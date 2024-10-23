@@ -2607,6 +2607,7 @@ Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation
 <translation id="2872968825059227580">Nonaktifkan dukungan GIF.</translation>
 <translation id="2874209944580848064">Catatan untuk perangkat <ph name="PRODUCT_OS_NAME" /> yang mendukung aplikasi Android:</translation>
 <translation id="287474029350993681">Nonaktifkan transmisi konten ke perangkat</translation>
+<translation id="2874983257003956579">Konfigurasi Alat pengelolaan kelas</translation>
 <translation id="2875192972412983412">Menentukan subset server cetak yang akan dikueri untuk server printer.
 
       Jika kebijakan ini ditetapkan, hanya server printer yang memiliki id yang cocok dengan nilai kebijakan ini yang akan tersedia untuk pengguna.
@@ -2734,6 +2735,10 @@ perilaku tombol fungsi, dan setelan ini tidak akan dapat diubah oleh pengguna.</
 Jika cookie ditetapkan untuk domain yang cocok dengan salah satu filter yang diberikan, cookie tersebut akan dikecualikan dari pemindahan. Domain cookie dicocokkan sesuai dengan aturan kolom "host" yang diuraikan dalam https://support.google.com/chrome/a?p=url_blocklist_filter_format, semua kolom lainnya akan diabaikan. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
 
 Kebijakan <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> lebih diprioritaskan.</translation>
+<translation id="2953447815703785478">Menentukan sertifikat klien di seluruh perangkat yang seharusnya didaftarkan menggunakan
+protokol pengelolaan perangkat.
+
+Opsi algoritma kunci <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> didukung sejak <ph name="PRODUCT_OS_NAME" /> versi 132.</translation>
 <translation id="2957506574938329824">Jangan izinkan situs apa pun meminta akses ke perangkat Bluetooth melalui API Bluetooth Web</translation>
 <translation id="2957513448235202597">Jenis akun untuk autentikasi <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Selalu kirim titik akses Wi-Fi ke server saat menetapkan zona waktu</translation>
@@ -4628,6 +4633,7 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melacak paket mere
       <ph name="PRODUCT_NAME" /> versi M121.</translation>
 <translation id="439661169333921592">Nonaktifkan sorotan fokus keyboard di layar login</translation>
 <translation id="4397045637922200204">Nonaktifkan pemulihan akun</translation>
+<translation id="4397157269508242312">Menyetel kebijakan akan menentukan apakah pengguna menggunakan alat pengelolaan kelas untuk mengirim/menerima konten, mengirim/menerima teks sebagai siswa, pengajar, atau jika alat pengelolaan kelas dinonaktifkan untuk pengguna.</translation>
 <translation id="4397464099112037398">Setelan default izin Penempatan Jendela</translation>
 <translation id="4398803806072237638">Fitur sintaksis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> untuk status kustom CSS diubah menjadi <ph name="CUSTOM_STATE_NEW_SYNTAX" /> di <ph name="PRODUCT_NAME" /> untuk mematuhi perubahan yang telah dibuat di <ph name="FIREFOX_PRODUCT_NAME" /> dan <ph name="SAFARI_PRODUCT_NAME" />. Kebijakan ini memungkinkan sintaksis lama yang sudah tidak digunakan lagi diaktifkan hingga M133.
 
@@ -5103,6 +5109,7 @@ Di instance <ph name="MAC_OS_NAME" />, aplikasi dan ekstensi yang bukan dari Chr
 <translation id="4739596156184678950">Mengizinkan penyimpanan file secara langsung ke <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Membatasi mode pencetakan grafis latar belakang</translation>
 <translation id="4745232963710538589">Mengaktifkan ekstensi insight untuk melaporkan metrik penggunaan</translation>
+<translation id="4746394249367607432">Pengguna dapat bergabung dan ditambahkan ke sesi pengelolaan kelas. Pengajar dapat mengirim konten kepada pengguna ini.</translation>
 <translation id="4749670563834935149">Mengaktifkan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di layar login dan layar kunci.
 
 Menyetel kebijakan ini akan menentukan URL mana yang akan ditawarkan oleh <ph name="PRODUCT_OS_NAME" /> untuk memulai alur pengesahan. Hal ini memungkinkan situs tersebut mendapatkan serangkaian sinyal kontekstual yang telah disahkan dari perangkat.
@@ -6439,6 +6446,10 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
       Jika kebijakan disetel ke Nonaktif, periksa ejaan akan dinonaktifkan dari semua sumber, dan pengguna tidak dapat mengaktifkannya. Kebijakan <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" />, dan <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> tidak akan berpengaruh jika kebijakan ini disetel ke Salah (False).
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan periksa ejaan di setelan bahasa. </translation>
+<translation id="5655060841667911118">Menentukan sertifikat klien yang seharusnya didaftarkan menggunakan protokol
+pengelolaan perangkat.
+
+Opsi algoritma kunci <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> didukung sejak <ph name="PRODUCT_OS_NAME" /> versi 132.</translation>
 <translation id="5655553344896004108">Mengizinkan penggunaan U2F Security Key API yang sudah tidak digunakan lagi</translation>
 <translation id="5656177735561364047">Mengaktifkan Fitur Papan Klip Bersama</translation>
 <translation id="5657752663637568277">Kebijakan ini mengontrol apakah peringatan penghentian <ph name="CLOUD_PRINT_NAME" /> akan ditampilkan kepada pengguna di dialog pratinjau cetak atau di halaman setelan.
@@ -7819,6 +7830,7 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 <translation id="6607983779935460461">Dukungan URL data untuk SVGUseElement.</translation>
 <translation id="6609867253856597039">Menyetel pengalaman pengguna fitur yang dinonaktifkan</translation>
 <translation id="6614557704487944013">Izinkan pengguna menggunakan browser <ph name="LACROS_NAME" /></translation>
+<translation id="6614648642325603511">Algoritma untuk pembuatan pasangan kunci. Opsi EC didukung sejak versi 132.</translation>
 <translation id="661610294649586421">Jangan izinkan permintaan WebAuthn API di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="6617589895942747919">Waktu mulai interval, inklusif.</translation>
 <translation id="6621830999036927230">Jika kebijakan disetel, host akses jarak jauh akan menggunakan URL ini untuk memvalidasi token autentikasi dari klien akses jarak jauh agar dapat menerima koneksi. Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.
@@ -8121,6 +8133,7 @@ kebijakan ini saat browser berjalan.</translation>
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Aktifkan transfer Cookie SSO SAML ke sesi pengguna selama login</translation>
+<translation id="6847810176590195243">Pengguna dapat menghubungkan dan men-deploy konten ke siswa. Hal ini mencakup mengirimkan konten web dan menyediakan terjemahan/teks otomatis dari suara pengajar kepada siswa.</translation>
 <translation id="684856667300805181">Kebijakan ini dihapus dalam <ph name="PRODUCT_NAME" /> 68 dan digantikan oleh <ph name="ARC_GLS_POLICY_NAME" />.</translation>
 <translation id="684882090733715433">Pelaporan Peristiwa Browser</translation>
 <translation id="6850300477973481112">Setelan Konektor Desktop</translation>
@@ -9352,6 +9365,7 @@ Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /
 <translation id="782661371433719637">Jangan izinkan situs apa pun meminta akses baca ke file dan direktori melalui File System API</translation>
 <translation id="7827127381981620448">Aplikasi platform</translation>
 <translation id="7829436838673974723">Izinkan halaman mengirim permintaan XHR sinkron selama penutupan halaman</translation>
+<translation id="7829546795016635784">Pengguna tidak dapat menggunakan fitur pengelolaan kelas atau ditambahkan ke sesi pengelolaan kelas.</translation>
 <translation id="782978857350824974">Mengizinkan permintaan Autentikasi Web di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="7830775338190021763">Aktifkan kemampuan transfer file di sesi dukungan jarak jauh perusahaan</translation>
 <translation id="7832225468415136704">Cegah Pembersih Chrome memindai sistem secara berkala dan nonaktifkan pemindaian manual</translation>
@@ -11189,6 +11203,7 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="943865157632139008">Memungkinkan Anda mengonfigurasi perender HTML default jika <ph name="PRODUCT_FRAME_NAME" /> diinstal. Setelan defaultnya adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat mengganti ini secara opsional dan memerintahkan <ph name="PRODUCT_FRAME_NAME" /> me-render halaman HTML secara default.</translation>
 <translation id="944817693306670849">Setel ukuran cache disk</translation>
 <translation id="949192525372487705">Blokir peralihan ke pengelola sandi pihak ketiga</translation>
+<translation id="956107219808875608">Mengontrol setelan untuk alat pengelolaan kelas.</translation>
 <translation id="957322141096206402">Resolusi DNS sistem dapat berjalan di dalam atau di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
 <translation id="957778406002650056">URL tempat gambar <ph name="PLUGIN_VM_NAME" /> dapat didownload.</translation>
 <translation id="957920984193041197">Izinkan halaman menampilkan pop-up selama penghapusan muatan</translation>
@@ -11201,6 +11216,7 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="966425658642788645">Terapkan perilaku default</translation>
 <translation id="971677226939413180">Opsi Cetak sebagai gambar tidak tersedia bagi pilihan pengguna.</translation>
 <translation id="974349541138387272">Menentukan template URI pada resolver DNS-over-HTTPS yang diinginkan</translation>
+<translation id="978619365985286086">Setelan alat pengelolaan kelas</translation>
 <translation id="978658824596356870">Format jam 24 jam</translation>
 <translation id="979467274961593903">Jangan izinkan penggunaan proses debug jarak jauh</translation>
 <translation id="980218166381006412">Jika kebijakan disetel ke Aktif, mode latar belakang akan aktif. Dalam mode latar belakang, proses <ph name="PRODUCT_NAME" /> dimulai saat login OS dan terus berjalan saat jendela browser terakhir ditutup sehingga aplikasi latar belakang dan sesi penjelajahan dapat tetap aktif. Proses latar belakang menampilkan ikon di area notifikasi dan selalu dapat ditutup dari sana.

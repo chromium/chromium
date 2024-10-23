@@ -2913,7 +2913,6 @@
 <translation id="3030967311408872958">Од зајдисонце до изгрејсонце</translation>
 <translation id="3031417829280473749">Агентката X</translation>
 <translation id="3031532026314193077">Користи допирна подлога и тастатура за кликнување со десно копче</translation>
-<translation id="3031544881009594539">Најавете се на сајтов за да создадете нов криптографски клуч. Стариот е избришан од Google Password Manager.</translation>
 <translation id="3031557471081358569">Изберете ставки за увезување:</translation>
 <translation id="3032204772252313646">Автоматски титлови</translation>
 <translation id="3032272345862007156">Неодамнешна AI-тема: <ph name="INDEX" /></translation>
@@ -3808,7 +3807,6 @@
 <translation id="370665806235115550">Се вчитува...</translation>
 <translation id="3707034683772193706">Даден сајт што ќе го отворите може да зачува мала количина податоци со Chrome, главно за да потврди дека не сте бот</translation>
 <translation id="3707163604290651814">Во моментов сте најавени како <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Потребно е ажурирање на криптографскиот клуч</translation>
 <translation id="3707348585109246684">Отвори линк во нова картичка на <ph name="APP" /></translation>
 <translation id="3708295717182051206">Затворени титлови</translation>
 <translation id="3708684582558000260">Не им дозволувај на затворените сајтови за го довршат испраќањето или примањето податоци</translation>
@@ -4310,7 +4308,6 @@
 <translation id="403725336528835653">Прво испробајте</translation>
 <translation id="4039966970282098406">Управувајте со вашата приватност со контролирање на пристапот до микрофонот, камерата и друго</translation>
 <translation id="4040041015953651705">Јазик од кој треба да се преведе</translation>
-<translation id="4042660782729322247">Го споделувате екранот</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Излези од страницата}one{Излези од страниците}other{Излези од страниците}}</translation>
 <translation id="4042941173059740150">Продолжете на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Големина на курсорот</translation>
@@ -5036,7 +5033,6 @@
 <translation id="4588749726511456218">Забрзување на лизгањето <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Евиденцијата е успешно запишана во директориумот „Преземања“.</translation>
 <translation id="4590785647529325123">Затворете ги сите картички „Инкогнито“ за да се избрише историјата на прелистувањето во режимот „Инкогнито“ од уредот</translation>
-<translation id="4590969863668977062">Криптографскиот клуч е ажуриран</translation>
 <translation id="459204634473266369">Нема зачувани уреди во <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Апликација за цртање со пенкало</translation>
 <translation id="4593021220803146968">&amp;Оди на <ph name="URL" /></translation>

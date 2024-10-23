@@ -2896,7 +2896,6 @@
 <translation id="3030967311408872958">സൂര്യാസ്‌തമയം മുതൽ സൂര്യോദയം വരെ</translation>
 <translation id="3031417829280473749">ഏജന്റ് X</translation>
 <translation id="3031532026314193077">വലത് ക്ലിക്ക് ചെയ്യാൻ ടച്ച്പാഡും കീബോർഡും ഉപയോഗിക്കുക</translation>
-<translation id="3031544881009594539">പുതിയൊരു പാസ്‌കീ സൃഷ്ടിക്കാൻ ഈ സൈറ്റിലേക്ക് സൈൻ ഇൻ ചെയ്യുക. പഴയത് Google Password Manager-ൽ നിന്ന് നീക്കം ചെയ്തു.</translation>
 <translation id="3031557471081358569">ഇറക്കുമതി ചെയ്യുന്നതിനായി ഇനങ്ങള്‍ തിരഞ്ഞെടുക്കുക:</translation>
 <translation id="3032204772252313646">സ്വയമേവയുള്ള അടിക്കുറിപ്പുകൾ</translation>
 <translation id="3032272345862007156">സമീപകാല AI തീം <ph name="INDEX" /></translation>
@@ -3791,7 +3790,6 @@
 <translation id="370665806235115550">ലോഡ്ചെയ്യുന്നു...</translation>
 <translation id="3707034683772193706">പ്രധാനമായും നിങ്ങളൊരു ബോട്ട് അല്ലെന്ന് സാധൂകരിക്കുന്ന കുറച്ച് വിവരങ്ങൾ, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന് Chrome-ൽ സംരക്ഷിക്കാനാകും</translation>
 <translation id="3707163604290651814">നിലവിൽ <ph name="NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="3707242400882068741">പാസ്‌കീ അപ്ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="3707348585109246684">പുതിയ <ph name="APP" /> ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="3708295717182051206">സബ്‌ടൈറ്റിലുകൾ</translation>
 <translation id="3708684582558000260">ഡാറ്റ അയയ്‌ക്കുന്നതോ സ്വീകരിക്കുന്നതോ പൂർത്തിയാക്കാൻ അടച്ച സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
@@ -4292,7 +4290,6 @@
 <translation id="403725336528835653">ആദ്യം ഇത് പരീക്ഷിക്കൂ</translation>
 <translation id="4039966970282098406">മൈക്രോഫോൺ, ക്യാമറ എന്നിവയിലേക്കും മറ്റുമുള്ള ആക്‌സസ് നിയന്ത്രിച്ച് നിങ്ങളുടെ സ്വകാര്യത മാനേജ് ചെയ്യുക</translation>
 <translation id="4040041015953651705">വിവർത്തനം ചെയ്യേണ്ട ഭാഷ</translation>
-<translation id="4042660782729322247">നിങ്ങൾ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{പേജിൽ നിന്ന് പുറത്തുകടക്കുക}other{പേജുകളിൽ നിന്ന് പുറത്തുകടക്കുക}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="4043267180218562935">കഴ്‌സർ വലുപ്പം</translation>
@@ -5018,7 +5015,6 @@
 <translation id="4588749726511456218">സ്ക്രോൾ ആക്‌സിലറേഷൻ <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">'ഡൗൺ‌ലോഡുകൾ'‌ ഡയറക്റ്ററിയിലേക്ക് ലോഗുകൾ‌ എഴുതി.</translation>
 <translation id="4590785647529325123">നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് അദൃശ്യ മോഡിന്റെ ബ്രൗസിംഗ് ചരിത്രം ഇല്ലാതാക്കാൻ എല്ലാ അദൃശ്യ ടാബുകളും അടയ്ക്കുക</translation>
-<translation id="4590969863668977062">പാസ്‌കീ അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> എന്ന വിലാസത്തിലേക്ക് ഉപകരണങ്ങളൊന്നും സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="4592891116925567110">സ്റ്റൈലസ് ഡ്രോയിംഗ് ആപ്പ്</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> ലേക്ക് പോകുക</translation>
@@ -5040,6 +5036,7 @@
 <translation id="4602776638371779614">ഈ ടാബ്, Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ സജീവമായി സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="4605026046465576953">ഐസൊലേറ്റഡ് വെബ് ആപ്പുകൾ റൺ ചെയ്യാൻ നിങ്ങൾക്ക് അനുമതിയില്ലാത്തതിനാൽ ഈ ആപ്പ് തുറക്കാനാകില്ല</translation>
 <translation id="4606551464649945562">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനോ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനോ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
+<translation id="4606933160360542263">ഇഷ്‍ടാനുസൃത കീ കോമ്പിനേഷൻ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ടാബ് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?}other{ടാബ് ഗ്രൂപ്പുകൾ ഇല്ലാതാക്കണോ?}}</translation>
 <translation id="4608500690299898628">&amp;കണ്ടെത്തുക...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-ന് ഒരു പിശക് നേരിട്ടു</translation>
@@ -6275,6 +6272,7 @@
 <translation id="5517304475148761050">ഈ ആപ്പിന് Play Store-ലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">പ്രവർത്തനം <ph name="ACTION_TO_REMOVE" /> നീക്കം ചെയ്യുക</translation>
 <translation id="5521078259930077036">നിങ്ങൾ പ്രതീക്ഷിച്ച ഹോം പേജ് ഇതാണോ?</translation>
 <translation id="5522156646677899028">ഈ വിപുലീകരണത്തിൽ ഗുരുതരമായ സുരക്ഷാ പ്രശ്നമടങ്ങിയിരിക്കുന്നു.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{നിങ്ങളുടെ അഡ്മിൻ ഒരു വിപുലീകരണം ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു}other{നിങ്ങളുടെ അഡ്മിൻ # വിപുലീകരണങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു}}</translation>
@@ -10258,6 +10256,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> എന്നതിനുള്ള കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="8431190899827883166">ഷോ ടാപ്‌സ്</translation>
 <translation id="843173223122814223">AI ഉപയോഗിച്ച് പശ്ചാത്തലങ്ങൾ സൃഷ്‌ടിക്കൂ</translation>
+<translation id="8431977087510901105">കഴ്‌സർ ക്രമീകരണം റീസെറ്റ് ചെയ്യൽ</translation>
 <translation id="8433186206711564395">നെറ്റ്‍വര്‍ക്ക് ക്രമീകരണങ്ങള്‍</translation>
 <translation id="8434109185104929038">വായനാ മൂല</translation>
 <translation id="8434480141477525001">NaCl ഡീബഗ് പോർട്ട്</translation>

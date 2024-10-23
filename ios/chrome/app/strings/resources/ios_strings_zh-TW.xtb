@@ -1636,6 +1636,7 @@
 <translation id="8601611099293226919">使用 Google 智慧鏡頭搜尋你的螢幕畫面</translation>
 <translation id="8605219856220328675">關閉分頁。</translation>
 <translation id="8609743333007776886">將 ${url} 加入書籤</translation>
+<translation id="8611922158252451755">知道連結的使用者都可以編輯所有分頁，因此請謹慎選擇共用對象。連結將在 48 小時後失效。</translation>
 <translation id="8620640915598389714">編輯</translation>
 <translation id="8625706492572042370">編輯主畫面</translation>
 <translation id="8633025649649592204">近期活動</translation>
@@ -1747,6 +1748,7 @@
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="9039373489628511875">頻寬</translation>
+<translation id="9057030985451135243">瞭解共用分頁群組</translation>
 <translation id="9057972802061533987">無法追蹤，發生錯誤。</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9066097352053395362">隱藏「編輯書籤」</translation>

@@ -339,9 +339,6 @@
 <translation id="219905428774326614">ランチャー、すべてのアプリ</translation>
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
 <translation id="2201687081523799384">Google ToDo リストを折りたたむ</translation>
-<translation id="2206960886090042977">マウスが接続されているため、内蔵タッチパッドを無効にします。マウスまたはキーボードを使用して変更を確定します。
-
-無効にしない場合は 30 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222841058024245321">デスク 7</translation>
@@ -1916,9 +1913,6 @@
 デバイスをシャットダウンするには、デバイスの電源ボタンをもう一度長押しします。</translation>
 <translation id="7523420897035067483">フォーカス モード中にサイレント モードを有効にする</translation>
 <translation id="7524043547948122239">Google ToDo リスト</translation>
-<translation id="7524919752437339268">内蔵タッチパッドを無効にします。キーボードまたは別のポインタ デバイスを使用して変更を確定します。
-
-無効にしない場合は 30 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="7525067979554623046">作成</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>

@@ -339,9 +339,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="219905428774326614">Launcher, barcha ilovalar</translation>
 <translation id="2201071101391734388">Oxirgi <ph name="INDEX" />/<ph name="TOTAL_COUNT" /> ta rasm.</translation>
 <translation id="2201687081523799384">Google Tasks maʼlumotlarini yopish</translation>
-<translation id="2206960886090042977">Sichqoncha ulangani uchun ichki sensorli panel oʻchirildi. Bu amalni sichqoncha yoki klaviatura orqali tasdiqlang.
-
-Bekor qilinsa, 30 soniyadan keyin sensorli panel qayta yoqiladi.</translation>
 <translation id="2208323208084708176">Birlashgan ish stoli rejimi</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -1915,9 +1912,6 @@ yangi oʻrnatilgan</translation>
 Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translation>
 <translation id="7523420897035067483">Fokus rejimida Bezovta qilinmasin</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">Ichki sensorli panel oʻchirildi. Bu amalni klaviatura yoki boshqa koʻrsatish qurilmasi orqali tasdiqlang.
-
-Bekor qilinsa, 30 soniyadan keyin sensorli panel qayta yoqiladi.</translation>
 <translation id="7525067979554623046">Yaratish</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>

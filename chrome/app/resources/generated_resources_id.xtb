@@ -2912,7 +2912,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3030967311408872958">Malam hingga pagi</translation>
 <translation id="3031417829280473749">Agen X</translation>
 <translation id="3031532026314193077">Gunakan touchpad dan keyboard untuk mengklik kanan</translation>
-<translation id="3031544881009594539">Login ke situs ini untuk membuat kunci sandi baru. Kunci lama telah dihapus dari Pengelola Sandi Google.</translation>
 <translation id="3031557471081358569">Pilih item yang akan diimpor:</translation>
 <translation id="3032204772252313646">Teks otomatis</translation>
 <translation id="3032272345862007156">Tema AI terbaru <ph name="INDEX" /></translation>
@@ -3807,7 +3806,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3707034683772193706">Situs yang Anda buka dapat menyimpan info dalam jumlah kecil dengan Chrome, terutama untuk memvalidasi bahwa Anda bukan bot</translation>
 <translation id="3707163604290651814">Saat ini login sebagai <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Perlu pembaruan kunci sandi</translation>
 <translation id="3707348585109246684">Buka Link di Tab <ph name="APP" /> Baru</translation>
 <translation id="3708295717182051206">Teks tertutup</translation>
 <translation id="3708684582558000260">Jangan izinkan situs yang ditutup untuk menyelesaikan pengiriman atau penerimaan data</translation>
@@ -4309,7 +4307,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="403725336528835653">Coba dulu</translation>
 <translation id="4039966970282098406">Kelola privasi Anda dengan mengontrol akses ke mikrofon, kamera, dan lainnya</translation>
 <translation id="4040041015953651705">Bahasa sumber</translation>
-<translation id="4042660782729322247">Anda membagikan layar Anda</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Keluar dari Halaman}other{Keluar dari Halaman}}</translation>
 <translation id="4042941173059740150">Lanjutkan ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Ukuran kursor</translation>
@@ -5035,7 +5032,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4588749726511456218">Akselerasi scroll <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Log berhasil ditulis ke direktori Download.</translation>
 <translation id="4590785647529325123">Untuk menghapus histori penjelajahan mode Samaran dari perangkat Anda, tutup semua tab Samaran</translation>
-<translation id="4590969863668977062">Kunci sandi diperbarui</translation>
 <translation id="459204634473266369">Tidak ada perangkat yang disimpan ke <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplikasi menggambar dengan stilus</translation>
 <translation id="4593021220803146968">&amp;Buka <ph name="URL" /></translation>
@@ -5057,6 +5053,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4602776638371779614">Tab ini memindai perangkat Bluetooth secara aktif</translation>
 <translation id="4605026046465576953">Aplikasi ini tidak dapat dibuka karena Anda tidak memiliki izin untuk menjalankan aplikasi web terisolasi</translation>
 <translation id="4606551464649945562">Jangan izinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
+<translation id="4606933160360542263">Kombinasi tombol kustom: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Hapus grup tab?}other{Hapus grup tab?}}</translation>
 <translation id="4608500690299898628">&amp;Temukan...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> telah mengalami error</translation>
@@ -6292,6 +6289,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5517304475148761050">Aplikasi ini memerlukan akses ke Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Hapus tindakan <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Apakah ini beranda yang Anda harapkan?</translation>
 <translation id="5522156646677899028">Ekstensi ini berisi kerentanan keamanan serius.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ekstensi telah diinstal oleh administrator Anda}other{# ekstensi telah diinstal oleh administrator Anda}}</translation>
@@ -10274,6 +10272,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8429928917752180743">Opsi lainnya untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
 <translation id="843173223122814223">Buat latar belakang dengan AI</translation>
+<translation id="8431977087510901105">Setelan kursor direset</translation>
 <translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="8434109185104929038">Sudut baca</translation>
 <translation id="8434480141477525001">Port Debug NaCl</translation>

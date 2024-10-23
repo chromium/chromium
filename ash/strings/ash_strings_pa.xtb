@@ -339,9 +339,6 @@
 <translation id="219905428774326614">ਲਾਂਚਰ, ਸਭ ਐਪਾਂ</translation>
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
 <translation id="2201687081523799384">Google Tasks ਨੂੰ ਸਮੇਟੋ</translation>
-<translation id="2206960886090042977">ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ ਬੰਦ ਹੈ ਕਿਉਂਕਿ ਮਾਊਸ ਕਨੈਕਟ ਹੈ। ਤਬਦੀਲੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ ਮਾਊਸ ਜਾਂ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।
-
-ਨਹੀਂ ਤਾਂ, ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ 30 ਸਕਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="2208323208084708176">ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ</translation>
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2222841058024245321">ਡੈਸਕ 7</translation>
@@ -975,6 +972,7 @@
 <translation id="4356872429719185452">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦਿਖਾਓ। ਹੌਟਸਪੌਟ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ਰਿਕਾਰਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4371348193907997655">ਕਾਸਟ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="4371834685492830207">ਪਿੰਨ ਵਿੱਚ ਸਿਰਫ਼ ਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="4375482231364171368">ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /> ਫ਼ੀਸਦ</translation>
 <translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -1561,6 +1559,7 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> ਤੋਂ</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">ਪਾਸਵਰਡ ਵਿੱਚ ਸਿਰਫ਼ ਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="6240603910551255087">ਸਿਖਰਲਾ ਬਟਨ</translation>
 <translation id="6240821072888636753">ਹਰ ਵਾਰ ਪੁੱਛੋ</translation>
 <translation id="6247728804802644171">ਸੂਚਨਾਵਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -1916,9 +1915,6 @@
 ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ 'ਤੇ ਦੁਬਾਰਾ ਪਾਵਰ ਬਟਨ ਦਬਾਈ ਰੱਖੋ।</translation>
 <translation id="7523420897035067483">ਫੋਕਸ ਮੋਡ ਵਿੱਚ ਹੋਣ ਵੇਲੇ 'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ ਬੰਦ ਹੈ। ਤਬਦੀਲੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਜਾਂ ਕਿਸੇ ਹੋਰ ਪੁਆਇੰਟਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ।
-
-ਨਹੀਂ ਤਾਂ, ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ 30 ਸਕਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="7525067979554623046">ਬਣਾਓ</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>

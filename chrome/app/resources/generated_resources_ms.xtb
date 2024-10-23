@@ -1906,7 +1906,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
     Jika nanti anda memutuskan bahawa Voice Match tidak sesuai untuk anak anda, hanya alih keluar ciri itu dalam Tetapan Assistant mereka. Untuk melihat atau memadamkan klip audio yang dirakam oleh anak anda semasa persediaan Voice Match, pergi ke <ph name="VOICE_MATCH_SETTINGS_URL" /> daripada akaun anak anda.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308288819918530468"><ph name="ITEM" /> tidak dipilih. Tekan Cari dan Ruang untuk membuat pilihan.</translation>
 <translation id="2308798336967462263">Kekunci berikut tidak disokong: Tab, Shift, Control, Escape, Caps lock, Kelantangan</translation>
 <translation id="2309620859903500144">Tapak ini telah disekat daripada mengakses penderia gerakan atau cahaya anda.</translation>
 <translation id="2310923358723722542">Paparan dan pembesaran</translation>
@@ -2933,7 +2932,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3030967311408872958">Matahari terbenam hingga terbit</translation>
 <translation id="3031417829280473749">Ejen X</translation>
 <translation id="3031532026314193077">Gunakan pad sentuh dan papan kekunci untuk klik kanan</translation>
-<translation id="3031544881009594539">Log masuk ke laman ini untuk membuat kunci laluan baharu. Kunci laluan lama telah dipadamkan pada Google Password Manager.</translation>
 <translation id="3031557471081358569">Pilih item untuk mengimport:</translation>
 <translation id="3032204772252313646">Sari kata automatik</translation>
 <translation id="3032272345862007156">Tema AI <ph name="INDEX" /> terbaharu</translation>
@@ -3837,7 +3835,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3707034683772193706">Laman yang anda lawati boleh menyimpan sedikit maklumat dengan Chrome, terutamanya untuk mengesahkan bahawa anda bukan bot</translation>
 <translation id="3707163604290651814">Pada masa ini dilog masuk sebagai <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Kemaskinian kunci laluan diperlukan</translation>
 <translation id="3707348585109246684">Buka Pautan dalam Tab <ph name="APP" /> baharu</translation>
 <translation id="3708295717182051206">Sari kata</translation>
 <translation id="3708684582558000260">Jangan benarkan laman yang telah ditutup menyelesaikan penghantaran atau penerimaan data</translation>
@@ -4341,7 +4338,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="403725336528835653">Cuba dahulu</translation>
 <translation id="4039966970282098406">Urus privasi anda dengan mengawal akses kepada mikrofon, kamera dan pelbagai lagi</translation>
 <translation id="4040041015953651705">Bahasa sumber</translation>
-<translation id="4042660782729322247">Anda berkongsi skrin anda</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Keluar daripada Halaman}other{Keluar daripada Halaman}}</translation>
 <translation id="4042941173059740150">Terus kepada <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Saiz kursor</translation>
@@ -5072,7 +5068,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4588749726511456218">Pecutan penatalan <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Log berjaya ditulis ke direktori Muat Turun.</translation>
 <translation id="4590785647529325123">Untuk memadamkan sejarah penyemakan imbas Inkognito daripada peranti anda, tutup semua tab Inkognito</translation>
-<translation id="4590969863668977062">Kunci laluan dikemaskinikan</translation>
 <translation id="459204634473266369">Tiada peranti disimpan pada <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Apl melukis stilus</translation>
 <translation id="4593021220803146968">&amp;Pergi ke <ph name="URL" /></translation>
@@ -7470,7 +7465,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6357750620525943720">Pengecam Stabil Lain (mis., Cincangan atau UUID)</translation>
 <translation id="6358884629796491903">Naga</translation>
 <translation id="6361850914223837199">Butiran ralat:</translation>
-<translation id="6362303840256358093"><ph name="ITEM" /> dipilih. Tekan Cari dan Ruang untuk menyahpilih.</translation>
 <translation id="6362853299801475928">&amp;Laporkan isu...</translation>
 <translation id="6363786367719063276">Lihat log</translation>
 <translation id="6363990818884053551">Untuk memulakan penyegerakan, sahkan orang itu ialah anda</translation>

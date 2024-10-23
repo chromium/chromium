@@ -2900,7 +2900,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3030967311408872958">Du coucher au lever du soleil</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Utiliser le pavé tactile et le clavier pour effectuer un clic droit</translation>
-<translation id="3031544881009594539">Connectez-vous à ce site pour créer une autre clé d'accès. L'ancienne a été supprimée du Gestionnaire de mots de passe de Google.</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
 <translation id="3032204772252313646">Sous-titres automatiques</translation>
 <translation id="3032272345862007156">Thème IA récent <ph name="INDEX" /></translation>
@@ -3793,7 +3792,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3707034683772193706">Un site auquel vous accédez peut enregistrer une petite quantité d'informations dans Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
 <translation id="3707163604290651814">Actuellement connecté en tant que <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Mise à jour de la clé d'accès requise</translation>
 <translation id="3707348585109246684">Ouvrir un lien dans un nouvel onglet de l'<ph name="APP" /></translation>
 <translation id="3708295717182051206">Sous-titres</translation>
 <translation id="3708684582558000260">Ne pas autoriser les sites fermés à terminer l'envoi ni la réception de données</translation>
@@ -4295,7 +4293,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="403725336528835653">Essayer d'abord</translation>
 <translation id="4039966970282098406">Gérez votre confidentialité en contrôlant l'accès au micro, à l'appareil photo, etc.</translation>
 <translation id="4040041015953651705">Langue source</translation>
-<translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="4042941173059740150">Continuez vers <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Taille du curseur</translation>
@@ -5021,7 +5018,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4588749726511456218">Accélération du défilement <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Les journaux ont bien été écrits dans le répertoire des téléchargements.</translation>
 <translation id="4590785647529325123">Pour supprimer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée</translation>
-<translation id="4590969863668977062">Clé d'accès mise à jour</translation>
 <translation id="459204634473266369">Aucun appareil enregistré sur <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Application de dessin avec le stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
@@ -5043,6 +5039,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4602776638371779614">Cet onglet recherche activement des appareils Bluetooth</translation>
 <translation id="4605026046465576953">Impossible d'ouvrir cette appli, car vous n'êtes pas autorisé à exécuter des applis Web isolées</translation>
 <translation id="4606551464649945562">Interdire aux sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
+<translation id="4606933160360542263">Combinaison de touches personnalisée : <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets ?}one{Supprimer le groupe d'onglets ?}other{Supprimer les groupes d'onglets ?}}</translation>
 <translation id="4608500690299898628">&amp;Rechercher...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> a rencontré une erreur</translation>
@@ -5654,7 +5651,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5071295820492622726">Retour aux téléchargements récents</translation>
 <translation id="5071892329440114717">Afficher les détails de la protection standard</translation>
-<translation id="5072303130033714629">Outil Content Transfer</translation>
+<translation id="5072303130033714629">Outil Transfert de contenus</translation>
 <translation id="5072500507106264618">Seuls les services système peuvent utiliser votre position</translation>
 <translation id="5072836811783999860">Afficher les favoris gérés</translation>
 <translation id="5072900412896857127">Impossible de charger les conditions d'utilisation de Google Play. Veuillez vérifier votre connexion réseau et réessayer.</translation>
@@ -6276,6 +6273,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5517304475148761050">Cette application a besoin d'accéder au Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Supprimer l'action "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">Est-ce la page d'accueil que vous attendiez ?</translation>
 <translation id="5522156646677899028">Cette extension contient une grave faille de sécurité.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Une extension a été installée par votre administrateur}one{# extension a été installée par votre administrateur}other{# extensions ont été installées par votre administrateur}}</translation>
@@ -8467,7 +8465,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7139627972753429585"><ph name="APP_NAME" /> utilise votre micro</translation>
 <translation id="7140785920919278717">Programme d'installation de l'application</translation>
 <translation id="7141105143012495934">Échec de la connexion, car il est impossible de récupérer les informations relatives à votre compte. Veuillez contacter votre administrateur ou réessayer.</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
+<translation id="7141470099673912333">Transfert de contenus</translation>
 <translation id="7141844554192012199">Check-up</translation>
 <translation id="714301620504747562">La navigation et la recherche sont plus rapides qu'avec le préchargement standard</translation>
 <translation id="7143207342074048698">Connexion</translation>
@@ -10262,6 +10260,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8429928917752180743">Plus d'options pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
 <translation id="843173223122814223">Créer des arrière-plans avec l'IA</translation>
+<translation id="8431977087510901105">Paramètres du curseur réinitialisés</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8434109185104929038">Coin lecture</translation>
 <translation id="8434480141477525001">Port de débogage de Native Client</translation>

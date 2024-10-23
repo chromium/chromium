@@ -1891,7 +1891,6 @@
     Ако касније одлучите да Voice Match не одговара вашем детету, једноставно га уклоните из подешавања Помоћника. Да бисте прегледали или избрисали аудио снимке које дете сними током подешавања Voice Match-а, идите на <ph name="VOICE_MATCH_SETTINGS_URL" /> са дететовог налога.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308288819918530468">Ставка <ph name="ITEM" /> није изабрана. Да бисте изабрали, притисните тастер за претрагу и размак.</translation>
 <translation id="2308798336967462263">Следећи тастери нису подржани: Tab, Shift, Control, Escape, Caps lock, тастери за јачину звука</translation>
 <translation id="2309620859903500144">Овом сајту је забрањен приступ сензорима за покрет или светло.</translation>
 <translation id="2310923358723722542">Приказ и увећање</translation>
@@ -2918,7 +2917,6 @@
 <translation id="3030967311408872958">Од заласка до изласка сунца</translation>
 <translation id="3031417829280473749">Агент Икс</translation>
 <translation id="3031532026314193077">Користите тачпед и тастатуру да бисте кликнули десним тастером</translation>
-<translation id="3031544881009594539">Пријавите се на овај сајт да бисте направили нови приступни кључ. Стари је избрисан из Google менаџера лозинки.</translation>
 <translation id="3031557471081358569">Изаберите ставке за увоз:</translation>
 <translation id="3032204772252313646">Аутоматски титл</translation>
 <translation id="3032272345862007156">Недавна AI тема <ph name="INDEX" /></translation>
@@ -3822,7 +3820,6 @@
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="3707034683772193706">Сајт који посећујете може да сачува малу количину информација у Chrome-у, углавном да би потврдио да нисте бот</translation>
 <translation id="3707163604290651814">Тренутно сте пријављени као <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Треба да ажурирате приступни кључ</translation>
 <translation id="3707348585109246684">Отвори линк на новој картици у апликацији <ph name="APP" /></translation>
 <translation id="3708295717182051206">Титл</translation>
 <translation id="3708684582558000260">Не дозвољавај затвореним сајтовима да доврше слање или пријем података</translation>
@@ -4326,7 +4323,6 @@
 <translation id="403725336528835653">Прво испробајте</translation>
 <translation id="4039966970282098406">Управљајте приватношћу тако што ћете контролисати приступ микрофону, камери и другом</translation>
 <translation id="4040041015953651705">Језик са ког желите да преводите</translation>
-<translation id="4042660782729322247">Делите екран</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Затвори страницу}one{Затвори странице}few{Затвори странице}other{Затвори странице}}</translation>
 <translation id="4042941173059740150">Наставите на <ph name="SITE_ETLD_PLUS_ONE" /> уз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Величина курсора</translation>
@@ -5057,7 +5053,6 @@
 <translation id="4588749726511456218">Убрзање скроловања <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Евиденције су уписане у фолдер Подешавања.</translation>
 <translation id="4590785647529325123">Да бисте избрисали историју прегледања без архивирања са уређаја, затворите све картице без архивирања</translation>
-<translation id="4590969863668977062">Приступни кључ је ажуриран</translation>
 <translation id="459204634473266369">Нема сачуваних уређаја на <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Апликација за цртање помоћу писаљке</translation>
 <translation id="4593021220803146968">&amp;Иди на <ph name="URL" /></translation>
@@ -7454,7 +7449,6 @@
 <translation id="6357750620525943720">Други стабилни идентификатори (нпр. хешеви или UUID-ови)</translation>
 <translation id="6358884629796491903">Змај</translation>
 <translation id="6361850914223837199">Детаљи грешке:</translation>
-<translation id="6362303840256358093">Изабрали сте: <ph name="ITEM" />. Да бисте поништили избор, притисните тастер за претрагу и размак.</translation>
 <translation id="6362853299801475928">П&amp;ријави проблем...</translation>
 <translation id="6363786367719063276">Прегледајте евиденције</translation>
 <translation id="6363990818884053551">Да бисте започели синхронизацију, потврдите свој идентитет</translation>

@@ -2906,7 +2906,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3030967311408872958">Solnedgang til soloppgang</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Bruk styreflaten og tastaturet til å høyreklikke</translation>
-<translation id="3031544881009594539">Logg på dette nettstedet for å opprette en ny passnøkkel. Den gamle er slettet fra Google Passordlagring.</translation>
 <translation id="3031557471081358569">Velg elementer som skal importeres:</translation>
 <translation id="3032204772252313646">Automatisk teksting</translation>
 <translation id="3032272345862007156">Nylig AI-tema <ph name="INDEX" /></translation>
@@ -3801,7 +3800,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3707034683772193706">Nettsteder du besøker, kan lagre litt informasjon i Chrome – hovedsakelig for å bekrefte at du ikke er en robot</translation>
 <translation id="3707163604290651814">For øyeblikket logget på som <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Passnøkkelen må oppdateres</translation>
 <translation id="3707348585109246684">Åpne linken i ny <ph name="APP" />-fane</translation>
 <translation id="3708295717182051206">Teksting</translation>
 <translation id="3708684582558000260">Ikke la lukkede nettsteder fullføre sending eller mottak av data</translation>
@@ -4301,7 +4299,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="403725336528835653">Prøv det først</translation>
 <translation id="4039966970282098406">Administrer personvernet ditt ved å kontrollere tilgangen til mikrofonen, kameraet med mer</translation>
 <translation id="4040041015953651705">Språket du vil oversette fra</translation>
-<translation id="4042660782729322247">Du deler skjermen din</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="4042941173059740150">Fortsett til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Markørstørrelse</translation>
@@ -5027,7 +5024,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4588749726511456218">Rulleakselerasjon <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Loggene er skrevet til Nedlastinger-katalogen.</translation>
 <translation id="4590785647529325123">For å fjerne Inkognito-nettleserloggen fra enheten, lukk alle inkognitofaner</translation>
-<translation id="4590969863668977062">Passnøkkelen er oppdatert</translation>
 <translation id="459204634473266369">Ingen enheter er lagret i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App for tegning med pekepenn</translation>
 <translation id="4593021220803146968">&amp;Gå til <ph name="URL" /></translation>

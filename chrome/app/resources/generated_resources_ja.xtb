@@ -2893,7 +2893,6 @@
 <translation id="3030967311408872958">日の入りから日の出まで</translation>
 <translation id="3031417829280473749">エージェント X</translation>
 <translation id="3031532026314193077">タッチパッドとキーボードを使用して右クリックする</translation>
-<translation id="3031544881009594539">このサイトにログインして、新しいパスキーを作成してください。古いパスキーは Google パスワード マネージャーから削除されています。</translation>
 <translation id="3031557471081358569">インポートするデータを選択:</translation>
 <translation id="3032204772252313646">自動字幕</translation>
 <translation id="3032272345862007156">最近の AI テーマ <ph name="INDEX" /></translation>
@@ -3785,7 +3784,6 @@
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3707034683772193706">アクセス先のサイトは、主にあなたが bot でないことを確認する少量の情報を Chrome に保存できます。</translation>
 <translation id="3707163604290651814">現在、<ph name="NAME" /> としてログインしています</translation>
-<translation id="3707242400882068741">パスキーの更新が必要です</translation>
 <translation id="3707348585109246684"><ph name="APP" /> の新しいタブでリンクを開く</translation>
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">閉じたサイトにデータの送受信の完了を許可しない</translation>
@@ -4287,7 +4285,6 @@
 <translation id="403725336528835653">試してみる</translation>
 <translation id="4039966970282098406">マイクやカメラなどへのアクセスを制御して、プライバシーを管理します</translation>
 <translation id="4040041015953651705">翻訳元の言語</translation>
-<translation id="4042660782729322247">画面を共有しています</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ページを離れる}other{ページを離れる}}</translation>
 <translation id="4042941173059740150">引き続き <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
 <translation id="4043267180218562935">カーソルのサイズ</translation>
@@ -5011,7 +5008,6 @@
 <translation id="4588749726511456218">スクロールの高速化<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
 <translation id="4590785647529325123">シークレット モードでの閲覧履歴をデバイスから削除するには、すべてのシークレット タブを閉じます</translation>
-<translation id="4590969863668977062">パスキーが更新されました</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> に保存されたデバイスはありません</translation>
 <translation id="4592891116925567110">タッチペンの描画アプリ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> に移動(&amp;G)</translation>
@@ -5033,6 +5029,7 @@
 <translation id="4602776638371779614">このタブは Bluetooth デバイスをスキャンしています</translation>
 <translation id="4605026046465576953">分離されたウェブアプリを実行する権限がないため、このアプリを開けません</translation>
 <translation id="4606551464649945562">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可しない</translation>
+<translation id="4606933160360542263">カスタムキーの組み合わせ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{タブグループを削除しますか？}other{タブグループを削除しますか？}}</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> でエラーが発生しました</translation>
@@ -6264,6 +6261,7 @@
 <translation id="5517304475148761050">このアプリは、Play ストアへのアクセスが必要です</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">アクション「<ph name="ACTION_TO_REMOVE" />」を削除</translation>
 <translation id="5521078259930077036">このホーム ページでよろしいですか？</translation>
 <translation id="5522156646677899028">この拡張機能にはセキュリティ上の重大な問題があります。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の拡張機能をインストールしました}other{管理者が # 個の拡張機能をインストールしました}}</translation>
@@ -10243,6 +10241,7 @@
 <translation id="8429928917752180743">「<ph name="EXTENSION_NAME" />」に関するその他のオプション</translation>
 <translation id="8431190899827883166">タップを表示</translation>
 <translation id="843173223122814223">AI で背景を作成</translation>
+<translation id="8431977087510901105">カーソルの設定がリセットされました</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8434109185104929038">読書コーナー</translation>
 <translation id="8434480141477525001">NaCl デバッグ ポート</translation>

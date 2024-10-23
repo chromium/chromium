@@ -2901,7 +2901,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3030967311408872958">Od západu do východu slnka</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Kliknutie pravým tlačidlom pomocou touchpadu a klávesnice</translation>
-<translation id="3031544881009594539">Prihláste sa na tomto webe a vytvorte nový prístupový kľúč. Starý bol odstránený zo Správcu hesiel Google.</translation>
 <translation id="3031557471081358569">Vyberte položky na import:</translation>
 <translation id="3032204772252313646">Automatické titulky</translation>
 <translation id="3032272345862007156"><ph name="INDEX" />. nedávny motív vytvorený umelou inteligenciou</translation>
@@ -3796,7 +3795,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="370665806235115550">Načítava sa...</translation>
 <translation id="3707034683772193706">Web, ktorý navštívite, môže v Chrome uložiť malé množstvo informácií, najmä na overenie, že nie ste robot</translation>
 <translation id="3707163604290651814">Momentálne je prihlásený účet <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Vyžaduje sa aktualizácia prístupového kľúča</translation>
 <translation id="3707348585109246684">Otvoriť odkaz na novej karte aplikácie <ph name="APP" /></translation>
 <translation id="3708295717182051206">Skryté titulky</translation>
 <translation id="3708684582558000260">Nepovoliť zavretým webom dokončovať odosielanie alebo prijímanie údajov</translation>
@@ -4298,7 +4296,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="403725336528835653">Najprv vyskúšať</translation>
 <translation id="4039966970282098406">Spravujte svoju ochranu súkromia ovládaním prístupu k mikrofónu, kamere a ďalším položkám</translation>
 <translation id="4040041015953651705">Jazyk, z ktorého chcete prekladať</translation>
-<translation id="4042660782729322247">Zdieľate svoju obrazovku</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Opustiť stránku}few{Opustiť stránky}many{Opustiť stránky}other{Opustiť stránky}}</translation>
 <translation id="4042941173059740150">Pokračujte na webe <ph name="SITE_ETLD_PLUS_ONE" /> poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Veľkosť kurzora</translation>
@@ -5024,7 +5021,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4588749726511456218">Zrýchlenie posúvania <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Denníky boli úspešne zapísané do adresára Stiahnuté.</translation>
 <translation id="4590785647529325123">Ak chcete zo svojho zariadenia odstrániť históriu prehliadania v režime inkognito, zavrite všetky karty inkognito</translation>
-<translation id="4590969863668977062">Prístupový kľúč bol aktualizovaný</translation>
 <translation id="459204634473266369">V e‑maile <ph name="PRIMARY_EMAIL" /> nie sú uložené žiadne zariadenia</translation>
 <translation id="4592891116925567110">Aplikácia na kreslenie dotykovým perom</translation>
 <translation id="4593021220803146968">&amp;Prejsť na adresu <ph name="URL" /></translation>

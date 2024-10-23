@@ -2913,7 +2913,6 @@
 <translation id="3030967311408872958">সূর্যাস্ত থেকে সূর্যোদয়</translation>
 <translation id="3031417829280473749">এজেন্ট X</translation>
 <translation id="3031532026314193077">ডানদিকের বোতামে ক্লিক করার জন্য টাচপ্যাড ও কীবোর্ড ব্যবহার করুন</translation>
-<translation id="3031544881009594539">নতুন পাসকী তৈরি করার জন্য এই সাইটে সাইন-ইন করুন। Google Password Manager থেকে পুরনোটি মুছে ফেলা হয়েছে।</translation>
 <translation id="3031557471081358569">আমদানির জন্য আইটেম বেছে নিন:</translation>
 <translation id="3032204772252313646">অটোমেটিক ক্যাপশন</translation>
 <translation id="3032272345862007156">সাম্প্রতিক AI থিম <ph name="INDEX" /></translation>
@@ -3808,7 +3807,6 @@
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
 <translation id="3707034683772193706">আপনার দেখা সাইট Chrome-এর মাধ্যমে অল্প পরিমাণ তথ্য সেভ করতে পারে। আপনি যে আসলে বট নন এটি যাচাই করতেই তা করা হয়</translation>
 <translation id="3707163604290651814">বর্তমানে <ph name="NAME" /> হিসেবে সাইন-ইন করেছেন</translation>
-<translation id="3707242400882068741">পাসকী আপডেট করতে হবে</translation>
 <translation id="3707348585109246684">নতুন <ph name="APP" /> ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="3708295717182051206">ক্লোজড ক্যাপশন</translation>
 <translation id="3708684582558000260">ডেটা পাঠানো অথবা পাওয়া সম্পূর্ণ করার ব্যাপারে বন্ধ হয়ে যাওয়া সাইটগুলিকে অনুমতি দেয় না</translation>
@@ -4309,7 +4307,6 @@
 <translation id="403725336528835653">আগে এটি করে দেখো</translation>
 <translation id="4039966970282098406">মাইক্রোফোন, ক্যামেরা এবং আরও অনেক কিছুর কন্ট্রোল অ্যাক্সেস করে আপনার গোপনীয়তা ম্যানেজ করুন</translation>
 <translation id="4040041015953651705">যে ভাষা থেকে অনুবাদ করতে হবে</translation>
-<translation id="4042660782729322247">আপনার স্ক্রিন শেয়ার করছেন</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{পৃষ্ঠাটি ছেড়ে যান}one{পৃষ্ঠাগুলি ছেড়ে যান}other{পৃষ্ঠাগুলি ছেড়ে যান}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যান</translation>
 <translation id="4043267180218562935">কার্সর সাইজ</translation>
@@ -5036,7 +5033,6 @@
 <translation id="4588749726511456218">অ্যাক্সিলারেশন স্ক্রল করুন <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ডাউনলোড ডিরেক্টরিতে লগ সেভ করা হয়েছে।</translation>
 <translation id="4590785647529325123">আপনার ডিভাইস থেকে 'ছদ্মবেশী মোড'-এ করা ব্রাউজিংয়ের ইতিহাস মুছে ফেলতে, সব 'ছদ্মবেশী ট্যাব' বন্ধ করুন</translation>
-<translation id="4590969863668977062">পাসকী আপডেট করা হয়েছে</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-এ কোনও ডিভাইস সেভ করা নেই</translation>
 <translation id="4592891116925567110">স্টাইলাস ব্যবহার করে আঁকার অ্যাপ</translation>
 <translation id="4593021220803146968">&amp;এখানে যান <ph name="URL" /></translation>

@@ -2913,7 +2913,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3030967311408872958">Từ tối đến sáng</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
 <translation id="3031532026314193077">Sử dụng bàn di chuột và bàn phím để nhấp chuột phải</translation>
-<translation id="3031544881009594539">Đăng nhập vào trang web này để tạo khoá truy cập mới. Khoá truy cập cũ đã bị xoá khỏi Trình quản lý mật khẩu của Google.</translation>
 <translation id="3031557471081358569">Chọn các mục cần nhập:</translation>
 <translation id="3032204772252313646">Phụ đề tự động</translation>
 <translation id="3032272345862007156">Giao diện AI tạo gần đây <ph name="INDEX" /></translation>
@@ -3808,7 +3807,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
 <translation id="3707163604290651814">Hiện đăng nhập với tên <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Cần cập nhật khoá truy cập</translation>
 <translation id="3707348585109246684">Mở đường liên kết trong thẻ mới của <ph name="APP" /></translation>
 <translation id="3708295717182051206">Phụ đề</translation>
 <translation id="3708684582558000260">Không cho phép trang web đã đóng hoàn tất quá trình gửi hoặc nhận dữ liệu</translation>
@@ -4310,7 +4308,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="403725336528835653">Dùng thử trước</translation>
 <translation id="4039966970282098406">Quản lý quyền riêng tư bằng cách kiểm soát quyền truy cập vào micrô, máy ảnh và nhiều ứng dụng khác</translation>
 <translation id="4040041015953651705">Ngôn ngữ gốc</translation>
-<translation id="4042660782729322247">Bạn đang chia sẻ màn hình</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi trang}}</translation>
 <translation id="4042941173059740150">Tiếp tục truy cập <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Kích thước con trỏ</translation>
@@ -5036,7 +5033,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4588749726511456218">Tăng tốc độ cuộn <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Đã ghi thành công nhật ký vào thư mục Tệp đã tải xuống.</translation>
 <translation id="4590785647529325123">Để xoá nhật ký duyệt web ở chế độ Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh</translation>
-<translation id="4590969863668977062">Đã cập nhật khoá truy cập</translation>
 <translation id="459204634473266369">Chưa lưu thiết bị nào vào <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Ứng dụng vẽ bằng bút cảm ứng</translation>
 <translation id="4593021220803146968">Đ&amp;i đến <ph name="URL" /></translation>

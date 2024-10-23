@@ -339,9 +339,6 @@
 <translation id="219905428774326614">啟動器，所有應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
 <translation id="2201687081523799384">收合 Google Tasks</translation>
-<translation id="2206960886090042977">裝置已接上滑鼠，因此內建觸控板已停用。請使用滑鼠或鍵盤確認變更。
-
-如果沒有在 30 秒內確認，內建觸控板將重新啟用。</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -1911,9 +1908,6 @@
 如要關閉裝置，請再次按住裝置上的電源按鈕。</translation>
 <translation id="7523420897035067483">在專注模式下啟用零打擾模式</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">內建觸控板已停用，請使用鍵盤或其他指標裝置確認變更。
-
-如果沒有在 30 秒內確認，內建觸控板將重新啟用。</translation>
 <translation id="7525067979554623046">建立</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>

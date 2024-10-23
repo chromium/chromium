@@ -339,9 +339,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="219905428774326614">Tela de início, todos os apps</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Fechar o Google Tarefas</translation>
-<translation id="2206960886090042977">O touchpad integrado está desativado porque um mouse está conectado. Use o mouse ou o teclado para confirmar a mudança.
-
-Caso contrário, o touchpad integrado será reativado em 30 segundos.</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
@@ -975,6 +972,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4356872429719185452">Consulte detalhes do ponto de acesso. Ele está sendo ativado.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> (gravando)</translation>
 <translation id="4371348193907997655">Configurações de transmissão</translation>
+<translation id="4371834685492830207">O PIN só pode conter caracteres válidos</translation>
 <translation id="4375482231364171368">Pesquisar na barra de endereço</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Conectando...</translation>
@@ -1560,6 +1558,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">A senha só pode conter caracteres válidos</translation>
 <translation id="6240603910551255087">Botão da parte de cima</translation>
 <translation id="6240821072888636753">Perguntar sempre</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
@@ -1915,9 +1914,6 @@ Nova instalação</translation>
 Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.</translation>
 <translation id="7523420897035067483">Ativa o modo "Não perturbe" durante o Foco</translation>
 <translation id="7524043547948122239">Google Tarefas</translation>
-<translation id="7524919752437339268">O touchpad integrado está desativado. Use o teclado ou outro dispositivo apontador para confirmar a mudança.
-
-Caso contrário, o touchpad integrado será reativado em 30 segundos.</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>

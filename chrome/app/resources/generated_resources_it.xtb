@@ -2900,7 +2900,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3030967311408872958">Dal tramonto all'alba</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Usa il touchpad e la tastiera per fare clic con il tasto destro del mouse</translation>
-<translation id="3031544881009594539">Accedi a questo sito per creare una nuova passkey. Quella precedente è stata eliminata dal Gestore delle password di Google.</translation>
 <translation id="3031557471081358569">Seleziona elementi da importare:</translation>
 <translation id="3032204772252313646">Sottotitoli codificati automatici</translation>
 <translation id="3032272345862007156">Tema IA recente <ph name="INDEX" /></translation>
@@ -3795,7 +3794,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="370665806235115550">Caricamento in corso...</translation>
 <translation id="3707034683772193706">Un sito che visiti può salvare una piccola quantità di informazioni con Chrome, principalmente per verificare che tu non sia un bot</translation>
 <translation id="3707163604290651814">Accesso eseguito come <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Aggiornamento della passkey richiesto</translation>
 <translation id="3707348585109246684">Apri link in un'altra scheda di <ph name="APP" /></translation>
 <translation id="3708295717182051206">Sottotitoli codificati</translation>
 <translation id="3708684582558000260">Non consentire ai siti chiusi di terminare l'invio o la ricezione di dati</translation>
@@ -4297,7 +4295,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="403725336528835653">Prova prima</translation>
 <translation id="4039966970282098406">Gestisci la tua privacy controllando l'accesso a microfono, fotocamera e altro ancora</translation>
 <translation id="4040041015953651705">Lingua da cui tradurre</translation>
-<translation id="4042660782729322247">Stai condividendo lo schermo</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="4042941173059740150">Continua su <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Dimensioni cursore</translation>
@@ -5023,7 +5020,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4588749726511456218">Accelerazione di scorrimento <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Log scritti nella directory Download.</translation>
 <translation id="4590785647529325123">Per eliminare la cronologia di navigazione in incognito dal tuo dispositivo, chiudi tutte le schede di navigazione in incognito.</translation>
-<translation id="4590969863668977062">Passkey aggiornata</translation>
 <translation id="459204634473266369">Nessun dispositivo salvato in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App di disegno con stilo</translation>
 <translation id="4593021220803146968">Vai alla pa&amp;gina <ph name="URL" /></translation>

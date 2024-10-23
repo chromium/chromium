@@ -63,6 +63,7 @@
 <translation id="3613492231657284463">비활성 탭 숨기기 대화상자</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">공유 시트 미리보기 썸네일</translation>
+<translation id="3810973564298564668">관리</translation>
 <translation id="381219490185664296">탭 그룹을 해제하시겠습니까?</translation>
 <translation id="3940195383040445971">탭에서 가격 추적</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{탭 그룹화}other{탭 그룹화}}</translation>

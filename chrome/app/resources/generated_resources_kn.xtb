@@ -1809,6 +1809,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಾರಂಭವಾದ ನಂತರ ಅದನ್ನು ರದ್ದು ಮಾಡಲಾಗುವುದಿಲ್ಲ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ಡೊಮೇನ್‌ಗಳಲ್ಲಿನ ಯಾವುದೇ ಸಾಧನದೊಂದಿಗೆ ಡೇಟಾ ವಿನಿಮಯ ಮಾಡಿ: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“ಆಯ್ಕೆಮಾಡಿ” ಬಟನ್‌ಗೆ ಸ್ವಿಚ್ ಅನ್ನು ನಿಯೋಜಿಸಿ</translation>
+<translation id="2270668657177045040">ಸೈಟ್ ಮತ್ತು ಅದರ ಉಪಡೊಮೇನ್‌ಗಳು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಾವ ಸಂಬಂಧಿತ ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ ಎಂಬುದನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="2271452184061378400">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2271986192355138465">ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ</translation>
 <translation id="2272430695183451567">0 ಬದಲಾವಣೆಗಳನ್ನು ನಿಯೋಜಿಸಲಾಗಿದೆ</translation>
@@ -2905,7 +2906,6 @@
 <translation id="3030967311408872958">ಸೂರ್ಯಾಸ್ತದಿಂದ ಸೂರ್ಯೋದಯದವರೆಗೆ</translation>
 <translation id="3031417829280473749">ಏಜೆಂಟ್  X</translation>
 <translation id="3031532026314193077">ಬಲ ಕ್ಲಿಕ್ ಮಾಡಲು ಟಚ್‌ಪ್ಯಾಡ್ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಬಳಸಿ</translation>
-<translation id="3031544881009594539">ಹೊಸ ಪಾಸ್‌ಕೀ ರಚಿಸಲು ಈ ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ. ಹಳೆಯದನ್ನು Google Password Manager ನಿಂದ ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3031557471081358569">ಆಮದು ಮಾಡಲು ಐಟಂಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
 <translation id="3032204772252313646">ಸ್ವಯಂಚಾಲಿತ ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="3032272345862007156">ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" /></translation>
@@ -3799,7 +3799,6 @@
 <translation id="370665806235115550">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="3707034683772193706">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್, Chrome ನಲ್ಲಿ ಸಣ್ಣ ಪ್ರಮಾಣದ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, ಆ ಮಾಹಿತಿಯನ್ನು ಮುಖ್ಯವಾಗಿ ನೀವು ಬಾಟ್ ಅಲ್ಲ ಎಂಬುದನ್ನು ಮೌಲ್ಯೀಕರಿಸಲು ಸೇವ್ ಮಾಡಬಹುದು</translation>
 <translation id="3707163604290651814">ಪ್ರಸ್ತುತವಾಗಿ <ph name="NAME" /> ಅವರ ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="3707242400882068741">ಪಾಸ್‌ಕೀ ಅಪ್‌ಡೇಟ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3707348585109246684">ಹೊಸ <ph name="APP" /> ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3708295717182051206">ಉಪಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="3708684582558000260">ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವ ಅಥವಾ ಸ್ವೀಕರಿಸುವ ಕೆಲಸವನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಮುಚ್ಚಿದ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
@@ -4301,7 +4300,6 @@
 <translation id="403725336528835653">ಮೊದಲು ಇದನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="4039966970282098406">ಮೈಕ್ರೊಫೋನ್, ಕ್ಯಾಮರಾ ಹಾಗೂ ಇನ್ನಷ್ಟು ಫೀಚರ್‌ಗಳಿಗೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿಯಂತ್ರಿಸುವ ಮೂಲಕ ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4040041015953651705">ಅನುವಾದಿಸಬೇಕಾದ ಭಾಷೆ</translation>
-<translation id="4042660782729322247">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ಪುಟದಿಂದ ನಿರ್ಗಮಿಸಿ}one{ಪುಟಗಳಿಂದ ನಿರ್ಗಮಿಸಿ}other{ಪುಟಗಳಿಂದ ನಿರ್ಗಮಿಸಿ}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗಿನ <ph name="SITE_ETLD_PLUS_ONE" /> ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="4043267180218562935">ಕರ್ಸರ್ ಗಾತ್ರ</translation>
@@ -5027,7 +5025,6 @@
 <translation id="4588749726511456218">ಸ್ಕ್ರಾಲ್ ವೇಗವರ್ಧನೆ <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಲಾಗ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬರೆಯಲಾಗಿದೆ.</translation>
 <translation id="4590785647529325123">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
-<translation id="4590969863668977062">ಪಾಸ್‌ಕೀ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ಗೆ ಯಾವುದೇ ಸಾಧನಗಳನ್ನು ಉಳಿಸಿಲ್ಲ</translation>
 <translation id="4592891116925567110">ಸ್ಟೈಲಸ್ ರೇಖಾಚಿತ್ರದ ಆ್ಯಪ್</translation>
 <translation id="4593021220803146968"><ph name="URL" /> ಗೆ &amp;ಹೋಗಿ</translation>
@@ -5332,6 +5329,7 @@
 <translation id="4823193082697477185">ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಂಡ ಫೈಲ್‌ಗಳು, ಫೋಲ್ಡರ್‌ಗಳು ಅಥವಾ ಡ್ರೈವ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ಬಳಕೆದಾರ ಮತ್ತು ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಓದಿ ಹಾಗೂ ಬದಲಾಯಿಸಿ</translation>
 <translation id="4824037980212326045">Linux ಬ್ಯಾಕಪ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ</translation>
+<translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> ಕೀ ಸಂಯೋಜನೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="4824958205181053313">ಸಿಂಕ್ ರದ್ದುಗೊಳಿಸುವುದೇ?</translation>
 <translation id="4825462365587146530">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ Chrome Root Store ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="4825532258163983651">ಪಾಸ್‌ಕೀ ಅನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -7826,6 +7824,7 @@
 <translation id="6676212663108450937">ನಿಮ್ಮ ಧ್ವನಿಗೆ ತರಬೇತಿ ನೀಡುವಾಗ, ಹೆಡ್‌ಫೋನ್‌ಗಳನ್ನು ಬಳಸುವುದನ್ನು ಪರಿಗಣಿಸಿ</translation>
 <translation id="6676291960742508499">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಪುಟಗಳ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="667752334740867460">ವೈ-ಫೈ ಮಾಹಿತಿಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="6677527809400770913">ಗೆಸ್ಚರ್ <ph name="GESTURE" /> ಅನ್ನು <ph name="ACTION" /> ಗೆ ನಿಯೋಜಿಸಿ</translation>
 <translation id="6678604587151240716">ಸಮುದ್ರದಲ್ಲಿ ದೊಡ್ಡ ಅಲೆಗಳು ಚಿಮ್ಮುತ್ತಿವೆ, ದೂರದ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಭೂಮಿ. ಸಂಪೂರ್ಣವಾಗಿ ಕತ್ತಲೆಯಾಗಿರುವ ಆಕಾಶದ ದಿಗಂತದಲ್ಲಿ ಕಿತ್ತಳೆ ಕಿರಣಗಳ ಸುಳಿವು.</translation>
 <translation id="6678717876183468697">ಕ್ವೆರಿ URL</translation>
 <translation id="6680442031740878064">ಲಭ್ಯವಿದೆ: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10026,6 +10025,7 @@
 <translation id="8261378640211443080">ಈ ವಿಸ್ತರಣೆಯನ್ನು <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡಲಾಗಿಲ್ಲ ಮತ್ತು ಇದು ನಿಮಗೆ ಅರಿವಿಲ್ಲದಂತೆ ಸೇರಿಸಿರಬಹುದು.</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8261625296061301062">ಸ್ಕ್ಯಾನರ್ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="8263149565724023141">ಸಂಬಂಧಿತ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="8263228331881858381">ಪಾಸ್‌ಕೀ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8263336784344783289">ಈ ಗುಂಪನ್ನು ಹೆಸರಿಸಿ</translation>
 <translation id="8264024885325823677">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>

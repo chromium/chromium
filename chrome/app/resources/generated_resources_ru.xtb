@@ -2901,7 +2901,6 @@
 <translation id="3030967311408872958">От заката до рассвета</translation>
 <translation id="3031417829280473749">Секретный агент</translation>
 <translation id="3031532026314193077">Использовать сенсорную панель и клавиатуру для имитации нажатия правой кнопки мыши</translation>
-<translation id="3031544881009594539">Ваш прежний ключ доступа удален из Google Менеджера паролей. Войдите на сайт, чтобы создать новый.</translation>
 <translation id="3031557471081358569">Выберите элементы для импорта:</translation>
 <translation id="3032204772252313646">Субтитры</translation>
 <translation id="3032272345862007156">Недавняя тема, созданная искусственным интеллектом: <ph name="INDEX" /></translation>
@@ -3796,7 +3795,6 @@
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3707034683772193706">Сайт, который вы посещаете, может сохранять небольшой объем информации в Chrome, в основном для подтверждения того, что вы не бот.</translation>
 <translation id="3707163604290651814">Вы вошли как <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Требуется новый ключ доступа</translation>
 <translation id="3707348585109246684">Открыть ссылку в новой вкладке приложения "<ph name="APP" />"</translation>
 <translation id="3708295717182051206">Субтитры</translation>
 <translation id="3708684582558000260">Запретить закрытым сайтам завершать отправку и получение данных</translation>
@@ -4298,7 +4296,6 @@
 <translation id="403725336528835653">Попробовать</translation>
 <translation id="4039966970282098406">Настройки доступа к микрофону, камере и прочему</translation>
 <translation id="4040041015953651705">Исходный язык</translation>
-<translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Закрыть страницу}one{Закрыть страницы}few{Закрыть страницы}many{Закрыть страницы}other{Закрыть страницы}}</translation>
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Размер курсора</translation>
@@ -5024,7 +5021,6 @@
 <translation id="4588749726511456218">Ускорение прокрутки (<ph name="LINK_BEGIN" />узнать больше<ph name="LINK_END" />)</translation>
 <translation id="4589713469967853491">Журналы записаны в каталоге "Скачанные файлы".</translation>
 <translation id="4590785647529325123">Чтобы удалить с устройства историю браузера в режиме инкогнито, закройте все вкладки инкогнито</translation>
-<translation id="4590969863668977062">Ключ доступа обновлен</translation>
 <translation id="459204634473266369">В аккаунте <ph name="PRIMARY_EMAIL" /> нет сохраненных устройств.</translation>
 <translation id="4592891116925567110">Приложение для рисования с помощью стилуса</translation>
 <translation id="4593021220803146968">&amp;Перейти по адресу <ph name="URL" /></translation>
@@ -5046,6 +5042,7 @@
 <translation id="4602776638371779614">На этой вкладке выполняется активный поиск устройств Bluetooth</translation>
 <translation id="4605026046465576953">Приложение не может быть открыто, так как у вас нет разрешения на запуск изолированных веб-приложений</translation>
 <translation id="4606551464649945562">Запретить сайтам создавать 3D-карту места, в котором вы находитесь, и отслеживать положение камеры</translation>
+<translation id="4606933160360542263">Пользовательское сочетание клавиш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Удалить группу вкладок?}one{Удалить группы вкладок?}few{Удалить группы вкладок?}many{Удалить группы вкладок?}other{Удалить группы вкладок?}}</translation>
 <translation id="4608500690299898628">&amp;Найти...</translation>
 <translation id="4610162781778310380">Ошибка в плагине <ph name="PLUGIN_NAME" /></translation>
@@ -6280,6 +6277,7 @@
 <translation id="5517304475148761050">Этому приложению необходим доступ к Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Удалить действие "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">Другая главная страница?</translation>
 <translation id="5522156646677899028">В этом расширении обнаружена серьезная уязвимость, угрожающая безопасности.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Администратор установил расширение}one{Администратор установил # расширение}few{Администратор установил # расширения}many{Администратор установил # расширений}other{Администратор установил # расширения}}</translation>
@@ -10268,6 +10266,7 @@
 <translation id="8429928917752180743">Другие действия для расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8431190899827883166">Визуальный отклик</translation>
 <translation id="843173223122814223">Создавайте фоновые изображения с помощью ИИ</translation>
+<translation id="8431977087510901105">Настройки курсора сброшены</translation>
 <translation id="8433186206711564395">Настройки сети</translation>
 <translation id="8434109185104929038">Уголок для чтения</translation>
 <translation id="8434480141477525001">Порт отладки NaCl</translation>

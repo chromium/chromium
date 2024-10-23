@@ -1906,7 +1906,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
     Hvis du senere beslutter dig for, at dit barn ikke skal have Voice Match, kan du fjerne funktionen fra indstillingerne for Google Assistent. Du kan se eller slette lydklip, som dit barn optager under konfigurationen af Voice Match, ved at gå til <ph name="VOICE_MATCH_SETTINGS_URL" /> via dit barns konto.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308288819918530468"><ph name="ITEM" /> er ikke valgt. Tryk på søgetasten og mellemrumstasten på samme tid for at vælge.</translation>
 <translation id="2308798336967462263">Følgende taster understøttes ikke: Tab, Shift, Ctrl, Escape, Caps Lock, Lydstyrke</translation>
 <translation id="2309620859903500144">Dette website er blevet blokeret fra at få adgang til dine bevægelses- eller lyssensorer.</translation>
 <translation id="2310923358723722542">Skærm og forstørrelse</translation>
@@ -2933,7 +2932,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3030967311408872958">Fra solnedgang til solopgang</translation>
 <translation id="3031417829280473749">Scully</translation>
 <translation id="3031532026314193077">Brug touchpladen og tastaturet til at højreklikke</translation>
-<translation id="3031544881009594539">Log ind på dette website for at oprette en ny adgangsnøgle. Den gamle adgangsnøgle blev slettet fra Google Adgangskodeadministrator.</translation>
 <translation id="3031557471081358569">Vælg at importere følgende:</translation>
 <translation id="3032204772252313646">Automatiske undertekster</translation>
 <translation id="3032272345862007156">Seneste AI-tema <ph name="INDEX" /></translation>
@@ -3837,7 +3835,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="370665806235115550">Indlæser...</translation>
 <translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
 <translation id="3707163604290651814">Du er i øjeblikket logget ind som <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Adgangsnøglen skal opdateres</translation>
 <translation id="3707348585109246684">Åbn link på en ny <ph name="APP" />-fane</translation>
 <translation id="3708295717182051206">Undertekster</translation>
 <translation id="3708684582558000260">Tillad ikke, at lukkede websites kan afslutte afsendingen eller modtagelsen af data</translation>
@@ -4341,7 +4338,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="403725336528835653">Prøv det først</translation>
 <translation id="4039966970282098406">Administrer dit privatliv ved at styre adgangen til mikrofonen, kameraet m.m.</translation>
 <translation id="4040041015953651705">Sprog, der skal oversættes fra</translation>
-<translation id="4042660782729322247">Du deler din skærm</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Forlad side}one{Forlad side}other{Forlad sider}}</translation>
 <translation id="4042941173059740150">Fortsæt til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Markørens størrelse</translation>
@@ -5072,7 +5068,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4588749726511456218">Acceleration ved rulning <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Logs blev skrevet til mappen Downloads.</translation>
 <translation id="4590785647529325123">Luk alle inkognitofaner for at slette browserhistorikken for inkognitovinduet fra din enhed</translation>
-<translation id="4590969863668977062">Adgangsnøglen er opdateret</translation>
 <translation id="459204634473266369">Ingen enheder er gemt på <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App til tegning med styluspen</translation>
 <translation id="4593021220803146968">&amp;Gå til <ph name="URL" /></translation>
@@ -5094,6 +5089,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4602776638371779614">Denne fane søger aktivt efter Bluetooth-enheder</translation>
 <translation id="4605026046465576953">Denne app kan ikke åbnes, fordi du ikke har tilladelse til at køre isolerede webapps</translation>
 <translation id="4606551464649945562">Tillad ikke, at websites opretter et 3D-kort over dine omgivelser eller registrerer kamerapositionen</translation>
+<translation id="4606933160360542263">Tilpasset tastekombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vil du slette fanegruppen?}one{Vil du slette fanegruppen?}other{Vil du slette fanegrupperne?}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4610162781778310380">Der opstod en fejl i <ph name="PLUGIN_NAME" /></translation>
@@ -6341,6 +6337,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5517304475148761050">Denne app kræver adgang til Play Butik</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Fjern handlingen <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Var det den startside, du forventede?</translation>
 <translation id="5522156646677899028">Denne udvidelse indeholder en alvorlig sikkerhedsbrist.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{En udvidelse blev installeret af din administrator}one{# udvidelse blev installeret af din administrator}other{# udvidelser blev installeret af din administrator}}</translation>
@@ -7467,7 +7464,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6357750620525943720">Andre stabile id'er (f.eks. hash-værdier eller UUID'er)</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="6361850914223837199">Info om fejl:</translation>
-<translation id="6362303840256358093"><ph name="ITEM" /> er valgt. Tryk på søgetasten og mellemrumstasten på samme tid for at fjerne markeringen.</translation>
 <translation id="6362853299801475928">&amp;Rapporter et problem...</translation>
 <translation id="6363786367719063276">Se logfiler</translation>
 <translation id="6363990818884053551">Verificer din identitet for at starte synkroniseringen</translation>
@@ -10351,6 +10347,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8429928917752180743">Flere valgmuligheder for <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Vis tryk</translation>
 <translation id="843173223122814223">Opret baggrunde med AI</translation>
+<translation id="8431977087510901105">Indstillingerne for markøren er nulstillet</translation>
 <translation id="8433186206711564395">Netværksindstillinger</translation>
 <translation id="8434109185104929038">Læsekrog</translation>
 <translation id="8434480141477525001">NaCl-fejlretningsport</translation>

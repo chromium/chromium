@@ -2901,7 +2901,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3030967311408872958">Od soumraku do úsvitu</translation>
 <translation id="3031417829280473749">Agentka</translation>
 <translation id="3031532026314193077">Ke kliknutí pravým tlačítkem používat touchpad a klávesnici</translation>
-<translation id="3031544881009594539">Přihlaste se na tento web a vytvořte nový přístupový klíč. Starý byl ze Správce hesel Google smazán.</translation>
 <translation id="3031557471081358569">Vyberte položky k importu:</translation>
 <translation id="3032204772252313646">Automatické titulky</translation>
 <translation id="3032272345862007156">Nedávný motiv vygenerovaný umělou inteligencí <ph name="INDEX" /></translation>
@@ -3794,7 +3793,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3707034683772193706">Navštívené weby mohou do Chromu uložit malé množství informací (zejména k ověření, že nejste robot)</translation>
 <translation id="3707163604290651814">Jste přihlášeni jako <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Přístupový klíč je potřeba aktualizovat</translation>
 <translation id="3707348585109246684">Otevřít odkaz na nové kartě aplikace <ph name="APP" /></translation>
 <translation id="3708295717182051206">Skryté titulky</translation>
 <translation id="3708684582558000260">Nepovolovat zavřeným webům dokončit odeslání a příjem dat</translation>
@@ -4295,7 +4293,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="403725336528835653">Nejdříve to vyzkoušet</translation>
 <translation id="4039966970282098406">Spravujte soukromí řízením přístupu k mikrofonu, fotoaparátu a dalším funkcím</translation>
 <translation id="4040041015953651705">Jazyk, ze kterého se má překládat</translation>
-<translation id="4042660782729322247">Sdílíte svou obrazovku</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Opustit stránku}few{Opustit stránky}many{Opustit stránky}other{Opustit stránky}}</translation>
 <translation id="4042941173059740150">Pokračujte na web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Velikost kurzoru</translation>
@@ -5021,7 +5018,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4588749726511456218">Zrychlení posouvání <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Protokoly byly úspěšně zaznamenány do složky Stažené soubory.</translation>
 <translation id="4590785647529325123">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty</translation>
-<translation id="4590969863668977062">Přístupový klíč byl aktualizován</translation>
 <translation id="459204634473266369">Do účtu <ph name="PRIMARY_EMAIL" /> nejsou uložena žádná zařízení</translation>
 <translation id="4592891116925567110">Aplikace ke kreslení dotykovým perem</translation>
 <translation id="4593021220803146968">&amp;Přejít na adresu <ph name="URL" /></translation>
@@ -5043,6 +5039,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4602776638371779614">Tato karta aktivně hledá zařízení Bluetooth</translation>
 <translation id="4605026046465576953">Tuto aplikaci nelze otevřít, protože nemáte oprávnění ke spouštění izolovaných webových aplikací</translation>
 <translation id="4606551464649945562">Nepovolovat webům vytvořit 3D mapu okolí ani sledovat polohu kamery</translation>
+<translation id="4606933160360542263">Vlastní kombinace kláves: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Smazat skupinu karet?}few{Smazat skupiny karet?}many{Smazat skupiny karet?}other{Smazat skupiny karet?}}</translation>
 <translation id="4608500690299898628">&amp;Najít...</translation>
 <translation id="4610162781778310380">Plugin <ph name="PLUGIN_NAME" /> narazil na chybu</translation>
@@ -6276,6 +6273,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5517304475148761050">Tato aplikace vyžaduje přístup do Obchodu Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Odstranit akci <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je toto domovská stránka, kterou jste očekávali?</translation>
 <translation id="5522156646677899028">Toto rozšíření představuje závažné bezpečnostní riziko.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrátor nainstaloval rozšíření}few{Administrátor nainstaloval # rozšíření}many{Administrátor nainstaloval # rozšíření}other{Administrátor nainstaloval # rozšíření}}</translation>
@@ -10259,6 +10257,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8429928917752180743">Další možnosti rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Zobrazovat klepnutí</translation>
 <translation id="843173223122814223">Vytvářejte pozadí pomocí AI</translation>
+<translation id="8431977087510901105">Nastavení kurzoru byla resetována</translation>
 <translation id="8433186206711564395">Nastavení sítě</translation>
 <translation id="8434109185104929038">Čtecí koutek</translation>
 <translation id="8434480141477525001">Port ladění klientu NaCl</translation>
@@ -10422,7 +10421,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8552102814346875916">Uložit do seznamu webů, které mají být vždy ponechány aktivní</translation>
 <translation id="8553342806078037065">Spravovat ostatní uživatele</translation>
 <translation id="8554899698005018844">Žádný jazyk</translation>
-<translation id="8555444629041783356">Automatický plán západu slunce</translation>
+<translation id="8555444629041783356">Automatický plán klidového času</translation>
 <translation id="855604308879080518">Umožnit aplikacím pro Android na tomto Chromebooku přístup k zařízením USB. O oprávnění budete požádáni pokaždé, když připojíte zařízení USB. Jednotlivé aplikace pro Android budou žádat o další oprávnění.</translation>
 <translation id="8557022314818157177">Dotýkejte se bezpečnostního klíče, dokud se nesejme otisk prstu.</translation>
 <translation id="8557100046150195444">Pokračujte pomocí Touch ID</translation>

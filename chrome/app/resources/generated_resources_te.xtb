@@ -2911,7 +2911,6 @@
 <translation id="3030967311408872958">సూర్యాస్తమయం నుండి సూర్యోదయం వరకు</translation>
 <translation id="3031417829280473749">ఏజెంట్ X</translation>
 <translation id="3031532026314193077">కుడి క్లిక్ చేయడానికి టచ్‌ప్యాడ్‌ను, కీబోర్డ్‌ను ఉపయోగించండి</translation>
-<translation id="3031544881009594539">కొత్త పాస్-కీని క్రియేట్ చేయడానికి ఈ సైట్‌కు సైన్ ఇన్ చేయండి. పాత పాస్-కీ Google Password Manager నుండి తొలగించబడింది.</translation>
 <translation id="3031557471081358569">దిగుమతి చేయడానికి ఐటమ్‌లను ఎంచుకోండి:</translation>
 <translation id="3032204772252313646">ఆటో క్యాప్షన్‌లు</translation>
 <translation id="3032272345862007156">ఇటీవలి AI రూపం <ph name="INDEX" /></translation>
@@ -3806,7 +3805,6 @@
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3707034683772193706">మీరు సందర్శించే సైట్ Chromeతో కొద్దిపాటి సమాచారాన్ని సేవ్ చేయగలదు, ప్రధానంగా మీరు బాట్ కాదని ధృవీకరించడానికి ఇలా చేస్తుంది</translation>
 <translation id="3707163604290651814">ప్రస్తుతం <ph name="NAME" />గా సైన్ ఇన్ చేయబడి ఉన్నారు</translation>
-<translation id="3707242400882068741">పాస్-కీని అప్‌డేట్ చేయాలి</translation>
 <translation id="3707348585109246684">కొత్త <ph name="APP" /> ట్యాబ్‌లో లింక్‌ను తెరవండి</translation>
 <translation id="3708295717182051206">క్యాప్షన్‌లు</translation>
 <translation id="3708684582558000260">డేటాను పంపడం లేదా అందుకోవడాన్ని ముగించడానికి మూసివేసిన సైట్‌లను అనుమతించకండి</translation>
@@ -4308,7 +4306,6 @@
 <translation id="403725336528835653">ముందు దీన్ని ట్రై చేయండి</translation>
 <translation id="4039966970282098406">మైక్రోఫోన్, కెమెరా, మరిన్నింటికి యాక్సెస్‌ను కంట్రోల్ చేయడం ద్వారా మీ గోప్యతను మేనేజ్ చేయండి</translation>
 <translation id="4040041015953651705">ఈ భాష నుండి అనువదించాలి</translation>
-<translation id="4042660782729322247">మీరు మీ స్క్రీన్‌ను షేర్ చేస్తున్నారు</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{పేజీ నుండి నిష్క్రమించండి}other{పేజీల నుండి నిష్క్రమించండి}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను కొనసాగించండి</translation>
 <translation id="4043267180218562935">కర్సర్ సైజ్</translation>
@@ -5034,7 +5031,6 @@
 <translation id="4588749726511456218">స్క్రోల్ యాక్సిలరేషన్ గురించి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">లాగ్స్, విజయవంతంగా 'డౌన్‌లోడ్స్' డైరెక్టరీలోకి చేర్చబడ్డాయి.</translation>
 <translation id="4590785647529325123">మీ పరికరం నుండి అజ్ఞాత మోడ్‌లో ఉన్న బ్రౌజింగ్ హిస్టరీని క్లియర్ చేయడానికి, అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
-<translation id="4590969863668977062">పాస్-కీ అప్‌డేట్ అయింది</translation>
 <translation id="459204634473266369">పరికరాలేవీ <ph name="PRIMARY_EMAIL" />‌కు సేవ్ చేయబడలేదు</translation>
 <translation id="4592891116925567110">స్టయిలస్ డ్రాయింగ్ యాప్</translation>
 <translation id="4593021220803146968"><ph name="URL" />కు &amp;వెళ్ళండి</translation>

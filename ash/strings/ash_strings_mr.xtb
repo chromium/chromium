@@ -339,9 +339,6 @@
 <translation id="219905428774326614">लाँचर, सर्व अ‍ॅप्स</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
 <translation id="2201687081523799384">Google Tasks कोलॅप्स करा</translation>
-<translation id="2206960886090042977">माउस कनेक्ट केल्यामुळे बिल्ट-इन टचपॅड बंद केले गेले आहे. बदल कन्फर्म करण्यासाठी माउस किंवा कीबोर्ड वापरा.
-
-अन्यथा ३० सेकंदांमध्ये बिल्ट-इन टचपॅड पुन्हा सुरू केले जाईल.</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्‍क ७</translation>
@@ -445,6 +442,7 @@
 <translation id="2530896289327917474">कॅरेट ब्राउझिंग सुरू किंवा बंद करा</translation>
 <translation id="2531025035050312891">डिव्हाइसचा वेग कमी</translation>
 <translation id="2531107890083353124">टॅब ड्रॅग करताना <ph name="KEY_ONE" /> प्रेस करा</translation>
+<translation id="2545334090614121435">होम वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
 <translation id="254900897760075745">निवडलेला आशय क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="2549711466868162843">लायटिंगमध्ये सुधारणा करा</translation>
 <translation id="2549985041256363841">रेकॉर्डिंग सुरू करा</translation>
@@ -563,6 +561,7 @@
 <translation id="2985148236010982088">सर्व अ‍ॅप्स पहा</translation>
 <translation id="2992272421330787632">सर्व मीडिया सूचना लपवा</translation>
 <translation id="2992327365391326550">डिव्हाइसच्या मायक्रोफोनचे बटण बंद केले आहे.</translation>
+<translation id="2993956882370897557">एंड वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3001391739687111021">स्क्रीनचा आकार संपादित करा</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
@@ -615,6 +614,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> तुमचे <ph name="DEVICE_TYPE" /> मागे घेत आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
 <translation id="316798519864381606">Google स्लाइड</translation>
 <translation id="3171170659304083361">इनपुट पद्धतींची सेटिंग्ज</translation>
+<translation id="3174897399179348329">पेज अप वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
 <translation id="3176221688814061633">तुमचे Chromebook किंवा ब्लूटूथ डिव्‍हाइस हे ब्लूटूथ ची जुनी आवृत्ती वापरत आहे. आणखी चांगल्या ऑडिओ गुणवत्तेसाठी ब्लूटूथ सुपर रेझोल्यूशन सुरू करा किंवा अंतर्गत मायक्रोफोन वापरा.</translation>
 <translation id="3181441307743005334">रीस्टार्टला थोडा वेळ लागू शकतो</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{डिव्हाइसशी कनेक्ट केले}other{# डिव्हाइसशी कनेक्ट केले}}</translation>
@@ -1261,6 +1261,7 @@
 <translation id="5297704307811127955">बंद</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5302048478445481009">भाषा</translation>
+<translation id="5302531370473608800">YouTube Music वापरण्यासाठी तुमचे <ph name="DEVICE_TYPE" /> अपडेट करा</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% बॅटरी शिल्लक आहे.
 बॅटरी लाइफ वाढवण्यासाठी काही वैशिष्ट्ये मर्यादित केली आहेत.</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
@@ -1820,6 +1821,7 @@
 <translation id="7144942256906679589">बॅटरीची स्थिती</translation>
 <translation id="7145639536026937076">बॅटरी <ph name="PERCENTAGE" />% आहे आणि चार्ज होत आहे. बॅटरी सेव्हर सुरू आहे.</translation>
 <translation id="7147587499155271409">ब्राउझिंग इतिहास नाही</translation>
+<translation id="7147657298465433425">एफ की अ‍ॅक्सेस करण्यासाठी, fn की + सर्वात वरच्या पंक्तीमधील की प्रेस करा</translation>
 <translation id="7149149900052329230">तुमच्या स्थानिक फाइल आणि Google Drive फाइल व्यवस्थापित करा, सर्वकाही Files अ‍ॅपमध्ये.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1915,9 +1917,6 @@
 डिव्हाइस बंद करण्यासाठी, डिव्हाइसवरील पॉवर बटण पुन्हा प्रेस करून धरून ठेवा.</translation>
 <translation id="7523420897035067483">फोकस मध्ये असताना व्यत्यय आणू नका सुरू करा</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">बिल्ट-इन टचपॅड बंद केले गेले आहे. बदल कन्फर्म करण्यासाठी तुमचा कीबोर्ड किंवा दुसरे पॉइंटर डिव्हाइस वापरा.
-
-अन्यथा ३० सेकंदांमध्ये बिल्ट-इन टचपॅड पुन्हा सुरू केले जाईल.</translation>
 <translation id="7525067979554623046">तयार करा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
@@ -1929,6 +1928,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> हे सध्या तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
+<translation id="7568154670718626683">हटवण्याचा प्रयत्न करत आहात का? वापरा</translation>
 <translation id="7568790562536448087">अपडेट करीत आहे</translation>
 <translation id="7569509451529460200">ब्रेल आणि ChromeVox सुरू केलेले आहेत</translation>
 <translation id="7569886975397378678">तुमच्या फोनमधील सूचना आणि अ‍ॅप्स पाहण्याचे सेट करणे डिसमिस करा</translation>
@@ -2131,6 +2131,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> तुम्ही आताच <ph name="FOCUSED_TIME" /> साठी फोकस केले. पुन्हा फोकस करण्यासाठी क्विक सेटिंग्ज उघडा.</translation>
 <translation id="8203224998425013577">आणखी इमोजी आणि GIFs दाखवा</translation>
 <translation id="8203795194971602413">राइट क्लिक</translation>
+<translation id="8205469348819768313">पेज डाउन वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
 <translation id="8214996719228530800">कॅनरी चॅनल</translation>
 <translation id="8219451629189078428">या कालावधी दरम्यान Chromebook सुरू असणे आणि पॉवरशी कनेक्ट केलेले असणे आवश्यक आहे. चार्जर किंवा अडॅप्टर केबल तुमचे Chromebook आणि पॉवर आउटलेट या दोन्ही गोष्टींशी पूर्णपणे प्लग इन केल्या असल्याची खात्री करा. तुमचे Chromebook बंद करू नका.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> जोडा</translation>
@@ -2323,6 +2324,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ही भाषा बोलत नाही.</translation>
 <translation id="8926951137623668982">शेल्फ नेहमी लपवलेले आहे</translation>
+<translation id="8929566928381252430">कॅप्स लॉक वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>

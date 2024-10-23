@@ -2908,7 +2908,6 @@
 <translation id="3030967311408872958">Нар мандахаас нар жаргах хүртэл</translation>
 <translation id="3031417829280473749">Х Агент</translation>
 <translation id="3031532026314193077">Баруун талыг товшихын тулд мэдрэгч самбар болон гарыг ашиглана уу</translation>
-<translation id="3031544881009594539">Шинэ нэвтрэх түлхүүр үүсгэхийн тулд энэ сайтад нэвтэрнэ үү. Хуучин нэвтрэх түлхүүрийг Google Нууц үгний менежерээс устгасан.</translation>
 <translation id="3031557471081358569">Импортолж авах зүйлсийг сонгоно уу:</translation>
 <translation id="3032204772252313646">Автомат тайлбар</translation>
 <translation id="3032272345862007156">Саяхны ХОУ-ы <ph name="INDEX" />-р загвар</translation>
@@ -3803,7 +3802,6 @@
 <translation id="370665806235115550">Уншиж байна...</translation>
 <translation id="3707034683772193706">Таны зочилсон сайт голчлон таныг бот биш болохыг баталгаажуулахын тулд бага хэмжээний мэдээллийг Chrome-р хадгалах боломжтой</translation>
 <translation id="3707163604290651814">Одоогоор <ph name="NAME" />-р нэвтэрсэн</translation>
-<translation id="3707242400882068741">Нэвтрэх түлхүүрийг шинэчлэх шаардлагатай</translation>
 <translation id="3707348585109246684">Холбоосыг <ph name="APP" />-н шинэ табд нээ</translation>
 <translation id="3708295717182051206">Хаалттай тайлбарууд</translation>
 <translation id="3708684582558000260">Хаасан сайтуудад өгөгдөл илгээж эсвэл хүлээн авч дуусгахыг бүү зөвшөөр</translation>
@@ -4304,7 +4302,6 @@
 <translation id="403725336528835653">Эхлээд туршиж үзэх</translation>
 <translation id="4039966970282098406">Микрофон, камер болон бусад зүйлийн хандалтыг хянаснаар нууцлалаа удирдах</translation>
 <translation id="4040041015953651705">Орчуулах хэл</translation>
-<translation id="4042660782729322247">Та дэлгэцээ хуваалцаж байна</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Хуудаснаас гарах}other{Хуудаснуудаас гарах}}</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> руу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
 <translation id="4043267180218562935">Курсорын хэмжээ</translation>
@@ -5030,7 +5027,6 @@
 <translation id="4588749726511456218">Гүйлгэлтийн хурдасгуур <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Логуудыг Татаж авсан файлын лавлахад амжилттай бичлээ.</translation>
 <translation id="4590785647529325123">Нууцлалтай горим дахь хөтчийн түүхийг төхөөрөмжөөсөө устгахын тулд бүх нууцлалтай табыг хаана уу</translation>
-<translation id="4590969863668977062">Нэвтрэх түлхүүрийг шинэчилсэн</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-д хадгалсан төхөөрөмж байхгүй</translation>
 <translation id="4592891116925567110">Мэдрэгч үзгийн зурдаг апп</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> руу очих</translation>
@@ -5052,6 +5048,7 @@
 <translation id="4602776638371779614">Энэ таб Bluetooth төхөөрөмжүүдийг идэвхтэйгээр скан хийж байна</translation>
 <translation id="4605026046465576953">Танд тусгаарласан веб аппуудыг ажиллуулах зөвшөөрөл байхгүй тул энэ аппыг нээх боломжгүй</translation>
 <translation id="4606551464649945562">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг үл зөвшөөрөх</translation>
+<translation id="4606933160360542263">Захиалгат товчийн хослол: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Табын бүлгийг устгах уу?}other{Табын бүлгүүдийг устгах уу?}}</translation>
 <translation id="4608500690299898628">&amp;Олох...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-д алдаа гарлаа</translation>
@@ -6287,6 +6284,7 @@
 <translation id="5517304475148761050">Энэ аппад Play Store-д хандах хандалт шаардлагатай</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> үйлдлийг хасах</translation>
 <translation id="5521078259930077036">Энэ таны хүссэн нүүр хуудас мөн үү?</translation>
 <translation id="5522156646677899028">Энэ өргөтгөл нь аюулгүй байдлын ноцтой байдлыг агуулж байна.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Таны администратор өргөтгөлийг суулгасан}other{Таны администратор # өргөтгөлийг суулгасан}}</translation>
@@ -10266,6 +10264,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" />-н бусад сонголт</translation>
 <translation id="8431190899827883166">Товшилтыг харуулах</translation>
 <translation id="843173223122814223">ХОУ-аар дэвсгэрүүд үүсгэх</translation>
+<translation id="8431977087510901105">Курсорын тохиргоог шинэчилсэн</translation>
 <translation id="8433186206711564395">Сүлжээний тохиргоо</translation>
 <translation id="8434109185104929038">Уншлагын булан</translation>
 <translation id="8434480141477525001">NaCl гүйцэтгэл сайжруулах порт</translation>

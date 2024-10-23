@@ -2899,7 +2899,6 @@
 <translation id="3030967311408872958">Մայրամուտից լուսաբաց</translation>
 <translation id="3031417829280473749">Գործակալ X</translation>
 <translation id="3031532026314193077">Մկնիկի աջ կոճակը սեղմելու համար օգտագործեք հպահարթակ և ստեղնաշար</translation>
-<translation id="3031544881009594539">Մուտք գործեք այս կայք՝ նոր մուտքի բանալի ստեղծելու համար։ Հինը ջնջվել է Google գաղտնաբառերի կառավարչից։</translation>
 <translation id="3031557471081358569">Ընտրեք տարրեր ներմուծման համար՝</translation>
 <translation id="3032204772252313646">Ավտոմատ ենթագրեր</translation>
 <translation id="3032272345862007156">Արհեստական բանականության վերջերս ստեղծած թեմա <ph name="INDEX" /></translation>
@@ -3792,7 +3791,6 @@
 <translation id="370665806235115550">Բեռնում…</translation>
 <translation id="3707034683772193706">Կայքը, որն այցելում եք, կարող է փոքր քանակությամբ տեղեկություններ պահպանել Chrome-ի միջոցով՝ հիմնականում հաստատելու, որ դուք ռոբոտ չեք</translation>
 <translation id="3707163604290651814">Դուք մուտք եք գործել որպես <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Անհրաժեշտ է թարմացնել մուտքի բանալին</translation>
 <translation id="3707348585109246684">Բացել հղումը նոր ներդիրում (<ph name="APP" />)</translation>
 <translation id="3708295717182051206">Ենթագրեր</translation>
 <translation id="3708684582558000260">Թույլ չտալ փակված կայքերին ավարտել տվյալների ուղարկումն ու ստացումը</translation>
@@ -4294,7 +4292,6 @@
 <translation id="403725336528835653">Փորձել</translation>
 <translation id="4039966970282098406">Կառավարել ձեր գաղտնիությունը՝ վերահսկելով խոսափողի, տեսախցիկի և այլ գործիքների հասանելիությունը</translation>
 <translation id="4040041015953651705">Թարգմանվող լեզու</translation>
-<translation id="4042660782729322247">Դուք հասանելի եք դարձրել ձեր էկրանը</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Փակել էջը}one{Փակել էջը}other{Փակել էջը}}</translation>
 <translation id="4042941173059740150">Շարունակեք օգտագործել <ph name="SITE_ETLD_PLUS_ONE" /> կայքը <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="4043267180218562935">Նշորդի չափը</translation>
@@ -5020,7 +5017,6 @@
 <translation id="4588749726511456218">Ոլորման արագացում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Մատյանները գրվեցին «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="4590785647529325123">Ինկոգնիտո ռեժիմում այցելած կայքէջերը սարքից ջնջելու համար փակեք բոլոր ինկոգնիտո ներդիրները</translation>
-<translation id="4590969863668977062">Մուտքի բանալին թարմացվել է</translation>
 <translation id="459204634473266369">Ոչ մի պահված սարք չկա <ph name="PRIMARY_EMAIL" /> հաշվում</translation>
 <translation id="4592891116925567110">Ստիլուսի միջոցով նկարելու հավելված</translation>
 <translation id="4593021220803146968">&amp;Անցնել <ph name="URL" /></translation>
@@ -5042,6 +5038,7 @@
 <translation id="4602776638371779614">Այս ներդիրն ակտիվորեն որոնում է Bluetooth սարքեր</translation>
 <translation id="4605026046465576953">Այս հավելվածը հնարավոր չէ բացել, քանի որ դուք չունեք մեկուսացված վեբ հավելվածների գործարկման թույլտվություն</translation>
 <translation id="4606551464649945562">Թույլ չտալ կայքերին ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
+<translation id="4606933160360542263">Ստեղների հատուկ համադրություն՝ <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ջնջե՞լ ներդիրների խումբը}one{Ջնջե՞լ ներդիրների խումբը}other{Ջնջե՞լ ներդիրների խմբերը}}</translation>
 <translation id="4608500690299898628">&amp;Գտնել…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> փլագինում սխալ է առաջացել</translation>
@@ -6276,6 +6273,7 @@
 <translation id="5517304475148761050">Այս հավելվածը պահանջում է Play Խանութ մտնելու թույլտվություն</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Հեռացնել գործողությունը <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Սա՞ է ձեր սպասած գլխավոր էջը:</translation>
 <translation id="5522156646677899028">Այս ընդլայնումը պարունակում է անվտանգության լուրջ վտանգ:</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ձեր ադմինիստատորը տեղադրել է ընդլայնում}one{Ձեր ադմինիստրատորը տեղադրել է # ընդլայնում}other{Ձեր ադմինիստրատորը տեղադրել է # ընդլայնում}}</translation>
@@ -10255,6 +10253,7 @@
 <translation id="8429928917752180743">Լրացուցիչ ընտրանքներ <ph name="EXTENSION_NAME" />-ի համար</translation>
 <translation id="8431190899827883166">Ցույց տալ հպումները</translation>
 <translation id="843173223122814223">Ստեղծեք ֆոներ արհեստական բանականության օգնությամբ</translation>
+<translation id="8431977087510901105">Նշորդի կարգավորումները զրոյացվել են</translation>
 <translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="8434109185104929038">Ընթերցանության անկյուն</translation>
 <translation id="8434480141477525001">NaCl-ի վրիպազերծման միացք</translation>

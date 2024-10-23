@@ -339,9 +339,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="219905428774326614">Käynnistysohjelma, kaikki sovellukset</translation>
 <translation id="2201071101391734388">Viimeisin kuva <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Tiivistä Google Tasks</translation>
-<translation id="2206960886090042977">Sisäänrakennettu kosketuslevy on poistettu käytöstä, koska hiiri on kytkettynä. Vahvista muutos hiirellä tai näppäimistöllä.
-
-Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön 30 sekunnin kuluttua.</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222841058024245321">Työpöytä 7</translation>
@@ -1915,9 +1912,6 @@ Uusi asennus</translation>
 Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7523420897035067483">Ota Älä häiritse ‐tila käyttöön, kun olet Keskittymistilassa</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">Sisäänrakennettu kosketuslevy on poistettu käytöstä. Vahvista muutos näppäimistöllä tai toisella osoitinlaitteella.
-
-Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön 30 sekunnin kuluttua.</translation>
 <translation id="7525067979554623046">Luo</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>

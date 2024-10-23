@@ -2897,7 +2897,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3030967311408872958">Güneşin batışından doğuşuna</translation>
 <translation id="3031417829280473749">Ajan X</translation>
 <translation id="3031532026314193077">Sağ tıklamak için dokunmatik alanı ve klavyeyi kullanın</translation>
-<translation id="3031544881009594539">Yeni bir geçiş anahtarı oluşturmak için bu sitede oturum açın. Eski şifre, Google Şifre Yöneticisi'nden silindi.</translation>
 <translation id="3031557471081358569">İçe aktarılacak öğeleri seçin:</translation>
 <translation id="3032204772252313646">Otomatik altyazı</translation>
 <translation id="3032272345862007156">Son yapay zeka teması <ph name="INDEX" /></translation>
@@ -3790,7 +3789,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
 <translation id="3707034683772193706">Ziyaret ettiğiniz bir site, esasen bot olmadığınızı doğrulayan az miktarda bilgiyi Chrome'a kaydedebilir</translation>
 <translation id="3707163604290651814"><ph name="NAME" /> olarak oturum açmış durumdasınız</translation>
-<translation id="3707242400882068741">Geçiş anahtarının güncellenmesi gerekiyor</translation>
 <translation id="3707348585109246684">Bağlantıyı yeni <ph name="APP" /> sekmesinde aç</translation>
 <translation id="3708295717182051206">Altyazı</translation>
 <translation id="3708684582558000260">Kapatılan sitelerin veri gönderme veya alma işlemini bitirmesine izin verme</translation>
@@ -4292,7 +4290,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="403725336528835653">Önce deneyin</translation>
 <translation id="4039966970282098406">Mikrofon, kamera ve diğer cihazlara erişimi kontrol ederek gizliliğinizi yönetin</translation>
 <translation id="4040041015953651705">Çevirinin kaynak dili</translation>
-<translation id="4042660782729322247">Ekranınızı paylaşıyorsunuz</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sayfadan Çık}other{Sayfalardan Çık}}</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> sitesinde <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kimliğinizle devam edin</translation>
 <translation id="4043267180218562935">İmleç boyutu</translation>
@@ -5018,7 +5015,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4588749726511456218">Kaydırma hızlandırma <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Günlükler, İndirilenler dizinine yazıldı.</translation>
 <translation id="4590785647529325123">Gizli mod tarama geçmişini cihazınızdan silmek için tüm Gizli sekmeleri kapatın</translation>
-<translation id="4590969863668977062">Geçiş anahtarı güncellendi</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> hesabına kayıtlı cihaz yok</translation>
 <translation id="4592891116925567110">Ekran kalemiyle çizim uygulaması</translation>
 <translation id="4593021220803146968"><ph name="URL" /> adresine &amp;git</translation>

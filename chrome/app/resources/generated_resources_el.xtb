@@ -2912,7 +2912,6 @@
 <translation id="3030967311408872958">Από ηλιοβασίλεμα σε ανατολή</translation>
 <translation id="3031417829280473749">Πράκτορας X</translation>
 <translation id="3031532026314193077">Χρήση επιφάνειας αφής και πληκτρολογίου για δεξί κλικ</translation>
-<translation id="3031544881009594539">Συνδεθείτε σε αυτόν τον ιστότοπο, για να δημιουργήσετε ένα νέο κλειδί πρόσβασης. Το παλιό διαγράφηκε από τον Διαχειριστή κωδικών πρόσβασης Google.</translation>
 <translation id="3031557471081358569">Επιλογή στοιχείων για εισαγωγή:</translation>
 <translation id="3032204772252313646">Αυτόματοι υπότιτλοι</translation>
 <translation id="3032272345862007156">Πρόσφατο θέμα AI <ph name="INDEX" /></translation>
@@ -3807,7 +3806,6 @@
 <translation id="370665806235115550">Φόρτωση...</translation>
 <translation id="3707034683772193706">Ένας ιστότοπος που επισκέπτεστε μπορεί να αποθηκεύσει έναν μικρό όγκο πληροφοριών με το Chrome, κυρίως για να επαληθεύσει ότι δεν είστε bot.</translation>
 <translation id="3707163604290651814">Αυτήν τη στιγμή είστε συνδεδεμένοι ως <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Απαιτείται ενημέρωση του κλειδιού πρόσβασης</translation>
 <translation id="3707348585109246684">Άνοιγμα συνδέσμου σε νέα καρτέλα του <ph name="APP" /></translation>
 <translation id="3708295717182051206">Υπότιτλοι</translation>
 <translation id="3708684582558000260">Να μην επιτρέπεται στους ιστοτόπους που έκλεισαν να ολοκληρώνουν την αποστολή ή τη λήψη δεδομένων</translation>
@@ -4309,7 +4307,6 @@
 <translation id="403725336528835653">Δοκιμή πριν από την εγκατάσταση</translation>
 <translation id="4039966970282098406">Διαχειριστείτε το απόρρητό σας ελέγχοντας την πρόσβαση στο μικρόφωνο, την κάμερα και άλλα</translation>
 <translation id="4040041015953651705">Γλώσσα από την οποία θα γίνει η μετάφραση</translation>
-<translation id="4042660782729322247">Μοιράζεστε την οθόνη σας</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Έξοδος από τη σελίδα}other{Έξοδος από τις σελίδες}}</translation>
 <translation id="4042941173059740150">Συνέχεια σε <ph name="SITE_ETLD_PLUS_ONE" /> με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Μέγεθος δείκτη</translation>
@@ -5035,7 +5032,6 @@
 <translation id="4588749726511456218">Επιτάχυνση κύλισης <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Επιτυχής εγγραφή των αρχείων καταγραφής στον κατάλογο Λήψεις.</translation>
 <translation id="4590785647529325123">Για να διαγράψετε το ιστορικό ανώνυμης περιήγησης από τη συσκευή σας, κλείστε όλες τις καρτέλες ανώνυμης περιήγησης</translation>
-<translation id="4590969863668977062">Το κλειδί πρόσβασης ενημερώθηκε</translation>
 <translation id="459204634473266369">Δεν υπάρχουν αποθηκευμένες συσκευές στον λογαριασμό <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Εφαρμογή σχεδίασης με γραφίδα</translation>
 <translation id="4593021220803146968">&amp;Μετάβαση σε <ph name="URL" /></translation>
@@ -5057,6 +5053,7 @@
 <translation id="4602776638371779614">Η συγκεκριμένη καρτέλα κάνει ενεργά σάρωση για συσκευές Bluetooth.</translation>
 <translation id="4605026046465576953">Δεν είναι δυνατό το άνοιγμα αυτής της εφαρμογής, επειδή δεν έχετε άδεια εκτέλεσης απομονωμένων εφαρμογών ιστού</translation>
 <translation id="4606551464649945562">Να μην επιτρέπεται σε ιστοτόπους η δημιουργία τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας και η παρακολούθηση της θέσης της κάμερας</translation>
+<translation id="4606933160360542263">Προσαρμοσμένος συνδυασμός πλήκτρων: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Να διαγραφεί η ομάδα καρτελών;}other{Να διαγραφούν οι ομάδες καρτελών;}}</translation>
 <translation id="4608500690299898628">&amp;Εύρεση...</translation>
 <translation id="4610162781778310380">Η προσθήκη <ph name="PLUGIN_NAME" /> παρουσίασε κάποιο σφάλμα</translation>
@@ -6292,6 +6289,7 @@
 <translation id="5517304475148761050">Αυτή η εφαρμογή απαιτεί πρόσβαση στο Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Κατάργηση της ενέργειας <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Είναι αυτή η αρχική σελίδα που περιμένατε;</translation>
 <translation id="5522156646677899028">Αυτή η επέκταση περιλαμβάνει μια σοβαρή ευπάθεια ασφαλείας.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Εγκαταστάθηκε επέκταση από τον διαχειριστή}other{Εγκαταστάθηκαν # επεκτάσεις από τον διαχειριστή}}</translation>
@@ -10276,6 +10274,7 @@
 <translation id="8429928917752180743">Περισσότερες επιλογές για <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Εμφάνιση πατημάτων</translation>
 <translation id="843173223122814223">Δημιουργία φόντων με AI</translation>
+<translation id="8431977087510901105">Επαναφορά ρυθμίσεων δείκτη</translation>
 <translation id="8433186206711564395">Ρυθμίσεις δικτύου</translation>
 <translation id="8434109185104929038">Γωνιά ανάγνωσης</translation>
 <translation id="8434480141477525001">NaCl Εντοπισμός σφαλμάτων θύρας</translation>

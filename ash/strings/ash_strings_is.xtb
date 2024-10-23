@@ -339,9 +339,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="219905428774326614">Ræsiforrit, öll forrit</translation>
 <translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Draga saman Google-verkefni</translation>
-<translation id="2206960886090042977">Slökkt er á innbyggða snertifletinum vegna þess að mús er tengd. Notaðu músina eða lyklaborðið til að staðfesta breytinguna.
-
-Annars verður aftur kveikt á innbyggða snertifletinum eftir 30 sekúndur.</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
@@ -1159,7 +1156,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4952936045814352993">„Staðsetja síma“ er ekki í boði þegar slökkt er á vekjarahljóðum</translation>
 <translation id="4953585991029886728">Textareitur</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krefst þess að þú niðurfærir útgáfu <ph name="DEVICE_TYPE" />. Tækið verður endurstillt og öllum gögnum verður eytt.</translation>
-<translation id="4961318399572185831">Senda út skjá</translation>
+<translation id="4961318399572185831">Varpa skjá</translation>
 <translation id="4964188651935955085">Þegar þú slekkur á Bluetooth aftengist þetta ytra tæki frá <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Hækka hljóðstyrk</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> k., <ph name="MINUTES" /> m. og <ph name="SECONDS" /> s.</translation>
@@ -1915,9 +1912,6 @@ Ný uppsetning</translation>
 Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translation>
 <translation id="7523420897035067483">Kveikja á „Ónáðið ekki“ á meðan einbeitingarlota er í gangi</translation>
 <translation id="7524043547948122239">Google-verkefni</translation>
-<translation id="7524919752437339268">Slökkt er á innbyggða snertifletinum. Notaðu lyklaborðið eða annað benditæki til að staðfesta breytinguna.
-
-Annars verður aftur kveikt á innbyggða snertifletinum eftir 30 sekúndur.</translation>
 <translation id="7525067979554623046">Búa til</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>

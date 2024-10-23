@@ -2903,7 +2903,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3030967311408872958">Loojangust päikesetõusuni</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Paremklõpsamine puuteplaadi ja klaviatuuri abil</translation>
-<translation id="3031544881009594539">Uue pääsuvõtme loomiseks logige sisse sellele saidile. Vana on Google'i paroolihaldurist kustutatud.</translation>
 <translation id="3031557471081358569">Valige imporditavad üksused:</translation>
 <translation id="3032204772252313646">Automaatsed subtiitrid</translation>
 <translation id="3032272345862007156">Hiljutine AI loodud teema <ph name="INDEX" /></translation>
@@ -3798,7 +3797,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="3707034683772193706">Külastatav sait võib Chrome’iga salvestada väikese hulga teavet, peamiselt kinnitamaks, et te pole robot.</translation>
 <translation id="3707163604290651814">Olete praegu sisse logitud kasutajana <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Vajalik on pääsuvõtme värskendamine</translation>
 <translation id="3707348585109246684">Ava link rakenduse <ph name="APP" /> uuel vahelehel</translation>
 <translation id="3708295717182051206">Subtiitrid</translation>
 <translation id="3708684582558000260">Ära luba suletud saitidel viia andmete saatmist või vastuvõtmist lõpule</translation>
@@ -4300,7 +4298,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="403725336528835653">Proovige esmalt</translation>
 <translation id="4039966970282098406">Reguleerige oma privaatsust mikrofoni, kaamera ja muu juurdepääsu haldamise kaudu</translation>
 <translation id="4040041015953651705">Keel, millest tõlkida</translation>
-<translation id="4042660782729322247">Jagate oma ekraanikuva</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Välju lehelt}other{Välju lehtedelt}}</translation>
 <translation id="4042941173059740150">Minge saidile <ph name="SITE_ETLD_PLUS_ONE" /> kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Kursori suurus</translation>
@@ -5026,7 +5023,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4588749726511456218">Kerimise kiirendus. <ph name="LINK_BEGIN" />Lugege lisateavet<ph name="LINK_END" />.</translation>
 <translation id="4589713469967853491">Logide kirjutamine kataloogi Allalaadimised õnnestus.</translation>
 <translation id="4590785647529325123">Inkognito režiimi sirvimisajaloo kustutamiseks seadmest sulgege kõik inkognito vahelehed</translation>
-<translation id="4590969863668977062">Pääsuvõtit värskendati</translation>
 <translation id="459204634473266369">Ühtegi seadet pole kontole <ph name="PRIMARY_EMAIL" /> salvestatud</translation>
 <translation id="4592891116925567110">Elektronpliiatsiga joonistamise rakendus</translation>
 <translation id="4593021220803146968">&amp;Mine asukohta <ph name="URL" /></translation>
@@ -5048,6 +5044,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4602776638371779614">See vaheleht otsib aktiivselt Bluetooth-seadmeid</translation>
 <translation id="4605026046465576953">Seda rakendust ei saa avada, kuna teil pole isoleeritud veebirakenduste käitamise luba</translation>
 <translation id="4606551464649945562">Ära luba saitidel luua mind ümbritsevast 3D-kaarti ega jälgida kaamera asendit</translation>
+<translation id="4606933160360542263">Kohandatud klahvikombinatsioon: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Kas kustutada vahelehegrupp?}other{Kas kustutada vahelehegrupid?}}</translation>
 <translation id="4608500690299898628">&amp;Otsi...</translation>
 <translation id="4610162781778310380">Pistikprogrammis <ph name="PLUGIN_NAME" /> ilmnes viga</translation>
@@ -6283,6 +6280,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5517304475148761050">See rakendus nõuab juurdepääsu Play poele</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Toimingu <ph name="ACTION_TO_REMOVE" /> eemaldamine</translation>
 <translation id="5521078259930077036">Kas see on avaleht, mida ootasite?</translation>
 <translation id="5522156646677899028">See laiendus sisaldab tõsist turvaauku.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administraator installis laienduse}other{Administraator installis # laiendust}}</translation>
@@ -10266,6 +10264,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8429928917752180743">Rohkem valikuid: <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Puudutuste kuvamine</translation>
 <translation id="843173223122814223">Looge AI abil taustasid</translation>
+<translation id="8431977087510901105">Kursori seaded on lähtestatud</translation>
 <translation id="8433186206711564395">Võrguseaded</translation>
 <translation id="8434109185104929038">Lugemisnurk</translation>
 <translation id="8434480141477525001">NaCl silumisport</translation>

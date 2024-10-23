@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="100421257800558142">Sağ ox düyməsini basın</translation>
 <translation id="100506692671054486">əvvəlki əmr yoxdur</translation>
 <translation id="1009046985747440431">Hərəkət etmək üçün yuxarı və aşağı oxlara basın; aktiv etmək üçün isə enter düyməsinə basın</translation>
 <translation id="1011903154582639569">Açar tapın, daha sonra yazmaq üçün qaldırın</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Keçid Düyməsi</translation>
 <translation id="1299774449519412690">Açıq Səma Mavisi</translation>
 <translation id="1303806948938513162">ChromeVox menyularına daxil olmaq üçün 4 barmaqla klikləyin</translation>
+<translation id="1304162325618937178">Boşluq düyməsini basın</translation>
 <translation id="1313373992684326101">Əvvəlki bölməyə keçin. Status Bölməsi və Başladıcı nümunə olaraq göstərilə bilər.</translation>
 <translation id="1315077335264761176">Toxunma orientasiyası</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menyu elementi dəyirmi düyməsi seçilməyib</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Buğda rəngi</translation>
 <translation id="1618597272655350600">Cari vəziyyət haqqında tam təsvir elan edir</translation>
 <translation id="1627222324347828322">Ağ</translation>
+<translation id="1632810692616643246">Sürüşdürmə rejiminə daxil olun və ya çıxın</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{daha çox}other{# işarələrdən daha çox}}</translation>
 <translation id="1653266918374749391">Əvvəlki 3-cü səviyyə başlığı</translation>
 <translation id="1657616855184033958">Tədbir yayım filtrlərini göstərin</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Öncəki nəzarət yoxdur</translation>
 <translation id="2045606329038304310">Forma sahəsinə nəzarət</translation>
 <translation id="2063539687800151747">Epiqraf</translation>
+<translation id="2067158561093481039">Fərdi düymə kombinasiyasını icra edin</translation>
 <translation id="2086961585857038472">Növbəti Söz</translation>
 <translation id="2087981446621639008">təsvir siyahısı təfsilatı</translation>
 <translation id="2089387485033699258">az</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Parlaq Qəhvəyi</translation>
 <translation id="2199994615414171367">Əvvəlki riyaziyyat</translation>
 <translation id="2203046366315513658">Dəyəri azaldın</translation>
+<translation id="2206580811360135054">Pəncərələrin icmalını göstərin və ya gizlədin</translation>
 <translation id="2216790501338699346">URL keçidi: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Bir simvol geri köçürün</translation>
 <translation id="2220529011494928058">Problemi xəbər verin</translation>
+<translation id="2239819015858077439">Aşağı ox düyməsini basın</translation>
 <translation id="2243633977138166243">Naviqasiya üçün sol və ya sağ oxa, aktivləşdirmək üçün enter düyməsinə basın</translation>
 <translation id="224426591676115802">Bu dil üçün səs əlçatan deyil: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Öyrənmə Rejimi Dayandırılır</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Hindu Qırmızısı</translation>
 <translation id="4432896207833262240">İşarələnmiş məzmun</translation>
 <translation id="4437615272777527928">Menyularda axtarış etmək üçün yazın. Nəticələri gözdən keçirmək üçün yuxarı və aşağı ox düymələrini basın. Mətn kursorunu tənzimləmək və menyular arasında keçid etmək üçün sol və sağ ox düymələrini basın.</translation>
+<translation id="4441677939526091190">Yuxarı ox düyməsini basın</translation>
 <translation id="4453530046591759283">Ekranın alətlər paneli və ya bildiriş sahəsi kimi digər hissələrinə keçmək üçün Control+F1 üstünə basın. F1 escape düyməsinin sağındakı ilk düymədir.</translation>
 <translation id="4457472090507035117">Cari səs seçin:</translation>
 <translation id="4476183483923481720">yeni xətt</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook sensor əlçatımlılıq xüsusiyyətlərini istifadə edin</translation>
 <translation id="5655682562155942719">Keçid Əmrləri</translation>
 <translation id="56637627897541303">Mətn sahəsi</translation>
+<translation id="5666746275818170484">Sol ox düyməsini basın</translation>
 <translation id="5669637233317991674">Bu dərsdə naviqasiya üçün Axtarış + Sağ Ox, yaxud Axtarış + Sol Ox üzərinə basın</translation>
 <translation id="5677240841070992068">Cari məkan</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Popap düyməsi</translation>
 <translation id="7167657087543110">xarakter exosu</translation>
 <translation id="7173102181852295013">Gecə Mavisi</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Genişləndirilmiş</translation>
 <translation id="7209751026933045237">Sonrakı slayder yoxdur</translation>
 <translation id="7218782500591078391">Qızıl Sarısı</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Avto tamamlama sətiriçi və siyahısı</translation>
 <translation id="8394908167088220973">Medianı Oxudun/Durdurun</translation>
+<translation id="8409502156784390079">Sürüşdürmə rejimi aktivdir</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428603554127842284">səviyyə <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="8989104346085848538">İstənilən cari ChromeVox nitqini dayandırmaq üçün Control düyməsinə basın.</translation>
 <translation id="9014206344398081366">ChromeVox təlimatı</translation>
+<translation id="9034592733577768445">Mimika ilə idarəetmə durduruldu</translation>
 <translation id="9040132695316389094">Başlıq 1</translation>
 <translation id="9061884144798498064">8 nöqtəli brayl tabeli seçin:</translation>
 <translation id="9063946545000394379">əvvəlki simvola keçin</translation>

@@ -2899,7 +2899,6 @@
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031532026314193077">使用觸控板和鍵盤按一下滑鼠右鍵</translation>
-<translation id="3031544881009594539">登入這個網站即可建立新密碼金鑰，舊的密碼金鑰已從 Google 密碼管理工具中刪除。</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
 <translation id="3032204772252313646">自動產生字幕</translation>
 <translation id="3032272345862007156">最近的 AI 主題 <ph name="INDEX" /></translation>
@@ -3791,7 +3790,6 @@
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3707034683772193706">你造訪的網站可將少量資訊儲存在 Chrome，主要用來證明你不是機器人</translation>
 <translation id="3707163604290651814">目前登入帳戶：<ph name="NAME" /></translation>
-<translation id="3707242400882068741">必須更新密碼金鑰</translation>
 <translation id="3707348585109246684">在新「<ph name="APP" />」分頁中開啟連結</translation>
 <translation id="3708295717182051206">隱藏式輔助字幕</translation>
 <translation id="3708684582558000260">禁止已關閉的網站完成資料收發作業</translation>
@@ -4292,7 +4290,6 @@
 <translation id="403725336528835653">先試用看看</translation>
 <translation id="4039966970282098406">控管麥克風、攝影機等權限，掌握自己的隱私權</translation>
 <translation id="4040041015953651705">原文語言</translation>
-<translation id="4042660782729322247">你正在分享螢幕畫面</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="4042941173059740150">繼續透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">游標大小</translation>
@@ -5018,7 +5015,6 @@
 <translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590785647529325123">如要刪除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁</translation>
-<translation id="4590969863668977062">已更新密碼金鑰</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" />(&amp;G)</translation>
@@ -5040,6 +5036,7 @@
 <translation id="4602776638371779614">這個分頁正在主動掃描藍牙裝置</translation>
 <translation id="4605026046465576953">你的權限不足，無法執行隔離網頁應用程式，因此這個應用程式無法開啟</translation>
 <translation id="4606551464649945562">不允許網站根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
+<translation id="4606933160360542263">自訂按鍵組合：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要刪除分頁群組嗎？}other{要刪除分頁群組嗎？}}</translation>
 <translation id="4608500690299898628">尋找(&amp;F)...</translation>
 <translation id="4610162781778310380">「<ph name="PLUGIN_NAME" />」發生錯誤</translation>
@@ -6273,6 +6270,7 @@
 <translation id="5517304475148761050">這個應用程式需要存取 Play 商店才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">移除<ph name="ACTION_TO_REMOVE" />的動作</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{你的系統管理員已安裝擴充功能}other{你的系統管理員已安裝 # 個擴充功能}}</translation>
@@ -10252,6 +10250,7 @@
 <translation id="8429928917752180743">更多「<ph name="EXTENSION_NAME" />」的選項</translation>
 <translation id="8431190899827883166">顯示觸控回應</translation>
 <translation id="843173223122814223">使用 AI 建立背景</translation>
+<translation id="8431977087510901105">游標設定已重設</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8434109185104929038">閱讀角落</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>

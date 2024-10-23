@@ -2900,7 +2900,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3030967311408872958">De la apus la răsărit</translation>
 <translation id="3031417829280473749">Agenta X</translation>
 <translation id="3031532026314193077">Folosește touchpadul și tastatura pentru a da clic dreapta</translation>
-<translation id="3031544881009594539">Conectează-te la site pentru a crea o nouă cheie de acces. Cea veche a fost ștearsă din Managerul de parole Google.</translation>
 <translation id="3031557471081358569">Selectează elementele de importat:</translation>
 <translation id="3032204772252313646">Subtitrări automate</translation>
 <translation id="3032272345862007156">Tema recentă <ph name="INDEX" />, creată cu AI</translation>
@@ -3794,7 +3793,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
 <translation id="3707163604290651814">Te-ai conectat ca <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Cheia de acces trebuie actualizată</translation>
 <translation id="3707348585109246684">Deschide linkul într-o filă <ph name="APP" /> nouă</translation>
 <translation id="3708295717182051206">Subtitrări</translation>
 <translation id="3708684582558000260">Nu permite site-urilor închise să finalizeze trimiterea sau primirea datelor</translation>
@@ -4296,7 +4294,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="403725336528835653">Mai întâi încearcă</translation>
 <translation id="4039966970282098406">Gestionează-ți confidențialitatea controlând accesul la microfon, camera foto și altele</translation>
 <translation id="4040041015953651705">Limba din care se traduce</translation>
-<translation id="4042660782729322247">Permiți accesul la ecran</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Închide pagina}few{Închide paginile}other{Închide paginile}}</translation>
 <translation id="4042941173059740150">Continuă la <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Dimensiunea cursorului</translation>
@@ -5022,7 +5019,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4588749726511456218">Accelerarea derulării <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Jurnalele au fost scrise în directorul Descărcări.</translation>
 <translation id="4590785647529325123">Pentru a șterge istoricul de navigare incognito de pe dispozitiv, închide toate filele incognito</translation>
-<translation id="4590969863668977062">S-a actualizat cheia de acces</translation>
 <translation id="459204634473266369">Nu există dispozitive salvate în contul <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplicație de desenare cu creionul</translation>
 <translation id="4593021220803146968">&amp;Accesează <ph name="URL" /></translation>
@@ -5044,6 +5040,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4602776638371779614">Această filă caută activ dispozitive Bluetooth</translation>
 <translation id="4605026046465576953">Această aplicație nu poate fi deschisă deoarece nu ai permisiunea să rulezi aplicații web izolate</translation>
 <translation id="4606551464649945562">Nu permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
+<translation id="4606933160360542263">Combinație de taste personalizată: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ștergi grupul de file?}few{Ștergi grupurile de file?}other{Ștergi grupurile de file?}}</translation>
 <translation id="4608500690299898628">&amp;Caută...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> a întâmpinat o eroare</translation>
@@ -6277,6 +6274,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5517304475148761050">Aplicația necesită acces la Magazinul Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Elimină acțiunea <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Aceasta este pagina de pornire la care vă așteptați?</translation>
 <translation id="5522156646677899028">Această extensie conține o vulnerabilitate gravă a securității.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratorul a instalat o extensie}few{Administratorul a instalat # extensii}other{Administratorul a instalat # de extensii}}</translation>
@@ -10262,6 +10260,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8429928917752180743">Mai multe opțiuni pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Afișează atingerile</translation>
 <translation id="843173223122814223">Creează fundaluri cu AI</translation>
+<translation id="8431977087510901105">Setările cursorului au fost resetate</translation>
 <translation id="8433186206711564395">Setări de rețea</translation>
 <translation id="8434109185104929038">Colț de lectură</translation>
 <translation id="8434480141477525001">Port remediere NaCl</translation>

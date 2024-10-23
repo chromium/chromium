@@ -2912,7 +2912,6 @@
 <translation id="3030967311408872958">နေဝင်ချိန်မှ နေထွက်ချိန်</translation>
 <translation id="3031417829280473749">ကိုယ်စားလှယ် X</translation>
 <translation id="3031532026314193077">ညာဘက်ခလုတ်ကို နှိပ်ရန်အတွက် တာ့ချ်ပက်နှင့် ကီးဘုတ်သုံးရန်</translation>
-<translation id="3031544881009594539">လျှို့ဝှက်ကီးအသစ်ပြုလုပ်ရန်အတွက် ဤဝဘ်ဆိုက်သို့ လက်မှတ်ထိုးဝင်ပါ။ ယခင်အဟောင်းကို Google Password Manager ထံမှ ဖျက်ထားသည်။</translation>
 <translation id="3031557471081358569">တင်သွင်းရန် အရာများကို ရွေးပါ:</translation>
 <translation id="3032204772252313646">အလိုအလျောက်ထိုးသည့် စာတန်းများ</translation>
 <translation id="3032272345862007156">လတ်တလော AI အပြင်အဆင် <ph name="INDEX" /></translation>
@@ -3807,7 +3806,6 @@
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
 <translation id="3707034683772193706">အဓိကအားဖြင့် သင်ဘော့တ်မဟုတ်ကြောင်း အတည်ပြုရန် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်က အချက်အလက်အနည်းငယ်ကို Chrome ဖြင့် သိမ်းနိုင်သည်</translation>
 <translation id="3707163604290651814">လက်ရှိတွင် <ph name="NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်</translation>
-<translation id="3707242400882068741">လျှို့ဝှက်ကီး အပ်ဒိတ်လိုအပ်သည်</translation>
 <translation id="3707348585109246684">လင့်ကို <ph name="APP" /> တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="3708295717182051206">စာတန်းများ</translation>
 <translation id="3708684582558000260">ဒေတာပို့ခြင်း (သို့) လက်ခံခြင်း အပြီးသတ်ရန် ပိတ်ထားသောဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
@@ -4308,7 +4306,6 @@
 <translation id="403725336528835653">ဦးစွာ စမ်းကြည့်ရန်</translation>
 <translation id="4039966970282098406">မိုက်ခရိုဖုန်း၊ ကင်မရာ စသည်တို့အားသုံးခွင့်ကို ထိန်းချုပ်ခြင်းဖြင့် သင့်ကိုယ်ရေးအချက်အလက်လုံခြုံမှုကို စီမံပါ</translation>
 <translation id="4040041015953651705">ဖော်ပြပါဘာသာစကားမှ ဘာသာပြန်ဆိုရန်</translation>
-<translation id="4042660782729322247">သင့်မျက်နှာပြင်ကို မျှဝေနေသည်</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{စာမျက်နှာကို ပိတ်ရန်}other{စာမျက်နှာများကို ပိတ်ရန်}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
 <translation id="4043267180218562935">ကာဆာအရွယ်အစား</translation>
@@ -5034,7 +5031,6 @@
 <translation id="4588749726511456218">လှိမ့်သည့် အရှိန်မြှင့်ခြင်း <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">'ဒေါင်းလုဒ်များ' ဖိုင်လမ်းညွှန်သို့ မှတ်တမ်းများ ရေးထည့်ပြီးပါပြီ။</translation>
 <translation id="4590785647529325123">သင်၏စက်မှ ရုပ်ဖျက် ကြည့်ရှုမှုမှတ်တမ်းကို ဖျက်ရန် ရုပ်ဖျက်တဘ်အားလုံး ပိတ်ပါ</translation>
-<translation id="4590969863668977062">လျှို့ဝှက်ကီး အပ်ဒိတ်လုပ်လိုက်သည်</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> တွင် သိမ်းထားသောစက်များ မရှိပါ</translation>
 <translation id="4592891116925567110">စတိုင်လပ်စ် ပုံဆွဲသည့်အက်ပ်</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" />သို့ သွားရန်</translation>

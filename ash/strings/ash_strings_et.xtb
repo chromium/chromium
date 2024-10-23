@@ -339,9 +339,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="219905428774326614">Käivitaja, kõik rakendused</translation>
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasksi ahendamine</translation>
-<translation id="2206960886090042977">Sisseehitatud puuteplaat on keelatud, kuna hiir on ühendatud. Kasutage muudatuse kinnitamiseks hiirt või klaviatuuri.
-
-Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
 <translation id="2220572644011485463">PIN-kood või parool</translation>
 <translation id="2222841058024245321">Töölaud 7</translation>
@@ -1916,9 +1913,6 @@ Uus installimine</translation>
 Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translation>
 <translation id="7523420897035067483">Luba funktsioon Mitte segada keskendumise režiimi kasutamisel</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">Sisseehitatud puuteplaat on keelatud. Kasutage muudatuse kinnitamiseks klaviatuuri või muud osutamisseadet.
-
-Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</translation>
 <translation id="7525067979554623046">Loo</translation>
 <translation id="7526573455193969409">Võrku võidakse jälgida</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>

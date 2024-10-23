@@ -339,9 +339,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="219905428774326614">Palaišanas programma, visas lietotnes</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. jaunākais fotoattēls no <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sakļaut pakalpojumu Google uzdevumi</translation>
-<translation id="2206960886090042977">Iebūvētais skārienpaliktnis ir atspējots, jo ir pievienota pele. Lai apstiprinātu izmaiņas, izmantojiet peli vai tastatūru.
-
-Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots pēc 30 sekundēm.</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
 <translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="2222841058024245321">7. darbvieta</translation>
@@ -975,6 +972,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4356872429719185452">Rādīt informāciju par tīklāju. Notiek tīklāja ieslēgšana.</translation>
 <translation id="4364101114148522660">Notiek ierakstīšana: <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Apraides iestatījumi</translation>
+<translation id="4371834685492830207">PIN kodā drīkst būt tikai derīgas rakstzīmes.</translation>
 <translation id="4375482231364171368">Meklēt adreses joslā</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signāla stiprums ir <ph name="SIGNAL_STRENGTH" />%.</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
@@ -1560,6 +1558,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6232416233079464213">No: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> pašlaik izmanto jūsu kameru un mikrofonu.</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Parolē drīkst būt tikai derīgas rakstzīmes.</translation>
 <translation id="6240603910551255087">Augšējā poga</translation>
 <translation id="6240821072888636753">Vaicāt katru reizi</translation>
 <translation id="6247728804802644171">Atvērt paziņojumus</translation>
@@ -1915,9 +1914,6 @@ Jauna instalācija</translation>
 Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</translation>
 <translation id="7523420897035067483">Iespējot režīmu “Netraucēt”, kad ir ieslēgts fokusa režīms</translation>
 <translation id="7524043547948122239">Google uzdevumi</translation>
-<translation id="7524919752437339268">Iebūvētais skārienpaliktnis ir atspējots. Lai apstiprinātu izmaiņas, izmantojiet tastatūru vai citu rādītājierīci.
-
-Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots pēc 30 sekundēm.</translation>
 <translation id="7525067979554623046">Izveidot</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>

@@ -2915,7 +2915,6 @@
 <translation id="3030967311408872958">Від заходу до сходу сонця</translation>
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031532026314193077">Натискати правою кнопкою миші за допомогою сенсорної панелі або клавіатури</translation>
-<translation id="3031544881009594539">Щоб створити новий ключ доступу, увійдіть на цьому сайті. Старий ключ видалено з Google Менеджера паролів.</translation>
 <translation id="3031557471081358569">Виберіть елементи для імпорту:</translation>
 <translation id="3032204772252313646">Автоматичні субтитри</translation>
 <translation id="3032272345862007156">Нещодавня тема ШІ <ph name="INDEX" />.</translation>
@@ -3810,7 +3809,6 @@
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3707034683772193706">Сайт, який ви відвідуєте, може зберігати в Chrome невелику кількість інформації, яка підтверджує, що ви не бот</translation>
 <translation id="3707163604290651814">Ви ввійшли як <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Оновіть ключ доступу</translation>
 <translation id="3707348585109246684">Відкрити посилання на новій вкладці – <ph name="APP" /></translation>
 <translation id="3708295717182051206">Субтитри</translation>
 <translation id="3708684582558000260">Заборонити закритим сайтам завершувати надсилання чи отримання даних</translation>
@@ -4312,7 +4310,6 @@
 <translation id="403725336528835653">Спершу спробувати</translation>
 <translation id="4039966970282098406">Налаштуйте доступ до мікрофона, камери тощо, щоб керувати конфіденційністю</translation>
 <translation id="4040041015953651705">Вихідна мова</translation>
-<translation id="4042660782729322247">Ви ділитеся екраном</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Закрити сторінку}one{Закрити сторінки}few{Закрити сторінки}many{Закрити сторінки}other{Закрити сторінки}}</translation>
 <translation id="4042941173059740150">Продовжте використовувати обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Розмір курсора</translation>
@@ -5038,7 +5035,6 @@
 <translation id="4588749726511456218">Прискорення прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Журнали записано в каталог "Завантаження".</translation>
 <translation id="4590785647529325123">Щоб видалити з пристрою історію вебперегляду в анонімному режимі, закрийте всі анонімні вкладки</translation>
-<translation id="4590969863668977062">Ключ доступу оновлено</translation>
 <translation id="459204634473266369">В обліковому записі <ph name="PRIMARY_EMAIL" /> немає збережених пристроїв</translation>
 <translation id="4592891116925567110">Додаток для малювання за допомогою стилуса</translation>
 <translation id="4593021220803146968">&amp;Перейти до <ph name="URL" /></translation>
@@ -5060,6 +5056,7 @@
 <translation id="4602776638371779614">Ця вкладка шукає пристрої з Bluetooth</translation>
 <translation id="4605026046465576953">Не вдається відкрити цей додаток, оскільки у вас немає дозволу запускати ізольовані веб-додатки</translation>
 <translation id="4606551464649945562">Заборонити сайтам створювати 3D-карту вашого оточення або відстежувати положення камери</translation>
+<translation id="4606933160360542263">Власна комбінація клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Видалити групу вкладок?}one{Видалити групи вкладок?}few{Видалити групи вкладок?}many{Видалити групи вкладок?}other{Видалити групи вкладок?}}</translation>
 <translation id="4608500690299898628">&amp;Знайти...</translation>
 <translation id="4610162781778310380">У плагіні <ph name="PLUGIN_NAME" /> сталася помилка</translation>
@@ -6293,6 +6290,7 @@
 <translation id="5517304475148761050">Цьому додатку потрібен доступ до Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Видалити дію "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">Це домашня сторінка, яку ви очікували?</translation>
 <translation id="5522156646677899028">Це розширення містить серйозну загрозу безпеці.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Адміністратор установив розширення}one{Адміністратор установив # розширення}few{Адміністратор установив # розширення}many{Адміністратор установив # розширень}other{Адміністратор установив # розширення}}</translation>
@@ -10278,6 +10276,7 @@
 <translation id="8429928917752180743">Інші опції для розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Показувати дотики</translation>
 <translation id="843173223122814223">Створюйте фони за допомогою ШІ</translation>
+<translation id="8431977087510901105">Налаштування курсора скинуто</translation>
 <translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="8434109185104929038">Куточок для читання</translation>
 <translation id="8434480141477525001">Порт налагодження NaCl</translation>

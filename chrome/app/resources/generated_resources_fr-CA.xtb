@@ -2902,7 +2902,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3030967311408872958">Du coucher au lever du soleil</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Utilisez le pavé tactile et le clavier pour faire un clic droit</translation>
-<translation id="3031544881009594539">Connectez-vous à ce site pour créer une clé d'accès. L'ancienne a été supprimée du gestionnaire de mots de passe Google.</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
 <translation id="3032204772252313646">Sous-titres automatiques</translation>
 <translation id="3032272345862007156">Thème d'IA <ph name="INDEX" /> récent</translation>
@@ -3797,7 +3796,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3707034683772193706">Un site que vous visitez peut enregistrer une petite quantité d'informations avec Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
 <translation id="3707163604290651814">Actuellement connecté en tant que <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Mise à jour de la clé d'accès requise</translation>
 <translation id="3707348585109246684">Ouvrir le lien dans un nouvel onglet <ph name="APP" /></translation>
 <translation id="3708295717182051206">Sous-titres</translation>
 <translation id="3708684582558000260">Ne pas autoriser les sites fermés à terminer l'envoi ni la réception de données</translation>
@@ -4299,7 +4297,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="403725336528835653">L'essayer d'abord</translation>
 <translation id="4039966970282098406">Gérez votre confidentialité en contrôlant l'accès au microphone et à la caméra, entre autres</translation>
 <translation id="4040041015953651705">Langue à partir de laquelle traduire</translation>
-<translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="4042941173059740150">Continuer jusqu'à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Taille du curseur</translation>
@@ -5025,7 +5022,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4588749726511456218">Accélération du défilement <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Les journaux ont été écrits dans le répertoire Téléchargements.</translation>
 <translation id="4590785647529325123">Pour supprimer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée</translation>
-<translation id="4590969863668977062">Clé d'accès mise à jour</translation>
 <translation id="459204634473266369">Aucun appareil enregistré dans <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Application de dessin avec stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>

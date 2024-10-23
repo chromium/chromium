@@ -63,6 +63,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="3613492231657284463">I-hide ang dialog ng mga hindi aktibong tab</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail ng share sheet.</translation>
+<translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="381219490185664296">I-ungroup ang grupo ng tab?</translation>
 <translation id="3940195383040445971">Subaybayan ang mga presyo sa mga tab</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Igrupo ang tab}one{Igrupo ang mga tab}other{Igrupo ang mga tab}}</translation>

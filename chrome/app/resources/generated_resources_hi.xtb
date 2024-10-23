@@ -2913,7 +2913,6 @@
 <translation id="3030967311408872958">सूर्यास्त से सूर्योदय तक</translation>
 <translation id="3031417829280473749">एजेंट X</translation>
 <translation id="3031532026314193077">राइट क्लिक करके टचपैड और कीबोर्ड इस्तेमाल करें</translation>
-<translation id="3031544881009594539">नई पासकी बनाने के लिए इस साइट में साइन इन करें. Google Password Manager से पुराना पासवर्ड मिटा दिया गया है.</translation>
 <translation id="3031557471081358569">इंपोर्ट करने के लिए आइटम चुनें:</translation>
 <translation id="3032204772252313646">खुद सबटाइटल बनने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3032272345862007156">हाल ही में बनाई गई एआई थीम <ph name="INDEX" /></translation>
@@ -3808,7 +3807,6 @@
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
 <translation id="3707034683772193706">किसी साइट पर जाने से, Chrome की मदद से कुछ जानकारी सेव की जा सकती है. ऐसा करके, यह पुष्टि की जाती है कि आप बॉट नहीं हैं</translation>
 <translation id="3707163604290651814">इस समय <ph name="NAME" /> के रूप में साइन इन किया गया है</translation>
-<translation id="3707242400882068741">पासकी को अपडेट करना ज़रूरी है</translation>
 <translation id="3707348585109246684">लिंक को नए <ph name="APP" /> टैब में खोलें</translation>
 <translation id="3708295717182051206">सबटाइटल</translation>
 <translation id="3708684582558000260">बंद की गई साइटों को डेटा भेजने या पाने की प्रोसेस पूरी करने की अनुमति न दें</translation>
@@ -4309,7 +4307,6 @@
 <translation id="403725336528835653">पहले इसे आज़माएं</translation>
 <translation id="4039966970282098406">माइक्रोफ़ोन, कैमरा वगैरह का ऐक्सेस कंट्रोल करके, अपनी निजता मैनेज करें</translation>
 <translation id="4040041015953651705">वह भाषा जिससे अनुवाद करना है</translation>
-<translation id="4042660782729322247">आप अपनी स्क्रीन शेयर कर रहे हैं</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{पेज से बाहर निकलें}one{पेज से बाहर निकलें}other{पेज से बाहर निकलें}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से मिली <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल करें</translation>
 <translation id="4043267180218562935">कर्सर का साइज़</translation>
@@ -5035,7 +5032,6 @@
 <translation id="4588749726511456218">स्क्रोल करने की रफ़्तार <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">डाउनलोड डायरेक्ट्री में लॉग सेव किए गए.</translation>
 <translation id="4590785647529325123">अपने डिवाइस से गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद करें</translation>
-<translation id="4590969863668977062">पासकी अपडेट की गई</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> से कोई डिवाइस नहीं जुड़ा है</translation>
 <translation id="4592891116925567110">स्टाइलस की मदद से ड्रॉ करने के लिए ऐप्लिकेशन</translation>
 <translation id="4593021220803146968"><ph name="URL" /> पर &amp;जाएं</translation>

@@ -339,9 +339,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="219905428774326614">Launcher, all apps</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Collapse Google Tasks</translation>
-<translation id="2206960886090042977">The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
-
-Otherwise, the built-in touchpad will be re-enabled in 30 seconds.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -1915,9 +1912,6 @@ New install</translation>
 To shut down the device, press and hold the power button on the device again.</translation>
 <translation id="7523420897035067483">Enable Do Not Disturb while in Focus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
-
-Otherwise, the built-in touchpad will be re-enabled in 30 seconds.</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>

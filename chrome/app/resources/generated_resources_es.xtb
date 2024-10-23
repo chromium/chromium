@@ -2900,7 +2900,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3030967311408872958">Del anochecer al amanecer</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Usar el panel táctil y el teclado para hacer clic con el botón derecho</translation>
-<translation id="3031544881009594539">Inicia sesión en este sitio para crear una nueva llave de acceso. La antigua se ha eliminado del Gestor de contraseñas de Google.</translation>
 <translation id="3031557471081358569">Selecciona los elementos que quieres importar:</translation>
 <translation id="3032204772252313646">Subtítulos automáticos</translation>
 <translation id="3032272345862007156">Tema reciente generado por IA n.º <ph name="INDEX" /></translation>
@@ -3795,7 +3794,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3707034683772193706">Los sitios que visitas pueden guardar una pequeña cantidad de información con Chrome, principalmente para verificar que no eres un bot</translation>
 <translation id="3707163604290651814">Has iniciado sesión como <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Es necesario actualizar la llave de acceso</translation>
 <translation id="3707348585109246684">Abrir enlace en una pestaña nueva de <ph name="APP" /></translation>
 <translation id="3708295717182051206">Subtítulos</translation>
 <translation id="3708684582558000260">No permitir que los sitios cerrados terminen de enviar o recibir datos</translation>
@@ -4296,7 +4294,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="403725336528835653">Probarlo primero</translation>
 <translation id="4039966970282098406">Gestiona tu privacidad controlando el acceso al micrófono, la cámara y más</translation>
 <translation id="4040041015953651705">Idioma del que se va a traducir</translation>
-<translation id="4042660782729322247">Estás compartiendo tu pantalla</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="4042941173059740150">Sigue usando <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Tamaño del cursor</translation>
@@ -5022,7 +5019,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4588749726511456218">Aceleración del desplazamiento <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Registros escritos correctamente en el directorio Descargas.</translation>
 <translation id="4590785647529325123">Para eliminar el historial de navegación de Incógnito en tu dispositivo, cierra todas las pestañas de Incógnito</translation>
-<translation id="4590969863668977062">Llave de acceso actualizada</translation>
 <translation id="459204634473266369">No hay dispositivos guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplicación de dibujo con lápiz óptico</translation>
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
@@ -5044,6 +5040,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4602776638371779614">Esta pestaña está buscando dispositivos Bluetooth de forma activa</translation>
 <translation id="4605026046465576953">Esta aplicación no se puede abrir porque no tienes permiso para ejecutar aplicaciones web aisladas</translation>
 <translation id="4606551464649945562">No permitir a los sitios crear un mapa 3D de tu entorno ni hacer un seguimiento de la posición de la cámara</translation>
+<translation id="4606933160360542263">Combinación de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{¿Eliminar grupo de pestañas?}other{¿Eliminar grupos de pestañas?}}</translation>
 <translation id="4608500690299898628">&amp;Buscar...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ha detectado un error</translation>
@@ -6277,6 +6274,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5517304475148761050">Esta aplicación requiere acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Quitar acción <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">¿Es esta la página de inicio que esperabas?</translation>
 <translation id="5522156646677899028">Esta extensión tiene una vulnerabilidad de seguridad grave.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Tu administrador ha instalado 1 extensión}other{Tu administrador ha instalado # extensiones}}</translation>
@@ -10260,6 +10258,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8429928917752180743">Más opciones de <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
+<translation id="8431977087510901105">Ajustes del cursor restablecidos</translation>
 <translation id="8433186206711564395">Configuración de red</translation>
 <translation id="8434109185104929038">Rincón de lectura</translation>
 <translation id="8434480141477525001">Puerto de depuración NaCl</translation>

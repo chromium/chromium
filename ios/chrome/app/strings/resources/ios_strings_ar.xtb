@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">لن يتم حذف حسابك على <ph name="WEBSITE" />.</translation>
 <translation id="1506061864768559482">محرك البحث</translation>
 <translation id="1506063256525392513">يتيح لك هذا الإجراء التقاط الصور وتحميلها، بالإضافة إلى مسح رموز الاستجابة السريعة ضوئيًا.</translation>
+<translation id="1508263560970797965">هل تريد مواصلة استخدام "وضع التصفُّح المتخفي"؟</translation>
 <translation id="1509486075633541495">تسجيل الدخول إلى الموقع الإلكتروني</translation>
 <translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
 <translation id="1513858653616922153">حذف كلمة المرور</translation>
@@ -742,6 +743,7 @@
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4592672037257622855">{count,plural, =1{تمّت إضافة صفحة واحدة إلى "قائمة القراءة"}zero{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}two{تمّت إضافة صفحتَين ({count}) إلى "قائمة القراءة"}few{تمّت إضافة {count} صفحات إلى "قائمة القراءة"}many{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}other{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}}</translation>
 <translation id="459644946100970322">هل تريد تلقِّي تنبيهات عن تغيير الأسعار؟</translation>
+<translation id="4597892826846980979">تلقّي إشعارات علامات التبويب</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
 <translation id="4611811151908969241">إخفاء ميزة "إلغاء المتابعة <ph name="DOMAIN_NAME" />"</translation>
@@ -1201,6 +1203,7 @@
 <translation id="6606914854592108404">جارٍ التحقّق من الأمان…</translation>
 <translation id="6609890790934458793">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> و<ph name="THIRD_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
+<translation id="6612912757320004438">السماح بإشعارات علامات التبويب…</translation>
 <translation id="6617761071025228250">محو النص</translation>
 <translation id="6620279676667515405">إلغاء</translation>
 <translation id="6624219055418309072">حظر في وضع التصفُّح المتخفّي</translation>

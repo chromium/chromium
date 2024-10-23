@@ -2883,7 +2883,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3030967311408872958">Od zachodu do wschodu słońca</translation>
 <translation id="3031417829280473749">Agentka X</translation>
 <translation id="3031532026314193077">Użyj touchpada i klawiatury, aby kliknąć prawym przyciskiem</translation>
-<translation id="3031544881009594539">Zaloguj się na tej stronie, aby utworzyć nowy klucz dostępu. Stary klucz został usunięty z Menedżera haseł Google.</translation>
 <translation id="3031557471081358569">Wybierz elementy do zaimportowania:</translation>
 <translation id="3032204772252313646">Napisy automatyczne</translation>
 <translation id="3032272345862007156">Ostatni motyw AI: <ph name="INDEX" /></translation>
@@ -3774,7 +3773,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="370665806235115550">Ładuję...</translation>
 <translation id="3707034683772193706">Witryna, którą odwiedzasz, może zapisywać w Chrome niewielką ilość informacji, głównie po to, żeby potwierdzić, że nie jesteś botem.</translation>
 <translation id="3707163604290651814">W tej chwili używasz konta <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Wymagana aktualizacja klucza dostępu</translation>
 <translation id="3707348585109246684">Otwórz link w nowej karcie aplikacji <ph name="APP" /></translation>
 <translation id="3708295717182051206">Napisy</translation>
 <translation id="3708684582558000260">Nie zezwalaj witrynom na kontynuowanie przesyłania lub odbierania danych po zamknięciu</translation>
@@ -4276,7 +4274,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="403725336528835653">Najpierw wypróbuj</translation>
 <translation id="4039966970282098406">Zarządzaj swoją prywatnością, kontrolując dostęp do mikrofonu, aparatu i innych funkcji</translation>
 <translation id="4040041015953651705">Język źródłowy tłumaczenia</translation>
-<translation id="4042660782729322247">Udostępniasz ekran</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="4042941173059740150">Przejdź do witryny <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Rozmiar kursora</translation>
@@ -5002,7 +4999,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4588749726511456218">Przyspieszenie przewijania <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Dzienniki zostały zapisane w katalogu Pobrane.</translation>
 <translation id="4590785647529325123">Aby usunąć z urządzenia historię przeglądania w trybie incognito, zamknij wszystkie karty incognito</translation>
-<translation id="4590969863668977062">Klucz dostępu został zaktualizowany</translation>
 <translation id="459204634473266369">Na koncie <ph name="PRIMARY_EMAIL" /> nie zapisano żadnych urządzeń</translation>
 <translation id="4592891116925567110">Aplikacja do rysowania rysikiem</translation>
 <translation id="4593021220803146968">&amp;Przejdź do strony <ph name="URL" /></translation>

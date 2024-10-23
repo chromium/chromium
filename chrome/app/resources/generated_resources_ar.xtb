@@ -1808,6 +1808,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ويُرجى العِلم أنه لا يمكن إلغاء عملية التثبيت بعد بدئها.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">تبادل البيانات مع أي جهاز في النطاقات: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">تخصيص مفتاح تحكّم للإجراء "اختيار"</translation>
+<translation id="2270668657177045040">يمكن لموقع إلكتروني ونطاقاته الفرعية الاطّلاع على تطبيقات الويب ذات الصلة التي تم تثبيتها على جهازك.</translation>
 <translation id="2271452184061378400">يتم حفظ مجموعات علامات التبويب هنا</translation>
 <translation id="2271986192355138465">تعرَّف على كيفية تثبيت تطبيقات الويب</translation>
 <translation id="2272430695183451567">لم يتم تخصيص أيّ مفاتيح تبديل</translation>
@@ -2904,7 +2905,6 @@
 <translation id="3030967311408872958">من غروب الشمس إلى شروقها</translation>
 <translation id="3031417829280473749">‏الوكيل X</translation>
 <translation id="3031532026314193077">استخدام لوحة اللمس ولوحة المفاتيح للنقر بزر الماوس الأيمن</translation>
-<translation id="3031544881009594539">‏سجِّل الدخول إلى هذا الموقع الإلكتروني لإنشاء مفتاح مرور جديد. تم حذف مفتاح المرور القديم من "مدير كلمات المرور في Google".</translation>
 <translation id="3031557471081358569">اختيار العناصر المراد استيرادها:</translation>
 <translation id="3032204772252313646">النسخ النصي التلقائي</translation>
 <translation id="3032272345862007156">تم مؤخرًا إنشاء المظهر رقم <ph name="INDEX" /> باستخدام الذكاء الاصطناعي.</translation>
@@ -3799,7 +3799,6 @@
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3707034683772193706">‏يمكن للمواقع الإلكترونية التي تزورها أن تحفظ قليلاً من المعلومات في متصفّح Chrome للتأكّد من أنّك لست برنامج تتبُّع بشكل رئيسي.</translation>
 <translation id="3707163604290651814">تم تسجيل الدخول حاليًا باسم <ph name="NAME" /></translation>
-<translation id="3707242400882068741">يجب تعديل مفتاح المرور</translation>
 <translation id="3707348585109246684">فتح الرابط في علامة تبويب جديدة في <ph name="APP" /></translation>
 <translation id="3708295717182051206">الترجمة والشرح</translation>
 <translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية بإكمال عمليات إرسال البيانات أو تلقيّها</translation>
@@ -4299,7 +4298,6 @@
 <translation id="403725336528835653">إجراء تجربة أولاً</translation>
 <translation id="4039966970282098406">يمكنك إدارة خصوصيتك من خلال التحكّم في إمكانية الوصول إلى الميكروفون والكاميرا وغير ذلك</translation>
 <translation id="4040041015953651705">لغة النص المطلوب ترجمته</translation>
-<translation id="4042660782729322247">أنت تشارك الشاشة</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{الخروج من الصفحة}zero{الخروج من صفحة}two{الخروج من الصفحتين}few{الخروج من صفحات}many{الخروج من صفحة}other{الخروج من صفحة}}</translation>
 <translation id="4042941173059740150">المتابعة إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">حجم مؤشر الماوس</translation>
@@ -5025,7 +5023,6 @@
 <translation id="4588749726511456218">تسريع الانتقال للأعلى أو للأسفل. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">تمّت كتابة السجلّات في دليل "عمليات التنزيل" بنجاح.</translation>
 <translation id="4590785647529325123">لحذف سجل التصفّح المتخفي على جهازك، عليك إغلاق كل علامات التبويب في وضع التصفّح المتخفي</translation>
-<translation id="4590969863668977062">تم تعديل مفتاح المرور</translation>
 <translation id="459204634473266369">ما مِن أجهزة محفوظة في الحساب <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">تطبيق الرسم باستخدام قلم الشاشة</translation>
 <translation id="4593021220803146968">&amp;انتقال إلى <ph name="URL" /></translation>
@@ -5329,6 +5326,7 @@
 <translation id="4823193082697477185">الوصول إلى الملفات أو المجلدات أو مساحات التخزين السحابي المشتركة على شبكة محلية. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">قراءة إعدادات المستخدم والجهاز وتغييرها</translation>
 <translation id="4824037980212326045">‏النسخ الاحتياطي واستعادة البيانات من نظام التشغيل Linux</translation>
+<translation id="4824263260587281352">تغيير مجموعة المفاتيح ‏<ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">هل تريد إلغاء المزامنة؟</translation>
 <translation id="4825462365587146530">‏تعرَّف على مزيد من المعلومات حول متجر Chrome Root Store في علامة تبويب جديدة.</translation>
 <translation id="4825532258163983651">تعذُّر حذف مفتاح المرور</translation>
@@ -7830,6 +7828,7 @@
 <translation id="6676212663108450937">يُرجى مراعاة استخدام سماعات الرأس أثناء تدريب صوتك.</translation>
 <translation id="6676291960742508499">‏يتم إرسال علامات التبويب وعناوين الصفحات وعناوين URL إلى Google</translation>
 <translation id="667752334740867460">‏جارٍ تلقّي معلومات شبكة Wi-Fi…</translation>
+<translation id="6677527809400770913">تم تخصيص الإيماءة "<ph name="GESTURE" />" إلى "<ph name="ACTION" />"</translation>
 <translation id="6678604587151240716">أمواج كبيرة تتصادم في البحر، مع أرض في الخلفية البعيدة وخيوط من الضوء البرتقالي فوق الأفق، في سماء مظلمة</translation>
 <translation id="6678717876183468697">‏عنوان URL للاستعلام</translation>
 <translation id="6680442031740878064">المساحة المتاحة: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10035,6 +10034,7 @@
 <translation id="8261378640211443080">هذه الإضافة غير مدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تمت إضافتها بدون علمك.</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8261625296061301062">تم تثبيت برنامج الماسح الضوئي</translation>
+<translation id="8263149565724023141">التطبيقات ذات الصلة</translation>
 <translation id="8263228331881858381">تم حفظ مفتاح المرور</translation>
 <translation id="8263336784344783289">تسمية هذه المجموعة</translation>
 <translation id="8264024885325823677">يتولى مشرفك إدارة هذا الإعداد.</translation>

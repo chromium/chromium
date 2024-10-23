@@ -580,6 +580,9 @@ Cuando la estableces como PromptInTab, cuando vence la autenticación del usuari
 <translation id="1396119629372155901">Inhabilitar la función ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes</translation>
 <translation id="1397855852561539316">Dirección URL sugerida para el proveedor de búsqueda predeterminado</translation>
 <translation id="140076409387986842">Permitir Ayúdame a escribir sin mejorar los modelos de IA.</translation>
+<translation id="1401249111997036083">Si estableces la política como falsa, las apps para Android podrán capturar vínculos compatibles de forma predeterminada.
+Si estableces la política como verdadera, todos los vínculos se abrirán en el navegador Chrome de forma predeterminada.
+Si no estableces la política, los vínculos se abrirán de forma predeterminada en las apps de Android para los usuarios administrados y en el navegador para los consumidores.</translation>
 <translation id="1402227992519954892">Habilitar los informes de apps del dispositivo</translation>
 <translation id="1405444733221330570">Habilitar Orca</translation>
 <translation id="1407977345632185991">No permitir Create Themes.</translation>
@@ -821,6 +824,17 @@ Si no estableces esta política, los usuarios podrán agregar excepciones para p
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios escoger este permiso para cada sitio.</translation>
 <translation id="1574258262373444557">No usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1577162851453388235">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
+Para obtener más información, consulta https://github.com/WICG/direct-sockets.
+
+Si estableces la política, podrás crear una lista de patrones de URL donde se indiquen los sitios que pueden usar la API de Direct Sockets.
+Los patrones válidos se limitan a las apps web aisladas.
+
+Si no estableces la política, se aplicará <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL cumple con ambas políticas, no prevalece ninguna de las dos.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1578495851351913403">Si estableces esta política, se mostrará un nuevo botón de activación de la IU debajo de cada pantalla en la configuración de visualización. El modo de espejo normal convierte todas las pantallas en una, pero el nuevo botón de activación permite a los usuarios excluir una pantalla de la duplicación y que aparezca como una pantalla extendida.
 
 Si habilitas la política, aparecerá el botón para excluir la pantalla del modo de espejo, y los usuarios podrán elegir una para habilitarlo.
@@ -1551,6 +1565,7 @@ Esta política suele estar inhabilitada para ofrecer protección frente al phish
         Si habilitas la política o no la estableces, se podrán actualizar las apps de Chrome para kiosco durante la sesión.
         </translation>
 <translation id="2082205219176343977">Configura la versión mínima permitida de Chrome para el dispositivo.</translation>
+<translation id="2083696311760456171">No permitir la predicción de la función Autocompletar.</translation>
 <translation id="20838788335877967">Inhabilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="208566302163036794">Bloquea las funciones inhabilitadas</translation>
 <translation id="2086040449830622332">Habilitar la zona de pruebas de impresión de LPAC</translation>
@@ -1733,6 +1748,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
 <translation id="2212011154693551439">Mostrar una página del historial de Chrome organizada en grupos en chrome://history/grouped de forma predeterminada</translation>
+<translation id="221287948061571053">Ocultar la insignia empresarial expandida en la barra de herramientas</translation>
 <translation id="2213059592185933570">Habilitar la creación de perfiles de roaming</translation>
 <translation id="2213342458177721585">Habilitar el diseño InScript de hindi en todo el dispositivo</translation>
 <translation id="2215238871726750562">Si estableces la política como verdadera, no se ejecutará la ventana del navegador al inicio de la sesión.
@@ -2600,6 +2616,7 @@ Esta política solo se puede establecer como política del usuario basada en la 
 <translation id="2872968825059227580">Inhabilitar la compatibilidad con GIF</translation>
 <translation id="2874209944580848064">Nota para dispositivos <ph name="PRODUCT_OS_NAME" /> compatibles con apps de Android:</translation>
 <translation id="287474029350993681">Inhabilitar la transmisión de contenido al dispositivo</translation>
+<translation id="2874983257003956579">Configurar las herramientas de administración de la clase</translation>
 <translation id="2875192972412983412">Especifica el subconjunto de servidores de impresión que se consultará para las impresoras de servidor.
 
       Si se usa esta política, el usuario solo podrá acceder a las impresoras de servidor con ID que coincidan con los valores en esta política.
@@ -2726,6 +2743,10 @@ comportamiento de las teclas de función, y los usuarios no podrán cambiar esta
 Si se configura una cookie para un dominio que coincide con uno de los filtros proporcionados, la cookie se excluirá en la transferencia. Los dominios de cookies se vinculan según las reglas del campo "host" que se describen en https://support.google.com/chrome/a?p=url_blocklist_filter_format. Se ignoran todos los demás campos. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
 La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> tiene prioridad.</translation>
+<translation id="2953447815703785478">Especifica los certificados de cliente de todo el dispositivo que deben inscribirse con el
+protocolo de administración de dispositivos.
+
+La opción de algoritmo de clave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> es compatible desde la versión 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2957506574938329824">No permitir que ningún sitio solicite acceso a dispositivos Bluetooth mediante la API de Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Enviar siempre puntos de acceso de Wi-Fi al servidor mientras se determina la zona horaria</translation>
@@ -2844,6 +2865,7 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
 <translation id="3034855514833090741">Si habilitas la política, Asistente de Google mostrará el flujo de Voice Match durante su configuración inicial. Si inhabilitas la política, Asistente de Google no mostrará el flujo de Voice Match durante su configuración inicial.
 
       Si no estableces la política, estará habilitada.</translation>
+<translation id="3036271748813538143">Controla si se habilita el nuevo comportamiento del analizador HTML para el elemento &lt;select&gt;</translation>
 <translation id="3038323923255997294">Continuar ejecutando aplicaciones en segundo plano cuando <ph name="PRODUCT_NAME" /> esté cerrado</translation>
 <translation id="3039862327847526651">Controlar el uso de optimizadores de JavaScript</translation>
 <translation id="3041887182529293512">Si estableces la política como verdadera o no la estableces, se mostrarán las sugerencias de contenido autogenerado en la página Nueva pestaña, según el historial de navegación del usuario, sus intereses y su ubicación.
@@ -3097,6 +3119,7 @@ Si habilitas esta política o no la estableces, los desplazadores sin elementos 
 Si la inhabilitas, no se podrán enfocar los desplazadores de forma predeterminada con el teclado.
 
 Esta política es una solución temporal y se quitará en la versión M135.</translation>
+<translation id="3216094710930835317">Se inhabilitará el nuevo comportamiento del analizador HTML, que permite más etiquetas.</translation>
 <translation id="3217774577897351942">La API de <ph name="OFFSET_PARENT" /> se modificará en <ph name="PRODUCT_NAME" /> a fin de cumplir con los cambios realizados en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política recupera el comportamiento anterior hasta la versión M120.
 
 El comportamiento nuevo puede generar fallas en algunos sitios web exclusivos de <ph name="PRODUCT_NAME" /> que usan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
@@ -3405,6 +3428,17 @@ Si no estableces la política, se impedirá la navegación en el navegador cuand
       Ten en cuenta que, si inhabilitas la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />, pero habilitas o no estableces <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" />, la página del historial de Chrome organizada en grupos seguirá disponible en chrome://history/grouped, pero es posible que sea menos relevante para el usuario.
 </translation>
 <translation id="3469713571374938745">Permitir Create Themes sin mejorar los modelos de IA.</translation>
+<translation id="3471245568493482863">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
+Para obtener más información, consulta https://github.com/WICG/direct-sockets.
+
+Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios que no pueden comunicarse a través de la API de Direct Sockets.
+Los patrones válidos se limitan a las apps web aisladas.
+
+Si no estableces la política, se aplicará <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL cumple con ambas políticas, no prevalece ninguna de las dos.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="3478024346823118645">Eliminar los datos del usuario al salir</translation>
 <translation id="3478406829037689272">Habilitar los análisis detallados de descargas de la Navegación segura</translation>
 <translation id="3480961938508521469">Cargar la batería por completo a un ritmo normal</translation>
@@ -3464,6 +3498,7 @@ Si estableces esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME
       Si la política se configura como verdadera o no se configura, <ph name="PRODUCT_OS_NAME" /> se comunicará automáticamente con Quirks Server, descargará archivos de configuración, si están disponibles, y los guardará en el dispositivo.  Estos archivos pueden usarse, por ejemplo, para mejorar la calidad de visualización de los monitores conectados.</translation>
 <translation id="3515196503924273265">Permitir que se habilite la función NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Después de inhabilitar <ph name="LACROS_NAME" />, no se realizará la migración de datos. Se quitará la carpeta <ph name="LACROS_NAME" /> y los usuarios seguirán usando los datos restantes.</translation>
+<translation id="3518512927469906365">Inhabilitar la partición de almacenamiento de terceros para orígenes de nivel superior específicos</translation>
 <translation id="3522257170445891912">Según el valor que se establezca para esta política, el flujo de autenticación de acceso será una de las siguientes opciones:
 
       Si se establece como GAIA, el acceso se implementará mediante el flujo de autenticación de GAIA normal.
@@ -3585,6 +3620,13 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 
           Si no la estableces, la función estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="3587482841069643663">Todos</translation>
+<translation id="3587487647039152577">Este parámetro de configuración dejó de estar disponible. Permite que los usuarios creen y utilicen perfiles secundarios y usen el modo de invitado en el navegador <ph name="LACROS_NAME" />.
+
+      Si estableces esta política como falsa o no la estableces, el usuario no podrá crear ni usar perfiles secundarios ni usar el modo de invitado, de manera similar que con las políticas <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> y <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />. Si hay perfiles secundarios que se hayan creado anteriormente, no estarán disponibles.
+
+      Si estableces esta política como verdadera, el usuario podrá crear y utilizar perfiles secundarios, y usar el modo de invitado.
+
+      Ten en cuenta que, si estableces esta política como verdadera, pero se estableció <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> como falsa, el usuario no podrá crear perfiles secundarios. Del mismo modo, si se estableció <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> como falsa, el usuario tampoco podrá usar el modo de invitado.</translation>
 <translation id="3587766503874071316">Inhabilitar las combinaciones de accesibilidad</translation>
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
@@ -3808,6 +3850,7 @@ Para conocer las restricciones de <ph name="PRIVATE_NETWORK_ACCESS" />, consulta
       Si inhabilitas la política o no la estableces, <ph name="PRODUCT_OS_NAME" /> permitirá apagar el dispositivo.</translation>
 <translation id="376375951585423504">Inhabilitar la cuota persistente</translation>
 <translation id="3765260570442823273">Duración del mensaje que advierte al usuario que saldrá del navegador porque se encuentra inactivo</translation>
+<translation id="3766695867369523703">Permitir la partición de almacenamiento de terceros de forma predeterminada.</translation>
 <translation id="3770407495263198786">Si estableces la política, los administradores podrán configurar una lista de impresoras para sus usuarios. Los usuarios eligen la impresora la primera vez que realizan una impresión.
 
       Esta política permite hacer lo siguiente:
@@ -3829,6 +3872,12 @@ Para conocer las restricciones de <ph name="PRIVATE_NETWORK_ACCESS" />, consulta
 <translation id="3778689139323007309">Comprueba la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados de manera local</translation>
 <translation id="3780152581321609624">Incluir puerto no estándar en el SPN de Kerberos</translation>
 <translation id="3785423718413114598">No permitir las funciones de IA generativa</translation>
+<translation id="3788155044604525647">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
+Para obtener más información, consulta https://github.com/WICG/direct-sockets.
+
+Si estableces la política en 1 o no la estableces, los orígenes de apps web aisladas podrán usar Direct Sockets.
+
+Si estableces la política en 2, los orígenes de apps web aisladas no podrán usar Direct Sockets.</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
 <translation id="3788876528643861853">Inhabilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3790085888761753785">Si se habilita esta configuración, los usuarios podrán acceder a sus cuentas mediante Smart Lock. Este método es más permisivo que el comportamiento normal de Smart Lock, que solo permite a los usuarios desbloquear las pantallas.
@@ -3910,6 +3959,13 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
 <translation id="3842619997238271109">No permite que el host de acceso remoto use las autenticaciones con PIN y con vinculación cuando acepte conexiones de clientes</translation>
 <translation id="3845318141474759319">Permitir Generative AI Wallpaper sin mejorar los modelos de IA</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
+<translation id="3854609566862485607">Esta política controla una etiqueta personalizada que se usa para identificar perfiles administrados. En el caso de los perfiles administrados, esta etiqueta se mostrará junto al avatar en la barra de herramientas. No se traducirá la etiqueta personalizada.
+
+Cuando se aplica esta política, las cadenas que superen los 16 caracteres se truncarán con un “…”. No uses nombres extendidos.
+
+Esta política solo se puede establecer como política del usuario.
+
+Ten en cuenta que esta política no tiene efecto si la política <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> se establece como <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (valor 1).</translation>
 <translation id="3858658082795336534">Modo predeterminado de impresión doble</translation>
 <translation id="3859780406608282662">Permite agregar un parámetro para la obtención del valor de inicialización de variaciones en <ph name="PRODUCT_OS_NAME" />.
 
@@ -4616,6 +4672,7 @@ Si la inhabilitas, los usuarios no podrán realizar un seguimiento de sus paquet
       <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Inhabilitar la función para destacar el cursor del teclado en la pantalla de acceso</translation>
 <translation id="4397045637922200204">Desactivar la recuperación de la cuenta</translation>
+<translation id="4397157269508242312">Si estableces la política, se especificará si los usuarios utilizan las herramientas de administración de clases para enviar o recibir contenido, enviar o recibir subtítulos como estudiantes o profesores, o si las herramientas de administración de la clase están inhabilitadas para los usuarios.</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de Ubicación de ventanas</translation>
 <translation id="4398803806072237638">La sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> de la función de estado personalizado de CSS se cambiará a <ph name="CUSTOM_STATE_NEW_SYNTAX" /> en <ph name="PRODUCT_NAME" /> para cumplir con los cambios que se realizaron en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política permite habilitar la sintaxis obsoleta anterior hasta la versión M133.
 
@@ -4652,7 +4709,11 @@ Esto se quitó en M112.</translation>
 <translation id="4402887080007986374">La versión válida de las Condiciones del Servicio de Edu Coexistence</translation>
 <translation id="4408428864159735559">Lista de archivos compartidos de red configurados previamente</translation>
 <translation id="4410236409016356088">Habilitar la velocidad moderada del ancho de banda de la red</translation>
+<translation id="4410361389637971319">Permitir que los orígenes de apps web aisladas usen Direct Sockets</translation>
 <translation id="4411734231900934213">La diferencia permitida entre el reloj del dispositivo del niño y el del padre o la madre (en segundos).</translation>
+<translation id="4411759973223339687">Si estableces la política como verdadera o no la configuras, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los accesos de invitado. Los accesos de invitado son perfiles de <ph name="PRODUCT_NAME" /> en donde todas las ventanas están en el modo Incógnito.
+
+      Si estableces esta política como falsa, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles de invitado.</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Si habilitas la política, se desactivará el visor de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la aplicación predeterminada.
 
@@ -4940,6 +5001,13 @@ a estas APIs.</translation>
       Si no estableces la política, no se implementará la selección automática para ningún sitio.</translation>
 <translation id="4611983465824842867">No mostrar advertencias ni inhabilitar la opción Autocompletar en los formularios poco seguros</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
+<translation id="4615436471607987736">A partir de la versión M131, esta política dejará de estar disponible. Esta política ofrece una inhabilitación temporal para dos correcciones relacionadas con el comportamiento del diálogo de confirmación que muestra el evento beforeunload.
+Si habilitas esta política, se usará el comportamiento nuevo y correcto. Si la inhabilitas, se usará el comportamiento anterior y heredado. Si no la estableces, se usará el comportamiento predeterminado.
+Esta política es una solución temporal y se quitará pronto.
+
+Comportamiento nuevo y correcto: en “beforeunload”, la llamada a “event.preventDefault()” activará el diálogo de confirmación. Si configuras “event.returnValue” como una cadena vacía, no se activará el diálogo de confirmación.
+
+Comportamiento anterior y heredado: en “beforeunload”, la llamada a “event.preventDefault()” no activará el diálogo de confirmación. Si configuras “event.returnValue” como una cadena vacía, se activará el diálogo de confirmación.</translation>
 <translation id="4615892138881859957">Controlar la combinación de teclas utilizada para activar la tecla Insertar del "paquete de seis"</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Hacer que la función NewBaseUrlInheritanceBehavior esté disponible</translation>
@@ -5093,6 +5161,7 @@ En instancias de <ph name="MAC_OS_NAME" />, las apps y extensiones que no proven
 <translation id="4739596156184678950">Permitir que se guarden los archivos directamente en <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Restringe el modo de impresión con gráficos de fondo</translation>
 <translation id="4745232963710538589">Habilitar la extensión de estadísticas para métricas de informes de uso</translation>
+<translation id="4746394249367607432">Los usuarios podrán unirse y agregarse a una sesión de administración de clases. Los profesores podrán enviar contenido a estos usuarios.</translation>
 <translation id="4749670563834935149">Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para ver una lista de URLs en la pantalla de acceso y de bloqueo.
 
 Si estableces esta política, se especificarán las URLs que <ph name="PRODUCT_OS_NAME" /> ofrecerá para iniciar el flujo de certificación. Este último permite que esos sitios web obtengan un conjunto certificado de señales contextuales del dispositivo.
@@ -5196,6 +5265,7 @@ Esta política es temporal y se quitará ni bien se inicie la cancelación del e
 Si la estableces como falsa, se usará el comportamiento predeterminado.</translation>
 <translation id="4820432864264617413">Impide que se ejecute <ph name="BOREALIS_NAME" /> para un usuario</translation>
 <translation id="4821987881803903281">Bloquear el permiso de Ubicación de ventanas en estos sitios</translation>
+<translation id="4825653993105771848">Controlar el acceso a la red privada en la API de Direct Sockets</translation>
 <translation id="4825777333376170738">Inhabilitar los informes de las sesiones de kiosco del dispositivo</translation>
 <translation id="4826326557828204741">Acción a realizar si se alcanza la demora de inactividad mientras el dispositivo funciona con batería</translation>
 <translation id="4826701474986856664">Mostrar la pantalla del sensor de presencia humana durante el acceso</translation>
@@ -6006,6 +6076,9 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
       Si la estableces como falsa (la configuración predeterminada), no se afecta el tiempo de acceso.</translation>
 <translation id="5371152055157582429">Los usuarios pueden personalizar el fondo de la página Nueva pestaña</translation>
 <translation id="5372698090378600633">Bloquear la API de Direct Sockets en estos sitios</translation>
+<translation id="5373552304217872025">Si estableces esta política como verdadera o no la configuras, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> permitirán que se agregue una nueva persona desde el Administrador de usuarios.
+
+      Si la estableces como falsa, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se agregue una nueva persona desde el Administrador de usuarios.</translation>
 <translation id="5377606826822211923">Controla la forma en que el usuario usa las apps para Android de fuentes no confiables</translation>
 <translation id="537786648513450280">Controla la forma en que se usan las apps para Android de fuentes no confiables</translation>
 <translation id="5378885577701865339">Inhabilitar la función de portapapeles compartido</translation>
@@ -6074,6 +6147,7 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
 
       Si no se configura esta política, los usuarios podrán elegir la imagen de avatar que los identifique en la pantalla de acceso.</translation>
 <translation id="5428716437928918274">Controles de configuración de Privacy Sandbox</translation>
+<translation id="5430760800138878127">Se habilitará el nuevo comportamiento del analizador HTML, que permite más etiquetas.</translation>
 <translation id="5431392643649571773">Si habilitas la política, la función de <ph name="PRODUCT_NAME" /> permite el uso de la Memoria caché atrás/adelante. Cuando sales de una página durante la navegación, se puede preservar su estado actual (árbol de documentos, secuencia de comandos, etc.) en la Memoria caché atrás/adelante. Si regresas a esa página, es posible restablecerla desde la Memoria caché atrás/adelante y mostrarla en el estado en el que estaba antes de que se almacenara en caché.
 
           Esta función puede causar problemas en algunos sitios web que no esperan este almacenamiento en caché. Específicamente, algunos sitios dependen del envío del evento "<ph name="UNLOAD_HANDLER_NAME" />" cuando el usuario abandona la página en el navegador. Si la página utiliza la función Memoria caché atrás/adelante, no se enviará el evento "<ph name="UNLOAD_HANDLER_NAME" />".
@@ -6426,6 +6500,10 @@ Cuando se establece para el kiosco de <ph name="PRODUCT_OS_NAME" />, esta polít
       Si inhabilitas la política, se desactivará el corrector ortográfico de todas las fuentes, y los usuarios no lo podrán activar. Las políticas <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> y <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> no tienen efecto cuando esta política se establece como falsa.
 
       Si no estableces esta política, los usuarios podrán activar o desactivar el corrector ortográfico en la configuración de idiomas. </translation>
+<translation id="5655060841667911118">Especifica los certificados de cliente que deben inscribirse con el protocolo de administración
+de dispositivos.
+
+La opción de algoritmo de clave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> es compatible desde la versión 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Permitir el uso de la API de U2F Security Key que se dio de baja</translation>
 <translation id="5656177735561364047">Habilita la función de portapapeles compartido</translation>
 <translation id="5657752663637568277">Esta política controla si se muestran las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /> a los usuarios en el diálogo de la vista previa de impresión o en las páginas de configuración.
@@ -6433,6 +6511,22 @@ Cuando se establece para el kiosco de <ph name="PRODUCT_OS_NAME" />, esta polít
       Si la estableces como falsa o no la estableces, se mostrarán las advertencias de baja.</translation>
 <translation id="5659776687676755342">Habilitar el sonido de batería baja</translation>
 <translation id="5660950553460381588">Crear llaves de acceso de forma predeterminada en el llavero de iCloud cuando sea posible</translation>
+<translation id="5664848079661901346">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
+Para obtener más información, consulta https://github.com/WICG/direct-sockets.
+
+Los endpoints de red privada son aquellos que usan direcciones IP del espacio de direcciones IP privadas, que se define en https://wicg.github.io/private-network-access/#ip-address-space-private.
+
+Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios que pueden comunicarse con extremos de red privados en la API de Direct Sockets.
+Los patrones válidos se limitan a las apps web aisladas.
+
+Si no estableces la política, se aplicará <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL cumple con ambas políticas, no prevalece ninguna de las dos.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
+
+Ten en cuenta que esta política solo se aplica si el origen puede usar la API de Direct Sockets.
+Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más detalles.</translation>
 <translation id="5666457529647159548">Permite que los usuarios administren los certificados instalados</translation>
 <translation id="5670249935663090320">Si habilitas la política o no la estableces, se activará <ph name="PRODUCT_NAME" />, que los usuarios pueden ejecutar desde el menú de la app, los menús contextuales de la página, los controles de contenido multimedia en los sitios web compatibles con Cast y el ícono de la barra de herramientas de Cast (si se muestra).
 
@@ -6748,6 +6842,12 @@ Si inhabilitas la política, se inhabilitarán los sonidos del Modo sin distracc
 <translation id="5917425424971710623">No informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="592036544845479336">Volver a habilitar los eventos de mutación que quedaron obsoletos o se quitaron</translation>
 <translation id="5921713479449475707">Permitir descargas de actualizaciones automáticas a través de HTTP</translation>
+<translation id="5925405187134730827">Esta política dejó de estar disponible porque la función que controla nunca se lanzó. En su lugar, usa la política <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
+
+Si no estableces esta política o la estableces como <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valor 0), se mostrará una etiqueta de trabajo o de institución educativa junto al avatar de la barra de herramientas.
+Estas etiquetas solo se mostrarán si se administra la cuenta con la que accediste.
+
+Si se establece como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (valor 1), se mostrará una etiqueta de trabajo o de institución educativa junto al avatar de la barra de herramientas durante 30 segundos después de abrir el perfil.</translation>
 <translation id="5927903236543424081">Forzar al usuario a acceder antes de usar el navegador</translation>
 <translation id="5928633129285224981">Controla si <ph name="PRODUCT_NAME" /> hace que la opción Imprimir como imagen esté definida de forma predeterminada al imprimir documentos PDF.
 
@@ -6796,6 +6896,24 @@ Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /
       Si inhabilitas la política, los usuarios no podrán enviar los comentarios a Google.</translation>
 <translation id="5976636832661103220">La configuración de F11 usa la combinación de teclas que contiene la tecla modificadora mayúsculas</translation>
 <translation id="5979376378555121803">App alojada</translation>
+<translation id="5981308440856672205">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
+Para obtener más información, consulta https://github.com/WICG/direct-sockets.
+
+Los endpoints de red privada son aquellos que usan direcciones IP del espacio de direcciones IP privadas, que se define en https://wicg.github.io/private-network-access/#ip-address-space-private.
+
+Si estableces la política, podrás crear una lista de patrones de URL donde se especifiquen los sitios que no pueden acceder a la red privada en la API de Direct Sockets.
+Los patrones válidos se limitan a las apps web aisladas.
+
+Si no estableces la política, se aplicará <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido.
+
+Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL cumple con ambas políticas, no prevalece ninguna de las dos.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
+
+Ten en cuenta que esta política solo se aplica si el origen puede usar la API de Direct Sockets.
+Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más detalles.
+
+Esta política se aplica solo a los intentos de conexión nuevos y no invalida las conexiones existentes.</translation>
 <translation id="5981932073854958705">Elegir si deseas habilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5983274643567559194">Inhabilitar la configuración de un acceso directo para la acción "Borrar"</translation>
 <translation id="5984099692320899605">No usar la autenticación de NTLM</translation>
@@ -7395,6 +7513,13 @@ en la pantalla de <ph name="LOG_IN" />.</translation>
 <translation id="6371005337713685988">Configuración de Conjuntos de sitios web relacionados</translation>
 <translation id="6371561334154580937">Mostrar el diálogo de salida cuando se cierra la última ventana</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache, incluso si se encuentra desactivada de forma predeterminada</translation>
+<translation id="6372676668820850849">Esta política controla si se permite la partición de almacenamiento de terceros de forma predeterminada.
+
+Si estableces esta política como 1 (AllowPartitioning) o no la estableces, se permitirá la partición de almacenamiento de terceros de forma predeterminada. Este valor predeterminado se puede anular para orígenes de nivel superior específicos por otros medios.
+
+Si estableces esta política como 2 (BlockPartitioning), se inhabilitará la partición de almacenamiento de terceros para todos los contextos.
+
+Usa <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para inhabilitar la partición de almacenamiento de terceros para orígenes de nivel superior específicos. Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="6373299801585455337">Habilitar los informes de la CPU del dispositivo</translation>
 <translation id="6374945506685352202">Lista de entidades bloqueadas para los tipos de instalación de extensiones</translation>
 <translation id="6376540107659524656">Inhabilitar SSH en la app del sistema de la terminal</translation>
@@ -7558,6 +7683,7 @@ NOTA: El comportamiento predeterminado de los dispositivos de usuario y empresar
 <translation id="647645276885673708">Habilitar <ph name="LACROS_NAME" /> y seleccionarlo como navegador predeterminado</translation>
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6477685422297715670">Color verde para la retroiluminación del teclado</translation>
+<translation id="6477933144150138501">Permitir que los orígenes de apps web aisladas se comuniquen con endpoints de red privados en la API de Direct Sockets</translation>
 <translation id="6478258366184919502">Orígenes de la pantalla de acceso</translation>
 <translation id="6478261301433199402">Si estableces la política, se especificará la imagen de <ph name="PLUGIN_VM_NAME" /> para un usuario. Especifica esta política como una cadena de formato JSON que incluye <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> (establece dónde se descarga la imagen) y <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> (como un hash SHA-256 para verificar la integridad de la descarga).</translation>
 <translation id="6481245670325946423">Permitir el uso del modo sin interfaz gráfica</translation>
@@ -7807,6 +7933,7 @@ Los cambios que se realicen en la política solo se aplicarán cuando ARC no se 
 <translation id="6607983779935460461">Compatibilidad de las URLs de datos con SVGUseElement.</translation>
 <translation id="6609867253856597039">Establece la experiencia del usuario de las funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="6614648642325603511">El algoritmo para la generación del par de claves. La opción de EC es compatible desde la versión 132.</translation>
 <translation id="661610294649586421">No permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="6617589895942747919">La hora de inicio (inclusive) del intervalo.</translation>
 <translation id="6621830999036927230">Si estableces esta política, el host de acceso remoto usará esta URL para validar los tokens de autenticación de los clientes de acceso remoto, a fin de aceptar las conexiones. Si dejas la política vacía o no la estableces, se inhabilitará esta función.
@@ -7902,6 +8029,20 @@ Si habilitas la política, la función de actualización de GREASE de User-Agent
       Nota: Aunque la política acepte varios elementos en <ph name="ENTRIES_FIELD_NAME" />, ignorará todos menos el primero.
       Advertencia: Si estableces esta política, es posible que se retrase la aplicación de las actualizaciones de software.</translation>
 <translation id="6695441448686167614">Configuración de impresión web</translation>
+<translation id="6695983959768914375">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
+Para obtener más información, consulta https://github.com/WICG/direct-sockets.
+
+Los endpoints de red privada son aquellos que usan direcciones IP del espacio de direcciones IP privadas, que se define en https://wicg.github.io/private-network-access/#ip-address-space-private.
+
+Si estableces la política en 1 o no la estableces, los orígenes de apps web aisladas podrán comunicarse con endpoints de red privados en la API de Direct Sockets.
+
+Si estableces la política en 2, se impedirá que los orígenes de apps web aisladas se comuniquen con endpoints de red privados en la API de Direct Sockets.
+
+Ten en cuenta que esta política solo se aplica si el origen puede usar la API de Direct Sockets.
+Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más detalles.
+El valor predeterminado también se puede anular para las URLs coincidentes a través de <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />.
+
+Esta política se aplica solo a los nuevos intentos de conexión y no anula las conexiones existentes.</translation>
 <translation id="6698632841807204978">Habilitar la impresión monocromática</translation>
 <translation id="6699740789657890714">Especificar si se permite que los sitios web envíen solicitudes a extremos de red más privados de una forma no segura</translation>
 <translation id="6699880231565102694">Habilitar autenticación de dos factores para los hosts de acceso remoto.</translation>
@@ -8073,6 +8214,11 @@ después de lo cual se quitará la implementación anterior.
 
 NOTA: Solo los procesos del renderizado recién iniciados reflejarán los cambios de esta
 política mientras se esté ejecutando el navegador.</translation>
+<translation id="6831322012298364374">Una URL a una imagen que se usará como insignia de la empresa para un perfil administrado. La URL debe dirigir a una imagen.
+
+Esta política solo se puede establecer como política del usuario.
+
+Se recomienda usar el ícono de página (por ejemplo, https://www.google.com/favicon.ico) o un ícono de al menos 24 × 24 px.</translation>
 <translation id="6833023569065717572">Si estableces la política como verdadera, el reloj de la pantalla de acceso del dispositivo tendrá el formato de 24 horas.
 
       Si la estableces como falsa, el reloj tendrá el formato de 12 horas.
@@ -8109,6 +8255,7 @@ política mientras se esté ejecutando el navegador.</translation>
 
       Esta política dejó de estar disponible; usa la política <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="6847379587945465889">Habilitar la transferencia de cookies del SSO de SAML a la sesión del usuario durante el acceso</translation>
+<translation id="6847810176590195243">Los usuarios podrán conectarse e implementar contenido para los estudiantes. Esto incluye enviar contenido web y poner a disposición de los alumnos subtítulos o traducciones de la voz del profesor de forma instantánea.</translation>
 <translation id="684856667300805181">En la versión 68 de <ph name="PRODUCT_NAME" />, se quitó esta política y se reemplazó por <ph name="ARC_GLS_POLICY_NAME" />.</translation>
 <translation id="684882090733715433">Informes de eventos del navegador</translation>
 <translation id="6850300477973481112">Configuración del conector del escritorio</translation>
@@ -8909,6 +9056,13 @@ la lectura en voz alta estará habilitada.</translation>
 <translation id="7463934096276667908">Habilita las APIs de Prefixed Video Fullscreen</translation>
 <translation id="7464058117970792805">Habilitar vista previa de impresión</translation>
 <translation id="7464991223784276288">Restringir las cookies solo para las URL coincidentes en la sesión actual</translation>
+<translation id="7467748623079596345">Esta política te permite establecer una lista de patrones de URL que especifiquen los orígenes de nivel superior para los que se debe inhabilitar la partición de almacenamiento de terceros (partición de almacenamiento de iframe de origen cruzado).
+
+Si no estableces esta política o si un origen de nivel superior no coincide con uno de los patrones de URL, se aplicará <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Ten en cuenta que los patrones que incluyas aquí se tratarán como orígenes, no como URLs, por lo que no debes especificar una ruta de acceso.
+
+Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7468182772656807573">Si estableces la política, se determinará la frecuencia con la que se envían paquetes de red de control (expresado en milisegundos). Los intervalos varían de 30 segundos a 24 horas. Los valores fuera de este rango se restringirán conforme a estos valores.
 
       Si no estableces la política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
@@ -9081,6 +9235,7 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 <translation id="7612059745454194563">No permitir que se muestre la promoción para la extensión del Proveedor de credenciales</translation>
 <translation id="7612157962821894603">Marcas que se deben aplicar al iniciar <ph name="PRODUCT_NAME" /> en todo el sistema</translation>
 <translation id="7613115815080726221">El período sin intervención del usuario después del cual se toma una acción de inactividad (en milisegundos).</translation>
+<translation id="7613706918933704660">No permitir que los orígenes de apps web aisladas usen Direct Sockets</translation>
 <translation id="7614663184588396421">Lista de los esquemas de protocolo inhabilitados</translation>
 <translation id="7616631530432070402">Se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="761788785484453836">Solicitar el aislamiento de sitios para todos los sitios web</translation>
@@ -9261,6 +9416,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
 <translation id="776110834126722255">Obsoleto</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="7763650553214838209">Inhabilitar la configuración de un acceso directo para la acción "Insertar"</translation>
+<translation id="7763655314629932385">Especifica la versión deseada de la IWA. Si se proporciona, el sistema intentará instalar esta versión específica y, luego, bloqueará cualquier actualización posterior. Para dejar de fijar la app y volver a habilitar las actualizaciones, quita este campo. **Importante:** Si la versión proporcionada no existe, la IWA se quedará atascada en la versión instalada actualmente. Esto se debe a que, después de intentar (y, en este caso, no poder) actualizar a la versión fijada, la fijación inhabilita las actualizaciones automáticas posteriores.</translation>
 <translation id="776465643636059256">Inhabilitar Conjuntos de sitios web relacionados</translation>
 <translation id="7765879851993224640">Permitir el acceso mediante Smart Lock</translation>
 <translation id="7767066506143083523">Si estableces la política, podrás especificar una lista de patrones de URL que pueden usar la captura de pestaña.
@@ -9295,6 +9451,15 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
           De lo contrario, las combinaciones de teclas para las funciones de accesibilidad estarán habilitadas de forma predeterminada en la pantalla de acceso.</translation>
 <translation id="7777535871204167559">Tratar los dispositivos de almacenamiento externo como de solo lectura</translation>
 <translation id="7781452670568828399">Cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="7782770795171480507">Si estableces la política, se especificará una lista de apps web aisladas (IWA) que se instalan de manera silenciosa.
+      Las IWA son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles para las páginas web normales. Se agrupan en un paquete web firmado. La clave pública del paquete web firmado se usa para crear el ID del paquete web que identifica la IWA.
+      Hasta ahora, esta política solo funciona para las sesiones de invitado administradas.
+
+      Cada elemento de la lista de la política es un objeto que tiene dos campos obligatorios: el manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la app web aislada.
+
+      Cada elemento también puede tener campos opcionales: un nombre de canal de actualización o lanzamiento de la IWA (update_channel) y una versión específica para fijar (pinned_version).
+      Si no se establece "update_channel", se usará el valor "default". Cuando se especifica pinned_version, el sistema intentará instalar esa versión específica (si está disponible en el canal de actualización actual).
+      De forma predeterminada, la fijación de versiones no permite volver a versiones anteriores. Fijar una IWA a una versión específica impide que se actualice más allá de esa versión. Para dejar de fijarla, quita este campo.</translation>
 <translation id="7784062550705119230">Si eliges <ph name="PRINTERS_ALLOWLIST" /> para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará las impresoras que podrán utilizar los usuarios. Los usuarios solo podrán acceder a las impresoras con los ID que coincidan con los valores indicados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7785199109546027763">Una política que controla si se debe activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.
 
@@ -9313,6 +9478,11 @@ Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME
 Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de Internet Explorer, consulta https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">No permitir que los usuarios tomen capturas de pantalla ni graben videos</translation>
 <translation id="7792796937016596423">El usuario no podrá realizar capturas de paquetes de red</translation>
+<translation id="7795648856511126914">Se está cambiando el analizador de HTML para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador HTML hasta la versión M136.
+
+Si habilitas esta política o no la estableces, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
+
+Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas que se pueden colocar dentro del elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política se quitó desde la versión 89 de <ph name="PRODUCT_NAME" /> porque <ph name="FLASH_PLUGIN_NAME" /> dejó de estar disponible.
 
       Si estableces la política como verdadera, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> incorporado en sitios web que permitan <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes o el contenido pequeño.
@@ -9339,11 +9509,13 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
 <translation id="782661371433719637">No permite que ningún sitio solicite acceso de lectura a archivos y directorios a través de la API de File System</translation>
 <translation id="7827127381981620448">App de plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>
+<translation id="7829546795016635784">Los usuarios no pueden usar ninguna de las funciones de administración de la clase ni agregarse a una sesión de administración de clases.</translation>
 <translation id="782978857350824974">Permitir solicitudes de autenticación web en sitios con certificados TLS rotos</translation>
 <translation id="7830775338190021763">Habilitar la capacidad de transferencia de archivos en sesiones de asistencia remota empresarial</translation>
 <translation id="7832225468415136704">Impedir que Limpiar Chrome escanee el sistema de forma periódica y, luego, inhabilitar los escaneos manuales</translation>
 <translation id="7833148823006528332">Identificador de la app para Android, p. ej., "com.google.android.gm" para Gmail.</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
+<translation id="7836591982756027878">Permitir el acceso a la red privada en la API de Direct Sockets en estos sitios</translation>
 <translation id="7839124608155212387">La tasa a la que se recopila la telemetría de uso de las apps en dispositivos inscritos para usuarios afiliados. El mínimo permitido es de 5 minutos.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos.</translation>
@@ -9472,6 +9644,7 @@ Si inhabilitas la política, todas las aplicaciones nativas que se creen cuando 
 Solo desactiva la política si usas una solución de seguridad de endpoint que bloquea las aplicaciones con una firma de ad-hoc.</translation>
 <translation id="7941528208359969119">Permitir que se realicen verificaciones en línea de <ph name="OCSP_CRL_LABEL" /></translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
+<translation id="794447754389837404">Bloquear el acceso a la red privada en la API de Direct Sockets en estos sitios</translation>
 <translation id="7945445169067895719">Habilitar el bloqueo cuando el dispositivo se suspenda o se cierra la tapa</translation>
 <translation id="7946350455013548764">Si estableces la política en 3, los sitios web podrán solicitar acceso a los dispositivos HID. Si estableces la política en 2, los sitios no podrán acceder a los dispositivos HID.
 
@@ -10289,6 +10462,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="8559221882677768248">Inhabilitar la función Seleccionar para pronunciar en la pantalla de acceso</translation>
 <translation id="8561512522781085002">La configuración de RePág/AvPág usa la combinación de teclas que contiene la tecla modificadora de búsqueda</translation>
 <translation id="8566842294717252664">Ocultar ícono de Web Store en la página Nueva pestaña y el Selector de aplicaciones</translation>
+<translation id="8571119890730528225">Inhabilitar la partición de almacenamiento de terceros.</translation>
 <translation id="8571314270766672278">Revierte y restablece el dispositivo en el cambio a una versión inferior del canal (intenta preservar la inscripción)</translation>
 <translation id="8571871284943706125">Informa los eventos de sesiones de CRD en los dispositivos inscriptos para los usuarios afiliados.
 
@@ -10848,6 +11022,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
 <translation id="8963464192296208229">La configuración de F11 usa la combinación de teclas que contiene la tecla modificadora alt</translation>
+<translation id="8966888925105658202">No permitir que los orígenes de apps web aisladas se comuniquen con endpoints de red privados en la API de Direct Sockets</translation>
 <translation id="8970205333161758602">Elimina el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8973579598359969188">Elegir si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
 <translation id="8974457039656761249">Controlar la función de escritura predictiva en el teclado físico</translation>
@@ -11203,6 +11378,7 @@ El valor predeterminado es RollbackDisabled.</translation>
       La configuración predeterminada permite al navegador del host realizar el procesamiento, pero puedes anularlo de manera opcional y tener las páginas HTML del procesador de <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada.</translation>
 <translation id="944817693306670849">Configurar el tamaño de caché de disco</translation>
 <translation id="949192525372487705">Bloquear el cambio a un administrador de contraseñas de terceros</translation>
+<translation id="956107219808875608">Controla la configuración de las herramientas de administración de clases.</translation>
 <translation id="957322141096206402">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red según la configuración del sistema y las marcas de función</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante las descargas</translation>
@@ -11215,6 +11391,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="966425658642788645">Aplicar el comportamiento predeterminado</translation>
 <translation id="971677226939413180">La opción Imprimir como imagen no está disponible para el usuario</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
+<translation id="978619365985286086">Configuración de las herramientas de administración de la clase</translation>
 <translation id="978658824596356870">Formato de reloj de 24 horas</translation>
 <translation id="979467274961593903">No permitir el uso de la depuración remota</translation>
 <translation id="980218166381006412">Si habilitas la política, se activará el modo en segundo plano. En este modo, se inicia un proceso de <ph name="PRODUCT_NAME" /> durante el acceso al SO y se mantiene en ejecución cuando se cierra la última ventana del navegador, lo que permite mantener activas las apps en segundo plano y la sesión de navegación, incluidas las cookies de sesión. En la bandeja del sistema, aparece un ícono correspondiente al proceso en segundo plano. Puedes cerrar el proceso desde allí en cualquier momento.

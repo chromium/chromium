@@ -2903,7 +2903,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3030967311408872958">Od zalaska do izlaska sunca</translation>
 <translation id="3031417829280473749">Agentica X</translation>
 <translation id="3031532026314193077">Kliknite desnom tipkom na dodirnoj podlozi i tipkovnici</translation>
-<translation id="3031544881009594539">Prijavite se na ovu web-lokaciju da biste izradili novi pristupni ključ. Stara je kartica izbrisana iz Google upravitelja zaporki.</translation>
 <translation id="3031557471081358569">Odaberi stavke za uvoz:</translation>
 <translation id="3032204772252313646">Automatski titlovi</translation>
 <translation id="3032272345862007156">Nedavna AI tema <ph name="INDEX" /></translation>
@@ -3797,7 +3796,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3707034683772193706">Web-lokacija koju posjetite može spremiti male količine podataka pomoću Chromea, uglavnom kako bi potvrdila da niste bot</translation>
 <translation id="3707163604290651814">Trenutačno ste prijavljeni kao <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Potrebno je ažuriranje pristupnog ključa</translation>
 <translation id="3707348585109246684">Otvaranje veze u novoj kartici: <ph name="APP" /></translation>
 <translation id="3708295717182051206">Titlovi</translation>
 <translation id="3708684582558000260">Ne dopuštaj zatvorenim web-lokacijama dovršetak slanja ili primanja podataka</translation>
@@ -4299,7 +4297,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="403725336528835653">Najprije isprobajte</translation>
 <translation id="4039966970282098406">Upravljajte svojom privatnošću tako da kontrolirate pristup mikrofonu, kameri i ostalom</translation>
 <translation id="4040041015953651705">Jezik s kojega se prevodi</translation>
-<translation id="4042660782729322247">Dijelite zaslon</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Zatvori stranicu}one{Zatvori stranicu}few{Zatvori stranice}other{Zatvori stranica}}</translation>
 <translation id="4042941173059740150">Nastavi na <ph name="SITE_ETLD_PLUS_ONE" /> s davateljem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Veličina pokazivača</translation>
@@ -5025,7 +5022,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4588749726511456218">Ubrzanje pomicanja <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Zapisnici su uspješno zabilježeni u direktorij Preuzimanja.</translation>
 <translation id="4590785647529325123">Da biste izbrisali povijest anonimnog pregledavanja s uređaja, zatvorite sve anonimne kartice.</translation>
-<translation id="4590969863668977062">Pristupni ključ je ažuriran</translation>
 <translation id="459204634473266369">Nijedan uređaj nije spremljen na <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplikacija za crtanje pisaljkom</translation>
 <translation id="4593021220803146968">&amp;Idi na <ph name="URL" /></translation>

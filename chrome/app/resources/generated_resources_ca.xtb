@@ -2899,7 +2899,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3030967311408872958">De la posta de sol a l'alba</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Fes servir el ratolí tàctil i el teclat per fer clic amb el botó dret</translation>
-<translation id="3031544881009594539">Inicia la sessió en aquest lloc web per crear una clau d'accés nova. L'antiga s'ha suprimit del gestor de contrasenyes de Google.</translation>
 <translation id="3031557471081358569">Seleccioneu els elements que voleu importar:</translation>
 <translation id="3032204772252313646">Subtítols automàtics</translation>
 <translation id="3032272345862007156">Tema d'IA recent <ph name="INDEX" /></translation>
@@ -3792,7 +3791,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="370665806235115550">S'està carregant...</translation>
 <translation id="3707034683772193706">Els llocs web que visites poden desar una quantitat petita de dades amb Chrome, principalment per validar que no ets un bot</translation>
 <translation id="3707163604290651814">Has iniciat la sessió com a <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Cal actualitzar la clau d'accés</translation>
 <translation id="3707348585109246684">Obre l'enllaç en una pestanya nova de <ph name="APP" /></translation>
 <translation id="3708295717182051206">Subtítols</translation>
 <translation id="3708684582558000260">No permetis que els llocs web tancats acabin d'enviar o de rebre dades</translation>
@@ -4293,7 +4291,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="403725336528835653">Prova-ho primer</translation>
 <translation id="4039966970282098406">Gestiona la teva privadesa controlant l'accés al micròfon, a la càmera i més</translation>
 <translation id="4040041015953651705">Idioma de partida de la traducció</translation>
-<translation id="4042660782729322247">Estàs compartint la pantalla</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Surt de la pàgina}other{Surt de les pàgines}}</translation>
 <translation id="4042941173059740150">Continua a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Mida del cursor</translation>
@@ -5019,7 +5016,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4588749726511456218">Acceleració del desplaçament <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Els registres s'han escrit correctament al directori Baixades.</translation>
 <translation id="4590785647529325123">Per suprimir l'historial de navegació d'incògnit del dispositiu, tanca totes les pestanyes d'incògnit</translation>
-<translation id="4590969863668977062">La clau d'accés s'ha actualitzat</translation>
 <translation id="459204634473266369">No hi ha cap dispositiu desat a <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplicació de dibuix amb llapis òptic</translation>
 <translation id="4593021220803146968">&amp;Vés a <ph name="URL" /></translation>
@@ -5041,6 +5037,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4602776638371779614">Aquesta pestanya està cercant dispositius Bluetooth activament</translation>
 <translation id="4605026046465576953">Aquesta aplicació no es pot obrir perquè no tens permís per executar aplicacions web aïllades</translation>
 <translation id="4606551464649945562">No permetis que els llocs web creïn un mapa en 3D del meu entorn ni que facin un seguiment de la posició de la càmera</translation>
+<translation id="4606933160360542263">Combinació de tecles personalitzada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vols suprimir el grup de pestanyes?}other{Vols suprimir els grups de pestanyes?}}</translation>
 <translation id="4608500690299898628">&amp;Cerca...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ha detectat un error</translation>
@@ -6275,6 +6272,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5517304475148761050">Aquesta aplicació requereix accés a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Suprimeix l'acció <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Aquesta pàgina d'inici és la que esperàveu?</translation>
 <translation id="5522156646677899028">Aquesta extensió conté una vulnerabilitat de seguretat greu.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{L'administrador ha instal·lat una extensió}other{L'administrador ha instal·lat # extensions}}</translation>
@@ -10257,6 +10255,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8429928917752180743">Més opcions per a <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Mostra els tocs</translation>
 <translation id="843173223122814223">Crea fons amb IA</translation>
+<translation id="8431977087510901105">La configuració del cursor s'ha restablert</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8434109185104929038">Racó de lectura</translation>
 <translation id="8434480141477525001">Port de depuració NaCI</translation>

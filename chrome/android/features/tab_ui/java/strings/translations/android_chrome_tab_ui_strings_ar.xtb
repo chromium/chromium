@@ -63,6 +63,7 @@
 <translation id="3613492231657284463">إخفاء مربّع حوار علامات التبويب غير النشطة</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">صورة مصغّرة لمعاينة صفحة المشاركة</translation>
+<translation id="3810973564298564668">إدارة</translation>
 <translation id="381219490185664296">هل تريد إلغاء تجميع مجموعة علامات التبويب؟</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{تجميع علامة التبويب}zero{تجميع علامات التبويب}two{تجميع علامتَي التبويب}few{تجميع علامات التبويب}many{تجميع علامات التبويب}other{تجميع علامات التبويب}}</translation>

@@ -2912,7 +2912,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3030967311408872958">Sonsondergang tot sonsopkoms</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Gebruik raakpaneel en sleutelbord om te regsklik</translation>
-<translation id="3031544881009594539">Meld aan by hierdie werf om ’n nuwe toegangsleutel te skep. Die ou een is van Google Wagwoordbestuurder uitgevee.</translation>
 <translation id="3031557471081358569">Kies items om in te voer:</translation>
 <translation id="3032204772252313646">Outomatiese onderskrifte</translation>
 <translation id="3032272345862007156">Onlangse AI-tema <ph name="INDEX" /></translation>
@@ -3807,7 +3806,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="370665806235115550">Laai tans …</translation>
 <translation id="3707034683772193706">’n Werf wat jy besoek, kan ’n klein hoeveelheid inligting met Chrome deel, hoofsaaklik om te bekragtig dat jy nie ’n bot is nie</translation>
 <translation id="3707163604290651814">Tans aangemeld as <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Opdatering van toegangsleutel is nodig</translation>
 <translation id="3707348585109246684">Maak skakel in nuwe <ph name="APP" />-oortjie oop</translation>
 <translation id="3708295717182051206">Onderskrifte</translation>
 <translation id="3708684582558000260">Moenie geslote werwe toelaat om data klaar te stuur of te ontvang nie</translation>
@@ -4309,7 +4307,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="403725336528835653">Probeer dit eers</translation>
 <translation id="4039966970282098406">Bestuur jou privaatheid deur toegang tot mikrofoon, kamera en meer te beheer</translation>
 <translation id="4040041015953651705">Taal waaruit vertaal moet word</translation>
-<translation id="4042660782729322247">Jy deel tans jou skerm</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Verlaat bladsy}other{Verlaat bladsye}}</translation>
 <translation id="4042941173059740150">Gaan voort na <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Skermpyltjiegrootte</translation>
@@ -5035,7 +5032,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4588749726511456218">Rolleesversnelling <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Loglêers is suksesvol in Aflaaie-gids geskryf.</translation>
 <translation id="4590785647529325123">Maak alle Incognito-oortjies toe om Incognito-blaaigeskiedenis op jou toestel uit te vee</translation>
-<translation id="4590969863668977062">Toegangsleutel is opgedateer</translation>
 <translation id="459204634473266369">Geen toestelle na <ph name="PRIMARY_EMAIL" /> gestoor nie</translation>
 <translation id="4592891116925567110">Stilussketsprogram</translation>
 <translation id="4593021220803146968">Gaan na <ph name="URL" /></translation>
@@ -5057,6 +5053,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4602776638371779614">Hierdie oortjie soek tans aktief na Bluetooth-toestelle</translation>
 <translation id="4605026046465576953">Hierdie app kan nie oopgemaak word nie, want jy het nie toestemming om geïsoleerde webapps te laat loop nie</translation>
 <translation id="4606551464649945562">Moenie werwe toelaat om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor nie</translation>
+<translation id="4606933160360542263">Gepasmaakte sleutelkombinasie: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vee oortjiegroep uit?}other{Vee oortjiegroepe uit?}}</translation>
 <translation id="4608500690299898628">Vind …</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> het 'n fout ondervind</translation>
@@ -6292,6 +6289,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5517304475148761050">Hierdie program moet toegang tot die Play Winkel hê</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Verwyder handeling <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Is dit die tuisblad wat jy verwag het?</translation>
 <translation id="5522156646677899028">Die uitbreiding bevat 'n ernstige sekuriteitswakheid.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{'n Uitbreiding is deur jou administrateur geïnstalleer}other{# uitbreidings is deur jou administrateur geïnstalleer}}</translation>
@@ -10274,6 +10272,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8429928917752180743">Meer opsies vir <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Wys tikke</translation>
 <translation id="843173223122814223">Skep agtergronde met AI</translation>
+<translation id="8431977087510901105">Terugstelling van skermpyltjie-instellings</translation>
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="8434109185104929038">Leeshoekie</translation>
 <translation id="8434480141477525001">NaCl-ontfoutpoort</translation>

@@ -339,9 +339,6 @@
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
 <translation id="2201687081523799384">收起 Google Tasks</translation>
-<translation id="2206960886090042977">由于已连接鼠标，内置触控板已停用。请使用鼠标或键盘确认更改。
-
-否则，系统会在 30 秒后重新启用内置触控板。</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -974,6 +971,7 @@
 <translation id="4356872429719185452">显示热点详情。热点正在开启。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  正在录制</translation>
 <translation id="4371348193907997655">投放设置</translation>
+<translation id="4371834685492830207">PIN 码必须仅包含有效字符</translation>
 <translation id="4375482231364171368">在地址栏中搜索</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">正在连接…</translation>
@@ -1558,6 +1556,7 @@
 <translation id="6232416233079464213">来自<ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />正在使用您的摄像头和麦克风</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">密码必须仅包含有效字符</translation>
 <translation id="6240603910551255087">顶部按钮</translation>
 <translation id="6240821072888636753">每次都询问</translation>
 <translation id="6247728804802644171">打开通知</translation>
@@ -1913,9 +1912,6 @@
 要将设备关机，请再次按住设备上的电源按钮。</translation>
 <translation id="7523420897035067483">在专注模式下启用勿扰模式</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">内置触控板已停用。请使用键盘或其他指控设备确认更改。
-
-否则，系统会在 30 秒后重新启用内置触控板。</translation>
 <translation id="7525067979554623046">创建</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>

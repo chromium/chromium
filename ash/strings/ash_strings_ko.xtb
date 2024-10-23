@@ -339,9 +339,6 @@
 <translation id="219905428774326614">런처, 모든 앱</translation>
 <translation id="2201071101391734388">최근 사진 총 <ph name="TOTAL_COUNT" />개 중 <ph name="INDEX" />번째입니다.</translation>
 <translation id="2201687081523799384">Google Tasks 접기</translation>
-<translation id="2206960886090042977">마우스가 연결되어 있으므로 내장 터치패드가 사용 중지되었습니다. 마우스 또는 키보드를 사용하여 변경사항을 확인합니다.
-
-그렇지 않으면 30초 후에 내장 터치패드가 다시 사용 설정됩니다.</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222841058024245321">데스크 7</translation>
@@ -1915,9 +1912,6 @@
 기기를 종료하려면 기기의 전원 버튼을 다시 길게 누르세요.</translation>
 <translation id="7523420897035067483">집중 모드 사용 중 방해 금지 모드 사용 설정</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">내장 터치패드가 사용 중지되었습니다. 키보드 또는 다른 포인팅 기기를 사용하여 변경사항을 확인하세요.
-
-그렇지 않으면 30초 후에 내장 터치패드가 다시 사용 설정됩니다.</translation>
 <translation id="7525067979554623046">만들기</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>

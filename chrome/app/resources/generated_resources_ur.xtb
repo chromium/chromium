@@ -2901,7 +2901,6 @@
 <translation id="3030967311408872958">غروب آفتاب سے طلوع آفتاب تک</translation>
 <translation id="3031417829280473749">‏ایجنٹ X</translation>
 <translation id="3031532026314193077">دایاں کلک کرنے کے لیے ٹچ پیڈ اور کی بورڈ استعمال کریں</translation>
-<translation id="3031544881009594539">‏ایک نیا پاس کی بنانے کے لیے اس سائٹ میں سائن ان کریں۔ پرانا Google پاس ورڈ مینیجر سے حذف کر دیا گیا تھا</translation>
 <translation id="3031557471081358569">درآمد کرنے کیلئے آئٹمز منتخب کریں:</translation>
 <translation id="3032204772252313646">خودکار کیپشنز</translation>
 <translation id="3032272345862007156">‏حالیہ AI تھیم <ph name="INDEX" /></translation>
@@ -3794,7 +3793,6 @@
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
 <translation id="3707034683772193706">‏آپ جس سائٹ پر جاتے ہیں وہ Chrome کے ساتھ تھوڑی سی معلومات محفوظ کر سکتی ہے، بنیادی طور پر اس بات کی تصدیق کرنے کے لیے کہ آپ بوٹ نہیں ہیں</translation>
 <translation id="3707163604290651814">فی الحال <ph name="NAME" /> کے بطور سائن ان ہے</translation>
-<translation id="3707242400882068741">پاس کی اپ ڈیٹ کی ضرورت ہے</translation>
 <translation id="3707348585109246684">لنک کو نئے <ph name="APP" /> ٹیب میں کھولیں</translation>
 <translation id="3708295717182051206">سب ٹائٹلز</translation>
 <translation id="3708684582558000260">بند کی گئی سائٹس کو ڈیٹا بھیجنے اور موصول کرنے کے عمل کو مکمل کرنے کی اجازت نہ دیں</translation>
@@ -4296,7 +4294,6 @@
 <translation id="403725336528835653">پہلے اسے آزمائیں</translation>
 <translation id="4039966970282098406">مائیکروفون، کیمرے وغیرہ تک رسائی کو کنٹرول کر کے اپنی رازداری کا نظم کریں</translation>
 <translation id="4040041015953651705">وہ زبان جس سے ترجمہ کرنا ہے</translation>
-<translation id="4042660782729322247">آپ اپنی اسکرین کا اشتراک کر رہے ہیں</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{صفحہ سے باہر نکلیں}other{صفحات سے باہر نکلیں}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کو جاری رکھیں</translation>
 <translation id="4043267180218562935">کرسر کا سائز</translation>
@@ -5022,7 +5019,6 @@
 <translation id="4588749726511456218">اسکرول ایکسلریشن کے بارے میں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ڈاؤن لوڈ ڈائریکٹری میں کامیابی کے ساتھ لکھے گئے لاگز۔</translation>
 <translation id="4590785647529325123">اپنے آلے سے پوشیدگی براؤزنگ کی سرگزشت کو حذف کرنے کیلئے تمام پوشیدگی ٹیبز کو بند کریں</translation>
-<translation id="4590969863668977062">پاس کی کو اپ ڈیٹ کر دیا گیا</translation>
 <translation id="459204634473266369">کوئی بھی آلہ <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں ہے</translation>
 <translation id="4592891116925567110">اسٹائلس ڈرائنگ ایپ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> پر &amp;جائیں</translation>
@@ -5044,6 +5040,7 @@
 <translation id="4602776638371779614">یہ ٹیب بلوٹوتھ آلات کے لیے فعال طور پر اسکین کر رہا ہے</translation>
 <translation id="4605026046465576953">یہ ایپ نہیں کھولی جا سکتی کیونکہ آپ کو عیلحدہ کردہ ویب ایپس چلانے کی اجازت نہیں ہے</translation>
 <translation id="4606551464649945562">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کمرے کی پوزیشن ٹریک کرنے کی اجازت نہ دیں</translation>
+<translation id="4606933160360542263">حسب ضرورت کلید کا مجموعہ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ٹیب گروپ کو حذف کریں؟}other{ٹیب گروپس کو حذف کریں؟}}</translation>
 <translation id="4608500690299898628">&amp;تلاش کریں…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> میں ایک خرابی پیش آ گئی ہے</translation>
@@ -6276,6 +6273,7 @@
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">کارروائی ہٹائیں <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5522156646677899028">اس ایکسٹینشن میں ایک سنگین سیکیورٹی خطرہ شامل ہے۔</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے ایک ایکسٹینشن انسٹال کر دی ہے}other{# ایکسٹینشنز انسٹال کر دی گئی ہیں}}</translation>
@@ -10257,6 +10255,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> کیلئے مزید اختیارات</translation>
 <translation id="8431190899827883166">تھپتھپاہٹیں دکھائیں</translation>
 <translation id="843173223122814223">‏AI کی مدد سے پس منظر تخلیق کریں</translation>
+<translation id="8431977087510901105">کرسر کی ترتیبات ری سیٹ ہو گئیں</translation>
 <translation id="8433186206711564395">نیٹ ورک کی ترتیبات</translation>
 <translation id="8434109185104929038">مطالعے کا گوشہ</translation>
 <translation id="8434480141477525001">‏NaCl ڈیبگ پورٹ</translation>

@@ -1893,7 +1893,6 @@
     თუ მოგვიანებით გადაწყვეტთ, რომ Voice Match თქვენი ბავშვისთვის შესაფერისი არ არის, უბრალოდ, ამოშალეთ ის ასისტენტის პარამეტრებიდან. Voice Match-ის დაყენებისას ჩაწერილი აუდიოკლიპების სანახავად ან წასაშლელად თქვენი ბავშვის ანგარიშით გადადით მისამართზე <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308288819918530468"><ph name="ITEM" /> არ არის არჩეული. ასარჩევად დააჭირეთ Search-სა და შორისს.</translation>
 <translation id="2308798336967462263">მხარდაუჭერელია შემდეგი კლავიშები: Tab, Shift, Control, Escape, Caps lock, ხმის კლავიშები</translation>
 <translation id="2309620859903500144">ამ საიტს აეკრძალა მოძრაობისა თუ განათების სენსორებზე წვდომა.</translation>
 <translation id="2310923358723722542">ჩვენება და გადიდება</translation>
@@ -2920,7 +2919,6 @@
 <translation id="3030967311408872958">მზის ჩასვლიდან ამოსვლამდე</translation>
 <translation id="3031417829280473749">აგენტი X</translation>
 <translation id="3031532026314193077">მარჯვენა დაწკაპუნებისთვის სენსორული პანელის ან კლავიატურის გამოყენება</translation>
-<translation id="3031544881009594539">შედით სისტემაში ამ საიტზე, რომ წვდომის ახალი გასაღების შექმნათ. ძველი წვდომის გასაღები წაიშალა Google პაროლების მმართველიდან.</translation>
 <translation id="3031557471081358569">აირჩიეთ ელემენტები იმპორტისთვის:</translation>
 <translation id="3032204772252313646">ავტოსუბტიტრები</translation>
 <translation id="3032272345862007156">ხელოვნური ინტელექტით შექმნილი ბოლოდროინდელი თემა <ph name="INDEX" /></translation>
@@ -3824,7 +3822,6 @@
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3707034683772193706">თქვენ მიერ მონახულებულ საიტს შეუძლია ინფორმაციის მცირე ნაწილის შენახვა Chrome-ში, ძირითადად, იმის დასადასტურებლად, რომ ბოტი არ ხართ</translation>
 <translation id="3707163604290651814">ამჟამად სისტემაში შესული ხართ, როგორც <ph name="NAME" /></translation>
-<translation id="3707242400882068741">საჭიროა წვდომის გასაღების განახლება</translation>
 <translation id="3707348585109246684">ბმულის გახსნა <ph name="APP" />-ის ახალ ჩანართში</translation>
 <translation id="3708295717182051206">სუბტიტრები</translation>
 <translation id="3708684582558000260">დახურული საიტებისთვის მონაცემთა გაგზავნისა თუ მიღების დასრულების აკრძალვა</translation>
@@ -4328,7 +4325,6 @@
 <translation id="403725336528835653">ჯერ ცდა</translation>
 <translation id="4039966970282098406">მართეთ თქვენი კონფიდენციალურობა — აკონტროლეთ მიკროფონზე, კამერაზე და სხვა ტიპის წვდომა</translation>
 <translation id="4040041015953651705">ენა, რომლიდანაც უნდა ითარგმნოს</translation>
-<translation id="4042660782729322247">თქვენ აზიარებთ ეკრანს</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{გვერდიდან გასვლა}other{გვერდებიდან გასვლა}}</translation>
 <translation id="4042941173059740150">გადადით <ph name="SITE_ETLD_PLUS_ONE" />-ზე <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="4043267180218562935">კურსორის ზომა</translation>
@@ -5059,7 +5055,6 @@
 <translation id="4588749726511456218">გადაადგილების აჩქარება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ჟურნალები წარმატებით ჩაიწერა „ჩამოტვირთვების“ კატალოგში.</translation>
 <translation id="4590785647529325123">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი</translation>
-<translation id="4590969863668977062">წვდომის გასაღები განახლდა</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-ში შენახული მოწყობილობები არ არის</translation>
 <translation id="4592891116925567110">სტილუსით სახატავი აპი</translation>
 <translation id="4593021220803146968">&amp;გადასვლა <ph name="URL" />-ზე</translation>
@@ -7457,7 +7452,6 @@
 <translation id="6357750620525943720">სხვა სტაბილური იდენტიფიკატორები (მაგ. ჰეშები ან UUID-ები)</translation>
 <translation id="6358884629796491903">დრაკონი</translation>
 <translation id="6361850914223837199">შეცდომის დეტალები:</translation>
-<translation id="6362303840256358093">არჩეულია <ph name="ITEM" />. არჩევანის გასაუქმებლად დააჭირეთ Search-სა და შორისს.</translation>
 <translation id="6362853299801475928">&amp;მოხსენება პრობლემის შესახებ…</translation>
 <translation id="6363786367719063276">ჟურნალების ნახვა</translation>
 <translation id="6363990818884053551">სინქრონიზაციის დასაწყებად დაადასტურეთ, რომ ეს თქვენ ხართ</translation>

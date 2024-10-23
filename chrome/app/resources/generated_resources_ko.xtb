@@ -2914,7 +2914,6 @@
 <translation id="3030967311408872958">화면 밝기 자동 설정</translation>
 <translation id="3031417829280473749">X 요원</translation>
 <translation id="3031532026314193077">마우스 오른쪽 버튼으로 클릭하려면 터치패드 및 키보드 사용</translation>
-<translation id="3031544881009594539">새 패스키를 만들려면 이 사이트에 로그인하세요. 이전 비밀번호는 Google 비밀번호 관리자에서 삭제되었습니다.</translation>
 <translation id="3031557471081358569">가져올 항목 선택:</translation>
 <translation id="3032204772252313646">자동 자막</translation>
 <translation id="3032272345862007156">최근 AI 테마 <ph name="INDEX" /></translation>
@@ -3809,7 +3808,6 @@
 <translation id="370665806235115550">로드 중...</translation>
 <translation id="3707034683772193706">방문하는 사이트에서 주로 내가 봇이 아님을 확인하기 위해 Chrome에 약간의 정보를 저장할 수 있습니다.</translation>
 <translation id="3707163604290651814">현재 <ph name="NAME" />님으로 로그인한 사용자</translation>
-<translation id="3707242400882068741">패스키 업데이트 필요</translation>
 <translation id="3707348585109246684">새 <ph name="APP" /> 탭에서 링크 열기</translation>
 <translation id="3708295717182051206">자막</translation>
 <translation id="3708684582558000260">닫힌 사이트에서 데이터 전송 또는 수신을 완료하도록 허용하지 않음</translation>
@@ -4311,7 +4309,6 @@
 <translation id="403725336528835653">먼저 사용해 보기</translation>
 <translation id="4039966970282098406">마이크, 카메라 등에 대한 액세스를 제어하여 개인 정보 보호를 관리하세요</translation>
 <translation id="4040041015953651705">출발 언어</translation>
-<translation id="4042660782729322247">화면 공유 중</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 계속하기</translation>
 <translation id="4043267180218562935">커서 크기</translation>
@@ -5036,7 +5033,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4588749726511456218">스크롤 가속 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">로그가 다운로드 디렉터리에 작성되었습니다.</translation>
 <translation id="4590785647529325123">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
-<translation id="4590969863668977062">패스키가 업데이트됨</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>
 <translation id="4592891116925567110">스타일러스 그리기 앱</translation>
 <translation id="4593021220803146968"><ph name="URL" />(으)로 이동(&amp;G)</translation>
@@ -5058,6 +5054,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4602776638371779614">이 탭은 현재 블루투스 기기를 검사하고 있습니다</translation>
 <translation id="4605026046465576953">격리된 웹 앱을 실행할 권한이 없으므로 앱을 열 수 없습니다.</translation>
 <translation id="4606551464649945562">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하지 않음</translation>
+<translation id="4606933160360542263">맞춤 키 조합: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{탭 그룹을 삭제하시겠습니까?}other{탭 그룹을 삭제하시겠습니까?}}</translation>
 <translation id="4608500690299898628">찾기(&amp;F)...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />에 오류가 발생했습니다</translation>
@@ -6293,6 +6290,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5517304475148761050">Play 스토어 액세스가 필요한 앱입니다</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> 작업을 삭제하시겠습니까?</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
 <translation id="5522156646677899028">이 확장 프로그램에는 보안이 심각하게 취약한 요소가 있습니다.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{관리자가 확장 프로그램 1개를 설치함}other{관리자가 확장 프로그램 #개를 설치함}}</translation>
@@ -10276,6 +10274,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> 옵션 더보기</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="843173223122814223">AI로 배경 만들기</translation>
+<translation id="8431977087510901105">커서 설정 재설정</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8434109185104929038">독서 공간</translation>
 <translation id="8434480141477525001">NaCl 디버그 포트</translation>

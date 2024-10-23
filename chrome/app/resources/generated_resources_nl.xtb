@@ -2899,7 +2899,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3030967311408872958">Zonsondergang tot zonsopkomst</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Het touchpad en toetsenbord gebruiken om met de rechtermuisknop te klikken</translation>
-<translation id="3031544881009594539">Log in op deze site om een nieuwe toegangssleutel te maken. De oude is verwijderd uit Google Wachtwoordmanager.</translation>
 <translation id="3031557471081358569">Selecteer items die je wilt importeren:</translation>
 <translation id="3032204772252313646">Automatische ondertiteling</translation>
 <translation id="3032272345862007156">Recent AI-thema <ph name="INDEX" /></translation>
@@ -3792,7 +3791,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="370665806235115550">Bezig met laden...</translation>
 <translation id="3707034683772193706">Een site die je bezoekt, kan een kleine hoeveelheid informatie opslaan in Chrome, voornamelijk om te bevestigen dat je geen bot bent</translation>
 <translation id="3707163604290651814">Momenteel ingelogd als <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Update van toegangssleutel nodig</translation>
 <translation id="3707348585109246684">Link openen in een nieuw tabblad van <ph name="APP" /></translation>
 <translation id="3708295717182051206">Ondertiteling</translation>
 <translation id="3708684582558000260">Niet toestaan dat gesloten sites het sturen of ontvangen van gegevens afronden</translation>
@@ -4294,7 +4292,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="403725336528835653">Eerst proberen</translation>
 <translation id="4039966970282098406">Beheer je privacy door onder andere toegang tot de microfoon en camera te beheren</translation>
 <translation id="4040041015953651705">Taal om uit te vertalen</translation>
-<translation id="4042660782729322247">Je deelt je scherm</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
 <translation id="4042941173059740150">Doorgaan naar <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Grootte van cursor</translation>
@@ -5019,7 +5016,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4588749726511456218">Scrollversnelling <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Logboeken zijn naar de map Downloads geschreven.</translation>
 <translation id="4590785647529325123">Sluit alle incognitotabbladen om de incognito-browsegeschiedenis op je apparaat te verwijderen</translation>
-<translation id="4590969863668977062">Toegangssleutel geüpdatet</translation>
 <translation id="459204634473266369">Geen apparaten opgeslagen in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App voor tekenen met stylus</translation>
 <translation id="4593021220803146968">&amp;Ga naar <ph name="URL" /></translation>

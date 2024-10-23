@@ -1666,7 +1666,7 @@
 <translation id="4025777154208238692">ترتیب معکوس</translation>
 <translation id="4027270464942389997">‏<ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />مهاجمان می‌توانند اطلاعاتی را که به سایت ارسال یا از آن دریافت می‌کنید ببینند و تغییر دهند.<ph name="END_STRONG" />
-      <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />اگر از شبکه عمومی استفاده می‌کنید، ایمن‌تر است که بعداً از این سایت بازدید کنید.<ph name="END_STRONG" /> استفاده از شبکه‌های مورداعتماد مثل Wi-Fi خانه یا محل کار خطر کمتری دارند.
+      <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />اگر از شبکه عمومی استفاده می‌کنید، ایمن‌تر است که بعداً از این سایت بازدید کنید.<ph name="END_STRONG" /> استفاده از شبکه‌های مطمئن مثل Wi-Fi در خانه یا محل کار خطر کمتری دارند.
     <ph name="END_LIST" />
 
     همچنین می‌توانید با مالک سایت تماس بگیرید و پیشنهاد دهید که سایت را به HTTPS ارتقا دهد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3524,6 +3524,7 @@
 <translation id="7424421098814895617">گزینه حذف نشانی انتخاب شد</translation>
 <translation id="7425037327577270384">کمک به نوشتن</translation>
 <translation id="7425878584435172632">هنرهای تجسمی و طراحی</translation>
+<translation id="7426745633088095666">برگه‌های هم‌رسانی‌شده</translation>
 <translation id="7427079287360774240">مطالعه زبان خارجی</translation>
 <translation id="7429429656042611765">اجرایی</translation>
 <translation id="7432774160230062882">‏هویتتان را به‌تأیید برسانید تا Chromium بتواند اطلاعات پرداخت شما را تکمیل کند.</translation>
@@ -3835,7 +3836,7 @@
 <translation id="7979595116210197019">خدمات غذایی</translation>
 <translation id="798134797138789862">می‌تواند برای استفاده از داده‌ها و دستگاه‌های واقعیت مجازی درخواست دهد</translation>
 <translation id="7982789257301363584">شبکه</translation>
-<translation id="7983008347525536475">خودروی شاسی‌بلند</translation>
+<translation id="7983008347525536475">خودرو شاسی‌بلند</translation>
 <translation id="7984945080620862648">‏در حال حاضر نمی‌توانید از <ph name="SITE" /> بازدید کنید زیرا این وب‌سایت اعتبارنامه‌های درهمی ارسال کرده است که Chrome نمی‌تواند پردازش کند. معمولاً خطاهای شبکه و حمله‌ها موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">به‌هم چسباندن</translation>

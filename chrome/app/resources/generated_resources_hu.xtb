@@ -2911,7 +2911,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3030967311408872958">Napnyugtától napkeltéig</translation>
 <translation id="3031417829280473749">X ügynök</translation>
 <translation id="3031532026314193077">A jobb egérgombbal való kattintáshoz használja az érintőpadot és a billentyűzetet</translation>
-<translation id="3031544881009594539">Jelentkezzen be erre a webhelyre új azonosítókulcs létrehozásához. A régi törölve lett a Google Jelszókezelőből.</translation>
 <translation id="3031557471081358569">Válassza ki az importálandó elemeket:</translation>
 <translation id="3032204772252313646">Automatikus feliratok</translation>
 <translation id="3032272345862007156"><ph name="INDEX" />. új AI-téma</translation>
@@ -3806,7 +3805,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="3707034683772193706">A felkeresett webhelyek menthetnek kis mennyiségű adatot a Chrome-ban, elsősorban annak ellenőrzéséhez, hogy Ön nem robot.</translation>
 <translation id="3707163604290651814">Jelenleg bejelentkezve mint <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Az azonosítókulcs frissítése szükséges</translation>
 <translation id="3707348585109246684">Link megnyitása új lapon itt: <ph name="APP" /></translation>
 <translation id="3708295717182051206">Feliratok</translation>
 <translation id="3708684582558000260">A bezárt webhelyek nem fejezhetik be az adatküldést és -fogadást</translation>
@@ -4307,7 +4305,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="403725336528835653">Előbb kipróbálom</translation>
 <translation id="4039966970282098406">A mikrofonhoz, kamerához és egyebekhez való hozzáférés szabályozásával kezelheti az adatvédelmet</translation>
 <translation id="4040041015953651705">Fordítás forrásnyelve</translation>
-<translation id="4042660782729322247">Jelenleg megosztja a képernyőt</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Oldal elhagyása}other{Oldalak elhagyása}}</translation>
 <translation id="4042941173059740150">Folytassa a(z) <ph name="SITE_ETLD_PLUS_ONE" /> használatát a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Kurzor mérete</translation>
@@ -5033,7 +5030,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4588749726511456218">Görgetés gyorsítása <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Naplóesemények sikeresen mentve a Letöltések mappába.</translation>
 <translation id="4590785647529325123">Az inkognitó mód böngészési előzményeinek az eszközről való törléséhez zárja be az összes inkognitó lapot</translation>
-<translation id="4590969863668977062">Azonosítókulcs frissítve</translation>
 <translation id="459204634473266369">Nincs eszköz mentve a következő fiókba: <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Érintőceruza rajzalkalmazása</translation>
 <translation id="4593021220803146968">&amp;Ugrás: <ph name="URL" /></translation>

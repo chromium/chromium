@@ -1803,6 +1803,7 @@
     <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">กำหนดสวิตช์ให้กับ "เลือก"</translation>
+<translation id="2270668657177045040">เว็บไซต์และโดเมนย่อยของเว็บไซต์จะดูได้ว่ามีการติดตั้งเว็บแอปพลิเคชันที่เกี่ยวข้องใดบ้างในอุปกรณ์ของคุณ</translation>
 <translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
 <translation id="2271986192355138465">ดูวิธีติดตั้งเว็บแอป</translation>
 <translation id="2272430695183451567">กำหนดสวิตช์ 0 รายการแล้ว</translation>
@@ -2899,7 +2900,6 @@
 <translation id="3030967311408872958">พระอาทิตย์ตกถึงพระอาทิตย์ขึ้น</translation>
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031532026314193077">ใช้ทัชแพดและแป้นพิมพ์เพื่อคลิกขวา</translation>
-<translation id="3031544881009594539">ลงชื่อเข้าใช้เว็บไซต์นี้เพื่อสร้างพาสคีย์ใหม่ ระบบลบรหัสผ่านเก่าออกจากเครื่องมือจัดการรหัสผ่านบน Google แล้ว</translation>
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
 <translation id="3032204772252313646">คําบรรยายแทนเสียงอัตโนมัติ</translation>
 <translation id="3032272345862007156">ธีม AI ล่าสุด <ph name="INDEX" /></translation>
@@ -3792,7 +3792,6 @@
 <translation id="370665806235115550">กำลังโหลด ...</translation>
 <translation id="3707034683772193706">เว็บไซต์ที่เข้าชมสามารถบันทึกข้อมูลบางส่วนไว้กับ Chrome ได้ โดยส่วนใหญ่จะใช้เพื่อตรวจสอบว่าคุณไม่ใช่บ็อต</translation>
 <translation id="3707163604290651814">ขณะนี้ลงชื่อเข้าใช้ในชื่อ <ph name="NAME" /></translation>
-<translation id="3707242400882068741">ต้องอัปเดตพาสคีย์</translation>
 <translation id="3707348585109246684">เปิดลิงก์ในแท็บใหม่ของ <ph name="APP" /></translation>
 <translation id="3708295717182051206">คำบรรยาย/คำบรรยายแทนเสียง</translation>
 <translation id="3708684582558000260">ไม่อนุญาตให้เว็บไซต์ที่ปิดไปแล้วส่งหรือรับข้อมูลต่อจนเสร็จ</translation>
@@ -4294,7 +4293,6 @@
 <translation id="403725336528835653">ลองใช้ก่อน</translation>
 <translation id="4039966970282098406">จัดการความเป็นส่วนตัวโดยควบคุมการเข้าถึงไมโครโฟน กล้อง และอื่นๆ</translation>
 <translation id="4040041015953651705">ภาษาต้นทาง</translation>
-<translation id="4042660782729322247">คุณกำลังแชร์หน้าจอ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{หน้าที่ออกไป}other{หน้าที่ออกไป}}</translation>
 <translation id="4042941173059740150">ใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ต่อไป</translation>
 <translation id="4043267180218562935">ขนาดของเคอร์เซอร์</translation>
@@ -5020,7 +5018,6 @@
 <translation id="4588749726511456218">การเร่งความเร็วของการเลื่อน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">เขียนบันทึกไปยังไดเรกทอรี "การดาวน์โหลด" เรียบร้อยแล้ว</translation>
 <translation id="4590785647529325123">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดเพื่อลบประวัติการท่องเว็บแบบไม่ระบุตัวตนออกจากอุปกรณ์</translation>
-<translation id="4590969863668977062">อัปเดตพาสคีย์แล้ว</translation>
 <translation id="459204634473266369">ไม่มีอุปกรณ์ที่บันทึกไว้ใน <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">แอปการวาดด้วยสไตลัส</translation>
 <translation id="4593021220803146968">&amp;ไปที่ <ph name="URL" /></translation>
@@ -5324,6 +5321,7 @@
 <translation id="4823193082697477185">เข้าถึงไฟล์ โฟลเดอร์ หรือไดรฟ์ที่แชร์ในเครือข่ายภายใน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">อ่านและเปลี่ยนการตั้งค่าผู้ใช้และอุปกรณ์</translation>
 <translation id="4824037980212326045">การสำรองและกู้คืนข้อมูลใน Linux</translation>
+<translation id="4824263260587281352">เปลี่ยนชุดแป้น <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">ยกเลิกการซิงค์ใช่ไหม</translation>
 <translation id="4825462365587146530">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Chrome Root Store ในแท็บใหม่</translation>
 <translation id="4825532258163983651">ลบพาสคีย์ไม่ได้</translation>
@@ -7812,6 +7810,7 @@
 <translation id="6676212663108450937">โปรดพิจารณาใช้หูฟังขณะสอนให้ระบบรู้จำเสียง</translation>
 <translation id="6676291960742508499">ระบบจะส่งแท็บ ชื่อหน้า และ URL ไปยัง Google</translation>
 <translation id="667752334740867460">กำลังรับข้อมูล Wi-Fi...</translation>
+<translation id="6677527809400770913">กำหนดท่าทางสัมผัส <ph name="GESTURE" /> ให้กับ <ph name="ACTION" /> แล้ว</translation>
 <translation id="6678604587151240716">คลื่นขนาดใหญ่ซัดในทะเลโดยมีฉากหลังเป็นแผ่นดินอยู่ไกลๆ แสงสีส้มอยู่เหนือเส้นขอบฟ้าตัดกับท้องฟ้าหม่นหมองมืดมิด</translation>
 <translation id="6678717876183468697">URL ของคำค้นหา</translation>
 <translation id="6680442031740878064">พร้อมใช้งาน: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10015,6 +10014,7 @@
 <translation id="8261378640211443080">ส่วนขยายนี้ไม่ได้ระบุไว้ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจถูกเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8261625296061301062">ติดตั้งซอฟต์แวร์เครื่องสแกนแล้ว</translation>
+<translation id="8263149565724023141">แอปพลิเคชันที่เกี่ยวข้อง</translation>
 <translation id="8263228331881858381">บันทึกพาสคีย์แล้ว</translation>
 <translation id="8263336784344783289">ตั้งชื่อกลุ่มนี้</translation>
 <translation id="8264024885325823677">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>

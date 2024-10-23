@@ -339,9 +339,6 @@
 <translation id="219905428774326614">Панэль запуску, усе праграмы</translation>
 <translation id="2201071101391734388">Нядаўняе фота <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Згарнуць Google Задачы</translation>
-<translation id="2206960886090042977">Убудаваная сэнсарная панэль адключана, бо вы падключылі мыш. Пацвердзіце змену з дапамогай мышы ці клавіятуры.
-
-Калі не зрабіць гэтага, убудаваная сэнсарная панэль зноў уключыцца праз 30 секунд.</translation>
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222841058024245321">Працоўны стол 7</translation>
@@ -975,6 +972,7 @@
 <translation id="4356872429719185452">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот уключаецца.</translation>
 <translation id="4364101114148522660">Ідзе запіс: <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Налады трансляцыі</translation>
+<translation id="4371834685492830207">PIN-код павінен змяшчаць толькі сапраўдныя сімвалы</translation>
 <translation id="4375482231364171368">Выканаць пошук у адрасным радку</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
@@ -1560,6 +1558,7 @@
 <translation id="6232416233079464213">З прылады "<ph name="SESSION_NAME" />"</translation>
 <translation id="6232891689835436217">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру і мікрафон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Пароль павінен змяшчаць толькі сапраўдныя сімвалы</translation>
 <translation id="6240603910551255087">Верхняя кнопка</translation>
 <translation id="6240821072888636753">Заўсёды пытацца</translation>
 <translation id="6247728804802644171">Адкрыць апавяшчэнні</translation>
@@ -1915,9 +1914,6 @@
 Каб завяршыць працу прылады, зноў націсніце і ўтрымлівайце кнопку сілкавання на ёй.</translation>
 <translation id="7523420897035067483">Уключаць рэжым "Не турбаваць", калі актывавана Канцэнтрацыя ўвагі</translation>
 <translation id="7524043547948122239">Google Задачы</translation>
-<translation id="7524919752437339268">Убудаваная сэнсарная панэль адключана. Пацвердзіце змену з дапамогай клавіятуры ці іншай указальнай прылады.
-
-Калі не зрабіць гэтага, убудаваная сэнсарная панэль зноў уключыцца праз 30 секунд.</translation>
 <translation id="7525067979554623046">Стварыць</translation>
 <translation id="7526573455193969409">За сеткай могуць сачыць</translation>
 <translation id="7536035074519304529">IP-адрас: <ph name="ADDRESS" /></translation>

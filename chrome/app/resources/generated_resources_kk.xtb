@@ -2896,7 +2896,6 @@
 <translation id="3030967311408872958">Күн батқаннан күн шыққанға дейін</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Тінтуірдің оң жақ түймесін басу үшін сенсорлық тақта мен пернетақтаны пайдалану</translation>
-<translation id="3031544881009594539">Осы сайтқа кіріп, жаңа кіру кілтін жасаңыз. Ескісі Google Password Manager-ден жойылды.</translation>
 <translation id="3031557471081358569">Импорттау үшін элементтерді таңдаңыз:</translation>
 <translation id="3032204772252313646">Автоматты субтитрлер</translation>
 <translation id="3032272345862007156">Соңғы AI тақырыбы: <ph name="INDEX" /></translation>
@@ -3789,7 +3788,6 @@
 <translation id="370665806235115550">Жүктелуде…</translation>
 <translation id="3707034683772193706">Сіз кірген сайт көбінесе бот емес екеніңізді растау үшін Chrome-мен ақпараттың шағын көлемін сақтай алады</translation>
 <translation id="3707163604290651814">Аккаунтқа <ph name="NAME" /> ретінде кірдіңіз.</translation>
-<translation id="3707242400882068741">Кіру кілтін жаңарту қажет</translation>
 <translation id="3707348585109246684">Сілтемені жаңа <ph name="APP" /> қойындысында ашу</translation>
 <translation id="3708295717182051206">Субтитр</translation>
 <translation id="3708684582558000260">Жабылған сайттардың деректерді жіберуді немесе қабылдауды аяқтауына рұқсат бермеу</translation>
@@ -4291,7 +4289,6 @@
 <translation id="403725336528835653">Алдымен пайдаланып көру</translation>
 <translation id="4039966970282098406">Микрофонды, камераны және т.б. пайдалану рұқсатын басқару арқылы құпиялықты басқарыңыз.</translation>
 <translation id="4040041015953651705">Аударылатын тіл</translation>
-<translation id="4042660782729322247">Экранды бөлісудесіз</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Беттен шығу}other{Беттерден шығу}}</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> көмегімен өту</translation>
 <translation id="4043267180218562935">Курсор өлшемі</translation>
@@ -5017,7 +5014,6 @@
 <translation id="4588749726511456218">Айналдыруды үдету <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Журналдар "Жүктеп алынғандар" каталогіне жазылды.</translation>
 <translation id="4590785647529325123">Құрылғыңыздан инкогнито режиміндегі браузерді қолдану тарихын жою үшін барлық инкогнито қойындысын жабыңыз.</translation>
-<translation id="4590969863668977062">Кіру кілті өзгертілді</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> электрондық поштасына ешбір құрылғы сақталмаған.</translation>
 <translation id="4592891116925567110">Стилуспен сурет салу қолданбасы</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> мекенжайына өту</translation>
@@ -5039,6 +5035,7 @@
 <translation id="4602776638371779614">Бұл қойынды Bluetooth құрылғыларын белсенді түрде іздеп жатыр</translation>
 <translation id="4605026046465576953">Бұл қолданбаны ашу мүмкін емес, себебі оқшау веб-қолданбаларды іске қосуға рұқсатыңыз жоқ.</translation>
 <translation id="4606551464649945562">Сайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат бермеу</translation>
+<translation id="4606933160360542263">Арнаулы пернелер тіркесімі: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Қойындылар тобын жою қажет пе?}other{Қойындылар топтарын жою қажет пе?}}</translation>
 <translation id="4608500690299898628">&amp;Табу…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> плагинінде қате шықты</translation>
@@ -6272,6 +6269,7 @@
 <translation id="5517304475148761050">Қолданбаға Play Store дүкеніне кіру рұқсаты қажет</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> әрекетін өшіру</translation>
 <translation id="5521078259930077036">Бұл сіз күткен бастапқы бет пе?</translation>
 <translation id="5522156646677899028">Бұл кеңейтім өте қауіпсіз.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Кеңейтім әкімшіңіздің тарапынан орнатылды.}other{# кеңейтім әкімшіңіздің тарапынан орнатылды.}}</translation>
@@ -10249,6 +10247,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" />: басқа опциялар</translation>
 <translation id="8431190899827883166">Түрту қимылын көрсету</translation>
 <translation id="843173223122814223">AI көмегімен фондар жасау</translation>
+<translation id="8431977087510901105">Курсор параметрлерін бастапқы қалпына келтіру</translation>
 <translation id="8433186206711564395">Желі параметрлері</translation>
 <translation id="8434109185104929038">Оқуға арналған оңаша орын</translation>
 <translation id="8434480141477525001">NaCl түзету ұяшығы</translation>

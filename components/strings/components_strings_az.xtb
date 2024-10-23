@@ -169,6 +169,7 @@
 <translation id="1293797321964802402">Zərf 9 x 11 düym</translation>
 <translation id="129553762522093515">Son qapadılan</translation>
 <translation id="1296930489679394997">Endirimlər</translation>
+<translation id="1297814096526086484">Klaviatura və maus kilidlənsin?</translation>
 <translation id="1301227606947843452">Hüquqi Ekstra</translation>
 <translation id="1301324364792935241">Təhlükəsiz DNS ayarlarınızı yoxlayın</translation>
 <translation id="1302418742166945866"><ph name="URL" /> MIDI cihazlarını idarə etmək və təkrar proqramlaşdırmaq istəyir</translation>
@@ -200,6 +201,7 @@
 <translation id="1337692097987160377">Bu tabı paylaşın</translation>
 <translation id="1339601241726513588">Qeydiyyat domeni:</translation>
 <translation id="1340482604681802745">Götürmə ünvanı</translation>
+<translation id="134204716678666126">Rəy düymələrinə keçmək üçün sol və sağ oxlardan istifadə edin.</translation>
 <translation id="1343356790768851700">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1348779747280417563">Adı təsdiq edin</translation>
@@ -211,9 +213,12 @@
 <translation id="1358223345833465883">Chromium-da axtarış mexanizminiz</translation>
 <translation id="1359836962251219822">Mətbəx və yemək otağı</translation>
 <translation id="1360955481084547712">Gizli baxış üçün yeni Anonim pəncərə açın</translation>
+<translation id="1361528602584216624"><ph name="TRANSACTION_LIMIT" /> R$ Pix limiti</translation>
+<translation id="1363015776076529485">Tam hündürlükdə açılan ödənişi davam etdirmək üçün seçilə bilən ödəniş metodları.</translation>
 <translation id="1363028406613469049">Trek</translation>
 <translation id="1364822246244961190">Bu siyasət blok edildiyinə görə onun dəyəri iqnor ediləcək.</translation>
 <translation id="1368318639262510626">Dinozavr oyunu. Pikselləşdirilmiş dinozavr kimsəsiz ərazi boyunca qaçarkən kaktuslardan və pterodaktillərdən yayınır. Səs siqnalı eşitdiyiniz zaman boşluq düyməsinə basaraq maneələrin üstündən tullanın.</translation>
+<translation id="1369735141991626842">Sahələri Sİ ilə doldurun</translation>
 <translation id="1374468813861204354">təkliflər</translation>
 <translation id="1375198122581997741">Versiya Haqqında</translation>
 <translation id="1375293861397106342">Bütün seçimlər üzrə tipik qiymət: <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /></translation>
@@ -233,6 +238,7 @@
 <translation id="1406812885827747674">Bu dəfə icazə verin</translation>
 <translation id="14070772729708640">Fayllar <ph name="CLOUD_PROVIDER" /> buludunda <ph name="FOLDER_NAME" /> qovluğuna yükləndi</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
+<translation id="1408696301184924537">Növbəti dəfə bu IBAN-ı avtomatik doldurmaq üçün onu Google Hesabında yadda saxlayın</translation>
 <translation id="1408787208417187241">Yuxarıdan üçlü ştapel vurun</translation>
 <translation id="1410365862999780287">Bu cihazdan istifadə edən digər şəxslər fəaliyyətinizi görməyəcək. Məxfi nəzər sala bilərsiniz. Daxil olduğunuz veb-saytların topladığı data və istifadə etdiyi xidmətlər (Google daxil olmaqla) dəyişməyəcək. Endirmə, əlfəcin və oxu siyahısı elementləri yadda saxlanacaq.</translation>
 <translation id="1410941016594047814">Zərf Dəvət</translation>
@@ -303,6 +309,7 @@
 <translation id="1532118530259321453">Bu səhifə deyir:</translation>
 <translation id="1533966801397200693">Daxil olduğunuz profil idarə olunan profildir. Administrator profil ayarlarına uzaqdan dəyişiklik edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Səhifəni tərcümə edin</translation>
+<translation id="1538295100801850685">Proqnoz təkmilləşdirmələri</translation>
 <translation id="1539840569003678498">Şikayət göndərildi:</translation>
 <translation id="1542105669288201090">Biznes təhsili</translation>
 <translation id="1545757265410828525">Qiymət tarixçəsi</translation>
@@ -398,6 +405,7 @@
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoom səviyyələri</translation>
+<translation id="1706922226983368260">Giriş açarı • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; böyük ehtimal təhlükəsizlik sertifikatı sabahdan etibarən nəzərdə tutulub. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.}other{Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; təhlükəsizlik sertifikatı gələcəkdə # gündən sonra nəzərdə tutulub. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" /> <ph name="VALUE" /> olaraq ayarlanmadığına görə nəzərə alınmayıb.</translation>
@@ -521,6 +529,7 @@
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
 <translation id="192095259937375524">"Bu tabı paylaşın" düyməsi, aktivləşdirərək keçid paylaşmaq, QR kodu yaratmaq, yayımlamaq və s. yollarla bu tabı paylaşın</translation>
+<translation id="1921479021518565778">Təkliflər yükləndi</translation>
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1927439846988093361">Saça Qulluq</translation>
 <translation id="1935353813610900265">AI tərəfindən dəstəklənən tarixçədə axtarış ilə bağlı rəy göndərin</translation>
@@ -735,6 +744,7 @@
 <translation id="2292556288342944218">İnternet girişiniz blok edilib</translation>
 <translation id="2293443924986248631">Aktiv edildiyi zaman saytlar vebdə sizi izləyən kukilərdən istifadə edə bilmir. Bəzi saytlardakı funksiyalar dayandırıla bilər.</translation>
 <translation id="2295831393422400053">"Yazmağa kömək et" funksiyasından istifadə üçün Axtarış edin və Daha yaxşı axtarış ayarını aktiv edin</translation>
+<translation id="2296244067976588032">Giriş açarı • iCloud Keychain</translation>
 <translation id="2300306941146563769">Yüklənməyib</translation>
 <translation id="2301098101308036335">Hansı veb-saytlara nə zaman daxil olunur.</translation>
 <translation id="230286397113210245">"Anonim pəncərə açın" düyməsi, aktivləşdirərək yeni anonim pəncərə açıb, gizli baxın</translation>
@@ -785,6 +795,7 @@
 <translation id="238459632961158867">Veb-sayt</translation>
 <translation id="2385809941344967209">Chrome'u Chrome ayarlarınızdan güncəlləyin</translation>
 <translation id="2386255080630008482">Serverin sertifikatı geri alındı.</translation>
+<translation id="2386410849674401722">"Baş barmaq yuxarı" Sİ ilə avtodoldurmanı bəyəndiyinizə dair rəy göndərir</translation>
 <translation id="2388828676877700238">Vergi Hazırlığı və Planlama</translation>
 <translation id="239203817277685015">Ətraflı izah edin</translation>
 <translation id="239293030466334554">Kabriole avtomobilləri</translation>
@@ -817,6 +828,7 @@
 <translation id="2452098632681057184">Ekologiya və Ətraf Mühit</translation>
 <translation id="2452837234288608067">Kömək etmək alınmadı. Yenidən cəhd edin.</translation>
 <translation id="2456755709261364512">Batareya <ph name="REQUIRED_BATTERY_PRECENT" />%-dən çox şarj edilməlidir</translation>
+<translation id="2461385121573678775">Chrome Enterprise Core buluddan brauzer siyasətlərini konfiqurasiya etmək üçün mərkəzləşdirilmiş alət təqdim edir</translation>
 <translation id="2461822463642141190">Cari</translation>
 <translation id="2462932596748424101">Sosial Şəbəkələr</translation>
 <translation id="2465688316154986572">Ştapel vurun</translation>
@@ -840,6 +852,7 @@
 <translation id="2491120439723279231">Serverin sertifikatında xətalar var.</translation>
 <translation id="2491414235131909199">Bu səhifə artırma tərəfindən bloklanıb</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
+<translation id="2496402116964818747"><ph name="SETTINGS" /> bölməsində parolları doldurmaq üçün barmaq izindən istifadə edib-etməməyi dəyişə bilərsiniz</translation>
 <translation id="2498091847651709837">Yeni kartı skan edin</translation>
 <translation id="2501270939904835585">Etiket (hamar)</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
@@ -1027,6 +1040,7 @@
 <translation id="2902312830803030883">Daha çox əməliyyatlar</translation>
 <translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="290376772003165898">Səhifə <ph name="LANGUAGE" /> dilində deyil?</translation>
+<translation id="2904165004205947971">Məlumatları idarə edin</translation>
 <translation id="2905107382358353958">Yeni ödəniş ayarı haqqında xəbərdarlıq</translation>
 <translation id="2909120679423833511">Təşkilatınız (<ph name="MANAGER" />) xüsusi profildən istifadə edərək daxil olmağınızı tələb edir</translation>
 <translation id="2909946352844186028">Şəbəkə dəyişikliyi aşkarlandı.</translation>
@@ -1090,6 +1104,7 @@
 <translation id="299122504639061328">Defolt axtarış sisteminizi və sayt axtarışınızı idarə edin</translation>
 <translation id="2991571918955627853">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə HSTS istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, bu səhifə yəqin ki daha sonra işləyəcək.</translation>
 <translation id="2991865971341174470">Chrome-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
+<translation id="2995121550202354573">Bütün Qonaq profilləri üçün istifadə edin</translation>
 <translation id="2995517112308048736">Fayl ölçüsü:</translation>
 <translation id="299990983510665749">Hetçbeklər</translation>
 <translation id="3002501248619246229">Daxiletmə qabı mediasını yoxlayın</translation>
@@ -1118,6 +1133,7 @@
 <translation id="3052868890529250114">Adətən, saytlara təhlükəsiz qoşulursunuz, lakin Chrome bu dəfə güvənli bağlantı istifadə edə bilmədi. Hücumçu şəbəkə bağlantısını dinləməyə və ya dəyişdirməyə cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3061707000357573562">Təmir Xidməti</translation>
+<translation id="306198082577913404">Proqnoz təkmilləşdirmələrini aktiv edin</translation>
 <translation id="3062655045399308513">Baxış datasını silin...</translation>
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Qiymət aşağıdır</translation>
@@ -1394,6 +1410,7 @@
 <translation id="3542768452570884558">Keçidi Yeni Pəncərədə açın</translation>
 <translation id="3547442767634383572">İş profili icmalı</translation>
 <translation id="3547746132308051926">20 x 24 düym</translation>
+<translation id="3550325450190222557">Sİ ilə avtodoldurma barədə rəy göndərin.</translation>
 <translation id="3552155506104542239">Xəbərdarlıq: Bu siyasət <ph name="POLICY_NAME" /> ilə ziddiyyət təşkil edir və Android tətbiqlərinə təsiri olmayacaq. Əks halda, siyasət lazım olan qaydada işləyir.</translation>
 <translation id="3552297013052089404">Sans-serif şrifti</translation>
 <translation id="3558573058928565255">Gündüz vaxtı</translation>
@@ -1488,10 +1505,12 @@
 <translation id="3681007416295224113">Sertifikat məlumatı</translation>
 <translation id="3681421644246505351">Chrome son baxış tarixçənizə əsaslanaraq maraqlandığınız mövzuları qeyd edir.</translation>
 <translation id="3682094733650754138">Ünvanın daxil edilməsi seçilib</translation>
+<translation id="3687493962714153124">Sİ ilə avtodoldurmanı idarə edin</translation>
 <translation id="3687920599421452763">Ven və Minivenlər</translation>
 <translation id="3693327506115126094">Kimliyinizi necə doğrulayacağınızı seçin</translation>
 <translation id="3698353241727597930">Administrator <ph name="FILES" /> müəssisə tərəfindən idarə edilən <ph name="CLOUD_STORAGE" /> yaddaşında saxlamağı konfiqurasiya edib. Bu fayllar izlənilə, yoxlanıla və onları sildiyiniz zaman saxlanıla bilər.</translation>
 <translation id="3698629142018988477">"Sayt yaradın" düyməsi, aktivləşdirərək Google Saytda cəld yeni sayt yaradın</translation>
+<translation id="3700966190175650601">Parolları doldurmaq üçün barmaq izindən istifadə edirsiniz</translation>
 <translation id="3701325639446035885">Tədbir bileti satışı</translation>
 <translation id="3701427423622901115">Sıfırlanma doğrulandı.</translation>
 <translation id="3701900332588705891">Tipik qiymət: <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /></translation>
@@ -1500,6 +1519,7 @@
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3709599264800900598">Kopyalanmış Mətn</translation>
 <translation id="3709837451557142236">Əşyalar və Gələcək Ticarəti</translation>
+<translation id="3711430313228789376">Chrome brauzeri parolları göstərməyə çalışır</translation>
 <translation id="3711861349027352138">Kompüter və Video Oyunları</translation>
 <translation id="3711895659073496551">Durdurun</translation>
 <translation id="3712006010833051684">Zərf #10</translation>
@@ -1516,6 +1536,8 @@
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Slaydda cəld yeni Google təqdimatı yaradın</translation>
 <translation id="3727309136762649052">Ad sahəsi</translation>
 <translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
+<translation id="3728173127485570463">Chrome brauzeri parolları avtomatik doldurmaq üçün barmaq izi tələb etməyəcək</translation>
+<translation id="3735143108516366187">Proqnoz təkmilləşdirmələrini idarə etmək üçün enter düyməsini basın</translation>
 <translation id="3736739313435669994">Saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini blokladınız. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
 <translation id="3738428049780661523">Yaradılıb: <ph name="DATE" /></translation>
@@ -1560,6 +1582,7 @@
 <translation id="3810770279996899697">Parol meneceri MacOS Keychain-ə giriş tələb edir</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="3812398568375898177">Bu, ChromeOS-də Android tətbiqlərinin performansını təkmilləşdirən vacib güncəllənmədir.</translation>
+<translation id="3814865536373139791">Təşkilatın siyasətləri idarə etmə formasını sadələşdirin</translation>
 <translation id="3815434930383843058">8 x 12 düym</translation>
 <translation id="3816482573645936981">Dəyər (əvəz edilib)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" /> üçün CVC</translation>
@@ -1607,6 +1630,7 @@
 <translation id="3906954721959377182">Planşet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Daxil edilmiş kontent haqqında ətraflı</translation>
+<translation id="3915878244842478983">Chrome məlumatları əldə edə bilmədi</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Datanı idarə qaydası:<ph name="END_BOLD" /> Chrome 30 gündən əvvələ aid saytları avtomatik silir. Yenidən daxil olduğunuz sayt siyahıda təkrar görünə bilər. Chrome ayarlarında saytın reklam təklif etməsini bloklaya və sayt tərəfindən təklif olunan reklamları deaktiv edə bilərsiniz.</translation>
 <translation id="3921869355029467742">Təhlükəsizlik kodunuzu daxil edin</translation>
 <translation id="3927538228901078312">Müqayisə cədvəli yoxdur</translation>
@@ -1844,6 +1868,7 @@
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
 <translation id="4316057107946726368">Maksimum <ph name="MAX_CHAR_COUNT" /> simvoldan ibarət əsaslandırma mesajı daxil edin. <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> simvol istifadə edildi.</translation>
+<translation id="431740489189220419">Təkliflər yüklənir</translation>
 <translation id="4318213823155573975">Baş geyimi</translation>
 <translation id="4318312030194671742">Boyama Önbaxış Düzücü Xidməti</translation>
 <translation id="4318566738941496689">Cihaz adı və şəbəkə ünvanı</translation>
@@ -2007,6 +2032,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4671339777629075741">Zərf DL</translation>
+<translation id="4675391562155186035">Giriş açarı • Chrome profiliniz</translation>
 <translation id="467662567472608290">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatında xətalar var. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> əlçatımlılıq tədbirlərinə cavab vermək istəyir</translation>
 <translation id="467809019005607715">Google Slayd</translation>
@@ -2047,6 +2073,7 @@
 <translation id="4743275772928623722">Sistem güncəlləndi, lakin bəzi tətbiq və fayllar bərpa edilmədi. Tətbiqlər avtomatik yenidən endiriləcək.</translation>
 <translation id="4744514002166662487">Təqdimat yaradın</translation>
 <translation id="4744603770635761495">İcra olunan yol</translation>
+<translation id="4744816391336495134">Yadda saxlanmış paroldan istifadə etdiyiniz zaman kimliyinizi doğrulamaq üçün barmaq izindən istifadə edə bilərsiniz</translation>
 <translation id="4749011317274908093">Anonim rejimə keçdiniz</translation>
 <translation id="4750394297954878236">Təkliflər</translation>
 <translation id="4750671009706599284">bu telefon</translation>
@@ -2423,6 +2450,7 @@
 <translation id="5425082381151187189">Ev və İnteryer Dekoru</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
 <translation id="5430298929874300616">Əlfəcini silin</translation>
+<translation id="5433756542371550806">Əmr sətri variasiyaları</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Brauzer tarixçəsi
@@ -2570,6 +2598,7 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates dəyəri uyğun deyil və DnsOverHttpsMode siyasəti <ph name="SECURE_DNS_MODE_AUTOMATIC" /> və ya <ph name="SECURE_DNS_MODE_SECURE" /> kimi ayarlanana qədər istifadə edilməyəcək.</translation>
 <translation id="5691848789297492617">Kartın yadda saxlanması tam hündürlükdə açıldı.</translation>
 <translation id="5695542892312572833">Doğrulamaq və alışı tamamlamaq üçün Windows Hello istifadə edilsin?</translation>
+<translation id="5697827549745555938">Avtodoldurmanın bu formanı doldurmağa kömək edib-etmədiyini görmək üçün yadda saxladığınız məlumatlar və bu səhifə Google-a göndərilir. Bu funksiyanı təkmilləşdirmək üçün insan redaktorlar datanı görə bilər.</translation>
 <translation id="5699628521141772782">Süd məhsulları və yumurta</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
 <translation id="5701381305118179107">Mərkəzi edin</translation>
@@ -2600,6 +2629,7 @@
 <translation id="5745733273847572235">Saytlar məkanınıza daxil olmaq üçün icazə istəyə bilər</translation>
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>
 <translation id="5752327398324808817">Bir və ya iki söz daxil edin</translation>
+<translation id="5752519522101347518">Bank doğrulama veb-saytı yüklənir</translation>
 <translation id="5759751709240058861">Kameranızın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="5763042198335101085">Düzgün e-poçt ünvanı daxil edin</translation>
 <translation id="5764725887548570807">Yanlış mənşə formatı.</translation>
@@ -2766,6 +2796,7 @@
 <translation id="6058977677006700226">Kartlardan bütün cihazlarda istifadə edilsin?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6060009363608157444">Yanlış DnsOverHttps rejimi.</translation>
+<translation id="6060132878120844000">və daha 1 sahə</translation>
 <translation id="6061154937977953833">Güləş</translation>
 <translation id="6062937464449575061">Qiyməti izləməyin</translation>
 <translation id="6063415549109819824">Ev Maliyyəsi</translation>
@@ -2798,6 +2829,7 @@
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
 <translation id="6126565365696310362">Zərf Çin #2</translation>
 <translation id="6127379762771434464">Element silindi</translation>
+<translation id="6128214169525122635">"Baş barmaq aşağı" Sİ ilə avtodoldurmanı bəyənmədiyinizə dair rəy göndərir</translation>
 <translation id="6131824478727057281">məkan</translation>
 <translation id="6133320744616005677">İcazəni davam etdirin</translation>
 <translation id="6133984428121856852">Fayl artırması boşdur və ya səhvdir.</translation>
@@ -2826,6 +2858,7 @@
 <translation id="6180316780098470077">Təkrar cəhd intervalı</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome üçüncü tərəf kukilərini avtomatik məhdudlaşdırır</translation>
+<translation id="6188479691141473408">və daha <ph name="N_FIELDS" /> sahə</translation>
 <translation id="6194209731893739467">Bütün izlənən məhsulları burada görə bilərsiniz</translation>
 <translation id="6195163219142236913">Üçüncü tərəf kukiləri məhdudlaşdırılıb</translation>
 <translation id="6195371403461054755">Geologiya</translation>
@@ -3087,6 +3120,7 @@
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">İdarə edən:</translation>
 <translation id="6652101503459149953">Windows Hello işlədin</translation>
+<translation id="6654224358955673568">Rəsmiləşdirin</translation>
 <translation id="6654244995031366386">Şüşə (teksturalı)</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659246032834639189">Bu qiymət aşağıdır</translation>
@@ -3099,6 +3133,7 @@
 <translation id="6671697161687535275">Təkliflər Chromium'dan silinsin?</translation>
 <translation id="6677351035258626477">Fastfud</translation>
 <translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-da alış-veriş etdikdə <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçiminə baxın}other{Chrome-da alış-veriş etdikdə <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçiminə baxın}}</translation>
+<translation id="6679354743514146922">Chrome brauzeri <ph name="APP_NAME" /> tətbiqində parolu doldurmağa çalışır.</translation>
 <translation id="6681790815630918386">CVC yadda saxlandı</translation>
 <translation id="6683022854667115063">Qulaqlıq</translation>
 <translation id="6687230248707087982">Zərf (sadə)</translation>
@@ -3278,6 +3313,7 @@
 <translation id="6987806006823772670">Zərf (örtüklü)</translation>
 <translation id="6989256887001961296">Bu kontent bloklanıb.</translation>
 <translation id="6989763994942163495">Qabaqcıl ayarları göstərin...</translation>
+<translation id="6991376411634620997">Giriş açarı • Windows Hello</translation>
 <translation id="6997288673234694149">Beysbol və softbol avadanlıqları</translation>
 <translation id="6999480632062519056">Fitnes təlimatı və şəxsi təlim</translation>
 <translation id="7003278537452757231">Kilim və xalçalar</translation>
@@ -3439,6 +3475,7 @@
 <translation id="7304562222803846232">Google Hesabının məxfilik ayarlarını idarə edin</translation>
 <translation id="7305756307268530424">Daha asta sürəti başladın</translation>
 <translation id="7308436126008021607">arxa fonda sinxronizasiya</translation>
+<translation id="7309058266849426521">Chrome-da reklam məxfiliyinin idarə edilməsi haqqında ətraflı məlumat.</translation>
 <translation id="7310392214323165548">Cihaz tezliklə yenidən başladılacaq</translation>
 <translation id="7311244614769792472">Nəticə tapılmadı</translation>
 <translation id="7311837626618954149">Chromium saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır.</translation>
@@ -3446,6 +3483,7 @@
 <translation id="7316521168101843192">Fayl Microsoft OneDrive-da yadda saxlanılır</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
+<translation id="7321111802407017850">Məlumatları avtomatik doldurmaq üçün yadda saxlayın</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" bölməsini gizlədin</translation>
 <translation id="733354035281974745">Cihazın lokal hesabı əvəz edilib</translation>
 <translation id="7334320624316649418">&amp;Yenidən yerbəyer edin</translation>
@@ -3481,6 +3519,7 @@
 <translation id="7378594059915113390">Media Nəzarətləri</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7380398842872229465">10 x 15 düym</translation>
+<translation id="7381551826960739226">Bu forma güvənli bağlantı istifadə etmədiyinə görə avtomatik ödəniş metodu doldurma deaktivdir.</translation>
 <translation id="7388380253839603603">Yanacaq Qiymətləri və Avtomobillərin Doldurulması</translation>
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dəqiqə ərzində yenidən başladılacaq}other{Cihazınız # dəqiqə ərzində yenidən başladılacaq}}</translation>
 <translation id="7392089738299859607">Ünvanı yeniləyin</translation>
@@ -3518,6 +3557,7 @@
 <translation id="7424421098814895617">Ünvanın silinməsi seçilib</translation>
 <translation id="7425037327577270384">Yazmağa kömək edin</translation>
 <translation id="7425878584435172632">Vizual İncəsənət və Dizayn</translation>
+<translation id="7426745633088095666">Paylaşılan tablar</translation>
 <translation id="7427079287360774240">Xarici Dil Təhsili</translation>
 <translation id="7429429656042611765">Biznes klass</translation>
 <translation id="7432774160230062882">Chromium-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
@@ -3760,6 +3800,7 @@
 <translation id="7831993212387676366">Alış-veriş siyahısı nədir?</translation>
 <translation id="7840103971441592723">Ekranın çəkilməsi başladılıb</translation>
 <translation id="784137052867620416">Şoppinq üzrə statistik məlumat</translation>
+<translation id="7841633276323004751">Ödənişi davam etdirmək üçün seçilə bilən ödəniş metodları. Gizli klaviatura.</translation>
 <translation id="7842611866969435396">Başlayaq</translation>
 <translation id="784404208867107517">Qruplaşdırılmış tarixçə</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Heç bir tətbiq}=1{1 tətbiq (<ph name="EXAMPLE_APP_1" />)}=2{2 tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3850,6 +3891,7 @@
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, tab düyməsi, sonra Enter düyməsinə basaraq Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="8027077570865220386">Qab 15</translation>
 <translation id="8027585818882015174">"Chrome təhlükəsizlik yoxlanışını icra edin" düyməsi, aktivləşdirərək Chrome ayarlarında təhlükəsizlik yoxlanışı icra edin</translation>
+<translation id="8028138772801251745">Sİ ilə avtomatik doldurun</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Forma'da cəld yeni forma yaradın</translation>
 <translation id="8028892419725165118">Kazual Oyun</translation>
 <translation id="8028960012888758725">İşdən sonra kəsin</translation>
@@ -3919,6 +3961,7 @@
 <translation id="8150722005171944719"><ph name="URL" /> linkində olan fayl oxunmur. O, silinmiş, köçürülmüş ola bilər və ya fayl icazələri girişin qarşısını alıb.</translation>
 <translation id="8151185429379586178">Developer alətləri</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə endirməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə endirməyi tövsiyə etmir}}</translation>
+<translation id="8155253549374198915">Son açıq tablar</translation>
 <translation id="81563721597823545">Xokkey avadanlığı</translation>
 <translation id="815805690561372740">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="8161095570253161196">Baxmağa davam edin</translation>
@@ -4022,6 +4065,7 @@
 <translation id="8321448084834652864">Chromium ayarlarında axtarış mexanizmini dəyişə bilərsiniz.</translation>
 <translation id="8321476692217554900">bildirişlər</translation>
 <translation id="8322402665880479974">Çarpayı və yataq başlıqları</translation>
+<translation id="8323505966575306467">Parollar üçün daha çox qorunma təmin edin</translation>
 <translation id="832567874344484841">Səhər yeməkləri</translation>
 <translation id="8329068931308448247">Zərf #14</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> hostuna giriş rədd edildi</translation>
@@ -4093,6 +4137,7 @@
 <translation id="8449155699563577224">17 x 24 düym</translation>
 <translation id="8449836157089738489">Hamısını yeni tab qrupunda açın</translation>
 <translation id="84561192812921051">Administrator profil və brauzerinizə uzaqdan dəyişikliklər edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. Bu cihazdakı fəaliyyət Chrome-dan kənarda da idarə edilə bilər.  <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="8456383681414356368">Aşağıdakı vərəq bağlıdır.</translation>
 <translation id="8457125768502047971">Qeyri-müəyyən</translation>
 <translation id="8458202188076138974">Məktub Ekstra</translation>
 <translation id="8460854335417802511">Aktiv edin</translation>
@@ -4253,6 +4298,7 @@
 <translation id="8763986294015493060">Hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="8766943070169463815">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi açılıb</translation>
 <translation id="8767765348545497220">Yardım balonunu bağlayın</translation>
+<translation id="8767881944435256294">{COUNT,plural, =1{1 ödəniş metodu}other{# ödəniş metodu}}</translation>
 <translation id="8768225988514678921">"Təqdimat yaradın" düyməsi, aktivləşdirərək Slaydda cəld yeni Google təqdimatı yaradın</translation>
 <translation id="8770286973007342895">Çəmənbiçənlər</translation>
 <translation id="8772387130037509473">Yoqa və pilates</translation>
@@ -4380,6 +4426,7 @@
 <translation id="9023536760430404133">Nəqliyyat vasitəsi üçün təkər və şinlər</translation>
 <translation id="9025348182339809926">(Yanlış)</translation>
 <translation id="902590795160480390">PDF yüklənir</translation>
+<translation id="9027020981272345766">Chrome Enterprise Core-u sınayın</translation>
 <translation id="9027531288681624875">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
 <translation id="9035022520814077154">Güvənlik xətası</translation>
 <translation id="9035824888276246493">Təhlükəsizlik kodlarını yadda saxlayın</translation>
@@ -4442,6 +4489,7 @@
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtual kart</translation>
 <translation id="9138037198177304356">Bildirişlərə icazə verilib</translation>
 <translation id="9139318394846604261">Alış-veriş</translation>
+<translation id="9140198744651252040">Chrome brauzeri parolları avtomatik doldurmaq üçün barmaq izindən istifadə etmək istəyir</translation>
 <translation id="9141013498910525015">Ünvanları idarə edin</translation>
 <translation id="9144951720726881238">Bitmə tarixi:</translation>
 <translation id="9145910032514306808">Yazarkən kömək almaq
@@ -4452,6 +4500,7 @@
 <translation id="9150025764986957246">Belə daxiletmələr edə bilərsiniz:</translation>
 <translation id="9154194610265714752">Güncəlləşib</translation>
 <translation id="9155211586651734179">Köməkçi audio cihazları əlavə edilib</translation>
+<translation id="9155453166708525139">Sİ ilə avtodoldurma təcrübi funksiyadır və həmişə düzgün olmaya bilər. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Ayarlanır...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> faylında həssas kontent ola bilər}other{<ph name="FILE_COUNT" /> faylda həssas kontent ola bilər}}</translation>
@@ -4512,6 +4561,7 @@
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome bu gün kukiləri yenidən məhdudlaşdıracaq}=1{Chrome sabah kukiləri yenidən məhdudlaşdıracaq}other{Chrome-un kukiləri yenidən məhdudlaşdırmasına # gün qaldı}}</translation>
 <translation id="949314938206378263">Bu saytı ziyarət etməyi istəmisiniz. Valideyniniz Family Link'də cavab verə bilər.</translation>
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>
+<translation id="950926967802086924">Giriş açarı • Google Parol Meneceri</translation>
 <translation id="961663415146723894">Aşağıdan uclarını qovuşdurun</translation>
 <translation id="961856697154696964">Baxış datasını silin</translation>
 <translation id="961930410699694996">Bu dəfə üçün məkana icazə verilib</translation>

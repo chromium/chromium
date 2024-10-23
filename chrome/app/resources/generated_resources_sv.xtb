@@ -1905,7 +1905,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     Om du vill att barnet ska sluta använda Voice Match vid ett senare tillfälle tar du helt enkelt bort funktionen från Assistent-inställningarna. Öppna <ph name="VOICE_MATCH_SETTINGS_URL" /> i barnets konto om du vill visa eller radera ljudklipp från konfigurationen av Voice Match.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308288819918530468"><ph name="ITEM" /> har inte markerats. Markera genom att trycka på Sök och mellanslagstangenten.</translation>
 <translation id="2308798336967462263">Följande tangenter stöds inte: Tabb, Skift, Ctrl, Escape, Caps Lock, Volym</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
 <translation id="2310923358723722542">Skärm och förstoring</translation>
@@ -2932,7 +2931,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3030967311408872958">Soluppgång till solnedgång</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Använd styrplattan och tangentbordet för att högerklicka</translation>
-<translation id="3031544881009594539">Logga in på den här webbplatsen för att skapa en ny nyckel. Den gamla har raderats från Google Lösenordshantering.</translation>
 <translation id="3031557471081358569">Välj objekt att importera:</translation>
 <translation id="3032204772252313646">Automatisk textning</translation>
 <translation id="3032272345862007156">Senaste AI-tema <ph name="INDEX" /></translation>
@@ -3836,7 +3834,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="370665806235115550">Läser in...</translation>
 <translation id="3707034683772193706">En webbplats du besöker kan spara mycket information med Chrome, främst för att kontrollera att du inte är en bot</translation>
 <translation id="3707163604290651814">För närvarande inloggad som <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Uppdatering av nyckeln krävs</translation>
 <translation id="3707348585109246684">Öppna länken på en ny flik i <ph name="APP" /></translation>
 <translation id="3708295717182051206">Textning</translation>
 <translation id="3708684582558000260">Tillåt inte att stängda webbplatser fortsätter skicka eller ta emot data</translation>
@@ -4340,7 +4337,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="403725336528835653">Testa först</translation>
 <translation id="4039966970282098406">Hantera din integritet genom att styra åtkomsten till mikrofonen, kameran med mera</translation>
 <translation id="4040041015953651705">Språk att översätta från</translation>
-<translation id="4042660782729322247">Skärmen delas</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Lämna sidan}other{Lämna sidorna}}</translation>
 <translation id="4042941173059740150">Fortsätt till <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Markörstorlek</translation>
@@ -5071,7 +5067,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4588749726511456218">Scrollningsacceleration <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Loggarna har sparats i katalogen Nedladdningar.</translation>
 <translation id="4590785647529325123">Stäng alla inkognitoflikar om du vill radera webbhistoriken i inkognitoläget</translation>
-<translation id="4590969863668977062">Nyckeln har uppdaterats</translation>
 <translation id="459204634473266369">Inga enheter har sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App för att rita med e-penna</translation>
 <translation id="4593021220803146968">&amp;Öppna <ph name="URL" /></translation>
@@ -7468,7 +7463,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6357750620525943720">Andra stabila identifierare (t.ex. hashvärden eller UUID)</translation>
 <translation id="6358884629796491903">Drake</translation>
 <translation id="6361850914223837199">Information om felet:</translation>
-<translation id="6362303840256358093"><ph name="ITEM" /> har valts. Avmarkera genom att trycka på Sök och mellanslagstangenten.</translation>
 <translation id="6362853299801475928">&amp;Rapportera ett problem...</translation>
 <translation id="6363786367719063276">Visa loggar</translation>
 <translation id="6363990818884053551">Verifiera din identitet för att starta synkroniseringen</translation>

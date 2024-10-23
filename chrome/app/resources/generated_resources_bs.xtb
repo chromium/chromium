@@ -1815,7 +1815,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
     <ph name="BEGIN_PARAGRAPH2" />Kada instalacija započne, nije je moguće otkazati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Razmijeni podatke s bilo kojim uređajem u domenama: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Dodijelite prekidač za "Odaberi"</translation>
-<translation id="2270668657177045040">Web-lokacija i njezine poddomene mogu vidjeti koje su povezane web-aplikacije instalirane na vašem uređaju.</translation>
+<translation id="2270668657177045040">Web lokacija i njene poddomene mogu vidjeti koje su povezane web aplikacije instalirane na uređaju.</translation>
 <translation id="2271452184061378400">Grupe kartica se pohranjuju ovdje</translation>
 <translation id="2271986192355138465">Saznajte kako instalirati web aplikacije</translation>
 <translation id="2272430695183451567">Nije dodijeljen nijedan prekidač</translation>
@@ -2912,7 +2912,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3030967311408872958">Od sutona do svitanja</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Koristi dodirnu podlogu i tastaturu za desni klik</translation>
-<translation id="3031544881009594539">Prijavite se na ovu web lokaciju da kreirate novi pristupni ključ. Stari ključ je izbrisan s Google upravitelja lozinki.</translation>
 <translation id="3031557471081358569">Odaberite stavke za uvoz:</translation>
 <translation id="3032204772252313646">Automatski titlovi</translation>
 <translation id="3032272345862007156"><ph name="INDEX" />. nedavna AI tema</translation>
@@ -3807,7 +3806,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3707034683772193706">Web lokacija koju posjećujete može putem Chromea sačuvati malu količinu informacija uglavnom da potvrdi da niste bot</translation>
 <translation id="3707163604290651814">Trenutno ste prijavljeni kao <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Potrebno je ažuriranje pristupnog ključa</translation>
 <translation id="3707348585109246684">Otvori link u novoj kartici aplikacije <ph name="APP" /></translation>
 <translation id="3708295717182051206">Titlovi</translation>
 <translation id="3708684582558000260">Nemoj dozvoliti zatvorenim web lokacijama završavanje slanja ili primanje podataka</translation>
@@ -4309,7 +4307,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="403725336528835653">Najprije isprobajte</translation>
 <translation id="4039966970282098406">Upravljajte zaštitom privatnosti kontroliranjem pristupa mikrofonu, kameri i drugom</translation>
 <translation id="4040041015953651705">Jezik s kojeg se prevodi</translation>
-<translation id="4042660782729322247">Trenutno dijelite ekran</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Izađi sa stranice}one{Izađi sa stranica}few{Izađi sa stranica}other{Izađi sa stranica}}</translation>
 <translation id="4042941173059740150">Nastavite na web lokaciju <ph name="SITE_ETLD_PLUS_ONE" /> s pružaocem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Veličina kursora</translation>
@@ -5035,7 +5032,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4588749726511456218">Ubrzanje klizanja <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Zapisnici su uspješno ispisani u direktorij Preuzimanja.</translation>
 <translation id="4590785647529325123">Da s uređaja izbrišete historiju pregledanja u anonimnom načinu rada, zatvorite sve anonimne kartice</translation>
-<translation id="4590969863668977062">Pristupni ključ je ažuriran</translation>
 <translation id="459204634473266369">Nema sačuvanih uređaja na <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplikacija za crtanje olovkom</translation>
 <translation id="4593021220803146968">&amp;Idi na <ph name="URL" /></translation>
@@ -5339,7 +5335,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4823193082697477185">Pristupajte dijeljenim fajlovima, folderima ili diskovima na lokalnoj mreži. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Pročitajte i promijenite postavke korisnika i uređaja</translation>
 <translation id="4824037980212326045">Izrada sigurnosne kopije i vraćanje na Linuxu</translation>
-<translation id="4824263260587281352">Promijenite kombinaciju tipki <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824263260587281352">Promjena kombinacije tipki <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Otkazati sinhroniziranje?</translation>
 <translation id="4825462365587146530">Više informacija o Chrome Root Storeu na novoj kartici.</translation>
 <translation id="4825532258163983651">Nije moguće izbrisati pristupni ključ</translation>
@@ -7837,7 +7833,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6676212663108450937">Razmislite da koristite slušalice dok vježbate glas</translation>
 <translation id="6676291960742508499">Vaše kartice, naslovi stranica i URL-ovi se šalju Googleu.</translation>
 <translation id="667752334740867460">Primanje informacija o WiFi-ju…</translation>
-<translation id="6677527809400770913">Pokret <ph name="GESTURE" /> dodijeljen je radnji <ph name="ACTION" /></translation>
+<translation id="6677527809400770913">Dodijeljen je pokret <ph name="GESTURE" /> za radnju <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Veliki valovi pljuskaju u moru, s kopnom daleko u pozadini. Iza horizonta se vide tračci narandžastog svjetla, a ostatak neba je taman i atmosferičan.</translation>
 <translation id="6678717876183468697">URL upita</translation>
 <translation id="6680442031740878064">Dostupno: <ph name="AVAILABLE_SPACE" /></translation>

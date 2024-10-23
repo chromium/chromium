@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
 <translation id="1908394185991500139">sol ox</translation>
+<translation id="1914144885717544695">Cümə</translation>
 <translation id="1923388006036088459">Vurğu rəngləri</translation>
 <translation id="1945403655450283000">Diktofon</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">Üzmə</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Bu gün</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Axtarışı silin</translation>
 <translation id="2157660087437850958">emoji seçicisi</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2715723665057727940">çay</translation>
 <translation id="2717139507051041123">Tünd rəng rejimini aktiv edin</translation>
+<translation id="2726755229438917165">Bazar ertəsi</translation>
 <translation id="2728460467788544679">Çap tarixçəsini silin</translation>
 <translation id="2731700343119398978">Gözləyin...</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">Son nöqtə</translation>
 <translation id="3060579846059757016">Haşiyələr</translation>
 <translation id="3061850252076394168">"basıb dinləyin" seçimini aktivləşdirin</translation>
+<translation id="3066772729299747758">Çərşənbə axşamı</translation>
 <translation id="3069085583900247081">Test uğursuz oldu</translation>
 <translation id="3078740164268491126">cədvəl</translation>
 <translation id="3081652522083185657">işıqlı</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">suşi</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">"Torpaq axını" divar kağızı</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> hərfi ilə <ph name="LETTERS_COLOR" /> arxa fon</translation>
 <translation id="3383623117265110236">Eksklüziv</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">Digər düzən seçimləri üçün mausla tuşlamağa davam edin</translation>
 <translation id="4130750466177569591">Razıyam</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
+<translation id="4137700675046373159">Şənbə</translation>
 <translation id="4143226836069425823">Əvəzləmək üçün başqa klaviatura düyməsinə toxunun</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">Bazar</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4251839292699800785">Dəbli ofis</translation>
 <translation id="4258281355379922695">HTTP Gecikməsi</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">çəmənlik</translation>
 <translation id="551689408806449779">Cihaz ayrılıb. Test etmək üçün yenidən qoşmağa çalışın</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">Mikrofon seçimləri</translation>
 <translation id="5534900277405737921">Ərazi</translation>
 <translation id="554067135846762198">mərcan və sarımtıl qəhvəyi</translation>
 <translation id="5543701552415191873">kilidli</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="6535178685492749208">Oflaynsınız. Rəy sonra göndəriləcək.</translation>
 <translation id="6543412779435705598">takolar</translation>
+<translation id="6550369542114086980">Cümə axşamı</translation>
 <translation id="6551839203326557324">almalar</translation>
 <translation id="65526652485742171">Təsdiq düyməsi aktivləşdirilib</translation>
 <translation id="6557784757915238407">APN növü: <ph name="ATTACH" />.</translation>
@@ -1265,6 +1274,7 @@
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7182063559013288142">Ani hotspot</translation>
 <translation id="7184043045742675738">Düyməni fərdiləşdirmək üçün istənilən düyməyə klikləyin. Maus və ya ox düymələri ilə mövqenin dəyişdirilməsi düyməsi.</translation>
+<translation id="7187669805838282391">Çərşənbə</translation>
 <translation id="7206979415662233817">Xidmət şərtləri</translation>
 <translation id="7210635925306941239">yaşıl-mavi</translation>
 <translation id="7212547870105584639">Şəbəkə APN ayarlarını idarə edin. APN mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1321,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7388959671917308825">Quraşdırılmış taçped</translation>
 <translation id="7397270852490618635">İşıqlı temanı deaktiv edin</translation>
 <translation id="7401543881546089382">Qısayolu silin</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> güncəllənməyə hazırdır</translation>
 <translation id="741244894080940828">çevirmə</translation>
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7425037327577270384">Yazmağa kömək edin</translation>
@@ -1325,6 +1336,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7500205272584643581">Diktofona dinamikləri aşkarlamaq və etiketləmək icazəsi verilsin?</translation>
 <translation id="7501957181231305652">və ya</translation>
 <translation id="7502658306369382406">IPv6 ünvanı</translation>
+<translation id="7503342217608032738">Cihaz istifadə edilə bilməz</translation>
 <translation id="7507061649493508884">Parlaq <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">alt</translation>
 <translation id="7514365320538308">Endirmə</translation>
@@ -1337,6 +1349,8 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7544853251252956727">Qarışdırın</translation>
 <translation id="7550715992156305117">Diaqnostika Rejimləri</translation>
 <translation id="7551123448725492271">Cihaz audio cihazdır.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> administratoru bu <ph name="DEVICE_TYPE" /> cihazının istifadə oluna biləcəyi vaxtı təyin edib.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" /><ph name="DAY" /> günü <ph name="TIME" /> radələrində bu cihazı yenidən istifadə edə biləcəksiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Skrinşotu Önizləyin</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7561759921596375678">Səs səviyyəsini aktiv edin</translation>
@@ -1398,6 +1412,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="785170686607360576">zanbaq</translation>
 <translation id="7856267634822906833">Bluetooth taçskrin</translation>
 <translation id="7859006200041800233">kaktus çiçəyi</translation>
+<translation id="7865217133132122390">Mikrofonu aktiv edin</translation>
 <translation id="7869143217755017858">Qaranlıq rejimi deaktiv edin</translation>
 <translation id="7878972877380405573">Oxumağıma yardım edin funksiyası ilə ümumiləşdirin</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1426,6 +1441,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" avtomatik başladıldı}other{# tətbiq avtomatik başladıldı}}</translation>
 <translation id="7994702968232966508">EAP üsulu</translation>
 <translation id="8004582292198964060">Brauzer</translation>
+<translation id="8010765388850538088">Yaradan Sİ haqqında ətraflı məlumat əldə edin</translation>
 <translation id="8017679124341497925">Qısayol redaktə edildi</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8028993641010258682">Ölçü</translation>
@@ -1435,6 +1451,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8045012663542226664">Mikrofonun səssiz düyməsi</translation>
 <translation id="8054112564438735763">bej</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> arxa fonunda <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN qoşulub.</translation>
 <translation id="8067208048261192356">qəhvəyi</translation>
 <translation id="8067224607978179455">Silin: <ph name="ACTION_NAME" /></translation>
@@ -1538,6 +1555,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" /> cihazının mikroproqramının <ph name="VERSION" /> versiyasına quraşdırılmasını tamamlamaq məqsədilə yenidən başlatma tələb olunur. Kompüter bir neçə dəfə yenidən yüklənmiş kimi görünə bilər. Bu, gözləniləndir.</translation>
 <translation id="8593058461203131755">medianı durdurun</translation>
 <translation id="8620617069779373398">Rominq statusu</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> üçün digər əməliyyatlar</translation>
@@ -1671,6 +1689,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviaturanız avtomatik olaraq divar kağızı ilə uyğunlaşa bilər</translation>
 <translation id="9189000703457422362">Avtomatik aşkarlanan APN ilə bu şəbəkəyə qoşulmaq olmur. Ətraflı məlumat üçün mobil operator ilə əlaqə saxlayın.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">Seçilmiş coystik düymələri: <ph name="KEYS" />. Nizamlayıcını redaktə etmək üçün düyməyə toxunun</translation>
 <translation id="9204237731135241582">Android tətbiqlərindən giriş ilə əlaqə saxlamaq olmur</translation>
@@ -1691,5 +1710,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="982713511914535780">Deşarj testi icra edin</translation>
 <translation id="98515147261107953">Peyzaj</translation>
 <translation id="987264212798334818">Ümumi</translation>
+<translation id="994473081369871639">Mikrofonu deaktiv edin</translation>
 <translation id="995062385528875723">Diakritik işarəli hərflərdən, qeyri-latın əlifbasından və ya simvollardan istifadə etmək olmaz</translation>
 </translationbundle>

@@ -1817,6 +1817,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ਇੱਕ ਵਾਰ ਸਥਾਪਨਾ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ, ਇਸ ਨੂੰ ਰੱਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ਡੋਮੇਨਾਂ ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨਾਲ ਡਾਟਾ ਐਕਸਚੇਂਜ ਕਰੋ: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“ਚੁਣੋ” ਲਈ ਸਵਿੱਚ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
+<translation id="2270668657177045040">ਕੋਈ ਸਾਈਟ ਅਤੇ ਉਸਦੇ ਉਪ-ਡੋਮੇਨ ਦੇਖ ਸਕਦੇ ਹਨ ਕਿ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਕਿਹੜੀਆਂ ਸੰਬੰਧਿਤ ਵੈੱਬ ਐਪਲੀਕੇਸ਼ਨਾਂ ਸਥਾਪਤ ਹਨ।</translation>
 <translation id="2271452184061378400">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਇੱਥੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="2271986192355138465">ਵੈੱਬ ਐਪਾਂ ਸਥਾਪਤ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ</translation>
 <translation id="2272430695183451567">0 ਸਵਿੱਚ ਜਿੰਮੇ ਲਾਏ ਗਏ</translation>
@@ -2914,7 +2915,6 @@
 <translation id="3030967311408872958">ਸੂਰਜ ਛਿਪਣ ਤੋਂ ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ</translation>
 <translation id="3031417829280473749">ਏਜੰਟ X</translation>
 <translation id="3031532026314193077">ਸੱਜਾ-ਕਲਿੱਕ ਕਰਨ ਲਈ ਟੱਚਪੈਡ ਅਤੇ ਕੀ-ਬੋਰਡ ਵਰਤੋ</translation>
-<translation id="3031544881009594539">ਨਵੀਂ ਪਾਸਕੀ ਬਣਾਉਣ ਲਈ, ਇਸ ਸਾਈਟ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ। ਪੁਰਾਣੀ ਪਾਸਕੀ ਨੂੰ Google Password Manager ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="3031557471081358569">ਆਯਾਤ ਕਰਨ ਲਈ ਆਈਟਮਾਂ ਚੁਣੋ:</translation>
 <translation id="3032204772252313646">ਸਵੈ ਸੁਰਖੀਆਂ</translation>
 <translation id="3032272345862007156">ਹਾਲੀਆ ਬਣਾਇਆ ਗਿਆ AI ਥੀਮ <ph name="INDEX" /></translation>
@@ -3809,7 +3809,6 @@
 <translation id="370665806235115550">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3707034683772193706">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਉਹ Chrome 'ਤੇ ਕੁਝ ਜਾਣਕਾਰੀ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਮੁੱਖ ਤੌਰ 'ਤੇ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਬੋਟ ਨਹੀਂ ਹੋ</translation>
 <translation id="3707163604290651814">ਇਸ ਵੇਲੇ <ph name="NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਹੋ</translation>
-<translation id="3707242400882068741">ਪਾਸਕੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3707348585109246684">ਨਵੀਂ <ph name="APP" /> ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3708295717182051206">ਬੰਦ ਸੁਰਖੀਆਂ</translation>
 <translation id="3708684582558000260">ਬੰਦ ਸਾਈਟਾਂ ਨੂੰ ਡਾਟਾ ਭੇਜਣਾ ਜਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਪੂਰਾ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -4311,7 +4310,6 @@
 <translation id="403725336528835653">ਪਹਿਲਾਂ ਇਹ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="4039966970282098406">ਮਾਈਕ੍ਰੋਫ਼ੋਨ, ਕੈਮਰੇ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰ ਕੇ ਆਪਣੀ ਪਰਦੇਦਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4040041015953651705">ਉਹ ਭਾਸ਼ਾ ਜਿਸ ਤੋਂ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ</translation>
-<translation id="4042660782729322247">ਤੁਸੀਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ਪੰਨੇ ਤੋਂ ਬਾਹਰ ਜਾਓ}one{ਪੰਨੇ ਤੋਂ ਬਾਹਰ ਜਾਓ}other{ਪੰਨਿਆਂ ਤੋਂ ਬਾਹਰ ਜਾਓ}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4043267180218562935">ਕਰਸਰ ਦਾ ਆਕਾਰ</translation>
@@ -5037,7 +5035,6 @@
 <translation id="4588749726511456218">ਸਕ੍ਰੋਲ ਐਕਸੈੱਲਰੇਸ਼ਨ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ਲੌਗਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਸਫਲਤਾਪੂਰਕ ਲਿਖਿਆ ਗਿਆ।</translation>
 <translation id="4590785647529325123">ਆਪਣੇ ਡੀਵਾਈਸ ਤੋਂ ਇਨਕੋਗਨਿਟੋ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਮਿਟਾਉਣ ਲਈ, ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਬੰਦ ਕਰੋ</translation>
-<translation id="4590969863668977062">ਪਾਸਕੀ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4592891116925567110">ਸਟਾਈਲਸ ਚਿੱਤਰਕਾਰੀ ਸੰਬੰਧੀ ਐਪ</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> ਤੇ ਜਾਓ</translation>
@@ -5341,6 +5338,7 @@
 <translation id="4823193082697477185">ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ, ਫੋਲਡਰਾਂ ਜਾਂ ਡਰਾਈਵਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ਵਰਤੋਂਕਾਰ ਅਤੇ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="4824037980212326045">Linux ਬੈਕਅੱਪ ਅਤੇ ਮੁੜ-ਬਹਾਲੀ</translation>
+<translation id="4824263260587281352">ਕੁੰਜੀ ਦਾ ਸੁਮੇਲ ਬਦਲੋ <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">ਕੀ ਸਿੰਕ ਰੱਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4825462365587146530">ਨਵੇਂ ਟੈਬ ਵਿੱਚ Chrome Root Store ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="4825532258163983651">ਪਾਸਕੀ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
@@ -7835,6 +7833,7 @@
 <translation id="6676212663108450937">ਆਪਣੀ ਅਵਾਜ਼ ਦੀ ਸਿਖਲਾਈ ਦੌਰਾਨ ਕਿਰਪਾ ਕਰਕੇ ਹੈੱਡਫ਼ੋਨ ਵਰਤਣ ਬਾਰੇ ਵਿਚਾਰ ਕਰੋ</translation>
 <translation id="6676291960742508499">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ, ਪੇਜ ਸਿਰਲੇਖ ਅਤੇ URL Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="667752334740867460">ਵਾਈ-ਫਾਈ ਜਾਣਕਾਰੀ ਨੂੰ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="6677527809400770913"><ph name="GESTURE" /> ਇਸ਼ਾਰੇ ਨੂੰ <ph name="ACTION" /> ਦੇ ਲਈ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6678604587151240716">ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਥੋੜ੍ਹੀ ਦੂਰੀ 'ਤੇ ਜ਼ਮੀਨ ਦੇ ਨਾਲ-ਨਾਲ, ਸਮੁੰਦਰ ਵਿੱਚ ਵੱਡੀਆਂ-ਵੱਡੀਆਂ ਲਹਿਰਾਂ ਦਿਖਾਈ ਦੇ ਰਹੀਆਂ ਹਨ। ਦਿਸਹੱਦੇ 'ਤੇ ਸੰਤਰੀ ਰੰਗ ਦੀ ਰੋਸ਼ਨੀ ਦਿਖਾਈ ਦੇ ਰਹੀ ਹੈ। ਅਸਮਾਨ ਦਾ ਰੰਗ ਗੂੜ੍ਹਾ ਹੈ।</translation>
 <translation id="6678717876183468697">ਪੁੱਛਗਿਛ URL</translation>
 <translation id="6680442031740878064">ਉਪਲਬਧ: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10037,6 +10036,7 @@
 <translation id="8261378640211443080">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ਵਿੱਚ ਸੂਚੀਬੱਧ ਨਹੀਂ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੋਂ ਬਿਨਾਂ ਜੋੜਿਆ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8261625296061301062">ਸਕੈਨਰ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8263149565724023141">ਸੰਬੰਧਿਤ ਐਪਲੀਕੇਸ਼ਨਾਂ</translation>
 <translation id="8263228331881858381">ਪਾਸਕੀ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8263336784344783289">ਇਸ ਗਰੁੱਪ ਦਾ ਨਾਮ ਰੱਖੋ</translation>
 <translation id="8264024885325823677">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>

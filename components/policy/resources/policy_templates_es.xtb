@@ -2490,6 +2490,7 @@ Esta política solo se puede establecer como política de usuarios basada en la 
 <translation id="2872968825059227580">Inhabilitar la compatibilidad con GIFs</translation>
 <translation id="2874209944580848064">Nota para los dispositivos <ph name="PRODUCT_OS_NAME" /> compatibles con las aplicaciones de Android:</translation>
 <translation id="287474029350993681">Inhabilitar el envío de contenido al dispositivo</translation>
+<translation id="2874983257003956579">Configurar herramientas de gestión de clases</translation>
 <translation id="2875192972412983412">Permite especificar el subconjunto de servidores de impresión a los que se solicitará información sobre impresoras del servidor.
 
       Si se usa esta política, solo las impresoras del servidor cuyos ID coincidan con los valores incluidos en esta política estarán disponibles para el usuario.
@@ -2611,6 +2612,9 @@ Si se habilita esta política, el menú de aplicaciones/la tecla de búsqueda po
 Si se define una cookie en un dominio que coincide con uno de los filtros proporcionados, la cookie se excluye y no se moverá. Los dominios de cookies se contrastan mediante reglas del campo "host" descritas en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El resto de los campos se ignoran. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
 La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> prevalece.</translation>
+<translation id="2953447815703785478">Especifica los certificados de cliente de todo el dispositivo que deberían registrarse usando el protocolo de gestión de dispositivos.
+
+La opción de algoritmo de clave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> es compatible desde la versión 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2957506574938329824">No permitir que los sitios soliciten acceso a los dispositivos Bluetooth a través de la API Bluetooth web</translation>
 <translation id="2957513448235202597">Tipo de cuenta para la autenticación <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Enviar siempre los puntos de acceso Wi‑Fi al servidor mientras se detecta la zona horaria</translation>
@@ -4434,6 +4438,7 @@ Si esta política se inhabilita, los usuarios no podrán hacer el seguimiento de
       <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Inhabilitar el resaltado del foco del teclado en la pantalla de inicio de sesión</translation>
 <translation id="4397045637922200204">Desactivar recuperación de cuenta</translation>
+<translation id="4397157269508242312">Si se define esta política, se especificará si los usuarios usan herramientas de gestión de clases para enviar/recibir contenido, enviar/recibir subtítulos como alumnos o profesores, o si las herramientas de gestión de clases están inhabilitadas para los usuarios.</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de colocación de ventanas</translation>
 <translation id="4398803806072237638">La sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> de la función de estado personalizado de CSS se va a cambiar a <ph name="CUSTOM_STATE_NEW_SYNTAX" /> en <ph name="PRODUCT_NAME" /> para cumplir los cambios que se han hecho en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política permite habilitar la sintaxis obsoleta anterior hasta la versión M133.
 
@@ -4902,6 +4907,7 @@ En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones e
 <translation id="4739596156184678950">Permitir que se guarden archivos directamente en <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Restringir el modo de impresión con gráficos de fondo</translation>
 <translation id="4745232963710538589">Habilitar la extensión de estadísticas para informar sobre métricas de uso</translation>
+<translation id="4746394249367607432">Los usuarios podrán unirse a una sesión de gestión de clases y se les podrá añadir a ella. Los profesores podrán enviar contenido a estos usuarios.</translation>
 <translation id="4749670563834935149">Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs en las pantallas de inicio de sesión y de bloqueo.
 
 Si se define esta política, especificará a qué URLs ofrecerá <ph name="PRODUCT_OS_NAME" /> iniciar el flujo de atestación. Este último permite que esos sitios web obtengan un conjunto acreditado de señales contextuales del dispositivo.
@@ -6207,6 +6213,9 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
       Si se inhabilita esta política, se inhabilitará el corrector ortográfico desde todas las fuentes y los usuarios no podrán activarlo. Las políticas <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> y <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> no tendrán ningún efecto si se asigna el valor False a esta política.
 
       Si no se asigna ningún valor a esta política, los usuarios podrán activar o desactivar el corrector ortográfico en los ajustes de idioma. </translation>
+<translation id="5655060841667911118">Especifica los certificados de cliente que deberían registrarse usando el protocolo de gestión de dispositivos.
+
+La opción de algoritmo de clave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> es compatible desde la versión 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Permitir el uso de la API U2F Security Key obsoleta</translation>
 <translation id="5656177735561364047">Habilita la función de portapapeles compartido</translation>
 <translation id="5657752663637568277">Esta política controla si se muestran advertencias de desactivación de <ph name="CLOUD_PRINT_NAME" /> a los usuarios en el cuadro de diálogo de vista previa de impresión o en las páginas de ajustes.
@@ -7507,6 +7516,7 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 <translation id="6607983779935460461">Compatibilidad de URLs de datos con SVGUseElement</translation>
 <translation id="6609867253856597039">Establecer la experiencia de usuario de funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="6614648642325603511">El algoritmo para generar pares de claves. La opción de EC es compatible desde la versión 132.</translation>
 <translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS dañados.</translation>
 <translation id="6617589895942747919">Hora de inicio del intervalo, inclusiva.</translation>
 <translation id="6621830999036927230">Si se le asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.
@@ -7796,6 +7806,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 
       Esta política está obsoleta. Usa la política <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="6847379587945465889">Habilitar la transferencia de cookies de SSO basado en SAML a la sesión de usuario durante el inicio de sesión</translation>
+<translation id="6847810176590195243">Los usuarios podrán conectarse y enviar contenido a los alumnos. Esto incluye enviar contenido web y hacer que los subtítulos/traducciones automáticos de la voz del profesor estén disponibles para los alumnos.</translation>
 <translation id="684856667300805181">Esta política se retiró en <ph name="PRODUCT_NAME" /> 68 y se ha sustituido por <ph name="ARC_GLS_POLICY_NAME" />.</translation>
 <translation id="684882090733715433">Informes de eventos del navegador</translation>
 <translation id="6850300477973481112">Configuración de Desk Connector</translation>
@@ -9013,6 +9024,7 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
 <translation id="782661371433719637">No permitir que ningún sitio web solicite acceso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="7827127381981620448">Aplicación de una plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas durante el cierre de la página</translation>
+<translation id="7829546795016635784">Los usuarios no pueden usar ninguna de las funciones de gestión de clases ni se les puede añadir a una sesión de gestión de clases.</translation>
 <translation id="782978857350824974">Permitir solicitudes de Web Authentication en sitios con certificados TLS rotos.</translation>
 <translation id="7830775338190021763">Habilitar la capacidad de transferir archivos en sesiones de asistencia remota de empresas</translation>
 <translation id="7832225468415136704">Impedir que Limpiador de Chrome analice periódicamente el sistema e inhabilitar los análisis manuales</translation>
@@ -10816,6 +10828,7 @@ El valor predeterminado es RollbackDisabled.</translation>
       De forma predeterminada, se permite que el navegador del host muestre las páginas HTML, pero puedes anular esta opción para que <ph name="PRODUCT_FRAME_NAME" /> muestre las páginas HTML de forma predeterminada.</translation>
 <translation id="944817693306670849">Establecer tamaño de caché de disco</translation>
 <translation id="949192525372487705">Bloquear el cambio a gestores de contraseñas de terceros</translation>
+<translation id="956107219808875608">Controla la configuración de las herramientas de gestión de clases.</translation>
 <translation id="957322141096206402">La resolución de DNS del sistema se puede ejecutar dentro o fuera del proceso de red, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="957778406002650056">La URL desde la que se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante la descarga</translation>
@@ -10828,6 +10841,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="966425658642788645">Aplicar comportamiento predeterminado</translation>
 <translation id="971677226939413180">Opción Imprimir como imagen no disponible para el usuario.</translation>
 <translation id="974349541138387272">Especifica la plantilla URI de resolución de DNS-over-HTTPS deseada</translation>
+<translation id="978619365985286086">Ajustes de las herramientas de gestión de clases</translation>
 <translation id="978658824596356870">Formato de reloj de 24 horas</translation>
 <translation id="979467274961593903">No permitir el uso de la depuración remota</translation>
 <translation id="980218166381006412">Si se habilita esta política, se activará el modo de segundo plano. En el modo de segundo plano, un proceso de <ph name="PRODUCT_NAME" /> comienza al iniciar sesión en el sistema operativo y sigue ejecutándose cuando se cierra la última ventana del navegador, lo que permite que las aplicaciones en segundo plano y la sesión de navegación sigan activas. El proceso en segundo plano muestra un icono en la bandeja del sistema y se puede cerrar desde ahí en cualquier momento.

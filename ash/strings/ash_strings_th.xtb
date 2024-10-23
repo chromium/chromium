@@ -339,9 +339,6 @@
 <translation id="219905428774326614">Launcher, แอปทั้งหมด</translation>
 <translation id="2201071101391734388">รูปภาพล่าสุด <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">ยุบ Google Tasks</translation>
-<translation id="2206960886090042977">ระบบปิดใช้งานทัชแพดในตัวเนื่องจากมีเมาส์เชื่อมต่ออยู่ ใช้เมาส์หรือแป้นพิมพ์เพื่อยืนยันการเปลี่ยนแปลง
-
-ไม่เช่นนั้นระบบจะเปิดใช้ทัชแพดในตัวอีกครั้งใน 30 วินาที</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222841058024245321">เดสก์ 7</translation>
@@ -970,6 +967,7 @@
 <translation id="4356872429719185452">แสดงรายละเอียดฮอตสปอต กำลังเปิดฮอตสปอต</translation>
 <translation id="4364101114148522660">กำลังบันทึก <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">การตั้งค่าการแคสต์</translation>
+<translation id="4371834685492830207">PIN ต้องมีอักขระที่ถูกต้องเท่านั้น</translation>
 <translation id="4375482231364171368">ค้นหาในแถบที่อยู่</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /> เปอร์เซ็นต์</translation>
 <translation id="4378551569595875038">กำลังเชื่อมต่อ</translation>
@@ -1555,6 +1553,7 @@
 <translation id="6232416233079464213">จาก <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">"<ph name="APP_NAME" />" กำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">รหัสผ่านต้องมีอักขระที่ถูกต้องเท่านั้น</translation>
 <translation id="6240603910551255087">ปุ่มบน</translation>
 <translation id="6240821072888636753">ถามทุกครั้ง</translation>
 <translation id="6247728804802644171">เปิดการแจ้งเตือน</translation>
@@ -1910,9 +1909,6 @@
 หากต้องการปิดอุปกรณ์ ให้กดปุ่มเปิด/ปิดบนอุปกรณ์ค้างไว้อีกครั้ง</translation>
 <translation id="7523420897035067483">เปิดใช้ฟีเจอร์ห้ามรบกวนขณะอยู่ในโหมดโฟกัส</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7524919752437339268">ระบบปิดใช้งานทัชแพด ใช้แป้นพิมพ์หรืออุปกรณ์ชี้ตำแหน่งอื่นเพื่อยืนยันการเปลี่ยนแปลง
-
-ไม่เช่นนั้นระบบจะเปิดใช้ทัชแพดในตัวอีกครั้งใน 30 วินาที</translation>
 <translation id="7525067979554623046">สร้าง</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>

@@ -2909,7 +2909,6 @@
 <translation id="3030967311408872958">غروب تا طلوع</translation>
 <translation id="3031417829280473749">‏مأمور X</translation>
 <translation id="3031532026314193077">استفاده از صفحه لمسی و صفحه‌کلید برای کلیک راست</translation>
-<translation id="3031544881009594539">‏برای ایجاد گذرکلید جدید، به سیستم این سایت وارد شوید. گذرکلید قبلی از «مدیر گذرواژه Google» حذف شده است.</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
 <translation id="3032204772252313646">زیرنویس خودکار</translation>
 <translation id="3032272345862007156">مضمون هوش مصنوعی <ph name="INDEX" /></translation>
@@ -3804,7 +3803,6 @@
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3707034683772193706">‏سایتی که از آن بازدید می‌کنید می‌تواند مقدار کمی از اطلاعات را در Chrome ذخیره کند. این کار عمدتاً برای تأیید اینکه شما روبات نیستید انجام می‌شود</translation>
 <translation id="3707163604290651814">درحال‌حاضر به‌عنوان <ph name="NAME" /> به سیستم وارد شده‌اید</translation>
-<translation id="3707242400882068741">گذرکلید باید به‌روز شود</translation>
 <translation id="3707348585109246684">باز کردن پیوند در برگه جدید <ph name="APP" /></translation>
 <translation id="3708295717182051206">زیرنویس ناشنوایان</translation>
 <translation id="3708684582558000260">به سایت‌های بسته‌شده اجازه داده نشود ارسال و دریافت داده را تکمیل کنند</translation>
@@ -4306,7 +4304,6 @@
 <translation id="403725336528835653">امتحان کردن</translation>
 <translation id="4039966970282098406">با کنترل دسترسی به میکروفون، دوربین، و غیره، حریم خصوصی خود را مدیریت کنید</translation>
 <translation id="4040041015953651705">زبانی که می‌خواهید از آن ترجمه کنید</translation>
-<translation id="4042660782729322247">درحال اشتراک‌گذاری صفحه‌تان هستید</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{خروج از صفحه}one{خروج از صفحه‌ها}other{خروج از صفحه‌ها}}</translation>
 <translation id="4042941173059740150">ادامه <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">اندازه مکان‌نما</translation>
@@ -5032,7 +5029,6 @@
 <translation id="4588749726511456218">شتاب‌دهی پیمایش، <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">گزارش‌ها باموفقیت در فهرست راهنمای «بارگیری‌ها» نوشته شد.</translation>
 <translation id="4590785647529325123">برای حذف کردن سابقه مرور «حالت ناشناس» از دستگاه، همه برگه‌های «ناشناس» را ببندید</translation>
-<translation id="4590969863668977062">گذرکلید به‌روزرسانی شد</translation>
 <translation id="459204634473266369">هیچ دستگاهی در <ph name="PRIMARY_EMAIL" /> ذخیره نشده است</translation>
 <translation id="4592891116925567110">برنامه طراحی قلم</translation>
 <translation id="4593021220803146968">&amp;رفتن به <ph name="URL" /></translation>
@@ -8938,7 +8934,7 @@
 <translation id="7478069565037869084">عریض</translation>
 <translation id="7478485216301680444">برنامه کاربردی کیوسک نصب نشد.</translation>
 <translation id="7478658909253570368">به سایت‌ها اجازه داده نشود به درگاه‌های سریال متصل شوند</translation>
-<translation id="7479221278376295180">نمای کلی استفاده از حافظه</translation>
+<translation id="7479221278376295180">نمای کلی استفاده از فضای ذخیره‌سازی</translation>
 <translation id="747981547666531654">متصل به دستگاه‌های بلوتوث با نام <ph name="FIRST_DEVICE" /> و <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
 <translation id="7481358317100446445">آماده</translation>

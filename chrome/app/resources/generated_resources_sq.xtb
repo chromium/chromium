@@ -2897,7 +2897,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3030967311408872958">Nga perëndimi në agim</translation>
 <translation id="3031417829280473749">Agjenti X</translation>
 <translation id="3031532026314193077">Përdor bllokun me prekje dhe tastierën për të klikuar me butonin djathtas</translation>
-<translation id="3031544881009594539">Identifikohu në këtë sajt për të krijuar një çelës të ri kalimi. Çelësi i vjetër i kalimit është fshirë nga "Menaxheri i fjalëkalimeve i Google".</translation>
 <translation id="3031557471081358569">Përzgjidh artikujt për të importuar:</translation>
 <translation id="3032204772252313646">Titrat automatikë</translation>
 <translation id="3032272345862007156">Tema e fundit me IA: <ph name="INDEX" /></translation>
@@ -3790,7 +3789,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3707034683772193706">Një sajt që ti viziton mund të ruajë një sasi të vogël informacionesh me Chrome, kryesisht për të vërtetuar që nuk je një robot</translation>
 <translation id="3707163604290651814">Aktualisht i identifikuar si <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Nevojitet përditësimi i çelësit të kalimit</translation>
 <translation id="3707348585109246684">Hape lidhjen në një skedë të re të <ph name="APP" /></translation>
 <translation id="3708295717182051206">Titrat</translation>
 <translation id="3708684582558000260">Mos lejo që sajtet e mbyllura të përfundojnë dërgimin ose marrjen e të dhënave</translation>
@@ -4292,7 +4290,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="403725336528835653">Provoje një herë</translation>
 <translation id="4039966970282098406">Menaxho privatësinë tënde duke kontrolluar qasjen te mikrofoni, kamera etj.</translation>
 <translation id="4040041015953651705">Gjuha nga e cila do të përkthesh</translation>
-<translation id="4042660782729322247">Po ndan ekranin</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Dil nga faqja}other{Dil nga faqet}}</translation>
 <translation id="4042941173059740150">Vazhdo te <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Madhësia e kursorit</translation>
@@ -5018,7 +5015,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4588749726511456218">Përshpejtimi i lëvizjes <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Evidencat janë shkruar me sukses te direktoria "Shkarkimet".</translation>
 <translation id="4590785647529325123">Për të fshirë historikun e shfletimit në modalitetin "I fshehtë" nga pajisja jote, mbylli të gjitha skedat e fshehta</translation>
-<translation id="4590969863668977062">Çelësi i kalimit u përditësua</translation>
 <translation id="459204634473266369">Nuk u ruajt asnjë pajisje te <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplikacioni për vizatimin me stilolaps</translation>
 <translation id="4593021220803146968">&amp;Shko te <ph name="URL" /></translation>

@@ -339,9 +339,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna fotografija od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sužavanje Google Zadataka</translation>
-<translation id="2206960886090042977">Ugrađena dodirna podloga je onemogućena jer je povezan miš. Potvrdite promjenu pomoću miša ili tastature.
-
-U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za 30 sekundi.</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
@@ -1561,7 +1558,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6232416233079464213">S <ph name="SESSION_NAME" /> računara</translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutno koristi vašu kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6240551054644725950">Zaporka mora sadržavati samo važeće znakove</translation>
+<translation id="6240551054644725950">Lozinka mora sadržavati samo važeće znakove</translation>
 <translation id="6240603910551255087">Gornje dugme</translation>
 <translation id="6240821072888636753">Pitaj svaki put</translation>
 <translation id="6247728804802644171">Otvorite obavještenja</translation>
@@ -1917,9 +1914,6 @@ Nova instalacija</translation>
 Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na uređaju.</translation>
 <translation id="7523420897035067483">Omogućavanje funkcije "Ne ometaj" za vrijeme fokusiranja</translation>
 <translation id="7524043547948122239">Google Zadaci</translation>
-<translation id="7524919752437339268">Ugrađena dodirna podloga je onemogućena. Potvrdite promjenu pomoću tastature ili drugog uređaja za pokazivanje.
-
-U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za 30 sekundi.</translation>
 <translation id="7525067979554623046">Kreiraj</translation>
 <translation id="7526573455193969409">Mreža može biti nadzirana</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>

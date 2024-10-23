@@ -551,6 +551,9 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1396119629372155901">已停用 ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes 功能</translation>
 <translation id="1397855852561539316">默认搜索服务提供商建议网址</translation>
 <translation id="140076409387986842">允许使用“帮我写”功能，但不改进 AI 模型。</translation>
+<translation id="1401249111997036083">如果此政策设为 False，受支持的链接将默认在 Android 应用中打开。
+如果此政策设为 True，则所有链接都会默认在 Chrome 浏览器中打开。
+如果此政策未设置，受管用户的链接将默认在 Android 应用中打开，而个人用户的链接将默认在浏览器中打开。</translation>
 <translation id="1402227992519954892">启用设备应用信息报告功能</translation>
 <translation id="1405444733221330570">启用 Orca</translation>
 <translation id="1407977345632185991">不允许使用“创建主题”功能。</translation>
@@ -8835,6 +8838,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
 <translation id="7763650553214838209">为“Insert”操作设置快捷键的功能已停用。</translation>
+<translation id="7763655314629932385">指定所需的 IWA 版本。如果提供了，系统会尝试安装此特定版本，并随后阻止任何后续更新。若要取消固定应用并重新启用更新，请移除此字段。**重要提示：**如果提供的版本不存在，IWA 将停留在当前已安装的版本上。这是因为，在尝试更新到固定版本（但失败）后，固定操作会停用任何后续自动更新。</translation>
 <translation id="776465643636059256">停用 Related Website Sets</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
 <translation id="7767066506143083523">通过设置此政策，您可创建一个网址格式列表，从而指定哪些网站能够使用标签页截取功能。
@@ -8869,6 +8873,15 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           如果未设置此政策，默认情况下，无障碍功能快捷方式在登录屏幕上会处于启用状态。</translation>
 <translation id="7777535871204167559">以只读模式处理外部存储设备</translation>
 <translation id="7781452670568828399">更改建议的 <ph name="PRODUCT_OS_NAME" /> 配置。</translation>
+<translation id="7782770795171480507">设置此政策将指定一系列静默安装的独立式 Web 应用 (IWA)。
+      IWA 拥有普通网页不具备的实用安全属性。IWA 会被打包成经过签名的 Web 软件包。经过签名的 Web 软件包的公钥用于创建可标识 IWA 的 Web 软件包 ID。
+      截至目前，此政策仅适用于受管理的访客会话。
+
+      此政策的每个列表项都是一个对象，包含两个必填字段：更新清单<ph name="URL_LABEL" />和 IWA 的 Web 软件包 ID。
+
+     每个列表项还可以包含可选字段：IWA 发布/更新渠道名称 (update_channel) 和要固定的特定版本 (pinned_version)。
+      如果未设置“update_channel”，系统将使用“default”值。指定 pinned_version 后，系统会尝试安装该特定版本（如果当前更新渠道上有该版本）。
+      默认情况下，版本固定不允许回滚到旧版本。将 IWA 固定到特定版本后，它将无法更新到该版本之后的版本。若要取消固定，请移除此字段。</translation>
 <translation id="7784062550705119230">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="7785199109546027763">此政策用于控制是否应启用 <ph name="PRIVACY_SANDBOX_NAME" /> IP 地址保护功能。
 

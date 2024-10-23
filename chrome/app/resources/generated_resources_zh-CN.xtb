@@ -1796,6 +1796,7 @@
     <ph name="BEGIN_PARAGRAPH2" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">与下列网域中的任何设备交换数据：<ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">为“选择”操作分配开关</translation>
+<translation id="2270668657177045040">网站及其子网域可以查看您的设备上安装了哪些相关 Web 应用。</translation>
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2271986192355138465">了解如何安装 Web 应用</translation>
 <translation id="2272430695183451567">已分配 0 个开关键</translation>
@@ -2891,7 +2892,6 @@
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">女特工</translation>
 <translation id="3031532026314193077">使用触控板和键盘实现右键点击操作</translation>
-<translation id="3031544881009594539">登录此网站即可创建新的通行密钥。旧通行密钥已从 Google 密码管理工具中删除。</translation>
 <translation id="3031557471081358569">选择要导入的内容：</translation>
 <translation id="3032204772252313646">自动字幕</translation>
 <translation id="3032272345862007156">近期搜索的 AI 主题 <ph name="INDEX" /></translation>
@@ -3784,7 +3784,6 @@
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
 <translation id="3707163604290651814">目前登录的账号是 <ph name="NAME" /></translation>
-<translation id="3707242400882068741">需要更新通行密钥</translation>
 <translation id="3707348585109246684">在新的<ph name="APP" />标签页中打开链接</translation>
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
@@ -4285,7 +4284,6 @@
 <translation id="403725336528835653">先试用一下</translation>
 <translation id="4039966970282098406">通过控制对麦克风、摄像头等的访问权限来管理您的隐私设置</translation>
 <translation id="4040041015953651705">原文语言</translation>
-<translation id="4042660782729322247">您正在共享屏幕</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{退出网页}other{退出网页}}</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">光标大小</translation>
@@ -5011,7 +5009,6 @@
 <translation id="4588749726511456218">滚动加速<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">已成功将日志写入“下载内容”目录中。</translation>
 <translation id="4590785647529325123">若要删除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
-<translation id="4590969863668977062">已更新通行密钥</translation>
 <translation id="459204634473266369">尚未将任何设备保存到“<ph name="PRIMARY_EMAIL" />”</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
 <translation id="4593021220803146968">转到 <ph name="URL" />(&amp;G)</translation>
@@ -5315,6 +5312,7 @@
 <translation id="4823193082697477185">访问本地网络中的共享文件、文件夹或云端硬盘。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">读取和更改用户设置与设备设置</translation>
 <translation id="4824037980212326045">Linux 备份和恢复</translation>
+<translation id="4824263260587281352">更改组合键 <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">取消同步？</translation>
 <translation id="4825462365587146530">在新标签页中详细了解 Chrome 根存储区。</translation>
 <translation id="4825532258163983651">无法删除通行密钥</translation>
@@ -7803,6 +7801,7 @@
 <translation id="6676212663108450937">请考虑在训练语音时使用耳机</translation>
 <translation id="6676291960742508499">您的标签页、网页标题和网址会发送给 Google</translation>
 <translation id="667752334740867460">正在接收 Wi-Fi 信息…</translation>
+<translation id="6677527809400770913">已将手势“<ph name="GESTURE" />”分配给“<ph name="ACTION" />”</translation>
 <translation id="6678604587151240716">海中巨浪翻滚，远处背景是一片陆地。天空暗沉，地平线上隐约透出橙色光芒。</translation>
 <translation id="6678717876183468697">查询网址</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
@@ -10007,6 +10006,7 @@
 <translation id="8261378640211443080">该扩展程序未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并可能是在您不知情的情况下添加的。</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8261625296061301062">已安装扫描仪软件</translation>
+<translation id="8263149565724023141">相关应用</translation>
 <translation id="8263228331881858381">已保存通行密钥</translation>
 <translation id="8263336784344783289">为此组命名</translation>
 <translation id="8264024885325823677">此设置由您的管理员管理。</translation>

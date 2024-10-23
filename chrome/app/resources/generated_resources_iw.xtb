@@ -2911,7 +2911,6 @@
 <translation id="3030967311408872958">מהשקיעה ועד לזריחה</translation>
 <translation id="3031417829280473749">‏סוכנת X</translation>
 <translation id="3031532026314193077">שימוש בלוח המגע ובמקלדת כדי ללחוץ לחיצה ימנית</translation>
-<translation id="3031544881009594539">‏צריך להיכנס לחשבון באתר הזה כדי ליצור מפתח גישה חדש. הסיסמה הישנה נמחקה ממנהל הסיסמאות של Google.</translation>
 <translation id="3031557471081358569">יש לבחור פריטים לייבוא:</translation>
 <translation id="3032204772252313646">כתוביות אוטומטיות</translation>
 <translation id="3032272345862007156">‏עיצוב מהזמן אחרון שנוצר באמצעות AI‏ <ph name="INDEX" /></translation>
@@ -3806,7 +3805,6 @@
 <translation id="370665806235115550">בטעינה...</translation>
 <translation id="3707034683772193706">‏אתר כלשהו שמבקרים בו יכול לשמור כמות נתונים קטנה ב-Chrome, בעיקר כדי לאמת שלא מדובר בבוט.</translation>
 <translation id="3707163604290651814">החשבון המחובר עכשיו הוא <ph name="NAME" /></translation>
-<translation id="3707242400882068741">צריך לעדכן את מפתח הגישה</translation>
 <translation id="3707348585109246684">פתיחת הקישור בכרטיסייה חדשה של <ph name="APP" /></translation>
 <translation id="3708295717182051206">כתוביות ללקויי שמיעה</translation>
 <translation id="3708684582558000260">לא לאפשר לאתרים סגורים לסיים שליחה או קבלה של נתונים</translation>
@@ -4308,7 +4306,6 @@
 <translation id="403725336528835653">אני רוצה לנסות קודם</translation>
 <translation id="4039966970282098406">ניהול ההגדרות לשמירה על פרטיות באמצעות הרשאות הגישה למיקרופון, למצלמה ועוד</translation>
 <translation id="4040041015953651705">שפת המקור לתרגום</translation>
-<translation id="4042660782729322247">המסך שלך משותף</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{יציאה מהדף}one{יציאה מהדפים}two{יציאה מהדפים}other{יציאה מהדפים}}</translation>
 <translation id="4042941173059740150">יש לך אפשרות להמשיך לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">גודל הסמן</translation>
@@ -5035,7 +5032,6 @@
 <translation id="4588749726511456218">הגברת מהירות הגלילה <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">היומנים נכתבו בהצלחה בספרייה 'הורדות'.</translation>
 <translation id="4590785647529325123">כדי למחוק את היסטוריית הגלישה במצב פרטי מהמכשיר, צריך לסגור את כל הכרטיסיות הפרטיות</translation>
-<translation id="4590969863668977062">מפתח הגישה עודכן</translation>
 <translation id="459204634473266369">לא נשמרו מכשירים לחשבון <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">אפליקציה לציור עם סטיילוס</translation>
 <translation id="4593021220803146968">&amp;מעבר אל <ph name="URL" /></translation>
@@ -5057,6 +5053,7 @@
 <translation id="4602776638371779614">‏בכרטיסייה הזו מבצעת סריקה באופן פעיל כדי לאתר מכשירי Bluetooth</translation>
 <translation id="4605026046465576953">‏לא ניתן לפתוח את האפליקציה הזו כי אין לך הרשאה להפעיל אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="4606551464649945562">אתרים לא יוכלו ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
+<translation id="4606933160360542263">שילוב מקשים מותאם אישית: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{למחוק את קבוצת הכרטיסיות?}one{למחוק את קבוצות הכרטיסיות?}two{למחוק את קבוצות הכרטיסיות?}other{למחוק את קבוצות הכרטיסיות?}}</translation>
 <translation id="4608500690299898628">&amp;חיפוש...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> נתקל בשגיאה</translation>
@@ -6292,6 +6289,7 @@
 <translation id="5517304475148761050">‏האפליקציה הזו צריכה גישה אל חנות Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">הסרת הפעולה <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">האם זהו דף הבית שציפית לראות?</translation>
 <translation id="5522156646677899028">התוסף הזה מכיל נקודת תורפה חמורה באבטחה.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{מנהל המערכת שלך התקין תוסף}one{מנהל המערכת שלך התקין # תוספים}two{מנהל המערכת שלך התקין # תוספים}other{מנהל המערכת שלך התקין # תוספים}}</translation>
@@ -10280,6 +10278,7 @@
 <translation id="8429928917752180743">אפשרויות נוספות ל-<ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">הצגת הקשות</translation>
 <translation id="843173223122814223">‏יצירת רקעים באמצעות AI</translation>
+<translation id="8431977087510901105">הגדרות הסמן אופסו</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="8434109185104929038">פינת קריאה</translation>
 <translation id="8434480141477525001">יציאת ניפוי באגים של לקוח מקומי</translation>

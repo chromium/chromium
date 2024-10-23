@@ -2899,7 +2899,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3030967311408872958">Iluntzetik egunsentira</translation>
 <translation id="3031417829280473749">X agentea</translation>
 <translation id="3031532026314193077">Eskuineko botoiarekin klik egiteko, erabili ukipen-panela eta teklatua</translation>
-<translation id="3031544881009594539">Hasi saioa webgune honetan sarbide-gako bat sortzeko. Zaharra ezabatu egin da Google-ren Pasahitz-kudeatzailea zerbitzutik.</translation>
 <translation id="3031557471081358569">Hautatu inportatu beharreko elementuak:</translation>
 <translation id="3032204772252313646">Azpititulu automatikoak</translation>
 <translation id="3032272345862007156">Azkenaldiko AA bidez sortutako gaia (<ph name="INDEX" />)</translation>
@@ -3792,7 +3791,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="370665806235115550">Kargatzen…</translation>
 <translation id="3707034683772193706">Bisitatzen dituzun webguneek informazio pixka bat gorde dezakete Chrome-rekin, batez ere robot bat ez zarela egiaztatzeko.</translation>
 <translation id="3707163604290651814"><ph name="NAME" /> gisa hasi duzu saioa</translation>
-<translation id="3707242400882068741">Sarbide-gakoa eguneratu behar da</translation>
 <translation id="3707348585109246684">Ireki esteka <ph name="APP" /> aplikazioaren beste fitxa batean</translation>
 <translation id="3708295717182051206">Azpitituluak</translation>
 <translation id="3708684582558000260">Ez eman datuak bidaltzen edo jasotzen amaitzeko baimena itxitako webguneei</translation>
@@ -4294,7 +4292,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="403725336528835653">Proba ezazu lehendabizi</translation>
 <translation id="4039966970282098406">Kudeatu pribatutasuna mikrofonoa, kamera eta abar erabiltzeko baimena kontrolatuta</translation>
 <translation id="4040041015953651705">Jatorrizko hizkuntza</translation>
-<translation id="4042660782729322247">Pantaila partekatzen ari zara</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Irten orritik}other{Irten orrietatik}}</translation>
 <translation id="4042941173059740150">Sartu <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="4043267180218562935">Kurtsorearen tamaina</translation>
@@ -5020,7 +5017,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4588749726511456218">Gora/Behera egiteko moduaren azelerazioa <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Idatzi dira erregistroak Deskargak direktorioan.</translation>
 <translation id="4590785647529325123">Gailuan gordetako ezkutuko moduko arakatze-historia ezabatzeko, itxi ezkutuko moduko fitxa guztiak</translation>
-<translation id="4590969863668977062">Eguneratu da sarbide-gakoa</translation>
 <translation id="459204634473266369">Ez dago gailurik gordeta <ph name="PRIMARY_EMAIL" /> kontuan</translation>
 <translation id="4592891116925567110">Arkatzarekin marrazteko aplikazioa</translation>
 <translation id="4593021220803146968">&amp;Joan hona: <ph name="URL" /></translation>

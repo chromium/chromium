@@ -1804,6 +1804,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Пасля таго як усталяванне пачнецца, працэс нельга будзе скасаваць.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Абмен данымі з прыладамі ў наступных даменах: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Прызначце пераключальнік для дзеяння "Выбраць"</translation>
+<translation id="2270668657177045040">Сайт і яго субдамены могуць атрымліваць інфармацыю пра тое, якія звязаныя вэб-праграмы ўсталяваны на вашай прыладзе.</translation>
 <translation id="2271452184061378400">Тут захоўваюцца групы ўкладак</translation>
 <translation id="2271986192355138465">Даведацца, як усталёўваць вэб-праграмы</translation>
 <translation id="2272430695183451567">Прызначана 0 пераключальнікаў</translation>
@@ -2900,7 +2901,6 @@
 <translation id="3030967311408872958">Ад захаду сонца да світання</translation>
 <translation id="3031417829280473749">Агент X</translation>
 <translation id="3031532026314193077">Выкарыстоўваць сэнсарную панэль і клавіятуру для націскання правай кнопкай мышы</translation>
-<translation id="3031544881009594539">Каб стварыць новы ключ доступу, выканайце ўваход на сайт. Стары ключ доступу быў выдалены з Менеджара пароляў Google.</translation>
 <translation id="3031557471081358569">Выберыце, што імпартаваць:</translation>
 <translation id="3032204772252313646">Аўтаматычныя субцітры</translation>
 <translation id="3032272345862007156">Нядаўняя тэма <ph name="INDEX" />, створаная з дапамогай AI</translation>
@@ -3793,7 +3793,6 @@
 <translation id="370665806235115550">Загрузка…</translation>
 <translation id="3707034683772193706">Наведаны вамі сайт можа захаваць невялікі аб’ём інфармацыі ў Chrome, у асноўным для пацвярджэння таго, што вы не бот.</translation>
 <translation id="3707163604290651814">Карыстальнік увайшоў у сістэму як <ph name="NAME" /></translation>
-<translation id="3707242400882068741">Трэба змяніць ключ доступу</translation>
 <translation id="3707348585109246684">Адкрыць спасылку ў новай укладцы (<ph name="APP" />)</translation>
 <translation id="3708295717182051206">Субцітры для асоб з парушэннем слыху</translation>
 <translation id="3708684582558000260">Не дазваляць сайтам завяршаць адпраўку або атрыманне даных</translation>
@@ -4295,7 +4294,6 @@
 <translation id="403725336528835653">Спачатку апрабаваць</translation>
 <translation id="4039966970282098406">Кантралюйце налады прыватнасці, кіруючы доступам прылады да мікрафона, камеры і іншых функцый</translation>
 <translation id="4040041015953651705">З якой мовы перакласці</translation>
-<translation id="4042660782729322247">Вы абагульваеце экран</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Старонка выхаду}one{Старонкі выхаду}few{Старонкі выхаду}many{Старонкі выхаду}other{Старонкі выхаду}}</translation>
 <translation id="4042941173059740150">Працягвайце выкарыстоўваць сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" для доступу да вэб-сайта <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Памер курсора</translation>
@@ -5021,7 +5019,6 @@
 <translation id="4588749726511456218">Паскарэнне прагортвання <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Журналы захаваны ў каталозе "Спампоўкі".</translation>
 <translation id="4590785647529325123">Каб выдаліць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта</translation>
-<translation id="4590969863668977062">Ключ доступу абноўлены</translation>
 <translation id="459204634473266369">Ва ўліковым запісе <ph name="PRIMARY_EMAIL" /> няма захаваных прылад</translation>
 <translation id="4592891116925567110">Праграма для рысавання пяром</translation>
 <translation id="4593021220803146968">&amp;Перайсці на старонку <ph name="URL" /></translation>
@@ -5043,6 +5040,7 @@
 <translation id="4602776638371779614">Гэта ўкладка шукае прылады з Bluetooth</translation>
 <translation id="4605026046465576953">Гэту праграму нельга адкрыць, бо ў вас няма дазволу на выкананне ізаляваных вэб-праграм</translation>
 <translation id="4606551464649945562">Не дазваляць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
+<translation id="4606933160360542263">Уласная камбінацыя клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Выдаліць групу ўкладак?}one{Выдаліць групы ўкладак?}few{Выдаліць групы ўкладак?}many{Выдаліць групы ўкладак?}other{Выдаліць групы ўкладак?}}</translation>
 <translation id="4608500690299898628">&amp;Пошук...</translation>
 <translation id="4610162781778310380">У <ph name="PLUGIN_NAME" /> выяўлена памылка</translation>
@@ -5324,6 +5322,7 @@
 <translation id="4823193082697477185">Доступ да агульных файлаў, папак і дыскаў у лакальнай сетцы. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Прагляд і змяненне налад прылады і карыстальніка</translation>
 <translation id="4824037980212326045">Рэзервовае капіраванне і аднаўленне Linux</translation>
+<translation id="4824263260587281352">Змяніць камбінацыю клавіш <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Скасаваць сінхранізацыю?</translation>
 <translation id="4825462365587146530">Адкрыць падрабязную інфармацыю пра Chrome Root Store у новай укладцы.</translation>
 <translation id="4825532258163983651">Не ўдалося выдаліць ключ доступу</translation>
@@ -6277,6 +6276,7 @@
 <translation id="5517304475148761050">Гэтай праграме патрабуецца доступ да Крамы Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Выдаліць дзеянне "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">Ці з’яўляецца галоўная старонка той, якую вы чакалі ўбачыць?</translation>
 <translation id="5522156646677899028">Гэта пашырэнне стварае сур’ёзную пагрозу для бяспекі.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Адміністратар усталяваў пашырэнне}one{Адміністратар усталяваў # пашырэнне}few{Адміністратар усталяваў # пашырэнні}many{Адміністратар усталяваў # пашырэнняў}other{Адміністратар усталяваў # пашырэння}}</translation>
@@ -7821,6 +7821,7 @@
 <translation id="6676212663108450937">Карыстайцеся навушнікамі, калі выпрабоўваеце голас</translation>
 <translation id="6676291960742508499">Вашы ўкладкі, загалоўкі старонак і URL-адрасы будуць адпраўляцца ў Google</translation>
 <translation id="667752334740867460">Ідзе атрыманне даных Wi-Fi...</translation>
+<translation id="6677527809400770913">Прызначыць жэст "<ph name="GESTURE" />" для дзеяння "<ph name="ACTION" />"</translation>
 <translation id="6678604587151240716">Вялікія хвалі плёскаюцца ў моры, далёка на фоне бачна зямлю. Цёмнае атмасфернае неба з аранжавымі пробліскамі за гарызонтам.</translation>
 <translation id="6678717876183468697">URL запыту</translation>
 <translation id="6680442031740878064">Даступна: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10023,6 +10024,7 @@
 <translation id="8261378640211443080">Гэта пашырэнне не значыцца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, яно магло быць дададзена без вашага ведама.</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8261625296061301062">Праграмнае забеспячэнне для сканера ўсталявана</translation>
+<translation id="8263149565724023141">Звязаныя праграмы</translation>
 <translation id="8263228331881858381">Ключ доступу захаваны</translation>
 <translation id="8263336784344783289">Дайце назву гэтай групе</translation>
 <translation id="8264024885325823677">Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
@@ -10264,6 +10266,7 @@
 <translation id="8429928917752180743">Іншыя варыянты для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8431190899827883166">Паказ дотыкаў</translation>
 <translation id="843173223122814223">Стварайце фоны з дапамогай AI</translation>
+<translation id="8431977087510901105">Налады курсора скінуты</translation>
 <translation id="8433186206711564395">Налады сеткі</translation>
 <translation id="8434109185104929038">Куток для чытання</translation>
 <translation id="8434480141477525001">Порт адладкі NaCl</translation>
