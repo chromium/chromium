@@ -413,8 +413,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         mNoPasswords = passwordParent.getPreferenceCount() == 0;
         if (mMenu != null) {
-            mMenu.findItem(R.id.export_passwords)
-                    .setEnabled(!mNoPasswords && !mExportFlow.isActive());
+            MenuItem menuItem = mMenu.findItem(R.id.export_passwords);
+            if (menuItem != null) {
+                menuItem.setEnabled(!mNoPasswords && !mExportFlow.isActive());
+            }
         }
         if (mNoPasswords) {
             if (count == 0) displayEmptyScreenMessage(); // Show if the list was already empty.
