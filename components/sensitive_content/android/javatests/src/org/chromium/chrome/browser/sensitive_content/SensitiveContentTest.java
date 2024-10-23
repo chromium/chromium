@@ -4,8 +4,14 @@
 
 package org.chromium.chrome.browser.sensitive_content;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -33,12 +39,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -80,13 +86,11 @@ public class SensitiveContentTest {
 
     private WebPageStation mPage;
     private EmbeddedTestServer mTestServer;
-    private ContentView mTabContentView;
 
     @Before
     public void setUp() throws Exception {
         mPage = mInitialStateRule.startOnBlankPage();
         mTestServer = sActivityTestRule.getTestServer();
-        mTabContentView = sActivityTestRule.getActivity().getActivityTab().getContentView();
     }
 
     @Test
@@ -94,19 +98,19 @@ public class SensitiveContentTest {
     public void testTabHasSensitiveContentWhileSensitiveFieldsArePresent() throws Exception {
         assertEquals(
                 "Initially, the tab does not have sensitive content",
-                mTabContentView.getContentSensitivity(),
+                getContentViewOfCurrentTab().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_AUTO);
 
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
 
         sActivityTestRule.loadUrl(mTestServer.getURL(NOT_SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
     }
 
@@ -115,7 +119,7 @@ public class SensitiveContentTest {
     public void testSensitiveContentClientObserver() throws Exception {
         assertEquals(
                 "Initially, the tab does not have sensitive content",
-                mTabContentView.getContentSensitivity(),
+                getContentViewOfCurrentTab().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_AUTO);
 
         final SensitiveContentClient client =
@@ -131,14 +135,14 @@ public class SensitiveContentTest {
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
         assertTrue(observer.getContentSensitivity());
 
         sActivityTestRule.loadUrl(mTestServer.getURL(NOT_SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
         assertFalse(observer.getContentSensitivity());
 
@@ -147,7 +151,7 @@ public class SensitiveContentTest {
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
         assertFalse(observer.getContentSensitivity());
     }
@@ -158,7 +162,7 @@ public class SensitiveContentTest {
     public void testTabHasSensitiveContentAttributeIsUpdated() throws Exception {
         assertEquals(
                 "Initially, the tab does not have sensitive content",
-                mTabContentView.getContentSensitivity(),
+                getContentViewOfCurrentTab().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_AUTO);
 
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
@@ -167,14 +171,14 @@ public class SensitiveContentTest {
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
         assertTrue(tab.getTabHasSensitiveContent());
 
         sActivityTestRule.loadUrl(mTestServer.getURL(NOT_SENSITIVE_FILE));
         pollUiThread(
                 () ->
-                        mTabContentView.getContentSensitivity()
+                        getContentViewOfCurrentTab().getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
         assertFalse(tab.getTabHasSensitiveContent());
     }
@@ -302,6 +306,39 @@ public class SensitiveContentTest {
         incognitoTabSwitcher.openAppMenu().openNewTab();
     }
 
+    @Test
+    @LargeTest
+    @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() throws Exception {
+        // Load sensitive content only into the first tab.
+        Tab firstTab = mPage.getLoadedTab();
+        sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThread(() -> firstTab.getTabHasSensitiveContent());
+        // Open a second tab.
+        PageStation page = mPage.openGenericAppMenu().openNewTab();
+        Tab secondTab = page.getLoadedTab();
+        // Group the tabs.
+        TabUiTestHelper.createTabGroup(
+                sActivityTestRule.getActivity(), false, List.of(firstTab, secondTab));
+
+        // Click on the "arrow button" from the bottom toolbar to display the tab group UI.
+        onView(allOf(withId(R.id.toolbar_show_group_dialog_button))).perform(click());
+        // Check that the tab group UI view is sensitive.
+        onView(allOf(withId(R.id.dialog_parent_view)))
+                .check(
+                        (view, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            assertEquals(
+                                    view.getContentSensitivity(),
+                                    View.CONTENT_SENSITIVITY_SENSITIVE);
+                        });
+        // Check that the content view is not sensitive. This ensures that the screen won't be
+        // redacted if the tab group UI closes.
+        assertNotEquals(
+                getContentViewOfCurrentTab().getContentSensitivity(),
+                View.CONTENT_SENSITIVITY_SENSITIVE);
+    }
+
     private Pane getFocusedTabSwitcherPane() {
         return (Pane)
                 ThreadUtils.runOnUiThreadBlocking(
@@ -314,5 +351,9 @@ public class SensitiveContentTest {
                                         .getPaneManager()
                                         .getFocusedPaneSupplier()
                                         .get());
+    }
+
+    private View getContentViewOfCurrentTab() {
+        return sActivityTestRule.getActivity().getActivityTab().getContentView();
     }
 }

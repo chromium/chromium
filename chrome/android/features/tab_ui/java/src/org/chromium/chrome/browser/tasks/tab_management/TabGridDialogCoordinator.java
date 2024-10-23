@@ -534,4 +534,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     public boolean messageCardExists(@MessageType int messageType) {
         return mTabListCoordinator.specialItemExists(messageType);
     }
+
+    @Override
+    public @NonNull TabGridDialogView getDialogView() {
+        return mDialogView;
+    }
 }

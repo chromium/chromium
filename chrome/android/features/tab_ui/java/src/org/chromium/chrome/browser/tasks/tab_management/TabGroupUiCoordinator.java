@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -46,6 +47,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -317,6 +319,14 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     @Override
     public void resetGridWithListOfTabs(List<Tab> tabs) {
         if (mTabGridDialogControllerSupplier != null) {
+            // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
+                    && ChromeFeatureList.isEnabled(
+                            SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                TabUiUtils.updateViewContentSensitivityForTabs(
+                        tabs, mTabGridDialogControllerSupplier.get().getDialogView());
+            }
             mTabGridDialogControllerSupplier.get().resetWithListOfTabs(tabs);
         }
     }

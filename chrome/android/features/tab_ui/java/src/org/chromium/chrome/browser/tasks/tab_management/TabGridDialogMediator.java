@@ -158,6 +158,12 @@ public class TabGridDialogMediator
          * @param messageType The type of message to look for.
          */
         boolean messageCardExists(@MessageType int messageType);
+
+        /**
+         * Returns the dialog view. Note: This view is shared between all tab grid dialog instances.
+         */
+        @NonNull
+        TabGridDialogView getDialogView();
     }
 
     /**
