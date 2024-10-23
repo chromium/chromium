@@ -1020,6 +1020,11 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return owner_select->PopoverForAppearanceBase();
   }
 
+  // No parent: this can occur when elements are not assigned a slot.
+  if (!parent) {
+    return nullptr;
+  }
+
   // Descendants of pseudo elements must only be created by walking the tree via
   // AXNodeObject::AddChildren(), which already knows the parent. Therefore, the
   // parent must not be computed. This helps avoid situations with certain
