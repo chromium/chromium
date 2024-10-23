@@ -59,6 +59,9 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // if snapshot generation fails.
   void UpdateSnapshotWithCallback(void (^callback)(UIImage*));
 
+  // Updates the snapshot storage with `snapshot`.
+  void UpdateSnapshotStorageWithImage(UIImage* image);
+
   // Generates a new snapshot without any overlays, and returns the new snapshot
   // image. This does not update the snapshot storage. Returns nil if snapshot
   // generation fails.

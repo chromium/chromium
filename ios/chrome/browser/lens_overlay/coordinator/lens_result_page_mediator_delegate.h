@@ -8,6 +8,7 @@
 #import "components/lens/lens_overlay_new_tab_source.h"
 
 @class LensResultPageMediator;
+class GURL;
 namespace web {
 class WebState;
 }  // namespace web
@@ -24,6 +25,9 @@ class WebState;
 /// Called when a new tab has been opened by the lens result page mediator.
 - (void)lensResultPageMediator:(LensResultPageMediator*)mediator
        didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource;
+
+/// Called when an URL needs to be opened in a new tab.
+- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL;
 
 @end
 

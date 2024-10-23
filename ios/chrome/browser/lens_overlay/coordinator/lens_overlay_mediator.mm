@@ -155,13 +155,7 @@
   [self defocusOmnibox];
   // Start new unimodal searches in a new tab.
   if (thumbnailRemoved || _currentLensResult.isTextSelection) {
-    OpenNewTabCommand* command =
-        [[OpenNewTabCommand alloc] initWithURL:destinationURL
-                                      referrer:web::Referrer()
-                                   inIncognito:_isIncognito
-                                  inBackground:NO
-                                      appendTo:OpenPosition::kCurrentTab];
-    [self.applicationHandler openURLInNewTab:command];
+    [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
     [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
     [self updateForLensResult:_currentLensResult];
   } else {
@@ -283,6 +277,10 @@
 - (void)lensResultPageMediator:(LensResultPageMediator*)mediator
        didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource {
   [self recordNewTabGeneratedBy:newTabSource];
+}
+
+- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
+  [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
 }
 
 #pragma mark - Private

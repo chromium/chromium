@@ -51,8 +51,13 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
     return is_updating_tab_switcher_snapshot_;
   }
 
+  UIImage* CaptureSnapshotOfBaseWindowSafeArea();
+
   // Updates the lens overlay web state tab switcher snapshot.
   void UpdateSnapshot();
+
+  // Updates the lens overlay web state tab switcher snapshot.
+  void UpdateSnapshotStorageWithImage(UIImage* snapshot);
 
   // Sets the Lens Overlay commands handler.
   void SetLensOverlayCommandsHandler(id<LensOverlayCommands> commands_handler) {

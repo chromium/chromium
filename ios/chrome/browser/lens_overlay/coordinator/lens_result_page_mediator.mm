@@ -251,13 +251,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       return;
     }
 
-    OpenNewTabCommand* command =
-        [[OpenNewTabCommand alloc] initWithURL:URL
-                                      referrer:web::Referrer()
-                                   inIncognito:_isIncognito
-                                  inBackground:NO
-                                      appendTo:OpenPosition::kCurrentTab];
-    [self.applicationHandler openURLInNewTab:command];
+    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];

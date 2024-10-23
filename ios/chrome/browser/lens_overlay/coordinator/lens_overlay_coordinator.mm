@@ -162,6 +162,9 @@ const CGFloat kMenuSymbolSize = 18;
   CADisplayLink* _displayLink;
 
   LensOverlayDetentsManager* _detentsManager;
+
+  // The snapshot that is due to be updated in the tab switcher.
+  UIImage* _pendingTabSwitcherSnapshot;
 }
 
 #pragma mark - public
@@ -190,6 +193,7 @@ const CGFloat kMenuSymbolSize = 18;
   [_selectionViewController setLensOverlayDelegate:_mediator];
   _mediator.lensHandler = _selectionViewController;
   _mediator.commandsHandler = self;
+  _mediator.delegate = self;
   // The mediator might destroy lens UI if the search engine doesn't support
   // lens.
   _mediator.templateURLService =
@@ -406,6 +410,12 @@ const CGFloat kMenuSymbolSize = 18;
       _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
   _foregroundTime = base::TimeTicks();
 
+  if (_pendingTabSwitcherSnapshot) {
+    _associatedTabHelper->UpdateSnapshotStorageWithImage(
+        _pendingTabSwitcherSnapshot);
+    _pendingTabSwitcherSnapshot = nil;
+  }
+
   [_containerViewController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:nil];
@@ -444,18 +454,13 @@ const CGFloat kMenuSymbolSize = 18;
   // the cleanup process. Exiting fullscreen has to happen on destruction to
   // ensure a smooth transition back to the content.
   __weak __typeof(self) weakSelf = self;
-  __block int completionCount = 0;
   void (^onAnimationFinished)() = ^{
-    completionCount++;
-    if (completionCount == kExpectedExitAnimationCount) {
-      [weakSelf dismissLensOverlayWithCompletion:^{
-        [weakSelf destroyViewControllersAndMediators];
-      }];
-    }
+    [weakSelf dismissLensOverlayWithCompletion:^{
+      [weakSelf destroyViewControllersAndMediators];
+    }];
   };
 
-  [self animateBottomSheetExitWithCompletion:onAnimationFinished];
-  [self animateSelectionUIExitWithCompletion:onAnimationFinished];
+  [self executeExitAnimationFlowWithCompletion:onAnimationFinished];
 }
 
 #pragma mark - Exit animations
@@ -477,6 +482,21 @@ const CGFloat kMenuSymbolSize = 18;
 
   [presentingViewController dismissViewControllerAnimated:NO
                                                completion:completion];
+}
+
+- (void)executeExitAnimationFlowWithCompletion:(void (^)())completion {
+  __block int completionCount = 0;
+  void (^onAnimationFinished)() = ^{
+    completionCount++;
+    if (completionCount == kExpectedExitAnimationCount) {
+      if (completion) {
+        completion();
+      }
+    }
+  };
+
+  [self animateBottomSheetExitWithCompletion:onAnimationFinished];
+  [self animateSelectionUIExitWithCompletion:onAnimationFinished];
 }
 
 - (void)animateBottomSheetExitWithCompletion:(void (^)())completion {
@@ -612,6 +632,18 @@ const CGFloat kMenuSymbolSize = 18;
       recordFirstInteraction:lens::LensOverlayFirstInteractionType::kLensMenu];
 }
 
+- (void)lensOverlayMediatorOpenURLInNewTabRequsted:(GURL)URL {
+  // Take a snapshot of the current tab before opening the URL in a new tab.
+  // A side effect of opening a new tab is that the snapshot storage associated
+  // to the current web state is updated. This snapshot would not include the
+  // bottom sheet in the view hierarchy. Refrain from commiting it to
+  // the storage until the web state is marked hidden, as by that point all
+  // other updates should be issued.
+  _pendingTabSwitcherSnapshot =
+      _associatedTabHelper->CaptureSnapshotOfBaseWindowSafeArea();
+  [self openURLInNewTab:URL];
+}
+
 #pragma mark - LensOverlayResultConsumer
 
 // This coordinator acts as a proxy consumer to the result consumer to implement
@@ -676,15 +708,19 @@ const CGFloat kMenuSymbolSize = 18;
                                    self.currentInvocationSource);
   [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
                                    kPermissionDialog];
+  [self openURLInNewTab:GURL(kLearnMoreLensURL)];
+}
+
+#pragma mark - private
+
+- (void)openURLInNewTab:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:GURL(kLearnMoreLensURL)
+      commandWithURLFromChrome:URL
                    inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
 }
-
-#pragma mark - private
 
 - (void)showNoInternetAlert {
   if (!_containerViewController) {

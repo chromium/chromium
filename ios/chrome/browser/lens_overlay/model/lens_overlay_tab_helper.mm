@@ -62,10 +62,6 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
   }
 
   if (is_showing_lens_overlay_) {
-    // Prior to hiding the UI update the snapshot to ensure lens overlay is
-    // visible in the tab switcher.
-    UpdateSnapshot();
-
     [commands_handler_ hideLensUI:YES];
   }
 }
@@ -86,19 +82,35 @@ void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_ = nullptr;
 }
 
+UIImage* LensOverlayTabHelper::CaptureSnapshotOfBaseWindowSafeArea() {
+  if (snapshot_controller_) {
+    return snapshot_controller_->CaptureSnapshotOfBaseWindowSafeArea();
+  }
+
+  return nil;
+}
+
 void LensOverlayTabHelper::UpdateSnapshot() {
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(web_state_);
 
-  if (snapshotTabHelper) {
-    is_updating_tab_switcher_snapshot_ = true;
-    base::WeakPtr<LensOverlayTabHelper> weakThis =
-        weak_ptr_factory_.GetWeakPtr();
-    snapshotTabHelper->UpdateSnapshotWithCallback(^(UIImage* image) {
-      if (weakThis) {
-        weakThis->is_updating_tab_switcher_snapshot_ = false;
-      }
-    });
+  if (!snapshotTabHelper) {
+    return;
+  }
+
+  is_updating_tab_switcher_snapshot_ = true;
+  base::WeakPtr<LensOverlayTabHelper> weakThis = weak_ptr_factory_.GetWeakPtr();
+  snapshotTabHelper->UpdateSnapshotWithCallback(^(UIImage* image) {
+    if (weakThis) {
+      weakThis->is_updating_tab_switcher_snapshot_ = false;
+    }
+  });
+}
+
+void LensOverlayTabHelper::UpdateSnapshotStorageWithImage(UIImage* snapshot) {
+  if (SnapshotTabHelper* snapshotTabHelper =
+          SnapshotTabHelper::FromWebState(web_state_)) {
+    snapshotTabHelper->UpdateSnapshotStorageWithImage(snapshot);
   }
 }
 

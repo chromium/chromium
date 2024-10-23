@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -28,6 +29,34 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
+
+@interface FakeLensResultPageMediatorDelegate
+    : NSObject <LensResultPageMediatorDelegate>
+// Whether an open URL in new tab was issued.
+@property(nonatomic, readonly) BOOL openInNewTabRequested;
+@end
+
+@implementation FakeLensResultPageMediatorDelegate
+
+- (void)lensResultPageWebStateDestroyed {
+  // NO-OP
+}
+
+- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
+  // NO-OP
+}
+
+- (void)lensResultPageMediator:(LensResultPageMediator*)mediator
+       didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource {
+  // NO-OP
+}
+
+- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
+  _openInNewTabRequested = YES;
+}
+
+@end
 
 @interface LensResultPageMediator (Testing)
 - (std::unique_ptr<web::WebState>)detachWebState;
@@ -59,7 +88,8 @@ class LensResultPageMediatorTest : public PlatformTest {
         [OCMockObject niceMockForProtocol:@protocol(LensResultPageConsumer)];
     mock_application_handler_ =
         [OCMockObject mockForProtocol:@protocol(ApplicationCommands)];
-
+    fake_delegate_ = [[FakeLensResultPageMediatorDelegate alloc] init];
+    mediator_.delegate = fake_delegate_;
     mediator_.consumer = mock_consumer_;
     mediator_.applicationHandler = mock_application_handler_;
   }
@@ -137,6 +167,7 @@ class LensResultPageMediatorTest : public PlatformTest {
   web::FakeWebStateDelegate browser_web_state_delegate_;
   OCMockObject<LensResultPageConsumer>* mock_consumer_;
   OCMockObject<ApplicationCommands>* mock_application_handler_;
+  FakeLensResultPageMediatorDelegate* fake_delegate_;
 
   // Call `AttachFakeWebState()` to use `fake_web_state_`.
   raw_ptr<web::FakeWebState> fake_web_state_;
@@ -182,10 +213,10 @@ TEST_F(LensResultPageMediatorTest, ShouldAllowGoogleNavigation) {
 
 // Tests that other navigation is not allowed but opens a new tab.
 TEST_F(LensResultPageMediatorTest, ShouldOpenOtherNavigationInNewTab) {
-  OCMExpect([mock_application_handler_ openURLInNewTab:[OCMArg any]]);
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
   EXPECT_FALSE(TestShouldAllowRequest(@"https://www.chromium.com",
                                       /*target_frame_is_main=*/true));
-  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
 }
 
 // Tests that any navigation that's not on main frame is allowed.
