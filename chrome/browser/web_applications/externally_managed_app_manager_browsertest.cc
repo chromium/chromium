@@ -56,13 +56,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
-#include "chromeos/crosapi/mojom/message_center.mojom.h"
-#include "chromeos/crosapi/mojom/notification.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS)
 using testing::_;
 using testing::AllOf;
@@ -953,35 +946,13 @@ class PlaceholderUpdateRelaunchBrowserTest
   }
 
   auto GetAllNotifications() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
     NotificationDisplayServiceFactory::GetForProfile(profile())->GetDisplayed(
         get_displayed_future.GetCallback());
-#else
-    base::test::TestFuture<const std::vector<std::string>&>
-        get_displayed_future;
-    auto& remote = chromeos::LacrosService::Get()
-                       ->GetRemote<crosapi::mojom::MessageCenter>();
-    EXPECT_TRUE(remote.get());
-    remote->GetDisplayedNotifications(get_displayed_future.GetCallback());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     const auto& notification_ids = get_displayed_future.Get<0>();
     EXPECT_TRUE(get_displayed_future.Wait());
     return notification_ids;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void ClearAllNotifications() {
-    base::test::TestFuture<const std::vector<std::string>&>
-        get_displayed_future;
-    auto& service = chromeos::LacrosService::Get()
-                        ->GetRemote<crosapi::mojom::MessageCenter>();
-    EXPECT_TRUE(service.get());
-    for (const std::string& notification_id : GetAllNotifications()) {
-      service->CloseNotification(notification_id);
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   size_t GetDisplayedNotificationsCount() {
     return GetAllNotifications().size();
@@ -1003,12 +974,6 @@ class PlaceholderUpdateRelaunchBrowserTest
 IN_PROC_BROWSER_TEST_F(
     PlaceholderUpdateRelaunchBrowserTest,
     DISABLED_UpdatePlaceholderRelaunchClosePreventedAppSucceeds) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This may be needed due to side-effects previously run lacros tests.
-  ClearAllNotifications();
-  WaitUntilDisplayNotificationCount(/*display_count=*/0u);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   notification_observation_.Observe(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
 
