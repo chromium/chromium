@@ -81,6 +81,7 @@ class CORE_EXPORT CachedMatchedProperties final
   }
 
   bool CorrespondsTo(const MatchedPropertiesVector& lookup_properties) const;
+  void RefreshKey(const MatchedPropertiesVector& lookup_properties);
 };
 
 class CORE_EXPORT MatchedPropertiesCache {

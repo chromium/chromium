@@ -168,6 +168,19 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     return nullptr;
   }
   cache_item->last_used = clock_++;
+
+  // Since we have a cache hit, refresh it using the most recent property sets
+  // (in case they have differing pointers but same content); the key is weak,
+  // and using more recently seen sets make it less likely that they will go
+  // away and GC the entry.
+  //
+  // Ideally, we would not be using weak pointers in the MPC at all,
+  // but CSSValues keep StyleImages alive (see
+  // StyleImageCacheTest.WeakReferenceGC), so if we used regular pointers, we'd
+  // need to find some other way of making sure these images do not live forever
+  // in the cache.
+  cache_item->RefreshKey(key.result_.GetMatchedProperties());
+
   return cache_item;
 }
 
@@ -204,6 +217,17 @@ bool CachedMatchedProperties::CorrespondsTo(
     }
   }
   return true;
+}
+
+void CachedMatchedProperties::RefreshKey(
+    const MatchedPropertiesVector& lookup_properties) {
+  DCHECK(CorrespondsTo(lookup_properties));
+  auto lookup_it = lookup_properties.begin();
+  auto cached_it = matched_properties.begin();
+  for (; lookup_it != lookup_properties.end();
+       std::advance(lookup_it, 1), std::advance(cached_it, 1)) {
+    cached_it->first = lookup_it->properties;
+  }
 }
 
 void MatchedPropertiesCache::Add(const Key& key,
