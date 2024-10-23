@@ -112,7 +112,7 @@ def _convert_matrix_compound_suite(
   targets_builder = values.ListValueBuilder()
   for suite_name, matrix_config in suite.items():
     if not matrix_config:
-      targets_builder.append(suite_name)
+      targets_builder.append(values.convert_direct(suite_name))
     else:
       bundle_builder = values.CallValueBuilder(
           'targets.bundle', {'targets': values.convert_direct(suite_name)})
