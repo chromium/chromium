@@ -290,7 +290,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
 
-  if (captions::IsLiveCaptionFeatureSupported() &&
+  if (::captions::IsLiveCaptionFeatureSupported() &&
       features::IsSystemLiveCaptionEnabled()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);
     UserMicrophoneCaptionServiceFactory::GetInstance()->GetForProfile(profile);

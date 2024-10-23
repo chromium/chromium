@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
+#include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -49,11 +52,16 @@ BocaManager::BocaManager(Profile* profile)
       session_client_impl_.get(), ash::BrowserContextHelper::Get()
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId());
+  babel_orca_speech_recognizer_ = nullptr;
+  if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
+    babel_orca_speech_recognizer_ =
+        std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(profile);
+  }
   babel_orca_manager_ = std::make_unique<boca::BabelOrcaManager>(
-      std::make_unique<captions::TranslationDispatcher>(
+      std::make_unique<::captions::TranslationDispatcher>(
           google_apis::GetBocaAPIKey(), profile),
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory());
+      profile->GetURLLoaderFactory(), babel_orca_speech_recognizer_.get());
 
   if (ash::boca_util::IsConsumer()) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(

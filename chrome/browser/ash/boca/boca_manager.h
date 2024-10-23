@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_BOCA_MANAGER_H_
 #define CHROME_BROWSER_ASH_BOCA_BOCA_MANAGER_H_
 
+#include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -51,6 +52,8 @@ class BocaManager : public KeyedService {
   std::unique_ptr<boca::SessionClientImpl> session_client_impl_;
   std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;
   std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl_;
+  std::unique_ptr<babelorca::BabelOrcaSpeechRecognizerImpl>
+      babel_orca_speech_recognizer_;
   std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager_;
 };
 }  // namespace ash

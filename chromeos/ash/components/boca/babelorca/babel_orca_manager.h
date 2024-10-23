@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
@@ -37,9 +38,10 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
                          public babelorca::TachyonRequestDataProvider {
  public:
   BabelOrcaManager(
-      std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher,
+      std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      babelorca::BabelOrcaSpeechRecognizer* speech_recognizer_);
   BabelOrcaManager(const BabelOrcaManager&) = delete;
   BabelOrcaManager& operator=(const BabelOrcaManager&) = delete;
   ~BabelOrcaManager() override;
@@ -60,7 +62,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   std::optional<std::string> sender_email() const override;
 
  private:
-  std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher_;
+  std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher_;
   const std::string client_uuid_;
   babelorca::TokenManagerImpl token_manager_;
   babelorca::TachyonAuthedClientImpl authed_client_;
@@ -69,6 +71,10 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   std::optional<std::string> session_id_;
   std::optional<std::string> group_id_;
   std::optional<std::string> sender_email_;
+
+  // This manager and the speech_recognizer_ are both owned by the same
+  // class so their lifetimes are shared, hence the raw pointer here.
+  raw_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer_;
 };
 
 }  // namespace ash::boca

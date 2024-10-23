@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/uuid.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
@@ -25,7 +26,8 @@ namespace ash::boca {
 BabelOrcaManager::BabelOrcaManager(
     std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    babelorca::BabelOrcaSpeechRecognizer* speech_recognizer)
     : translation_dispatcher_(std::move(translation_dispatcher)),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       token_manager_(
@@ -33,7 +35,8 @@ BabelOrcaManager::BabelOrcaManager(
       authed_client_(
           std::make_unique<babelorca::TachyonClientImpl>(url_loader_factory),
           &token_manager_),
-      registrar_(&authed_client_) {}
+      registrar_(&authed_client_),
+      speech_recognizer_(speech_recognizer) {}
 
 BabelOrcaManager::~BabelOrcaManager() = default;
 

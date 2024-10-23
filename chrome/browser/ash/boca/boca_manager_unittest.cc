@@ -129,7 +129,6 @@ class BocaManagerProducerTest : public BocaManagerTest {
     BocaManagerTest::SetUp();
     scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
                                           /*disabled_features=*/{});
-
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
@@ -138,7 +137,7 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::make_unique<boca::BabelOrcaManager>(
             /*translation_dispatcher=*/nullptr,
             identity_test_env_.identity_manager(),
-            url_loader_factory_.GetSafeWeakWrapper()));
+            url_loader_factory_.GetSafeWeakWrapper(), nullptr));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -168,6 +167,7 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         /* enabled_features */ {ash::features::kBoca,
                                 ash::features::kBocaConsumer},
         /* disabled_features */ {});
+
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
@@ -176,7 +176,7 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::make_unique<boca::BabelOrcaManager>(
             /*translation_dispatcher=*/nullptr,
             identity_test_env_.identity_manager(),
-            url_loader_factory_.GetSafeWeakWrapper()));
+            url_loader_factory_.GetSafeWeakWrapper(), nullptr));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };

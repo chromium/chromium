@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -57,9 +58,9 @@ class BabelOrcaManagerTest : public testing::Test {
 
 TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithSuccess) {
   base::test::TestFuture<bool> test_future;
-  BabelOrcaManager manager(/*translation_dispatcher=*/nullptr,
-                           identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper());
+  BabelOrcaManager manager(
+      /*translation_dispatcher=*/nullptr, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), nullptr);
   AddSuccessfulSigninGaiaResponse();
 
   manager.SigninToTachyonAndRespond(test_future.GetCallback());
@@ -76,9 +77,9 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithSuccess) {
 
 TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
   base::test::TestFuture<bool> test_future;
-  BabelOrcaManager manager(/*translation_dispatcher=*/nullptr,
-                           identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper());
+  BabelOrcaManager manager(
+      /*translation_dispatcher=*/nullptr, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), nullptr);
   AddFailedSigninGaiaResponse();
 
   manager.SigninToTachyonAndRespond(test_future.GetCallback());
@@ -91,9 +92,9 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
 
 TEST_F(BabelOrcaManagerTest, DataSetAtSessionStart) {
   base::test::TestFuture<bool> test_future;
-  BabelOrcaManager manager(/*translation_dispatcher=*/nullptr,
-                           identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper());
+  BabelOrcaManager manager(
+      /*translation_dispatcher=*/nullptr, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), nullptr);
   ::boca::UserIdentity producer;
   producer.set_email(kSenderEmail);
   manager.OnSessionStarted(kSessionId, producer);

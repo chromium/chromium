@@ -44,6 +44,12 @@ include_rules = [
   "+chrome/test/base/browser_with_test_window_test.h",
   "+chrome/browser/ash/settings/device_settings_service.h",
   "+components/sessions",
+  # Files needed by babelorca/
+  "+chrome/browser/accessibility/live_caption/live_caption_controller_factory.h",
+  "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
+  "+chrome/browser/speech/speech_recognition_client_browser_interface.h",
+  "+chrome/browser/speech/speech_recognition_client_browser_interface_factory.h",
+  "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
 ]
 
 specific_include_rules = {
