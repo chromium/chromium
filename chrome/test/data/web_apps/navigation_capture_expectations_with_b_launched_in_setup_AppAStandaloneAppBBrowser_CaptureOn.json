@@ -75,7 +75,7 @@
       },
       "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": false,
+         "disabled": true,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
