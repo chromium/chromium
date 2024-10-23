@@ -1092,7 +1092,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   // Android doesn't use StartupBrowserCreator.
   browser_creator_ = std::make_unique<StartupBrowserCreator>();
   // TODO(yfriedman): Refactor Android to re-use UMABrowsingActivityObserver
-  chrome::UMABrowsingActivityObserver::Init();
+  UMABrowsingActivityObserver::Init();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
