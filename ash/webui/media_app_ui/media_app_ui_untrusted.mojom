@@ -13,15 +13,19 @@ interface UntrustedPageHandlerFactory {
   // Create a page handler for the untrusted frame exposing OCR related APIs
   // between it and the browser via |receiver| and |page|.
   CreateOcrUntrustedPageHandler(
-  pending_receiver<OcrUntrustedPageHandler> receiver,
+      pending_receiver<OcrUntrustedPageHandler> receiver,
       pending_remote<OcrUntrustedPage> page);
 
   // Create a page handler for the untrusted frame exposing Mahi related APIs
   // between it and the browser via `receiver` and `page`.
   CreateMahiUntrustedPageHandler(
-  pending_receiver<MahiUntrustedPageHandler> receiver,
+      pending_receiver<MahiUntrustedPageHandler> receiver,
       pending_remote<MahiUntrustedPage> page,
       string file_name);
+
+  // Create an untrusted service exposing Mantis related APIs via `receiver`.
+  CreateMantisUntrustedService(
+      pending_receiver<MantisMediaAppUntrustedService> receiver);
 };
 
 struct PageMetadata {
@@ -88,7 +92,6 @@ interface OcrUntrustedPage {
   SetPdfOcrEnabled(bool enabled);
 };
 
-
 // Interfaces for Mahi support
 
 // Interface implemented in the browser process and called by the
@@ -120,4 +123,10 @@ interface MahiUntrustedPage {
 
   // Requests the text content of the PDF file.
   GetPdfContent(int32 limit) => (string? content);
+};
+
+// Interface implemented in the browser process and called by the
+// chrome-untrusted:// Media App page.
+interface MantisMediaAppUntrustedService {
+  // TODO(crbug.com/368986974): Add Media App methods for Mantis.
 };

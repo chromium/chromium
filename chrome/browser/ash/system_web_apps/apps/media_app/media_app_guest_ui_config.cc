@@ -113,6 +113,10 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
 
+  source->AddBoolean(
+      "mantisInGallery",
+      base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantis));
+
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
