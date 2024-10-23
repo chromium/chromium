@@ -162,6 +162,7 @@ CreditCard GetMaskedServerCardVisa();
 CreditCard GetMaskedServerCardAmex();
 CreditCard GetMaskedServerCardWithNickname();
 CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+CreditCard GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
 
 // Returns a full server card full of dummy info.
 CreditCard GetFullServerCard();

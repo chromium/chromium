@@ -427,6 +427,13 @@ CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber() {
   return credit_card;
 }
 
+CreditCard GetMaskedServerCardEnrolledIntoRuntimeRetrieval() {
+  CreditCard credit_card = GetMaskedServerCard();
+  credit_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  return credit_card;
+}
+
 CreditCard GetFullServerCard() {
   CreditCard credit_card(CreditCard::RecordType::kFullServerCard, "c123");
   test::SetCreditCardInfo(&credit_card, "Full Carter",
