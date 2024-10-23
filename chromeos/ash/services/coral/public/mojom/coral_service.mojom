@@ -87,9 +87,13 @@ enum CoralError {
 struct Group {
   // A random id that uniquely identifies the group.
   mojo_base.mojom.Token id;
-  // This could be empty, in that case the title will be updated to the
-  // observer with corresponding group ID when the generation is done.
-  string title;
+  // There are 3 possibilities of the title field:
+  // - If it's null, it means that the title hasn't been generated yet,
+  // and the actual title will be updated to the title observer with
+  // corresponding group ID when the generation is done.
+  // - If it's empty string, it means that title generation has failed.
+  // - Otherwise, it contains the valid title of the generated group.
+  string? title;
   // This is sorted by descending rank of importance.
   array<Entity> entities;
 };
@@ -135,8 +139,10 @@ union CacheEmbeddingsResult {
 // update the title through this observer when they are ready.
 interface TitleObserver {
   // Updates the title of the group with id `group_id` to `title`.
-  // Currently this should be called exactly once for each group. If `title`
-  // is empty, that means some error is encountered and can't be generated.
+  // Currently this should be called exactly once for each group with null
+  // title.
+  // If `title` is empty, that means some error is encountered and can't be
+  // generated.
   TitleUpdated(mojo_base.mojom.Token group_id, string title);
 };
 
@@ -145,7 +151,7 @@ interface TitleObserver {
 // UI features using this coral service.
 interface CoralService {
   // Group the request entities into suitable groups with titles. When the
-  // observer is passed, the service could return groups with empty title
+  // observer is passed, the service could return groups with null title
   // before the title is generated, then trigger title updates on the observer
   // afterwards.
   Group@0(GroupRequest request, pending_remote<TitleObserver>? observer)

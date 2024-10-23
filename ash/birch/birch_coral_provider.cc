@@ -334,7 +334,7 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
   }
 
   request_.set_content(std::move(tab_app_data));
-  // TODO(b/370851826): Change `mojo::NullRemote()` to `BindRemote()` when we
+  // TODO(zxdan): Change `mojo::NullRemote()` to `BindRemote()` when we
   // can update BirchModel on title updates.
   Shell::Get()->coral_controller()->GenerateContentGroups(
       request_, mojo::NullRemote(),
@@ -359,7 +359,7 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   }
   FilterCoralContentItems(&active_tab_app_data);
   request_.set_content(std::move(active_tab_app_data));
-  // TODO(b/370851826): Change `mojo::NullRemote()` to `BindRemote()` when we
+  // TODO(zxdan): Change `mojo::NullRemote()` to `BindRemote()` when we
   // can update BirchModel on title updates.
   Shell::Get()->coral_controller()->GenerateContentGroups(
       request_, mojo::NullRemote(),
@@ -410,7 +410,9 @@ void BirchCoralProvider::HandleCoralResponse(
   response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->groups().size()));
   for (size_t i = 0; i < response_->groups().size(); ++i) {
-    items.emplace_back(base::UTF8ToUTF16(response_->groups()[i]->title),
+    // TODO(zxdan): Support nullopt title for async title generation.
+    items.emplace_back(base::UTF8ToUTF16(response_->groups()[i]->title.value_or(
+                           std::string())),
                        /*subtitle=*/std::u16string(),
                        /*group_id=*/int(i));
   }

@@ -209,8 +209,9 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
   if (!desks_controller->CanCreateDesks()) {
     return;
   }
-  desks_controller->NewDesk(DesksCreationRemovalSource::kCoral,
-                            base::UTF8ToUTF16(group->title));
+  desks_controller->NewDesk(
+      DesksCreationRemovalSource::kCoral,
+      base::UTF8ToUTF16(group->title.value_or(std::string())));
   const coral_util::TabsAndApps tabs_apps =
       coral_util::SplitContentData(group->entities);
 
