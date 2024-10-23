@@ -37,8 +37,8 @@
   }
 
   #dismissButton {
-    --cr-icon-button-fill-color:
-        var(--color-new-tab-page-mobile-promo-dismiss-button, currentColor);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-primary-foreground);
     --cr-icon-button-icon-size: 18px;
     --cr-icon-button-margin-end: 0px;
     --cr-icon-button-size: 24px;
