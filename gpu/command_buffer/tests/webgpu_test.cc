@@ -226,12 +226,16 @@ void WebGPUTest::PollUntilIdle() {
   context_->GetTaskRunner()->RunPendingTasks();
 }
 
-wgpu::Device WebGPUTest::GetNewDevice() {
+wgpu::Device WebGPUTest::GetNewDevice(
+    std::vector<wgpu::FeatureName> requiredFeatures) {
   wgpu::Device device;
   bool done = false;
 
   DCHECK(adapter_);
   wgpu::DeviceDescriptor device_desc = {};
+  device_desc.requiredFeatureCount = requiredFeatures.size();
+  device_desc.requiredFeatures = requiredFeatures.data();
+
   device_desc.SetDeviceLostCallback(
       wgpu::CallbackMode::AllowSpontaneous,
       [](const wgpu::Device&, wgpu::DeviceLostReason reason,

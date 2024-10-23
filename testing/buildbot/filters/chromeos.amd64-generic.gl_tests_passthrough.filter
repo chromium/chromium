@@ -5,7 +5,7 @@
 
 # crbug.com/1314115
 -SharedImageGLBackingProduceDawnTest.Basic
--WebGPUMailboxTest.*
+-WebGPUMailboxTextureTest.*
 -WebGPUTest.*
 
 # crbug.com/1314118

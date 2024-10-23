@@ -375,6 +375,34 @@ scoped_refptr<APIChannel> WebGPUImplementation::GetAPIChannel() const {
 #endif
 }
 
+ReservedBuffer WebGPUImplementation::ReserveBuffer(
+    WGPUDevice device,
+    const WGPUBufferDescriptor* optionalDesc) {
+#if BUILDFLAG(USE_DAWN)
+  // Commit because we need to make sure messages that free a previously used
+  // buffer is seen first. ReserveBuffer may reuse an existing ID.
+  dawn_wire_->serializer()->Commit();
+
+  WGPUBufferDescriptor placeholderDesc;
+  if (optionalDesc == nullptr) {
+    placeholderDesc = {};  // Zero initialize.
+    optionalDesc = &placeholderDesc;
+  }
+
+  auto reserved =
+      dawn_wire_->wire_client()->ReserveBuffer(device, optionalDesc);
+  ReservedBuffer result;
+  result.buffer = reserved.buffer;
+  result.id = reserved.handle.id;
+  result.generation = reserved.handle.generation;
+  result.deviceId = reserved.deviceHandle.id;
+  result.deviceGeneration = reserved.deviceHandle.generation;
+  return result;
+#else
+  return {};
+#endif
+}
+
 ReservedTexture WebGPUImplementation::ReserveTexture(
     WGPUDevice device,
     const WGPUTextureDescriptor* optionalDesc) {
@@ -450,6 +478,30 @@ void WebGPUImplementation::AssociateMailbox(
 #endif
 }
 
+void WebGPUImplementation::AssociateMailboxForBuffer(GLuint device_id,
+                                                     GLuint device_generation,
+                                                     GLuint buffer_id,
+                                                     GLuint buffer_generation,
+                                                     uint64_t usage,
+                                                     const Mailbox& mailbox) {
+#if BUILDFLAG(USE_DAWN)
+  // Commit previous Dawn commands as they may manipulate buffer object IDs
+  // and need to be resolved prior to the AssociateMailboxForBuffer command.
+  // Otherwise the service side might not know, for example that the previous
+  // buffer using that ID has been released.
+  dawn_wire_->serializer()->Commit();
+
+  // The command buffer transfer data in 4-byte "entries". So the array of data
+  // we pass must have a byte-length that's a multiple of 4.
+  constexpr size_t kEntrySize = 4u;
+  static_assert(sizeof(mailbox.name) % kEntrySize == 0u);
+
+  helper_->AssociateMailboxForBufferImmediate(
+      device_id, device_generation, buffer_id, buffer_generation, usage,
+      reinterpret_cast<const GLuint*>(mailbox.name));
+#endif
+}
+
 void WebGPUImplementation::DissociateMailbox(GLuint texture_id,
                                              GLuint texture_generation) {
 #if BUILDFLAG(USE_DAWN)
@@ -457,6 +509,17 @@ void WebGPUImplementation::DissociateMailbox(GLuint texture_id,
   // to Dissociating the shared image from that texture.
   dawn_wire_->serializer()->Commit();
   helper_->DissociateMailbox(texture_id, texture_generation);
+#endif
+}
+
+void WebGPUImplementation::DissociateMailboxForBuffer(
+    GLuint buffer_id,
+    GLuint buffer_generation) {
+#if BUILDFLAG(USE_DAWN)
+  // Commit previous Dawn commands that might be rendering to the buffer, prior
+  // to Dissociating the shared image from that buffer.
+  dawn_wire_->serializer()->Commit();
+  helper_->DissociateMailboxForBuffer(buffer_id, buffer_generation);
 #endif
 }
 

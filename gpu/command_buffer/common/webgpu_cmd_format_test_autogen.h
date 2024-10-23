@@ -70,6 +70,34 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
+TEST_F(WebGPUFormatTest, AssociateMailboxForBufferImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLuint data[] = {
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 3),
+  };
+  cmds::AssociateMailboxForBufferImmediate& cmd =
+      *GetBufferAs<cmds::AssociateMailboxForBufferImmediate>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
+              static_cast<GLuint>(13), static_cast<GLuint>(14),
+              static_cast<uint64_t>(15), data);
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::AssociateMailboxForBufferImmediate::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.device_id);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.device_generation);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.id);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.generation);
+  EXPECT_EQ(static_cast<uint64_t>(15), cmd.usage);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
 TEST_F(WebGPUFormatTest, DissociateMailbox) {
   cmds::DissociateMailbox& cmd = *GetBufferAs<cmds::DissociateMailbox>();
   void* next_cmd =
@@ -79,6 +107,19 @@ TEST_F(WebGPUFormatTest, DissociateMailbox) {
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLuint>(11), cmd.texture_id);
   EXPECT_EQ(static_cast<GLuint>(12), cmd.texture_generation);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(WebGPUFormatTest, DissociateMailboxForBuffer) {
+  cmds::DissociateMailboxForBuffer& cmd =
+      *GetBufferAs<cmds::DissociateMailboxForBuffer>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::DissociateMailboxForBuffer::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.buffer_id);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.buffer_generation);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

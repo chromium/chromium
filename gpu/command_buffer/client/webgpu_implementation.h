@@ -90,6 +90,13 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
                         MailboxFlags flags,
                         const Mailbox& mailbox) override;
 
+  void AssociateMailboxForBuffer(GLuint device_id,
+                                 GLuint device_generation,
+                                 GLuint id,
+                                 GLuint generation,
+                                 uint64_t usage,
+                                 const Mailbox& mailbox) override;
+
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
   uint64_t ShareGroupTracingGUID() const override;
@@ -137,6 +144,9 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
   scoped_refptr<APIChannel> GetAPIChannel() const override;
+  ReservedBuffer ReserveBuffer(
+      WGPUDevice device,
+      const WGPUBufferDescriptor* optionalDesc) override;
   ReservedTexture ReserveTexture(
       WGPUDevice device,
       const WGPUTextureDescriptor* optionalDesc = nullptr) override;

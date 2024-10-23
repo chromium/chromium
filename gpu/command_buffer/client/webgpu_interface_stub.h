@@ -32,6 +32,10 @@ class WebGPUInterfaceStub : public WebGPUInterface {
       WGPUDevice device,
       const WGPUTextureDescriptor* optionalDesc) override;
 
+  ReservedBuffer ReserveBuffer(
+      WGPUDevice device,
+      const WGPUBufferDescriptor* optionalDesc) override;
+
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
   void AssociateMailbox(GLuint device_id,
@@ -44,6 +48,13 @@ class WebGPUInterfaceStub : public WebGPUInterface {
                         GLuint view_format_count,
                         MailboxFlags flags,
                         const Mailbox& mailbox) override;
+
+  void AssociateMailboxForBuffer(GLuint device_id,
+                                 GLuint device_generation,
+                                 GLuint id,
+                                 GLuint generation,
+                                 uint64_t usage,
+                                 const Mailbox& mailbox) override;
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

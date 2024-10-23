@@ -50,6 +50,11 @@ ReservedTexture WebGPUInterfaceStub::ReserveTexture(
   return {nullptr, 0, 0, 0, 0};
 }
 
+ReservedBuffer WebGPUInterfaceStub::ReserveBuffer(WGPUDevice device,
+                                                  const WGPUBufferDescriptor*) {
+  return {nullptr, 0, 0, 0, 0};
+}
+
 WGPUDevice WebGPUInterfaceStub::DeprecatedEnsureDefaultDeviceSync() {
   return nullptr;
 }
@@ -65,6 +70,13 @@ void WebGPUInterfaceStub::AssociateMailbox(
     GLuint view_format_count,
     MailboxFlags flags,
     const Mailbox& mailbox) {}
+
+void WebGPUInterfaceStub::AssociateMailboxForBuffer(GLuint device_id,
+                                                    GLuint device_generation,
+                                                    GLuint id,
+                                                    GLuint generation,
+                                                    uint64_t usage,
+                                                    const Mailbox& mailbox) {}
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in
