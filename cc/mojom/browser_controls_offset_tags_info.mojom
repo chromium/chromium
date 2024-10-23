@@ -9,6 +9,8 @@ import "services/viz/public/mojom/compositing/offset_tag.mojom";
 // Only sent from browser to renderer. See
 // cc/input/browser_controls_offset_tags_info.h for more details.
 struct BrowserControlsOffsetTagsInfo {
+  viz.mojom.OffsetTag content_offset_tag;
   viz.mojom.OffsetTag top_controls_offset_tag;
   int32 top_controls_height;
+  int32 top_controls_hairline_height;
 };

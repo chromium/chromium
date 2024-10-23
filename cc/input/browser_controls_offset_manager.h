@@ -52,6 +52,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float TopControlsShownRatio() const;
   float TopControlsHeight() const;
   float TopControlsMinHeight() const;
+  int TopControlsHairlineHeight() const;
   // The minimum shown ratio top controls can have.
   float TopControlsMinShownRatio() const;
   // The current top controls min-height. If the min-height is changing with an
@@ -59,6 +60,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // min-height, which is equal to the current visible min-height. Otherwise,
   // this will return the same value as |TopControlsMinHeight()|.
   float TopControlsMinHeightOffset() const;
+  viz::OffsetTag ContentOffsetTag() const;
   viz::OffsetTag TopControlsOffsetTag() const;
 
   // The amount of offset of the web content area, calculating from the bottom.
@@ -187,6 +189,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // Current top/bottom controls min-height.
   float top_controls_min_height_offset_;
   float bottom_controls_min_height_offset_;
+  int top_controls_hairline_height_;
 
   // Minimum and maximum values |top_controls_min_height_offset_| can take
   // during the current min-height change animation.
@@ -205,9 +208,10 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // gesture, then we reorder the animation until after the scroll.
   bool show_controls_when_scroll_completes_ = false;
 
-  // The tag used to accompany scroll offsets in the render frame's metadata.
+  // The tags used to accompany scroll offsets in the render frame's metadata.
   // During surface aggregation, the layers with the same token will have the
   // corresponding offsets applied.
+  viz::OffsetTag content_offset_tag_;
   viz::OffsetTag top_controls_offset_tag_;
 
   // Class that holds and manages the state of the controls animations.

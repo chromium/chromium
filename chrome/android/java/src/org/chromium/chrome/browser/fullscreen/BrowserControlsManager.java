@@ -271,10 +271,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         if (webContents == null) {
                             return;
                         }
-                        // TODO(peilinwang) Refactor so this this function only gets passed
-                        // OffsetTags as only this class needs to know/use the height for
-                        // creating the OffsetTagConstraint.
+
                         offsetTagsInfo.mTopControlsHeight = mTopControlsHeight;
+                        offsetTagsInfo.mTopControlsHairlineHeight =
+                                mControlContainer.getToolbarHairlineHeight();
 
                         webContents.notifyControlsConstraintsChanged(
                                 oldOffsetTagsInfo, offsetTagsInfo);

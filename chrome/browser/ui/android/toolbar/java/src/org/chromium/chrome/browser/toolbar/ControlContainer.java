@@ -40,6 +40,9 @@ public interface ControlContainer {
     /** Gets the height of the toolbar contained by the control container. */
     int getToolbarHeight();
 
+    /** Gets the height of the toolbar hairline. */
+    int getToolbarHairlineHeight();
+
     /**
      * @param handler The swipe handler to be notified of swipe events on this container.
      */

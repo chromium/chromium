@@ -226,7 +226,7 @@ public class StaticLayout extends Layout {
                             if (mNeedsOffsetTag) {
                                 mModel.set(
                                         LayoutTab.CONTENT_OFFSET_TAG,
-                                        offsetTagsInfo.getTopControlsOffsetTag());
+                                        offsetTagsInfo.getContentOffsetTag());
                             }
 
                             // With BCIV enabled, scrolling will not update the content offset of

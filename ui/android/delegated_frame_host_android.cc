@@ -129,12 +129,26 @@ void DelegatedFrameHostAndroid::RegisterOffsetTags(
     const cc::BrowserControlsOffsetTagsInfo& tags_info) {
   const viz::OffsetTag top_controls_offset_tag =
       tags_info.top_controls_offset_tag;
+  const viz::OffsetTag content_offset_tag = tags_info.content_offset_tag;
+
+  // TOOD(peilinwang) Enforce that either both tags exist or are both empty
+  // after the NoBrowserFramesWithAdditionalCaptures BCIV experiment ramps up.
   if (!top_controls_offset_tag.IsEmpty()) {
+    CHECK(!content_offset_tag.IsEmpty());
+
     int top_controls_height = tags_info.top_controls_height;
-    viz::OffsetTagConstraints top_controls_constraints(0, 0,
-                                                       -top_controls_height, 0);
+    int top_controls_hairline_height = tags_info.top_controls_hairline_height;
+    viz::OffsetTagConstraints top_controls_constraints(
+        0, 0, -(top_controls_height + top_controls_hairline_height), 0);
     content_layer_->RegisterOffsetTag(top_controls_offset_tag,
                                       top_controls_constraints);
+  }
+
+  if (!content_offset_tag.IsEmpty()) {
+    int top_controls_height = tags_info.top_controls_height;
+    viz::OffsetTagConstraints content_constraints(0, 0, -top_controls_height,
+                                                  0);
+    content_layer_->RegisterOffsetTag(content_offset_tag, content_constraints);
   }
 }
 
@@ -144,6 +158,11 @@ void DelegatedFrameHostAndroid::UnregisterOffsetTags(
       tags_info.top_controls_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(top_controls_offset_tag);
+  }
+
+  const viz::OffsetTag content_offset_tag = tags_info.content_offset_tag;
+  if (!content_offset_tag.IsEmpty()) {
+    content_layer_->UnregisterOffsetTag(content_offset_tag);
   }
 }
 

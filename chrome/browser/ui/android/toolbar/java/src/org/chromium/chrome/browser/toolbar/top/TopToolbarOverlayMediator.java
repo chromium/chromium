@@ -168,6 +168,9 @@ public class TopToolbarOverlayMediator {
                                 || isVisibilityForced) {
                             updateContentOffset();
                         }
+
+                        // TODO(peilinwang) Clean up this flag and remove the updateVisibility call
+                        // when stable experiment is finished.
                         if (!ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
                             updateShadowState();
                             updateVisibility();
@@ -178,9 +181,7 @@ public class TopToolbarOverlayMediator {
                     public void onAndroidControlsVisibilityChanged(int visibility) {
                         if (ToolbarFeatures.shouldSuppressCaptures()) {
                             mIsBrowserControlsAndroidViewVisible = visibility == View.VISIBLE;
-                            if (!ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
-                                updateShadowState();
-                            }
+                            updateShadowState();
                         }
                     }
 
@@ -190,9 +191,15 @@ public class TopToolbarOverlayMediator {
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
                         if (ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())) {
-                            mModel.set(
-                                    TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
-                                    offsetTagsInfo.getTopControlsOffsetTag());
+                            if (ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
+                                mModel.set(
+                                        TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
+                                        offsetTagsInfo.getTopControlsOffsetTag());
+                            } else {
+                                mModel.set(
+                                        TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
+                                        offsetTagsInfo.getContentOffsetTag());
+                            }
 
                             // With BCIV enabled, scrolling will not update the content offset of
                             // the browser's compositor frame. If we transition to a HIDDEN state
@@ -232,6 +239,14 @@ public class TopToolbarOverlayMediator {
      * android view is not shown.
      */
     private void updateShadowState() {
+        if (ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())
+                && ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
+            // With BCIV enabled, we show the hairline on the composited toolbar by default,
+            // and we don't want to update its visibility from the browser, because that incurs a
+            // compositor frame.
+            return;
+        }
+
         boolean drawControlsAsTexture;
         if (ToolbarFeatures.shouldSuppressCaptures()) {
             drawControlsAsTexture = !mIsBrowserControlsAndroidViewVisible;

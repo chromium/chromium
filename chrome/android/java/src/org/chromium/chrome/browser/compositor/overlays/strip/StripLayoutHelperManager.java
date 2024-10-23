@@ -1371,8 +1371,10 @@ public class StripLayoutHelperManager
                             @BrowserControlsState int constraints) {
                         if (ToolbarFeatures.isBrowserControlsInVizEnabled(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))) {
+                            // Use the content OffsetTag here, because the tab strip and content
+                            // are part of the same subtree and move together with the same offset.
                             mTabStripTreeProvider.updateOffsetTag(
-                                    offsetTagsInfo.getTopControlsOffsetTag());
+                                    offsetTagsInfo.getContentOffsetTag());
                         }
                     }
 

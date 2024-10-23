@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -51,6 +53,11 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             Supplier<Integer> bottomToolbarControlsOffsetSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
+        // If BCIV is enabled, we always show the hairline on the composited
+        // toolbar, and let renderer+viz control the visibility during scrolls.
+        boolean showHairline =
+                ToolbarFeatures.isBrowserControlsInVizEnabled(
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
         mModel =
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                         .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
@@ -63,6 +70,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                                 TopToolbarOverlayProperties.CONTENT_OFFSET,
                                 browserControlsStateProvider.getContentOffset())
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
+                        .with(TopToolbarOverlayProperties.SHOW_SHADOW, showHairline)
                         .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =

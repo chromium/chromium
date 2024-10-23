@@ -11,11 +11,28 @@ import org.jni_zero.CalledByNative;
 /** Java counterpart to the native cc::BrowserControlsOffsetTagsInfo. */
 @DoNotMock("This is a simple value object.")
 public final class BrowserControlsOffsetTagsInfo {
+    public OffsetTag mContentOffsetTag;
     public OffsetTag mTopControlsOffsetTag;
     public int mTopControlsHeight;
+    public int mTopControlsHairlineHeight;
 
-    public BrowserControlsOffsetTagsInfo(OffsetTag topControlsOffsetTag) {
-        mTopControlsOffsetTag = topControlsOffsetTag;
+    public BrowserControlsOffsetTagsInfo() {
+        mContentOffsetTag = OffsetTag.createRandom();
+        mTopControlsOffsetTag = OffsetTag.createRandom();
+    }
+
+    public BrowserControlsOffsetTagsInfo(OffsetTag content, OffsetTag topControls) {
+        mContentOffsetTag = content;
+        mTopControlsOffsetTag = topControls;
+    }
+
+    public boolean hasTags() {
+        return mContentOffsetTag != null || mTopControlsOffsetTag != null;
+    }
+
+    @CalledByNative
+    public OffsetTag getContentOffsetTag() {
+        return mContentOffsetTag;
     }
 
     @CalledByNative
@@ -26,5 +43,10 @@ public final class BrowserControlsOffsetTagsInfo {
     @CalledByNative
     public int getTopControlsHeight() {
         return mTopControlsHeight;
+    }
+
+    @CalledByNative
+    public int getTopControlsHairlineHeight() {
+        return mTopControlsHairlineHeight;
     }
 }

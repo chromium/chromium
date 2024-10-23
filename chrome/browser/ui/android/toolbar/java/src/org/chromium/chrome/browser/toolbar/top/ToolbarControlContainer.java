@@ -79,6 +79,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private boolean mIsAppInUnfocusedDesktopWindow;
     private final int mToolbarLayoutHeight;
 
+    private View mToolbarHairline;
+
     /**
      * Constructs a new control container.
      *
@@ -91,6 +93,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         super(context, attrs);
         mToolbarLayoutHeight =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mToolbarHairline = findViewById(R.id.toolbar_hairline);
     }
 
     @Override
@@ -120,6 +128,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     @Override
     public int getToolbarHeight() {
         return mToolbarLayoutHeight;
+    }
+
+    @Override
+    public int getToolbarHairlineHeight() {
+        assert mToolbarHairline != null;
+        return mToolbarHairline.getHeight();
     }
 
     @Override
@@ -287,10 +301,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             // the rounding for dp -> px conversion can cause off-by-one error for the toolbar
             // hairline top margin, result in a sequence of top UI misalignment.
             // See https://crbug.com/40941027.
-            View toolbarHairline = mToolbarContainer.findViewById(R.id.toolbar_hairline);
-            var lp = (MarginLayoutParams) toolbarHairline.getLayoutParams();
+            var lp = (MarginLayoutParams) mToolbarHairline.getLayoutParams();
             lp.topMargin = mToolbar.getTabStripHeight() + mToolbarLayoutHeight;
-            toolbarHairline.setLayoutParams(lp);
+            mToolbarHairline.setLayoutParams(lp);
         }
     }
 
