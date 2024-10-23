@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -30,8 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -76,7 +72,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
@@ -300,40 +295,5 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         assertFalse(
                 "Not drawing E2E when not in media viewer.",
                 mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
-    }
-
-    @Test
-    @EnableFeatures({SigninFeatures.CCT_SIGN_IN_PROMPT})
-    public void testCreateMismatchNotificationChecker() {
-        FeatureList.setDisableNativeForTesting(true);
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(SigninFeatures.CCT_SIGN_IN_PROMPT, true);
-        FeatureList.setTestValues(testValues);
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
-        when(mProfileSupplier.get()).thenReturn(mProfile);
-
-        assertNotNull(
-                "Should create a checker",
-                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
-
-        // Not the right app
-        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(false);
-        assertNull(
-                "Should NOT create a checker for a wrong app",
-                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
-        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
-
-        // Nulled-out app ID
-        assertNull(
-                "Should NOT create checker for no app ID",
-                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker(null));
-
-        // No profile
-        when(mProfileSupplier.get()).thenReturn(null);
-        assertNull(
-                "Should NOT create checker for no profile",
-                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
     }
 }

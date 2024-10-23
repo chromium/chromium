@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
-import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationData;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -1386,47 +1385,6 @@ public class CustomTabsConnection {
             Context context,
             WindowAndroid windowAndroid,
             OneshotSupplier<ProfileProvider> profileProviderSupplier) {}
-
-    /**
-     * Returns whether the app launching the CCT may display account mismatch notification UI.
-     *
-     * @param intent The intent that launched the custom tab.
-     */
-    boolean isAppForAccountMismatchNotification(Intent intent) {
-        return false;
-    }
-
-    /**
-     * Whether the account mismatch notification UI should be shown.
-     *
-     * @param intent The intent that launched the custom tab.
-     * @param profile The current profile object.
-     * @param lastShownTime The last time the notification was shown to user.
-     * @return Whether the notification was shown or not.
-     */
-    boolean shouldShowAccountMismatchNotification(
-            Intent intent, Profile profile, long lastShownTime) {
-        return false;
-    }
-
-    /**
-     * Show the name of the account in which the app launching the custom tab is signed.
-     *
-     * @param intent The intent that launched the custom tab.
-     */
-    String getAppAccountName(Intent intent) {
-        return null;
-    }
-
-    /**
-     * Perform tasks when account mismatch notification is close.
-     *
-     * @param intent The intent that launched the custom tab.
-     * @param profile The current profile object.
-     * @param closeType How the notification UI was closed.
-     */
-    void onCloseMismatchNotification(
-            Intent intent, Profile profile, @MismatchNotificationData.UserAction int closeType) {}
 
     /**
      * Sends a callback using {@link CustomTabsCallback} with the first run result if necessary.

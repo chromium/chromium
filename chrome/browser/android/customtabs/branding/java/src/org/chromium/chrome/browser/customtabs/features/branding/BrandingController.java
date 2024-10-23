@@ -18,7 +18,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -60,7 +59,6 @@ public class BrandingController {
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
-    private Supplier<MismatchNotificationChecker> mMismatchNotificationChecker;
 
     /**
      * Branding controller responsible for showing branding.
@@ -69,7 +67,6 @@ public class BrandingController {
      * @param appId The ID for the embedded app. Can be {@code null}
      * @param browserName The browser name shown on the branding toast.
      * @param toastTemplateId Resource ID of the string to be shown on Toast branding UI.
-     * @param mismatchNotificationChecker A bridge interface for mismatch notification handler.
      * @param exceptionReporter Optional reporter that reports wrong state quietly.
      */
     public BrandingController(
@@ -77,12 +74,10 @@ public class BrandingController {
             String appId,
             String browserName,
             @StringRes int toastTemplateId,
-            @NonNull Supplier<MismatchNotificationChecker> mismatchNotificationChecker,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
         mBrowserName = browserName;
         mToastTemplateId = toastTemplateId;
-        mMismatchNotificationChecker = mismatchNotificationChecker;
         mExceptionReporter = exceptionReporter;
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
@@ -100,7 +95,6 @@ public class BrandingController {
 
     /**
      * Register the {@link ToolbarBrandingDelegate} from CCT Toolbar.
-     *
      * @param delegate {@link ToolbarBrandingDelegate} instance from CCT Toolbar.
      */
     public void onToolbarInitialized(@NonNull ToolbarBrandingDelegate delegate) {
@@ -133,21 +127,10 @@ public class BrandingController {
     private void maybeMakeBrandingDecision() {
         if (mToolbarBrandingDelegate == null || mBrandingDecision.get() == null) return;
 
-        @BrandingDecision int brandingDecision = mBrandingDecision.get();
-
-        // Mismatch notification checker is invoked when branding decision data is available
-        // to respect the timing with which the decision is made. The decision making takes
-        // place quite early without native layer involved, while the checker needs the native
-        // layer to be initialized. For this reason, it is instantiated lazily only at this
-        // point, where the native is likely to be ready for pre-warmed CCTs.
-        var checker = mMismatchNotificationChecker.get();
-        if (checker != null && checker.maybeShow(mBrandingChecker.getLastShowTime())) {
-            brandingDecision = BrandingDecision.NONE;
-        }
-
         long timeToolbarEmpty = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
         long remainingBrandingTime = TOTAL_BRANDING_DELAY_MS - timeToolbarEmpty;
 
+        @BrandingDecision int brandingDecision = mBrandingDecision.get();
         switch (brandingDecision) {
             case BrandingDecision.NONE:
                 mToolbarBrandingDelegate.showRegularToolbar();
@@ -236,7 +219,6 @@ public class BrandingController {
                                 SharedPreferencesBrandingTimeStorage.resetInstance();
                             }
                         }));
-        mMismatchNotificationChecker = null;
     }
 
     @BrandingDecision

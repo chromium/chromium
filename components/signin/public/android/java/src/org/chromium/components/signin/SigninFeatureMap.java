@@ -8,9 +8,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.components.cached_flags.CachedFlag;
-
-import java.util.List;
 
 /** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("signin")
@@ -24,11 +21,6 @@ public final class SigninFeatureMap extends FeatureMap {
     public static SigninFeatureMap getInstance() {
         return sInstance;
     }
-
-    public static final CachedFlag sCctSignInPrompt =
-            new CachedFlag(sInstance, SigninFeatures.CCT_SIGN_IN_PROMPT, false);
-
-    public static final List<CachedFlag> sCachedFlags = List.of(sCctSignInPrompt);
 
     /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
