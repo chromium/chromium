@@ -392,11 +392,14 @@ void OptimizationGuideService::ExecuteModel(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (!model_execution_manager_) {
     std::move(callback).Run(
-        base::unexpected(
-            optimization_guide::OptimizationGuideModelExecutionError::
-                FromModelExecutionError(
-                    optimization_guide::OptimizationGuideModelExecutionError::
-                        ModelExecutionError::kGenericFailure)),
+        optimization_guide::OptimizationGuideModelExecutionResult(
+            base::unexpected(
+                optimization_guide::OptimizationGuideModelExecutionError::
+                    FromModelExecutionError(
+                        optimization_guide::
+                            OptimizationGuideModelExecutionError::
+                                ModelExecutionError::kGenericFailure)),
+            /*model_execution_info=*/nullptr),
         nullptr);
     return;
   }

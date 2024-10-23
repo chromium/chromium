@@ -139,6 +139,7 @@ void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
   VLOG(1) << "Executing server query";
   service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kTest, request,
+      /*execution_timeout=*/std::nullopt,
       base::BindOnce(&OnDeviceLlmInternalsHandler::OnServerModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 #endif  // Server inference
@@ -178,17 +179,18 @@ void OnDeviceLlmInternalsHandler::OnServerModelExecuteResponse(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   std::string response = "";
 
-  if (result.has_value()) {
+  if (result.response.has_value()) {
     auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::StringValue>(result.value());
+        optimization_guide::proto::StringValue>(result.response.value());
     if (parsed->has_value()) {
       response = parsed->value();
     } else {
       response = "Failed to parse server response as a string";
     }
   } else {
-    response = base::StringPrintf("Server model execution error: %d",
-                                  static_cast<int>(result.error().error()));
+    response =
+        base::StringPrintf("Server model execution error: %d",
+                           static_cast<int>(result.response.error().error()));
   }
 
   VLOG(1) << "Server query response: " << response;
