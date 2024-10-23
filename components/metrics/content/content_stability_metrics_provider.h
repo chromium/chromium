@@ -69,6 +69,16 @@ class ContentStabilityMetricsProvider
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            BrowserChildProcessObserverUtility);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           CdmServiceProcessObserverUtility);
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           CdmServiceProcessObserverUtilityLaunchFailed);
+#if BUILDFLAG(IS_WIN)
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           MediaFoundationServiceProcessObserverUtility);
+#endif  // BUILDFLAG(IS_WIN)
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           UnknownCdmServiceProcessObserverUtility);
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            RenderProcessObserver);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            MetricsServicesWebContentObserver);

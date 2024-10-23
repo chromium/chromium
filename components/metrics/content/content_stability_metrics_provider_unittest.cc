@@ -30,6 +30,11 @@ namespace metrics {
 namespace {
 
 const char kTestUtilityProcessName[] = "test_utility_process";
+const char kTestCdmServiceUtilityProcessName[] = "media.mojom.CdmServiceBroker";
+#if BUILDFLAG(IS_WIN)
+const char kTestMediaFoundationServiceUtilityProcessName[] =
+    "media.mojom.MediaFoundationServiceBroker";
+#endif
 
 class MockExtensionsHelper : public ExtensionsHelper {
  public:
@@ -103,6 +108,91 @@ TEST_F(ContentStabilityMetricsProviderTest,
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kUtilityCrash, 2);
 }
+
+TEST_F(ContentStabilityMetricsProviderTest, CdmServiceProcessObserverUtility) {
+  base::HistogramTester histogram_tester;
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
+
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
+  child_process_data.metrics_name = kTestCdmServiceUtilityProcessName;
+  child_process_data.sandbox_type = sandbox::mojom::Sandbox::kCdm;
+
+  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
+  const int kExitCode = 333;
+  content::ChildProcessTerminationInfo abnormal_termination_info;
+  abnormal_termination_info.status =
+      base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  abnormal_termination_info.exit_code = kExitCode;
+  provider.BrowserChildProcessCrashed(child_process_data,
+                                      abnormal_termination_info);
+  provider.BrowserChildProcessCrashed(child_process_data,
+                                      abnormal_termination_info);
+
+  // Verify metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Stability.Media.CdmServiceBroker.Crash.ExitCode", kExitCode, 2);
+}
+
+TEST_F(ContentStabilityMetricsProviderTest,
+       CdmServiceProcessObserverUtilityLaunchFailed) {
+  base::HistogramTester histogram_tester;
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
+
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
+  child_process_data.metrics_name = kTestCdmServiceUtilityProcessName;
+  child_process_data.sandbox_type = sandbox::mojom::Sandbox::kCdm;
+
+  const int kExitCode = 777;
+  content::ChildProcessTerminationInfo abnormal_termination_info;
+  abnormal_termination_info.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
+  abnormal_termination_info.exit_code = kExitCode;
+#if BUILDFLAG(IS_WIN)
+  const int kLastError = 9;
+  abnormal_termination_info.last_error = kLastError;
+#endif
+  provider.BrowserChildProcessLaunchFailed(child_process_data,
+                                           abnormal_termination_info);
+
+  // Verify metrics.
+  histogram_tester.ExpectUniqueSample("Stability.Media.CdmServiceBroker.Launch",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Stability.Media.CdmServiceBroker.Launch.LaunchErrorCode", kExitCode, 1);
+#if BUILDFLAG(IS_WIN)
+  histogram_tester.ExpectUniqueSample(
+      "Stability.Media.CdmServiceBroker.Launch.WinLastError", kLastError, 1);
+#endif
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ContentStabilityMetricsProviderTest,
+       MediaFoundationServiceProcessObserverUtility) {
+  base::HistogramTester histogram_tester;
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
+
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
+  child_process_data.metrics_name =
+      kTestMediaFoundationServiceUtilityProcessName;
+  child_process_data.sandbox_type =
+      sandbox::mojom::Sandbox::kMediaFoundationCdm;
+
+  provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
+  const int kExitCode = 555;
+  content::ChildProcessTerminationInfo abnormal_termination_info;
+  abnormal_termination_info.status =
+      base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  abnormal_termination_info.exit_code = kExitCode;
+  provider.BrowserChildProcessCrashed(child_process_data,
+                                      abnormal_termination_info);
+  provider.BrowserChildProcessCrashed(child_process_data,
+                                      abnormal_termination_info);
+
+  // Verify metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Stability.Media.MediaFoundationServiceBroker.Crash.ExitCode", kExitCode,
+      2);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentStabilityMetricsProviderTest, RenderProcessObserver) {
