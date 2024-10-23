@@ -217,6 +217,8 @@ source_set("browser") {
     "safe_browsing/aw_safe_browsing_local_state_delegate_impl.h",
     "safe_browsing/aw_safe_browsing_navigation_throttle.cc",
     "safe_browsing/aw_safe_browsing_navigation_throttle.h",
+    "safe_browsing/aw_safe_browsing_ui.cc",
+    "safe_browsing/aw_safe_browsing_ui.h",
     "safe_browsing/aw_safe_browsing_ui_manager.cc",
     "safe_browsing/aw_safe_browsing_ui_manager.h",
     "safe_browsing/aw_url_checker_delegate_impl.cc",

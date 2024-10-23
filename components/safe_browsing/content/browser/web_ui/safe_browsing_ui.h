@@ -382,7 +382,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
 // The WebUI for chrome://safe-browsing
 class SafeBrowsingUI : public content::WebUIController {
- public:
+ protected:
   SafeBrowsingUI(content::WebUI* web_ui,
                  std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate);
 

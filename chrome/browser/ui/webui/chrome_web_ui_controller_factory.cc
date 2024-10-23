@@ -28,12 +28,12 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_safe_browsing_local_state_delegate.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/crashes_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
+#include "chrome/browser/ui/webui/safe_browsing/chrome_safe_browsing_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -57,7 +57,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/reading_list/features/reading_list_switches.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -192,14 +191,6 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
   return new T(web_ui);
 }
 
-// Template for handlers defined in a component layer, that take an instance of
-// a delegate implemented in the chrome layer.
-template <class WEB_UI_CONTROLLER, class DELEGATE>
-WebUIController* NewComponentUI(WebUI* web_ui, const GURL& url) {
-  auto delegate = std::make_unique<DELEGATE>(web_ui);
-  return new WEB_UI_CONTROLLER(web_ui, std::move(delegate));
-}
-
 template <>
 WebUIController* NewWebUI<commerce::CommerceInternalsUI>(WebUI* web_ui,
                                                          const GURL& url) {
@@ -261,8 +252,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<OptimizationGuideInternalsUI>;
   }
   if (url.host_piece() == safe_browsing::kChromeUISafeBrowsingHost)
-    return &NewComponentUI<safe_browsing::SafeBrowsingUI,
-                           ChromeSafeBrowsingLocalStateDelegate>;
+    return &NewWebUI<safe_browsing::ChromeSafeBrowsingUI>;
   if (url.host_piece() ==
       history_clusters_internals::kChromeUIHistoryClustersInternalsHost) {
     return &NewWebUI<HistoryClustersInternalsUI>;
