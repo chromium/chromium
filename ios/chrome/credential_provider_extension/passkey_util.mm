@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -114,6 +115,26 @@ void SaveCredential(id<Credential> credential) {
   }];
 }
 
+// Returns the UserVerificationPreference based on the provided
+// `user_verification_preference_string`. The passed string is expected to match
+// one of the user verification preference options made available by the
+// WebAuthn API.
+UserVerificationPreference UserVerificationPreferenceFromString(
+    NSString* user_verification_preference_string) {
+  if ([user_verification_preference_string isEqualToString:@"required"]) {
+    return UserVerificationPreference::kRequired;
+  } else if ([user_verification_preference_string
+                 isEqualToString:@"preferred"]) {
+    return UserVerificationPreference::kPreferred;
+  } else if ([user_verification_preference_string
+                 isEqualToString:@"discouraged"]) {
+    return UserVerificationPreference::kDiscouraged;
+  } else {
+    // Probably indicates that the WebAuthn API changed.
+    return UserVerificationPreference::kOther;
+  }
+}
+
 }  // namespace
 
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
@@ -208,4 +229,28 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
                 clientDataHash:client_data_hash
              authenticatorData:authenticatorData
                   credentialID:credential.credentialId];
+}
+
+BOOL ShouldPerformUserVerificationForPreference(
+    NSString* user_verification_preference_string,
+    BOOL is_biometric_authentication_enabled) {
+  UserVerificationPreference user_verification_preference =
+      UserVerificationPreferenceFromString(user_verification_preference_string);
+
+  // If the UserVerificationPreference value is `kOther`, the WebAuthn API
+  // probably changed. This should be investigated, but shouldn't cause a crash.
+  if (user_verification_preference == UserVerificationPreference::kOther) {
+    base::debug::DumpWithoutCrashing();
+  }
+
+  switch (user_verification_preference) {
+    case UserVerificationPreference::kRequired:
+    case UserVerificationPreference::kOther:  // Fallback to highest degree of
+                                              // security.
+      return YES;
+    case UserVerificationPreference::kPreferred:
+      return is_biometric_authentication_enabled;
+    case UserVerificationPreference::kDiscouraged:
+      return NO;
+  }
 }

@@ -472,8 +472,9 @@ UIColor* BackgroundColor() {
 // on the provided `userVerificationPreference`.
 - (BOOL)shouldPerformUserVerificationForPreference:
     (NSString*)userVerificationPreference {
-  // TODO(crbug.com/355043266): Implement logic.
-  return YES;
+  return ShouldPerformUserVerificationForPreference(
+      userVerificationPreference,
+      [self.reauthenticationModule canAttemptReauthWithBiometrics]);
 }
 
 - (void)provideCredentialWithoutUserInteractionForIdentifier:

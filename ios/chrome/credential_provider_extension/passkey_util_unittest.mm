@@ -169,4 +169,33 @@ TEST_F(PasskeyUtilTest, CreationSucceeds) {
   }
 }
 
+// Tests that `ShouldPerformUserVerificationForPreference` gives the expected
+// result for a diverse set of arguments.
+TEST_F(PasskeyUtilTest,
+       ShouldPerformUserVerificationForPreferenceGivesExpectedResults) {
+  // Cases where user verification should be performed.
+  EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
+      @"required", /*is_biometric_authentication_enabled=*/YES));
+  EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
+      @"required", /*is_biometric_authentication_enabled=*/NO));
+  EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
+      @"preferred", /*is_biometric_authentication_enabled=*/YES));
+  EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
+      @"Discouraged",
+      /*is_biometric_authentication_enabled=*/YES));  // Not a valid preference
+                                                      // value.
+  EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
+      @"Discouraged",
+      /*is_biometric_authentication_enabled=*/NO));  // Not a valid preference
+                                                     // value.
+
+  // Cases where user verification shouldn't be performed.
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      @"preferred", /*is_biometric_authentication_enabled=*/NO));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      @"discouraged", /*is_biometric_authentication_enabled=*/YES));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      @"discouraged", /*is_biometric_authentication_enabled=*/NO));
+}
+
 }  // namespace credential_provider_extension
