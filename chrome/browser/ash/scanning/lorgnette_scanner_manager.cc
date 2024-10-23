@@ -98,6 +98,7 @@ constexpr char kEpsonNoFlipModels[] =
     "|WF-C21000c"
     "|WF-C579R"
     "|WF-C579Ra"
+    "|WF-C5891"
     "|WF-C8610"
     "|WF-C8690"
     "|WF-C8690a"
