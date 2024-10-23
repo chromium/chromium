@@ -15,8 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
-#include "base/functional/function_ref.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -144,15 +143,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
     void Start(base::OnceClosure callback);
 
    private:
-    struct Timeout {
-      Timeout(base::TimeTicks time, base::OnceClosure callback);
-      Timeout(Timeout&&);
-      Timeout& operator=(Timeout&&);
-      ~Timeout();
-
-      base::TimeTicks time;
-      base::OnceClosure callback;
-    };
+    struct Timeout;
 
     void MaybeStartTimer();
     void ProcessTimeout();
@@ -196,7 +187,15 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   const RegistrationContext* GetReceiverRegistrationContextForSource();
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();
 
-  [[nodiscard]] bool CheckRegistrarSupport(
+  void OsDataAvailable(
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      std::vector<attribution_reporting::OsRegistrationItem>,
+      bool was_fetched_via_service_worker,
+      const char* data_available_call_metric,
+      const RegistrationContext*,
+      attribution_reporting::mojom::RegistrationType);
+
+  [[nodiscard]] static bool CheckRegistrarSupport(
       attribution_reporting::Registrar,
       attribution_reporting::mojom::RegistrationType,
       const RegistrationContext&,
@@ -214,11 +213,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   using InfoParseResult =
       base::expected<net::structured_headers::Dictionary, std::string>;
   void OnInfoHeaderParsed(RegistrationsId, InfoParseResult);
-  void HandleRegistrationInfo(base::flat_set<Registrations>::iterator,
+  void HandleRegistrationInfo(Registrations&,
                               PendingRegistrationData,
                               const attribution_reporting::RegistrationInfo&);
 
-  void ParseHeader(base::flat_set<Registrations>::iterator,
+  void ParseHeader(Registrations&,
                    HeaderPendingDecode,
                    attribution_reporting::Registrar);
   void HandleNextWebDecode(const Registrations&);
