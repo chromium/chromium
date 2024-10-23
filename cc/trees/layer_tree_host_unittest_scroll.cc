@@ -1329,12 +1329,13 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
       DoGestureScroll(host_impl, scroller_, impl_thread_scroll_,
                       scroller_element_id_);
 
-      EXPECT_TRUE(
-          host_impl->GetInputHandler().animating_for_snap_for_testing());
+      EXPECT_TRUE(host_impl->GetInputHandler().animating_for_snap_for_testing(
+          scroller_element_id_));
       EXPECT_VECTOR2DF_EQ(impl_thread_scroll_, ScrollDelta(scroller_impl));
     } else {
       snap_animation_finished_ =
-          !host_impl->GetInputHandler().animating_for_snap_for_testing();
+          !host_impl->GetInputHandler().animating_for_snap_for_testing(
+              scroller_element_id_);
     }
   }
 

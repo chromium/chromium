@@ -480,7 +480,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool RunsOnCurrentThread() const override;
 
-  void ScrollOffsetAnimationFinished() override;
+  void ScrollOffsetAnimationFinished(ElementId element_id) override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override;

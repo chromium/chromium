@@ -5487,9 +5487,9 @@ void LayerTreeHostImpl::MaximumScaleChanged(ElementId element_id,
   }
 }
 
-void LayerTreeHostImpl::ScrollOffsetAnimationFinished() {
+void LayerTreeHostImpl::ScrollOffsetAnimationFinished(ElementId element_id) {
   if (input_delegate_)
-    input_delegate_->ScrollOffsetAnimationFinished();
+    input_delegate_->ScrollOffsetAnimationFinished(element_id);
 }
 
 void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
