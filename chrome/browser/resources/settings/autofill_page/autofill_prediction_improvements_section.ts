@@ -28,6 +28,8 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_prediction_improvements_section.html.js';
@@ -89,6 +91,9 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
     this.userAnnotationsManager_.getEntries().then(
         (entries: UserAnnotationsEntry[]) => {
+          if (this.disabled && entries.length === 0) {
+            Router.getInstance().navigateTo(routes.AUTOFILL);
+          }
           this.userAnnotationsEntries_ = entries;
         });
   }

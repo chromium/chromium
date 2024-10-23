@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl, UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
@@ -16,6 +16,7 @@ import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/ch
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {Router, routes} from 'chrome://settings/settings.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createIbanEntry, PaymentsManagerExpectations, STUB_USER_ACCOUNT_INFO, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
@@ -344,5 +345,43 @@ suite('PasswordsUITest', function() {
     autofillSection.$.passwordManagerButton.click();
     const param = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, param);
+  });
+});
+
+
+suite('AutofillPredictionImprovementsRedirectTest', function() {
+  let section: SettingsAutofillPredictionImprovementsSectionElement;
+  let userAnnotationsManager: TestUserAnnotationsManagerProxyImpl;
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    // Enable the Autofill Prediction Improvements feature so that the route is
+    // defined.
+    loadTimeData.overrideValues({
+      autofillPredictionImprovementsEnabled: true,
+    });
+
+    resetRouterForTesting();
+
+    userAnnotationsManager = new TestUserAnnotationsManagerProxyImpl();
+    UserAnnotationsManagerProxyImpl.setInstance(userAnnotationsManager);
+
+    // Simulate navigating to the AUTOFILL_PREDICTION_IMPROVEMENTS route.
+    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
+  });
+
+  test('Redirects to Autofill when disabled and no entries', async function() {
+    // Mock getEntries to return an empty array to simulate no entries.
+    userAnnotationsManager.setEntries([]);
+
+    section = document.createElement(
+        'settings-autofill-prediction-improvements-section');
+    section.disabled = true;
+
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
   });
 });
