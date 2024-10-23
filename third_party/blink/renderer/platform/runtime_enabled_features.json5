@@ -355,6 +355,10 @@
       status: "experimental",
     },
     {
+      name: "AllowPreloadingWithCSPMetaTag",
+      status: "experimental",
+    },
+    {
       name: "AllowURNsInIframes",
       base_feature: "none",
     },

@@ -227,7 +227,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // resources using the resulting PreloadRequests and |preloader_|.
   void ScanAndPreload(HTMLPreloadScanner*);
   void ProcessPreloadData(std::unique_ptr<PendingPreloadData> preload_data);
-  void FetchQueuedPreloads();
+  void MaybeFetchQueuedPreloads();
   std::string GetPreloadHistogramSuffix();
   void FinishAppend();
   void ScanInBackground(const String& source);
@@ -255,6 +255,11 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                              int tokens_parsed) const;
 
   bool ShouldSkipPreloadScan();
+
+  // Check if preloads are allowed considering the presence of a preloader,
+  // the presence of queued preloads and the presence of meta CSP tags in the
+  // HTML document.
+  bool AllowPreloading();
 
   HTMLInputStream input_;
   const HTMLParserOptions options_;
@@ -297,6 +302,11 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   // Cached result of ShouldSkipPreloadScan()
   bool should_skip_preload_scan_ = false;
+
+  // Counts how many CSP meta tags have been seen (but not necessarily processed
+  // yet). This is used to compare the number of seen tags with the number of
+  // processed CSP tags in order to decide if resources can be preloaded.
+  int seen_csp_meta_tags_ = 0;
 };
 
 }  // namespace blink
