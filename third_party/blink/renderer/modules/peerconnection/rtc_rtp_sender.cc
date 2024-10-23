@@ -780,6 +780,15 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
         encoding->setScaleResolutionDownBy(
             webrtc_encoding.scale_resolution_down_by.value());
       }
+      if (webrtc_encoding.requested_resolution) {
+        RTCResolutionRestriction* resolution_restriction =
+            RTCResolutionRestriction::Create();
+        resolution_restriction->setMaxWidth(
+            webrtc_encoding.requested_resolution->width);
+        resolution_restriction->setMaxHeight(
+            webrtc_encoding.requested_resolution->height);
+        encoding->setScaleResolutionDownTo(resolution_restriction);
+      }
       if (webrtc_encoding.max_framerate) {
         encoding->setMaxFramerate(webrtc_encoding.max_framerate.value());
       }
