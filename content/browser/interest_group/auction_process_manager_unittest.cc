@@ -250,6 +250,9 @@ class AuctionProcessManagerTestBase
     SiteInstance::StartIsolatingSite(
         &test_browser_context_, kIsolatedOrigin.GetURL(),
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+    site_instance1_ = SiteInstance::Create(&test_browser_context_);
+    site_instance2_ = SiteInstance::Create(&test_browser_context_);
   }
 
   virtual ~AuctionProcessManagerTestBase() {
@@ -264,7 +267,7 @@ class AuctionProcessManagerTestBase
       std::optional<AuctionProcessManager::WorkletType> worklet_type =
           std::nullopt) {
     GetAuctionProcessManager().MaybeStartAnticipatoryProcess(
-        origin, GetSiteInstance(), worklet_type.value_or(GetWorkletType()));
+        origin, site_instance1_.get(), worklet_type.value_or(GetWorkletType()));
   }
 
   std::string RequestWorkletServiceOutcomeUmaName(
@@ -286,7 +289,7 @@ class AuctionProcessManagerTestBase
       RequestWorkletServiceOutcome expected_outcome) {
     base::HistogramTester histogram_tester;
     bool success = GetAuctionProcessManager().RequestWorkletService(
-        worklet_type, origin, GetSiteInstance(), process_handle,
+        worklet_type, origin, site_instance1_.get(), process_handle,
         base::DoNothing());
     EXPECT_EQ(expect_success, success);
     histogram_tester.ExpectUniqueSample(
@@ -347,8 +350,6 @@ class AuctionProcessManagerTestBase
 
   virtual AuctionProcessManager& GetAuctionProcessManager() = 0;
 
-  virtual SiteInstance* GetSiteInstance() = 0;
-
   // Isolated by StartIsolatingSite() call in the constructor.
   const url::Origin kIsolatedOrigin =
       url::Origin::Create(GURL("https://bank.test"));
@@ -372,18 +373,21 @@ class AuctionProcessManagerTestBase
   // Used by the kInRendererSharedProcess case to disable strict site isolation.
   PartialSiteIsolationContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> original_browser_client_;
+
+  // `site_instance1_` and `site_instance2_` are in different browsing
+  // instances.
+  scoped_refptr<SiteInstance> site_instance1_;
+  scoped_refptr<SiteInstance> site_instance2_;
 };
 
 class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
  protected:
   AuctionProcessManagerTest()
-      : AuctionProcessManagerTestBase(ProcessMode::kDedicated),
-        site_instance_(SiteInstance::Create(&test_browser_context_)) {}
+      : AuctionProcessManagerTestBase(ProcessMode::kDedicated) {}
 
   AuctionProcessManager& GetAuctionProcessManager() override {
     return auction_process_manager_;
   }
-  SiteInstance* GetSiteInstance() override { return site_instance_.get(); }
 
   // Request a worklet service and expect the request to complete synchronously.
   // There's no async version, since async calls are only triggered by deleting
@@ -394,7 +398,7 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
     auto process_handle =
         std::make_unique<AuctionProcessManager::ProcessHandle>();
     EXPECT_TRUE(auction_process_manager_.RequestWorkletService(
-        worklet_type, origin, site_instance_, process_handle.get(),
+        worklet_type, origin, site_instance1_, process_handle.get(),
         NeverInvokedClosure()));
     EXPECT_TRUE(process_handle->GetService());
     return process_handle;
@@ -411,7 +415,6 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
         []() { ADD_FAILURE() << "This should not be called"; });
   }
 
-  scoped_refptr<SiteInstance> site_instance_;
   TestAuctionProcessManager<DedicatedAuctionProcessManager>
       auction_process_manager_;
 };
@@ -425,8 +428,6 @@ class DedicatedStyleAuctionProcessManagerTest
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "10s"}});
   }
-
-  SiteInstance* GetSiteInstance() override { return nullptr; }
 
   AuctionProcessManager& GetAuctionProcessManager() override {
     return auction_process_manager_;
@@ -649,7 +650,7 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
           base::HistogramTester histogram_tester;
           ASSERT_EQ(original_size < GetMaxProcesses(),
                     auction_process_manager_.RequestWorkletService(
-                        GetWorkletType(), distinct_origin, site_instance_,
+                        GetWorkletType(), distinct_origin, site_instance1_,
                         data.back().process_handle.get(),
                         data.back().run_loop->QuitClosure()));
           RequestWorkletServiceOutcome expected_result =
@@ -759,7 +760,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   auto process_delayed_a1 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      GetWorkletType(), kOriginA, site_instance_, process_delayed_a1.get(),
+      GetWorkletType(), kOriginA, site_instance1_, process_delayed_a1.get(),
       run_loop_delayed_a1.QuitClosure()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_a1.AnyQuitCalled());
@@ -770,7 +771,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   auto process_delayed_a2 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      GetWorkletType(), kOriginA, site_instance_, process_delayed_a2.get(),
+      GetWorkletType(), kOriginA, site_instance1_, process_delayed_a2.get(),
       run_loop_delayed_a2.QuitClosure()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_a2.AnyQuitCalled());
@@ -781,7 +782,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   auto process_delayed_b =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      GetWorkletType(), kOriginB, site_instance_, process_delayed_b.get(),
+      GetWorkletType(), kOriginB, site_instance1_, process_delayed_b.get(),
       run_loop_delayed_b.QuitClosure()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
@@ -855,7 +856,7 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
   auto pending_process1 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      GetWorkletType(), kOriginA, site_instance_, pending_process1.get(),
+      GetWorkletType(), kOriginA, site_instance1_, pending_process1.get(),
       NeverInvokedClosure()));
   EXPECT_EQ(1u, GetPendingRequestsOfWorkletType());
 
@@ -868,13 +869,13 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
   auto pending_process2 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      GetWorkletType(), kOriginA, site_instance_, pending_process2.get(),
+      GetWorkletType(), kOriginA, site_instance1_, pending_process2.get(),
       NeverInvokedClosure()));
   auto pending_process3 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   base::RunLoop pending_process3_run_loop;
   ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      GetWorkletType(), kOriginB, site_instance_, pending_process3.get(),
+      GetWorkletType(), kOriginB, site_instance1_, pending_process3.get(),
       pending_process3_run_loop.QuitClosure()));
   EXPECT_EQ(2u, GetPendingRequestsOfWorkletType());
 
@@ -1352,15 +1353,11 @@ class InRendererAuctionProcessManagerTestBase
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "3s"}});
-
-    site_instance1_ = SiteInstance::Create(&test_browser_context_);
-    site_instance2_ = SiteInstance::Create(&test_browser_context_);
   }
 
   AuctionProcessManager& GetAuctionProcessManager() override {
     return auction_process_manager_;
   }
-  SiteInstance* GetSiteInstance() override { return site_instance1_.get(); }
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle>
   GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
@@ -1380,9 +1377,6 @@ class InRendererAuctionProcessManagerTestBase
         []() { ADD_FAILURE() << "This should not be called"; });
   }
 
-  // `site_instance1_` and `site_instance2_` are in different browsing
-  // instances.
-  scoped_refptr<SiteInstance> site_instance1_, site_instance2_;
   TestAuctionProcessManager<InRendererAuctionProcessManager>
       auction_process_manager_;
 
