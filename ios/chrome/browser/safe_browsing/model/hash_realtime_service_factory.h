@@ -20,10 +20,6 @@ class HashRealTimeService;
 // It returns nullptr for incognito profiles.
 class HashRealTimeServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::HashRealTimeService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static safe_browsing::HashRealTimeService* GetForProfile(ProfileIOS* profile);
   // Returns the singleton instance of HashRealTimeServiceFactory.
   static HashRealTimeServiceFactory* GetInstance();

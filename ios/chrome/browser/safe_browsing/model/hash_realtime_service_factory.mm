@@ -23,12 +23,6 @@ network::mojom::NetworkContext* GetNetworkContext() {
 }  // namespace
 
 // static
-safe_browsing::HashRealTimeService*
-HashRealTimeServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 safe_browsing::HashRealTimeService* HashRealTimeServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<safe_browsing::HashRealTimeService*>(

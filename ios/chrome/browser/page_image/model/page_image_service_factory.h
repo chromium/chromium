@@ -19,10 +19,6 @@ class ImageService;
 // Factory for the components ImageService service which fetches salient images.
 class PageImageServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static page_image_service::ImageService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static page_image_service::ImageService* GetForProfile(ProfileIOS* profile);
   static PageImageServiceFactory* GetInstance();
 

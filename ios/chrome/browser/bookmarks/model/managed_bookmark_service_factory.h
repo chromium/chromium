@@ -18,10 +18,6 @@ class ManagedBookmarkService;
 // profiles.
 class ManagedBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static bookmarks::ManagedBookmarkService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static bookmarks::ManagedBookmarkService* GetForProfile(ProfileIOS* profile);
   static ManagedBookmarkServiceFactory* GetInstance();
 

@@ -23,10 +23,6 @@ class ChromePasswordProtectionServiceFactory
   // this profile, creating one if none exists.
   static ChromePasswordProtectionService* GetForProfile(ProfileIOS* profile);
 
-  // Deprecated: use GetForProfile(...).
-  static ChromePasswordProtectionService* GetForBrowserState(
-      ProfileIOS* profile);
-
   // Returns the singleton instance of ChromePasswordProtectionServiceFactory.
   static ChromePasswordProtectionServiceFactory* GetInstance();
 

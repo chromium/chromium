@@ -19,9 +19,6 @@ class BreadcrumbManagerKeyedServiceFactory
   static BreadcrumbManagerKeyedServiceFactory* GetInstance();
   static breadcrumbs::BreadcrumbManagerKeyedService* GetForProfile(
       ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static breadcrumbs::BreadcrumbManagerKeyedService* GetForBrowserState(
-      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<BreadcrumbManagerKeyedServiceFactory>;

@@ -65,7 +65,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   affiliations::AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(profile);
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
 
   // `groups_manager` can be null in tests.
   GoogleGroupsManager* groups_manager =

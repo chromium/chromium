@@ -19,9 +19,6 @@ class CredentialsCleanerRunnerFactory : public BrowserStateKeyedServiceFactory {
   static CredentialsCleanerRunnerFactory* GetInstance();
   static password_manager::CredentialsCleanerRunner* GetForProfile(
       ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static password_manager::CredentialsCleanerRunner* GetForBrowserState(
-      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<CredentialsCleanerRunnerFactory>;

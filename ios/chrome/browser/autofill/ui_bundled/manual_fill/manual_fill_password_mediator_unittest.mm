@@ -77,7 +77,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
                 .get()));
 
     affiliation_service_ = static_cast<affiliations::FakeAffiliationService*>(
-        IOSChromeAffiliationServiceFactory::GetForBrowserState(profile_.get()));
+        IOSChromeAffiliationServiceFactory::GetForProfile(profile_.get()));
 
     presenter_ = std::make_unique<SavedPasswordsPresenter>(
         affiliation_service_, store_, /*accont_store=*/nullptr);

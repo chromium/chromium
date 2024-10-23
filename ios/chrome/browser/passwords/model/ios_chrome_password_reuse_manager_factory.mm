@@ -27,12 +27,6 @@ IOSChromePasswordReuseManagerFactory::GetInstance() {
 
 // static
 password_manager::PasswordReuseManager*
-IOSChromePasswordReuseManagerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-password_manager::PasswordReuseManager*
 IOSChromePasswordReuseManagerFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordReuseManager*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

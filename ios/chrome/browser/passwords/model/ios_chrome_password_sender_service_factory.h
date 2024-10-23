@@ -18,10 +18,6 @@ class PasswordSenderService;
 class IOSChromePasswordSenderServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::PasswordSenderService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::PasswordSenderService* GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordSenderServiceFactory* GetInstance();

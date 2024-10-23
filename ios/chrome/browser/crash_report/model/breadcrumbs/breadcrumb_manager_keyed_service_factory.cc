@@ -25,12 +25,6 @@ BreadcrumbManagerKeyedServiceFactory::GetForProfile(ProfileIOS* profile) {
       GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
-// static
-breadcrumbs::BreadcrumbManagerKeyedService*
-BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
 BreadcrumbManagerKeyedServiceFactory::BreadcrumbManagerKeyedServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "BreadcrumbManagerService",

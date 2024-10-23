@@ -29,7 +29,7 @@ IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
       IOSPopularSitesFactory::NewForBrowserState(profile),
       /*custom_links=*/nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
-          ios::FaviconServiceFactory::GetForBrowserState(
+          ios::FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),
           IOSChromeLargeIconServiceFactory::GetForProfile(profile),
           std::make_unique<image_fetcher::ImageFetcherImpl>(

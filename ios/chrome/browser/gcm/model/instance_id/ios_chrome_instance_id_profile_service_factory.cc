@@ -14,13 +14,6 @@
 
 // static
 instance_id::InstanceIDProfileService*
-IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-instance_id::InstanceIDProfileService*
 IOSChromeInstanceIDProfileServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<instance_id::InstanceIDProfileService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

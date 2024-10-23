@@ -27,13 +27,6 @@ using invalidation::ProfileInvalidationProvider;
 
 // static
 invalidation::ProfileInvalidationProvider*
-IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-invalidation::ProfileInvalidationProvider*
 IOSChromeProfileInvalidationProviderFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ProfileInvalidationProvider*>(

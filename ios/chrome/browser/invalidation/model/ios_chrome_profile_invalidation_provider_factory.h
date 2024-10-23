@@ -21,10 +21,6 @@ class ProfileInvalidationProvider;
 class IOSChromeProfileInvalidationProviderFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static invalidation::ProfileInvalidationProvider* GetForBrowserState(
-      ProfileIOS* profile);
-
   static invalidation::ProfileInvalidationProvider* GetForProfile(
       ProfileIOS* profile);
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();

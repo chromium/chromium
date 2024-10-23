@@ -28,12 +28,6 @@ IOSChromeBulkLeakCheckServiceFactory::GetInstance() {
 
 // static
 password_manager::BulkLeakCheckServiceInterface*
-IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-password_manager::BulkLeakCheckServiceInterface*
 IOSChromeBulkLeakCheckServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::BulkLeakCheckServiceInterface*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

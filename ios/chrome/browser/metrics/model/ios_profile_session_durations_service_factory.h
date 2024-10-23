@@ -14,10 +14,6 @@ class ProfileIOS;
 class IOSProfileSessionDurationsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static IOSProfileSessionDurationsService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static IOSProfileSessionDurationsService* GetForProfile(ProfileIOS* profile);
   static IOSProfileSessionDurationsServiceFactory* GetInstance();
 

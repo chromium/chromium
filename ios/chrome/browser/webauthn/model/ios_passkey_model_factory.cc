@@ -53,7 +53,7 @@ std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
       std::make_unique<password_manager::PasskeyAffiliationSourceAdapter>(
           sync_bridge.get());
 
-  IOSChromeAffiliationServiceFactory::GetForBrowserState(profile)
-      ->RegisterSource(std::move(adapter));
+  IOSChromeAffiliationServiceFactory::GetForProfile(profile)->RegisterSource(
+      std::move(adapter));
   return sync_bridge;
 }

@@ -36,12 +36,6 @@ IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
       GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
-// static
-affiliations::AffiliationService*
-IOSChromeAffiliationServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "AffiliationService",

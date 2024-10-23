@@ -49,12 +49,6 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkModel(
 }  // namespace
 
 // static
-bookmarks::ManagedBookmarkService*
-ManagedBookmarkServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 bookmarks::ManagedBookmarkService* ManagedBookmarkServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<bookmarks::ManagedBookmarkService*>(

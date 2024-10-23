@@ -21,10 +21,6 @@ class BulkLeakCheckServiceInterface;
 class IOSChromeBulkLeakCheckServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::BulkLeakCheckServiceInterface* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::BulkLeakCheckServiceInterface* GetForProfile(
       ProfileIOS* profile);
   static IOSChromeBulkLeakCheckServiceFactory* GetInstance();

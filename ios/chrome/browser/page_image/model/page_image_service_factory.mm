@@ -18,12 +18,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
-page_image_service::ImageService* PageImageServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 page_image_service::ImageService* PageImageServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<page_image_service::ImageService*>(

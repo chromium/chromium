@@ -19,10 +19,6 @@ class PasswordReuseManager;
 class IOSChromePasswordReuseManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::PasswordReuseManager* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::PasswordReuseManager* GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordReuseManagerFactory* GetInstance();

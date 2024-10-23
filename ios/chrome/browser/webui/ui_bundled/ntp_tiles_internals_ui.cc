@@ -109,7 +109,7 @@ NTPTilesInternalsUI::NTPTilesInternalsUI(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource::Add(profile, CreateNTPTilesInternalsHTMLSource());
   web_ui->AddMessageHandler(
       std::make_unique<IOSNTPTilesInternalsMessageHandlerBridge>(
-          ios::FaviconServiceFactory::GetForBrowserState(
+          ios::FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)));
 }
 

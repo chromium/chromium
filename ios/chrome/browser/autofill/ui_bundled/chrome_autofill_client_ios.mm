@@ -171,7 +171,7 @@ FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   if (!form_data_importer_) {
     form_data_importer_ = std::make_unique<FormDataImporter>(
         this,
-        ios::HistoryServiceFactory::GetForBrowserState(
+        ios::HistoryServiceFactory::GetForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS),
         GetApplicationContext()->GetApplicationLocale());
   }

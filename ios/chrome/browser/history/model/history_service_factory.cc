@@ -44,13 +44,6 @@ std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
 }  // namespace
 
 // static
-history::HistoryService* HistoryServiceFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
-
-// static
 history::HistoryService* HistoryServiceFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {

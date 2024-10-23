@@ -13,14 +13,6 @@
 
 // static
 password_manager::PasswordRequirementsService*
-IOSPasswordRequirementsServiceFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
-
-// static
-password_manager::PasswordRequirementsService*
 IOSPasswordRequirementsServiceFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {

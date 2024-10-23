@@ -23,10 +23,6 @@ class BrowserState;
 // profile. It returns nullptr for Incognito profiles.
 class TailoredSecurityServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::TailoredSecurityService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static safe_browsing::TailoredSecurityService* GetForProfile(
       ProfileIOS* profile);
 

@@ -21,10 +21,6 @@ class PasswordRequirementsService;
 class IOSPasswordRequirementsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static password_manager::PasswordRequirementsService* GetForBrowserState(
-      ProfileIOS* profile,
-      ServiceAccessType access_type);
-
   static password_manager::PasswordRequirementsService* GetForProfile(
       ProfileIOS* profile,
       ServiceAccessType access_type);

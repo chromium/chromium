@@ -52,12 +52,6 @@ AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
 }
 
 // static
-language::AcceptLanguagesService*
-AcceptLanguagesServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 language::AcceptLanguagesService* AcceptLanguagesServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   AcceptLanguagesServiceForProfile* service =

@@ -40,12 +40,6 @@ LanguageModelManagerFactory* LanguageModelManagerFactory::GetInstance() {
 }
 
 // static
-language::LanguageModelManager* LanguageModelManagerFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 language::LanguageModelManager* LanguageModelManagerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<language::LanguageModelManager*>(

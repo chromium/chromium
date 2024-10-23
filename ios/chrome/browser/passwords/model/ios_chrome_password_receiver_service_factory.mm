@@ -32,13 +32,6 @@ IOSChromePasswordReceiverServiceFactory::GetInstance() {
 
 // static
 password_manager::PasswordReceiverService*
-IOSChromePasswordReceiverServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-password_manager::PasswordReceiverService*
 IOSChromePasswordReceiverServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordReceiverService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

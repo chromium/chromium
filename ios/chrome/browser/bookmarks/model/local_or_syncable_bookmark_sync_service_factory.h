@@ -19,10 +19,6 @@ namespace ios {
 class LocalOrSyncableBookmarkSyncServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static sync_bookmarks::BookmarkSyncService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static sync_bookmarks::BookmarkSyncService* GetForProfile(
       ProfileIOS* profile);
   static LocalOrSyncableBookmarkSyncServiceFactory* GetInstance();

@@ -21,10 +21,6 @@ class LanguageModelManager;
 // provided depends on feature flags.
 class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static language::LanguageModelManager* GetForBrowserState(
-      ProfileIOS* profile);
-
   static language::LanguageModelManager* GetForProfile(ProfileIOS* profile);
   static LanguageModelManagerFactory* GetInstance();
 

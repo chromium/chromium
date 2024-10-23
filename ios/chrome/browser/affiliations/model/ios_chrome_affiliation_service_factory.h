@@ -19,10 +19,6 @@ class IOSChromeAffiliationServiceFactory
   static IOSChromeAffiliationServiceFactory* GetInstance();
   static affiliations::AffiliationService* GetForProfile(ProfileIOS* profile);
 
-  // Deprecated: use GetForProfile(...)
-  static affiliations::AffiliationService* GetForBrowserState(
-      ProfileIOS* profile);
-
  private:
   friend class base::NoDestructor<IOSChromeAffiliationServiceFactory>;
 

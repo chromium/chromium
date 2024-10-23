@@ -22,11 +22,6 @@ namespace ios {
 // ProfileIOS.
 class FaviconServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static favicon::FaviconService* GetForBrowserState(
-      ProfileIOS* profile,
-      ServiceAccessType access_type);
-
   static favicon::FaviconService* GetForProfile(ProfileIOS* profile,
                                                 ServiceAccessType access_type);
   static FaviconServiceFactory* GetInstance();
