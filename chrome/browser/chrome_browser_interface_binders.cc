@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/cart/commerce_hint_service.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -533,68 +532,6 @@ void BindImageAnnotator(
       ->BindImageAnnotator(std::move(receiver));
 }
 
-void BindCommerceHintObserver(
-    content::RenderFrameHost* const frame_host,
-    mojo::PendingReceiver<cart::mojom::CommerceHintObserver> receiver) {
-  // This is specifically restricting this to main frames, whether they are the
-  // main frame of the tab, while preventing this from working in subframes and
-  // fenced frames.
-  if (frame_host->GetParent() || frame_host->IsFencedFrameRoot()) {
-    mojo::ReportBadMessage(
-        "Unexpected the message from subframe or fenced frame.");
-    return;
-  }
-
-// Check if features require CommerceHint are enabled.
-#if !BUILDFLAG(IS_ANDROID)
-  if (!IsCartModuleEnabled()) {
-    return;
-  }
-#else
-  if (!base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid)) {
-    return;
-  }
-#endif
-
-// On Android, commerce hint observer is enabled for all users with the feature
-// enabled since the observer is only used for collecting metrics for now, and
-// we want to maximize the user population exposed; on Desktop, ChromeCart is
-// not available for non-signin single-profile users and therefore neither does
-// commerce hint observer.
-#if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = Profile::FromBrowserContext(
-      frame_host->GetProcess()->GetBrowserContext());
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!identity_manager || !profile_manager) {
-    return;
-  }
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      profile_manager->GetNumberOfProfiles() <= 1) {
-    return;
-  }
-#endif
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents) {
-    return;
-  }
-  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  if (!browser_context) {
-    return;
-  }
-  if (browser_context->IsOffTheRecord()) {
-    return;
-  }
-
-  cart::CommerceHintService::CreateForWebContents(web_contents);
-  cart::CommerceHintService* service =
-      cart::CommerceHintService::FromWebContents(web_contents);
-  if (!service) {
-    return;
-  }
-  service->BindCommerceHintObserver(frame_host, std::move(receiver));
-}
-
 void BindDistillabilityService(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<dom_distiller::mojom::DistillabilityService>
@@ -826,9 +763,6 @@ void PopulateChromeFrameBinders(
     content::RenderFrameHost* render_frame_host) {
   map->Add<image_annotation::mojom::Annotator>(
       base::BindRepeating(&BindImageAnnotator));
-
-  map->Add<cart::mojom::CommerceHintObserver>(
-      base::BindRepeating(&BindCommerceHintObserver));
 
   map->Add<blink::mojom::AnchorElementMetricsHost>(
       base::BindRepeating(&NavigationPredictor::Create));

@@ -140,7 +140,6 @@ static_library("renderer") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
-    "//chrome/common/cart:mojo_bindings",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
     "//chrome/services/speech/buildflags",
