@@ -338,14 +338,8 @@ class ReportBuilder {
 
 bool operator==(const StoredSource&, const StoredSource&);
 
-bool operator==(const AttributionReport::CommonAggregatableData&,
-                const AttributionReport::CommonAggregatableData&);
-
-bool operator==(const AttributionReport::AggregatableAttributionData&,
-                const AttributionReport::AggregatableAttributionData&);
-
-bool operator==(const AttributionReport::NullAggregatableData&,
-                const AttributionReport::NullAggregatableData&);
+bool operator==(const AttributionReport::AggregatableData&,
+                const AttributionReport::AggregatableData&);
 
 bool operator==(const AttributionReport&, const AttributionReport&);
 
@@ -371,14 +365,7 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data);
 
 std::ostream& operator<<(std::ostream& out,
-                         const AttributionReport::CommonAggregatableData&);
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionReport::AggregatableAttributionData& data);
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionReport::NullAggregatableData&);
+                         const AttributionReport::AggregatableData& data);
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
@@ -511,7 +498,7 @@ MATCHER_P(TriggerDebugKeyIs, matcher, "") {
 }
 
 MATCHER_P(ReportSourceDebugKeyIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.GetSourceDebugKey(), result_listener);
+  return ExplainMatchResult(matcher, arg.source_debug_key(), result_listener);
 }
 
 MATCHER_P(EventLevelDataIs, matcher, "") {
@@ -542,36 +529,35 @@ MATCHER_P(ReportTypeIs, matcher, "") {
 
 MATCHER_P(AggregatableAttributionDataIs, matcher, "") {
   return ExplainMatchResult(
-      ::testing::VariantWith<AttributionReport::AggregatableAttributionData>(
-          matcher),
+      ::testing::VariantWith<AttributionReport::AggregatableData>(matcher),
       arg.data(), result_listener);
 }
 
 MATCHER_P(NullAggregatableDataIs, matcher, "") {
   return ExplainMatchResult(
-      ::testing::VariantWith<AttributionReport::NullAggregatableData>(matcher),
+      ::testing::VariantWith<AttributionReport::AggregatableData>(matcher),
       arg.data(), result_listener);
 }
 
 MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.contributions, result_listener);
+  return ExplainMatchResult(matcher, arg.contributions(), result_listener);
 }
 
 MATCHER_P(AggregationCoordinatorOriginIs, matcher, "") {
-  return ExplainMatchResult(
-      matcher, arg.common_data.aggregation_coordinator_origin, result_listener);
+  return ExplainMatchResult(matcher, arg.aggregation_coordinator_origin(),
+                            result_listener);
 }
 
 MATCHER_P(SourceRegistrationTimeConfigIs, matcher, "") {
-  return ExplainMatchResult(matcher,
-                            arg.common_data.aggregatable_trigger_config
-                                .source_registration_time_config(),
-                            result_listener);
+  return ExplainMatchResult(
+      matcher,
+      arg.aggregatable_trigger_config().source_registration_time_config(),
+      result_listener);
 }
 
 MATCHER_P(TriggerContextIdIs, matcher, "") {
   return ExplainMatchResult(
-      matcher, arg.common_data.aggregatable_trigger_config.trigger_context_id(),
+      matcher, arg.aggregatable_trigger_config().trigger_context_id(),
       result_listener);
 }
 

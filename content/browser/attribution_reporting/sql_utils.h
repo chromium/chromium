@@ -34,6 +34,10 @@ class SuitableOrigin;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace sql {
 class Statement;
 }  // namespace sql
@@ -109,11 +113,11 @@ std::optional<AttributionReport::EventLevelData>
 DeserializeEventLevelReportMetadata(base::span<const uint8_t>,
                                     const StoredSource&);
 
-std::optional<AttributionReport::AggregatableAttributionData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeAggregatableReportMetadata(base::span<const uint8_t>,
                                       const StoredSource&);
 
-std::optional<AttributionReport::NullAggregatableData>
+std::optional<AttributionReport::AggregatableData>
     DeserializeNullAggregatableReportMetadata(base::span<const uint8_t>);
 
 std::string SerializeAttributionScopesData(

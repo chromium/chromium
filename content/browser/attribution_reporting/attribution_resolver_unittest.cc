@@ -165,6 +165,10 @@ MATCHER_P(CreateReportMaxAggregatableReportsLimitIs, matcher, "") {
   return ExplainMatchResult(matcher, value, result_listener);
 }
 
+MATCHER_P(SourceTimeIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.source_time(), result_listener);
+}
+
 }  // namespace
 
 // Unit test suite for the AttributionResolver interface. All
@@ -4190,24 +4194,21 @@ TEST_F(AttributionResolverTest,
   EXPECT_THAT(result.min_null_aggregatable_report_time(),
               Optional(now + kReportDelay));
 
-  EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Max()),
-      UnorderedElementsAre(
-          AggregatableAttributionDataIs(SourceRegistrationTimeConfigIs(
-              attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                  kInclude)),
-          NullAggregatableDataIs(AllOf(
-              SourceRegistrationTimeConfigIs(
-                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kInclude),
-              Field(&AttributionReport::NullAggregatableData::fake_source_time,
-                    now - base::Days(1)))),
-          NullAggregatableDataIs(AllOf(
-              SourceRegistrationTimeConfigIs(
-                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kInclude),
-              Field(&AttributionReport::NullAggregatableData::fake_source_time,
-                    now - base::Days(30))))));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(
+                  AggregatableAttributionDataIs(SourceRegistrationTimeConfigIs(
+                      attribution_reporting::mojom::
+                          SourceRegistrationTimeConfig::kInclude)),
+                  NullAggregatableDataIs(
+                      AllOf(SourceRegistrationTimeConfigIs(
+                                attribution_reporting::mojom::
+                                    SourceRegistrationTimeConfig::kInclude),
+                            SourceTimeIs(now - base::Days(1)))),
+                  NullAggregatableDataIs(
+                      AllOf(SourceRegistrationTimeConfigIs(
+                                attribution_reporting::mojom::
+                                    SourceRegistrationTimeConfig::kInclude),
+                            SourceTimeIs(now - base::Days(30))))));
 }
 
 TEST_F(
@@ -4229,25 +4230,21 @@ TEST_F(
 
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),
-      UnorderedElementsAre(
-          NullAggregatableDataIs(AllOf(
-              SourceRegistrationTimeConfigIs(
-                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kInclude),
-              Field(&AttributionReport::NullAggregatableData::fake_source_time,
-                    now))),
-          NullAggregatableDataIs(AllOf(
-              SourceRegistrationTimeConfigIs(
-                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kInclude),
-              Field(&AttributionReport::NullAggregatableData::fake_source_time,
-                    now - base::Days(1)))),
-          NullAggregatableDataIs(AllOf(
-              SourceRegistrationTimeConfigIs(
-                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kInclude),
-              Field(&AttributionReport::NullAggregatableData::fake_source_time,
-                    now - base::Days(30))))));
+      UnorderedElementsAre(NullAggregatableDataIs(AllOf(
+                               SourceRegistrationTimeConfigIs(
+                                   attribution_reporting::mojom::
+                                       SourceRegistrationTimeConfig::kInclude),
+                               SourceTimeIs(now))),
+                           NullAggregatableDataIs(AllOf(
+                               SourceRegistrationTimeConfigIs(
+                                   attribution_reporting::mojom::
+                                       SourceRegistrationTimeConfig::kInclude),
+                               SourceTimeIs(now - base::Days(1)))),
+                           NullAggregatableDataIs(AllOf(
+                               SourceRegistrationTimeConfigIs(
+                                   attribution_reporting::mojom::
+                                       SourceRegistrationTimeConfig::kInclude),
+                               SourceTimeIs(now - base::Days(30))))));
 }
 
 TEST_F(
@@ -4291,14 +4288,12 @@ TEST_F(
   EXPECT_THAT(result.min_null_aggregatable_report_time(),
               Optional(now + kReportDelay));
 
-  EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Max()),
-      UnorderedElementsAre(NullAggregatableDataIs(AllOf(
-          SourceRegistrationTimeConfigIs(
-              attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                  kExclude),
-          Field(&AttributionReport::NullAggregatableData::fake_source_time,
-                now)))));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(NullAggregatableDataIs(
+                  AllOf(SourceRegistrationTimeConfigIs(
+                            attribution_reporting::mojom::
+                                SourceRegistrationTimeConfig::kExclude),
+                        SourceTimeIs(now)))));
 }
 
 TEST_F(AttributionResolverTest,

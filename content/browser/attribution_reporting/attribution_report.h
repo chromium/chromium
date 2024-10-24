@@ -63,7 +63,6 @@ class CONTENT_EXPORT AttributionReport {
     attribution_reporting::DestinationSet destinations;
     uint64_t source_event_id;
     attribution_reporting::mojom::SourceType source_type;
-    std::optional<uint64_t> source_debug_key;
     double randomized_response_rate;
     bool attributed_truthfully;
 
@@ -71,15 +70,21 @@ class CONTENT_EXPORT AttributionReport {
                            const EventLevelData&) = default;
   };
 
-  struct CONTENT_EXPORT CommonAggregatableData {
-    CommonAggregatableData(std::optional<attribution_reporting::SuitableOrigin>
-                               aggregation_coordinator_origin,
-                           attribution_reporting::AggregatableTriggerConfig);
-    CommonAggregatableData(const CommonAggregatableData&);
-    CommonAggregatableData(CommonAggregatableData&&);
-    CommonAggregatableData& operator=(const CommonAggregatableData&);
-    CommonAggregatableData& operator=(CommonAggregatableData&&);
-    ~CommonAggregatableData();
+  class CONTENT_EXPORT AggregatableData {
+   public:
+    AggregatableData(
+        std::optional<attribution_reporting::SuitableOrigin>
+            aggregation_coordinator_origin,
+        attribution_reporting::AggregatableTriggerConfig,
+        base::Time source_time,
+        std::vector<blink::mojom::AggregatableReportHistogramContribution>
+            contributions,
+        std::optional<attribution_reporting::SuitableOrigin> source_origin);
+    AggregatableData(const AggregatableData&);
+    AggregatableData(AggregatableData&&);
+    AggregatableData& operator=(const AggregatableData&);
+    AggregatableData& operator=(AggregatableData&&);
+    ~AggregatableData();
 
     // When updating the string, update the goldens and version history too, see
     // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md
@@ -89,68 +94,65 @@ class CONTENT_EXPORT AttributionReport {
     // Enum string identifying this API for use in reports.
     static constexpr char kApiIdentifier[] = "attribution-reporting";
 
-    // The report assembled by the aggregation service. If null, the report has
-    // not been assembled yet.
-    std::optional<AggregatableReport> assembled_report;
+    const std::optional<AggregatableReport>& assembled_report() const {
+      return assembled_report_;
+    }
 
-    std::optional<attribution_reporting::SuitableOrigin>
-        aggregation_coordinator_origin;
+    void SetAssembledReport(std::optional<AggregatableReport>);
 
-    attribution_reporting::AggregatableTriggerConfig
-        aggregatable_trigger_config;
+    const std::optional<attribution_reporting::SuitableOrigin>&
+    aggregation_coordinator_origin() const {
+      return aggregation_coordinator_origin_;
+    }
 
-    // When adding new members, the corresponding `operator==()` definition in
-    // `attribution_test_utils.h` should also be updated.
-  };
+    const attribution_reporting::AggregatableTriggerConfig&
+    aggregatable_trigger_config() const {
+      return aggregatable_trigger_config_;
+    }
 
-  // Struct that contains the data specific to the aggregatable report.
-  struct CONTENT_EXPORT AggregatableAttributionData {
-    AggregatableAttributionData(
-        CommonAggregatableData,
-        std::vector<blink::mojom::AggregatableReportHistogramContribution>
-            contributions,
-        const StoredSource&);
-    AggregatableAttributionData(const AggregatableAttributionData&);
-    AggregatableAttributionData& operator=(const AggregatableAttributionData&);
-    AggregatableAttributionData(AggregatableAttributionData&&);
-    AggregatableAttributionData& operator=(AggregatableAttributionData&&);
-    ~AggregatableAttributionData();
+    base::Time source_time() const { return source_time_; }
+
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+    contributions() const {
+      return contributions_;
+    }
+
+    void SetContributions(
+        std::vector<blink::mojom::AggregatableReportHistogramContribution>);
+
+    const std::optional<attribution_reporting::SuitableOrigin>& source_origin()
+        const {
+      return source_origin_;
+    }
 
     // Returns the sum of the contributions (values) across all buckets.
     base::CheckedNumeric<int64_t> BudgetRequired() const;
 
-    CommonAggregatableData common_data;
+    bool is_null() const { return !source_origin_.has_value(); }
+
+   private:
+    // The report assembled by the aggregation service. If null, the report has
+    // not been assembled yet.
+    std::optional<AggregatableReport> assembled_report_;
+
+    std::optional<attribution_reporting::SuitableOrigin>
+        aggregation_coordinator_origin_;
+
+    attribution_reporting::AggregatableTriggerConfig
+        aggregatable_trigger_config_;
+
+    base::Time source_time_;
 
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
-        contributions;
+        contributions_;
 
-    base::Time source_time;
-    std::optional<uint64_t> source_debug_key;
-    attribution_reporting::SuitableOrigin source_origin;
+    std::optional<attribution_reporting::SuitableOrigin> source_origin_;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
   };
 
-  struct CONTENT_EXPORT NullAggregatableData {
-    NullAggregatableData(CommonAggregatableData,
-                         base::Time fake_source_time);
-    NullAggregatableData(const NullAggregatableData&);
-    NullAggregatableData(NullAggregatableData&&);
-    NullAggregatableData& operator=(const NullAggregatableData&);
-    NullAggregatableData& operator=(NullAggregatableData&&);
-    ~NullAggregatableData();
-
-    CommonAggregatableData common_data;
-    base::Time fake_source_time;
-
-    // When adding new members, the corresponding `operator==()` definition in
-    // `attribution_test_utils.h` should also be updated.
-  };
-
-  using Data = absl::variant<EventLevelData,
-                             AggregatableAttributionData,
-                             NullAggregatableData>;
+  using Data = absl::variant<EventLevelData, AggregatableData>;
 
   // Returns the minimum non-null time of `a` and `b`, or `std::nullopt` if
   // both are null.
@@ -164,7 +166,8 @@ class CONTENT_EXPORT AttributionReport {
                     base::Uuid external_report_id,
                     int failed_send_attempts,
                     Data data,
-                    attribution_reporting::SuitableOrigin reporting_origin);
+                    attribution_reporting::SuitableOrigin reporting_origin,
+                    std::optional<uint64_t> source_debug_key);
   AttributionReport(const AttributionReport&);
   AttributionReport& operator=(const AttributionReport&);
   AttributionReport(AttributionReport&&);
@@ -192,9 +195,9 @@ class CONTENT_EXPORT AttributionReport {
 
   Data& data() { return data_; }
 
-  Type GetReportType() const { return static_cast<Type>(data_.index()); }
+  Type GetReportType() const;
 
-  std::optional<uint64_t> GetSourceDebugKey() const;
+  std::optional<uint64_t> source_debug_key() const { return source_debug_key_; }
 
   const attribution_reporting::SuitableOrigin& reporting_origin() const {
     return reporting_origin_;
@@ -234,6 +237,8 @@ class CONTENT_EXPORT AttributionReport {
   Data data_;
 
   attribution_reporting::SuitableOrigin reporting_origin_;
+
+  std::optional<uint64_t> source_debug_key_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

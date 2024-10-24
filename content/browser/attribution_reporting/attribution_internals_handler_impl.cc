@@ -165,48 +165,37 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                     event_level_data.attributed_truthfully));
           },
 
-          [](const AttributionReport::AggregatableAttributionData&
-                 aggregatable_data) {
+          [](const AttributionReport::AggregatableData& aggregatable_data) {
             std::vector<ai_mojom::AggregatableHistogramContributionPtr>
                 contributions;
-            base::ranges::transform(
-                aggregatable_data.contributions,
-                std::back_inserter(contributions),
-                [](const auto& contribution) {
-                  return ai_mojom::AggregatableHistogramContribution::New(
-                      attribution_reporting::HexEncodeAggregationKey(
-                          contribution.bucket),
-                      base::checked_cast<uint32_t>(contribution.value),
-                      contribution.filtering_id.value_or(0));
-                });
+
+            if (aggregatable_data.is_null()) {
+              contributions.push_back(
+                  ai_mojom::AggregatableHistogramContribution::New(
+                      attribution_reporting::HexEncodeAggregationKey(0),
+                      /*value=*/0,
+                      /*filtering_id=*/0));
+            } else {
+              base::ranges::transform(
+                  aggregatable_data.contributions(),
+                  std::back_inserter(contributions),
+                  [](const auto& contribution) {
+                    return ai_mojom::AggregatableHistogramContribution::New(
+                        attribution_reporting::HexEncodeAggregationKey(
+                            contribution.bucket),
+                        base::checked_cast<uint32_t>(contribution.value),
+                        contribution.filtering_id.value_or(0));
+                  });
+            }
 
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    aggregatable_data.common_data.aggregation_coordinator_origin
-                        ? aggregatable_data.common_data
-                              .aggregation_coordinator_origin->Serialize()
-                        : "",
-                    /*is_null_report=*/false));
-          },
-
-          [](const AttributionReport::NullAggregatableData& null_data)
-              -> ai_mojom::WebUIReportDataPtr {
-            std::vector<ai_mojom::AggregatableHistogramContributionPtr>
-                contributions;
-            contributions.push_back(
-                ai_mojom::AggregatableHistogramContribution::New(
-                    attribution_reporting::HexEncodeAggregationKey(0),
-                    /*value=*/0,
-                    /*filtering_id=*/0));
-            return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
-                ai_mojom::WebUIReportAggregatableAttributionData::New(
-                    std::move(contributions),
-                    null_data.common_data.aggregation_coordinator_origin
-                        ? null_data.common_data.aggregation_coordinator_origin
+                    aggregatable_data.aggregation_coordinator_origin()
+                        ? aggregatable_data.aggregation_coordinator_origin()
                               ->Serialize()
                         : "",
-                    /*is_null_report=*/true));
+                    aggregatable_data.is_null()));
           },
       },
       report.data());

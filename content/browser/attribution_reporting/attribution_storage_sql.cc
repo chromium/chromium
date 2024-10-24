@@ -1297,6 +1297,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   }
 
   std::optional<AttributionReport::Data> data;
+  std::optional<uint64_t> source_debug_key;
 
   switch (base::span<const uint8_t> metadata = statement.ColumnBlob(col++);
           *report_type) {
@@ -1310,6 +1311,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       if (!data.has_value()) {
         corruptions.status_set.Put(ReportCorruptionStatus::kInvalidMetadata);
       }
+      source_debug_key = source_data->source.debug_key();
       break;
     }
     case AttributionReport::Type::kAggregatableAttribution: {
@@ -1323,6 +1325,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       if (!data.has_value()) {
         corruptions.status_set.Put(ReportCorruptionStatus::kInvalidMetadata);
       }
+      source_debug_key = source_data->source.debug_key();
       break;
     }
     case AttributionReport::Type::kNullAggregatable:
@@ -1351,7 +1354,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
                                            *std::move(context_origin)),
                            report_id, report_time, initial_report_time,
                            std::move(external_report_id), failed_send_attempts,
-                           *std::move(data), *std::move(reporting_origin));
+                           *std::move(data), *std::move(reporting_origin),
+                           source_debug_key);
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -2524,8 +2528,7 @@ bool AttributionStorageSql::ClearReportsForSourceIds(
 namespace {
 
 bool AggregatableAttributionAllowedForBudgetLimit(
-    const AttributionReport::AggregatableAttributionData&
-        aggregatable_attribution,
+    const AttributionReport::AggregatableData& aggregatable_attribution,
     int remaining_aggregatable_attribution_budget) {
   if (remaining_aggregatable_attribution_budget <= 0) {
     return false;
@@ -2681,8 +2684,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto* aggregatable_attribution =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
+      absl::get_if<AttributionReport::AggregatableData>(&report.data());
   DCHECK(aggregatable_attribution);
 
   if (num_aggregatable_attribution_reports >=

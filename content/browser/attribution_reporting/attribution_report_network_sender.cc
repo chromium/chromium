@@ -257,34 +257,31 @@ void AttributionReportNetworkSender::OnReportSent(
                                has_trigger_context_id, *retry_succeed);
             }
           },
-          [&](const AttributionReport::AggregatableAttributionData& data) {
-            has_trigger_context_id =
-                data.common_data.aggregatable_trigger_config
-                    .trigger_context_id()
-                    .has_value();
-            NetworkHistogram("ReportStatusAggregatable",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
-            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
-            if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedAggregatable",
-                               &base::UmaHistogramBoolean, is_debug_report,
-                               has_trigger_context_id, *retry_succeed);
+          [&](const AttributionReport::AggregatableData& data) {
+            has_trigger_context_id = data.aggregatable_trigger_config()
+                                         .trigger_context_id()
+                                         .has_value();
+
+            if (data.is_null()) {
+              NetworkHistogram("ReportStatusAggregatableNull",
+                               &base::UmaHistogramEnumeration, is_debug_report,
+                               has_trigger_context_id, status);
+              NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
+                               &base::UmaHistogramSparse, is_debug_report,
+                               has_trigger_context_id, response_or_net_error);
+            } else {
+              NetworkHistogram("ReportStatusAggregatable",
+                               &base::UmaHistogramEnumeration, is_debug_report,
+                               has_trigger_context_id, status);
+              NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable",
+                               &base::UmaHistogramSparse, is_debug_report,
+                               has_trigger_context_id, response_or_net_error);
+              if (retry_succeed.has_value()) {
+                NetworkHistogram("ReportRetrySucceedAggregatable",
+                                 &base::UmaHistogramBoolean, is_debug_report,
+                                 has_trigger_context_id, *retry_succeed);
+              }
             }
-          },
-          [&](const AttributionReport::NullAggregatableData& data) {
-            has_trigger_context_id =
-                data.common_data.aggregatable_trigger_config
-                    .trigger_context_id()
-                    .has_value();
-            NetworkHistogram("ReportStatusAggregatableNull",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
-            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
           },
       },
       report.data());

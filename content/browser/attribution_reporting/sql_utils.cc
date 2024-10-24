@@ -21,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -88,19 +89,18 @@ void SerializeCommonAggregatableData(
       trigger_config.aggregatable_filtering_id_max_bytes().value());
 }
 
-std::optional<AttributionReport::CommonAggregatableData>
-DeserializeCommonAggregatableData(
-    const proto::AttributionCommonAggregatableMetadata& msg) {
+std::optional<AttributionReport::AggregatableData> DeserializeAggregatableData(
+    const proto::AttributionCommonAggregatableMetadata& msg,
+    base::Time source_time,
+    base::optional_ref<const SuitableOrigin> source_origin) {
   if (!msg.has_source_registration_time_config()) {
     return std::nullopt;
   }
 
-  std::optional<attribution_reporting::SuitableOrigin>
-      aggregation_coordinator_origin;
+  std::optional<SuitableOrigin> aggregation_coordinator_origin;
   if (msg.has_coordinator_origin()) {
     aggregation_coordinator_origin =
-        attribution_reporting::SuitableOrigin::Deserialize(
-            msg.coordinator_origin());
+        SuitableOrigin::Deserialize(msg.coordinator_origin());
     if (!aggregation_coordinator_origin.has_value()) {
       return std::nullopt;
     }
@@ -141,9 +141,10 @@ DeserializeCommonAggregatableData(
     return std::nullopt;
   }
 
-  return AttributionReport::CommonAggregatableData(
+  return AttributionReport::AggregatableData(
       std::move(aggregation_coordinator_origin),
-      *std::move(aggregatable_trigger_config));
+      *std::move(aggregatable_trigger_config), source_time,
+      /*contributions=*/{}, source_origin.CopyAsOptional());
 }
 
 }  // namespace
@@ -180,7 +181,7 @@ void SetReadOnlySourceData(
 }
 
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::TriggerSpecs& trigger_specs,
+    const TriggerSpecs& trigger_specs,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
     bool cookie_based_debug_allowed,
@@ -393,7 +394,7 @@ std::string SerializeAggregatableReportMetadata(
   return msg.SerializeAsString();
 }
 
-std::optional<AttributionReport::AggregatableAttributionData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
                                       const StoredSource& source) {
   proto::AttributionAggregatableMetadata msg;
@@ -402,9 +403,10 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
     return std::nullopt;
   }
 
-  std::optional<AttributionReport::CommonAggregatableData> common_data =
-      DeserializeCommonAggregatableData(msg.common_data());
-  if (!common_data.has_value()) {
+  std::optional<AttributionReport::AggregatableData> data =
+      DeserializeAggregatableData(msg.common_data(), source.source_time(),
+                                  source.common_info().source_origin());
+  if (!data.has_value()) {
     return std::nullopt;
   }
 
@@ -421,7 +423,7 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
     }
     std::optional<uint64_t> filtering_id;
     if (contribution_msg.has_filtering_id()) {
-      if (!common_data->aggregatable_trigger_config
+      if (!data->aggregatable_trigger_config()
                .aggregatable_filtering_id_max_bytes()
                .CanEncompass(contribution_msg.filtering_id())) {
         return std::nullopt;
@@ -434,8 +436,8 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
         base::checked_cast<int32_t>(contribution_msg.value()), filtering_id);
   }
 
-  return AttributionReport::AggregatableAttributionData(
-      *std::move(common_data), std::move(contributions), source);
+  data->SetContributions(std::move(contributions));
+  return data;
 }
 
 std::string SerializeNullAggregatableReportMetadata(
@@ -454,7 +456,7 @@ std::string SerializeNullAggregatableReportMetadata(
   return msg.SerializeAsString();
 }
 
-std::optional<AttributionReport::NullAggregatableData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
   proto::AttributionNullAggregatableMetadata msg;
   if (!msg.ParseFromArray(blob.data(), blob.size()) ||
@@ -462,17 +464,11 @@ DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
     return std::nullopt;
   }
 
-  std::optional<AttributionReport::CommonAggregatableData> common_data =
-      DeserializeCommonAggregatableData(msg.common_data());
-  if (!common_data.has_value()) {
-    return std::nullopt;
-  }
+  base::Time fake_source_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(msg.fake_source_time()));
 
-  return AttributionReport::NullAggregatableData(
-      *std::move(common_data),
-      /*fake_source_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(msg.fake_source_time())));
+  return DeserializeAggregatableData(msg.common_data(), fake_source_time,
+                                     /*source_origin=*/std::nullopt);
 }
 
 std::optional<TriggerSpecs> DeserializeTriggerSpecs(

@@ -377,7 +377,11 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
                                        now - report.report_time(),
                                        base::Seconds(1), base::Days(1), 50);
           },
-          [&](const AttributionReport::AggregatableAttributionData& data) {
+          [&](const AttributionReport::AggregatableData& data) {
+            if (data.is_null()) {
+              return;
+            }
+
             base::TimeDelta time_from_conversion_to_report_assembly =
                 report.report_time() - report.attribution_info().time;
             UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -388,7 +392,7 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
 
             LogAggregatableReportHistogramCustomTimes(
                 "ExtraReportDelay",
-                data.common_data.aggregatable_trigger_config
+                data.aggregatable_trigger_config()
                     .trigger_context_id()
                     .has_value(),
                 now - report.initial_report_time(), base::Seconds(1),
@@ -399,7 +403,6 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
                 now - report.report_time(), base::Seconds(1), base::Days(1),
                 50);
           },
-          [](const AttributionReport::NullAggregatableData&) {},
       },
       report.data());
 }
@@ -1304,17 +1307,10 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
     return;
   }
 
-  absl::visit(
-      base::Overloaded{
-          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
-          [&](AttributionReport::AggregatableAttributionData& data) {
-            data.common_data.assembled_report = std::move(assembled_report);
-          },
-          [&](AttributionReport::NullAggregatableData& data) {
-            data.common_data.assembled_report = std::move(assembled_report);
-          },
-      },
-      report.data());
+  auto* data =
+      absl::get_if<AttributionReport::AggregatableData>(&report.data());
+  CHECK(data);
+  data->SetAssembledReport(std::move(assembled_report));
 
   RecordAssembleAggregatableReportStatus(
       AssembleAggregatableReportStatus::kSuccess);

@@ -155,7 +155,7 @@ enum class DebugKeyUsage {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportDebugKeyUsage)
 
 void RecordDebugKeyUsage(const AttributionReport& report) {
-  bool has_source_debug_key = report.GetSourceDebugKey().has_value();
+  bool has_source_debug_key = report.source_debug_key().has_value();
   bool has_trigger_debug_key = report.attribution_info().debug_key.has_value();
 
   DebugKeyUsage usage = DebugKeyUsage::kNone;
@@ -904,7 +904,7 @@ EventLevelResult AttributionResolverImpl::MaybeCreateEventLevelReport(
       /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data, event_trigger->priority,
                                         source),
-      common_info.reporting_origin());
+      common_info.reporting_origin(), source.debug_key());
 
   dedup_key = event_trigger->dedup_key;
 
@@ -993,12 +993,12 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
       attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
       /*failed_send_attempts=*/0,
-      AttributionReport::AggregatableAttributionData(
-          AttributionReport::CommonAggregatableData(
-              trigger_registration.aggregation_coordinator_origin,
-              trigger_registration.aggregatable_trigger_config),
-          std::move(contributions), source),
-      source.common_info().reporting_origin());
+      AttributionReport::AggregatableData(
+          trigger_registration.aggregation_coordinator_origin,
+          trigger_registration.aggregatable_trigger_config,
+          source.source_time(), std::move(contributions),
+          source.common_info().source_origin()),
+      source.common_info().reporting_origin(), source.debug_key());
 
   return AggregatableResult::kSuccess;
 }
@@ -1012,11 +1012,11 @@ bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
   std::optional<base::Time> attributed_source_time;
 
   if (new_aggregatable_report) {
-    const auto* data =
-        absl::get_if<AttributionReport::AggregatableAttributionData>(
-            &new_aggregatable_report->data());
+    const auto* data = absl::get_if<AttributionReport::AggregatableData>(
+        &new_aggregatable_report->data());
     DCHECK(data);
-    attributed_source_time = data->source_time;
+    DCHECK(!data->is_null());
+    attributed_source_time = data->source_time();
 
     DCHECK(source);
 
@@ -1027,8 +1027,8 @@ bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
             new_aggregatable_report->external_report_id(),
             attribution_info.debug_key, attribution_info.context_origin,
             new_aggregatable_report->reporting_origin(),
-            data->common_data.aggregation_coordinator_origin,
-            data->common_data.aggregatable_trigger_config, data->contributions);
+            data->aggregation_coordinator_origin(),
+            data->aggregatable_trigger_config(), data->contributions());
 
     if (!report_id.has_value()) {
       return false;
