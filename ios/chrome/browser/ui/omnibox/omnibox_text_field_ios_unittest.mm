@@ -28,7 +28,8 @@ class OmniboxTextFieldIOSTest : public PlatformTest {
     // This rect is fairly arbitrary. The text field just needs a non-zero width
     // so that the pre-edit label's text alignment can be tested.
     CGRect rect = CGRectMake(0, 0, 100, 20);
-    textfield_ = [[OmniboxTextFieldIOS alloc] initWithFrame:rect];
+    textfield_ = [[OmniboxTextFieldIOS alloc] initWithFrame:rect
+                                              isLensOverlay:NO];
     [GetAnyKeyWindow() addSubview:textfield_];
   }
 

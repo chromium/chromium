@@ -100,7 +100,8 @@ const CGFloat kClearButtonSize = 28.5f;
     _isLensOverlay = isLensOverlay;
     _textField = [[OmniboxTextFieldIOS alloc] initWithFrame:frame
                                                   textColor:textColor
-                                                  tintColor:textFieldTint];
+                                                  tintColor:textFieldTint
+                                              isLensOverlay:isLensOverlay];
     _textField.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Leading image view.

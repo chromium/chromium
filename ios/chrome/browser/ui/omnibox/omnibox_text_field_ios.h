@@ -40,7 +40,11 @@
 /// Initialize the omnibox with the given `frame`, `textColor`, and `tintColor`.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
-                    tintColor:(UIColor*)tintColor;
+                    tintColor:(UIColor*)tintColor
+                isLensOverlay:(BOOL)isLensOverlay;
+
+/// Initialize the omnibox with the given `frame`.
+- (instancetype)initWithFrame:(CGRect)frame isLensOverlay:(BOOL)isLensOverlay;
 
 /// Sets the field's text to `text`.  If `userTextLength` is less than the
 /// length of `text`, the excess is displayed as inline autocompleted text. When

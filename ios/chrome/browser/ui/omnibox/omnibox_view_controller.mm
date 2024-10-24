@@ -188,6 +188,15 @@ using base::UserMetricsAction;
            object:nil];
 }
 
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  if (_isLensOverlay) {
+    self.semanticContentAttribute =
+        [self.textField bestSemanticContentAttribute];
+    [self.textField updateTextDirection];
+  }
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   self.textField.selectedTextRange =
