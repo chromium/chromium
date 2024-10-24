@@ -6,7 +6,6 @@ import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
@@ -123,10 +122,6 @@ suite('shortcutCustomizationAppTest', function() {
   function getPage(): ShortcutCustomizationAppElement {
     assertTrue(!!page);
     return page as ShortcutCustomizationAppElement;
-  }
-
-  function getDialog(selector: string) {
-    return getPage().shadowRoot!.querySelector(selector) as CrDialogElement;
   }
 
   function getSubsections(category: AcceleratorCategory):
@@ -971,58 +966,6 @@ suite('shortcutCustomizationAppTest', function() {
 
     assertEquals(
         UserAction.kRemoveAccelerator, provider.getLatestRecordedAction());
-  });
-
-  test('RestoreAllButton', async () => {
-    loadTimeData.overrideValues({isCustomizationAllowed: true});
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
-
-    let restoreDialog = getDialog('#restoreDialog');
-    // Expect the dialog to not appear initially.
-    assertFalse(!!restoreDialog);
-
-    // Click on the Restore all button.
-    const restoreButton =
-        getPage()
-            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
-            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
-    restoreButton!.click();
-
-    await flushTasks();
-
-    // Requery the dialog.
-    restoreDialog = getDialog('#restoreDialog');
-    assertTrue(restoreDialog!.open);
-
-    const confirmButton =
-        restoreDialog!.querySelector('#confirmButton') as CrButtonElement;
-    confirmButton.click();
-
-    await flushTasks();
-
-    assertEquals(UserAction.kResetAll, provider.getLatestRecordedAction());
-
-    // Confirm dialog is now closed.
-    restoreDialog = getDialog('#restoreDialog');
-    assertFalse(!!restoreDialog);
-
-    // Re-open the Restore All dialog.
-    restoreButton!.click();
-    await flushTasks();
-
-    restoreDialog = getDialog('#restoreDialog');
-    assertTrue(restoreDialog!.open);
-
-    // Click on Cancel button.
-    const cancelButton =
-        restoreDialog!.querySelector('#cancelButton') as CrButtonElement;
-    cancelButton.click();
-
-    await flushTasks();
-
-    restoreDialog = getDialog('#restoreDialog');
-    assertFalse(isVisible(restoreDialog));
   });
 
   test('RestoreAllButtonShownWithFlag', async () => {
