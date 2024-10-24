@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,9 +55,7 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   bool is_maximized = browser_->window()->IsMaximized();
   switch (command_id) {
     case IDC_MAXIMIZE_WINDOW:

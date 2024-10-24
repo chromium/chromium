@@ -70,12 +70,6 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
-#include "chromeos/ui/frame/interior_resize_handler_targeter.h"
-#endif
-
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
@@ -99,7 +93,7 @@ constexpr int kTopControlsHeight = 34;
 constexpr int kFrameBorderThickness = 4;
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr int kResizeBorder = 10;
 #endif
 constexpr int kResizeAreaCornerSize = 16;
@@ -628,15 +622,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   if (!window_frame_provider_) {
     frame_background_ = std::make_unique<views::FrameBackground>();
   }
-#endif
-
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  frame->GetNativeWindow()->SetEventTargeter(
-      std::make_unique<chromeos::InteriorResizeHandleTargeter>(
-          base::BindRepeating([](const aura::Window* window) {
-            return window->GetProperty(chromeos::kWindowStateTypeKey);
-          })));
 #endif
 }
 
@@ -1383,7 +1368,7 @@ gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
 gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
 #if BUILDFLAG(IS_LINUX)
   return FrameBorderInsets();
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !BUILDFLAG(IS_CHROMEOS)
   return gfx::Insets(kResizeBorder);
 #else
   return gfx::Insets();

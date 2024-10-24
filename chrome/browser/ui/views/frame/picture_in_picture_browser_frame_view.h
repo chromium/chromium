@@ -31,14 +31,13 @@
 #include "ui/linux/window_frame_provider.h"
 #endif
 
-// On Windows, Linux, and Lacros, child dialogs don't draw outside of their
+// On Windows and Linux, child dialogs don't draw outside of their
 // parent window, so to prevent cutting off important dialogs we resize the
 // picture-in-picture window to fit them. While ChromeOS Ash also uses Aura, it
 // does not have this issue so we do not resize on ChromeOS Ash.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG 1
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 #include "base/scoped_multi_source_observation.h"

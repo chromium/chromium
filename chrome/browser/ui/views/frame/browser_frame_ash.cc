@@ -199,8 +199,6 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   params.init_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 
-  // This is only needed for ash. For lacros, Exo tags the associated
-  // ShellSurface as being of AppType::LACROS.
   bool is_app = browser->is_type_app() || browser->is_type_app_popup();
   web_app::AppBrowserController* controller = browser->app_controller();
   if (controller && controller->system_app()) {

@@ -254,7 +254,6 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
 };
 
 #if BUILDFLAG(IS_WIN)
-// Document PIP is not supported in LACROS.
 // TODO(jazzhsu): Fix test on MAC and Wayland. Test currently not working on
 // those platforms because if we send mouse move event outside of the pip window
 // in ui_test_utils::SendMouseMoveSync, the pip window will not receive the

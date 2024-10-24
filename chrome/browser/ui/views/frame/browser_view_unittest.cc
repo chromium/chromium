@@ -166,7 +166,7 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
   ASSERT_TRUE(browser_view()->browser());
   browser_view()->browser()->SetLockedForOnTask(true);

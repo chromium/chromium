@@ -20,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/ui/browser.h"
@@ -65,7 +64,7 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/client_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/compositor/throughput_tracker.h"
 #endif
 
@@ -1326,7 +1325,7 @@ class BrowserView : public BrowserWindow,
 
   OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // |loading_animation_tracker_| is used to measure animation smoothness for
   // tab loading animation.
   std::optional<ui::ThroughputTracker> loading_animation_tracker_;

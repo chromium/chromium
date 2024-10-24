@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -254,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
-// TODO(crbug.com/40855995): Flaky on linux-wayland-rel and linux-lacros-rel
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40855995): Flaky on linux-wayland-rel.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CustomTabBarIsVisibleInFullscreen \
   DISABLED_CustomTabBarIsVisibleInFullscreen
 #else
@@ -436,17 +435,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Tests that GetWindowMask is supported for lacros in chromeos.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        BrowserFrameWindowMask) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserNonClientFrameView* frame_view = browser_view->frame()->GetFrameView();
   SkPath path;
   frame_view->GetWindowMask(frame_view->bounds().size(), &path);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_FALSE(path.isEmpty());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(path.isEmpty());
-#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

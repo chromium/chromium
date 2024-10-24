@@ -905,13 +905,13 @@ void BrowserViewLayout::LayoutContentBorder() {
   }
 
   gfx::Point contents_top_left;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
-#else
+#if BUILDFLAG(IS_CHROMEOS)
   // On Ash placing the border widget on top of the contents container
   // does not require an offset -- see crbug.com/1030925.
   contents_top_left =
       gfx::Point(contents_container_->x(), contents_container_->y());
+#else
+  views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
 #endif
 
   gfx::Rect rect;
