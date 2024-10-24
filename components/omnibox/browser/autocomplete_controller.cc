@@ -841,22 +841,29 @@ void AutocompleteController::OnProviderUpdate(
   if (last_update_type_ == UpdateType::kNone)
     return;
 
+  // Allow history embedding answers to trigger updates after `stop_timer_` has
+  // fired.
+  // TODO(crbug.com/364303536) This is a temporary fix for allowing history
+  //   embedding answers to `UpdateResults()` after `stop_timer_` has fired.
+  bool allow_post_done_updates =
+      provider &&
+      provider->type() == AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS;
+
   // Providers shouldn't be running and calling `OnProviderUpdate()` after
   // autocompletion has stopped.
-  DCHECK(!done()) << "last_update_type_: "
-                  << AutocompleteController::UpdateTypeToDebugString(
-                         last_update_type_)
-                  << ", provider: "
-                  << (provider ? provider->GetName() : "null");
+  DCHECK(!done() || allow_post_done_updates)
+      << "last_update_type_: "
+      << AutocompleteController::UpdateTypeToDebugString(last_update_type_)
+      << ", provider: " << (provider ? provider->GetName() : "null");
 
   auto done_state = GetProviderDoneState();
 
   if (done_state == ProviderDoneState::kAllDone)
-    UpdateResult(UpdateType::kLastAsyncPass);
+    UpdateResult(UpdateType::kLastAsyncPass, allow_post_done_updates);
   else if (done_state == ProviderDoneState::kAllExceptDocDone)
-    UpdateResult(UpdateType::kLastAsyncPassExceptDoc);
+    UpdateResult(UpdateType::kLastAsyncPassExceptDoc, allow_post_done_updates);
   else if (updated_matches)
-    UpdateResult(UpdateType::kAsyncPass);
+    UpdateResult(UpdateType::kAsyncPass, allow_post_done_updates);
 
   if (done_state == ProviderDoneState::kAllDone) {
     size_t calculator_count =
@@ -1256,7 +1263,8 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
-void AutocompleteController::UpdateResult(UpdateType update_type) {
+void AutocompleteController::UpdateResult(UpdateType update_type,
+                                          bool allow_post_done_updates) {
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.AutocompletionTime.UpdateResult");
 
@@ -1273,9 +1281,11 @@ void AutocompleteController::UpdateResult(UpdateType update_type) {
 
     case UpdateType::kAsyncPass:
     case UpdateType::kLastAsyncPassExceptDoc:
-      DCHECK(last_update_type_ == UpdateType::kSyncPass ||
-             last_update_type_ == UpdateType::kAsyncPass ||
-             last_update_type_ == UpdateType::kExpirePass)
+      DCHECK(
+          last_update_type_ == UpdateType::kSyncPass ||
+          last_update_type_ == UpdateType::kAsyncPass ||
+          last_update_type_ == UpdateType::kExpirePass ||
+          (last_update_type_ == UpdateType::kStop && allow_post_done_updates))
           << debug_string;
       break;
 
@@ -1287,10 +1297,12 @@ void AutocompleteController::UpdateResult(UpdateType update_type) {
       break;
 
     case UpdateType::kLastAsyncPass:
-      DCHECK(last_update_type_ == UpdateType::kSyncPass ||
-             last_update_type_ == UpdateType::kAsyncPass ||
-             last_update_type_ == UpdateType::kLastAsyncPassExceptDoc ||
-             last_update_type_ == UpdateType::kExpirePass)
+      DCHECK(
+          last_update_type_ == UpdateType::kSyncPass ||
+          last_update_type_ == UpdateType::kAsyncPass ||
+          last_update_type_ == UpdateType::kLastAsyncPassExceptDoc ||
+          last_update_type_ == UpdateType::kExpirePass ||
+          (last_update_type_ == UpdateType::kStop && allow_post_done_updates))
           << debug_string;
       break;
 
@@ -1918,7 +1930,8 @@ void AutocompleteController::StartExpireTimer() {
     expire_timer_.Start(
         FROM_HERE, base::Milliseconds(kExpireTimeMS),
         base::BindOnce(&AutocompleteController::UpdateResult,
-                       base::Unretained(this), UpdateType::kExpirePass));
+                       base::Unretained(this), UpdateType::kExpirePass,
+                       /*allow_post_done_updates=*/false));
 }
 
 void AutocompleteController::StartStopTimer() {
