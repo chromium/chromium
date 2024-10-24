@@ -34,6 +34,14 @@ import helper.git_helper as git_helper
 here = os.path.dirname(os.path.realpath(__file__))
 src_path = os.path.normpath(os.path.join(here, '..', '..'))
 
+# To keep cog workspaces clean by not creatiing .pyc files
+if (
+    here.startswith('/google/cog/cloud')
+    and not os.environ.get('PYTHONPYCACHEPREFIX')
+  ):
+  os.environ.setdefault('PYTHONDONTWRITEBYTECODE', '1')
+
+
 depot_tools_path = os.path.normpath(
     os.path.join(src_path, 'third_party', 'depot_tools'))
 sys.path.insert(0, depot_tools_path)

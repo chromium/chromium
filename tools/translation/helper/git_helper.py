@@ -23,7 +23,7 @@ def list_grds_in_repository(repo_path):
     files = []
     for dirpath, _, filenames in os.walk(repo_path):
       files.extend([
-          os.path.relpath(os.path.join(dirpath, f))
+          os.path.relpath(os.path.join(dirpath, f), start=repo_path)
           for f in filenames
           if f.endswith('.grd')
       ])
