@@ -33628,6 +33628,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="141" label="CanvasDesynchronized"/>
   <int value="142" label="WillReadFrequently"/>
   <int value="143" label="StartingStyle"/>
+  <int value="144" label="DocumentCaretpositionfrompoint"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
