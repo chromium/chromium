@@ -295,6 +295,7 @@
 <translation id="5553374991681107062">Uusimmat</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> estetty</translation>
+<translation id="560980142378233747">Tällöin sivuston ominaisuuksien pitäisi toimia odotetulla tavalla, mutta selaussuojaus saattaa olla heikompi. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Näytä miten</translation>
 <translation id="5649053991847567735">Automaattiset lataukset</translation>
 <translation id="5668404140385795438">Ohita sivuston zoomauksen estämispyyntö</translation>
