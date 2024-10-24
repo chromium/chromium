@@ -11,15 +11,13 @@ namespace messages {
 
 // Feature that controls whether "ads blocked" messages use Messages or
 // Infobars infrastructure.
+// TODO(https://crbug.com/40258218): Remove flag.
 BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 
 // Feature that controls whether "save card" prompts use Messages or
 // Infobars infrastructure.
+// TODO(https://crbug.com/40258224): Remove flag.
 BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
-
-// Feature that controls whether Messages for Android should use
-// new Stacking Animation.
-BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 
 // Feature that exposes a listener to notify whether the current message
 // is fully visible.
@@ -29,18 +27,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
 BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
 
 bool IsAdsBlockedMessagesUiEnabled();
-
-bool IsPermissionUpdateMessagesUiEnabled();
-
-bool IsSafetyTipMessagesUiEnabled();
-
-bool IsSaveCardMessagesUiEnabled();
-
-bool UseFollowupButtonTextForSaveCardMessage();
-
-bool UseGPayIconForSaveCardMessage();
-
-bool UseDialogV2ForSaveCardMessage();
 
 }  // namespace messages
 

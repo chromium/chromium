@@ -5920,21 +5920,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "messages-for-android-infrastructure",
-    "owners": [ "lazzzis@chromium.org", "aishwaryarj@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "messages-for-android-popup-blocked",
-    "owners": [ "pavely@chromium.org", "lazzzis@chromium.org" ],
-    "expiry_milestone": 97
-  },
-  {
-    "name": "messages-for-android-pwa-install",
-    "owners": [ "lazzzis@chromium.org", "aishwaryarj@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "messages-for-android-save-card",
     "owners": [ "lazzzis@chromium.org", "aishwaryarj@chromium.org" ],
     "expiry_milestone": 112

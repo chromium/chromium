@@ -51,14 +51,6 @@ bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
 }
 
-bool IsSaveCardMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
-}
-
-bool ISdFullyVisibleCallbackEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidFullyVisibleCallback);
-}
-
 static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetFeatureMap());
 }
