@@ -1700,8 +1700,8 @@ the browser and content area. -->
   <summary>
     Counts the number of identities loaded by SSO library using the keychain
     API. The metric is recorded every time SSO updates the identity list (either
-    on the first run, or when the cache is staled). See:
-    https://crbug.com/897470.
+    on the first run, or when the cache is staled). Identities with and without
+    auth error are counted. See: https://crbug.com/897470.
   </summary>
 </histogram>
 
@@ -1729,6 +1729,18 @@ the browser and content area. -->
     API to finish, divided by the number of identities returned. The metrics is
     recorded every time SSO updates the identity list (either on the first run,
     or when the cache is staled). See: crbug.com/897470.
+  </summary>
+</histogram>
+
+<histogram name="Signin.LoadedIdentities.IdentityWithAuthErrorCount"
+    units="identities" expires_after="2025-04-13">
+  <owner>jlebel@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts the number of identities with auth error, loaded by SSO library using
+    the keychain API. The metric is recorded every time SSO updates the identity
+    list (either on the first run, or when the cache is staled).
   </summary>
 </histogram>
 
