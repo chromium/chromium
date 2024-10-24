@@ -93,8 +93,8 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
     frame = static_cast<WebFrameImpl*>(
         web_state->GetWebFramesManager(content_world)->GetMainWebFrame());
   } else {
-    world = JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-        web_state->GetBrowserState());
+    world = JavaScriptFeatureManager::GetContentWorldForBrowserState(
+        ContentWorld::kPageContentWorld, web_state->GetBrowserState());
     frame = static_cast<WebFrameImpl*>(
         web_state->GetPageWorldWebFramesManager()->GetMainWebFrame());
   }

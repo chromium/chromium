@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 #define IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 
-
 #include <map>
 #include <string>
 
@@ -14,6 +13,7 @@
 #import "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -34,7 +34,8 @@ class WebFrameImpl final : public WebFrame,
                const std::string& frame_id,
                bool is_main_frame,
                GURL security_origin,
-               web::WebState* web_state);
+               web::WebState* web_state,
+               ContentWorld content_world);
 
   WebFrameImpl(const WebFrameImpl&) = delete;
   WebFrameImpl& operator=(const WebFrameImpl&) = delete;
@@ -166,6 +167,8 @@ class WebFrameImpl final : public WebFrame,
   GURL security_origin_;
   // The associated web state.
   raw_ptr<web::WebState> web_state_ = nullptr;
+  // The frame's content world.
+  ContentWorld content_world_;
 
   base::WeakPtrFactory<WebFrameImpl> weak_ptr_factory_{this};
 };

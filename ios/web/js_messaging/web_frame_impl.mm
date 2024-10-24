@@ -62,12 +62,14 @@ WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
                            const std::string& frame_id,
                            bool is_main_frame,
                            GURL security_origin,
-                           web::WebState* web_state)
+                           web::WebState* web_state,
+                           ContentWorld content_world)
     : frame_info_(frame_info),
       frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
-      web_state_(web_state) {
+      web_state_(web_state),
+      content_world_(content_world) {
   DCHECK(frame_info_);
   DCHECK(web_state_);
   web_state->AddObserver(this);
@@ -121,8 +123,8 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
                                           const base::Value::List& parameters) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
 
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               /*reply_with_result=*/false);
@@ -142,8 +144,8 @@ bool WebFrameImpl::CallJavaScriptFunction(
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               std::move(callback), timeout);
 }
@@ -196,8 +198,8 @@ bool WebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     ExecuteJavaScriptCallbackWithError callback) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
 
   return ExecuteJavaScriptInContentWorld(script, content_world,
                                          std::move(callback));

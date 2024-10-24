@@ -101,6 +101,7 @@ source_set("java_script_feature_manager_header") {
   deps = [
     ":java_script_content_world_header",
     "//base",
+    "//ios/web/public/js_messaging:content_world_header",
   ]
 
   sources = [ "java_script_feature_manager.h" ]

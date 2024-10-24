@@ -11,8 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
-
-//@class WKUserContentController;
+#import "ios/web/public/js_messaging/content_world.h"
 
 namespace web {
 
@@ -20,9 +19,8 @@ class BrowserState;
 class JavaScriptFeature;
 
 // Configures JavaScriptFeatures for `browser_state`. The features will be
-// added to either `page_content_world_` or `isolated_world_`  based on
-// JavaScriptFeature::GetSupportedContentWorld() and the operating system of the
-// user's device (which determines if isolated worlds are supported).
+// added to either `page_content_world_` or `isolated_world_` based on
+// JavaScriptFeature::GetSupportedContentWorld().
 class JavaScriptFeatureManager : public base::SupportsUserData::Data {
  public:
   ~JavaScriptFeatureManager() override;
@@ -36,11 +34,12 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
   static JavaScriptFeatureManager* FromBrowserState(
       BrowserState* browser_state);
 
-  // Returns the JavaScriptContentWorld for the page content world associated
+  // Returns the JavaScriptContentWorld for `content_world` associated
   // with `browser_state`. If a JavaScriptFeatureManager does not already exist,
   // one will be created and associated with `browser_state`. `browser_state`
   // must not be null.
-  static JavaScriptContentWorld* GetPageContentWorldForBrowserState(
+  static JavaScriptContentWorld* GetContentWorldForBrowserState(
+      ContentWorld content_world,
       BrowserState* browser_state);
 
   // Configures `features` on `user_content_controller_` by adding user scripts
