@@ -74,11 +74,8 @@ void VirtualCardEnrollBubbleViews::Hide() {
 bool VirtualCardEnrollBubbleViews::OnDialogAccepted() {
   bool did_switch_to_loading_state = false;
   if (controller_) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-      SwitchToLoadingState();
-      did_switch_to_loading_state = true;
-    }
+    SwitchToLoadingState();
+    did_switch_to_loading_state = true;
     controller_->OnAcceptButton(did_switch_to_loading_state);
   }
   return !did_switch_to_loading_state;
@@ -212,10 +209,7 @@ void VirtualCardEnrollBubbleViews::Init() {
   AddChildView(CreateLegalMessageView())
       ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
-  }
+  loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
 }
 
 std::unique_ptr<views::View>

@@ -453,11 +453,6 @@ void ChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 
 void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     PaymentsRpcResult result) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    return;
-  }
-
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
   VirtualCardEnrollBubbleControllerImpl* controller =
       VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());

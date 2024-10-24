@@ -327,18 +327,13 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-      set_bubble_view(
-          browser->window()
-              ->GetAutofillBubbleHandler()
-              ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
-      LogVirtualCardEnrollmentConfirmationViewShown(
-          /*is_shown=*/true, confirmation_ui_params_->is_success);
-    } else {
-      LogVirtualCardEnrollmentConfirmationViewShown(
-          /*is_shown=*/false, confirmation_ui_params_->is_success);
-    }
+    set_bubble_view(
+        browser->window()
+            ->GetAutofillBubbleHandler()
+            ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+    LogVirtualCardEnrollmentConfirmationViewShown(
+        /*is_shown=*/true, confirmation_ui_params_->is_success);
+
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;

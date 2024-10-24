@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+// TODO(crbug.com/309627643): Remove this import as a part of loading and
+// confirmation cleanup on Desktop
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -238,8 +240,6 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableVcnEnrollLoadingAndConfirmation};
 };
 
 IN_PROC_BROWSER_TEST_F(
