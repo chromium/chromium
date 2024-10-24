@@ -16,14 +16,10 @@ namespace ash {
 
 enum class PickerCategory;
 
-struct PickerActionSearchOptions {
-  base::span<const PickerCategory> available_categories;
-  bool caps_lock_state_to_search = false;
-  bool search_case_transforms = false;
-};
-
 ASH_EXPORT std::vector<QuickInsertSearchResult> PickerActionSearch(
-    const PickerActionSearchOptions& options,
+    base::span<const PickerCategory> available_categories,
+    bool caps_lock_state_to_search,
+    bool search_case_transforms,
     std::u16string_view query);
 
 }  // namespace ash

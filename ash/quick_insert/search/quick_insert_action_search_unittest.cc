@@ -25,7 +25,9 @@ using ::testing::VariantWith;
 using CaseTransformType = QuickInsertCaseTransformResult::Type;
 
 struct TestCase {
-  PickerActionSearchOptions options;
+  std::vector<PickerCategory> available_categories;
+  bool caps_lock_state_to_search = false;
+  bool search_case_transforms = false;
   std::u16string query;
   std::vector<QuickInsertSearchResult> expected_results;
 };
@@ -33,8 +35,12 @@ struct TestCase {
 class QuickInsertActionSearchTest : public testing::TestWithParam<TestCase> {};
 
 TEST_P(QuickInsertActionSearchTest, MatchesExpectedCategories) {
-  const auto& [options, query, expected_results] = GetParam();
-  EXPECT_THAT(PickerActionSearch(options, query), expected_results);
+  const TestCase& test_case = GetParam();
+  EXPECT_THAT(
+      PickerActionSearch(test_case.available_categories,
+                         test_case.caps_lock_state_to_search,
+                         test_case.search_case_transforms, test_case.query),
+      test_case.expected_results);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -43,77 +49,49 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Exact match
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLinks}},
-                },
+            .available_categories = {PickerCategory::kLinks},
             .query = u"Browsing history",
             .expected_results = {QuickInsertCategoryResult(
                 PickerCategory::kLinks)},
         },
         // Case-insensitive match
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLinks}},
-                },
+            .available_categories = {PickerCategory::kLinks},
             .query = u"bRoWsInG hIsToRy",
             .expected_results = {QuickInsertCategoryResult(
                 PickerCategory::kLinks)},
         },
         // Prefix match
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLinks}},
-                },
+            .available_categories = {PickerCategory::kLinks},
             .query = u"b",
             .expected_results = {QuickInsertCategoryResult(
                 PickerCategory::kLinks)},
         },
         // Prefix match in second word
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLinks}},
-                },
+            .available_categories = {PickerCategory::kLinks},
             .query = u"hi",
             .expected_results = {QuickInsertCategoryResult(
                 PickerCategory::kLinks)},
         },
         // Substring match
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLinks}},
-                },
+            .available_categories = {PickerCategory::kLinks},
             .query = u"ist",
-            .expected_results = {},
         },
         // Category unavailable
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLocalFiles}},
-                },
+            .available_categories = {PickerCategory::kLocalFiles},
             .query = u"Browsing history",
-            .expected_results = {},
         },
         // Not matched
         TestCase{
-            .options =
-                {
-                    .available_categories = {{PickerCategory::kLinks}},
-                },
+            .available_categories = {PickerCategory::kLinks},
             .query = u"Browsing history1",
-            .expected_results = {},
         },
         // Caps Lock Off
         TestCase{
-            .options =
-                {
-                    .caps_lock_state_to_search = false,
-                },
             .query = u"caps",
             .expected_results = {QuickInsertCapsLockResult(
                 /*enabled=*/false,
@@ -121,10 +99,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // Caps Lock On
         TestCase{
-            .options =
-                {
-                    .caps_lock_state_to_search = true,
-                },
+            .caps_lock_state_to_search = true,
             .query = u"caps",
             .expected_results = {QuickInsertCapsLockResult(
                 /*enabled=*/true,
@@ -132,42 +107,28 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // Uppercase
         TestCase{
-            .options =
-                {
-                    .search_case_transforms = true,
-                },
+            .search_case_transforms = true,
             .query = u"upper",
             .expected_results = {QuickInsertCaseTransformResult(
                 CaseTransformType::kUpperCase)},
         },
         // Lowercase
         TestCase{
-            .options =
-                {
-                    .search_case_transforms = true,
-                },
+            .search_case_transforms = true,
             .query = u"lower",
             .expected_results = {QuickInsertCaseTransformResult(
                 CaseTransformType::kLowerCase)},
         },
         // Title case
         TestCase{
-            .options =
-                {
-                    .search_case_transforms = true,
-                },
+            .search_case_transforms = true,
             .query = u"title",
             .expected_results = {QuickInsertCaseTransformResult(
                 CaseTransformType::kTitleCase)},
         },
         // No case
         TestCase{
-            .options =
-                {
-                    .search_case_transforms = false,
-                },
             .query = u"upper",
-            .expected_results = {},
         }));
 
 }  // namespace

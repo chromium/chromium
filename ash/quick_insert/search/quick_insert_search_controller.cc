@@ -157,7 +157,9 @@ void PickerSearchController::StartSearch(
     PickerClient* client,
     std::u16string_view query,
     std::optional<PickerCategory> category,
-    PickerSearchRequest::Options search_options,
+    base::span<const PickerCategory> available_categories,
+    bool caps_lock_state_to_search,
+    bool search_case_transforms,
     PickerViewDelegate::SearchResultsCallback callback) {
   StopSearch();
   aggregator_ = std::make_unique<PickerSearchAggregator>(burn_in_period_,
@@ -170,7 +172,8 @@ void PickerSearchController::StartSearch(
                           aggregator_->GetWeakPtr()),
       base::BindOnce(&PickerSearchAggregator::HandleNoMoreResults,
                      aggregator_->GetWeakPtr()),
-      client, std::move(search_options));
+      client, available_categories, caps_lock_state_to_search,
+      search_case_transforms);
 }
 
 void PickerSearchController::StopSearch() {

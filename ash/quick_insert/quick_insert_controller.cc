@@ -345,13 +345,9 @@ void PickerController::StartSearch(std::u16string_view query,
   CHECK(session_);
   CHECK(client_);
   search_controller_.StartSearch(
-      client_, query, std::move(category),
-      {
-          .available_categories = GetAvailableCategories(),
-          .caps_lock_state_to_search = !session_->model.is_caps_lock_enabled(),
-          .search_case_transforms =
-              session_->model.GetMode() == PickerModeType::kHasSelection,
-      },
+      client_, query, std::move(category), GetAvailableCategories(),
+      !session_->model.is_caps_lock_enabled(),
+      session_->model.GetMode() == PickerModeType::kHasSelection,
       std::move(callback));
 }
 

@@ -40,20 +40,17 @@ class ASH_EXPORT PickerSearchRequest {
                                    bool has_more_results)>;
   using DoneCallback = base::OnceCallback<void(bool interrupted)>;
 
-  struct Options {
-    base::span<const PickerCategory> available_categories;
-    bool caps_lock_state_to_search = false;
-    bool search_case_transforms = false;
-  };
-
   // `done_closure` is guaranteed to be called strictly after the last call to
   // `callback`.
-  explicit PickerSearchRequest(std::u16string_view query,
-                               std::optional<PickerCategory> category,
-                               SearchResultsCallback callback,
-                               DoneCallback done_callback,
-                               PickerClient* client,
-                               const Options& options);
+  PickerSearchRequest(
+      std::u16string_view query,
+      std::optional<PickerCategory> category,
+      SearchResultsCallback callback,
+      DoneCallback done_callback,
+      PickerClient* client,
+      base::span<const PickerCategory> available_categories = {},
+      bool caps_lock_state_to_search = false,
+      bool search_case_transforms = false);
   PickerSearchRequest(const PickerSearchRequest&) = delete;
   PickerSearchRequest& operator=(const PickerSearchRequest&) = delete;
   ~PickerSearchRequest();

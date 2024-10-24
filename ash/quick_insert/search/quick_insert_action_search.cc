@@ -16,6 +16,7 @@
 #include "ash/quick_insert/views/quick_insert_strings.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "chromeos/ash/components/string_matching/prefix_matcher.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,14 +46,16 @@ bool IsMatch(const string_matching::TokenizedString& query,
 }  // namespace
 
 std::vector<QuickInsertSearchResult> PickerActionSearch(
-    const PickerActionSearchOptions& options,
+    base::span<const PickerCategory> available_categories,
+    bool caps_lock_state_to_search,
+    bool search_case_transforms,
     std::u16string_view query) {
   CHECK(!query.empty());
   string_matching::TokenizedString tokenized_query((std::u16string(query)));
 
   // TODO: b/349494170 - Speed this up by pretokenizing the search terms.
   std::vector<QuickInsertSearchResult> matches;
-  for (const PickerCategory category : options.available_categories) {
+  for (const PickerCategory category : available_categories) {
     if (IsMatch(tokenized_query, GetLabelForPickerCategory(category))) {
       matches.push_back(QuickInsertCategoryResult(category));
     }
@@ -60,14 +63,14 @@ std::vector<QuickInsertSearchResult> PickerActionSearch(
 
   if (IsMatch(tokenized_query,
               l10n_util::GetStringUTF16(
-                  options.caps_lock_state_to_search
+                  caps_lock_state_to_search
                       ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
                       : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL))) {
     matches.push_back(QuickInsertCapsLockResult(
-        options.caps_lock_state_to_search, GetPickerShortcutForCapsLock()));
+        caps_lock_state_to_search, GetPickerShortcutForCapsLock()));
   }
 
-  if (options.search_case_transforms) {
+  if (search_case_transforms) {
     for (const auto& [message_id, type] : kTransformMessageIds) {
       if (IsMatch(tokenized_query, l10n_util::GetStringUTF16(message_id))) {
         matches.push_back(QuickInsertCaseTransformResult(type));

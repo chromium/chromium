@@ -259,7 +259,7 @@ ui::ImageModel GetNoResultsFoundIllustration() {
 #endif
 }
 
-bool IsEditorAvailable(base::span<PickerCategory> available_categories) {
+bool IsEditorAvailable(base::span<const PickerCategory> available_categories) {
   return base::Contains(available_categories, PickerCategory::kEditorWrite) ||
          base::Contains(available_categories, PickerCategory::kEditorRewrite);
 }
