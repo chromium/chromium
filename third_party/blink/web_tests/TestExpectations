@@ -1440,14 +1440,19 @@ crbug.com/358159989 external/wpt/css/css-images/out-of-range-color-stop-conic.ht
 crbug.com/358159989 external/wpt/css/css-images/tiled-conic-gradients.html [ Failure ]
 
 # :has-slotted
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-001.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-004.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-006.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-007.tentative.html [ Failure ]
-crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-001.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-004.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-006.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-007.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-001.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-004.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-006.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-007.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattened-001.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattened-004.tentative.html [ Failure ]
+crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattened-006.tentative.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 
@@ -2653,15 +2658,6 @@ crbug.com/371068262 [ Mac14 ] external/wpt/media-capabilities/encodingInfo.webrt
 crbug.com/371068252 [ Mac14 ] external/wpt/webcodecs/video-encoder-flush.https.any.html?vp8 [ Timeout ]
 crbug.com/371068252 [ Mac14 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?baseline [ Timeout ]
 crbug.com/371068252 [ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.html [ Timeout ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-003.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-flattened-003.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-001.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-004.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-006.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-007.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-flattened-001.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-flattened-004.tentative.html [ Failure ]
-crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-flattened-006.tentative.html [ Failure ]
 crbug.com/370032367 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html [ Timeout ]
 crbug.com/369652659 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
 crbug.com/369652659 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
