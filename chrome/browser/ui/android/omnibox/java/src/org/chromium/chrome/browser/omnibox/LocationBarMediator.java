@@ -38,6 +38,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -1212,7 +1213,9 @@ class LocationBarMediator
 
     private boolean shouldShowSaveOfflineButton() {
         assert mIsTablet;
-        if (!mNativeInitialized || mLocationBarDataProvider == null) return false;
+        if (hideSaveOfflineButton() || !mNativeInitialized || mLocationBarDataProvider == null) {
+            return false;
+        }
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return false;
         // The save offline button should not be shown on native pages. Currently, trying to
@@ -1223,6 +1226,10 @@ class LocationBarMediator
     private boolean isSaveOfflineButtonEnabled() {
         if (mLocationBarDataProvider == null) return false;
         return mSaveOfflineButtonState.isEnabled(mLocationBarDataProvider.getTab());
+    }
+
+    private boolean hideSaveOfflineButton() {
+        return ChromeFeatureList.sHideTabletToolbarDownloadButton.isEnabled();
     }
 
     private boolean shouldShowPageActionButtons() {
