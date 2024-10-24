@@ -29,7 +29,6 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -64,11 +63,6 @@ void RecordUmaSelection(base::TimeTicks dialog_open_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab, dialog_open_time);
 }
-
-// The length of the initial delay during which the "Allow"-button is disabled
-// in the share-this-tab dialog.
-const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
-    &kShareThisTabDialog, "activation_delay_ms", 500};
 
 bool ShouldAutoAcceptThisTabCapture() {
 #if BUILDFLAG(PLATFORM_CFM)
@@ -144,11 +138,11 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     SetupAudioToggle();
   }
 
-  // Use no delay in tests that auto-accepts/rejects the dialog.
+  // Delay the "Allow" button as a click-jacking mitigation. Skip the delay if
+  // the result is preprogrammed anyway (e.g. in tests).
   const base::TimeDelta activation_delay =
-      (ShouldAutoAccept() || ShouldAutoReject())
-          ? base::Milliseconds(0)
-          : base::Milliseconds(kShareThisTabDialogActivationDelayMs.Get());
+      (ShouldAutoAccept() || ShouldAutoReject()) ? base::Milliseconds(0)
+                                                 : base::Milliseconds(500);
   activation_timer_.Start(FROM_HERE, activation_delay,
                           base::BindOnce(&ShareThisTabDialogView::Activate,
                                          weak_factory_.GetWeakPtr()));
