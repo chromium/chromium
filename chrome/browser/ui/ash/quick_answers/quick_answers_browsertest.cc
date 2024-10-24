@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"

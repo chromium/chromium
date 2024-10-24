@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 

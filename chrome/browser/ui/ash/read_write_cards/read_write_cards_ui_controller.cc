@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 
 #include <algorithm>
 #include <memory>
@@ -10,7 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"

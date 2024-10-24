@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"

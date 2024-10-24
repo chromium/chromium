@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_ash.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"

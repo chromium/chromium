@@ -53,7 +53,7 @@ source_set("editor_menu") {
     "//base",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/chromeos/read_write_cards",
+    "//chrome/browser/ui/ash/read_write_cards",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/constants:constants",

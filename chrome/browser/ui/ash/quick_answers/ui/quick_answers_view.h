@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_stage_button.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/result_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/retry_view.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"

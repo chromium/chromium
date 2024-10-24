@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"

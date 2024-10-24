@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_card_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"

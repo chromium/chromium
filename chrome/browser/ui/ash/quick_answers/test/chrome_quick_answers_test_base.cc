@@ -10,7 +10,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "components/user_manager/user_manager.h"

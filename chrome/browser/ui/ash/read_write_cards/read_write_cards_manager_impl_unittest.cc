@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager_impl.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager_impl.h"
 
 #include <cstddef>
 #include <memory>
@@ -12,8 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"

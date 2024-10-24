@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/test_layout_provider.h"
 
