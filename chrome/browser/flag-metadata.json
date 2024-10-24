@@ -3801,6 +3801,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-root-ns-dns-proxy",
+    "owners": [ "jasongustaman@chromium.org", "cros-networking@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-run-on-os-login",
     "owners": [ "sfiss@chromium.org" ],
     "expiry_milestone": 140

@@ -17811,6 +17811,7 @@ from previous Chrome versions.
   <int value="-949956361" label="ControlledFrame:disabled"/>
   <int value="-949289795" label="PdfInk2:disabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
+  <int value="-949137285" label="EnableRootNsDnsProxy:enabled"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
   <int value="-948684341" label="OmniboxBlurWithEscape:enabled"/>
   <int value="-948256052" label="EnableInputInDiagnosticsApp:enabled"/>
@@ -19884,6 +19885,7 @@ from previous Chrome versions.
   <int value="-88822940" label="ssl-version-min"/>
   <int value="-88638121" label="AutofillFixFillableFieldTypes:enabled"/>
   <int value="-88273414" label="ContentSuggestionsShowSummary:enabled"/>
+  <int value="-87554952" label="EnableRootNsDnsProxy:disabled"/>
   <int value="-87405369" label="PageInfoDiscoverability:enabled"/>
   <int value="-86857743" label="OsSettingsSearchFeedback:disabled"/>
   <int value="-86788587" label="allow-autofill-sync-credential"/>

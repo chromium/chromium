@@ -3730,6 +3730,9 @@ extern const char kDisconnectWiFiOnEthernetConnectedDescription[];
 extern const char kEnableRFC8925Name[];
 extern const char kEnableRFC8925Description[];
 
+extern const char kEnableRootNsDnsProxyName[];
+extern const char kEnableRootNsDnsProxyDescription[];
+
 extern const char kEnableEdidBasedDisplayIdsName[];
 extern const char kEnableEdidBasedDisplayIdsDescription[];
 
