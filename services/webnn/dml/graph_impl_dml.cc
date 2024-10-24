@@ -35,7 +35,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "base/types/fixed_array.h"
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/dml/adapter.h"
@@ -5731,7 +5730,8 @@ GraphImplDml::GraphImplDml(
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
-    std::unique_ptr<ComputeResources> compute_resources)
+    std::unique_ptr<ComputeResources> compute_resources,
+    std::unique_ptr<GraphResources> graph_resources)
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
@@ -5739,7 +5739,8 @@ GraphImplDml::GraphImplDml(
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)),
       graph_buffer_binding_info_(std::move(graph_buffer_binding_info)),
-      compute_resources_(std::move(compute_resources)) {}
+      compute_resources_(std::move(compute_resources)),
+      graph_resources_(std::move(graph_resources)) {}
 
 //  Notice that it's the CommandQueue's responsibility to wait for all of the
 //  queued work to complete before destructing itself.
@@ -5750,7 +5751,10 @@ GraphImplDml::CompileOnBackgroundThread(
     GraphBuilderDml graph_builder,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CompileOnBackgroundThread");
-  DML_EXECUTION_FLAGS flags = DML_EXECUTION_FLAG_NONE;
+  // Use `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE` to allow late bindings on the
+  // compiled operator which you've already recorded onto the command list,
+  // before you submit the command list for execution.
+  DML_EXECUTION_FLAGS flags = DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE;
   if (pass_dml_execution_disable_meta_commands) {
     flags |= DML_EXECUTION_FLAG_DISABLE_META_COMMANDS;
   }
@@ -6057,12 +6061,54 @@ void GraphImplDml::CreateWebNNGraphImpl(
       "Failed to create the command recorder for dispatch.",
       std::move(callback), context.get());
 
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<GraphResources> graph_resources,
+      AllocateGraphResources(adapter.get(), compiled_operator.Get()),
+      &HandleGraphCreationFailure,
+      "Failed to create the graph resource for dispatch.", std::move(callback),
+      context.get());
+
+  HRESULT hr = command_recorder_for_dispatch->Open();
+  if (FAILED(hr)) {
+    HandleGraphCreationFailure("Failed to open the command recorder.",
+                               std::move(callback), context.get(), hr);
+    return;
+  }
+
+  std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
+  if (persistent_resource) {
+    persistent_buffer_binding_desc =
+        persistent_resource->persistent_buffer_binding_desc();
+  }
+
+  // Execute the graph with temporary and persistent bindings, as inputs and
+  // outputs will be late bound.
+  hr = command_recorder_for_dispatch->ExecuteOperator(
+      compiled_operator, graph_resources->descriptor_heap,
+      /*input_bindings*/ std::nullopt, /*output_bindings*/ std::nullopt,
+      persistent_buffer_binding_desc,
+      graph_resources->temporary_buffer_binding_desc);
+  if (FAILED(hr)) {
+    HandleGraphCreationFailure(
+        "Failed to record graph execution for late binding.",
+        std::move(callback), context.get(), hr);
+    return;
+  }
+
+  hr = command_recorder_for_dispatch->Close();
+  if (FAILED(hr)) {
+    HandleGraphCreationFailure("Failed to close the command recorder.",
+                               std::move(callback), context.get(), hr);
+    return;
+  }
+
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::WrapUnique(new GraphImplDml(
       std::move(adapter), context.get(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
-      std::move(graph_buffer_binding_info), std::move(compute_resources))));
+      std::move(graph_buffer_binding_info), std::move(compute_resources),
+      std::move(graph_resources))));
 }
 
 // static
@@ -6838,24 +6884,104 @@ void GraphImplDml::OnComputationComplete(
       ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
 
+GraphImplDml::IoBindings::IoBindings(
+    std::vector<DML_BUFFER_BINDING> buffer_bindings,
+    base::FixedArray<DML_BINDING_DESC> buffer_binding_desc)
+    : buffer_bindings(std::move(buffer_bindings)),
+      buffer_binding_desc(std::move(buffer_binding_desc)) {}
+GraphImplDml::IoBindings::~IoBindings() = default;
+
+GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs) {
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheInputBindings");
+  // Create the MLTensor input bindings needed for graph execution.
+  std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
+      graph_buffer_binding_info_.input_buffer_binding_count,
+      DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
+
+  previous_input_tensors_.reserve(named_inputs.size());
+
+  // The graph input tensors must be bound to the binding table during the
+  // graph execution.
+  base::FixedArray<DML_BINDING_DESC> input_buffer_binding_desc(
+      graph_buffer_binding_info_.input_buffer_binding_count,
+      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+
+  for (auto& [name, input_tensor] : named_inputs) {
+    TensorImplDml* input_tensor_impl =
+        static_cast<TensorImplDml*>(input_tensor);
+    // Get the graph input index for the name.
+    const size_t graph_input_index =
+        graph_buffer_binding_info_.graph_input_name_to_index_map.at(
+            std::string(name));
+    graph_input_buffer_bindings[graph_input_index] = DML_BUFFER_BINDING{
+        .Buffer = input_tensor_impl->buffer(),
+        .Offset = 0,
+        .SizeInBytes = input_tensor_impl->PackedByteLength()};
+    input_buffer_binding_desc[graph_input_index] = {
+        DML_BINDING_TYPE_BUFFER,
+        &graph_input_buffer_bindings[graph_input_index]};
+    previous_input_tensors_[std::string(name)] =
+        input_tensor_impl->GetWeakPtr();
+    command_recorder_->OnTensorAccessed(input_tensor_impl);
+  }
+  return IoBindings(std::move(graph_input_buffer_bindings),
+                    std::move(input_buffer_binding_desc));
+}
+
+GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
+    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
+  TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheOutputBindings");
+  // TODO(crbug.com/40278771): consider pre-computing the output binding
+  // count.
+  const size_t output_buffer_binding_count =
+      graph_buffer_binding_info_.graph_output_name_to_index_map.size();
+
+  // Create the MLTensor output bindings needed for graph execution.
+  std::vector<DML_BUFFER_BINDING> graph_output_buffer_bindings(
+      output_buffer_binding_count,
+      DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
+
+  // The graph output tensors must be bound to the binding table during the
+  // graph execution.
+  base::FixedArray<DML_BINDING_DESC> output_buffer_binding_desc(
+      output_buffer_binding_count,
+      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+
+  previous_output_tensors_.reserve(named_outputs.size());
+
+  for (auto& [name, output_tensor] : named_outputs) {
+    TensorImplDml* output_tensor_impl =
+        static_cast<TensorImplDml*>(output_tensor);
+    // Get the graph output index with the name.
+    const size_t graph_output_index =
+        graph_buffer_binding_info_.graph_output_name_to_index_map.at(
+            std::string(name));
+    graph_output_buffer_bindings[graph_output_index] = DML_BUFFER_BINDING{
+        .Buffer = output_tensor_impl->buffer(),
+        .Offset = 0,
+        .SizeInBytes = output_tensor_impl->PackedByteLength()};
+    output_buffer_binding_desc[graph_output_index] = {
+        DML_BINDING_TYPE_BUFFER,
+        &graph_output_buffer_bindings[graph_output_index]};
+    previous_output_tensors_[std::string(name)] =
+        output_tensor_impl->GetWeakPtr();
+    // Only output buffers could get modified upon execution.
+    command_recorder_->OnTensorAccessed(output_tensor_impl);
+  }
+  return IoBindings(std::move(graph_output_buffer_bindings),
+                    std::move(output_buffer_binding_desc));
+}
+
 void GraphImplDml::DispatchImpl(
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   // It indicates whether we need to record commands and bind resources again.
-  // If either the I/O tensors change or `graph_resources_` is not available
+  // If either the `command_recorder_` or `graph_resources_` is not available
   // during the graph execution, it must be set to true.
   bool is_command_recording_needed = false;
-
-  // TODO(crbug.com/40278771): avoid re-bindings for all tensors
-  if (!IsDispatchBindingValid(named_inputs, previous_input_tensors_)) {
-    is_command_recording_needed = true;
-  }
-
-  if (!IsDispatchBindingValid(named_outputs, previous_output_tensors_)) {
-    is_command_recording_needed = true;
-  }
 
   if (!command_recorder_) {
     ASSIGN_OR_RETURN(command_recorder_,
@@ -6866,10 +6992,8 @@ void GraphImplDml::DispatchImpl(
     is_command_recording_needed = true;
   }
 
-  // Use the existing graph resource if it is available, otherwise allocate
-  // a new one.
-  // TODO(crbug.com/40278771): pre-allocate graph resources in graph
-  // initialization.
+  // Use the existing graph resource if it is available, else allocate a new
+  // one.
   std::unique_ptr<GraphResources> graph_resources = std::move(graph_resources_);
   if (!graph_resources) {
     base::expected<std::unique_ptr<GraphResources>, HRESULT> result =
@@ -6893,76 +7017,6 @@ void GraphImplDml::DispatchImpl(
       return;
     }
 
-    // Create the MLTensor input bindings needed for graph execution.
-    std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
-        graph_buffer_binding_info_.input_buffer_binding_count,
-        DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
-
-    previous_input_tensors_.reserve(named_inputs.size());
-
-    // The graph input tensors must be bound to the binding table during the
-    // graph execution.
-    base::FixedArray<DML_BINDING_DESC> input_buffer_binding_desc(
-        graph_buffer_binding_info_.input_buffer_binding_count,
-        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
-
-    for (auto& [name, input_tensor] : named_inputs) {
-      TensorImplDml* input_tensor_impl =
-          static_cast<TensorImplDml*>(input_tensor);
-      // Get the graph input index for the name.
-      const size_t graph_input_index =
-          graph_buffer_binding_info_.graph_input_name_to_index_map.at(
-              std::string(name));
-      graph_input_buffer_bindings[graph_input_index] = DML_BUFFER_BINDING{
-          .Buffer = input_tensor_impl->buffer(),
-          .Offset = 0,
-          .SizeInBytes = input_tensor_impl->PackedByteLength()};
-      input_buffer_binding_desc[graph_input_index] = {
-          DML_BINDING_TYPE_BUFFER,
-          &graph_input_buffer_bindings[graph_input_index]};
-      previous_input_tensors_[std::string(name)] =
-          input_tensor_impl->GetWeakPtr();
-      command_recorder_->OnTensorAccessed(input_tensor_impl);
-    }
-
-    // TODO(crbug.com/40278771): consider pre-computing the output binding
-    // count.
-    const size_t output_buffer_binding_count =
-        graph_buffer_binding_info_.graph_output_name_to_index_map.size();
-
-    // Create the MLTensor output bindings needed for graph execution.
-    std::vector<DML_BUFFER_BINDING> graph_output_buffer_bindings(
-        output_buffer_binding_count,
-        DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
-
-    // The graph output tensors must be bound to the binding table during the
-    // graph execution.
-    base::FixedArray<DML_BINDING_DESC> output_buffer_binding_desc(
-        output_buffer_binding_count,
-        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
-
-    previous_output_tensors_.reserve(named_outputs.size());
-
-    for (auto& [name, output_tensor] : named_outputs) {
-      TensorImplDml* output_tensor_impl =
-          static_cast<TensorImplDml*>(output_tensor);
-      // Get the graph output index with the name.
-      const size_t graph_output_index =
-          graph_buffer_binding_info_.graph_output_name_to_index_map.at(
-              std::string(name));
-      graph_output_buffer_bindings[graph_output_index] = DML_BUFFER_BINDING{
-          .Buffer = output_tensor_impl->buffer(),
-          .Offset = 0,
-          .SizeInBytes = output_tensor_impl->PackedByteLength()};
-      output_buffer_binding_desc[graph_output_index] = {
-          DML_BINDING_TYPE_BUFFER,
-          &graph_output_buffer_bindings[graph_output_index]};
-      previous_output_tensors_[std::string(name)] =
-          output_tensor_impl->GetWeakPtr();
-      // Only output buffers could get modified upon execution.
-      command_recorder_->OnTensorAccessed(output_tensor_impl);
-    }
-
     std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
     if (persistent_resource_) {
       persistent_buffer_binding_desc =
@@ -6970,9 +7024,11 @@ void GraphImplDml::DispatchImpl(
     }
 
     // Execute the graph with input, output, temporary, and persistent bindings.
+    IoBindings input_bindings = CreateAndCacheInputBindings(named_inputs);
+    IoBindings output_bindings = CreateAndCacheOutputBindings(named_outputs);
     hr = command_recorder_->ExecuteOperator(
         compiled_operator_.Get(), graph_resources->descriptor_heap,
-        input_buffer_binding_desc, output_buffer_binding_desc,
+        input_bindings.buffer_binding_desc, output_bindings.buffer_binding_desc,
         persistent_buffer_binding_desc,
         graph_resources->temporary_buffer_binding_desc);
     if (FAILED(hr)) {
@@ -6984,6 +7040,25 @@ void GraphImplDml::DispatchImpl(
     if (FAILED(hr)) {
       HandleDispatchFailure("Failed to close the command recorder.", hr);
       return;
+    }
+  } else {
+    // We need bind the input/output tensors if they are not bound yet.
+    if (!IsDispatchBindingValid(named_inputs, previous_input_tensors_)) {
+      IoBindings input_bindings = CreateAndCacheInputBindings(named_inputs);
+      hr = command_recorder_->BindInputs(input_bindings.buffer_binding_desc);
+      if (FAILED(hr)) {
+        HandleDispatchFailure("Failed to bind inputs.", hr);
+        return;
+      }
+    }
+
+    if (!IsDispatchBindingValid(named_outputs, previous_output_tensors_)) {
+      IoBindings output_bindings = CreateAndCacheOutputBindings(named_outputs);
+      hr = command_recorder_->BindOutputs(output_bindings.buffer_binding_desc);
+      if (FAILED(hr)) {
+        HandleDispatchFailure("Failed to bind outputs.", hr);
+        return;
+      }
     }
   }
 

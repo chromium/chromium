@@ -49,21 +49,28 @@ CommandRecorder::Create(scoped_refptr<CommandQueue> queue,
   RETURN_UNEXPECTED_IF_FAILED(
       dml_device->CreateCommandRecorder(IID_PPV_ARGS(&command_recorder)));
 
+  // Create an empty binding table.
+  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table;
+  RETURN_UNEXPECTED_IF_FAILED(
+      dml_device->CreateBindingTable(nullptr, IID_PPV_ARGS(&binding_table)));
+
   return base::WrapUnique(new CommandRecorder(
       std::move(queue), std::move(dml_device), std::move(command_allocator),
-      std::move(command_recorder)));
+      std::move(command_recorder), std::move(binding_table)));
 }
 
 CommandRecorder::CommandRecorder(
     scoped_refptr<CommandQueue> command_queue,
     Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
     Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
-    Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder)
+    Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder,
+    Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table)
     : command_queue_(std::move(command_queue)),
       dml_device_(std::move(dml_device)),
       d3d12_device_(GetD3D12Device(dml_device_.Get())),
       command_allocator_(std::move(command_allocator)),
-      command_recorder_(std::move(command_recorder)) {}
+      command_recorder_(std::move(command_recorder)),
+      binding_table_(std::move(binding_table)) {}
 
 CommandRecorder::~CommandRecorder() = default;
 
@@ -158,11 +165,10 @@ void CommandRecorder::CopyBufferRegion(
   command_resources_.push_back(std::move(src_buffer));
 }
 
-void CommandRecorder::RecordDispatch(IDMLDispatchable* dispatchable,
-                                     IDMLBindingTable* binding_table) {
+void CommandRecorder::RecordDispatch(IDMLDispatchable* dispatchable) {
   TRACE_EVENT0("gpu", "dml::CommandRecorder::RecordDispatch");
   command_recorder_->RecordDispatch(command_list_.Get(), dispatchable,
-                                    binding_table);
+                                    binding_table_.Get());
 }
 
 void CommandRecorder::UploadTensorWithBarrier(
@@ -221,9 +227,8 @@ HRESULT CommandRecorder::InitializeOperator(
           descriptor_heap->GetGPUDescriptorHandleForHeapStart(),
       .SizeInDescriptors =
           initialization_binding_properties.RequiredDescriptorCount};
-  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table;
-  RETURN_IF_FAILED(dml_device_->CreateBindingTable(
-      &binding_table_desc, IID_PPV_ARGS(&binding_table)));
+
+  RETURN_IF_FAILED(binding_table_->Reset(&binding_table_desc));
 
   // Create and bind the temporary resource if the operator initializer
   // requires.
@@ -239,7 +244,7 @@ HRESULT CommandRecorder::InitializeOperator(
                                            .SizeInBytes = temp_resource_size};
     DML_BINDING_DESC temp_binding_desc{.Type = DML_BINDING_TYPE_BUFFER,
                                        .Desc = &temp_buffer_binding};
-    binding_table->BindTemporaryResource(&temp_binding_desc);
+    binding_table_->BindTemporaryResource(&temp_binding_desc);
 
     // The temporary resource should be kept alive until the operator has been
     // initialized on the GPU.
@@ -250,8 +255,8 @@ HRESULT CommandRecorder::InitializeOperator(
   // should be bound as input during operator initialization.
   if (input_array_binding.has_value()) {
     CHECK_EQ(input_array_binding.value().Type, DML_BINDING_TYPE_BUFFER_ARRAY);
-    binding_table->BindInputs(/* bindingCount */ 1,
-                              &input_array_binding.value());
+    binding_table_->BindInputs(/* bindingCount */ 1,
+                               &input_array_binding.value());
 
     // The input resources should be kept alive until the operator has been
     // initialized on the GPU.
@@ -272,8 +277,8 @@ HRESULT CommandRecorder::InitializeOperator(
   // initialization.
   if (persistent_resource_binding.has_value()) {
     CHECK_EQ(persistent_resource_binding.value().Type, DML_BINDING_TYPE_BUFFER);
-    binding_table->BindOutputs(/* bindingCount */ 1,
-                               &persistent_resource_binding.value());
+    binding_table_->BindOutputs(/* bindingCount */ 1,
+                                &persistent_resource_binding.value());
 
     // The persistent resource should be kept alive until the operator has been
     // initialized on the GPU.
@@ -288,7 +293,7 @@ HRESULT CommandRecorder::InitializeOperator(
   // DirectML may remove the device if invalid bindings are provided.
   RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
-  RecordDispatch(initializer.Get(), binding_table.Get());
+  RecordDispatch(initializer.Get());
 
   // The operator initializer owns GPU resources, it should be kept alive until
   // the dispatch using it have completed execution on the GPU.
@@ -313,8 +318,8 @@ HRESULT CommandRecorder::InitializeOperator(
 HRESULT CommandRecorder::ExecuteOperator(
     Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
-    base::span<const DML_BINDING_DESC> input_bindings,
-    base::span<const DML_BINDING_DESC> output_bindings,
+    const std::optional<base::span<const DML_BINDING_DESC>>& input_bindings,
+    const std::optional<base::span<const DML_BINDING_DESC>>& output_bindings,
     const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
     const std::optional<DML_BINDING_DESC>& temporary_resource_binding) {
   TRACE_EVENT0("gpu", "dml::CommandRecorder::ExecuteOperator");
@@ -336,17 +341,17 @@ HRESULT CommandRecorder::ExecuteOperator(
           descriptor_heap->GetGPUDescriptorHandleForHeapStart(),
       .SizeInDescriptors =
           execution_binding_properties.RequiredDescriptorCount};
-  // TODO(crbug.com/40272709): Consider reusing the binding table.
-  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table;
-  RETURN_IF_FAILED(dml_device_->CreateBindingTable(
-      &binding_table_desc, IID_PPV_ARGS(&binding_table)));
+
+  RETURN_IF_FAILED(binding_table_->Reset(&binding_table_desc));
 
   // Create and bind the temporary resource if the operator execution requires.
   auto temp_resource_size = execution_binding_properties.TemporaryResourceSize;
   if (temp_resource_size > 0) {
     CHECK_EQ(temporary_resource_binding.has_value(), true);
     CHECK_EQ(temporary_resource_binding.value().Type, DML_BINDING_TYPE_BUFFER);
-    binding_table->BindTemporaryResource(&temporary_resource_binding.value());
+    binding_table_->BindTemporaryResource(&temporary_resource_binding.value());
+    // DirectML may remove the device if invalid bindings are provided.
+    RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
     // The temporary resource should be kept alive until the operator has been
     // executed on the GPU.
@@ -364,7 +369,10 @@ HRESULT CommandRecorder::ExecuteOperator(
   if (persistent_buffer_size > 0) {
     CHECK_EQ(persistent_resource_binding.has_value(), true);
     CHECK_EQ(persistent_resource_binding.value().Type, DML_BINDING_TYPE_BUFFER);
-    binding_table->BindPersistentResource(&persistent_resource_binding.value());
+    binding_table_->BindPersistentResource(
+        &persistent_resource_binding.value());
+    // DirectML may remove the device if invalid bindings are provided.
+    RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
     // The persistent resource should be kept alive until the operator has been
     // executed on the GPU.
@@ -376,11 +384,39 @@ HRESULT CommandRecorder::ExecuteOperator(
     command_resources_.push_back(persistent_resource);
   }
 
+  if (input_bindings) {
+    RETURN_IF_FAILED(BindInputs(input_bindings.value()));
+  }
+
+  if (output_bindings) {
+    RETURN_IF_FAILED(BindOutputs(output_bindings.value()));
+  }
+
+  RecordDispatch(compiled_operator.Get());
+
+  // The operator owns GPU resources, and so it should be kept alive until the
+  // dispatch using it has completed execution on the GPU.
+  command_resources_.push_back(std::move(compiled_operator));
+
+  // It's safe to release the binding table right after the dispatch has been
+  // recorded into the command list. However, the heap which is referred to by
+  // the GPU descriptor handle should be kept alive until all work referencing
+  // it has completed execution on the GPU.
+  command_resources_.push_back(std::move(descriptor_heap));
+
+  return S_OK;
+}
+
+HRESULT CommandRecorder::BindInputs(
+    base::span<const DML_BINDING_DESC> input_bindings) {
+  TRACE_EVENT0("gpu", "dml::CommandRecorder::BindInputs");
   // Bind the input resources if needed.
   if (input_bindings.size() > 0) {
-    binding_table->BindInputs(
+    binding_table_->BindInputs(
         base::checked_cast<uint32_t>(input_bindings.size()),
         input_bindings.data());
+    // DirectML may remove the device if invalid bindings are provided.
+    RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
     // The input resources should be kept alive until the operator has been
     // executed on the GPU.
@@ -397,11 +433,17 @@ HRESULT CommandRecorder::ExecuteOperator(
     }
   }
 
+  return S_OK;
+}
+
+HRESULT CommandRecorder::BindOutputs(
+    base::span<const DML_BINDING_DESC> output_bindings) {
+  TRACE_EVENT0("gpu", "dml::CommandRecorder::BindOutputs");
+
   // Bind the output resources.
-  binding_table->BindOutputs(
+  binding_table_->BindOutputs(
       base::checked_cast<uint32_t>(output_bindings.size()),
       output_bindings.data());
-
   // DirectML may remove the device if invalid bindings are provided.
   RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
@@ -414,18 +456,6 @@ HRESULT CommandRecorder::ExecuteOperator(
     CHECK_NE(output_resource, nullptr);
     command_resources_.push_back(output_resource);
   }
-
-  RecordDispatch(compiled_operator.Get(), binding_table.Get());
-
-  // The operator owns GPU resources, it should be kept alive until the dispatch
-  // using it have completed execution on the GPU.
-  command_resources_.push_back(std::move(compiled_operator));
-
-  // It's safe to release the binding table right after the dispatch has been
-  // recorded into the command list. However, the heap which is referred to by
-  // the GPU descriptor handle should be kept alive until all work referencing
-  // it has completed execution on the GPU.
-  command_resources_.push_back(std::move(descriptor_heap));
 
   return S_OK;
 }
