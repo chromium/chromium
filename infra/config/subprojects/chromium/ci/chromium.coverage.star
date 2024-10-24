@@ -274,14 +274,6 @@ coverage_builder(
                     shards = 2,
                 ),
             ),
-            # TODO: crbug.com/40258588 - This flag should have no effect on this
-            # script test, but it needs to be present to satisfy the
-            # targets-config-verifier, so remove it after landing
-            "check_network_annotations": targets.mixin(
-                args = [
-                    "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-                ],
-            ),
             # Keep this same as android-oreo-x86-rel
             "chrome_public_test_apk": targets.mixin(
                 args = [

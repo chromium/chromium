@@ -4178,9 +4178,6 @@
     ],
     "scripts": [
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
-        ],
         "name": "check_network_annotations",
         "resultdb": {
           "enable": true,
