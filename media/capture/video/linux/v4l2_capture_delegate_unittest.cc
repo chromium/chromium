@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/capture/video/linux/v4l2_capture_delegate.h"
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
@@ -12,10 +14,11 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "media/capture/video/linux/v4l2_capture_delegate.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -349,6 +352,10 @@ class V4l2CaptureDelegateGPUMemoryBufferTest
         std::move(fake_v4l2), std::move(fake_device_provider));
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kVideoCaptureUseGpuMemoryBuffer);
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
+        test_sii_);
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
@@ -359,6 +366,7 @@ class V4l2CaptureDelegateGPUMemoryBufferTest
   raw_ptr<FakeV4L2Impl> fake_v4l2_;
   raw_ptr<FakeDeviceProvider> fake_device_provider_;
   int received_frame_count_ = 0;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 #endif  // BUILDFLAG(IS_LINUX)
 }  // anonymous namespace
