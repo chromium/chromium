@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
@@ -137,6 +138,7 @@ public class CustomTabToolbarUnitTest {
     private TextView mUrlBar;
     private ImageButton mSecurityButton;
     private ImageButton mSecurityIcon;
+    private ToolbarProgressBar mToolbarProgressBar;
 
     @Before
     public void setup() {
@@ -161,6 +163,7 @@ public class CustomTabToolbarUnitTest {
                                 .inflate(R.layout.custom_tabs_toolbar, null, false);
         ObservableSupplierImpl<Tracker> trackerSupplier = new ObservableSupplierImpl<>();
         trackerSupplier.set(mTracker);
+        mToolbarProgressBar = new ToolbarProgressBar(mActivity, null);
         mToolbar.initialize(
                 mToolbarDataProvider,
                 mTabController,
@@ -170,7 +173,8 @@ public class CustomTabToolbarUnitTest {
                 mPartnerHomepageEnabledSupplier,
                 mOfflineDownloader,
                 mUserEducationHelper,
-                trackerSupplier);
+                trackerSupplier,
+                mToolbarProgressBar);
 
         when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
         mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);

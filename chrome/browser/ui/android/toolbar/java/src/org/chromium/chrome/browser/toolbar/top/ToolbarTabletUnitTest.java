@@ -60,6 +60,8 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -102,6 +104,7 @@ public final class ToolbarTabletUnitTest {
     private View mLocationBarButton;
     private ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>(TAB_COUNT);
+    private ToolbarProgressBar mProgressBar;
 
     @Before
     public void setUp() {
@@ -132,6 +135,8 @@ public final class ToolbarTabletUnitTest {
         mLocationBarButton = mToolbarTablet.findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = mToolbarTablet.findViewById(R.id.bookmark_button);
         mSaveOfflineButton = mToolbarTablet.findViewById(R.id.save_offline_button);
+        mProgressBar = new ToolbarProgressBar(mActivity, null);
+        mProgressBar.setAnimatingView(new ToolbarProgressBarAnimatingView(mActivity, null));
     }
 
     @After
@@ -172,7 +177,8 @@ public final class ToolbarTabletUnitTest {
                 () -> false,
                 null,
                 null,
-                null);
+                null,
+                mProgressBar);
         mToolbarTablet.onNativeLibraryReady();
 
         mToolbarTablet.onClick(mReloadingButton);
@@ -192,7 +198,8 @@ public final class ToolbarTabletUnitTest {
                 () -> false,
                 null,
                 null,
-                null);
+                null,
+                mProgressBar);
         mToolbarTablet.onNativeLibraryReady();
 
         MotionEvent shiftClick =
@@ -217,7 +224,8 @@ public final class ToolbarTabletUnitTest {
                 () -> false,
                 null,
                 null,
-                null);
+                null,
+                mProgressBar);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -328,7 +336,8 @@ public final class ToolbarTabletUnitTest {
                 () -> false,
                 null,
                 null,
-                null);
+                null,
+                mProgressBar);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();

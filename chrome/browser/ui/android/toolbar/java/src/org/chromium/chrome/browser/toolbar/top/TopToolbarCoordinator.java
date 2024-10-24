@@ -184,7 +184,8 @@ public class TopToolbarCoordinator implements Toolbar {
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
-            @Nullable OnLongClickListener onLongClickListener) {
+            @Nullable OnLongClickListener onLongClickListener,
+            ToolbarProgressBar progressBar) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -222,7 +223,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 partnerHomepageEnabledSupplier,
                 offlineDownloader,
                 userEducationHelper,
-                mTrackerSupplier);
+                mTrackerSupplier,
+                progressBar);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);

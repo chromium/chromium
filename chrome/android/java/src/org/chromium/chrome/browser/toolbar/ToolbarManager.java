@@ -795,6 +795,13 @@ public class ToolbarManager
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 
+        ViewStub progressBarStub = mActivity.findViewById(R.id.progress_bar_stub);
+        FrameLayout progressBarContainer = (FrameLayout) progressBarStub.inflate();
+        ToolbarProgressBar progressBar =
+                progressBarContainer.findViewById(R.id.toolbar_progress_bar);
+        progressBar.setAnimatingView(
+                progressBarContainer.findViewById(R.id.progress_bar_animating_view));
+        mBrowserControlsSizer.addObserver(progressBar);
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
@@ -803,7 +810,8 @@ public class ToolbarManager
                         browsingModeThemeColorProvider,
                         initializeWithIncognitoColors,
                         mConstraintsProxy,
-                        onLongClickListener);
+                        onLongClickListener,
+                        progressBar);
         mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
@@ -1383,7 +1391,8 @@ public class ToolbarManager
             ThemeColorProvider browsingModeThemeColorProvider,
             boolean initializeWithIncognitoColors,
             ObservableSupplier<Integer> constraintsSupplier,
-            OnLongClickListener onLongClickListener) {
+            OnLongClickListener onLongClickListener,
+            ToolbarProgressBar progressBar) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -1412,7 +1421,8 @@ public class ToolbarManager
                         mTabObscuringHandler,
                         mDesktopWindowStateProvider,
                         mTabStripTransitionDelegateSupplier,
-                        onLongClickListener);
+                        onLongClickListener,
+                        progressBar);
 
         mHomepageStateListener =
                 () -> {
