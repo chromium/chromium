@@ -20,6 +20,7 @@ class GetSessionRequest;
 class UpdateSessionRequest;
 class UpdateStudentActivitiesRequest;
 class UploadTokenRequest;
+class JoinSessionRequest;
 
 class SessionClientImpl {
  public:
@@ -38,6 +39,7 @@ class SessionClientImpl {
   virtual void UpdateStudentActivity(
       std::unique_ptr<UpdateStudentActivitiesRequest> request);
   virtual void RemoveStudent(std::unique_ptr<RemoveStudentRequest> request);
+  virtual void JoinSession(std::unique_ptr<JoinSessionRequest> request);
   google_apis::RequestSender* sender() { return sender_.get(); }
 
  private:

@@ -68,6 +68,9 @@ class BocaAppHandler : public mojom::PageHandler,
                            UpdateCaptionConfigCallback callback) override;
   void SetFloatMode(bool isFloatMode, SetFloatModeCallback callback) override;
 
+  void SubmitAccessCode(const std::string& access_code,
+                        SubmitAccessCodeCallback callback) override;
+
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
 
@@ -111,6 +114,10 @@ class BocaAppHandler : public mojom::PageHandler,
                         ::boca::Session* current_session,
                         std::string id,
                         base::expected<bool, google_apis::ApiErrorCode> result);
+
+  void OnAccessCodeSubmitted(SubmitAccessCodeCallback callback,
+                             base::expected<std::unique_ptr<::boca::Session>,
+                                            google_apis::ApiErrorCode> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
   TabInfoCollector tab_info_collector_;

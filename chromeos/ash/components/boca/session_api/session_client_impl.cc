@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
@@ -74,6 +75,11 @@ void SessionClientImpl::UpdateStudentActivity(
 
 void SessionClientImpl::RemoveStudent(
     std::unique_ptr<RemoveStudentRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::JoinSession(
+    std::unique_ptr<JoinSessionRequest> request) {
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 }  // namespace ash::boca

@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
@@ -151,6 +152,7 @@ BocaAppHandler::BocaAppHandler(
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
+  user_identity_.set_photo_url(user->image_url().spec());
   // BocaAppClient is guaranteed to be live here.
   BocaAppClient::Get()->GetSessionManager()->AddObserver(this);
 }
@@ -381,6 +383,17 @@ void BocaAppHandler::SetFloatMode(bool isFloatMode,
       std::move(callback));
 }
 
+void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
+                                      SubmitAccessCodeCallback callback) {
+  std::unique_ptr<JoinSessionRequest> request =
+      std::make_unique<JoinSessionRequest>(
+          session_client_impl_->sender(), user_identity_,
+          BocaAppClient::Get()->GetDeviceId(), access_code,
+          base::BindOnce(&BocaAppHandler::OnAccessCodeSubmitted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  session_client_impl_->JoinSession(std::move(request));
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   if (!test_activity_callback_.is_null()) {
@@ -564,6 +577,21 @@ void BocaAppHandler::OnStudentRemoved(
         break;
       }
     }
+  }
+}
+
+void BocaAppHandler::OnAccessCodeSubmitted(
+    SubmitAccessCodeCallback callback,
+    base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
+        result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(mojom::SubmitAccessCodeError::kInvalid);
+    return;
+  } else {
+    // Load current session into memory;
+    BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
+        std::move(result.value()), /*dispatch_event=*/true);
+    std::move(callback).Run(std::nullopt);
   }
 }
 }  // namespace ash::boca

@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
@@ -167,6 +168,10 @@ class MockSessionClientImpl : public SessionClientImpl {
   MOCK_METHOD(void,
               RemoveStudent,
               (std::unique_ptr<RemoveStudentRequest>),
+              (override));
+  MOCK_METHOD(void,
+              JoinSession,
+              (std::unique_ptr<JoinSessionRequest>),
               (override));
 };
 
@@ -1391,6 +1396,59 @@ TEST_F(BocaAppPageHandlerTest, OnSessionRosterUpdatedSucceed) {
   boca_app_handler()->OnSessionRosterUpdated("any", {});
   auto result = future.Take();
   ASSERT_TRUE(result->is_config());
+}
+
+TEST_F(BocaAppPageHandlerTest, JoinSessionSucceeded) {
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::SubmitAccessCodeError>> future_1;
+
+  JoinSessionRequest request(nullptr, ::boca::UserIdentity(), "device", "code",
+                             future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), JoinSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            request->callback().Run(std::make_unique<::boca::Session>());
+          })));
+
+  boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, JoinSessionFailed) {
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(0);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::SubmitAccessCodeError>> future_1;
+
+  JoinSessionRequest request(nullptr, ::boca::UserIdentity(), "device", "code",
+                             future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), JoinSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            request->callback().Run(
+                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+          })));
+
+  boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_EQ(mojom::SubmitAccessCodeError::kInvalid, future_1.Get().value());
 }
 
 class BocaAppPageHandlerFloatModeTest : public AshTestBase {

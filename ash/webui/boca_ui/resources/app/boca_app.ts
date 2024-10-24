@@ -60,6 +60,12 @@ export enum JoinMethod {
   ACCESS_CODE = 1,
 }
 
+export enum SubmitAccessCodeResult {
+  UNKNOWN = 0,
+  SUCCESS = 1,
+  INVALID_CODE = 2,
+}
+
 /**
  * Declare controlled tab
  */
@@ -179,6 +185,11 @@ export declare interface ClientApiDelegate {
    * Set float mode
    */
   setFloatMode(isFloatMode: boolean): Promise<boolean>;
+
+  /**
+   * Submit an access code for student to join the session.
+   */
+  submitAccessCode(accessCode: string): Promise<SubmitAccessCodeResult>;
 }
 
 /**

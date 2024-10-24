@@ -4,7 +4,7 @@
 
 import {Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, OnTaskConfig, SessionConfig} from './boca_app.js';
+import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, OnTaskConfig, SessionConfig, SubmitAccessCodeResult} from './boca_app.js';
 
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
@@ -193,6 +193,13 @@ export class ClientDelegateFactory {
       setFloatMode: async (isFloatMode: boolean) => {
         return (await pageHandler.setFloatMode(isFloatMode)).success;
       },
+      submitAccessCode: async (code: string) => {
+        const result = await pageHandler.submitAccessCode(code);
+        if (!result.error) {
+          return SubmitAccessCodeResult.SUCCESS;
+        }
+        return SubmitAccessCodeResult.INVALID_CODE;
+      }
     };
   }
 

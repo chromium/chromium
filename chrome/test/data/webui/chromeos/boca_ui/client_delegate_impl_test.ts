@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -209,6 +209,11 @@ class MockRemoteHandler extends PageHandlerRemote {
   override setFloatMode(isFloatMode: boolean): Promise<{success: boolean}> {
     isFloatMode;
     return Promise.resolve({success: true});
+  }
+  override submitAccessCode(code: string):
+      Promise<{error: SubmitAccessCodeError | null}> {
+    code;
+    return Promise.resolve({error: null});
   }
 }
 
@@ -519,4 +524,11 @@ suite('ClientDelegateTest', function() {
     assertTrue(result);
   });
 
+  test(
+      'client delegate should translate data for submit access code',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().submitAccessCode('1');
+        assertDeepEquals(1, result);
+      });
 });

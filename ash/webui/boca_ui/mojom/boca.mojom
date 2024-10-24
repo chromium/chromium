@@ -134,8 +134,14 @@ enum UpdateSessionError{
 };
 
 enum RemoveStudentError{
+  // Invalid access code.
   kInvalid,
+  // Network failure.
   kHTTPError,
+};
+
+enum SubmitAccessCodeError {
+  kInvalid,
 };
 
 // Implemented by browser process for page chrome-untrusted://boca-app/
@@ -166,6 +172,9 @@ interface PageHandler {
   => (UpdateSessionError? error);
   // Set app float mode.
   SetFloatMode(bool isFloatMode)=> (bool success);
+  // Submit access code to join a current class session.
+  SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
+
 };
 
 // Implemented by renderer process
