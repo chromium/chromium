@@ -70,7 +70,7 @@ def main():
     mc_help = subprocess.check_output(['mc.exe', '/?'], env=env_dict,
                                       stderr=subprocess.STDOUT, shell=True)
     version = re.search(br'Message Compiler\s+Version (\S+)', mc_help).group(1)
-    if version != b'10.0.22621':
+    if version != b'10.0.26100':
       return
 
   # mc writes to stderr, so this explicitly redirects to stdout and eats it.
