@@ -13,3 +13,4 @@ Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] .test 65
   assert_equals: \n<div class="test max-height stretch indefinite" data-expected-height="50">XXXXX XXXXX</div>\nheight expected 50 but got 510
 Harness: the test ran to completion.
+
