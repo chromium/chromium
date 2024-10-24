@@ -1471,6 +1471,7 @@
         },
         "swarming": {
           "dimensions": {
+            "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
             "pool": "chromium.tests.gpu"
@@ -1603,6 +1604,7 @@
         },
         "swarming": {
           "dimensions": {
+            "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
             "pool": "chromium.tests.gpu"
