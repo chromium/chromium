@@ -226,7 +226,7 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
 
   CHECK_GT(manager_->GetCurrentCacheSize(), manager_->GetMaxCacheSize());
 
-  const int current_index = nav_controller_->GetCurrentEntryIndex();
+  const int current_index = nav_controller_->GetLastCommittedEntryIndex();
   const int current_entry_id =
       nav_controller_->GetEntryAtIndex(current_index)->GetUniqueID();
   // It's impossible to have a screenshot for the current entry.
