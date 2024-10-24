@@ -100,7 +100,7 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
   private onToggleSubLabelLinkClick_(): void {
     OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('addressesAndPaymentMethodsLearnMoreURL'));
+        loadTimeData.getString('autofillPredictionImprovementsLearnMoreURL'));
   }
 
   private onPrefToggleChanged_() {
