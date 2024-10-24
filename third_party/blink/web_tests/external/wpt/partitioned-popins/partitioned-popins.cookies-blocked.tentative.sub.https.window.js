@@ -11,11 +11,16 @@
 // Step 4 (main-window) Embed iframe for other origin.
 // Step 5 (main-iframe) Write third-party cookies and report success.
 // Step 6 (main-window) Open partitioned popin for other origin.
-// Step 7 (main-popin) Check for first-/third-party cookies and report success.
-// Step 8 (main-window) Cleanup.
+// Step 7 (popin) Check for first-/third-party cookies.
+// Step 8 (popin-iframe) Check for first-/third-party cookies and report success.
+// Step 9 (popin) Report success.
+// Step 10 (main-window) Cleanup.
 
 async_test(t => {
   const id = String(Math.random());
+  document.cookie = "FirstPartyStrict=" + id + "; SameSite=Strict; Secure";
+  document.cookie = "FirstPartyLax=" + id + "; SameSite=Lax; Secure";
+  document.cookie = "FirstPartyNone=" + id + "; SameSite=None; Secure";
   // Step 1
   window.addEventListener("message", t.step_func(e => {
     switch (e.data.type) {
@@ -29,13 +34,13 @@ async_test(t => {
       case 'iframe-set':
         // Step 6
         assert_equals(e.data.message, "Set third-party data");
-        window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/partitioned-popins/resources/partitioned-popins.cookies-popin.py?id="+id, '_blank', 'popin');
+        window.open("https://{{hosts[alt][]}}:{{ports[https][0]}}/partitioned-popins/resources/partitioned-popins.cookies-popin.sub.py?id="+id, '_blank', 'popin');
         break;
       case 'popin-read':
-        // Step 8
+        // Step 10
         // We want to see the same behavior a cross-site iframe would have, only SameSite=None available, with the ability to set additional cookies in the popin.
         // TODO(crbug.com/340606651): Once RSA is implemented we should see first-party cookies after the call.
-        assert_equals(e.data.message, "ReadOnLoad:ThirdPartyNone-,ReadOnFetch:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnDocument:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnFetchAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-,ReadOnDocumentAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-");
+        assert_equals(e.data.message, "ReadOnLoad:ThirdPartyNone-,ReadOnFetch:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnDocument:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnFetchAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-,ReadOnDocumentAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-,ReadInPopinIframe:ThirdPartyNone-,ReadInPopinIframeAfterRSA:FirstPartyNone-ThirdPartyNone-FirstPartyNoneAfterRSA-ThirdPartyNoneAfterRSA-");
         t.done();
         break;
     }

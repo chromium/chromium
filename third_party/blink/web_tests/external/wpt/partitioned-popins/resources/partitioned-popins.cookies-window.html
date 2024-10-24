@@ -6,7 +6,7 @@
 (async function() {
   test_driver.set_test_context(window.opener);
 
-  // Step 3 (partitioned-popins/partitioned-popins.cookies.tentative.sub.https.window.js)
+  // Step 3 (partitioned-popins/partitioned-popins.cookies-*.tentative.sub.https.window.js)
   const id = (new URLSearchParams(window.location.search)).get("id");
   document.cookie = "FirstPartyStrict=" + id + "; SameSite=Strict; Secure";
   document.cookie = "FirstPartyLax=" + id + "; SameSite=Lax; Secure";
