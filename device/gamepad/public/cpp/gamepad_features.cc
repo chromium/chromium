@@ -20,11 +20,6 @@ BASE_FEATURE(kEnableGamepadButtonAxisEvents,
              "EnableGamepadButtonAxisEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Windows.Gaming.Input data fetcher.
-BASE_FEATURE(kEnableWindowsGamingInputDataFetcher,
-             "EnableWindowsGamingInputDataFetcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRestrictGamepadAccess,
              "RestrictGamepadAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
