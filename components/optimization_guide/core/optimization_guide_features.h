@@ -387,6 +387,10 @@ int GetOnDeviceModelMaxTokensForExecute();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 int GetOnDeviceModelMaxTokensForOutput();
 
+// The maximum total tokens, for input and output combined.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+uint32_t GetOnDeviceModelMaxTokens();
+
 // Returns the number of crashes without a successful response before the
 // on-device model won't be used.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

@@ -68,25 +68,6 @@ proto::OnDeviceModelVersions GetModelVersions(
   return versions;
 }
 
-const auto& GetTokenLimits() {
-  // TODO(b/302402959): Choose max_tokens based on device.
-  static const TokenLimits token_limits = []() {
-    auto context =
-        static_cast<uint32_t>(features::GetOnDeviceModelMaxTokensForContext());
-    auto execute =
-        static_cast<uint32_t>(features::GetOnDeviceModelMaxTokensForExecute());
-    auto output =
-        static_cast<uint32_t>(features::GetOnDeviceModelMaxTokensForOutput());
-    return TokenLimits{
-        .max_tokens = (context + execute + output),
-        .max_context_tokens = context,
-        .max_execute_tokens = execute,
-        .max_output_tokens = output,
-    };
-  }();
-  return token_limits;
-}
-
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -225,7 +206,7 @@ OnDeviceModelServiceController::CreateSession(
   opts.adapter = std::move(adapter);
   opts.safety_checker =
       std::make_unique<SafetyChecker>(SafetyConfig(safety_config));
-  opts.token_limits = GetTokenLimits();
+  opts.token_limits = GetFeatureAdapter(feature)->GetTokenLimits();
 
   base::WeakPtr<ModelQualityLogsUploaderService> log_uploader =
       (config_params && config_params->logging_mode ==
@@ -339,7 +320,8 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   }
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
-  params->max_tokens = GetTokenLimits().max_tokens;
+  // TODO(crbug.com/302402959): Choose max_tokens based on device.
+  params->max_tokens = features::GetOnDeviceModelMaxTokens();
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
   service_remote_->LoadModel(
       std::move(params), std::move(model),
