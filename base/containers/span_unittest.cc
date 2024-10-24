@@ -743,6 +743,13 @@ TEST(SpanTest, FromRefOfConstStackVariable) {
   EXPECT_EQ(sizeof(int), b.size());
 }
 
+TEST(SpanTest, FromRefOfRValue) {
+  int x = 123;
+  static_assert(std::is_same_v<decltype(span_from_ref(std::move(x))),
+                               span<const int, 1u>>);
+  EXPECT_EQ(&x, span_from_ref(std::move(x)).data());
+}
+
 TEST(SpanTest, FromCString) {
   // No terminating null, size known at compile time.
   {

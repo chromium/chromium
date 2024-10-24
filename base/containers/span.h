@@ -1519,6 +1519,16 @@ constexpr auto make_span(Container&& container) noexcept {
 // `span_from_ref` converts a reference to T into a span of length 1.  This is a
 // non-std helper that is inspired by the `std::slice::from_ref()` function from
 // Rust.
+//
+// Const references are turned into a `span<const T, 1>` while mutable
+// references are turned into a `span<T, 1>`.
+template <typename T>
+constexpr span<const T, 1u> span_from_ref(
+    const T& single_object LIFETIME_BOUND) noexcept {
+  // SAFETY: Given a valid reference to `single_object` the span of size 1 will
+  // be a valid span that points to the `single_object`.
+  return UNSAFE_BUFFERS(span<const T, 1u>(std::addressof(single_object), 1u));
+}
 template <typename T>
 constexpr span<T, 1u> span_from_ref(T& single_object LIFETIME_BOUND) noexcept {
   // SAFETY: Given a valid reference to `single_object` the span of size 1 will
