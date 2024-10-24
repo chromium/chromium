@@ -18,7 +18,8 @@ class TestShareKitService : public ShareKitService {
   // ShareKitService.
   bool IsSupported() const override;
   void ShareGroup(ShareKitShareGroupConfiguration* config) override;
-  void JoinGroup(ShareKitJoinConfiguration* configuration) override;
+  void ManageGroup(ShareKitManageConfiguration* config) override;
+  void JoinGroup(ShareKitJoinConfiguration* config) override;
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override;
 };
 

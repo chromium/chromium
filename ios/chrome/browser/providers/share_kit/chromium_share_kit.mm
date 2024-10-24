@@ -17,7 +17,8 @@ class ChromiumShareKitService final : public ShareKitService {
   // ShareKitService.
   bool IsSupported() const override { return false; }
   void ShareGroup(ShareKitShareGroupConfiguration* config) override {}
-  void JoinGroup(ShareKitJoinConfiguration* configuration) override {}
+  void ManageGroup(ShareKitManageConfiguration* config) override {}
+  void JoinGroup(ShareKitJoinConfiguration* config) override {}
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override {
     return nil;
   }

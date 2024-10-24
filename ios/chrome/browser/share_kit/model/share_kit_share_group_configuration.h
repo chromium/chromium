@@ -13,10 +13,12 @@ class TabGroup;
 // Configuration object for the ShareKit ShareGroup API.
 @interface ShareKitShareGroupConfiguration : NSObject
 
-// Local tab group.
-@property(nonatomic, assign) const TabGroup* tabGroup;
 // The base view controller from which to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// Local tab group.
+@property(nonatomic, assign) const TabGroup* tabGroup;
+
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 

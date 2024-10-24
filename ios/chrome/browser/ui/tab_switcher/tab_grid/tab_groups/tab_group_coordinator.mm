@@ -11,6 +11,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
@@ -101,10 +102,14 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   if (shareKitService) {
     ShareKitFacePileConfiguration* config =
         [[ShareKitFacePileConfiguration alloc] init];
+    // TODO(crbug.com/374935325): Get the collabID for the group if it's already
+    // shared, and set it here.
     config.collabID = nil;
     __weak __typeof(self) weakSelf = self;
     config.completionBlock = ^(NSString* collabID, BOOL isSignedIn) {
-      if (!collabID) {
+      if (collabID) {
+        [weakSelf manageGroup:collabID];
+      } else {
         // If there is no collabID, start the share group flow.
         [weakSelf shareGroup];
       }
@@ -370,6 +375,22 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   shareKitService->ShareGroup(config);
+}
+
+// Manage the group with `collabID`.
+- (void)manageGroup:(NSString*)collabID {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!collabID || !shareKitService) {
+    return;
+  }
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = self.baseViewController;
+  config.collabID = collabID;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ManageGroup(config);
 }
 
 @end

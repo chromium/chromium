@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 
 TestShareKitService::TestShareKitService() {}
+
 TestShareKitService::~TestShareKitService() {}
 
 bool TestShareKitService::IsSupported() const {
@@ -15,7 +16,11 @@ void TestShareKitService::ShareGroup(ShareKitShareGroupConfiguration* config) {
   // TODO(crbug.com/358373145): add fake implementation.
 }
 
-void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* configuration) {
+void TestShareKitService::ManageGroup(ShareKitManageConfiguration* config) {
+  // TODO(crbug.com/358373145): add fake implementation.
+}
+
+void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* config) {
   // TODO(crbug.com/358373145): add fake implementation.
 }
 
