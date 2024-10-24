@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
@@ -23,19 +22,6 @@
 
 namespace extensions {
 
-// Feature to add allow listed extensions remotely.
-BASE_FEATURE(kAllowlistedAiDataExtensions,
-             "AllowlistedAiDataExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-namespace {
-
-const base::FeatureParam<std::string> kAllowlistedExtensions{
-    &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
-    /*default_value=*/"hpkopmikdojpadgmioifjjodbmnjjjca"};
-
-}  // namespace
-
 ExperimentalAiDataGetAiDataFunction::ExperimentalAiDataGetAiDataFunction() =
     default;
 
@@ -44,11 +30,8 @@ ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
 
 ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
   // Check the allowlist and return an error if extension is not allow listed.
-  std::string allowlisted_extension_string = kAllowlistedExtensions.Get();
-  std::vector<std::string_view> allowlisted_extensions =
-      base::SplitStringPiece(allowlisted_extension_string, ",",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
+  std::vector<std::string> allowlisted_extensions =
+      AiDataKeyedService::GetAllowlistedExtensions();
   if (std::find(allowlisted_extensions.begin(), allowlisted_extensions.end(),
                 extension_id()) == allowlisted_extensions.end()) {
     return RespondNow(Error("API access restricted for this extension."));

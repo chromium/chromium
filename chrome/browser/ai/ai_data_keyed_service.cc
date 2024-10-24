@@ -8,11 +8,14 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -329,6 +332,16 @@ void GetModelPrototypingAiData(int dom_node_id,
                            std::move(data)));
 }
 
+// Feature to add allow listed extensions remotely.
+BASE_FEATURE(kAllowlistedAiDataExtensions,
+             "AllowlistedAiDataExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kAllowlistedExtensions{
+    &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
+    /*default_value=*/
+    "hpkopmikdojpadgmioifjjodbmnjjjca,nfdaijodggdcjengofmbibbkcnopmikg"};
+
 }  // namespace
 
 AiDataKeyedService::AiDataKeyedService(content::BrowserContext* browser_context)
@@ -343,4 +356,11 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
   GetModelPrototypingAiData(dom_node_id, web_contents, user_input,
                             std::move(callback));
+}
+
+std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
+  std::vector<std::string> allowlisted_extensions =
+      base::SplitString(kAllowlistedExtensions.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return allowlisted_extensions;
 }

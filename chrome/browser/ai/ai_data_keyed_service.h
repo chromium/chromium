@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_AI_AI_DATA_KEYED_SERVICE_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -21,14 +23,15 @@ class AiDataKeyedService : public KeyedService {
  public:
   // Data related to AiData collection.
   using BrowserData = optimization_guide::proto::BrowserCollectedInformation;
-  using AiData =
-      std::optional<BrowserData>;
+  using AiData = std::optional<BrowserData>;
   using AiDataCallback = base::OnceCallback<void(AiData)>;
 
   explicit AiDataKeyedService(content::BrowserContext* browser_context);
   AiDataKeyedService(const AiDataKeyedService&) = delete;
   AiDataKeyedService& operator=(const AiDataKeyedService&) = delete;
   ~AiDataKeyedService() override;
+
+  static std::vector<std::string> GetAllowlistedExtensions();
 
   // Fills an AiData and returns the result via the passed in callback. If the
   // AiData is empty, data collection failed. |callback| is guaranteed to be

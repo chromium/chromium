@@ -79,6 +79,15 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
   AiDataKeyedService::AiData ai_data_;
 };
 
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
+                       AllowlistedExtensionList) {
+  std::vector<std::string> expected_allowlisted_extensions = {
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "nfdaijodggdcjengofmbibbkcnopmikg"};
+
+  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
+            expected_allowlisted_extensions);
+}
+
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, GetsData) {
   LoadSimplePageAndData();
   EXPECT_TRUE(ai_data());
