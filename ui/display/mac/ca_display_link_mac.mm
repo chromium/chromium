@@ -85,7 +85,6 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link) {
 struct ObjCState {
   CADisplayLink* __strong display_link API_AVAILABLE(macos(14.0));
   CADisplayLinkTarget* __strong target API_AVAILABLE(macos(14.0));
-  NSScreen* ns_screen;
 };
 
 void CADisplayLinkMac::Step() {
@@ -115,7 +114,8 @@ void CADisplayLinkMac::Step() {
 
 double CADisplayLinkMac::GetRefreshRate() const {
   if (@available(macos 12.0, *)) {
-    return 1.0 / objc_state_->ns_screen.minimumRefreshInterval;
+    NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
+    return 1.0 / screen.minimumRefreshInterval;
   }
   return 0;
 }
@@ -125,12 +125,10 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& max_interval,
     base::TimeDelta& granularity) const {
   if (@available(macos 12.0, *)) {
-    min_interval =
-        base::Seconds(1) * objc_state_->ns_screen.minimumRefreshInterval;
-    max_interval =
-        base::Seconds(1) * objc_state_->ns_screen.maximumRefreshInterval;
-    granularity =
-        base::Seconds(1) * objc_state_->ns_screen.displayUpdateGranularity;
+    NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
+    min_interval = base::Seconds(1) * screen.minimumRefreshInterval;
+    max_interval = base::Seconds(1) * screen.maximumRefreshInterval;
+    granularity = base::Seconds(1) * screen.displayUpdateGranularity;
   }
 }
 
@@ -154,10 +152,11 @@ void CADisplayLinkMac::SetPreferredIntervalRange(
       preferred_interval = AdjustedToSupportedInterval(preferred_interval);
     }
 
+    NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
     base::TimeDelta ns_screen_min_interval =
-        base::Seconds(1) * objc_state_->ns_screen.minimumRefreshInterval;
+        base::Seconds(1) * screen.minimumRefreshInterval;
     base::TimeDelta ns_screen_max_interval =
-        base::Seconds(1) * objc_state_->ns_screen.maximumRefreshInterval;
+        base::Seconds(1) * screen.maximumRefreshInterval;
 
     // Cap the intervals to the upper bound and the lower bound.
     if (max_interval > ns_screen_max_interval) {
@@ -228,15 +227,14 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
         new CADisplayLinkMac(display_id));
     auto* objc_state = display_link->objc_state_.get();
 
-    objc_state->ns_screen = GetNSScreenFromDisplayID(display_id);
-    if (!objc_state->ns_screen) {
+    NSScreen* screen = GetNSScreenFromDisplayID(display_id);
+    if (!screen) {
       return nullptr;
     }
 
     objc_state->target = [[CADisplayLinkTarget alloc] init];
-    objc_state->display_link =
-        [objc_state->ns_screen displayLinkWithTarget:objc_state->target
-                                            selector:@selector(step:)];
+    objc_state->display_link = [screen displayLinkWithTarget:objc_state->target
+                                                    selector:@selector(step:)];
 
     if (!objc_state->display_link) {
       return nullptr;
@@ -246,7 +244,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
     objc_state->display_link.paused = YES;
 
     // Set the default refresh rate
-    float refresh_rate = 1.0 / objc_state->ns_screen.minimumRefreshInterval;
+    float refresh_rate = 1.0 / screen.minimumRefreshInterval;
 
     objc_state->display_link.preferredFrameRateRange =
         CAFrameRateRange{.minimum = refresh_rate,
@@ -269,7 +267,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
                         display_link->weak_factory_.GetWeakPtr())];
 
     display_link->min_interval_ =
-        base::Seconds(1) * objc_state->ns_screen.minimumRefreshInterval;
+        base::Seconds(1) * screen.minimumRefreshInterval;
     display_link->max_interval_ = display_link->min_interval_;
     display_link->preferred_interval_ = display_link->min_interval_;
 
