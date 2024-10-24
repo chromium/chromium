@@ -19812,25 +19812,22 @@
             ]
         }
     ],
-    "ReportEventTimingAtVisibilityChange": [
+    "ReportCertificateErrors": [
         {
             "platforms": [
                 "android",
                 "chromeos",
-                "chromeos_lacros",
                 "fuchsia",
                 "linux",
                 "mac",
-                "windows",
-                "android_webview",
-                "android_weblayer"
+                "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReportEventTimingAtVisibilityChange"
-                    ]
+                    "name": "ShowAndPossiblySend",
+                    "params": {
+                        "sendingThreshold": "1.0"
+                    }
                 }
             ]
         }

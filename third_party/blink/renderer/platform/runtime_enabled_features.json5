@@ -3552,7 +3552,7 @@
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
-      status: "experimental",
+      status: "stable",
     },
     {
       // TODO(crbug.com/1500633): Remove this flag when the new CursorAnchorInfo
