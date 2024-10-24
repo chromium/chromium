@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
+
 // The location bar lens overlay entrypoint UIButton.
-@interface LensOverlayEntrypointButton : UIButton
+@interface LensOverlayEntrypointButton : ExtendedTouchTargetButton
 
 - (instancetype)init;
 
