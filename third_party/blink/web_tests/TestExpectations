@@ -2698,9 +2698,6 @@ crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
 crbug.com/368060001 [ Mac15-arm64 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
 crbug.com/368060001 [ Mac15 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
-crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
-crbug.com/367497041 [ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
-crbug.com/367497041 [ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/create.tentative.https.html [ Failure Timeout ]
 crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
 crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
@@ -8229,3 +8226,6 @@ crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/htm
 # Gardener 2024-10-23
 crbug.com/375006417 [ Linux ] external/wpt/fledge/tentative/trusted-scoring-signals.https.window.html?50-last [ Failure Pass Timeout ]
 
+# Gardener 2024-10-24
+# Platform specific failure expectations were previosly added after a wpt roll for crbug.com/367497041
+crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
