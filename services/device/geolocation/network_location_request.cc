@@ -101,6 +101,11 @@ void RecordUmaNetworkLocationRequestSource(
                                 network_location_request_source);
 }
 
+void RecordUmaAccuracy(int accuracy) {
+  base::UmaHistogramCounts1M("Geolocation.NetworkLocationRequest.Accuracy",
+                             accuracy);
+}
+
 // Local functions
 
 // Returns a URL for a request to the Google Maps geolocation API. If the
@@ -520,6 +525,7 @@ mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
   std::optional<double> accuracy = response_body.FindDouble(kAccuracyString);
   if (accuracy) {
     position->accuracy = *accuracy;
+    RecordUmaAccuracy(static_cast<int>(*accuracy));
   }
 
   return position;

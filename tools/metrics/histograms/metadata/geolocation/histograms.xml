@@ -226,6 +226,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.NetworkLocationRequest.Accuracy" units="meter"
+    expires_after="2026-10-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the accuracy value of a valid Geoposition from the
+    NetworkLocationProvider
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.NetworkLocationRequest.Event"
     enum="NetworkLocationRequestEvent" expires_after="2025-03-09">
   <owner>mattreynolds@chromium.org</owner>
