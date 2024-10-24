@@ -169,7 +169,8 @@ public class SamsungSelectionActionMenuHelper {
         for (int i = 0; i < supportedActivities.size(); i++) {
             ResolveInfo resolveInfo = supportedActivities.get(i);
             if (resolveInfo.activityInfo == null
-                    || !splitTextManagerApps.contains(resolveInfo.activityInfo.packageName)) {
+                    || (!splitTextManagerApps.contains(resolveInfo.activityInfo.packageName)
+                            && !splitTextManagerApps.contains(resolveInfo.activityInfo.name))) {
                 continue;
             }
             updatedSupportedItems.add(resolveInfo);
@@ -178,7 +179,7 @@ public class SamsungSelectionActionMenuHelper {
     }
 
     public static boolean shouldUseSamsungMenuItemOrdering() {
-        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && isSamsungDevice()
                 && ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
     }
@@ -204,7 +205,8 @@ public class SamsungSelectionActionMenuHelper {
 
     public static boolean isManageAppsSupported() {
         if (!isSamsungDevice()
-                || Build.VERSION.SDK_INT != Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM
                 || !ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)) {
             return false;
         }
