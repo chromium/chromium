@@ -1870,7 +1870,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   // If PaintCanvas cannot be get from the new layer bridge, revert the
   // replacement.
   CanvasResourceProvider* new_provider =
-      canvas2d_bridge_->GetOrCreateResourceProvider();
+      GetOrCreateCanvasResourceProviderFor2DContext();
   if (!new_provider) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
@@ -1908,10 +1908,83 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     if (bridge == nullptr) {
       return nullptr;
     }
-    return bridge->GetOrCreateResourceProvider();
+    return GetOrCreateCanvasResourceProviderFor2DContext();
   }
 
   return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(hint);
+}
+
+CanvasResourceProvider*
+HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext() {
+  CanvasResourceProvider* resource_provider = ResourceProvider();
+
+  if (context_lost()) {
+    DCHECK(!resource_provider);
+    return nullptr;
+  }
+
+  if (resource_provider && resource_provider->IsValid()) {
+    return resource_provider;
+  }
+
+  // Restore() is tried at most four times in two seconds to recreate the
+  // ResourceProvider before the final attempt, in which a new
+  // Canvas2DLayerBridge is created along with its resource provider.
+
+  bool want_acceleration = ShouldTryToUseGpuRaster();
+  RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
+                                                   : RasterModeHint::kPreferCPU;
+
+  CanvasHibernationHandler& hibernation_handler =
+      canvas2d_bridge_->GetHibernationHandler();
+  // Re-creation will happen through Restore().
+  // If the Canvas2DLayerBridge has just been created, possibly due to failed
+  // attempts of Restore(), the layer would not exist, therefore, it will not
+  // fall through this clause to try Restore() again
+  if (CcLayer() && adjusted_hint == RasterModeHint::kPreferGPU &&
+      !hibernation_handler.IsHibernating()) {
+    return nullptr;
+  }
+
+  // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
+  // circular callstack.
+  resource_provider = GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
+  if (!resource_provider || !resource_provider->IsValid()) {
+    return nullptr;
+  }
+
+  if (!hibernation_handler.IsHibernating()) {
+    return resource_provider;
+  }
+
+  if (resource_provider->IsAccelerated()) {
+    Canvas2DLayerBridge::ReportHibernationEvent(
+        Canvas2DLayerBridge::kHibernationEndedNormally);
+  } else {
+    if (!IsPageVisible()) {
+      Canvas2DLayerBridge::ReportHibernationEvent(
+          Canvas2DLayerBridge::
+              kHibernationEndedWithSwitchToBackgroundRendering);
+    } else {
+      Canvas2DLayerBridge::ReportHibernationEvent(
+          Canvas2DLayerBridge::kHibernationEndedWithFallbackToSW);
+    }
+  }
+
+  PaintImageBuilder builder = PaintImageBuilder::WithDefault();
+  builder.set_image(hibernation_handler.GetImage(),
+                    PaintImage::GetNextContentId());
+  builder.set_id(PaintImage::GetNextId());
+  resource_provider->RestoreBackBuffer(builder.TakePaintImage());
+  resource_provider->SetRecorder(hibernation_handler.ReleaseRecorder());
+  // The hibernation image is no longer valid, clear it.
+  hibernation_handler.Clear();
+  DCHECK(!hibernation_handler.IsHibernating());
+
+  // shouldBeDirectComposited() may have changed.
+  SetNeedsCompositingUpdate();
+
+  return resource_provider;
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::GetTransparentImage() {

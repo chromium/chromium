@@ -46,10 +46,6 @@ namespace blink {
 
 namespace {
 
-void ReportHibernationEvent(Canvas2DLayerBridge::HibernationEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
-}
-
 // TODO(crbug.com/40280152): Remove this method when no longer used.
 gpu::ContextSupport* GetContextSupport() {
   if (!SharedGpuContext::ContextProviderWrapper() ||
@@ -160,74 +156,6 @@ void Canvas2DLayerBridge::Hibernate() {
       context_support->SetAggressivelyFreeResources(true);
     }
   }
-}
-
-CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
-  CanvasResourceProvider* resource_provider =
-      resource_host_->ResourceProvider();
-
-  if (resource_host_->context_lost()) {
-    DCHECK(!resource_provider);
-    return nullptr;
-  }
-
-  if (resource_provider && resource_provider->IsValid()) {
-    return resource_provider;
-  }
-
-  // Restore() is tried at most four times in two seconds to recreate the
-  // ResourceProvider before the final attempt, in which a new
-  // Canvas2DLayerBridge is created along with its resource provider.
-
-  bool want_acceleration = resource_host_->ShouldTryToUseGpuRaster();
-  RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
-                                                   : RasterModeHint::kPreferCPU;
-
-  // Re-creation will happen through Restore().
-  // If the Canvas2DLayerBridge has just been created, possibly due to failed
-  // attempts of Restore(), the layer would not exist, therefore, it will not
-  // fall through this clause to try Restore() again
-  if (resource_host_->CcLayer() &&
-      adjusted_hint == RasterModeHint::kPreferGPU &&
-      !hibernation_handler_.IsHibernating()) {
-    return nullptr;
-  }
-
-  // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
-  // circular callstack from HTMLCanvasElement.
-  resource_provider =
-      resource_host_->GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
-  if (!resource_provider || !resource_provider->IsValid())
-    return nullptr;
-
-  if (!hibernation_handler_.IsHibernating()) {
-    return resource_provider;
-  }
-
-  if (resource_provider->IsAccelerated()) {
-    ReportHibernationEvent(kHibernationEndedNormally);
-  } else {
-    if (!resource_host_->IsPageVisible()) {
-      ReportHibernationEvent(kHibernationEndedWithSwitchToBackgroundRendering);
-    } else {
-      ReportHibernationEvent(kHibernationEndedWithFallbackToSW);
-    }
-  }
-
-  PaintImageBuilder builder = PaintImageBuilder::WithDefault();
-  builder.set_image(hibernation_handler_.GetImage(),
-                    PaintImage::GetNextContentId());
-  builder.set_id(PaintImage::GetNextId());
-  resource_provider->RestoreBackBuffer(builder.TakePaintImage());
-  resource_provider->SetRecorder(hibernation_handler_.ReleaseRecorder());
-  // The hibernation image is no longer valid, clear it.
-  hibernation_handler_.Clear();
-  DCHECK(!hibernation_handler_.IsHibernating());
-
-  // shouldBeDirectComposited() may have changed.
-  resource_host_->SetNeedsCompositingUpdate();
-
-  return resource_provider;
 }
 
 void Canvas2DLayerBridge::InitiateHibernationIfNecessary() {

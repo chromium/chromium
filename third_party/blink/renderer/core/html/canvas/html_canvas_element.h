@@ -330,6 +330,8 @@ class CORE_EXPORT HTMLCanvasElement final
  private:
   void Dispose();
 
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderFor2DContext();
+
   void ColorSchemeMayHaveChanged();
 
   void RecordIdentifiabilityMetric(IdentifiableSurface surface,

@@ -28,12 +28,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 class CanvasResourceHost;
-class CanvasResourceProvider;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
@@ -62,7 +62,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
     kMaxValue = kHibernationAbortedBecauseNoSurface,
   };
 
-  CanvasResourceProvider* GetOrCreateResourceProvider();
   void InitiateHibernationIfNecessary();
 
   // Allow access to the hibernation handler while Canvas2DLayerBridge is being
@@ -70,6 +69,11 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   // TODO(crbug.com/40280152): Eliminate Canvas2DLayerBridge entirely.
   CanvasHibernationHandler& GetHibernationHandler() {
     return hibernation_handler_;
+  }
+
+  static void ReportHibernationEvent(
+      Canvas2DLayerBridge::HibernationEvent event) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
   }
 
  private:
