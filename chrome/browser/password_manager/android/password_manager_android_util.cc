@@ -341,11 +341,6 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                            static_cast<int>(kOff));
 }
 
-bool EmptyProfileStore(PrefService* pref_service) {
-  return pref_service->GetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase);
-}
-
 std::string_view GetAccessLossWarningTypeName(
     PasswordAccessLossWarningType warning_type) {
   switch (warning_type) {
@@ -434,9 +429,23 @@ void SetUsesSplitStoresAndUPMForLocal(
 
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
     PrefService* pref_service) {
-  // No warning should be displayed to the users, who don't have any passwords
-  // in the profile store.
-  if (EmptyProfileStore(pref_service)) {
+  bool is_empty_login_db_pref_default =
+      pref_service
+          ->FindPreference(
+              password_manager::prefs::kEmptyProfileStoreLoginDatabase)
+          ->IsDefaultValue();
+  // No warning should be shown if we don't yet know whether the user has
+  // passwords or not.
+  if (is_empty_login_db_pref_default) {
+    return PasswordAccessLossWarningType::kNone;
+  }
+  bool empty_login_database = pref_service->GetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase);
+  // No warning should be shown if the user doesn't have any passwords.
+  // TODO(crbug.com/375376807): The users who are actively using old UPM have
+  // had their passwords removed from the login database, but might still need
+  // to see warnings.
+  if (empty_login_database) {
     return PasswordAccessLossWarningType::kNone;
   }
 
