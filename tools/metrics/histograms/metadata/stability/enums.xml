@@ -529,6 +529,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="EFH_NO_BACKGROUND_HOST_FOR_FRAME"/>
   <int value="32" label="LEGACY_IPC_MISMATCH"/>
   <int value="33" label="ER_SW_INVALID_LAZY_BACKGROUND_PARAM"/>
+  <int value="34" label="SWH_BAD_WORKER_THREAD_ID"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

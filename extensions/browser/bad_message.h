@@ -71,10 +71,11 @@ enum BadMessageReason {
   EFH_NO_BACKGROUND_HOST_FOR_FRAME = 31,
   LEGACY_IPC_MISMATCH = 32,
   ER_SW_INVALID_LAZY_BACKGROUND_PARAM = 33,
+  SWH_BAD_WORKER_THREAD_ID = 34,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
-  // "python tools/metrics/histograms/update_bad_message_reasons.py"
+  // "vpython3 tools/metrics/histograms/update_bad_message_reasons.py"
   BAD_MESSAGE_MAX
 };
 

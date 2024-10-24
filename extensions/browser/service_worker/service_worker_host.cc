@@ -135,6 +135,14 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     return;
   }
 
+  // Ensure the worker thread ID is not the main thread ID as that is
+  // invalid input.
+  if (worker_thread_id == kMainThreadId) {
+    bad_message::ReceivedBadMessage(render_process_host_,
+                                    bad_message::SWH_BAD_WORKER_THREAD_ID);
+    return;
+  }
+
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);
   if (!registry->enabled_extensions().GetByID(extension_id)) {
