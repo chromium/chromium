@@ -217,6 +217,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   // the UI accordingly.
   private onRemoveCommandPairButtonClick_(
       e: DomRepeatEvent<FaceGazeCommandPair>): void {
+    this.faceGazeActionsAlert_ = '';
     const removedCommandPair: FaceGazeCommandPair = e.model.item;
     this.removeCommandPairFromPref_(removedCommandPair);
 
@@ -226,6 +227,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
         removeCommandPairIndex, 1);
 
+    this.faceGazeActionsAlert_ = this.i18n(
+        'faceGazeActionsRemovedActionAlert',
+        this.i18n(
+            FaceGazeUtils.getMacroDisplayTextName(removedCommandPair.action)));
+
     // If there is one, set focus to the remove button of the next command pair.
     // Otherwise, set focus to the action button.
     if (this.commandPairs_[removeCommandPairIndex]) {
@@ -233,7 +239,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
           this.shadowRoot!.querySelectorAll<HTMLElement>('.command-pair');
       const nextRemoveButton =
           commandPairElements[removeCommandPairIndex]
-              .shadowRoot!.querySelector<CrButtonElement>('.icon-clear');
+              .querySelector<CrButtonElement>('.icon-clear');
       nextRemoveButton!.focus();
     } else {
       const addActionButton =

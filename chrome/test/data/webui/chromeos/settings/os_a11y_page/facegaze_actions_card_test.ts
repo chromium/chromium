@@ -4,6 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
+import {getDeepActiveElement} from '//resources/js/util.js';
 import {AddDialogPage, AssignedKeyCombo, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActionsCardElement, FaceGazeAddActionDialogElement, FaceGazeCommandPair, KeyCombination} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrIconButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
@@ -57,6 +58,10 @@ suite('<facegaze-actions-card>', () => {
   async function addAndRemoveCommandPair(commandPair: FaceGazeCommandPair) {
     await openAddDialogAndFireCommandPairAddedEvent(commandPair);
     flush();
+    await removeCommandPair(commandPair);
+  }
+
+  async function removeCommandPair(commandPair: FaceGazeCommandPair) {
     const reassignRow = assertActionSettingsRow(commandPair);
     const removeButton =
         reassignRow.querySelector<CrIconButtonElement>('.icon-clear');
@@ -293,6 +298,68 @@ suite('<facegaze-actions-card>', () => {
 
     alert = getAlert();
     assertFalse(!!alert);
+  });
+
+  test('actions alert updates appropriately when action removed', async () => {
+    await initPage();
+
+    let alert = getAlert();
+    assertFalse(!!alert);
+
+    const expectedCommandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    await openAddDialogAndFireCommandPairAddedEvent(expectedCommandPair);
+
+    const nextCommandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_RIGHT, FacialGesture.JAW_OPEN);
+    await openAddDialogAndFireCommandPairAddedEvent(nextCommandPair);
+    const dialog = getDialog();
+    dialog.$.dialog.close();
+
+    await removeCommandPair(expectedCommandPair);
+
+    alert = getAlert();
+    assertTrue(!!alert);
+    assertEquals(alert!.innerText, 'Removed action Left-click the mouse');
+
+    const addButton = getAddButton();
+    assertFalse(addButton.disabled);
+    addButton.click();
+    flush();
+
+    alert = getAlert();
+    assertFalse(!!alert);
+  });
+
+  test('actions moves focus appropriately when action removed', async () => {
+    await initPage();
+
+    const expectedCommandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    await openAddDialogAndFireCommandPairAddedEvent(expectedCommandPair);
+
+    const nextCommandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_RIGHT, FacialGesture.JAW_OPEN);
+    await openAddDialogAndFireCommandPairAddedEvent(nextCommandPair);
+    const dialog = getDialog();
+    dialog.$.dialog.close();
+
+    await removeCommandPair(expectedCommandPair);
+
+    const reassignRow = assertActionSettingsRow(nextCommandPair);
+    const removeButton = reassignRow.querySelector<HTMLElement>('.icon-clear');
+    assertTrue(!!removeButton);
+    let focusedElement = getDeepActiveElement();
+    assertTrue(!!focusedElement);
+    assertEquals(removeButton, focusedElement);
+
+    removeButton!.click();
+    flush();
+
+    const addButton = getAddButton();
+    focusedElement = getDeepActiveElement();
+    assertTrue(!!focusedElement);
+    assertEquals(addButton, focusedElement);
   });
 
   test(
