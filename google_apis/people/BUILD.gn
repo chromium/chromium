@@ -8,6 +8,8 @@ static_library("people") {
   sources = [
     "people_api_request_types.cc",
     "people_api_request_types.h",
+    "people_api_response_types.cc",
+    "people_api_response_types.h",
   ]
 
   public_deps = [ "//base" ]
@@ -18,7 +20,10 @@ static_library("people") {
 source_set("people_unittest_sources") {
   testonly = true
 
-  sources = [ "people_api_request_types_unittest.cc" ]
+  sources = [
+    "people_api_request_types_unittest.cc",
+    "people_api_response_types_unittest.cc",
+  ]
 
   deps = [
     ":people",
