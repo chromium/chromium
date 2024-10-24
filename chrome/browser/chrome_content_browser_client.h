@@ -1092,6 +1092,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
 #endif
 
+  bool ShouldDispatchPagehideDuringCommit(
+      content::BrowserContext* browser_context,
+      const GURL& destination_url) override;
+
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
 
