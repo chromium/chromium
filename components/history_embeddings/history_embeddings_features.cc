@@ -175,6 +175,10 @@ const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
                                                 "EnableSidePanel",
                                                 false);
 
+const base::FeatureParam<bool> kTrimAfterHostInResults(&kHistoryEmbeddings,
+                                                       "TrimAfterHostInResults",
+                                                       false);
+
 const base::FeatureParam<int> kMaxAnswererContextUrlCount(
     &kHistoryEmbeddings,
     "MaxAnswererContextUrlCount",

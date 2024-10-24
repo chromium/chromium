@@ -32,7 +32,7 @@
   color: var(--cr-secondary-text-color);
   font-size: 11px;
   line-height: 16px;
-  margin-block-end: 16px;
+  margin-block-end: 24px;
   padding: 0 16px;
 }
 
@@ -69,7 +69,7 @@ cr-history-embeddings {
   --cr-history-embeddings-loading-padding: 8px 16px 6px 16px;
   --cr-history-embeddings-url-list-item-padding: 4px 16px;
   align-self: center;
-  margin: 0 0 8px 8px;
+  margin: 0 0 16px 8px;
   max-width: var(--cluster-max-width);
   width: calc(100% - 8px);
 }

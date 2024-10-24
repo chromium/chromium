@@ -98,6 +98,8 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     test('DisplaysHeading', async () => {
       loadTimeData.overrideValues({
         historyEmbeddingsHeading: 'searched for "$1"',
+        historyEmbeddingsWithAnswersResultsHeading:
+            'searched with answers enabled',
         historyEmbeddingsHeadingLoading: 'loading results for "$1"',
       });
       element.searchQuery = 'my query';
@@ -107,7 +109,12 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           'loading results for "my query"', headingEl.textContent!.trim());
       await handler.whenCalled('search');
       await flushTasks();
-      assertEquals('searched for "my query"', headingEl.textContent!.trim());
+      if (enableAnswers) {
+        assertEquals(
+            'searched with answers enabled', headingEl.textContent!.trim());
+      } else {
+        assertEquals('searched for "my query"', headingEl.textContent!.trim());
+      }
     });
 
     test('DisplaysLoading', async () => {
@@ -673,6 +680,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       if (!enableAnswers) {
         return;
       }
+      loadTimeData.overrideValues({
+        historyEmbeddingsAnswerHeading: 'Answer section',
+        historyEmbeddingsAnswerLoadingHeading: 'Loading answer...',
+      });
       const answerSectionElement =
           element.shadowRoot!.querySelector<HTMLElement>('.answer-section');
       assertTrue(!!answerSectionElement);
@@ -690,6 +701,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertTrue(
           isVisible(answerSectionElement),
           'Answer should be visible to show loading state.');
+      const headingEl =
+          answerSectionElement.querySelector<HTMLElement>('.heading');
+      assertTrue(!!headingEl);
+      assertEquals('Loading answer...', headingEl.innerText.trim());
 
       element.searchResultChangedForTesting({
         query: 'some query',
@@ -701,6 +716,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertTrue(
           isVisible(answerSectionElement),
           'Answer should be visible to show answer.');
+      assertEquals('Answer section', headingEl.innerText.trim());
 
       element.searchQuery = 'new query';
       await flushTasks();
@@ -729,6 +745,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       });
       await flushTasks();
       assertTrue(isVisible(answerElement));
+      assertFalse(answerElement.hasAttribute('is-error'));
       assertEquals('some answer', answerElement!.innerText);
     });
 
@@ -856,9 +873,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       const errorEl = element.shadowRoot!.querySelector<HTMLElement>('.answer');
       assertTrue(!!errorEl);
       assertTrue(isVisible(errorEl));
+      assertTrue(errorEl.hasAttribute('is-error'));
       assertEquals('Sorry, I can\'t help you with that.', errorEl.innerText);
 
-      await updateAnswerStatus(AnswerStatus.kExecutionCanceled);
+      await updateAnswerStatus(AnswerStatus.kExecutionFailure);
       assertTrue(isVisible(errorEl));
       assertEquals(
           'Something went wrong. Please try again later.', errorEl.innerText);
