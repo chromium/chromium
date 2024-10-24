@@ -108,12 +108,17 @@ void CreatePlatformShortcuts_WithUseAdHocSigningForWebAppShims(
     bool use_ad_hoc_signing_for_web_app_shims) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-
-  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
-                                         &shortcut_info,
-                                         use_ad_hoc_signing_for_web_app_shims);
-  bool created_shortcuts =
-      shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+  bool created_shortcuts = false;
+  {
+    WebAppShortcutCreator shortcut_creator(
+        app_data_path, GetChromeAppsFolder(), &shortcut_info,
+        use_ad_hoc_signing_for_web_app_shims);
+    created_shortcuts =
+        shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+    // Make sure WebAppShortcutCreator is destroyed before invoking the
+    // callback, as invoking the callback might for example invalidate the
+    // `shortcut_info` reference that is held by `shortcut_creator`.
+  }
   std::move(callback).Run(created_shortcuts);
 }
 
