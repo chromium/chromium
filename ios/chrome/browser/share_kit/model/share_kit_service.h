@@ -30,9 +30,8 @@ class ShareKitService : public KeyedService {
   // Initiates the share group flow for the given `config`.
   virtual void ShareGroup(ShareKitShareGroupConfiguration* config) = 0;
 
-  // TODO(crbug.com/373825718): Make it pure virtual.
   // Initiates the flow to manage the group, using `config`.
-  virtual void ManageGroup(ShareKitManageConfiguration* config);
+  virtual void ManageGroup(ShareKitManageConfiguration* config) = 0;
 
   // Initiates the flow to join the group, using `config`.
   virtual void JoinGroup(ShareKitJoinConfiguration* config) = 0;

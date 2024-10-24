@@ -7,5 +7,3 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
-
-void ShareKitService::ManageGroup(ShareKitManageConfiguration* config) {}
