@@ -9,9 +9,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -1099,6 +1101,82 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
         }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
+}
+
+TEST_F(TabGroupSyncServiceTest, UpdateTabTitleForSharedTabGroup) {
+  std::u16string title_1 = u"title1";
+
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
+  auto local_tab_id = test::GenerateRandomTabID();
+  tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id, u"title1",
+                                  GURL("www.google.com"), std::nullopt);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(2u, group->saved_tabs().size());
+  auto tab = group->saved_tabs()[1];
+  EXPECT_EQ(title_1, tab.title());
+
+  std::string title = "alternative";
+  std::u16string u16_title = base::UTF8ToUTF16(title);
+  GURL new_url = GURL("https://www.example.com");
+  optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
+  page_entities_metadata.set_alternative_title(title);
+  optimization_guide::proto::Any any;
+  any.set_type_url(page_entities_metadata.GetTypeName());
+  page_entities_metadata.SerializeToString(any.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any);
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  new_url, optimization_guide::proto::PAGE_ENTITIES,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(metadata)));
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(u"title2");
+  tab_builder.SetURL(new_url);
+  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id,
+                                     tab_builder);
+  tab = tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[1];
+  EXPECT_EQ(tab.url(), new_url);
+  EXPECT_EQ(tab.title(), u16_title);
+}
+
+TEST_F(TabGroupSyncServiceTest, FailToGetTitleForSharedTabGroup) {
+  std::u16string title_1 = u"title1";
+
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
+  auto local_tab_id = test::GenerateRandomTabID();
+  tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id, u"title1",
+                                  GURL("www.google.com"), std::nullopt);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(2u, group->saved_tabs().size());
+  auto tab = group->saved_tabs()[1];
+  EXPECT_EQ(title_1, tab.title());
+
+  GURL new_url = GURL("http://www.example.com/abc");
+  optimization_guide::OptimizationMetadata metadata;
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  new_url, optimization_guide::proto::PAGE_ENTITIES,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(u"title2");
+  tab_builder.SetURL(new_url);
+  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id,
+                                     tab_builder);
+  tab = tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[1];
+  EXPECT_EQ(tab.url(), new_url);
+  EXPECT_EQ(tab.title(), u"example.com/abc");
 }
 
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {

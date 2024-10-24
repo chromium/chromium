@@ -130,7 +130,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void AddTab(const LocalTabGroupID& group_id,
                       const LocalTabID& tab_id,
                       const std::u16string& title,
-                      GURL url,
+                      const GURL& url,
                       std::optional<size_t> position) = 0;
   virtual void UpdateTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id,

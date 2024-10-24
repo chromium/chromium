@@ -94,6 +94,12 @@ SavedTabGroupTabBuilder::SavedTabGroupTabBuilder() = default;
 
 SavedTabGroupTabBuilder::~SavedTabGroupTabBuilder() = default;
 
+SavedTabGroupTabBuilder::SavedTabGroupTabBuilder(
+    const SavedTabGroupTabBuilder&) = default;
+
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::operator=(
+    const SavedTabGroupTabBuilder&) = default;
+
 SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetURL(const GURL& url) {
   url_ = url;
   has_url_ = true;

@@ -179,9 +179,9 @@ class SavedTabGroupTabBuilder {
   SavedTabGroupTabBuilder();
   ~SavedTabGroupTabBuilder();
 
-  // Disallow copy/assign.
-  SavedTabGroupTabBuilder(const SavedTabGroupTabBuilder&) = delete;
-  SavedTabGroupTabBuilder& operator=(const SavedTabGroupTabBuilder&) = delete;
+  // Allow copy/assign.
+  SavedTabGroupTabBuilder(const SavedTabGroupTabBuilder&);
+  SavedTabGroupTabBuilder& operator=(const SavedTabGroupTabBuilder&);
 
   SavedTabGroupTabBuilder& SetURL(const GURL& url);
   SavedTabGroupTabBuilder& SetTitle(const std::u16string& title);

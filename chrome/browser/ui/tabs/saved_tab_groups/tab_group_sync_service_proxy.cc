@@ -89,7 +89,7 @@ void TabGroupSyncServiceProxy::UpdateGroupPosition(
 void TabGroupSyncServiceProxy::AddTab(const LocalTabGroupID& group_id,
                                       const LocalTabID& tab_id,
                                       const std::u16string& title,
-                                      GURL url,
+                                      const GURL& url,
                                       std::optional<size_t> position) {
   std::optional<SavedTabGroup> group = GetGroup(group_id);
   CHECK(group.has_value());

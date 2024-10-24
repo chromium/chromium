@@ -51,7 +51,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,
               const std::u16string& title,
-              GURL url,
+              const GURL& url,
               std::optional<size_t> position) override;
   void UpdateTab(const LocalTabGroupID& group_id,
                  const LocalTabID& tab_id,

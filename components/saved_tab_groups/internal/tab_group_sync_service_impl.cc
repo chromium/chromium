@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
@@ -60,6 +61,31 @@ void OnCanApplyOptimizationCompleted(
   std::move(callback).Run(std::move(url_restriction));
 }
 
+void OnPageEntitiesResponseReceived(
+    const GURL& url,
+    base::OnceCallback<void(const std::u16string&)> callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+
+  if (metadata.any_metadata().has_value()) {
+    std::optional<optimization_guide::proto::PageEntitiesMetadata>
+        page_entities_metadata = metadata.ParsedMetadata<
+            optimization_guide::proto::PageEntitiesMetadata>();
+    if (page_entities_metadata.has_value() &&
+        !page_entities_metadata->alternative_title().empty()) {
+      std::move(callback).Run(
+          base::ASCIIToUTF16(page_entities_metadata->alternative_title()));
+      return;
+    }
+  }
+
+  std::move(callback).Run(std::u16string());
+}
+
 }  // namespace
 
 TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
@@ -82,7 +108,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
   model_->AddObserver(this);
   if (opt_guide_) {
     opt_guide_->RegisterOptimizationTypes(
-        {optimization_guide::proto::SAVED_TAB_GROUP});
+        {optimization_guide::proto::PAGE_ENTITIES,
+         optimization_guide::proto::SAVED_TAB_GROUP});
   }
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
@@ -261,18 +288,18 @@ void TabGroupSyncServiceImpl::UpdateGroupPosition(
 void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                                      const LocalTabID& tab_id,
                                      const std::u16string& title,
-                                     GURL url,
+                                     const GURL& url,
                                      std::optional<size_t> position) {
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
   if (tab) {
-    LOG(WARNING) << __func__ << " Called for a tab that already exists";
+    DVLOG(1) << __func__ << " Called for a tab that already exists";
     return;
   }
 
@@ -294,13 +321,13 @@ void TabGroupSyncServiceImpl::UpdateTab(
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const auto* tab = group->GetTab(tab_id);
   if (!tab) {
-    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -308,11 +335,24 @@ void TabGroupSyncServiceImpl::UpdateTab(
   UpdateAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
-  SavedTabGroupTab updated_tab = tab_builder.Build(*tab);
+  bool need_update_title = group->is_shared_tab_group() &&
+                           !tab_builder.title().empty() &&
+                           tab_builder.url().SchemeIsHTTPOrHTTPS();
 
+  SavedTabGroupTabBuilder new_builder = tab_builder;
+  if (need_update_title) {
+    new_builder.SetTitle(GetTitleFromUrlForDisplay(tab_builder.url()));
+  }
+  SavedTabGroupTab updated_tab = new_builder.Build(*tab);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
+  if (need_update_title) {
+    GetPageTitle(tab_builder.url(),
+                 base::BindOnce(&TabGroupSyncServiceImpl::UpdateTabTitle,
+                                weak_ptr_factory_.GetWeakPtr(), group_id,
+                                tab_id, tab_builder.url()));
+  }
 }
 
 void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
@@ -320,13 +360,13 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   auto* tab = group->GetTab(tab_id);
   if (!tab) {
-    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -343,13 +383,13 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   auto* tab = group->GetTab(tab_id);
   if (!tab) {
-    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -364,13 +404,13 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
   VLOG(2) << __func__;
   const SavedTabGroup* group = model_->Get(group_id);
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
   const SavedTabGroupTab* tab = group->GetTab(tab_id);
   if (!tab) {
-    LOG(WARNING) << __func__ << " Called for a tab that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
     return;
   }
 
@@ -573,7 +613,7 @@ void TabGroupSyncServiceImpl::RecordTabGroupEvent(
   }
 
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
@@ -929,13 +969,13 @@ void TabGroupSyncServiceImpl::LogEvent(
     LocalTabGroupID group_id,
     const std::optional<LocalTabID>& tab_id) {
   if (!metrics_logger_) {
-    LOG(WARNING) << __func__ << " Metrics logger doesn't exist";
+    DVLOG(1) << __func__ << " Metrics logger doesn't exist";
     return;
   }
 
   const auto* group = model_->Get(group_id);
   if (!group) {
-    LOG(WARNING) << __func__ << " Called for a group that doesn't exist";
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
     return;
   }
 
@@ -946,6 +986,53 @@ void TabGroupSyncServiceImpl::LogEvent(
   event_details.local_tab_group_id = group_id;
   event_details.local_tab_id = tab_id;
   metrics_logger_->LogEvent(event_details, group, tab);
+}
+
+void TabGroupSyncServiceImpl::GetPageTitle(const GURL& url,
+                                           GetTitleCallback callback) {
+  if (!opt_guide_) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+
+  opt_guide_->CanApplyOptimization(
+      url, optimization_guide::proto::PAGE_ENTITIES,
+      base::BindOnce(&OnPageEntitiesResponseReceived, url,
+                     std::move(callback)));
+}
+
+void TabGroupSyncServiceImpl::UpdateTabTitle(const LocalTabGroupID& group_id,
+                                             const LocalTabID& tab_id,
+                                             const GURL& url,
+                                             const std::u16string& title) {
+  if (title.empty()) {
+    return;
+  }
+
+  auto* group = model_->Get(group_id);
+  if (!group) {
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
+    return;
+  }
+
+  const auto* tab = group->GetTab(tab_id);
+  if (!tab) {
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
+    return;
+  }
+
+  // Tab URL has changed, ignore updating the title.
+  if (tab->url() != url) {
+    return;
+  }
+
+  if (tab->title() == title) {
+    return;
+  }
+
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(title);
+  model_->UpdateTabInGroup(group->saved_guid(), tab_builder.Build(*tab));
 }
 
 }  // namespace tab_groups

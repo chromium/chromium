@@ -134,7 +134,7 @@ void FakeTabGroupSyncService::UpdateGroupPosition(
 void FakeTabGroupSyncService::AddTab(const LocalTabGroupID& group_id,
                                      const LocalTabID& tab_id,
                                      const std::u16string& title,
-                                     GURL url,
+                                     const GURL& url,
                                      std::optional<size_t> position) {
   std::optional<int> index = GetIndexOf(group_id);
   if (!index.has_value()) {

@@ -70,7 +70,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,
               const std::u16string& title,
-              GURL url,
+              const GURL& url,
               std::optional<size_t> position) override;
   void UpdateTab(const LocalTabGroupID& group_id,
                  const LocalTabID& tab_id,
@@ -215,6 +215,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void LogEvent(TabGroupEvent event,
                 LocalTabGroupID group_id,
                 const std::optional<LocalTabID>& tab_id = std::nullopt);
+
+  using GetTitleCallback = base::OnceCallback<void(const std::u16string&)>;
+  // Get the title on a given URL.
+  void GetPageTitle(const GURL& url, GetTitleCallback callback);
+
+  // Helper method to update title and URL for a tab in a group.
+  void UpdateTabTitle(const LocalTabGroupID& group_id,
+                      const LocalTabID& tab_id,
+                      const GURL& url,
+                      const std::u16string& title);
 
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
