@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -82,19 +81,19 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 // Represents a Payments customer id.
-const char kCustomerDataId[] = "deadbeef";
-const char kCustomerDataId2[] = "deadcafe";
+constexpr char kCustomerDataId[] = "deadbeef";
+constexpr char kCustomerDataId2[] = "deadcafe";
 
 // Unique client tags for the server data.
-const char kCard1ClientTag[] = "Y2FyZDHvv74=";
-const char kCustomerDataClientTag[] = "deadbeef";
-const char kCloudTokenDataClientTag[] = "token";
-const char kBankAccountClientTag[] = "payment_instrument:1234";
-const char kEwalletAccountClientTag[] = "payment_instrument:2345";
+constexpr char kCard1ClientTag[] = "Y2FyZDHvv74=";
+constexpr char kCustomerDataClientTag[] = "deadbeef";
+constexpr char kCloudTokenDataClientTag[] = "token";
+constexpr char kBankAccountClientTag[] = "payment_instrument:1234";
+constexpr char kEwalletAccountClientTag[] = "payment_instrument:2345";
 
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+constexpr auto kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
-const char kDefaultCacheGuid[] = "CacheGuid";
+constexpr char kDefaultCacheGuid[] = "CacheGuid";
 
 void ExtractAutofillWalletSpecificsFromDataBatch(
     std::unique_ptr<DataBatch> batch,
@@ -285,8 +284,7 @@ class AutofillWalletSyncBridgeTestBase {
  public:
   AutofillWalletSyncBridgeTestBase()
       : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {
-    // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
+    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
@@ -432,9 +430,9 @@ class AutofillWalletSyncBridgeTestBase {
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const os_crypt_async::Encryptor encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
@@ -448,15 +446,12 @@ class AutofillWalletSyncBridgeTestBase {
 class AutofillWalletSyncBridgeTest : public testing::Test,
                                      public AutofillWalletSyncBridgeTestBase {
  public:
-  AutofillWalletSyncBridgeTest() {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableCardBenefitsSync);
-  }
-
+  AutofillWalletSyncBridgeTest() = default;
   ~AutofillWalletSyncBridgeTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableCardBenefitsSync};
 };
 
 // The following 3 tests make sure client tags stay stable.
