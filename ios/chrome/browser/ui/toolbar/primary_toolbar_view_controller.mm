@@ -32,6 +32,11 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
+// TODO(crbug.com/374808149): Clean up the killswitch.
+BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
+             "PrimaryToolbarViewDidLoadUpdateViews",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 @interface PrimaryToolbarViewController ()
 
 // Redefined to be a PrimaryToolbarView.
@@ -177,6 +182,10 @@
     ]
                        withAction:@selector(updateViews:
                                       previousTraitCollection:)];
+    // TODO(crbug.com/374808149): Clean up the killswitch.
+    if (base::FeatureList::IsEnabled(kPrimaryToolbarViewDidLoadUpdateViews)) {
+      [self updateViews:self.view previousTraitCollection:nil];
+    }
   }
 }
 
