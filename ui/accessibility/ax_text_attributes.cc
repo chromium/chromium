@@ -22,7 +22,7 @@ void UpdateProperty(ax::mojom::IntAttribute attribute,
 void UpdateProperty(ax::mojom::FloatAttribute attribute,
                     const AXNodeData& node_data,
                     float* value) {
-  int maybe_value = node_data.GetFloatAttribute(attribute);
+  float maybe_value = node_data.GetFloatAttribute(attribute);
   if (maybe_value || node_data.HasFloatAttribute(attribute)) {
     *value = maybe_value;
   }
@@ -119,12 +119,13 @@ bool AXTextAttributes::operator!=(const AXTextAttributes& other) const {
 }
 
 bool AXTextAttributes::IsUnset() const {
-  return background_color == kUnsetValue && invalid_state == kUnsetValue &&
-         overline_style == kUnsetValue && strikethrough_style == kUnsetValue &&
-         text_position == kUnsetValue && font_size == kUnsetValue &&
-         font_weight == kUnsetValue && text_style == kUnsetValue &&
-         underline_style == kUnsetValue && font_family.length() == 0 &&
-         marker_types.size() == 0 && highlight_types.size() == 0;
+  return background_color == kUnsetValue && color == kUnsetValue &&
+         invalid_state == kUnsetValue && overline_style == kUnsetValue &&
+         strikethrough_style == kUnsetValue && text_position == kUnsetValue &&
+         font_size == kUnsetValue && font_weight == kUnsetValue &&
+         text_style == kUnsetValue && underline_style == kUnsetValue &&
+         font_family.length() == 0 && marker_types.size() == 0 &&
+         highlight_types.size() == 0;
 }
 
 bool AXTextAttributes::HasTextStyle(
