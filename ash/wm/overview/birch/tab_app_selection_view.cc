@@ -357,10 +357,15 @@ class UserFeedbackView : public views::BoxLayoutView {
   ~UserFeedbackView() override = default;
 
  private:
-  // TODO(crbug.com/374116757): Implement `OnThumbUpButtonPressed` and
-  // `OnThumbDownButtonPressed`.
-  void OnThumbUpButtonPressed() {}
-  void OnThumbDownButtonPressed() {}
+  void OnThumbUpButtonPressed() {
+    base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", true);
+  }
+
+  // TODO(crbug.com/374116757): Open user feedback dialog on thumb down
+  // button pressed.
+  void OnThumbDownButtonPressed() {
+    base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", false);
+  }
 };
 
 BEGIN_METADATA(UserFeedbackView)

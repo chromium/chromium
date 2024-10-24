@@ -1078,6 +1078,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.Coral.UserFeedback" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>conniekxu@chromium.org</owner>
+  <owner>cros-coral@google.com</owner>
+  <summary>
+    Record the thumbs up/thumbs down feedback for coral grouping suggestion from
+    the user. Emits true if the feedback is positive, false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Birch.Latency{Type}" units="ms" expires_after="2025-04-13">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
