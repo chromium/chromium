@@ -27,7 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -53,6 +54,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 public class SaveUpdateAddressProfilePromptTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
     private static final boolean NO_MIGRATION = false;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;
@@ -73,7 +75,6 @@ public class SaveUpdateAddressProfilePromptTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         SyncServiceFactory.setInstanceForTesting(mSyncService);

@@ -29,7 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -55,6 +56,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 /** Instrumentation tests for AutofillLocalCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillLocalCardEditorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
     @Rule
@@ -169,7 +171,6 @@ public class AutofillLocalCardEditorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mAutofillTestHelper = new AutofillTestHelper();
         mActionTester = new UserActionTester();
     }

@@ -83,7 +83,9 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @Before
     @Override
     public void setUpTest() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        // Mocks need to be initialized in the setup rather than before each test method.
+        MockitoAnnotations.openMocks(this);
+
         runOnUiThreadBlocking(
                 () -> {
                     PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);

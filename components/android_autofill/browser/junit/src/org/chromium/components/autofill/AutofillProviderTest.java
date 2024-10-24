@@ -35,8 +35,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -77,6 +78,7 @@ public class AutofillProviderTest {
     private int mDialogVirtualId;
     private SparseArray<VirtualViewFillInfo> mPrefillRequestInfos;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
@@ -111,7 +113,6 @@ public class AutofillProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mContext = Mockito.mock(Context.class);
         when(mContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
         when(mAutofillManager.isEnabled()).thenReturn(true);

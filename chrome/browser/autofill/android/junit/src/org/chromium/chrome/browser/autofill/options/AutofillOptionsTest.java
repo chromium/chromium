@@ -47,7 +47,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
@@ -92,6 +93,7 @@ public class AutofillOptionsTest {
     private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int USE_3P =
             RadioButtonGroupThirdPartyPreference.ThirdPartyOption.USE_OTHER_PROVIDER;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private UserPrefsJni mMockUserPrefsJni;
@@ -104,13 +106,10 @@ public class AutofillOptionsTest {
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
     private AutofillOptionsFragment mFragment;
-    private AutoCloseable mCloseableMocks;
     private FragmentScenario mScenario;
 
     @Before
     public void setUp() {
-        mCloseableMocks = MockitoAnnotations.openMocks(this);
-
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
@@ -135,7 +134,6 @@ public class AutofillOptionsTest {
         if (mScenario != null) {
             mScenario.close();
         }
-        mCloseableMocks.close();
     }
 
     @Test

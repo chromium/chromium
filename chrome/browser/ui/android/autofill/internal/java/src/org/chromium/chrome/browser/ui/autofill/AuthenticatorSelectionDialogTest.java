@@ -25,10 +25,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.autofill.AuthenticatorOptionsAdapter.AuthenticatorOptionViewHolder;
@@ -85,11 +87,11 @@ public class AuthenticatorSelectionDialogTest {
     private FakeModalDialogManager mModalDialogManager;
     private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
     private Resources mResources;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AuthenticatorSelectionDialog.Listener mAuthenticatorSelectedListener;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
         mAuthenticatorSelectionDialog =

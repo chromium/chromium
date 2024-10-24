@@ -29,7 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -50,6 +51,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 // TODO(b/309163597): Add Robolectric tests to test the local editor behavior.
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillLocalIbanEditorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
     @Rule
@@ -76,7 +78,6 @@ public class AutofillLocalIbanEditorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mAutofillTestHelper = new AutofillTestHelper();
     }
 
