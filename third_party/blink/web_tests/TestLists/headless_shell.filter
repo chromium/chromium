@@ -25,7 +25,6 @@ external/wpt/css/css-namespaces/*
 external/wpt/css/css-nesting/*
 external/wpt/css/css-parser-api/*
 external/wpt/css/css-rhythm/*
-external/wpt/css/css-scrollbars/*
 external/wpt/css/css-size-adjust/*
 external/wpt/css/css-sizing/*
 external/wpt/css/css-style-attr/*

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] scrollbar-color yellow blue on body overrides ::-webkit-scrollbar on scrollable area
-  assert_less_than: themed scrollWidth expected a number less than 200 but got 200
-Harness: the test ran to completion.

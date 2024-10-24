@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] scrollbar-width thin on the root overrides ::-webkit-scrollbar
-  assert_less_than: viewport has a scrollbar expected a number less than 800 but got 800
-Harness: the test ran to completion.
