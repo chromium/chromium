@@ -281,11 +281,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   // true, it means context is forced to be lost for testing purpose. Restore
   // the context.
   if (context_lost_mode_ == kSyntheticLostContext) {
-    // TODO(crbug.com/40280152): Eliminate this creation, which is superfluous
-    // with the below call.
-    Canvas2DLayerBridge* bridge = canvas()->GetOrCreateCanvas2DLayerBridge();
-    if (bridge &&
-        Host()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+    if (Host()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
