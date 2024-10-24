@@ -1862,7 +1862,10 @@ def FetchJsonFromURL(url):
   # Allow retry for 3 times for unexpected network error
   for i in range(3):
     try:
-      return json.loads(urllib.request.urlopen(url).read())
+      data = urllib.request.urlopen(url).read()
+      # Remove the potential XSSI prefix from JSON output
+      data = data.lstrip(b")]}',\n")
+      return json.loads(data)
     except urllib.request.HTTPError as e:
       print(f'urlopen {url} HTTPError: {e}')
     except json.JSONDecodeError as e:
@@ -1901,7 +1904,7 @@ def GetRevisionFromSourceTag(tag):
     # The commit message for version tag before M116 doesn't contains
     # Cr-Branched-From and Cr-Commit-Position message lines. However they might
     # exists in the parent commit.
-    source_url = SOURCE_TAG_URL % str(tag) + '^'
+    source_url = SOURCE_TAG_URL % (str(tag) + '^')
     data = FetchJsonFromURL(source_url)
     match = revision_regex.search(data.get('message', ''))
   if match:

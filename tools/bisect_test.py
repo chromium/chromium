@@ -670,7 +670,7 @@ class SnapshotBuildTest(BisectTestCase):
   '''
 
   @maybe_patch('urllib.request.urlopen',
-               return_value=io.StringIO(CommonDataXMLContent))
+               return_value=io.BytesIO(CommonDataXMLContent.encode('utf8')))
   @patch('bisect-builds.GetChromiumRevision', return_value=1313185)
   def test_get_rev_list(self, mock_GetChromiumRevision, mock_urlopen):
     options = bisect_builds.ParseCommandLine(
@@ -796,7 +796,7 @@ class ASANBuildTest(BisectTestCase):
   '''
 
   @maybe_patch('urllib.request.urlopen',
-               return_value=io.StringIO(CommonDataXMLContent))
+               return_value=io.BytesIO(CommonDataXMLContent.encode('utf8')))
   def test_get_rev_list(self, mock_urlopen):
     options = bisect_builds.ParseCommandLine([
         '--asan', '-a', 'mac', '-g', '1313161', '-b', '1313210',
@@ -1418,8 +1418,8 @@ class MethodTest(BisectTestCase):
          side_effect=[
              urllib.request.HTTPError('url', 404, 'Not Found', None, None),
              urllib.request.HTTPError('url', 404, 'Not Found', None, None),
-             io.StringIO("NOT_A_JSON"),
-             io.StringIO('{"chromium_main_branch_position": 123}'),
+             io.BytesIO(b"NOT_A_JSON"),
+             io.BytesIO(b'{"chromium_main_branch_position": 123}'),
          ])
   def test_GetRevisionFromVersion(self, mock_urlopen):
     self.assertEqual(123,
@@ -1431,17 +1431,25 @@ class MethodTest(BisectTestCase):
              '?version=127.0.6533.0'),
     ])
 
-  @patch("urllib.request.urlopen",
-         side_effect=[
-             io.StringIO('{"chromium_main_branch_position": null}'),
-             io.StringIO('{"message": "DEP\\n"}'),
-             io.StringIO('{"message": "Cr-Branched-From: '
-                         'e5ce7dc4f7518237b3d9bb93cccca35d25216cbe-'
-                         'refs/heads/master@{#857950}\\n"}'),
-         ])
+  @maybe_patch("urllib.request.urlopen",
+               side_effect=[
+                   io.BytesIO(b'{"chromium_main_branch_position": null}'),
+                   io.BytesIO(b'{"message": "DEP\\n"}'),
+                   io.BytesIO(b')]}\'\n{"message": "Cr-Branched-From: '
+                              b'3d60439cfb36485e76a1c5bb7f513d3721b20da1-'
+                              b'refs/heads/master@{#870763}\\n"}'),
+               ])
   def test_GetRevisionFromSourceTag(self, mock_urlopen):
-    self.assertEqual(857950,
-                     bisect_builds.GetRevisionFromVersion('127.0.6533.134'))
+    self.assertEqual(870763,
+                     bisect_builds.GetRevisionFromVersion('91.0.4472.38'))
+    mock_urlopen.assert_has_calls([
+        call('https://chromiumdash.appspot.com/fetch_version'
+             '?version=91.0.4472.38'),
+        call('https://chromium.googlesource.com/chromium/src/'
+             '+/refs/tags/91.0.4472.38?format=JSON'),
+        call('https://chromium.googlesource.com/chromium/src/'
+             '+/refs/tags/91.0.4472.38^?format=JSON'),
+    ])
 
 
 if __name__ == '__main__':
