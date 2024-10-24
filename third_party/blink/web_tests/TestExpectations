@@ -4003,6 +4003,16 @@ crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/aut
 crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-default-feature-policy.https.sub.html [ Crash Failure Pass Timeout ]
 crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-disabled-by-feature-policy.https.sub.html [ Crash Failure Pass Timeout ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5957647
+crbug.com/374903781 http/tests/devtools/console/console-clear-function.js [ Failure Pass ]
+crbug.com/374903781 http/tests/devtools/console/console-command-clear.js [ Failure Pass ]
+crbug.com/374903781 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
+crbug.com/374903781 http/tests/devtools/sources/debugger/rethrow-error-from-bindings-crash.js [ Failure Pass ]
+crbug.com/374903781 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
+crbug.com/374903781 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Failure Pass ]
+crbug.com/374903781 inspector-protocol/runtime/runtime-console-basic-functions-paused.js [ Failure Pass ]
+crbug.com/374903781 inspector-protocol/runtime/runtime-console-basic-functions.js [ Failure Pass ]
+
 # Does not work on Mac
 crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Crash Failure Pass Timeout ]
 
