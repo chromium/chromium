@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -566,9 +565,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         // Check the management domain before nativeSignOut() potentially clears it.
         boolean shouldWipeBecauseOfAccountManagement =
                 getManagementDomain() != null
-                        && (!ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                                || mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+                        && mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
         @SignOutState.DataWipeAction
         int dataWipeAction =
                 (forceWipeUserData || shouldWipeBecauseOfAccountManagement)
