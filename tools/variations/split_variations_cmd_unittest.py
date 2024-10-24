@@ -125,7 +125,8 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
     input_string = (
         '--force-fieldtrials="*Trial2/Enabled/" '
         '--enable-features="FeatureA<FeatureA" '
-        '--disable-features="FeatureC<FeatureC"')
+        '--disable-features="FeatureC<FeatureC" '
+        '--disable-field-trial-config')
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(1, len(splits))
 
