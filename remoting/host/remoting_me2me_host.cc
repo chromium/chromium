@@ -91,7 +91,6 @@
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_power_save_blocker.h"
-#include "remoting/host/host_status_logger.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
@@ -124,7 +123,6 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
-#include "remoting/signaling/remoting_log_to_server.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/event_tracer.h"
@@ -498,9 +496,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Must outlive |signal_strategy_| and |ftl_signaling_connector_|.
   std::unique_ptr<OAuthTokenGetterImpl> oauth_token_getter_;
 
-  // Must outlive |host_status_logger_|.
-  std::unique_ptr<LogToServer> log_to_server_;
-
   // Must outlive |signal_strategy_| and |heartbeat_sender_|.
   std::unique_ptr<ZombieHostDetector> zombie_host_detector_;
 
@@ -513,7 +508,6 @@ class HostProcess : public ConfigWatcher::Delegate,
       ftl_host_change_notification_listener_;
   std::unique_ptr<FtlEchoMessageListener> ftl_echo_message_listener_;
 
-  std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
 #if BUILDFLAG(IS_LINUX)
   std::unique_ptr<HostUTMPLogger> host_utmp_logger_;
@@ -1727,11 +1721,6 @@ void HostProcess::InitializeSignaling() {
   oauth_token_getter_ = std::make_unique<OAuthTokenGetterImpl>(
       std::move(oauth_credentials), context_->url_loader_factory(), false);
 
-  log_to_server_ = std::make_unique<RemotingLogToServer>(
-      ServerLogEntry::ME2ME,
-      std::make_unique<OAuthTokenGetterProxy>(
-          oauth_token_getter_->GetWeakPtr()),
-      context_->url_loader_factory());
   zombie_host_detector_ = std::make_unique<ZombieHostDetector>(base::BindOnce(
       &HostProcess::OnZombieStateDetected, base::Unretained(this)));
 
@@ -1883,9 +1872,6 @@ void HostProcess::StartHost() {
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
 
-  host_status_logger_ = std::make_unique<HostStatusLogger>(
-      host_->status_monitor(), log_to_server_.get());
-
 #if BUILDFLAG(IS_LINUX)
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kEnableUtempter)) {
@@ -1985,7 +1971,6 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
   // Shut down everything except the HostSignalingManager.
   host_.reset();
   host_event_logger_.reset();
-  host_status_logger_.reset();
   power_save_blocker_.reset();
   corp_host_status_logger_.reset();
   ftl_host_change_notification_listener_.reset();
@@ -2027,7 +2012,6 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   DCHECK(!host_);  // Assert that the host is really offline at this point.
 
   HOST_LOG << "SendHostOfflineReason " << (success ? "succeeded." : "failed.");
-  log_to_server_.reset();
   heartbeat_sender_.reset();
   oauth_token_getter_.reset();
   ftl_signaling_connector_.reset();
