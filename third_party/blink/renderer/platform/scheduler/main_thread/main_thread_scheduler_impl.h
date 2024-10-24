@@ -266,13 +266,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue(
       const MainThreadTaskQueue::QueueCreationParams& params);
 
-  // Returns a new loading task queue. This queue is intended for tasks related
-  // to resource dispatch, foreground HTML parsing, etc...
-  // Note: Tasks posted to kFrameLoadingControl queues must execute quickly.
-  scoped_refptr<MainThreadTaskQueue> NewLoadingTaskQueue(
-      MainThreadTaskQueue::QueueType queue_type,
-      FrameSchedulerImpl* frame_scheduler);
-
   // Returns a new throttleable task queue to be used for tests.
   scoped_refptr<MainThreadTaskQueue> NewThrottleableTaskQueueForTest(
       FrameSchedulerImpl* frame_scheduler);
