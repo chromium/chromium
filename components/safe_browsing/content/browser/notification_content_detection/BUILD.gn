@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("notification_content_detection") {
+  sources = [
+    "notification_content_detection_constants.cc",
+    "notification_content_detection_constants.h",
+    "notification_content_detection_model.cc",
+    "notification_content_detection_model.h",
+  ]
+
+  deps = [
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//url:url",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "notification_content_detection_model_unittest.cc",
+    "test_model_observer_tracker.cc",
+    "test_model_observer_tracker.h",
+    "test_notification_content_detection_model.cc",
+    "test_notification_content_detection_model.h",
+  ]
+
+  deps = [
+    ":notification_content_detection",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:model_executor",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+  ]
+}
