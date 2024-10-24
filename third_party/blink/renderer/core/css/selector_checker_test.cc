@@ -101,6 +101,50 @@ ScopeProximityTestData scope_proximity_test_data[] = {
     },
 
     // The proximity is determined according to the nearest scoping root.
+    // (#target is the scope itself, selected with :scope).
+    {
+      R"HTML(
+        <div class=a>
+          <div>
+            <div>
+              <div>
+                <div id=target class=a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )HTML",
+      R"CSS(
+        @scope (.a) {
+          :scope { z-index: 1; }
+        }
+      )CSS",
+      0
+    },
+
+    // The proximity is determined according to the nearest scoping root.
+    // (#target is the scope itself, selected with &).
+    {
+      R"HTML(
+        <div class=a>
+          <div>
+            <div>
+              <div>
+                <div id=target class=a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )HTML",
+      R"CSS(
+        @scope (.a) {
+          & { z-index: 1; }
+        }
+      )CSS",
+      0
+    },
+
+    // The proximity is determined according to the nearest scoping root.
     // (Nested scopes from different @scope rules).
     {
       R"HTML(

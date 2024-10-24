@@ -425,7 +425,12 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForScopeActivation(
     if (activations.vector.empty()) {
       return kSelectorFailsCompletely;
     }
-    for (const StyleScopeActivation& activation : activations.vector) {
+    // Activations are stored in decreasing order of proxmity (parent
+    // activations are added first in CalculateActivations, then any activation
+    // for this element). We want to the most proximate match, hence traverse
+    // activations in reverse order.
+    for (const StyleScopeActivation& activation :
+         base::Reversed(activations.vector)) {
       next_context.match_visited = context.match_visited;
       next_context.impact = context.impact;
       next_context.style_scope = nullptr;
