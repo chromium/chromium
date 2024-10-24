@@ -69,9 +69,7 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
         ButtonCompat bottomSheetButton =
                 defaultBrowserBottomSheetContent
                         .getContentView()
-                        .findViewById(
-                                org.chromium.chrome.browser.educational_tip.R.id
-                                        .default_browser_bottom_sheet_button);
+                        .findViewById(org.chromium.chrome.browser.educational_tip.R.id.button);
 
         bottomSheetButton.performClick();
         verify(mBottomSheetController).hideContent(any(), anyBoolean(), anyInt());

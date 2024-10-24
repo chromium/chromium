@@ -1185,6 +1185,24 @@
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_DESCRIPTION" desc="Description of the quick delete promo in the educational tip module on NTP.">
         You can delete some or all of your history, cookies, site data and more
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_TITLE" desc="Title of the default browser section's bottom sheet in the educational tip module on NTP.">
+        Use Chrome By Default
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_DESCRIPTION" desc="Description of the default browser section's bottom sheet in the educational tip module on NTP.">
+        You can now use Chrome anytime you browse or tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_FIRST_STEP" desc="The first step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        On your phone, open Settings
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP" desc="The second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Apps  > Default apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP" desc="The third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Browser app > Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_BUTTON" desc="The name of the button in the bottom sheet of the default browser section within the educational tip module on the NTP">
+        Settings
+      </message>
 
       <!-- Safety Hub Magic Stack strings -->
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">

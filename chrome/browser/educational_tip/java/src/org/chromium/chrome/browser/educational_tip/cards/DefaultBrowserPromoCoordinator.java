@@ -73,9 +73,7 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
                 new DefaultBrowserPromoBottomSheetContent(defaultBrowserBottomSheetView);
         BottomSheetController bottomSheetController = mActionDelegate.getBottomSheetController();
         bottomSheetController.requestShowContent(mDefaultBrowserBottomSheetContent, true);
-        ButtonCompat bottomSheetButton =
-                defaultBrowserBottomSheetView.findViewById(
-                        R.id.default_browser_bottom_sheet_button);
+        ButtonCompat bottomSheetButton = defaultBrowserBottomSheetView.findViewById(R.id.button);
         bottomSheetButton.setOnClickListener(
                 (v) -> {
                     IntentUtils.safeStartActivity(context, createBottomSheetOnClickIntent());
