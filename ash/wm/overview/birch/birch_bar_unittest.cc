@@ -306,7 +306,7 @@ class BirchBarTest : public AshTestBase {
                            {"Figma", GURL("https://www.figma.com/")},
                            {"Notion", GURL("https://www.notion.so/")},
                            {"Settings", "odknhmnlageboeamepcngndbggdpaobj"}},
-                          "Coral Group 1");
+                          "Coral Group 1", base::Token(1, 2));
       test_groups.push_back(std::move(test_group));
     }
 
@@ -316,7 +316,7 @@ class BirchBarTest : public AshTestBase {
                            {"NHL", GURL("https://www.nhl.com/")},
                            {"Google", GURL("https://www.google.com/")},
                            {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
-                          "Coral Group 2");
+                          "Coral Group 2", base::Token(2, 3));
       test_groups.push_back(std::move(test_group));
     }
 

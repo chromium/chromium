@@ -35,17 +35,19 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   // Gets a group reference with given group ID. This operation will not remove
   // the group from the `response_`.
-  const coral::mojom::GroupPtr& GetGroupById(int group_id) const;
+  const coral::mojom::GroupPtr& GetGroupById(const base::Token& group_id) const;
 
   // Extracts a group from the response with given group ID. This operation will
   // remove the group from the `response_`.
-  coral::mojom::GroupPtr ExtractGroupById(int group_id);
+  coral::mojom::GroupPtr ExtractGroupById(const base::Token& group_id);
 
-  // Add all items in group `group_id` to the coral item remover blocklist.
-  void RemoveGroup(int group_id);
+  // Removes the group with `group_id` from the `response_` and adds all items
+  // in the group to the coral item remover blocklist.
+  void RemoveGroup(const base::Token& group_id);
 
-  // Removes an item with `identifier` from the group with group_id.
-  void RemoveItemFromGroup(const int group_id, const std::string& identifier);
+  // Removes an item with `identifier` from the group with `group_id`.
+  void RemoveItemFromGroup(const base::Token& group_id,
+                           const std::string& identifier);
 
   mojo::PendingRemote<coral::mojom::TitleObserver> BindRemote();
 

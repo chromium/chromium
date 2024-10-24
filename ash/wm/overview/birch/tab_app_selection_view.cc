@@ -373,7 +373,8 @@ END_METADATA
 
 // -----------------------------------------------------------------------------
 // TabAppSelectionView:
-TabAppSelectionView::TabAppSelectionView(int group_id) : group_id_(group_id) {
+TabAppSelectionView::TabAppSelectionView(const base::Token& group_id)
+    : group_id_(group_id) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetBetweenChildSpacing(kChildSpacing);

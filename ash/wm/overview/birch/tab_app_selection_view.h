@@ -21,7 +21,7 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   METADATA_HEADER(TabAppSelectionView, views::BoxLayoutView)
 
  public:
-  explicit TabAppSelectionView(int group_id);
+  explicit TabAppSelectionView(const base::Token& group_id);
   TabAppSelectionView(const TabAppSelectionView&) = delete;
   TabAppSelectionView& operator=(const TabAppSelectionView&) = delete;
   ~TabAppSelectionView() override;
@@ -53,7 +53,7 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   void OnItemTapped(TabAppSelectionItemView* sender);
 
   // Unique identifier for the contents of the selection view.
-  const int group_id_;
+  const base::Token group_id_;
 
   raw_ptr<views::ScrollView> scroll_view_;
 

@@ -21,14 +21,14 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   BirchCoralItem(const std::u16string& coral_title,
                  const std::u16string& coral_text,
                  CoralSource source,
-                 int group_id);
+                 const base::Token& group_id);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
   BirchCoralItem& operator=(const BirchCoralItem&);
   bool operator==(const BirchCoralItem& rhs) const;
   ~BirchCoralItem() override;
 
-  int group_id() const { return group_id_; }
+  const base::Token& group_id() const { return group_id_; }
 
   // BirchItem:
   BirchItemType GetType() const override;
@@ -52,7 +52,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
       base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
 
   CoralSource source_;
-  int group_id_;
+  base::Token group_id_;
 };
 
 }  // namespace ash

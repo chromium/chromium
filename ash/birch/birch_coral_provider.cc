@@ -203,21 +203,28 @@ BirchCoralProvider* BirchCoralProvider::Get() {
 }
 
 const coral::mojom::GroupPtr& BirchCoralProvider::GetGroupById(
-    int group_id) const {
+    const base::Token& group_id) const {
   std::vector<coral::mojom::GroupPtr>& groups = response_->groups();
-  CHECK_LT(group_id, static_cast<int>(groups.size()));
-  return groups[group_id];
+  auto iter = std::find_if(
+      groups.begin(), groups.end(),
+      [&group_id](const auto& group) { return group->id == group_id; });
+  CHECK(iter != groups.end());
+  return *iter;
 }
 
-coral::mojom::GroupPtr BirchCoralProvider::ExtractGroupById(int group_id) {
+coral::mojom::GroupPtr BirchCoralProvider::ExtractGroupById(
+    const base::Token& group_id) {
   std::vector<coral::mojom::GroupPtr>& groups = response_->groups();
-  CHECK_LT(group_id, static_cast<int>(groups.size()));
-  auto group = std::move(groups[group_id]);
-  groups.erase(groups.begin() + group_id);
+  auto iter = std::find_if(
+      groups.begin(), groups.end(),
+      [&group_id](const auto& group) { return group->id == group_id; });
+  CHECK(iter != groups.end());
+  auto group = std::move(*iter);
+  groups.erase(iter);
   return group;
 }
 
-void BirchCoralProvider::RemoveGroup(int group_id) {
+void BirchCoralProvider::RemoveGroup(const base::Token& group_id) {
   CHECK(coral_item_remover_);
   coral::mojom::GroupPtr group = ExtractGroupById(group_id);
   for (const coral::mojom::EntityPtr& entity : group->entities) {
@@ -225,7 +232,7 @@ void BirchCoralProvider::RemoveGroup(int group_id) {
   }
 }
 
-void BirchCoralProvider::RemoveItemFromGroup(const int group_id,
+void BirchCoralProvider::RemoveItemFromGroup(const base::Token& group_id,
                                              const std::string& identifier) {
   CHECK(coral_item_remover_);
   auto& group = GetGroupById(group_id);
@@ -416,11 +423,11 @@ void BirchCoralProvider::HandleCoralResponse(
   response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->groups().size()));
   for (size_t i = 0; i < response_->groups().size(); ++i) {
+    const auto& group = response_->groups()[i];
     // TODO(zxdan): Support nullopt title for async title generation.
-    items.emplace_back(base::UTF8ToUTF16(response_->groups()[i]->title.value_or(
-                           std::string())),
+    items.emplace_back(base::UTF8ToUTF16(group->title.value_or(std::string())),
                        /*subtitle=*/std::u16string(), response_->source(),
-                       /*group_id=*/int(i));
+                       /*group_id=*/group->id);
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 }

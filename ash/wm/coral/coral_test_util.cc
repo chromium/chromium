@@ -29,8 +29,10 @@ TestEntity& TestEntity::operator=(const TestEntity&) = default;
 TestEntity::~TestEntity() = default;
 
 coral::mojom::GroupPtr CreateTestGroup(const std::vector<TestEntity>& entities,
-                                       const std::string& title) {
+                                       const std::string& title,
+                                       const base::Token& id) {
   auto test_group = coral::mojom::Group::New();
+  test_group->id = id;
   test_group->title = title.empty() ? "Coral Group" : title;
 
   for (const TestEntity& entity : entities) {

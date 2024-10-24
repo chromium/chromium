@@ -533,7 +533,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetLostMediaItems(lost_media_item_list);
   std::vector<BirchCoralItem> coral_item_list;
   coral_item_list.emplace_back(u"title", u"subtext", CoralSource::kInSession,
-                               /*group_id=*/0);
+                               /*group_id=*/base::Token());
   model->SetCoralItems(coral_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
@@ -1083,7 +1083,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetLostMediaItems(lost_media_item_list);
   std::vector<BirchCoralItem> coral_item_list;
   coral_item_list.emplace_back(u"title", u"subtext", CoralSource::kInSession,
-                               /*group_id=*/0);
+                               /*group_id=*/base::Token());
   model->SetCoralItems(coral_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
@@ -1449,10 +1449,12 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   entities0.emplace_back(item3.Clone());
 
   coral::mojom::GroupPtr group0 = coral::mojom::Group::New();
+  group0->id = base::Token(1, 2);
   group0->title = "Group Title 0";
   group0->entities = std::move(entities0);
 
-  coral::mojom::GroupPtr group1 = CreateTestGroup({}, "Group Title 1 (empty)");
+  coral::mojom::GroupPtr group1 =
+      CreateTestGroup({}, "Group Title 1 (empty)", base::Token(2, 3));
 
   // Setup fake coral backend response and pass to the coral provider.
   std::vector<coral::mojom::GroupPtr> groups;
@@ -1472,9 +1474,11 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   ASSERT_EQ(4u, content_items.size());
 
   BirchCoralItem coral_item0(u"Coral Title", u"Coral Text",
-                             CoralSource::kInSession, /*group_id=*/0);
+                             CoralSource::kInSession,
+                             /*group_id=*/base::Token(1, 2));
   BirchCoralItem coral_item1(u"Coral Title", u"Coral Text",
-                             CoralSource::kInSession, /*group_id=*/1);
+                             CoralSource::kInSession,
+                             /*group_id=*/base::Token(2, 3));
   model->SetCoralItems({coral_item0, coral_item1});
 
   model->RemoveItem(&coral_item1);

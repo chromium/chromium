@@ -86,7 +86,7 @@ void OnAllFaviconsRetrievedCoral(
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text,
                                CoralSource source,
-                               int group_id)
+                               const base::Token& group_id)
     : BirchItem(coral_title, coral_text),
       source_(source),
       group_id_(group_id) {}
