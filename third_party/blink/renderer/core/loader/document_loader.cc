@@ -432,13 +432,8 @@ ConvertPermissionStatusFlatMapToHashMap(
   if (!flat_map) {
     return std::nullopt;
   }
-
-  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
-      hash_map;
-  for (const auto& it : *flat_map) {
-    hash_map.insert(it.first, it.second);
-  }
-  return hash_map;
+  return HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>(
+      flat_map->begin(), flat_map->end());
 }
 
 base::flat_map<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
