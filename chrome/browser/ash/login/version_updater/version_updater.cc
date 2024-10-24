@@ -113,7 +113,7 @@ void VersionUpdater::StartNetworkCheck() {
       handler->AddObserver(this);
     const NetworkState* default_network = handler->DefaultNetwork();
     PortalStateChanged(default_network,
-                       default_network ? default_network->GetPortalState()
+                       default_network ? default_network->portal_state()
                                        : NetworkState::PortalState::kUnknown);
   }
 }

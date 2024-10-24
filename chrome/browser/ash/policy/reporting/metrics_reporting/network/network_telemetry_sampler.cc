@@ -103,7 +103,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
 NetworkConnectionState NetworkTelemetrySampler::GetNetworkConnectionState(
     const ash::NetworkState* network) {
   if (network->IsConnectedState()) {
-    auto portal_state = network->GetPortalState();
+    auto portal_state = network->portal_state();
     switch (portal_state) {
       case ash::NetworkState::PortalState::kUnknown:
         return NetworkConnectionState::CONNECTED;

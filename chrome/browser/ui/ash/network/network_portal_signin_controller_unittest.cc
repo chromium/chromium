@@ -257,7 +257,7 @@ class NetworkPortalSigninControllerTest : public testing::TestWithParam<bool> {
   }
 
   SigninMode GetSigninMode() {
-    return controller_->GetSigninMode(GetDefaultNetwork().GetPortalState());
+    return controller_->GetSigninMode(GetDefaultNetwork().portal_state());
   }
 
   content::BrowserTaskEnvironment task_environment_;

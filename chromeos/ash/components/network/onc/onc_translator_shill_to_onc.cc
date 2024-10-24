@@ -694,7 +694,7 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
 
   if (network_state_) {
     // Only visible networks set RestrictedConnectivity, and only if true.
-    auto portal_state = network_state_->GetPortalState();
+    auto portal_state = network_state_->portal_state();
     if (network_state_->IsConnectedState() &&
         portal_state != NetworkState::PortalState::kUnknown &&
         portal_state != NetworkState::PortalState::kOnline) {

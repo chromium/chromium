@@ -205,7 +205,7 @@ std::string MojoNetworkTypeToOnc(mojom::NetworkType type) {
 mojom::ConnectionStateType GetMojoConnectionStateType(
     const NetworkState* network) {
   if (network->IsConnectedState()) {
-    auto portal_state = network->GetPortalState();
+    auto portal_state = network->portal_state();
     switch (portal_state) {
       case NetworkState::PortalState::kUnknown:
         return mojom::ConnectionStateType::kConnected;
@@ -358,7 +358,7 @@ mojom::PortalState GetMojoPortalState(
 }
 
 std::optional<GURL> GetPortalProbeUrl(const NetworkState* network) {
-  switch (network->GetPortalState()) {
+  switch (network->portal_state()) {
     case NetworkState::PortalState::kUnknown:
       [[fallthrough]];
     case NetworkState::PortalState::kOnline:
@@ -453,7 +453,7 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   result->guid = network->guid();
   result->name =
       network_name_util::GetNetworkName(cellular_esim_profile_handler, network);
-  result->portal_state = GetMojoPortalState(network->GetPortalState());
+  result->portal_state = GetMojoPortalState(network->portal_state());
   result->portal_probe_url = GetPortalProbeUrl(network);
   result->priority = network->priority();
   result->prohibited_by_policy = network->blocked_by_policy();
@@ -1592,7 +1592,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     }
     result->ip_configs = std::move(ip_configs);
   }
-  result->portal_state = GetMojoPortalState(network_state->GetPortalState());
+  result->portal_state = GetMojoPortalState(network_state->portal_state());
   const base::Value::Dict* saved_ip_config =
       GetDictionary(properties, ::onc::network_config::kSavedIPConfig);
   if (saved_ip_config)

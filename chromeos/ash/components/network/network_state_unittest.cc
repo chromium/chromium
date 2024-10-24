@@ -208,34 +208,32 @@ TEST_F(NetworkStateTest, CaptivePortalState) {
   // State != portal or online -> portal_state() == kUnknown
   EXPECT_TRUE(SetStringProperty(shill::kStateProperty, shill::kStateReady));
   SignalInitialPropertiesReceived();
-  EXPECT_EQ(network_state_->GetPortalState(),
+  EXPECT_EQ(network_state_->portal_state(),
             NetworkState::PortalState::kUnknown);
 
   // State == online -> portal_state() == kOnline
   EXPECT_TRUE(SetStringProperty(shill::kStateProperty, shill::kStateOnline));
   SignalInitialPropertiesReceived();
-  EXPECT_EQ(network_state_->GetPortalState(),
-            NetworkState::PortalState::kOnline);
+  EXPECT_EQ(network_state_->portal_state(), NetworkState::PortalState::kOnline);
 
   // State == redirect-found -> portal_state() == kPortal
   EXPECT_TRUE(
       SetStringProperty(shill::kStateProperty, shill::kStateRedirectFound));
   SignalInitialPropertiesReceived();
-  EXPECT_EQ(network_state_->GetPortalState(),
-            NetworkState::PortalState::kPortal);
+  EXPECT_EQ(network_state_->portal_state(), NetworkState::PortalState::kPortal);
 
   // State == portal-suspected -> portal_state() == kPortalSuspected
   EXPECT_TRUE(
       SetStringProperty(shill::kStateProperty, shill::kStatePortalSuspected));
   SignalInitialPropertiesReceived();
-  EXPECT_EQ(network_state_->GetPortalState(),
+  EXPECT_EQ(network_state_->portal_state(),
             NetworkState::PortalState::kPortalSuspected);
 
   // State == no-connectivity -> portal_state() == kOffline
   EXPECT_TRUE(
       SetStringProperty(shill::kStateProperty, shill::kStateNoConnectivity));
   SignalInitialPropertiesReceived();
-  EXPECT_EQ(network_state_->GetPortalState(),
+  EXPECT_EQ(network_state_->portal_state(),
             NetworkState::PortalState::kNoInternet);
 }
 

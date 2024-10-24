@@ -124,7 +124,7 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
     NET_LOG(EVENT) << "Show signin mode from: " << source << ": No network.";
     return;
   }
-  auto portal_state = default_network->GetPortalState();
+  auto portal_state = default_network->portal_state();
   if (portal_state != NetworkState::PortalState::kPortal &&
       portal_state != NetworkState::PortalState::kPortalSuspected) {
     // If no portal signin is required, do not attempt to show the signin page.

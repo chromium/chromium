@@ -72,7 +72,7 @@ ConnectionStatus GetDeviceOnlineStatus() {
   }
 
   using PortalState = ash::NetworkState::PortalState;
-  if (const PortalState portal_state = network->GetPortalState();
+  if (const PortalState portal_state = network->portal_state();
       portal_state != PortalState::kOnline) {
     VLOG(1) << "GetDeviceOnlineStatus: not ready: portal is " << portal_state;
     return kNotReady;

@@ -246,7 +246,7 @@ void HatsNotificationController::Initialize(bool is_new_device) {
     // Create an immediate update for the current default network.
     const NetworkState* default_network = handler->DefaultNetwork();
     NetworkState::PortalState portal_state =
-        default_network ? default_network->GetPortalState()
+        default_network ? default_network->portal_state()
                         : NetworkState::PortalState::kUnknown;
     PortalStateChanged(default_network, portal_state);
   }

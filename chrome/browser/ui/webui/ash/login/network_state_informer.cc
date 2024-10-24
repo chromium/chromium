@@ -39,7 +39,7 @@ NetworkStateInformer::State GetStateForNetwork(const NetworkState* network) {
   if (!network->IsConnectedState()) {
     return NetworkStateInformer::OFFLINE;
   }
-  switch (network->GetPortalState()) {
+  switch (network->portal_state()) {
     case NetworkState::PortalState::kUnknown:
       return NetworkStateInformer::UNKNOWN;
     case NetworkState::PortalState::kOnline:
