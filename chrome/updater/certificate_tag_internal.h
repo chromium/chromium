@@ -276,19 +276,6 @@ bool AddName(CBB* cbb, const char* common_name);
 // CopyASN1 copies a single ASN.1 element from |in| to |out|.
 bool CopyASN1(CBB* out, CBS* in);
 
-struct ParseResult {
-  bool success = false;
-  // TODO(crbug.com/372311617): strip this exclusion if possible, or
-  // rewrite surrounding code to accommodate.
-  RAW_PTR_EXCLUSION std::optional<base::span<const uint8_t>> tag;
-};
-
-// Parses the `signed_data` PKCS7 object to find the final certificate in the
-// list and see whether it has an extension with `kTagOID`, and if so, returns a
-// `base::span` of the tag within this `signed_data`. `success` is set to `true`
-// if there were no parse errors, even if a tag could not be found.
-ParseResult ParseTagImpl(base::span<const uint8_t> signed_data);
-
 // Returns an updated version of the ContentInfo signedData PKCS7 object with
 // the given `tag` added, or `nullopt` on error. If the input `signed_data`
 // already contains a tag, then it will be replaced with `tag`.
