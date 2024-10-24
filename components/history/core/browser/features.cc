@@ -85,9 +85,11 @@ BASE_FEATURE(kMostVisitedTilesNewScoring,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kMvtScoringParamRecencyFactor[] = "recency_factor";
+const char kMvtScoringParamDecayPerDay[] = "decay_per_day";
 const char kMvtScoringParamDailyVisitCountCap[] = "daily_visit_count_cap";
 
 const char kMvtScoringParamRecencyFactor_Default[] = "default";
+const char kMvtScoringParamRecencyFactor_Decay[] = "decay";
 const char kMvtScoringParamRecencyFactor_DecayStaircase[] = "decay_staircase";
 
 }  // namespace history

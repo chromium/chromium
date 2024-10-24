@@ -15,6 +15,8 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,9 +110,18 @@ class SegmentScorerTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(SegmentScorerTest, RankByDefaultScorer) {
+  base::FieldTrialParams params;
+  params[history::kMvtScoringParamRecencyFactor] =
+      history::kMvtScoringParamRecencyFactor_Default;
+  params[history::kMvtScoringParamDailyVisitCountCap] =
+      base::NumberToString(INT_MAX);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      history::kMostVisitedTilesNewScoring, params);
+
   std::vector<std::string> names_by_rank = GetTestDataRankingUsingScorer(
-      MakeTestItems(), base::WrapUnique(new SegmentScorer(
-                           kMvtScoringParamRecencyFactor_Default, INT_MAX)));
+      MakeTestItems(), SegmentScorer::CreateFromFeatureFlags());
   int cur = 0;
   ASSERT_EQ("10 last 10 days", names_by_rank[cur++]);
   ASSERT_EQ("10 last 5 days", names_by_rank[cur++]);
@@ -123,10 +134,44 @@ TEST_F(SegmentScorerTest, RankByDefaultScorer) {
   ASSERT_EQ("1 today", names_by_rank[cur++]);
 }
 
-TEST_F(SegmentScorerTest, RankByDecayStaircaseCap10Scorer) {
+TEST_F(SegmentScorerTest, RankByDecayCap1Scorer) {
+  base::FieldTrialParams params;
+  params[history::kMvtScoringParamRecencyFactor] =
+      history::kMvtScoringParamRecencyFactor_Decay;
+  // exp(-1.0 / 11).
+  params[history::kMvtScoringParamDecayPerDay] = "0.9131007162822623";
+  params[history::kMvtScoringParamDailyVisitCountCap] = "1";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      history::kMostVisitedTilesNewScoring, params);
+
   std::vector<std::string> names_by_rank = GetTestDataRankingUsingScorer(
-      MakeTestItems(), base::WrapUnique(new SegmentScorer(
-                           kMvtScoringParamRecencyFactor_DecayStaircase, 10)));
+      MakeTestItems(), SegmentScorer::CreateFromFeatureFlags());
+  int cur = 0;
+  ASSERT_EQ("10 last 10 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 last 19 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 last 5 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 decrease last 4 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 increase last 4 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 last 2 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 over 2 days week apart", names_by_rank[cur++]);
+  ASSERT_EQ("1 today", names_by_rank[cur++]);
+  ASSERT_EQ("10 today", names_by_rank[cur++]);
+}
+
+TEST_F(SegmentScorerTest, RankByDecayStaircaseCap10Scorer) {
+  base::FieldTrialParams params;
+  params[history::kMvtScoringParamRecencyFactor] =
+      history::kMvtScoringParamRecencyFactor_DecayStaircase;
+  params[history::kMvtScoringParamDailyVisitCountCap] = "10";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      history::kMostVisitedTilesNewScoring, params);
+
+  std::vector<std::string> names_by_rank = GetTestDataRankingUsingScorer(
+      MakeTestItems(), SegmentScorer::CreateFromFeatureFlags());
   int cur = 0;
   ASSERT_EQ("10 last 10 days", names_by_rank[cur++]);
   ASSERT_EQ("10 last 5 days", names_by_rank[cur++]);

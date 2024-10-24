@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 
 namespace history {
@@ -18,6 +17,8 @@ class SegmentScorer {
  private:
   // Formula to add more weight to recent visits, and less to past ones.
   struct RecencyFactor {
+    static std::unique_ptr<RecencyFactor> CreateFromFeatureFlags();
+
     virtual ~RecencyFactor();
     virtual float Compute(int days_ago) = 0;
   };
@@ -25,6 +26,16 @@ class SegmentScorer {
   struct RecencyFactorDefault : public RecencyFactor {
     ~RecencyFactorDefault() override;
     float Compute(int days_ago) override;
+  };
+
+  struct RecencyFactorDecay : public RecencyFactor {
+    // Requires 0 < |decay_per_day| <= 1.
+    explicit RecencyFactorDecay(double decay_per_day);
+    ~RecencyFactorDecay() override;
+    float Compute(int days_ago) override;
+
+   private:
+    const double decay_per_day_;
   };
 
   struct RecencyFactorDecayStaircase : public RecencyFactor {
@@ -36,10 +47,8 @@ class SegmentScorer {
   static std::unique_ptr<SegmentScorer> CreateFromFeatureFlags();
 
  private:
-  SegmentScorer(const std::string& recency_factor_name,
+  SegmentScorer(std::unique_ptr<RecencyFactor> recency_factor,
                 int daily_visit_count_cap);
-  FRIEND_TEST_ALL_PREFIXES(SegmentScorerTest, RankByDefaultScorer);
-  FRIEND_TEST_ALL_PREFIXES(SegmentScorerTest, RankByDecayStaircaseCap10Scorer);
 
  public:
   ~SegmentScorer();
