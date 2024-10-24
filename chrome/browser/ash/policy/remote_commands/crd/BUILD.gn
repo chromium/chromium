@@ -36,6 +36,7 @@ static_library("crd") {
     "//ash",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/policy/core",
     "//chrome/common:constants",
     "//chromeos/ash/services/network_config:in_process_instance",
