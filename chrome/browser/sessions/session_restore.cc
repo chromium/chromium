@@ -141,6 +141,64 @@ bool HasSingleNewTabPage(Browser* browser) {
 std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Helper to pause occlusion tracking while it is alive and updates occlusion
+// states of restored tabs when it goes out of scope.
+class RestoredTabOcclusionPauserAndUpdater {
+ public:
+  explicit RestoredTabOcclusionPauserAndUpdater(
+      std::vector<RestoredTab>& restored_tabs)
+      : restored_tabs_(&restored_tabs) {
+    pause_occlusion_tracking_.emplace();
+    window_animation_disablers_.emplace();
+  }
+
+  ~RestoredTabOcclusionPauserAndUpdater() {
+    // Triggers occlusion state calculation.
+    window_animation_disablers_.reset();
+    pause_occlusion_tracking_.reset();
+
+    // Occlusion state should be calculated synchronously on ash after dropping
+    // `pause_occlusion_tracking_`. Explicitly updating the contents visibility
+    // based on HIDDEN/OCCLUDED state so that relevant restored tabs are marked
+    // as backgrounded. This is needed because
+    // `WebContentsImpl::UpdateWebContentsVisibility` ignores HIDDEN/OCCLUDED
+    // state before contents are made visible for the first time.
+    for (const auto& tab : *restored_tabs_) {
+      content::WebContents* contents = tab.contents();
+      aura::Window* contents_view = contents->GetNativeView();
+      if (contents_view->GetOcclusionState() ==
+          aura::Window::OcclusionState::HIDDEN) {
+        contents->WasHidden();
+      } else if (contents_view->GetOcclusionState() ==
+                 aura::Window::OcclusionState::OCCLUDED) {
+        contents->WasOccluded();
+      }
+    }
+  }
+
+  void DisableWindowAnimation(aura::Window* window) {
+    (*window_animation_disablers_)[window].emplace(window);
+  }
+
+ private:
+  // The restored tabs from session restore, updated externally.
+  const raw_ptr<std::vector<RestoredTab>> restored_tabs_;
+
+  // Pause occlusion tracking until all browser windows are created so that
+  // their final occlusion state is used to trigger tab loading.
+  // This is ash only because the final occlusion state is calculated
+  // synchronously on ash.
+  std::optional<aura::WindowOcclusionTracker::ScopedPause>
+      pause_occlusion_tracking_;
+
+  // Disables window animations for created browser windows. Otherwise,
+  // because occlusion states are not calculated for animating windows, all
+  // restored browser windows are considered visible and triggers tab load.
+  std::optional<
+      std::map<aura::Window*, std::optional<wm::ScopedAnimationDisabler>>>
+      window_animation_disablers_;
+};
+
 void ReportRestoredWindowCreated(aura::Window* window) {
   // Ash is not always initialized in unit tests.
   if (!ash::Shell::HasInstance()) {
@@ -654,24 +712,11 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Pause occlusion tracking until all browser windows are created so that
-    // their final occlusion state is used to trigger tab loading.
-    // This is ash only because the final occlusion state is calculated
-    // synchronously on ash.
-    std::optional<aura::WindowOcclusionTracker::ScopedPause>
-        pause_occlusion_tracking;
-
-    // Disables window animations for created browser windows. Otherwise,
-    // because occlusion states are not calculated for animating windows, all
-    // restored browser windows are considered visible and triggers tab load.
-    std::optional<
-        std::map<aura::Window*, std::optional<wm::ScopedAnimationDisabler>>>
-        window_animation_disablers;
+    std::optional<RestoredTabOcclusionPauserAndUpdater> occlusion_helper;
 
     if (base::FeatureList::IsEnabled(
             ash::features::kAshSessionRestoreDeferOccludedActiveTabLoad)) {
-      pause_occlusion_tracking.emplace();
-      window_animation_disablers.emplace();
+      occlusion_helper.emplace(restored_tabs);
     }
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -708,8 +753,8 @@ class SessionRestoreImpl : public BrowserListObserver {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         aura::Window* browser_window = browser->window()->GetNativeWindow();
-        if (window_animation_disablers) {
-          (*window_animation_disablers)[browser_window].emplace(browser_window);
+        if (occlusion_helper) {
+          occlusion_helper->DisableWindowAnimation(browser_window);
         }
 
         ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
