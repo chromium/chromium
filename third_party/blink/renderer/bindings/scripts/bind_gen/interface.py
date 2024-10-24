@@ -1234,7 +1234,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     else:
         arg_index = None
     func_like = None
-    dispatcher_nodes = SequenceNode()
+    dispatcher_nodes_stack = [SequenceNode()]
 
     # True if there exists a case that overload resolution will fail.
     can_fail = True
@@ -1274,6 +1274,23 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
             cg_context, overload_index=func_like.overload_index)
         return TextNode(_format(pattern, value=value, func_name=func_name))
 
+    # {begin,end}_condifitional_scope allow nesting some of the checks in
+    # an additional conditional to save on expensive checks. If no dispatches
+    # are generated in the nested block, the conditional is also omitted.
+    # The condition is supplied in `end_conditional_scope()` for convenience
+    # of implementation.
+    def begin_conditional_scope():
+        dispatcher_nodes_stack.append(SequenceNode())
+
+    def end_conditional_scope(expr):
+        assert len(dispatcher_nodes_stack) > 1
+        sequence_node = dispatcher_nodes_stack.pop()
+        cond = _format(expr, value=_format("${info}[{}]", arg_index))
+        if not len(sequence_node):
+            return
+        node = CxxUnlikelyIfNode(cond=cond, attribute=None, body=sequence_node)
+        dispatcher_nodes_stack[-1].append(node)
+
     def dispatch_if(expr):
         if expr is True:
             pattern = "return {func_name}(${info});"
@@ -1287,7 +1304,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
             node = CxxUnlikelyIfNode(cond=conditional,
                                      attribute=None,
                                      body=node)
-        dispatcher_nodes.append(node)
+        dispatcher_nodes_stack[-1].append(node)
         return expr is True and conditional.is_always_true
 
     if len(items) == 1:
@@ -1304,6 +1321,8 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     func_like = find(lambda t, u: t.does_include_nullable_or_dict)
     if func_like:
         dispatch_if("{value}->IsNullOrUndefined()")
+
+    begin_conditional_scope()  # if (value->IsObject()) { ...
 
     # 12.4. if V is a platform object, ...
     def inheritance_length(func_and_type):
@@ -1366,7 +1385,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
         dispatch_if("{value}->IsArray() || "  # Excessive optimization
                     "bindings::IsEsIterableObject"
                     "(${isolate}, {value}, ${exception_state})")
-        dispatcher_nodes.append(
+        dispatcher_nodes_stack[-1].append(
             CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
                               attribute="[[unlikely]]",
                               body=TextNode("return;")))
@@ -1375,7 +1394,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     func_like = find(lambda t, u: u.is_callback_interface or u.is_dictionary or
                      u.is_record or u.is_object)
     if func_like:
-        dispatch_if("{value}->IsObject()")
+        dispatch_if(True)
+
+    end_conditional_scope("{value}->IsObject()")
 
     # 12.11. if Type(V) is Boolean and ...
     func_like = find(lambda t, u: u.is_boolean)
@@ -1404,7 +1425,8 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
                 can_fail = False
                 break
 
-    return dispatcher_nodes, can_fail
+    assert (len(dispatcher_nodes_stack) == 1)
+    return dispatcher_nodes_stack[0], can_fail
 
 
 def make_overload_dispatcher(cg_context):
