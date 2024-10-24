@@ -159,8 +159,7 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
 void MigrationNotificationManager::ShowMigrationErrorNotification(
     CloudProvider provider,
     const std::string& folder_name,
-    const base::FilePath& error_log_path,
-    std::map<base::FilePath, MigrationUploadError> errors) {
+    const base::FilePath& error_log_path) {
   std::u16string provider_str = CloudProviderToString(provider);
 
   std::u16string title = base::ReplaceStringPlaceholders(

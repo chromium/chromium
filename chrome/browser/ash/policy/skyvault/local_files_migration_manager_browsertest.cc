@@ -61,9 +61,9 @@ MATCHER_P(TimeNear, expected_time, "") {
   return delta <= kMaxDelta;
 }
 
-// Constructs the expected destination directory name.
-std::string ExpectedDestinationDirName() {
-  return std::string(kDestinationDirName) + " " +
+// Constructs the expected directory name on the cloud.
+std::string ExpectedUploadRootName() {
+  return std::string(kUploadRootPrefix) + " " +
          std::string(kTestDeviceSerialNumber);
 }
 
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
-                                        ExpectedDestinationDirName(), _))
+                                        ExpectedUploadRootName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
   }
@@ -363,18 +363,19 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
   {
     testing::InSequence s;
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _,
-                                        ExpectedDestinationDirName(), _))
+    EXPECT_CALL(*coordinator.get(),
+                Run(CloudProvider::kOneDrive, _, ExpectedUploadRootName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
     EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
-                                        ExpectedDestinationDirName(), _))
+                                        ExpectedUploadRootName(), _))
         .WillOnce([](CloudProvider cloud_provider,
                      std::vector<base::FilePath> file_paths,
                      const std::string& destination_dir,
                      MigrationDoneCallback callback) {
           // Finish without delay.
-          std::move(callback).Run(/*errors=*/{}, base::FilePath());
+          std::move(callback).Run(/*errors=*/{}, base::FilePath(),
+                                  base::FilePath());
         });
   }
 
@@ -411,8 +412,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
   {
     testing::InSequence s;
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _,
-                                        ExpectedDestinationDirName(), _))
+    EXPECT_CALL(*coordinator.get(),
+                Run(CloudProvider::kOneDrive, _, ExpectedUploadRootName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
   }

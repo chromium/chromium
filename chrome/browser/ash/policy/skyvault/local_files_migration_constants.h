@@ -17,7 +17,7 @@ constexpr base::TimeDelta kFinalMigrationTimeout = base::Hours(1);
 
 // The prefix of the directory the files should be uploaded to. Used with the
 // unique identifier of the device to form the directory's full name.
-constexpr char kDestinationDirName[] = "ChromeOS device";
+inline constexpr char kUploadRootPrefix[] = "ChromeOS device";
 
 }  // namespace policy::local_user_files
 

@@ -22,9 +22,11 @@ namespace policy::local_user_files {
 // Parameters:
 //  errors: Map of source file paths to upload errors (empty if no errors).
 //  upload_root_path: Path to the upload root, or empty on early failure.
+//  error_log_path: Path to the error log file (empty if no errors).
 using MigrationDoneCallback =
     base::OnceCallback<void(std::map<base::FilePath, MigrationUploadError>,
-                            base::FilePath)>;
+                            base::FilePath,
+                            std::optional<base::FilePath>)>;
 
 class MigrationCloudUploader;
 
@@ -62,7 +64,8 @@ class MigrationCoordinator {
   virtual void OnMigrationDone(
       MigrationDoneCallback callback,
       std::map<base::FilePath, MigrationUploadError> errors,
-      base::FilePath upload_root_path);
+      base::FilePath upload_root_path,
+      std::optional<base::FilePath> error_log_path);
 
   // Profile for which this instance was created.
   raw_ptr<Profile> profile_;
@@ -98,6 +101,7 @@ class MigrationCloudUploader {
   virtual void Cancel(base::OnceClosure cancelled_callback) = 0;
 
  protected:
+  void LogError(base::FilePath file_path, MigrationUploadError error);
   // Maps file to their upload errors, if any.
   std::map<base::FilePath, MigrationUploadError> errors_;
 
@@ -116,6 +120,8 @@ class MigrationCloudUploader {
   base::OnceClosure cancelled_callback_;
   // Indicates that the upload was cancelled, e.g. by a policy change.
   bool cancelled_ = false;
+  // Error log path. Can be empty if no errors or it fails to be created.
+  std::optional<base::FilePath> error_log_path_;
 };
 
 // Migration file uploader for uploads to Microsoft OneDrive.

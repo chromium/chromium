@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   manager()->ShowMigrationErrorNotification(
-      CloudProvider(), kDestinationDirName, base::FilePath(),
-      /*errors=*/{});
+      CloudProvider(), kUploadRootPrefix,
+      /*error_log_path=*/base::FilePath());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   manager()->CloseAll();

@@ -101,9 +101,10 @@ void MigrationCoordinator::SetCancelledCallbackForTesting(
 void MigrationCoordinator::OnMigrationDone(
     MigrationDoneCallback callback,
     std::map<base::FilePath, MigrationUploadError> errors,
-    base::FilePath upload_root_path) {
+    base::FilePath upload_root_path,
+    std::optional<base::FilePath> error_log_path) {
   uploader_.reset();
-  std::move(callback).Run(std::move(errors), upload_root_path);
+  std::move(callback).Run(std::move(errors), upload_root_path, error_log_path);
 }
 
 MigrationCloudUploader::MigrationCloudUploader(
@@ -117,6 +118,15 @@ MigrationCloudUploader::MigrationCloudUploader(
       done_callback_(std::move(callback)) {}
 
 MigrationCloudUploader::~MigrationCloudUploader() = default;
+
+void MigrationCloudUploader::LogError(base::FilePath file_path,
+                                      MigrationUploadError error) {
+  if (!error_log_path_.has_value()) {
+    LOG(ERROR) << "Cannot log error, log path is empty.";
+    return;
+  }
+  // TODO(351972769): Create an error log and pass the path.
+}
 
 OneDriveMigrationUploader::OneDriveMigrationUploader(
     Profile* profile,
@@ -133,7 +143,7 @@ OneDriveMigrationUploader::~OneDriveMigrationUploader() = default;
 void OneDriveMigrationUploader::Run() {
   if (files_.empty()) {
     if (done_callback_) {
-      std::move(done_callback_).Run({}, base::FilePath());
+      std::move(done_callback_).Run({}, base::FilePath(), base::FilePath());
     }
     return;
   }
@@ -205,7 +215,8 @@ void OneDriveMigrationUploader::OnUploadDone(
     return;
   }
   CHECK(done_callback_);
-  std::move(done_callback_).Run(std::move(errors_), upload_root_path_);
+  std::move(done_callback_)
+      .Run(std::move(errors_), upload_root_path_, error_log_path_);
 }
 
 GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
@@ -223,7 +234,7 @@ GoogleDriveMigrationUploader::~GoogleDriveMigrationUploader() = default;
 void GoogleDriveMigrationUploader::Run() {
   if (files_.empty()) {
     if (done_callback_) {
-      std::move(done_callback_).Run({}, base::FilePath());
+      std::move(done_callback_).Run({}, base::FilePath(), base::FilePath());
       return;
     }
   }
@@ -295,7 +306,8 @@ void GoogleDriveMigrationUploader::OnUploadDone(
   }
 
   CHECK(done_callback_);
-  std::move(done_callback_).Run(std::move(errors_), upload_root_path_);
+  std::move(done_callback_)
+      .Run(std::move(errors_), upload_root_path_, error_log_path_);
 }
 
 }  // namespace policy::local_user_files

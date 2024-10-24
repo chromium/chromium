@@ -84,7 +84,7 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
 std::string GenerateUploadRootName() {
   std::optional<std::string_view> id =
       ash::system::StatisticsProvider::GetInstance()->GetMachineID();
-  return std::string(kDestinationDirName) + " " + std::string(id.value_or(""));
+  return std::string(kUploadRootPrefix) + " " + std::string(id.value_or(""));
 }
 
 // Converts `state` to its string representation.
@@ -399,7 +399,8 @@ void LocalFilesMigrationManager::StartMigration(
 
 void LocalFilesMigrationManager::OnMigrationDone(
     std::map<base::FilePath, MigrationUploadError> errors,
-    base::FilePath upload_root_path) {
+    base::FilePath upload_root_path,
+    std::optional<base::FilePath> error_log_path) {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration done";
     SkyVaultMigrationWrongStateHistogram(
@@ -412,7 +413,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
   if (!errors.empty()) {
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
-    ProcessErrors(std::move(errors));
+    ProcessErrors(std::move(errors), error_log_path);
     return;
   }
 
@@ -428,14 +429,17 @@ void LocalFilesMigrationManager::OnMigrationDone(
 }
 
 void LocalFilesMigrationManager::ProcessErrors(
-    std::map<base::FilePath, MigrationUploadError> errors) {
+    std::map<base::FilePath, MigrationUploadError> errors,
+    std::optional<base::FilePath> error_log_path) {
   CHECK(state_ == State::kFailure);
   CHECK(!errors.empty());
   // TODO(351971781): Process retryable errors/show correct message.
-  // TODO(351972769): Create an error log and pass the path.
+  if (!error_log_path.has_value()) {
+    LOG(ERROR) << "Local files migration log file path invalid.";
+    return;
+  }
   notification_manager_->ShowMigrationErrorNotification(
-      cloud_provider_, upload_root_, /*error_log_path=*/base::FilePath(),
-      std::move(errors));
+      cloud_provider_, upload_root_, error_log_path.value());
 }
 
 void LocalFilesMigrationManager::CleanupLocalFiles() {

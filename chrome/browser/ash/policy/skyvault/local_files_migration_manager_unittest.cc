@@ -200,7 +200,7 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
             {
                 {base::FilePath("test.txt"), MigrationUploadError::kCopyFailed},
             },
-            base::FilePath());
+            base::FilePath(), base::FilePath());
         run_future.SetValue();
       });
 

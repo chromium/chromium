@@ -23,7 +23,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-using policy::local_user_files::kDestinationDirName;
+using policy::local_user_files::kUploadRootPrefix;
 using policy::local_user_files::SkyvaultOneDriveTest;
 using policy::local_user_files::UploadTrigger;
 
@@ -96,18 +96,18 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   OdfsSkyvaultUploader::Upload(
       profile(), source_file_path,
       /*relative_source_path=*/base::FilePath(test_dir),
-      /*upload_root=*/kDestinationDirName, UploadTrigger::kMigration,
+      /*upload_root=*/kUploadRootPrefix, UploadTrigger::kMigration,
       progress_callback.Get(), upload_callback.GetCallback());
 
   auto [url, error, upload_root_path] = upload_callback.Get();
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(url.is_valid());
   EXPECT_EQ(GetODFS(profile())->GetFileSystemInfo().mount_path().Append(
-                kDestinationDirName),
+                kUploadRootPrefix),
             upload_root_path);
   // Check that the source file has been moved to OneDrive.
   CheckPathExistsOnODFS(base::FilePath("/")
-                            .AppendASCII(kDestinationDirName)
+                            .AppendASCII(kUploadRootPrefix)
                             .AppendASCII(test_dir)
                             .AppendASCII(test_file_name));
 }
