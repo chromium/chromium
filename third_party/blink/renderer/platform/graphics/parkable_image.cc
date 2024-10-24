@@ -346,7 +346,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
 
   base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
-      std::move(reserved_chunk), vector.data());
+      std::move(reserved_chunk), base::as_byte_span(vector));
   base::TimeDelta elapsed = timer.Elapsed();
 
   // Acquire the lock again after writing.
@@ -458,10 +458,9 @@ bool ParkableImageImpl::MaybePark(
 // static
 size_t ParkableImageImpl::ReadFromDiskIntoBuffer(
     DiskDataMetadata* on_disk_metadata,
-    void* buffer,
-    size_t capacity) {
+    base::span<uint8_t> buffer) {
   size_t size = on_disk_metadata->size();
-  DCHECK(size <= capacity);
+  DCHECK_LE(size, buffer.size());
   ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata,
                                                          buffer);
   return size;

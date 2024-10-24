@@ -139,15 +139,14 @@ std::unique_ptr<ReservedChunk> DiskDataAllocator::TryReserveChunk(size_t size) {
 
 std::unique_ptr<DiskDataMetadata> DiskDataAllocator::Write(
     std::unique_ptr<ReservedChunk> chunk,
-    const void* data) {
+    base::span<const uint8_t> data) {
   std::unique_ptr<DiskDataMetadata> metadata = chunk->Take();
   DCHECK(metadata);
 
-  int size_int = static_cast<int>(metadata->size());
-  const char* data_char = reinterpret_cast<const char*>(data);
-  int written = DoWrite(metadata->start_offset(), data_char, size_int);
+  std::optional<size_t> written =
+      DoWrite(metadata->start_offset(), data.first(metadata->size()));
 
-  if (size_int != written) {
+  if (metadata->size() != written) {
     Discard(std::move(metadata));
 
     // Assume that the error is not transient. This can happen if the disk is
@@ -161,12 +160,11 @@ std::unique_ptr<DiskDataMetadata> DiskDataAllocator::Write(
   return metadata;
 }
 
-void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {
+void DiskDataAllocator::Read(const DiskDataMetadata& metadata,
+                             base::span<uint8_t> data) {
   // Doesn't need locking as files support concurrent access, and we don't
   // update metadata.
-  char* data_char = reinterpret_cast<char*>(data);
-  DoRead(metadata.start_offset(), data_char,
-         base::checked_cast<int>(metadata.size()));
+  DoRead(metadata.start_offset(), data.first(metadata.size()));
 
 #if DCHECK_IS_ON()
   {
@@ -192,26 +190,29 @@ void DiskDataAllocator::Discard(std::unique_ptr<DiskDataMetadata> metadata) {
   ReleaseChunk(*metadata);
 }
 
-int DiskDataAllocator::DoWrite(int64_t offset, const char* data, int size) {
-  int rv = UNSAFE_TODO(file_.Write(offset, data, size));
+std::optional<size_t> DiskDataAllocator::DoWrite(
+    int64_t offset,
+    base::span<const uint8_t> data) {
+  std::optional<size_t> written = file_.Write(offset, data);
 
   // No PCHECK(), since a file writing error is recoverable.
-  if (rv != size) {
-    LOG(ERROR) << "DISK: Cannot write to disk. written = " << rv << " "
+  if (written != data.size()) {
+    LOG(ERROR) << "DISK: Cannot write to disk. written = "
+               << written.value_or(0u) << " "
                << base::File::ErrorToString(base::File::GetLastFileError());
   }
-  return rv;
+  return written;
 }
 
-void DiskDataAllocator::DoRead(int64_t offset, char* data, int size) {
+void DiskDataAllocator::DoRead(int64_t offset, base::span<uint8_t> data) {
   // This happens on the main thread, which is typically not allowed. This is
   // fine as this is expected to happen rarely, and only be slow with memory
   // pressure, in which case writing to/reading from disk is better than
   // swapping out random parts of the memory. See crbug.com/1029320 for details.
   base::ScopedAllowBlocking allow_blocking;
-  int rv = UNSAFE_TODO(file_.Read(offset, data, size));
+  std::optional<size_t> read = file_.Read(offset, data);
   // Can only crash, since we cannot continue without the data.
-  PCHECK(rv == size) << "Likely file corruption.";
+  PCHECK(read == data.size()) << "Likely file corruption.";
 }
 
 void DiskDataAllocator::ProvideTemporaryFile(base::File file) {
