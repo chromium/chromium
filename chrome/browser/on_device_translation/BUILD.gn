@@ -28,6 +28,18 @@ source_set("constants") {
   ]
 }
 
+source_set("translation_metrics") {
+  sources = [
+    "translation_metrics.cc",
+    "translation_metrics.h",
+  ]
+
+  deps = [
+    ":language_pack_util",
+    "//base",
+  ]
+}
+
 source_set("language_pack_util") {
   sources = [
     "language_pack_util.cc",
@@ -44,10 +56,12 @@ source_set("unit_tests") {
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
     "language_pack_util_unittest.cc",
     "translation_manager_impl_unittest.cc",
+    "translation_metrics_unittest.cc",
   ]
   deps = [
     ":language_pack_util",
     ":prefs",
+    ":translation_metrics",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",

@@ -13,7 +13,12 @@
 
 namespace on_device_translation {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // The supported languages for on-device translation.
+//
+// LINT.IfChange(SupportedLanguage)
 enum class SupportedLanguage {
   kEn = 0,
   kEs = 1,
@@ -52,6 +57,7 @@ enum class SupportedLanguage {
   kUk = 34,
   kMaxValue = kUk,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:SupportedLanguage)
 
 // Converts a SupportedLanguage to a language code.
 std::string_view ToLanguageCode(SupportedLanguage supported_language);
@@ -491,6 +497,14 @@ std::string GetPackageInstallDirName(LanguagePackKey);
 // Returns the suffix for the package name of a language pack.
 // eg: "en-es".
 std::string GetPackageNameSuffix(LanguagePackKey);
+
+// Returns the source language code of a language pack.
+// eg: "en".
+std::string_view GetSourceLanguageCode(LanguagePackKey);
+
+// Returns the source language code of a language pack.
+// eg: "es".
+std::string_view GetTargetLanguageCode(LanguagePackKey);
 
 // Returns the names of sub-directories in the package install directory that
 // need to be verified.

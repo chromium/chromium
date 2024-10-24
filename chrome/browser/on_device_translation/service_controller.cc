@@ -25,6 +25,7 @@
 #include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
+#include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
@@ -286,14 +287,21 @@ void OnDeviceTranslationServiceController::CreateTranslator(
         if (to_be_registered_packs.size() +
                 GetRegisteredLanguagePacks().size() >
             kTranslationAPILimitLanguagePackCountMax) {
-          // TODO(crbug.com/358030919): Add UMA, and consider printing errors
+          // TODO(crbug.com/358030919): Consider printing errors
           // to DevTool's console.
+          on_device_translation::RecordLanguagePairUma(
+              "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
+              source_lang, target_lang);
           std::move(callback).Run(false);
           return;
         }
       }
 
       for (const auto& language_pack : to_be_registered_packs) {
+        on_device_translation::RecordLanguagePairUma(
+            "Translate.OnDeviceTranslation.Download.LanguagePair",
+            on_device_translation::GetSourceLanguageCode(language_pack),
+            on_device_translation::GetTargetLanguageCode(language_pack));
         // Register the language pack component.
         RegisterLanguagePackComponent(language_pack);
       }

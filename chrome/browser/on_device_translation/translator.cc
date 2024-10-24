@@ -6,13 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
+#include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
 namespace on_device_translation {
 
 Translator::Translator(const std::string& source_lang,
                        const std::string& target_lang,
-                       base::OnceCallback<void(bool)> callback) {
+                       base::OnceCallback<void(bool)> callback)
+    : source_lang_(source_lang), target_lang_(target_lang) {
   OnDeviceTranslationServiceController::GetInstance()->CreateTranslator(
       source_lang, target_lang, translator_remote_.BindNewPipeAndPassReceiver(),
       std::move(callback));
@@ -22,6 +24,10 @@ Translator::~Translator() = default;
 
 void Translator::Translate(const std::string& input,
                            TranslateCallback callback) {
+  on_device_translation::RecordTranslationAPICallForLanguagePair(
+      "Translate", source_lang_, target_lang_);
+  on_device_translation::RecordTranslationCharacterCount(
+      source_lang_, target_lang_, input.size());
   if (translator_remote_.is_connected()) {
     translator_remote_->Translate(
         input, base::BindOnce(

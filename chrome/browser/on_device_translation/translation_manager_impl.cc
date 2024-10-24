@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
+#include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/on_device_translation/translator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/language/core/browser/pref_names.h"
@@ -67,6 +68,8 @@ void TranslationManagerImpl::CanCreateTranslator(
     const std::string& target_lang,
     CanCreateTranslatorCallback callback) {
   CHECK(browser_context_);
+  on_device_translation::RecordTranslationAPICallForLanguagePair(
+      "CanTranslate", source_lang, target_lang);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())
               ->GetPrefs()
@@ -85,6 +88,8 @@ void TranslationManagerImpl::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<blink::mojom::Translator> receiver,
     CreateTranslatorCallback callback) {
+  on_device_translation::RecordTranslationAPICallForLanguagePair(
+      "Create", source_lang, target_lang);
   CHECK(browser_context_);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())

@@ -8009,6 +8009,7 @@ static_library("browser") {
       "//chrome/browser/on_device_translation:constants",
       "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/on_device_translation:prefs",
+      "//chrome/browser/on_device_translation:translation_metrics",
       "//components/services/on_device_translation:on_device_translation_service",
     ]
   }

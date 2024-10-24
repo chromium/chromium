@@ -212,4 +212,20 @@ std::vector<std::string> GetPackageInstallSubDirNamesForVerification(
   };
 }
 
+std::string_view GetSourceLanguageCode(LanguagePackKey language_pack_key) {
+  const SupportedLanguage supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto [source_lang, _] =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
+  return ToLanguageCode(source_lang);
+}
+
+std::string_view GetTargetLanguageCode(LanguagePackKey language_pack_key) {
+  const SupportedLanguage supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto [_, target_lang] =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
+  return ToLanguageCode(target_lang);
+}
+
 }  // namespace on_device_translation

@@ -28,6 +28,8 @@ class Translator : public blink::mojom::Translator {
   void Translate(const std::string& input, TranslateCallback callback) override;
 
  private:
+  const std::string source_lang_;
+  const std::string target_lang_;
   mojo::Remote<on_device_translation::mojom::Translator> translator_remote_;
 };
 
