@@ -65,7 +65,8 @@ void SyncBridgeTabGroupModelWrapper::RemoveTabFromGroup(
   CHECK(group);
   CHECK_EQ(group->is_shared_tab_group(), IsSharedTabGroupData());
 
-  model_->RemoveTabFromGroupFromSync(group_id, tab_id);
+  model_->RemoveTabFromGroupFromSync(group_id, tab_id,
+                                     /*prevent_group_destruction=*/false);
 }
 
 void SyncBridgeTabGroupModelWrapper::RemoveGroup(const base::Uuid& group_id) {

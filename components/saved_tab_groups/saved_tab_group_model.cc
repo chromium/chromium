@@ -405,8 +405,10 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
       base::UserMetricsAction("TabGroups_SavedTabGroups_TabRemoved"));
 }
 
-void SavedTabGroupModel::RemoveTabFromGroupFromSync(const base::Uuid& group_id,
-                                                    const base::Uuid& tab_id) {
+void SavedTabGroupModel::RemoveTabFromGroupFromSync(
+    const base::Uuid& group_id,
+    const base::Uuid& tab_id,
+    bool prevent_group_destruction) {
   std::optional<int> index = GetIndexOf(group_id);
   CHECK(index.has_value());
   const SavedTabGroup& group = saved_tab_groups_[index.value()];
@@ -415,8 +417,9 @@ void SavedTabGroupModel::RemoveTabFromGroupFromSync(const base::Uuid& group_id,
     return;
   }
 
-  // Remove the group from the model if the last tab will be removed from it.
-  if (group.saved_tabs().size() == 1) {
+  // Remove the group from the model if the last tab will be removed from it,
+  // unless explicitly preventing group destruction.
+  if (group.saved_tabs().size() == 1 && !prevent_group_destruction) {
     RemovedFromSync(group_id);
     return;
   }

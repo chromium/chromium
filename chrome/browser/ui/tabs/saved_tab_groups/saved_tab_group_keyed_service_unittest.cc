@@ -595,7 +595,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Remove the first tab from the saved group.
   service()->model()->RemoveTabFromGroupFromSync(
-      guid, retrieved_saved_group->saved_tabs().at(0).saved_tab_guid());
+      guid, retrieved_saved_group->saved_tabs().at(0).saved_tab_guid(),
+      /*prevent_group_destruction=*/false);
 
   // Verify the number of tabs in the TabGroup and SavedTabGroup are the same.
   const gfx::Range& modified_tab_range = tab_group->ListTabs();
@@ -815,7 +816,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, RemoveTabFromSyncRemovesLocalTab) {
   // Remove one tab from the saved group.
   service()->model()->RemoveTabFromGroupFromSync(
       saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid());
+      saved_group->saved_tabs().at(0).saved_tab_guid(),
+      /*prevent_group_destruction=*/false);
 
   // It should have been removed from the local group too.
   EXPECT_EQ(1, tabstrip->count());
@@ -839,7 +841,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Remove the only tab from the saved group.
   service()->model()->RemoveTabFromGroupFromSync(
       saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid());
+      saved_group->saved_tabs().at(0).saved_tab_guid(),
+      /*prevent_group_destruction=*/false);
 
   // The local tab in the group should still be in the tabstrip but no longer in
   // the group.
@@ -1172,7 +1175,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTestV2, LastTabRemoveFromSyncClosesGroup) {
   // Remove the only tab from the saved group.
   service->model()->RemoveTabFromGroupFromSync(
       saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid());
+      saved_group->saved_tabs().at(0).saved_tab_guid(),
+      /*prevent_group_destruction=*/false);
 
   // The group should have closed along with all of its tabs.
   EXPECT_EQ(1, tab_strip_model->count());

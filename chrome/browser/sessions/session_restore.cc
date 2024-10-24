@@ -1003,7 +1003,12 @@ class SessionRestoreImpl : public BrowserListObserver {
                          std::optional<std::string> sync_id) {
     tab_groups::TabGroupSyncService* service =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
-    CHECK(service);
+    // It is possible that TabGroupSyncService could have different settings
+    // for a given profile where the service may not exist. Return without
+    // processing the saved group if that is the case.
+    if (!service) {
+      return;
+    }
 
     if (sync_id) {
       const base::Uuid& sync_guid = base::Uuid::ParseLowercase(sync_id.value());
