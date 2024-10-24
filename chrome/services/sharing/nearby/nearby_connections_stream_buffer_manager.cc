@@ -11,8 +11,7 @@
 #include "third_party/nearby/src/internal/platform/exception.h"
 #include "third_party/nearby/src/internal/platform/input_stream.h"
 
-namespace nearby {
-namespace connections {
+namespace nearby::connections {
 
 NearbyConnectionsStreamBufferManager::PayloadWithBuffer::PayloadWithBuffer(
     Payload payload)
@@ -106,5 +105,4 @@ NearbyConnectionsStreamBufferManager::GetCompletePayloadAndStopTracking(
   return complete_payload;
 }
 
-}  // namespace connections
-}  // namespace nearby
+}  // namespace nearby::connections
