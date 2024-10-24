@@ -1129,11 +1129,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
                 ],
             ),
-            "device_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
-                ],
-            ),
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
@@ -3816,11 +3811,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
                 ],
             ),
-            "device_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
-                ],
-            ),
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
@@ -3972,11 +3962,6 @@ ci.builder(
                 ],
                 # TODO(crbug.com/337935399): Remove experiment after the bug is fixed.
                 experiment_percentage = 100,
-            ),
-            "device_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
-                ],
             ),
             "gl_tests_validating": targets.mixin(
                 args = [
@@ -4227,11 +4212,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
                 ],
             ),
-            "device_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
-                ],
-            ),
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
@@ -4388,11 +4368,6 @@ ci.builder(
             "crashpad_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
-                ],
-            ),
-            "device_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
                 ],
             ),
             "gl_tests_validating": targets.mixin(
