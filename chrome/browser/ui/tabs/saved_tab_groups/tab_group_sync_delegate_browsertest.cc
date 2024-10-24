@@ -64,6 +64,34 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
     model_ = nullptr;
   }
 
+  void OnTabGroupAdded(const SavedTabGroup& group,
+                       TriggerSource source) override {
+    callback_received_ = true;
+    if (quit_) {
+      std::move(quit_).Run();
+    }
+  }
+
+  void OnTabGroupUpdated(const SavedTabGroup& group,
+                         TriggerSource source) override {
+    callback_received_ = true;
+    if (quit_) {
+      std::move(quit_).Run();
+    }
+  }
+
+  void WaitUntilCallbackReceived() {
+    if (callback_received_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_ = run_loop.QuitClosure();
+    run_loop.Run();
+
+    // Reset status.
+    callback_received_ = false;
+  }
+
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     subscription_ =
@@ -111,6 +139,8 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
   base::CallbackListSubscription subscription_;
   raw_ptr<SavedTabGroupModel> model_;
   raw_ptr<TabGroupSyncService> service_;
+  base::OnceClosure quit_;
+  bool callback_received_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
@@ -176,6 +206,7 @@ IN_PROC_BROWSER_TEST_F(
   LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
   EXPECT_TRUE(
       browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
+  WaitUntilCallbackReceived();
   std::optional<SavedTabGroup> group_1 = service->GetGroup(local_id);
   EXPECT_TRUE(group_1);
   EXPECT_EQ(2u, saved_tab_group_bar->children().size());

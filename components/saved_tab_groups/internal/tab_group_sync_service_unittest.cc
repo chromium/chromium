@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -189,6 +190,7 @@ class TabGroupSyncServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
 
     InitializeTestGroups();
+    task_environment_.RunUntilIdle();
   }
 
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
@@ -784,8 +786,13 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::REMOTE)))
-      .Times(1);
+      .Times(0);
   model_->AddedFromSync(group_4);
+
+  // Verify that the observers are posted instead of directly notifying.
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::REMOTE)))
+      .Times(1);
   task_environment_.RunUntilIdle();
 }
 
@@ -793,16 +800,60 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
-      .Times(1);
+      .Times(0);
   model_->Add(group_4);
+
+  // Verify that the observers are posted instead of directly notifying.
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
+
+  SavedTabGroup group_4 = test::CreateTestSavedTabGroupWithNoTabs();
+  LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
+  group_4.SetLocalGroupId(tab_group_id);
+
+  // Add an empty group. Observers shouldn't get notified.
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  model_->Add(group_4);
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  task_environment_.RunUntilIdle();
+
+  // Empty group should be excluded from GetAllGroups().
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
+
+  // Add a tab locally. Observers should get notified.
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  auto local_tab_id_2 = test::GenerateRandomTabID();
+  tab_group_sync_service_->AddTab(tab_group_id, local_tab_id_2,
+                                  u"random tab title", GURL("www.google.com"),
+                                  std::nullopt);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 4u);
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::REMOTE)))
-      .Times(1);
+      .Times(0);
+
+  // Verify that the observers are posted instead of directly notifying.
   model_->UpdatedVisualDataFromSync(group_1_.saved_guid(), &visual_data);
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::REMOTE)))
+      .Times(1);
   task_environment_.RunUntilIdle();
 }
 
@@ -810,8 +861,14 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
-      .Times(1);
+      .Times(0);
+
+  // Verify that the observers are posted instead of directly notifying.
   model_->UpdateVisualData(group_1_.local_group_id().value(), &visual_data);
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
@@ -865,7 +922,11 @@ TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {
   EXPECT_FALSE(group->saved_tabs()[0].local_tab_id().has_value());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
+TEST_F(TabGroupSyncServiceTest,
+       EmptyGroupsAreExcludedFromGetCallAndObserverMethods) {
+  auto all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_EQ(all_groups.size(), 3u);
+
   // Create a group with no tabs. Observers won't be notified.
   SavedTabGroup group_4 = test::CreateTestSavedTabGroupWithNoTabs();
   base::Uuid group_id = group_4.saved_guid();
@@ -874,6 +935,10 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
       .Times(0);
   model_->AddedFromSync(group_4);
   task_environment_.RunUntilIdle();
+
+  // Verify that GetAllGroups call will not return it.
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_EQ(all_groups.size(), 3u);
 
   // Update visuals. Observers still won't be notified.
   EXPECT_CALL(*observer_,
