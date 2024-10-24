@@ -41,7 +41,6 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
-#include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "net/http/http_status_code.h"
@@ -179,6 +178,21 @@ void OnInstallPackResponse(
   std::move(callback).Run(std::move(voicePackInfo));
 }
 
+#else
+InstallationState GetInstallationStateFromStatusCode(
+    const content::LanguageInstallStatus status_code) {
+  switch (status_code) {
+    case content::LanguageInstallStatus::NOT_INSTALLED:
+      return InstallationState::kNotInstalled;
+    case content::LanguageInstallStatus::INSTALLING:
+      return InstallationState::kInstalling;
+    case content::LanguageInstallStatus::INSTALLED:
+      return InstallationState::kInstalled;
+    case content::LanguageInstallStatus::FAILED:
+    case content::LanguageInstallStatus::UNKNOWN:
+      return InstallationState::kUnknown;
+  }
+}
 #endif
 
 class PersistentAccessibilityHelper
@@ -297,6 +311,9 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(this);
+#endif
   side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
                                web_ui_->GetWebContents())
                                ->controller();
@@ -392,6 +409,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 }
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
+      this);
+#endif
   translate_observation_.Reset();
   web_screenshotter_.reset();
   main_observer_.reset();
@@ -476,6 +497,19 @@ void ReadAnythingUntrustedPageHandler::GetDependencyParserModel(
   OnDependencyParserModelFileAvailabilityChanged(std::move(callback), true);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
+    const std::string& language,
+    content::LanguageInstallStatus install_status,
+    const std::string& error) {
+  auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
+  voicePackInfo->language = language;
+  voicePackInfo->pack_state = VoicePackInstallationState::NewInstallationState(
+      GetInstallationStateFromStatusCode(install_status));
+  OnGetVoicePackInfo(std::move(voicePackInfo));
+}
+#endif
+
 void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
     read_anything::mojom::VoicePackInfoPtr info) {
   page_->OnGetVoicePackInfo(std::move(info));
@@ -494,16 +528,6 @@ void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
   TtsController::GetInstance()->LanguageStatusRequest(
       profile_, language, string_constants::kReadingModeName,
       static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
-
-  //  TODO (crbug.com/40927698) The above LanguageStatusRequest is not handled
-  //  by the ReadAnythingUntrustedPageHandler and is currently a no-op.
-  //  Implement high quality voice support for non ChromeOS platforms. For now,
-  //  just return that all high quality voices are unavailable.
-  auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
-  voicePackInfo->language = language;
-  voicePackInfo->pack_state =
-      VoicePackInstallationState::NewErrorCode(ErrorCode::kUnsupportedPlatform);
-  OnGetVoicePackInfo(std::move(voicePackInfo));
 #endif
 }
 

@@ -18,6 +18,7 @@
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_constants.h"
 #include "components/translate/core/browser/translate_client.h"
+#include "content/public/browser/tts_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -84,6 +85,8 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
 class ReadAnythingUntrustedPageHandler :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     public ash::SessionObserver,
+#else
+    public content::UpdateLanguageStatusDelegate,
 #endif
     public ui::AXActionHandlerObserver,
     public read_anything::mojom::UntrustedPageHandler,
@@ -131,6 +134,13 @@ class ReadAnythingUntrustedPageHandler :
                              const std::vector<gfx::Size>& sizes);
 
  private:
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // content::UpdateLanguageStatusDelegate:
+  void OnUpdateLanguageStatus(const std::string& lang,
+                              content::LanguageInstallStatus install_status,
+                              const std::string& error) override;
+#endif
+
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
