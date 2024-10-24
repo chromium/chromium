@@ -26,6 +26,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillUsePLAddressModel;
     case RegexFeature::kAutofillUseFRAddressModel:
       return &features::kAutofillUseFRAddressModel;
+    case RegexFeature::kAutofillSupportPhoneticNameForJP:
+      return &features::kAutofillSupportPhoneticNameForJP;
   }
   NOTREACHED();
 }
