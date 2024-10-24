@@ -64,7 +64,9 @@ class FormFiller {
   virtual ~FormFiller();
 
   // Given a `form_field` and corresponding `autofill_field` to fill and the
-  // `trigger_field` return the skip reasons for that field.
+  // `trigger_field` return the set of all reasons for that field to be skipped
+  // for filling. If the field should not be skipped, an empty set is returned
+  // (and not {FieldFillingSkipReason::kNotSkipped}).
   // `type_count` tracks the number of times a type of field has been filled.
   // `type_group_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
@@ -73,12 +75,10 @@ class FormFiller {
   // `field_types_to_fill` and the classified fields for which we have data
   // stored.
   // `filling_product` is the type of filling calling this function.
-  // TODO(crbug.com/40207153): Add the case removed in crrev.com/c/4675831 when
-  // the experiment resumes.
   // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
   // also a FieldTypeSet.
   // TODO(crbug.com/40227496): Keep only one of 'field' and 'autofill_field'.
-  static FieldFillingSkipReason GetFieldFillingSkipReason(
+  static DenseSet<FieldFillingSkipReason> GetFillingSkipReasonsForField(
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
@@ -103,7 +103,7 @@ class FormFiller {
   // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
   // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
   // also a FieldTypeSet.
-  base::flat_map<FieldGlobalId, FieldFillingSkipReason>
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
   GetFieldFillingSkipReasons(
       base::span<const FormFieldData> fields,
       const FormStructure& form_structure,

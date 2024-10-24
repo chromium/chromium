@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -82,7 +83,8 @@ autofill::Suggestion::Icon GetAutofillPredictionImprovementsIcon() {
 // positives.
 // TODO(crbug.com/364808228): Remove.
 constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
-    kIgnoreableSkipReasons = {
+    kIgnorableSkipReasons = {
+        autofill::FieldFillingSkipReason::kNotInFilledSection,
         autofill::FieldFillingSkipReason::kNoFillableGroup};
 
 // Creates a child suggestion for `suggestion` given `prediction` and adds it to
@@ -409,7 +411,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   autofill::Suggestion suggestion(
       prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
-      GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
+      GetValuesToFill(), GetFieldTypesToFill(), kIgnorableSkipReasons);
   suggestion.payload = payload;
   suggestion.icon = GetAutofillPredictionImprovementsIcon();
 

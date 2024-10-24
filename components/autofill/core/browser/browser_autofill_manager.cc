@@ -3012,7 +3012,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
     // If the FormData and FormStructure do not have the same size, we assume
     // as a fallback that all fields are fillable.
-    base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons;
+    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+        skip_reasons;
     size_t num_fields = form_structure ? form_structure->field_count() : 0;
     if (form_structure && form.fields().size() == num_fields) {
       skip_reasons = form_filler_->GetFieldFillingSkipReasons(
@@ -3027,11 +3028,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < num_fields; ++i) {
-      const AutofillField* autofill_field = form_structure->field(i);
-      auto it = skip_reasons.find(autofill_field->global_id());
-      if (it == skip_reasons.end() ||
-          it->second == FieldFillingSkipReason::kNotSkipped) {
-        field_types.insert(autofill_field->Type().GetStorableType());
+      if (auto it = skip_reasons.find(form_structure->field(i)->global_id());
+          it == skip_reasons.end() || it->second.empty()) {
+        field_types.insert(form_structure->field(i)->Type().GetStorableType());
       }
     }
     return field_types;
