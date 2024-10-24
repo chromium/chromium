@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
 #include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -263,21 +264,19 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // Handle all cases where the initial navigation was captured, and that now
   // needs to be corrected. See the table at
   // bit.ly/pwa-navigation-handling-dd?tab=t.0#bookmark=id.hnvzj4iwiviz
-
   // Handle the use-case where the first result was navigation captured
   // into an app window and both apps had NavigateNew as launch handlers,
   // triggered via a non user modified.
   std::optional<std::pair<Browser*, int>> existing_app_host = std::nullopt;
-  Browser* main_browser =
-      chrome::FindBrowserWithTab(web_contents_for_navigation);
   if (target_app_id) {
     std::optional<mojom::UserDisplayMode> requested_app_user_display_mode =
         registrar.GetAppUserDisplayMode(target_app_id.value());
     CHECK(requested_app_user_display_mode.has_value());
     existing_app_host =
-        GetAppHostForCapturing(*main_browser->profile(), *target_app_id,
+        GetAppHostForCapturing(profile_.get(), *target_app_id,
                                requested_app_user_display_mode.value());
   }
+
   if (initial_nav_handling_result ==
           NavigationHandlingInitialResult::kAppWindowNavigationCaptured &&
       redirection_info.effective_launch_handling_mode ==
@@ -298,11 +297,67 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
     }
   }
 
+  // Only proceed from now on if the final app can be capturable depending on
+  // the result of the initial navigation handling. This involves only 2
+  // use-cases, where the intermediary result is either a browser tab, or an app
+  // window that opened as a result of a capturable navigation.
+  bool final_navigation_can_be_capturable =
+      initial_nav_handling_result ==
+          NavigationHandlingInitialResult::kAppWindowNavigationCaptured ||
+      initial_nav_handling_result ==
+          NavigationHandlingInitialResult::kBrowserTab;
+  if (!final_navigation_can_be_capturable) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // Handle the use-case where the target_app_id has a launch handling mode of
+  // kFocusExisting, and there is an existing app window already present that
+  // can be focused. The existing window is focused, and navigation is
+  // aborted.
+  if (target_app_id &&
+      GetLaunchHandlerMode(registrar, *target_app_id) ==
+          LaunchHandler::ClientMode::kFocusExisting &&
+      existing_app_host.has_value() && existing_app_host->second != -1) {
+    // Focus any existing app window if it exists.
+    content::WebContents* pre_existing_contents =
+        existing_app_host->first->tab_strip_model()->GetWebContentsAt(
+            existing_app_host->second);
+    CHECK(pre_existing_contents);
+
+    pre_existing_contents->Focus();
+    CHECK_NE(pre_existing_contents, web_contents_for_navigation);
+
+    // Perform post navigation operations, like recording app launch metrics,
+    // or showing the navigation capturing IPH.
+    EnqueueLaunchParams(pre_existing_contents, *target_app_id, final_url,
+                        /*wait_for_navigation_to_complete=*/false);
+    MaybeShowNavigationCaptureIph(*target_app_id, &profile_.get(),
+                                  existing_app_host->first);
+    RecordLaunchMetrics(*target_app_id,
+                        apps::LaunchContainer::kLaunchContainerWindow,
+                        apps::LaunchSource::kFromNavigationCapturing, final_url,
+                        pre_existing_contents);
+
+    // Close the old tab or app window, if it was created as part of the current
+    // navigation to mimic the behavior where the redirected url matches an
+    // outcome without redirection. Any residual app windows or tabs that were
+    // there before the current navigation started shouldn't be closed.
+    if (redirection_info.effective_launch_handling_mode ==
+            InitialNavigationCapturedBehavior::kNavigatedNew ||
+        initial_nav_handling_result ==
+            NavigationHandlingInitialResult::kBrowserTab) {
+      web_contents_for_navigation->ClosePage();
+    }
+    return content::NavigationThrottle::CANCEL;
+  }
+
   return content::NavigationThrottle::PROCEED;
 }
 
 NavigationCapturingRedirectionThrottle::NavigationCapturingRedirectionThrottle(
     content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    : content::NavigationThrottle(navigation_handle),
+      profile_(*Profile::FromBrowserContext(
+          navigation_handle->GetWebContents()->GetBrowserContext())) {}
 
 }  // namespace web_app
