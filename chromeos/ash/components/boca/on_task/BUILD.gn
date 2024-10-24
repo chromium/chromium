@@ -11,6 +11,8 @@ static_library("on_task") {
     "on_task_blocklist.cc",
     "on_task_blocklist.h",
     "on_task_extensions_manager.h",
+    "on_task_notifications_manager.cc",
+    "on_task_notifications_manager.h",
     "on_task_prefs.cc",
     "on_task_prefs.h",
     "on_task_session_manager.cc",
@@ -21,6 +23,7 @@ static_library("on_task") {
   deps = [
     ":activity",
     "//ash/constants:constants",
+    "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
@@ -47,7 +50,10 @@ static_library("activity") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_task_session_manager_unittest.cc" ]
+  sources = [
+    "on_task_notifications_manager_unittest.cc",
+    "on_task_session_manager_unittest.cc",
+  ]
 
   deps = [
     ":activity",

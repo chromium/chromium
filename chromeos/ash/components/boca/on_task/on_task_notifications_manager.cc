@@ -1,0 +1,121 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
+
+#include <memory>
+#include <utility>
+
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
+
+namespace ash::boca {
+
+OnTaskNotificationsManager::ToastCreateParams::ToastCreateParams(
+    std::string id,
+    ToastCatalogName catalog_name,
+    base::RepeatingCallback<std::u16string(base::TimeDelta)>
+        text_description_callback,
+    base::RepeatingClosure completion_callback,
+    base::TimeDelta countdown_period)
+    : id(id),
+      catalog_name(catalog_name),
+      text_description_callback(std::move(text_description_callback)),
+      completion_callback(std::move(completion_callback)),
+      countdown_period(countdown_period) {}
+
+OnTaskNotificationsManager::ToastCreateParams::ToastCreateParams(
+    const ToastCreateParams& other) = default;
+OnTaskNotificationsManager::ToastCreateParams&
+OnTaskNotificationsManager::ToastCreateParams::operator=(
+    const ToastCreateParams& other) = default;
+OnTaskNotificationsManager::ToastCreateParams::ToastCreateParams(
+    ToastCreateParams&& other) = default;
+OnTaskNotificationsManager::ToastCreateParams&
+OnTaskNotificationsManager::ToastCreateParams::operator=(
+    ToastCreateParams&& other) = default;
+
+OnTaskNotificationsManager::ToastCreateParams::~ToastCreateParams() = default;
+
+void OnTaskNotificationsManager::Delegate::ShowToast(ToastData toast_data) {
+  ash::ToastManager* const toast_manager = ash::ToastManager::Get();
+  CHECK(toast_manager);
+  toast_manager->Show(std::move(toast_data));
+}
+
+// static
+std::unique_ptr<OnTaskNotificationsManager>
+OnTaskNotificationsManager::Create() {
+  auto delegate = std::make_unique<OnTaskNotificationsManager::Delegate>();
+  return base::WrapUnique(new OnTaskNotificationsManager(std::move(delegate)));
+}
+
+// static
+std::unique_ptr<OnTaskNotificationsManager>
+OnTaskNotificationsManager::CreateForTest(std::unique_ptr<Delegate> delegate) {
+  return base::WrapUnique(new OnTaskNotificationsManager(std::move(delegate)));
+}
+
+OnTaskNotificationsManager::OnTaskNotificationsManager(
+    std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)) {}
+
+OnTaskNotificationsManager::~OnTaskNotificationsManager() = default;
+
+void OnTaskNotificationsManager::CreateToast(ToastCreateParams params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pending_notifications_map_.contains(params.id)) {
+    StopProcessingNotification(params.id);
+  }
+  auto notification_timer = std::make_unique<base::RepeatingTimer>();
+  notification_timer->Start(
+      FROM_HERE, base::Seconds(1),
+      base::BindRepeating(&OnTaskNotificationsManager::CreateToastInternal,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::OwnedRef(params)));
+  pending_notifications_map_[params.id] = std::move(notification_timer);
+}
+
+void OnTaskNotificationsManager::StopProcessingNotification(
+    const std::string& notification_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_notifications_map_.contains(notification_id)) {
+    return;
+  }
+  pending_notifications_map_.erase(notification_id);
+}
+
+void OnTaskNotificationsManager::CreateToastInternal(
+    ToastCreateParams& params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_notifications_map_.contains(params.id)) {
+    // Stale toast. Ignore.
+    return;
+  }
+
+  // Check if we've reached the countdown period and trigger callback if needed.
+  if (params.countdown_period.is_zero() ||
+      params.countdown_period.is_negative()) {
+    params.completion_callback.Run();
+    StopProcessingNotification(params.id);
+    return;
+  }
+
+  // Display toast.
+  ToastData toast_data(
+      params.id, params.catalog_name,
+      /*text=*/params.text_description_callback.Run(params.countdown_period),
+      base::Seconds(1));
+  delegate_->ShowToast(std::move(toast_data));
+
+  // Decrement countdown period by one second before the next toast is
+  // scheduled.
+  params.countdown_period = params.countdown_period - base::Seconds(1);
+}
+
+}  // namespace ash::boca
