@@ -5187,6 +5187,21 @@
             ]
         }
     ],
+    "ChromnientIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_M131",
+                    "enable_features": [
+                        "LensOverlay"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientImageContextMenuActions": [
         {
             "platforms": [
