@@ -178,13 +178,12 @@ def _DisambiguateMissingDeps(
 ):
   deps_to_add_programatically = set()
   class_lookup_index = None
+  # Run this even when len(potential_targets) == 1, because we need to look for
+  # java_group()s with preferred_deps=true.
   for (potential_targets,
        missing_classes) in potential_targets_to_missing_classes.items():
-    # No need to disambiguate if there's just one choice.
-    if len(potential_targets) == 1:
-      deps_to_add_programatically.add(potential_targets[0])
-      continue
-
+    # Dict for ordered dict.
+    potential_targets = {t: True for t in potential_targets}
     # Rather than just picking any of the potential targets, we want to use
     # dep_utils.ClassLookupIndex to ensure we respect the preferred dep if any
     # exists for the missing deps. It is necessary to obtain the preferred dep
@@ -198,6 +197,10 @@ def _DisambiguateMissingDeps(
             pathlib.Path(output_dir), should_build=False)
       for class_entry in class_lookup_index.match(missing_class):
         target_name_to_class_entry[class_entry.target] = class_entry
+        # Ensure preferred deps are always included in the options.
+        if (class_entry.preferred_dep
+            and class_entry.target not in potential_targets):
+          potential_targets[class_entry.target] = True
     potential_class_entries = [
         target_name_to_class_entry[t] for t in potential_targets
     ]
