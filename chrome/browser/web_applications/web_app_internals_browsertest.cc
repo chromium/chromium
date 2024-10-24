@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
       install_future;
   auto params = ::mojom::InstallFromBundleUrlParams::New();
   params->web_bundle_url = web_bundle_url;
-  params->update_manifest_url = update_manifest_url;
+  params->update_info = ::mojom::UpdateInfo::New(update_manifest_url);
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());

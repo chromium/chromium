@@ -11,7 +11,7 @@ import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
+import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateInfo, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
@@ -245,7 +245,9 @@ async function iwaDevFetchUpdateManifest() {
     const installResult: InstallIsolatedWebAppResult =
         (await webAppInternalsHandler.installIsolatedWebAppFromBundleUrl({
           webBundleUrl: selectedVersionEntry.webBundleUrl,
-          updateManifestUrl,
+          updateInfo: {
+            updateManifestUrl,
+          },
         })).result;
     if (installResult.success) {
       iwaInstallMessageDiv.innerText = `Installing version ${
@@ -343,10 +345,17 @@ function formatDevModeLocation(location: IwaDevModeLocation): string {
   if (location.bundlePath) {
     return filePathToText(location.bundlePath);
   }
-  if (location.updateManifestUrl) {
-    return location.updateManifestUrl.url;
-  }
   assertNotReached();
+}
+
+function describeIsolatedWebApp(
+    name: string, installedVersion: string, location: IwaDevModeLocation,
+    updateInfo: UpdateInfo|null): string {
+  if (updateInfo) {
+    return `${name} (${installedVersion}) → ${
+        updateInfo.updateManifestUrl.url}`;
+  }
+  return `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
 }
 
 function showIwaSection(containerId: string) {
@@ -365,11 +374,11 @@ async function refreshDevModeAppList() {
     devModeUpdatesMessage.innerText = 'None';
   } else {
     devModeUpdatesMessage.innerText = '';
-    for (const {appId, name, location, installedVersion} of devModeApps) {
+    for (const {appId, name, location, installedVersion, updateInfo} of
+             devModeApps) {
       const li = document.createElement('li');
-
       li.innerText =
-          `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
+          describeIsolatedWebApp(name, installedVersion, location, updateInfo);
 
       const updateMsg = document.createElement('p');
 
@@ -384,7 +393,12 @@ async function refreshDevModeAppList() {
           updateBtn.innerText =
               'Performing update... (close the IWA if it is currently open!)';
 
-          if (location.bundlePath) {
+          if (updateInfo) {
+            const {result}: {result: string} =
+                await webAppInternalsHandler
+                    .updateManifestInstalledIsolatedWebApp(appId);
+            updateMsg.innerText = result;
+          } else if (location.bundlePath) {
             const {result}: {result: string} =
                 await webAppInternalsHandler
                     .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
@@ -393,11 +407,6 @@ async function refreshDevModeAppList() {
             const {result}: {result: string} =
                 await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
                     appId);
-            updateMsg.innerText = result;
-          } else if (location.updateManifestUrl) {
-            const {result}: {result: string} =
-                await webAppInternalsHandler
-                    .updateManifestInstalledIsolatedWebApp(appId);
             updateMsg.innerText = result;
           } else {
             assertNotReached();

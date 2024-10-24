@@ -17,12 +17,17 @@ union InstallIsolatedWebAppResult {
   string error;
 };
 
+// Describes how a manifest-installed app should perform update checks.
+struct UpdateInfo {
+  url.mojom.Url update_manifest_url;
+};
+
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
-// file, or via an update manifest url.
+// file, or via an update manifest url (the latter case is indicated by the
+// presence of `update_info` in IwaDevModeInfo).
 union IwaDevModeLocation {
   url.mojom.Origin proxy_origin;
   mojo_base.mojom.FilePath bundle_path;
-  url.mojom.Url update_manifest_url;
 };
 
 struct IwaDevModeAppInfo {
@@ -30,6 +35,8 @@ struct IwaDevModeAppInfo {
   string name;
   IwaDevModeLocation location;
   string installed_version;
+
+  UpdateInfo? update_info;
 };
 
 // Mimics web_app::UpdateManifest::VersionEntry.
@@ -51,7 +58,7 @@ union ParseUpdateManifestFromUrlResult {
 // Parameters necessary for InstallIsolatedWebAppFromBundleUrl().
 struct InstallFromBundleUrlParams {
   url.mojom.Url web_bundle_url;
-  url.mojom.Url update_manifest_url;
+  UpdateInfo update_info;
 };
 
 // Handles requests from chrome://web-app-internals.
