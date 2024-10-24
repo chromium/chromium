@@ -23,6 +23,9 @@ class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
 
  public:
+  // Returns true if the given layout object a resolved clip path status
+  static bool ClipPathStatusResolved(const LayoutObject& layout_object);
+
   // Checks the composited paint status for a LO and checks whether it contains
   // a composited clip path animation. Assumes ResolveClipPathStatus has been
   // called, will fail otherwise.

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -1379,6 +1380,10 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   // Early out from the tree walk if possible.
   if (!needs_tree_builder_context_update && !ObjectRequiresPrePaint(object) &&
       !ContextRequiresChildPrePaint(parent_context)) {
+    if (!ClipPathClipper::ClipPathStatusResolved(object)) {
+      // crbug.com/374656290: Convert to CHECK or DCHECK when fix is confirmed.
+      base::debug::DumpWithoutCrashing();
+    }
     return;
   }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -255,10 +256,41 @@ bool ClipPathClipper::HasCompositeClipPathAnimation(
     case CompositedPaintStatus::kNotComposited:
       return false;
     case CompositedPaintStatus::kNeedsRepaint:
+      // TODO(crbug.com/374656290): Remove this and replace with NOTREACHED.
       // The compositing decision must be resolved by the time this check is
       // called. See FragmentPaintPropertyTreeBuilder::UpdateClipPathClip.
-      NOTREACHED();
+
+      // For now, dump without crashing as this is likely caused by
+      // crbug.com/374656290. In this case, the status is set to kNeedsRepaint
+      // in an update caused by a transform animation after the status and paint
+      // property has already been configured correctly, and is not re-resolved
+      // only because the animation has not had an update that requires a
+      // repaint (See the early return in PrePaintTreeWalk::Walk). Because
+      // nothing meaningful has changed in this case, we can safely return true.
+
+      // Confirm this is the case be re-resolving status. Doing so here is
+      // improper because it's unaware of fragmentation, so produce a crash dump
+      ClipPathClipper::ResolveClipPathStatus(layout_object, false);
+      CHECK(CompositeClipPathStatus(layout_object.GetNode()) ==
+            CompositedPaintStatus::kComposited);
+
+      base::debug::DumpWithoutCrashing();
+      return true;
   }
+}
+
+bool ClipPathClipper::ClipPathStatusResolved(
+    const LayoutObject& layout_object) {
+  if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
+    // Paradoxically, we return true here, as if the feature is disabled we
+    // know for sure that the status is not composited.
+    return true;
+  }
+
+  CompositedPaintStatus status =
+      CompositeClipPathStatus(layout_object.GetNode());
+
+  return status != CompositedPaintStatus::kNeedsRepaint;
 }
 
 void ClipPathClipper::ResolveClipPathStatus(const LayoutObject& layout_object,
