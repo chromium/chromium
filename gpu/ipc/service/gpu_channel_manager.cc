@@ -383,7 +383,13 @@ GpuChannelManager::GpuChannelManager(
       !gpu_preferences_.disable_gpu_shader_disk_cache;
   UMA_HISTOGRAM_BOOLEAN("Gpu.GrShaderCacheEnabled", enable_gr_shader_cache);
   if (enable_gr_shader_cache) {
-    gr_shader_cache_.emplace(gpu_preferences.gpu_program_cache_size, this);
+    size_t gr_shader_cache_size = gpu_preferences.gpu_program_cache_size;
+    if (base::FeatureList::IsEnabled(features::kANGLEPerContextBlobCache)) {
+      // When ANGLE shares the shader cache with Skia, double the size of the
+      // cache so that there is room for both APIs to cache together.
+      gr_shader_cache_size *= 2;
+    }
+    gr_shader_cache_.emplace(gr_shader_cache_size, this);
     gr_shader_cache_->CacheClientIdOnDisk(gpu::kDisplayCompositorClientId);
   }
 }
@@ -447,7 +453,8 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
 #if BUILDFLAG(IS_MAC)
       auto entries = BuiltInShaderCacheLoader::TakeEntries();
       for (auto& entry : *entries) {
-        cache->Set(std::move(entry.key), std::move(entry.value));
+        cache->Set(std::move(entry.key), std::move(entry.value),
+                   gles2::ProgramCache::CacheProgramCallback());
       }
 #endif
       program_cache_ = std::move(cache);

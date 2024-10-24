@@ -469,6 +469,18 @@
 // Forward declare EGL types.
 typedef uint64_t EGLuint64CHROMIUM;
 
+// GL_ANGLE_blob_cache
+typedef GLsizeiptr(APIENTRY* GLGETBLOBPROCANGLE)(const void* key,
+                                                 GLsizeiptr keySize,
+                                                 void* value,
+                                                 GLsizeiptr valueSize,
+                                                 const void* userParam);
+typedef void(APIENTRY* GLSETBLOBPROCANGLE)(const void* key,
+                                           GLsizeiptr keySize,
+                                           const void* value,
+                                           GLsizeiptr valueSize,
+                                           const void* userParam);
+
 #include "gl_bindings_autogen_gl.h"
 #include "gl_bindings_autogen_egl.h"
 

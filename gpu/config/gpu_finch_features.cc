@@ -788,4 +788,8 @@ bool IsSyncPointGraphValidationEnabled() {
   return base::FeatureList::IsEnabled(kSyncPointGraphValidation);
 }
 
+BASE_FEATURE(kANGLEPerContextBlobCache,
+             "ANGLEPerContextBlobCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

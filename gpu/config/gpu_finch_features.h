@@ -129,6 +129,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kSyncPointGraphValidation);
 
 GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

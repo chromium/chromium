@@ -52,6 +52,7 @@ class GPUTracer;
 class MultiDrawManager;
 class GLES2DecoderPassthroughImpl;
 class GLES2ExternalFramebuffer;
+class PassthroughProgramCache;
 
 struct MappedBuffer {
   GLsizeiptr size;
@@ -356,6 +357,15 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                       GLsizei length,
                       const GLchar* message);
 
+  GLsizeiptr BlobCacheGet(const void* key,
+                          GLsizeiptr key_size,
+                          void* value,
+                          GLsizeiptr value_size);
+  void BlobCacheSet(const void* key,
+                    GLsizeiptr key_size,
+                    const void* value,
+                    GLsizeiptr value_size);
+
   void SetCopyTextureResourceManagerForTest(
       CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager)
       override;
@@ -476,6 +486,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                                       const char* function_name);
 
   bool OnlyHasPendingProgramCompletionQueries();
+
+  PassthroughProgramCache* get_passthrough_program_cache() const;
 
   int commands_to_process_;
 

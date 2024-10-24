@@ -164,6 +164,65 @@ SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
   return SkiaBackendType::kUnknown;
 }
 
+GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
+                                           GLsizeiptr key_size,
+                                           void* value,
+                                           GLsizeiptr value_size,
+                                           const void* user_param) {
+  DCHECK(user_param != nullptr);
+  raster::GrShaderCache* cache =
+      static_cast<raster::GrShaderCache*>(const_cast<void*>(user_param));
+
+  sk_sp<SkData> sk_key = SkData::MakeWithoutCopy(key, key_size);
+  sk_sp<SkData> sk_data = cache->load(*sk_key);
+  if (!sk_data) {
+    return 0;
+  }
+
+  if (value_size > 0 && static_cast<size_t>(value_size) >= sk_data->size()) {
+    memcpy(value, sk_data->data(), sk_data->size());
+  }
+
+  // We didn't copy the original key data. Make sure it wasn't stored in the
+  // cache.
+  DCHECK(sk_key->unique());
+
+  return sk_data->size();
+}
+
+void APIENTRY GLBlobCacheSetCallback(const void* key,
+                                     GLsizeiptr key_size,
+                                     const void* value,
+                                     GLsizeiptr value_size,
+                                     const void* user_param) {
+  DCHECK(user_param != nullptr);
+  raster::GrShaderCache* cache =
+      static_cast<raster::GrShaderCache*>(const_cast<void*>(user_param));
+
+  sk_sp<SkData> sk_key = SkData::MakeWithoutCopy(key, key_size);
+  sk_sp<SkData> sk_data = SkData::MakeWithoutCopy(value, value_size);
+  cache->store(*sk_key, *sk_data);
+}
+
+void BindGLContextToShaderCache(scoped_refptr<gles2::FeatureInfo> feature_info,
+                                raster::GrShaderCache* cache) {
+  if (!cache || !feature_info->feature_flags().angle_blob_cache) {
+    return;
+  }
+
+  glBlobCacheCallbacksANGLE(GLBlobCacheSetCallback, GLBlobCacheGetCallback,
+                            cache);
+}
+
+void UnbindGLContextFromShaderCache(
+    scoped_refptr<gles2::FeatureInfo> feature_info) {
+  if (!feature_info->feature_flags().angle_blob_cache) {
+    return;
+  }
+
+  glBlobCacheCallbacksANGLE(nullptr, nullptr, nullptr);
+}
+
 }  // anonymous namespace
 
 void SharedContextState::compileError(const char* shader,
@@ -318,6 +377,10 @@ SharedContextState::~SharedContextState() {
   // lost in which case we don't delete the textures).
   DCHECK(IsCurrent(nullptr) || context_lost());
   transfer_cache_.reset();
+
+  if (IsCurrent(nullptr, true) && feature_info_) {
+    UnbindGLContextFromShaderCache(feature_info_);
+  }
 
 #if BUILDFLAG(ENABLE_VULKAN) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN))
@@ -495,6 +558,9 @@ bool SharedContextState::InitializeGanesh(
             glProgramBinary(program, binaryFormat, binary, length);
           };
     }
+
+    BindGLContextToShaderCache(feature_info_, cache);
+
     options.fDriverBugWorkarounds =
         GrDriverBugWorkarounds(workarounds.ToIntSet());
     options.fAvoidStencilBuffers = workarounds.avoid_stencil_buffers;

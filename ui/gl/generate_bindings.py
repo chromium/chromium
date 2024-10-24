@@ -200,6 +200,11 @@ GL_FUNCTIONS = [
                'GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, '
                'GLbitfield mask, GLenum filter', },
 { 'return_type': 'void',
+  'versions': [{'name': 'glBlobCacheCallbacksANGLE',
+                'extensions': ['GL_ANGLE_blob_cache']}],
+  'arguments':
+      'GLSETBLOBPROCANGLE set, GLGETBLOBPROCANGLE get, const void* userData', },
+{ 'return_type': 'void',
   'names': ['glBufferData'],
   'arguments':
       'GLenum target, GLsizeiptr size, const void* data, GLenum usage', },
@@ -3236,6 +3241,12 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
         r'EGLDEBUGPROCKHR ([a-zA-Z0-9_]+)',
         r'EGLDEBUGPROCKHR_\1', log_argument_names)
     log_argument_names = re.sub(
+        r'GLSETBLOBPROCANGLE ([a-zA-Z0-9_]+)',
+        r'GLSETBLOBPROCANGLE_\1', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLGETBLOBPROCANGLE ([a-zA-Z0-9_]+)',
+        r'GLGETBLOBPROCANGLE_\1', log_argument_names)
+    log_argument_names = re.sub(
         r'(?<!E)GLenum ([a-zA-Z0-9_]+)', r'GLenum_\1', log_argument_names)
     # Strip remaining types.
     log_argument_names = re.sub(
@@ -3262,6 +3273,12 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
         r'reinterpret_cast<void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'EGLDEBUGPROCKHR_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLSETBLOBPROCANGLE_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLGETBLOBPROCANGLE_([a-zA-Z0-9_]+)',
         r'reinterpret_cast<void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'GLenum_([a-zA-Z0-9_]+)', r'GLEnums::GetStringEnum(\1)',

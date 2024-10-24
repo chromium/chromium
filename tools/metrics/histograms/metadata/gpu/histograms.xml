@@ -1245,6 +1245,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.PassthroughProgramCacheLoadHitInCache"
+    enum="BooleanSuccess" expires_after="2025-03-01">
+  <owner>geofflang@google.com</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The cache hit rate for PassthroughProgramCache used by the passthrough
+    command decoder for WebGL and (sometimes) raster shader programs.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Presentation.VSyncCallbackDelay" units="microseconds"
     expires_after="2025-04-01">
   <owner>magchen@chromium.org</owner>
