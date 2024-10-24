@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -73,10 +74,12 @@ proto::OnDeviceModelVersions GetModelVersions(
 OnDeviceModelServiceController::OnDeviceModelServiceController(
     std::unique_ptr<OnDeviceModelAccessController> access_controller,
     base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-        on_device_component_state_manager)
+        on_device_component_state_manager,
+    on_device_model::ServiceClient::LaunchFn launch_fn)
     : access_controller_(std::move(access_controller)),
       on_device_component_state_manager_(
-          std::move(on_device_component_state_manager)) {}
+          std::move(on_device_component_state_manager)),
+      service_client_(launch_fn) {}
 
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
@@ -222,8 +225,7 @@ OnDeviceModelServiceController::CreateSession(
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
-  LaunchService();
-  service_remote_->GetEstimatedPerformanceClass(base::BindOnce(
+  service_client_.Get()->GetEstimatedPerformanceClass(base::BindOnce(
       [](GetEstimatedPerformanceClassCallback callback,
          on_device_model::mojom::PerformanceClass performance_class) {
         std::move(callback).Run(performance_class);
@@ -266,7 +268,6 @@ OnDeviceModelServiceController::GetTextSafetyModelRemote(
   if (ts_model_remote_) {
     return ts_model_remote_;
   }
-  LaunchService();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&on_device_model::LoadTextSafetyParams, params),
@@ -282,8 +283,8 @@ OnDeviceModelServiceController::GetTextSafetyModelRemote(
 void OnDeviceModelServiceController::OnTextSafetyParamsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model,
     on_device_model::mojom::TextSafetyModelParamsPtr params) {
-  LaunchService();
-  service_remote_->LoadTextSafetyModel(std::move(params), std::move(model));
+  service_client_.Get()->LoadTextSafetyModel(std::move(params),
+                                             std::move(model));
 }
 
 void OnDeviceModelServiceController::MaybeCreateBaseModelRemote(
@@ -291,10 +292,7 @@ void OnDeviceModelServiceController::MaybeCreateBaseModelRemote(
   if (base_model_remote_) {
     return;
   }
-  LaunchService();
-  // We want the service to start while loading the model assets, so set a
-  // longish idle timeout to make sure it doesn't get shut down.
-  service_remote_.reset_on_idle_timeout(base::Minutes(1));
+  service_client_.AddPendingUsage();  // Warm up the service.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
@@ -312,7 +310,7 @@ void OnDeviceModelServiceController::MaybeCreateBaseModelRemote(
 void OnDeviceModelServiceController::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     on_device_model::ModelAssets assets) {
-  if (!service_remote_) {
+  if (!service_client_.is_bound()) {
     // Close the files on a background thread.
     base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
                                base::DoNothingWithBoundArgs(std::move(assets)));
@@ -323,12 +321,11 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
-  service_remote_->LoadModel(
+  service_client_.Get()->LoadModel(
       std::move(params), std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));
-  // Now that the model has been loaded, the idle timeout is no longer needed.
-  service_remote_.reset_on_idle_timeout(base::TimeDelta());
+  service_client_.RemovePendingUsage();
 }
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(

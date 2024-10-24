@@ -31,6 +31,7 @@
 #include "feature_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -56,18 +57,14 @@ class OnDeviceModelAdaptationController;
 // As all OnDeviceModelServiceController's share the same model, and we do not
 // want to load duplicate models (would consume excessive amounts of memory), at
 // most one instance of OnDeviceModelServiceController is created.
-//
-// TODO(b/302402576): Handle unloading the model, and stopping the service. The
-// StreamingResponder should notify the controller upon completion to accomplish
-// this. Also handle multiple requests gracefully and fail the subsequent
-// requests, while handling the first one.
 class OnDeviceModelServiceController
     : public base::RefCounted<OnDeviceModelServiceController> {
  public:
   OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
       base::WeakPtr<OnDeviceModelComponentStateManager>
-          on_device_component_state_manager);
+          on_device_component_state_manager,
+      on_device_model::ServiceClient::LaunchFn launch_fn);
 
   // Initializes OnDeviceModelServiceController. This should be called once
   // after creation.
@@ -88,9 +85,6 @@ class OnDeviceModelServiceController
           model_quality_uploader_service,
       const std::optional<SessionConfigParams>& config_params);
 
-  // Launches the on-device model-service.
-  virtual void LaunchService() = 0;
-
   // Starts the service and calls |callback| with the estimated performance
   // class. Will call with std::nullopt if the service crashes.
   using GetEstimatedPerformanceClassCallback = base::OnceCallback<void(
@@ -100,7 +94,7 @@ class OnDeviceModelServiceController
       GetEstimatedPerformanceClassCallback callback);
 
   bool IsConnectedForTesting() {
-    return base_model_remote_.is_bound() || service_remote_.is_bound();
+    return base_model_remote_.is_bound() || service_client_.is_bound();
   }
 
   // Sets the language detection model to be used by the ODM service when text
@@ -247,7 +241,7 @@ class OnDeviceModelServiceController
   // Can be null if no safety model available.
   std::unique_ptr<SafetyModelInfo> safety_model_info_;
   std::unique_ptr<OnDeviceModelMetadata> model_metadata_;
-  mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
+  on_device_model::ServiceClient service_client_;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel> base_model_remote_;
 

@@ -32,9 +32,6 @@ class ChromeOnDeviceModelServiceController
 
  private:
   ~ChromeOnDeviceModelServiceController() override;
-
-  // OnDeviceModelServiceController implementation:
-  void LaunchService() override;
 };
 
 }  // namespace optimization_guide

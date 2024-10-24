@@ -32,7 +32,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
-#include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
@@ -268,12 +267,16 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     access_controller_ = nullptr;
     test_controller_ = nullptr;
 
+    // Turn down the service, to simulate restart.
+    fake_launcher_.CrashService();
+
     auto access_controller =
         std::make_unique<OnDeviceModelAccessController>(pref_service_);
     access_controller_ = access_controller.get();
-    test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-        &fake_settings_, std::move(access_controller),
-        on_device_component_state_manager_.get()->GetWeakPtr());
+    test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+        std::move(access_controller),
+        on_device_component_state_manager_.get()->GetWeakPtr(),
+        fake_launcher_.LaunchFn());
 
     test_controller_->Init();
   }
@@ -305,10 +308,11 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
+  on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &pref_service_};
-  scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
-  // Owned by FakeOnDeviceModelServiceController.
+  scoped_refptr<OnDeviceModelServiceController> test_controller_;
+  // Owned by OnDeviceModelServiceController.
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   ResponseHolder response_;
   base::test::ScopedFeatureList feature_list_;
@@ -597,7 +601,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   EXPECT_TRUE(GetModelAdaptationControllers().empty());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(test_controller_->IsConnectedForTesting());
-  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+  EXPECT_EQ(1ull, fake_launcher_.on_device_model_receiver_count());
 
   // Fast forward by another idle timeout. The base model remote will be reset.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
@@ -830,14 +834,14 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   auto session = CreateSession();
   session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+  EXPECT_EQ(1ull, fake_launcher_.on_device_model_receiver_count());
 
   // Simulates a model update. This should close the model remote.
   // Write a new empty execution config to check that the config is reloaded.
   base_model_asset_.Write({});
   on_device_component_state_manager_.SetReady(base_model_asset_.path());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(0ull, test_controller_->on_device_model_receiver_count());
+  EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
   // Create a new session and verify it fails due to the configuration.
   base::HistogramTester histogram_tester;
@@ -1717,7 +1721,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
@@ -1806,11 +1810,11 @@ TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
 
   // Wait for the service to launch, and be shut down.
   task_environment_.RunUntilIdle();
-  test_controller_->clear_did_launch_service();
+  fake_launcher_.clear_did_launch_service();
 
   // Adding context should not trigger launching the service again.
   session->AddContext(UserInputRequest("baz"));
-  EXPECT_FALSE(test_controller_->did_launch_service());
+  EXPECT_FALSE(fake_launcher_.did_launch_service());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
@@ -1935,7 +1939,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   task_environment_.RunUntilIdle();
 
   // Launch the service again, which triggers disconnect.
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   task_environment_.RunUntilIdle();
 
   // Send some text, ensuring the context is received.
@@ -1978,7 +1982,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   // killed.
   session->ExecuteModel(PageUrlRequest("bar"),
                         response_.GetStreamingCallback());
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_.value());
   ASSERT_FALSE(response_.log_entry());
@@ -2056,7 +2060,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
 
   // Wait for the service to launch, and be shut down.
   task_environment_.RunUntilIdle();
-  test_controller_->clear_did_launch_service();
+  fake_launcher_.clear_did_launch_service();
 
   // Adding context should not trigger launching the service again.
   {
@@ -2068,7 +2072,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   }
   session->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
   EXPECT_TRUE(remote_execute_called_);
-  EXPECT_FALSE(test_controller_->did_launch_service());
+  EXPECT_FALSE(fake_launcher_.did_launch_service());
   // Did not start with on-device, so there should not have been a log entry
   // passed.
   ASSERT_FALSE(log_ai_data_request_passed_to_remote_);
@@ -2170,7 +2174,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
@@ -3040,9 +3044,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   auto access_controller =
       std::make_unique<OnDeviceModelAccessController>(pref_service_);
   access_controller_ = access_controller.get();
-  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      &fake_settings_, std::move(access_controller),
-      on_device_component_state_manager_.get()->GetWeakPtr());
+  test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+      std::move(access_controller),
+      on_device_component_state_manager_.get()->GetWeakPtr(),
+      fake_launcher_.LaunchFn());
 
   on_device_component_state_manager_.Reset();
   // Init should not crash.
@@ -3457,12 +3462,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
   }
 
   EXPECT_TRUE(CreateSession());
-  // Kill the service since we are simulating a startup.
-  test_controller_->CrashService();
 
-  fake_settings_.set_execute_result({"goodbye"});
   {
     base::HistogramTester histogram_tester;
+    fake_settings_.set_execute_result({"goodbye"});
+    RecreateServiceController();  // Simulate a restart.
 
     on_device_component_state_manager_.get()->OnStartup();
     task_environment_.RunUntilIdle();
@@ -3712,7 +3716,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
   Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
 
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
 

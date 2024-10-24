@@ -5,8 +5,10 @@
 #define SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_TEST_SUPPORT_FAKE_SERVICE_H_
 
 #include <cstdint>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -83,7 +85,7 @@ class FakeOnDeviceSession final : public mojom::Session {
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
 
   void GetSizeInTokensDeprecated(const std::string& text,
-                       GetSizeInTokensCallback callback) override;
+                                 GetSizeInTokensCallback callback) override;
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
 
@@ -197,6 +199,39 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
   FakeTsHolder ts_holder_;
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;
+};
+
+class FakeServiceLauncher final {
+ public:
+  explicit FakeServiceLauncher(
+      on_device_model::FakeOnDeviceServiceSettings* settings);
+  ~FakeServiceLauncher();
+
+  // Provides a launcher for using with ServiceClient.
+  auto LaunchFn() {
+    return base::BindRepeating(&FakeServiceLauncher::LaunchService,
+                               weak_ptr_factory_.GetWeakPtr());
+  }
+
+  void clear_did_launch_service() { did_launch_service_ = false; }
+
+  bool did_launch_service() const { return did_launch_service_; }
+
+  size_t on_device_model_receiver_count() const {
+    return service_ ? service_->on_device_model_receiver_count() : 0;
+  }
+
+  void CrashService() { service_ = nullptr; }
+
+ private:
+  void LaunchService(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+          pending_reciever);
+
+  raw_ptr<on_device_model::FakeOnDeviceServiceSettings> settings_;
+  std::unique_ptr<FakeOnDeviceModelService> service_;
+  bool did_launch_service_;
+  base::WeakPtrFactory<FakeServiceLauncher> weak_ptr_factory_;
 };
 
 }  // namespace on_device_model

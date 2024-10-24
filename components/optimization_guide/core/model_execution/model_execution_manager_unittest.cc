@@ -56,9 +56,8 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
 
 class FakeServiceController : public OnDeviceModelServiceController {
  public:
-  FakeServiceController() : OnDeviceModelServiceController(nullptr, nullptr) {}
-
-  void LaunchService() override {}
+  FakeServiceController()
+      : OnDeviceModelServiceController(nullptr, nullptr, base::DoNothing()) {}
 
   void MaybeUpdateSafetyModel(
       base::optional_ref<const ModelInfo> model_info) override {

@@ -87,8 +87,9 @@ void FakeOnDeviceSession::Execute(
       settings_->execute_delay);
 }
 
-void FakeOnDeviceSession::GetSizeInTokensDeprecated(const std::string& text,
-                                          GetSizeInTokensCallback callback) {
+void FakeOnDeviceSession::GetSizeInTokensDeprecated(
+    const std::string& text,
+    GetSizeInTokensCallback callback) {
   std::move(callback).Run(0);
 }
 
@@ -294,6 +295,19 @@ void FakeOnDeviceModelService::GetEstimatedPerformanceClass(
       FROM_HERE,
       base::BindOnce(std::move(callback), mojom::PerformanceClass::kVeryHigh),
       settings_->estimated_performance_delay);
+}
+
+FakeServiceLauncher::FakeServiceLauncher(
+    on_device_model::FakeOnDeviceServiceSettings* settings)
+    : settings_(settings), weak_ptr_factory_(this) {}
+FakeServiceLauncher::~FakeServiceLauncher() = default;
+
+void FakeServiceLauncher::LaunchService(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        pending_reciever) {
+  did_launch_service_ = true;
+  service_ = std::make_unique<on_device_model::FakeOnDeviceModelService>(
+      std::move(pending_reciever), settings_);
 }
 
 }  // namespace on_device_model
