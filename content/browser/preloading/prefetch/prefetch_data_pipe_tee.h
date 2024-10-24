@@ -52,7 +52,7 @@ class CONTENT_EXPORT PrefetchDataPipeTee final
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
-  // LINT.IfChange(PrefetchDataPipeTee::State)
+  // LINT.IfChange(PrefetchDataPipeTee_State)
   enum class State {
     // Reading data from `source_`, and adding the data to `buffer_`.
     // `buffer_` represents the whole data read from `source_` so far.
