@@ -16,12 +16,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.INTERACTION_RESULT_HISTOGRAM;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.ACCEPTED_VIA_ACCEPT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.ACCEPTED_VIA_PASSWORD_VIEW;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.DISMISSED_FROM_NATIVE;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.DISMISSED_SHEET;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.REJECTED_GENERATED_PASSWORD;
-import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.USED_GENERATED_PASSWORD;
 
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -231,14 +233,27 @@ public class TouchToFillPasswordGenerationModuleTest {
     }
 
     @Test
-    public void recordsMetricWhenPasswordAccepted() {
+    public void recordsMetricWhenAcceptButtonClicked() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        INTERACTION_RESULT_HISTOGRAM, USED_GENERATED_PASSWORD);
+                        INTERACTION_RESULT_HISTOGRAM, ACCEPTED_VIA_ACCEPT_BUTTON);
         show();
 
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
+
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void recordsMetricWhenPasswordViewClicked() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        INTERACTION_RESULT_HISTOGRAM, ACCEPTED_VIA_PASSWORD_VIEW);
+        show();
+
+        View passwordView = mContent.findViewById(R.id.password);
+        passwordView.performClick();
 
         histogramExpectation.assertExpected();
     }

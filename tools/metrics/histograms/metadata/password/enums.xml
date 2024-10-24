@@ -881,10 +881,12 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult">
-  <int value="0" label="Used generated password"/>
+  <int value="0" label="(Deprecated in M132) Used generated password"/>
   <int value="1" label="Rejected generated password"/>
   <int value="2" label="Bottom sheet dismissed from native"/>
   <int value="3" label="Bottom sheet dismissed by user"/>
+  <int value="4" label="Accepted - tap password view"/>
+  <int value="5" label="Accepted - tap accept button"/>
 </enum>
 
 <enum name="PasswordManager.PasswordSharingDesktopActions">
