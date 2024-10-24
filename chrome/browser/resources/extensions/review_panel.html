@@ -3,7 +3,8 @@
   $i18n{safetyHubHeader}
 </h2>
 
-<div class="panel-background" ?hidden="${!this.shouldShowExtensionsSafetyHub_}">
+<div class="panel-background"
+    ?hidden="${!this.shouldShowExtensionsSafetyHub_()}">
   <cr-expand-button no-hover
       id="expandButton"
       ?expanded="${this.unsafeExtensionsReviewListExpanded_}"
