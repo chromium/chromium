@@ -91,7 +91,7 @@ void RunTaskSynchronously(AssociatedThreadId* associated_thread,
 TaskQueueImpl::GuardedTaskPoster::GuardedTaskPoster(TaskQueueImpl* outer)
     : outer_(outer) {}
 
-TaskQueueImpl::GuardedTaskPoster::~GuardedTaskPoster() {}
+TaskQueueImpl::GuardedTaskPoster::~GuardedTaskPoster() = default;
 
 bool TaskQueueImpl::GuardedTaskPoster::PostTask(PostedTask task) {
   // Do not process new PostTasks while we are handling a PostTask (tracing
@@ -153,7 +153,7 @@ TaskQueueImpl::TaskRunner::TaskRunner(
       associated_thread_(std::move(associated_thread)),
       task_type_(task_type) {}
 
-TaskQueueImpl::TaskRunner::~TaskRunner() {}
+TaskQueueImpl::TaskRunner::~TaskRunner() = default;
 
 bool TaskQueueImpl::TaskRunner::PostDelayedTask(const Location& location,
                                                 OnceClosure callback,
