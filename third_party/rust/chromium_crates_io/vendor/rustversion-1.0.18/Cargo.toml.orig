@@ -1,6 +1,6 @@
 [package]
 name = "rustversion"
-version = "1.0.17"
+version = "1.0.18"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build/build.rs"
 categories = ["development-tools::build-utils", "no-std", "no-std::no-alloc"]

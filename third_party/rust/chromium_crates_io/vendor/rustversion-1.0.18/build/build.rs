@@ -21,10 +21,16 @@ fn main() {
     let wrapped_rustc = rustc_wrapper.iter().chain(iter::once(&rustc));
 
     let mut is_clippy_driver = false;
+    let mut is_mirai = false;
     let version = loop {
-        let mut wrapped_rustc = wrapped_rustc.clone();
-        let mut command = Command::new(wrapped_rustc.next().unwrap());
-        command.args(wrapped_rustc);
+        let mut command;
+        if is_mirai {
+            command = Command::new(&rustc);
+        } else {
+            let mut wrapped_rustc = wrapped_rustc.clone();
+            command = Command::new(wrapped_rustc.next().unwrap());
+            command.args(wrapped_rustc);
+        }
         if is_clippy_driver {
             command.arg("--rustc");
         }
@@ -57,7 +63,13 @@ fn main() {
                 is_clippy_driver = true;
                 continue;
             }
-            rustc::ParseResult::Unrecognized | rustc::ParseResult::OopsClippy => {
+            rustc::ParseResult::OopsMirai if !is_mirai && rustc_wrapper.is_some() => {
+                is_mirai = true;
+                continue;
+            }
+            rustc::ParseResult::Unrecognized
+            | rustc::ParseResult::OopsClippy
+            | rustc::ParseResult::OopsMirai => {
                 eprintln!(
                     "Error: unexpected output from `rustc --version`: {:?}\n\n\
                     Please file an issue in https://github.com/dtolnay/rustversion",

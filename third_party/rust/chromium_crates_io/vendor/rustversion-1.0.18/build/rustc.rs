@@ -4,6 +4,7 @@ use std::fmt::{self, Debug};
 pub enum ParseResult {
     Success(Version),
     OopsClippy,
+    OopsMirai,
     Unrecognized,
 }
 
@@ -36,6 +37,7 @@ pub fn parse(string: &str) -> ParseResult {
     match words.next() {
         Some("rustc") => {}
         Some(word) if word.starts_with("clippy") => return ParseResult::OopsClippy,
+        Some("mirai") => return ParseResult::OopsMirai,
         Some(_) | None => return ParseResult::Unrecognized,
     }
 
