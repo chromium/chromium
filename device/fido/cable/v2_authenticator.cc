@@ -908,11 +908,6 @@ class CTAP2Processor : public Transaction {
           }
         }
 
-        // PRF inputs are already hashed when coming via CTAP so, if there are
-        // any PRF inputs, they're hashed.
-        params->extensions->prf_inputs_hashed =
-            !params->extensions->prf_inputs.empty();
-
         transaction_received_ = true;
         const bool empty_allowlist = params->allow_credentials.empty();
         platform_->GetAssertion(

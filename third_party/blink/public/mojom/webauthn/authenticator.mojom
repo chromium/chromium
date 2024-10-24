@@ -306,8 +306,7 @@ struct PRFValues {
   // IDs match. In the other direction, id will always be null.
   array<uint8>? id;
   // The WebAuthn spec says that inputs are hashed with a "WebAuthn PRF\x00"
-  // prefix before being used. These values may, or may not be, hashed when used
-  // as inputs. See the `prf_inputs_hashed` flag.
+  // prefix before being used. These are unhashed values when used as inputs.
   array<uint8> first;
   array<uint8>? second;
 };
@@ -415,10 +414,6 @@ struct AuthenticationExtensionsClientInputs {
   // credential ID match. Otherwise all elements must have an |id| member and
   // must be sorted lexicographically by it.
   array<PRFValues> prf_inputs;
-
-  // prf_inputs_hashed is true if the `first` and `second` members of
-  // `prf_inputs` have already been hashed.
-  bool prf_inputs_hashed;
 
   // If true, attempt to read the large blob associated to the credential.
   // https://w3c.github.io/webauthn/#dom-authenticationextensionslargeblobinputs-read

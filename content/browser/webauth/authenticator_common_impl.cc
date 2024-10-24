@@ -432,8 +432,10 @@ std::optional<device::PRFInput> ParsePRFInputForMakeCredential(
   }
 
   device::PRFInput prf_input;
+  prf_input.input1 = prf_input_from_renderer->first;
   prf_input.salt1 = HashPRFValue(prf_input_from_renderer->first);
   if (prf_input_from_renderer->second) {
+    prf_input.input2 = prf_input_from_renderer->second;
     prf_input.salt2 = HashPRFValue(*prf_input_from_renderer->second);
   }
 
@@ -1622,9 +1624,8 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
         ParsePRFInputsForGetAssertion(options->extensions->prf_inputs);
 
     // This should never happen for inputs from the renderer, which should sort
-    // the values itself. Additionally, `prf_inputs_hashed` is for hybrid
-    // authenticator support on Android.
-    if (!prf_inputs || options->extensions->prf_inputs_hashed) {
+    // the values itself.
+    if (!prf_inputs) {
       mojo::ReportBadMessage("invalid PRF inputs");
       req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
       CompleteGetAssertionRequest(

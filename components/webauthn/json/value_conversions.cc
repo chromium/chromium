@@ -534,11 +534,6 @@ base::Value ToValue(
   }
 
   if (!options->extensions->prf_inputs.empty()) {
-    // Hashed PRF inputs are only used when Chrome is acting as a caBLE
-    // authenticator on Android. We can't convert the request to JSON in that
-    // context and should never try.
-    CHECK(!options->extensions->prf_inputs_hashed);
-
     base::Value::Dict prf_value;
     base::Value::Dict eval_by_cred;
     bool is_first = true;

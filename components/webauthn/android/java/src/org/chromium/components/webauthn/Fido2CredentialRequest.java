@@ -479,12 +479,9 @@ public class Fido2CredentialRequest
             return;
         }
 
-        // Payments should still go through Google Play Services. Also, if the request has
-        // pre-hashed PRF inputs then we cannot represent that in JSON and so can only forward to
-        // Play Services.
+        // Payments should still go through Google Play Services.
         final byte[] finalClientDataHash = clientDataHash;
         if (payment == null
-                && !options.extensions.prfInputsHashed
                 && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             if (options.isConditional) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
