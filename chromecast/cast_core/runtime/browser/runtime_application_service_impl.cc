@@ -17,7 +17,6 @@
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
-#include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
@@ -574,15 +573,6 @@ cast_receiver::MessagePortService*
 RuntimeApplicationServiceImpl::GetMessagePortService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetMessagePortServiceGrpc();
-}
-
-std::unique_ptr<content::WebUIControllerFactory>
-RuntimeApplicationServiceImpl::CreateWebUIControllerFactory(
-    std::vector<std::string> hosts) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
-  return std::make_unique<GrpcWebUiControllerFactory>(std::move(hosts),
-                                                      &core_app_stub_.value());
 }
 
 content::WebContents* RuntimeApplicationServiceImpl::GetWebContents() {

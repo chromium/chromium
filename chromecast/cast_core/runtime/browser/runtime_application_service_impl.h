@@ -33,7 +33,6 @@ class StreamingConfigManager;
 
 namespace content {
 class WebContents;
-class WebUIControllerFactory;
 }  // namespace content
 
 namespace chromecast {
@@ -69,8 +68,6 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void NotifyMediaPlaybackChanged(bool playing) override;
   void GetAllBindings(GetAllBindingsCallback callback) override;
   cast_receiver::MessagePortService* GetMessagePortService() override;
-  std::unique_ptr<content::WebUIControllerFactory> CreateWebUIControllerFactory(
-      std::vector<std::string> hosts) override;
   content::WebContents* GetWebContents() override;
   cast_receiver::ContentWindowControls* GetContentWindowControls() override;
 #if !BUILDFLAG(IS_CAST_DESKTOP_BUILD)

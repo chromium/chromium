@@ -30,35 +30,6 @@ cast_source_set("metrics_recorder") {
   ]
 }
 
-cast_source_set("grpc_webui") {
-  sources = [
-    "grpc_resource_data_source.cc",
-    "grpc_resource_data_source.h",
-    "grpc_webui_controller.cc",
-    "grpc_webui_controller.h",
-    "grpc_webui_controller_factory.cc",
-    "grpc_webui_controller_factory.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromecast:chromecast_buildflags",
-    "//chromecast/base",
-    "//chromecast/base:chromecast_switches",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser",
-    "//net",
-    "//third_party/blink/public/common:headers",
-    "//third_party/grpc:grpc++",
-  ]
-
-  public_deps = [
-    "//chromecast/browser:public",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto_castcore",
-  ]
-}
-
 cast_source_set("runtime_service_impl") {
   public = [ "runtime_service_impl.h" ]
   sources = [
@@ -78,7 +49,6 @@ cast_source_set("runtime_service_impl") {
   public_deps = [ "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore" ]
 
   deps = [
-    ":grpc_webui",
     ":metrics_recorder",
     "//base",
     "//chromecast:chromecast_buildflags",
@@ -181,11 +151,9 @@ cast_source_set("unit_tests") {
     "cast_runtime_metrics_test_helpers.cc",
     "cast_runtime_metrics_test_helpers.h",
     "core_streaming_config_manager_unittest.cc",
-    "grpc_resource_data_source_unittest.cc",
   ]
 
   deps = [
-    ":grpc_webui",
     ":metrics_recorder",
     ":runtime_service_impl",
     "//base",

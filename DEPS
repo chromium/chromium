@@ -1687,7 +1687,7 @@ deps = {
     Var('chromium_git') + '/breakpad/breakpad.git' + '@' + '6b0c5b7ee1988a14a4af94564e8ae8bba8a94374',
 
   'src/third_party/cast_core/public/src':
-    Var('chromium_git') + '/cast_core/public' + '@' + 'deadbce86e6d6c2c650df9e7fd9431696ca7ae47',
+    Var('chromium_git') + '/cast_core/public' + '@' + 'fbc5e98031e1271a0a566fcd4d9092b2d3275d05',
 
   'src/third_party/catapult':
     Var('chromium_git') + '/catapult.git' + '@' + Var('catapult_revision'),
