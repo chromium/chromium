@@ -53,6 +53,7 @@ export enum NavigationType {
   BLOCK = 2,
   DOMAIN = 3,
   LIMITED = 4,
+  SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED = 5
 }
 
 export enum JoinMethod {

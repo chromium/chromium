@@ -82,6 +82,7 @@ enum NavigationType {
   kBlock,
   kDomain,
   kLimited,
+  kSameDomainOpenOtherDomainLimited,
 };
 
 struct ControlledTab {
