@@ -49,12 +49,20 @@ PrefetchDataPipeTee::PrefetchDataPipeTee(
 
 PrefetchDataPipeTee::~PrefetchDataPipeTee() {
   CHECK(!target_.first);
+
+  base::UmaHistogramEnumeration(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState", state_);
 }
 
 mojo::ScopedDataPipeConsumerHandle PrefetchDataPipeTee::Clone() {
+  ++count_clone_called_;
+
   switch (state_) {
     case State::kLoading:
       if (target_.first || pending_writes_) {
+        base::UmaHistogramCounts100(
+            "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.Loading",
+            count_clone_called_);
         return {};
       }
       break;
@@ -64,6 +72,9 @@ mojo::ScopedDataPipeConsumerHandle PrefetchDataPipeTee::Clone() {
       state_ = State::kSizeExceeded;
       break;
     case State::kSizeExceeded:
+      base::UmaHistogramCounts100(
+          "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.SizeExceeded",
+          count_clone_called_);
       return {};
     case State::kLoaded:
       break;
