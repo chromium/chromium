@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,9 @@
 #include "components/saved_tab_groups/messaging/android/messaging_backend_service_bridge.h"
 #include "components/saved_tab_groups/messaging/message.h"
 #include "components/saved_tab_groups/messaging/messaging_backend_service.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,6 +37,31 @@ namespace {
 
 MATCHER_P(ActivityLogQueryParamsEq, expected, "") {
   return arg.collaboration_id == expected.collaboration_id;
+}
+
+std::vector<PersistentMessage> GetDefaultPersistentMessages() {
+  std::vector<PersistentMessage> messages;
+  PersistentMessage message1;
+  message1.collaboration_event = CollaborationEvent::TAB_ADDED;
+  messages.emplace_back(message1);
+  PersistentMessage message2;
+  message2.collaboration_event = CollaborationEvent::TAB_NAVIGATED;
+  messages.emplace_back(message2);
+  PersistentMessage message3;
+  message3.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  messages.emplace_back(message3);
+  return messages;
+}
+
+base::android::ScopedJavaLocalRef<jintArray>
+PersistentMessagesToCollaborationEventArray(
+    JNIEnv* env,
+    std::vector<tab_groups::messaging::PersistentMessage> messages) {
+  std::vector<int32_t> ints;
+  for (const auto& message : messages) {
+    ints.push_back(static_cast<int32_t>(message.collaboration_event));
+  }
+  return base::android::ToJavaIntArray(env, ints);
 }
 
 }  // namespace
@@ -236,6 +265,182 @@ TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageFailure) {
   Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeInstantMessageSuccessCallback(
       base::android::AttachCurrentThread(), j_companion(), /*success=*/false);
   EXPECT_EQ(1U, success_callback_invocation_count());
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestGetMessages) {
+  std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
+
+  // First -- All types.
+  // The call should arrive to the service with no type.
+  std::optional<PersistentNotificationType> all_types = std::nullopt;
+  EXPECT_CALL(service(), GetMessages(all_types)).WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesAndVerify(
+      env, j_companion(),
+      /*notification_type=*/-1,
+      PersistentMessagesToCollaborationEventArray(env, messages));
+
+  // Next up -- Specific type.
+  // The call should arrive to the service with the correct type.
+  EXPECT_CALL(service(),
+              GetMessages(std::make_optional(PersistentNotificationType::CHIP)))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesAndVerify(
+      env, j_companion(),
+      /*notification_type=*/static_cast<jint>(PersistentNotificationType::CHIP),
+      PersistentMessagesToCollaborationEventArray(env, messages));
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForGroup_LocalID) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
+
+  // First -- All types
+  // Create a new random local tab group ID for this query.
+  LocalTabGroupID local_tab_group_id = base::Token::CreateRandom();
+  auto j_local_tab_group_id = TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+      env, std::make_optional(local_tab_group_id));
+
+  // The call should arrive to the service with no type.
+  std::optional<PersistentNotificationType> all_types = std::nullopt;
+  EitherGroupID group_id(local_tab_group_id);
+  EXPECT_CALL(service(), GetMessagesForGroup(group_id, all_types))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForGroupAndVerify(
+      env, j_companion(), j_local_tab_group_id, nullptr,
+      /*notification_type=*/-1,
+      PersistentMessagesToCollaborationEventArray(env, messages));
+
+  // Next up -- Specific type.
+  // The call should arrive to the service with the correct type.
+  PersistentNotificationType notification_type =
+      PersistentNotificationType::CHIP;
+  EXPECT_CALL(service(), GetMessagesForGroup(
+                             group_id, std::make_optional(notification_type)))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForGroupAndVerify(
+      env, j_companion(), j_local_tab_group_id, nullptr,
+      /*notification_type=*/static_cast<jint>(notification_type),
+      PersistentMessagesToCollaborationEventArray(env, messages));
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForGroup_SyncId) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
+
+  // First -- All types
+  // Create a random sync tab group ID for this query.
+  base::Uuid sync_tab_group_id = base::Uuid::GenerateRandomV4();
+  ScopedJavaLocalRef<jstring> j_sync_tab_group_id =
+      base::android::ConvertUTF8ToJavaString(
+          env, sync_tab_group_id.AsLowercaseString());
+
+  // The call should arrive to the service with no type.
+  std::optional<PersistentNotificationType> all_types = std::nullopt;
+  EitherGroupID group_id(sync_tab_group_id);
+  EXPECT_CALL(service(), GetMessagesForGroup(group_id, all_types))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForGroupAndVerify(
+      env, j_companion(), nullptr, j_sync_tab_group_id,
+      /*notification_type=*/-1,
+      PersistentMessagesToCollaborationEventArray(env, messages));
+
+  // Next up -- Specific type.
+  // The call should arrive to the service with the correct type.
+  PersistentNotificationType notification_type =
+      PersistentNotificationType::CHIP;
+  EXPECT_CALL(service(), GetMessagesForGroup(
+                             group_id, std::make_optional(notification_type)))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForGroupAndVerify(
+      env, j_companion(), nullptr, j_sync_tab_group_id,
+      /*notification_type=*/static_cast<jint>(notification_type),
+      PersistentMessagesToCollaborationEventArray(env, messages));
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForTab_LocalID) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
+
+  // First -- All types
+  std::optional<LocalTabID> local_tab_id = std::make_optional(14);
+  auto j_local_tab_id = ToJavaTabId(local_tab_id);
+
+  // The call should arrive to the service with no type.
+  std::optional<PersistentNotificationType> all_types = std::nullopt;
+  EitherTabID tab_id(local_tab_id.value());
+  EXPECT_CALL(service(), GetMessagesForTab(tab_id, all_types))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForTabAndVerify(
+      env, j_companion(), j_local_tab_id, nullptr,
+      /*notification_type=*/-1,
+      PersistentMessagesToCollaborationEventArray(env, messages));
+
+  // Next up -- Specific type.
+  // The call should arrive to the service with the correct type.
+  PersistentNotificationType notification_type =
+      PersistentNotificationType::CHIP;
+  EXPECT_CALL(service(),
+              GetMessagesForTab(tab_id, std::make_optional(notification_type)))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForTabAndVerify(
+      env, j_companion(), j_local_tab_id, nullptr,
+      /*notification_type=*/static_cast<jint>(notification_type),
+      PersistentMessagesToCollaborationEventArray(env, messages));
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForTab_SyncID) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
+
+  // First -- All types
+  // Create a random sync tab ID for this query.
+  base::Uuid sync_tab_id = base::Uuid::GenerateRandomV4();
+  ScopedJavaLocalRef<jstring> j_sync_tab_id =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             sync_tab_id.AsLowercaseString());
+
+  // The call should arrive to the service with no type.
+  std::optional<PersistentNotificationType> all_types = std::nullopt;
+  EitherTabID tab_id(sync_tab_id);
+  EXPECT_CALL(service(), GetMessagesForTab(tab_id, all_types))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForTabAndVerify(
+      env, j_companion(), -1, j_sync_tab_id,
+      /*notification_type=*/-1,
+      PersistentMessagesToCollaborationEventArray(env, messages));
+
+  // Next up -- Specific type.
+  // The call should arrive to the service with the correct type.
+  PersistentNotificationType notification_type =
+      PersistentNotificationType::CHIP;
+  EXPECT_CALL(service(),
+              GetMessagesForTab(tab_id, std::make_optional(notification_type)))
+      .WillOnce(Return(messages));
+
+  // Verify that the order of messages stays the same.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetMessagesForTabAndVerify(
+      env, j_companion(), -1, j_sync_tab_id,
+      /*notification_type=*/static_cast<jint>(notification_type),
+      PersistentMessagesToCollaborationEventArray(env, messages));
 }
 
 TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {

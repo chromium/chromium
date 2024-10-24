@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.junit.Assert;
@@ -22,6 +24,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
+import java.util.Optional;
 
 /** A companion object to the native MessagingBackendServiceBridgeTest. */
 @JNINamespace("tab_groups::messaging")
@@ -68,6 +71,69 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     @CalledByNative
     private void setInstantMessageDelegate() {
         mService.setInstantMessageDelegate(mInstantMessageDelegate);
+    }
+
+    @CalledByNative
+    private void invokeGetMessagesAndVerify(
+            @PersistentNotificationType int type, int[] expectedCollaborationEvents) {
+        List<PersistentMessage> messages;
+        if (type == -1) {
+            messages = mService.getMessages(Optional.empty());
+        } else {
+            messages = mService.getMessages(Optional.of(type));
+        }
+        Assert.assertEquals(expectedCollaborationEvents.length, messages.size());
+        for (int i = 0; i < expectedCollaborationEvents.length; ++i) {
+            Assert.assertEquals(expectedCollaborationEvents[i], messages.get(i).collaborationEvent);
+        }
+    }
+
+    @CalledByNative
+    private void invokeGetMessagesForGroupAndVerify(
+            LocalTabGroupId localGroupId,
+            @Nullable String syncId,
+            @PersistentNotificationType int type,
+            int[] expectedCollaborationEvents) {
+        EitherId.EitherGroupId groupId;
+        if (syncId == null) {
+            groupId = EitherId.EitherGroupId.createLocalId(localGroupId);
+        } else {
+            groupId = EitherId.EitherGroupId.createSyncId(syncId);
+        }
+        List<PersistentMessage> messages;
+        if (type == -1) {
+            messages = mService.getMessagesForGroup(groupId, Optional.empty());
+        } else {
+            messages = mService.getMessagesForGroup(groupId, Optional.of(type));
+        }
+        Assert.assertEquals(expectedCollaborationEvents.length, messages.size());
+        for (int i = 0; i < expectedCollaborationEvents.length; ++i) {
+            Assert.assertEquals(expectedCollaborationEvents[i], messages.get(i).collaborationEvent);
+        }
+    }
+
+    @CalledByNative
+    private void invokeGetMessagesForTabAndVerify(
+            int localTabId,
+            @Nullable String syncId,
+            @PersistentNotificationType int type,
+            int[] expectedCollaborationEvents) {
+        EitherId.EitherTabId tabId;
+        if (syncId == null) {
+            tabId = EitherId.EitherTabId.createLocalId(localTabId);
+        } else {
+            tabId = EitherId.EitherTabId.createSyncId(syncId);
+        }
+        List<PersistentMessage> messages;
+        if (type == -1) {
+            messages = mService.getMessagesForTab(tabId, Optional.empty());
+        } else {
+            messages = mService.getMessagesForTab(tabId, Optional.of(type));
+        }
+        Assert.assertEquals(expectedCollaborationEvents.length, messages.size());
+        for (int i = 0; i < expectedCollaborationEvents.length; ++i) {
+            Assert.assertEquals(expectedCollaborationEvents[i], messages.get(i).collaborationEvent);
+        }
     }
 
     @CalledByNative
