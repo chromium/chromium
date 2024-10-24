@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -32,12 +33,12 @@ namespace ip_protection {
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     MaskedDomainListManager* masked_domain_list_manager,
-    std::unique_ptr<IpProtectionCore> ipp_core)
-    : masked_domain_list_manager_(masked_domain_list_manager),
-      ipp_core_(std::move(ipp_core)) {
-  CHECK(masked_domain_list_manager_);
+    IpProtectionCore* ip_protection_core)
+    : masked_domain_list_manager_(raw_ref<MaskedDomainListManager>::from_ptr(
+          masked_domain_list_manager)),
+      ip_protection_core_(
+          raw_ref<IpProtectionCore>::from_ptr(ip_protection_core)) {
   CHECK(masked_domain_list_manager_->IsEnabled());
-  CHECK(ipp_core_);
 }
 
 IpProtectionProxyDelegate::~IpProtectionProxyDelegate() = default;
@@ -96,14 +97,16 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
     return ProxyResolutionResult::kFeatureDisabled;
   }
 
-  if (!ipp_core_->IsIpProtectionEnabled()) {
+  if (!ip_protection_core_->IsIpProtectionEnabled()) {
     vlog("ip protection proxy is not currently enabled");
     return ProxyResolutionResult::kSettingDisabled;
   }
   const bool were_token_caches_ever_filled =
-      ipp_core_->WereTokenCachesEverFilled();
-  const bool auth_tokens_are_available = ipp_core_->AreAuthTokensAvailable();
-  const bool proxy_list_is_available = ipp_core_->IsProxyListAvailable();
+      ip_protection_core_->WereTokenCachesEverFilled();
+  const bool auth_tokens_are_available =
+      ip_protection_core_->AreAuthTokensAvailable();
+  const bool proxy_list_is_available =
+      ip_protection_core_->IsProxyListAvailable();
 
   if (!proxy_list_is_available) {
     vlog("no proxy list available from cache");
@@ -135,7 +138,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   net::ProxyList proxy_list;
   if (!net::features::kIpPrivacyDirectOnly.Get()) {
     const std::vector<net::ProxyChain>& proxy_chain_list =
-        ipp_core_->GetProxyChainList();
+        ip_protection_core_->GetProxyChainList();
     for (const auto& proxy_chain : proxy_chain_list) {
       // Proxying HTTP traffic over HTTPS/SPDY proxies requires multi-proxy
       // chains.
@@ -174,10 +177,6 @@ void IpProtectionProxyDelegate::OnResolveProxy(
 
 void IpProtectionProxyDelegate::OnSuccessfulRequestAfterFailures(
     const net::ProxyRetryInfoMap& proxy_retry_info) {
-  if (!ipp_core_) {
-    return;
-  }
-
   // A request was successful, but one or more proxies failed. If _only_ QUIC
   // proxies failed, then we assume this is because QUIC is not working on
   // this network, and stop injecting QUIC proxies into the proxy list.
@@ -198,7 +197,7 @@ void IpProtectionProxyDelegate::OnSuccessfulRequestAfterFailures(
 
   if (seen_quic) {
     // Only QUIC chains failed.
-    ipp_core_->QuicProxiesFailed();
+    ip_protection_core_->QuicProxiesFailed();
   }
 }
 
@@ -208,7 +207,7 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   // protection proxies immediately.
   if (bad_chain.is_for_ip_protection()) {
     Telemetry().ProxyChainFallback(bad_chain.ip_protection_chain_id());
-    ipp_core_->RequestRefreshProxyList();
+    ip_protection_core_->RequestRefreshProxyList();
   }
 }
 
@@ -221,7 +220,7 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
   };
   if (proxy_chain.is_for_ip_protection()) {
     std::optional<BlindSignedAuthToken> token =
-        ipp_core_->GetAuthToken(chain_index);
+        ip_protection_core_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");
       // The token value we have here is the full Authorization header value,
