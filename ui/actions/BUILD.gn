@@ -10,6 +10,7 @@ source_set("actions_headers") {
     "action_id.h",
     "action_id_macros.inc",
     "actions.h",
+    "action_utils.h",
   ]
 
   public_deps = [
