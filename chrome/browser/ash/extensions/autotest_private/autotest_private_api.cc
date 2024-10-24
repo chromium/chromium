@@ -1477,7 +1477,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
       result.Set("isRegularUser",
                  user_manager->IsLoggedInAsUserWithGaiaAccount());
       result.Set("isGuest", user_manager->IsLoggedInAsGuest());
-      result.Set("isKiosk", user_manager->IsLoggedInAsKioskApp());
+      result.Set("isKiosk", user_manager->IsLoggedInAsAnyKioskApp());
 
       const user_manager::User* user = user_manager->GetActiveUser();
       result.Set("email", user->GetAccountId().GetUserEmail());
