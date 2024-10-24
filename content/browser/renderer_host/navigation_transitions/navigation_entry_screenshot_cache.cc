@@ -12,10 +12,16 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 namespace {
+
+const base::FeatureParam<bool> kDumpWithoutCrashNavigationEntryScreenshotCache{
+    &blink::features::kBackForwardTransitions,
+    "dump-without-crash-navigation-entry-screenshot-cache", false};
 
 NavigationEntryScreenshotCache::CompressedCallback& GetTestCallback() {
   static base::NoDestructor<NavigationEntryScreenshotCache::CompressedCallback>
@@ -131,9 +137,11 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
 
   // Should never capture the last committed entry.
   if (entry == nav_controller_->GetLastCommittedEntry()) {
-    SCOPED_CRASH_KEY_BOOL("dnt", "is_copied_from_embedder",
-                          is_copied_from_embedder);
-    base::debug::DumpWithoutCrashing();
+    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
+      SCOPED_CRASH_KEY_BOOL("dnt", "is_copied_from_embedder",
+                            is_copied_from_embedder);
+      base::debug::DumpWithoutCrashing();
+    }
     return;
   }
 
@@ -141,7 +149,9 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
   // first (thus not tracked). Impossible to overwrite for a cached entry.
   // TODO(crbug.com/373893401): Find out why this happens.
   if (entry->GetUserData(NavigationEntryScreenshot::kUserDataKey)) {
-    base::debug::DumpWithoutCrashing();
+    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
+      base::debug::DumpWithoutCrashing();
+    }
     RemoveScreenshot(entry);
   }
 
