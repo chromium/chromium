@@ -19,10 +19,6 @@
 // Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
 
-// Requests to dismiss the account menu view. Keeps the coordinator open and
-// show a spinner instead.
-- (void)mediatorWantsToDismissTheView:(AccountMenuMediator*)mediator;
-
 // Starts the sign-in flow. Then call `completion`, with a parameter stating
 // whether the the sign-out was done.
 - (AuthenticationFlow*)
