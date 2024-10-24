@@ -269,11 +269,6 @@ extern const char kDataSharingJoinOnlyDescription[];
 extern const char kDefaultBrowserIntentsShowSettingsName[];
 extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 
-// Title and description for the flag to enable experimental string for default
-// browser promo on iPad.
-extern const char kDefaultBrowserPromoIPadExperimentalStringName[];
-extern const char kDefaultBrowserPromoIPadExperimentalStringDescription[];
-
 // Title and description for default browser promo trigger criteria experiment.
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];

@@ -164,7 +164,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   // Enable Segmented Default Browser promos and iPad tailored Default Browser
   // promo strings.
   config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
-  config.features_enabled.push_back(kDefaultBrowserPromoIPadExperimentalString);
   // Set first run details to show Set Up List.
   config.additional_args.push_back("-FirstRunRecency");
   config.additional_args.push_back("1");

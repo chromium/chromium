@@ -825,12 +825,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
 // Whether the Segmentation Tips Manager is enabled for Chrome iOS.
 bool IsSegmentationTipsManagerEnabled();
 
-// Feature flag for default browser promo experimental string for iPad.
-BASE_DECLARE_FEATURE(kDefaultBrowserPromoIPadExperimentalString);
-
-// Returns `YES` if the title and subtitle should be tailored for iPad.
-BOOL UseIPadTailoredStringForDefaultBrowserPromo();
-
 // Flag to not keep a strong reference to the spotlight index, as a tentative
 // memory improvement measure.
 BASE_DECLARE_FEATURE(kSpotlightNeverRetainIndex);
