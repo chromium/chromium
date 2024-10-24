@@ -32,6 +32,8 @@ source_set("impl") {
     "//components/policy/core/common",
     "//components/prefs",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
