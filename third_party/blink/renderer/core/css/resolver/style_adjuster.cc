@@ -151,35 +151,70 @@ bool HostIsInputFile(const Element* element) {
   return false;
 }
 
-void AdjustStyleForSvgElement(const SVGElement& element,
-                              ComputedStyleBuilder& builder) {
-  // Disable some of text decoration properties.
-  //
-  // Note that SetFooBar() is more efficient than ResetFooBar() if the current
-  // value is same as the reset value.
-  builder.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
-  builder.SetTextDecorationStyle(
-      ETextDecorationStyle::kSolid);  // crbug.com/1246719
-  builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
-  builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
-  builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
-  builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);
-}
-
-bool ElementForcesStackingContext(Element* element) {
-  if (!element) {
-    return false;
-  }
-  if (element == element->GetDocument().documentElement()) {
-    return true;
-  }
-  if (IsA<SVGForeignObjectElement>(*element)) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
+
+void StyleAdjuster::AdjustStyleForSvgElement(
+    const SVGElement& element,
+    ComputedStyleBuilder& builder,
+    const ComputedStyle& layout_parent_style) {
+  if (builder.Display() != EDisplay::kNone) {
+    // Disable some of text decoration properties.
+    //
+    // Note that SetFooBar() is more efficient than ResetFooBar() if the current
+    // value is same as the reset value.
+    builder.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
+    builder.SetTextDecorationStyle(
+        ETextDecorationStyle::kSolid);  // crbug.com/1246719
+    builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
+    builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
+    builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
+    builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);
+  }
+
+  bool is_svg_root = element.IsOutermostSVGSVGElement();
+  if (!is_svg_root) {
+    // Only the root <svg> element in an SVG document fragment tree honors css
+    // position.
+    builder.SetPosition(ComputedStyleInitialValues::InitialPosition());
+  }
+
+  if (builder.Display() == EDisplay::kContents &&
+      (is_svg_root ||
+       (!IsA<SVGSVGElement>(element) && !IsA<SVGGElement>(element) &&
+        !IsA<SVGUseElement>(element) && !IsA<SVGTSpanElement>(element)))) {
+    // According to the CSS Display spec[1], nested <svg> elements, <g>,
+    // <use>, and <tspan> elements are not rendered and their children are
+    // "hoisted". For other elements display:contents behaves as display:none.
+    //
+    // [1] https://drafts.csswg.org/css-display/#unbox-svg
+    builder.SetDisplay(EDisplay::kNone);
+  }
+
+  // SVG text layout code expects us to be a block-level style element.
+  if ((IsA<SVGForeignObjectElement>(element) || IsA<SVGTextElement>(element)) &&
+      builder.IsDisplayInlineType()) {
+    builder.SetDisplay(EDisplay::kBlock);
+  }
+
+  // Columns don't apply to svg text elements.
+  if (IsA<SVGTextElement>(element)) {
+    AdjustForSVGTextElement(builder);
+  }
+
+  // Copy DominantBaseline to CssDominantBaseline without 'no-change',
+  // 'reset-size', and 'use-script'.
+  auto baseline = builder.DominantBaseline();
+  if (baseline == EDominantBaseline::kUseScript) {
+    // TODO(fs): The dominant-baseline and the baseline-table components
+    // are set by determining the predominant script of the character data
+    // content.
+    baseline = EDominantBaseline::kAlphabetic;
+  } else if (baseline == EDominantBaseline::kNoChange ||
+             baseline == EDominantBaseline::kResetSize) {
+    baseline = layout_parent_style.CssDominantBaseline();
+  }
+  builder.SetCssDominantBaseline(baseline);
+}
 
 // https://drafts.csswg.org/css-display/#transformations
 static EDisplay EquivalentBlockDisplay(EDisplay display) {
@@ -999,13 +1034,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForHTMLElement(builder, *html_element);
   }
 
-  auto* svg_element = DynamicTo<SVGElement>(element);
-
   if (builder.Display() != EDisplay::kNone) {
-    if (svg_element) {
-      AdjustStyleForSvgElement(*svg_element, builder);
-    }
-
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
     // https://drafts.csswg.org/css-position-4/#top-styling
@@ -1027,12 +1056,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // Absolute/fixed positioned elements, floating elements and the document
     // element need block-like outside display.
-    if (builder.Display() != EDisplay::kContents &&
-        (builder.HasOutOfFlowPosition() || builder.IsFloating())) {
-      builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
-    }
-
-    if (is_document_element) {
+    if (is_document_element ||
+        (builder.Display() != EDisplay::kContents &&
+         (builder.HasOutOfFlowPosition() || builder.IsFloating()))) {
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
     }
 
@@ -1083,17 +1109,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     }
   }
 
-  if (ElementForcesStackingContext(element)) {
-    builder.SetForcesStackingContext(true);
-  }
-
-  if (builder.Overlay() == EOverlay::kAuto ||
+  if (element == state.GetDocument().documentElement() ||
+      (element && IsA<SVGForeignObjectElement>(*element)) ||
+      builder.Overlay() == EOverlay::kAuto ||
       builder.StyleType() == kPseudoIdBackdrop ||
-      builder.StyleType() == kPseudoIdViewTransition) {
-    builder.SetForcesStackingContext(true);
-  }
-
-  if (IsCanvasPlacedElement(element)) {
+      builder.StyleType() == kPseudoIdViewTransition ||
+      IsCanvasPlacedElement(element)) {
     builder.SetForcesStackingContext(true);
   }
 
@@ -1151,54 +1172,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   AdjustStyleForEditing(builder, element);
 
-  bool is_svg_root = false;
-
-  if (svg_element) {
-    is_svg_root = svg_element->IsOutermostSVGSVGElement();
-    if (!is_svg_root) {
-      // Only the root <svg> element in an SVG document fragment tree honors css
-      // position.
-      builder.SetPosition(ComputedStyleInitialValues::InitialPosition());
-    }
-
-    if (builder.Display() == EDisplay::kContents &&
-        (is_svg_root ||
-         (!IsA<SVGSVGElement>(element) && !IsA<SVGGElement>(element) &&
-          !IsA<SVGUseElement>(element) && !IsA<SVGTSpanElement>(element)))) {
-      // According to the CSS Display spec[1], nested <svg> elements, <g>,
-      // <use>, and <tspan> elements are not rendered and their children are
-      // "hoisted". For other elements display:contents behaves as display:none.
-      //
-      // [1] https://drafts.csswg.org/css-display/#unbox-svg
-      builder.SetDisplay(EDisplay::kNone);
-    }
-
-    // SVG text layout code expects us to be a block-level style element.
-    if ((IsA<SVGForeignObjectElement>(*element) ||
-         IsA<SVGTextElement>(*element)) &&
-        builder.IsDisplayInlineType()) {
-      builder.SetDisplay(EDisplay::kBlock);
-    }
-
-    // Columns don't apply to svg text elements.
-    if (IsA<SVGTextElement>(*element)) {
-      AdjustForSVGTextElement(builder);
-    }
-
-    // Copy DominantBaseline to CssDominantBaseline without 'no-change',
-    // 'reset-size', and 'use-script'.
-    auto baseline = builder.DominantBaseline();
-    if (baseline == EDominantBaseline::kUseScript) {
-      // TODO(fs): The dominant-baseline and the baseline-table components
-      // are set by determining the predominant script of the character data
-      // content.
-      baseline = EDominantBaseline::kAlphabetic;
-    } else if (baseline == EDominantBaseline::kNoChange ||
-               baseline == EDominantBaseline::kResetSize) {
-      baseline = layout_parent_style.CssDominantBaseline();
-    }
-    builder.SetCssDominantBaseline(baseline);
-
+  if (auto* svg_element = DynamicTo<SVGElement>(element); svg_element) {
+    AdjustStyleForSvgElement(*svg_element, builder, layout_parent_style);
   } else if (IsA<MathMLElement>(element)) {
     if (builder.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
@@ -1224,7 +1199,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetJustifyItems(parent_style.JustifyItems());
   }
 
-  AdjustEffectiveTouchAction(builder, parent_style, element, is_svg_root);
+  AdjustEffectiveTouchAction(builder, parent_style, element,
+                             IsOutermostSVGElement(element));
 
   bool is_media_control =
       element && element->ShadowPseudoId().StartsWith("-webkit-media-controls");
