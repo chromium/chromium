@@ -70,7 +70,13 @@
     <cr-link-row label="$i18n{historySearchSettingLabel}"
         on-click="onHistorySearchLinkoutClick_" external>
       <div slot="sub-label">
-        $i18n{historySearchSettingSublabelV2}$i18n{sentenceEnd}
+        <span id="linkoutText" hidden="[[isAnswersFeatureEnabled_]]">
+          $i18n{historySearchSettingSublabelV2}$i18n{sentenceEnd}
+        </span>
+        <span id="linkoutTextWithAnswers"
+            hidden="[[!isAnswersFeatureEnabled_]]">
+          $i18n{historySearchWithAnswersSettingSublabelV2}$i18n{sentenceEnd}
+        </span>
         <a href="$i18n{historySearchLearnMoreUrl}"
             aria-label="$i18n{historySearchLearnMoreA11yLabel}"
             on-click="onLearnMoreClick_" target="_blank">
@@ -94,12 +100,26 @@
       <ul class="icon-bulleted-list">
         <li>
           <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{historySearchWhenOnPageContent}</div>
+          <div id="whenOnPageContentText" class="secondary"
+              hidden="[[isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWhenOnPageContent}
+          </div>
+          <div id="whenOnPageContentTextWithAnswers" class="secondary"
+              hidden="[[!isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWithAnswersWhenOnPageContent}
+          </div>
         </li>
         <li>
           <cr-icon icon="settings20:quick-reference-all" aria-hidden="true">
           </cr-icon>
           <div class="secondary">$i18n{historySearchWhenOnSearchFrom}</div>
+        </li>
+        <li id="whenOnLogStartItem" hidden="[[!isAnswersFeatureEnabled_]]">
+          <cr-icon icon="settings20:summarize" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">
+            $i18n{historySearchWithAnswersWhenOnLogStart}
+          </div>
         </li>
       </ul>
     </div>
@@ -120,7 +140,20 @@
         </li>
         <li>
           <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{historySearchConsiderDataEncrypted}</div>
+          <div id="considerDataEncryptedText" class="secondary"
+              hidden="[[isAnswersFeatureEnabled_]]">
+            $i18n{historySearchConsiderDataEncrypted}
+          </div>
+          <div id="considerDataEncryptedTextWithAnswers" class="secondary"
+              hidden="[[!isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWithAnswersConsiderDataEncrypted}
+          </div>
+        </li>
+        <li id="considerOutDatedItem" hidden="[[!isAnswersFeatureEnabled_]]">
+          <cr-icon icon="settings20:difference" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{historySearchWithAnswersConsiderOutdated}
+          </div>
         </li>
       </ul>
     </div>
