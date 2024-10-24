@@ -139,4 +139,13 @@ void ServerCertificateDatabaseService::GetCertificatesCount(
       .Then(std::move(callback));
 }
 
+void ServerCertificateDatabaseService::DeleteCertificate(
+    const std::string& sha256hash_hex,
+    base::OnceCallback<void(bool)> callback) {
+  server_cert_database_
+      .AsyncCall(&net::ServerCertificateDatabase::DeleteCertificate)
+      .WithArgs(sha256hash_hex)
+      .Then(std::move(callback));
+}
+
 }  // namespace net

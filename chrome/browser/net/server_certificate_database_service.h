@@ -86,6 +86,9 @@ class ServerCertificateDatabaseService : public KeyedService {
 
   void GetCertificatesCount(base::OnceCallback<void(uint32_t)> callback);
 
+  void DeleteCertificate(const std::string& sha256hash_hex,
+                         base::OnceCallback<void(bool)> callback);
+
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   void NSSMigrationComplete(

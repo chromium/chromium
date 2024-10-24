@@ -103,6 +103,32 @@ TEST_F(ServerCertificateDatabaseTest, Update) {
                            CertInfoEquals(std::ref(intermediate_cert_info))));
 }
 
+TEST_F(ServerCertificateDatabaseTest, Delete) {
+  EXPECT_TRUE(database_->RetrieveAllCertificates().empty());
+
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  ServerCertificateDatabase::CertInformation root_cert_info = MakeCertInfo(
+      root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED);
+  ServerCertificateDatabase::CertInformation intermediate_cert_info =
+      MakeCertInfo(intermediate->GetDER(),
+                   CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
+
+  EXPECT_TRUE(database_->InsertOrUpdateCert(root_cert_info));
+  EXPECT_TRUE(database_->InsertOrUpdateCert(intermediate_cert_info));
+
+  EXPECT_THAT(
+      database_->RetrieveAllCertificates(),
+      UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info)),
+                           CertInfoEquals(std::ref(intermediate_cert_info))));
+
+  EXPECT_TRUE(
+      database_->DeleteCertificate(intermediate_cert_info.sha256hash_hex));
+
+  EXPECT_THAT(database_->RetrieveAllCertificates(),
+              UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info))));
+}
+
 TEST(ServerCertificateDatabaseTrustTest, TestTrustMappings) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 

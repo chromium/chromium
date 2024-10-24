@@ -15,10 +15,13 @@
 
 class UserCertSource : public CertificateManagerPageHandler::CertSource {
  public:
-  UserCertSource(std::string export_file_name,
-                 chrome_browser_server_certificate_database::CertificateTrust::
-                     CertificateTrustType trust,
-                 raw_ptr<Profile> profile);
+  UserCertSource(
+      std::string export_file_name,
+      chrome_browser_server_certificate_database::CertificateTrust::
+          CertificateTrustType trust,
+      raw_ptr<Profile> profile,
+      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+          remote_client);
 
   void GetCertificateInfos(
       CertificateManagerPageHandler::GetCertificatesCallback callback) override;
@@ -30,11 +33,18 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource {
   void ExportCertificates(
       base::WeakPtr<content::WebContents> web_contents) override;
 
+  void DeleteCertificate(
+      const std::string& sha256hash_hex,
+      CertificateManagerPageHandler::DeleteCertificateCallback callback)
+      override;
+
  private:
   std::string export_file_name_;
   chrome_browser_server_certificate_database::CertificateTrust::
       CertificateTrustType trust_;
   raw_ptr<Profile> profile_;
+  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+      remote_client_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_MANAGER_USER_CERT_SOURCES_H_

@@ -56,6 +56,9 @@ class ServerCertificateDatabase {
 
   uint32_t RetrieveCertificatesCount();
 
+  // Delete the certificate with a matching hash from the database.
+  bool DeleteCertificate(const std::string& sha256hash_hex);
+
  private:
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);
 

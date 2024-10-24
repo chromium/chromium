@@ -159,6 +159,9 @@
         If you delete one of your own certificates, you can no longer use it to identify yourself.
       </message>
     </if>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_SERVER_CERT_DESCRIPTION" desc="Contents of certificate manager dialog confirming deletion of a server certificate.">
+        If you delete a server certificate, Chrome will no longer use it to identify servers.
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR" desc="Eror message displayed in certificate manager when the user tried to import a certificate but the file could not be read.">
       Error reading file
     </message>

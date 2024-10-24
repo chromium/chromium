@@ -197,7 +197,7 @@ CertificateManagerPageHandler::GetCertSource(
             "trusted_certs",
             chrome_browser_server_certificate_database::CertificateTrust::
                 CERTIFICATE_TRUST_TYPE_TRUSTED,
-            profile_);
+            profile_, &remote_client_);
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kUserIntermediateCerts:
@@ -205,7 +205,7 @@ CertificateManagerPageHandler::GetCertSource(
             "intermediate_certs",
             chrome_browser_server_certificate_database::CertificateTrust::
                 CERTIFICATE_TRUST_TYPE_UNSPECIFIED,
-            profile_);
+            profile_, &remote_client_);
         break;
       case certificate_manager_v2::mojom::CertificateSource::
           kUserDistrustedCerts:
@@ -213,7 +213,7 @@ CertificateManagerPageHandler::GetCertSource(
             "distrusted_certs",
             chrome_browser_server_certificate_database::CertificateTrust::
                 CERTIFICATE_TRUST_TYPE_DISTRUSTED,
-            profile_);
+            profile_, &remote_client_);
         break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case certificate_manager_v2::mojom::CertificateSource::
