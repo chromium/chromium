@@ -878,8 +878,7 @@ class CrossbenchTest(object):
                                                               handle,
                                                               env=env)
 
-      # TODO(crbug.com/371988599): Convert loadline test results
-      if return_code == 0 and not benchmark.startswith('loadline'):
+      if return_code == 0:
         crossbench_result_converter.convert(
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
