@@ -8175,6 +8175,19 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     # S/A: https://w3c.github.io/webdriver/#dfn-new-sessions
     self.assertTrue(self._driver.ExecuteScript("return document.hasFocus()"))
 
+  def testCustomProfile(self):
+    """Regression test for crbug.com/366886096"""
+
+    temp_dir = self.CreateTempDir()
+    driver = self.CreateDriver(
+        web_socket_url=True,
+        chrome_switches=[
+          '--user-data-dir=%s' % temp_dir,
+          '--profile-directory=squaregreen',
+        ]
+    )
+    self.assertEqual(driver.GetTitle(), '')
+
 
 class CustomBidiMapperTest(ChromeDriverBaseTest):
   """Base class for testing chromedriver with a custom bidi mapper path."""
