@@ -1309,6 +1309,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Banned: Views
             # Banned: Range factories
             # Banned: Range adaptors
+            # Incidentally listed on
+            # https://en.cppreference.com/w/cpp/header/ranges:
+            'enable_borrowed_range',
+            'enable_view',
             # From https://en.cppreference.com/w/cpp/algorithm/ranges:
             # Constrained algorithms: non-modifying sequence operations
             'all_of',

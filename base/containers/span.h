@@ -37,6 +37,19 @@ template <typename T,
           typename InternalPtrType = T*>
 class span;
 
+}  // namespace base
+
+// Mark `span` as satisfying the `view` and `borrowed_range` concepts. This
+// should be done before the definition of `span`, so that any inlined calls to
+// range functionality use the correct specializations.
+template <typename T, size_t N, typename Ptr>
+inline constexpr bool std::ranges::enable_view<base::span<T, N, Ptr>> = true;
+template <typename T, size_t N, typename Ptr>
+inline constexpr bool
+    std::ranges::enable_borrowed_range<base::span<T, N, Ptr>> = true;
+
+namespace base {
+
 namespace internal {
 
 template <typename From, typename To>
@@ -1756,13 +1769,6 @@ constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
 }
 
 }  // namespace base
-
-template <typename T, size_t N, typename Ptr>
-inline constexpr bool
-    std::ranges::enable_borrowed_range<base::span<T, N, Ptr>> = true;
-
-template <typename T, size_t N, typename Ptr>
-inline constexpr bool std::ranges::enable_view<base::span<T, N, Ptr>> = true;
 
 // EXTENT returns the size of any type that can be converted to a |base::span|
 // with definite extent, i.e. everything that is a contiguous storage of some
