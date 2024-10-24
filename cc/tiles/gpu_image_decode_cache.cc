@@ -2047,10 +2047,11 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetImageDecodeTaskAndRef(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::GetImageDecodeTaskAndRef");
   auto cache_key = InUseCacheKeyFromDrawImage(draw_image);
+  bool for_raster = (task_type == TaskType::kInRaster);
 
   // This ref is kept alive while an upload task may need this decode. We
   // release this ref in UploadTaskCompleted.
-  if (task_type == TaskType::kInRaster) {
+  if (for_raster) {
     RefImageDecode(draw_image, cache_key);
   }
 
@@ -2069,22 +2070,46 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetImageDecodeTaskAndRef(
   }
 
   // We didn't have an existing locked image, create a task to lock or decode.
-  ImageTaskMap* task_map = &image_data->decode.stand_alone_task_map;
-  if (task_type == TaskType::kInRaster) {
-    task_map = &image_data->decode.task_map;
-  }
+  scoped_refptr<TileTask> result;
 
-  scoped_refptr<TileTask> existing_task =
-      GetTaskFromMapForClientId(client_id, *task_map);
-  if (!existing_task) {
+  ImageTaskMap& raster_task_map = image_data->decode.task_map;
+  scoped_refptr<TileTask> raster_task =
+      GetTaskFromMapForClientId(client_id, raster_task_map);
+  ImageTaskMap& stand_alone_task_map = image_data->decode.stand_alone_task_map;
+  scoped_refptr<TileTask> stand_alone_task =
+      GetTaskFromMapForClientId(client_id, stand_alone_task_map);
+
+  if (for_raster && raster_task) {
+    result = std::move(raster_task);
+  } else if (!for_raster && stand_alone_task) {
+    result = std::move(stand_alone_task);
+  } else {
     // Ref image decode and create a decode task. This ref will be released in
     // DecodeTaskCompleted.
     RefImageDecode(draw_image, cache_key);
-    existing_task = base::MakeRefCounted<GpuImageDecodeTaskImpl>(
+    result = base::MakeRefCounted<GpuImageDecodeTaskImpl>(
         this, draw_image, tracing_info, task_type);
-    (*task_map)[client_id] = existing_task;
+    if (for_raster) {
+      raster_task_map[client_id] = result;
+      if (stand_alone_task) {
+        // If the existing stand-alone task hasn't started yet, make the new
+        // raster task primary.
+        if (stand_alone_task->state().IsNew()) {
+          result->SetExternalDependent(stand_alone_task);
+        } else {
+          stand_alone_task->SetExternalDependent(result);
+        }
+      }
+    } else {
+      stand_alone_task_map[client_id] = result;
+      if (raster_task && !raster_task->HasCompleted()) {
+        raster_task->SetExternalDependent(result);
+      }
+    }
   }
-  return existing_task;
+
+  CHECK(result);
+  return result;
 }
 
 void GpuImageDecodeCache::RefImageDecode(const DrawImage& draw_image,

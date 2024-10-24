@@ -278,6 +278,19 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     ++cache_entry->ref_count;
     task = base::MakeRefCounted<SoftwareImageDecodeTaskImpl>(
         this, key, image.paint_image(), task_type, tracing_info);
+    if (task_type == TaskType::kInRaster && cache_entry->out_of_raster_task) {
+      // If the existing stand-alone task hasn't started yet, make the new
+      // raster task primary.
+      if (cache_entry->out_of_raster_task->state().IsNew()) {
+        task->SetExternalDependent(cache_entry->out_of_raster_task);
+      } else {
+        cache_entry->out_of_raster_task->SetExternalDependent(task);
+      }
+    } else if (task_type == TaskType::kOutOfRaster &&
+               cache_entry->in_raster_task &&
+               !cache_entry->in_raster_task->HasCompleted()) {
+      cache_entry->in_raster_task->SetExternalDependent(task);
+    }
   }
   return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
 }
