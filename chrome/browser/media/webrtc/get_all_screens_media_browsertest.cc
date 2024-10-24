@@ -47,8 +47,10 @@
 #include "ui/display/test/display_manager_test_api.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/shell.h"
 #include "base/path_service.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
+#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -57,18 +59,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
-#include "chromeos/crosapi/mojom/message_center.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -203,7 +193,7 @@ bool CheckScreenDetailedExists(content::WebContents* tab,
 }
 
 void SetScreens(size_t screen_count) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This part of the test only works on ChromeOS.
   std::stringstream screens;
   for (size_t screen_index = 0; screen_index + 1 < screen_count;
@@ -220,25 +210,7 @@ void SetScreens(size_t screen_count) {
   }
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay(screens.str());
-#else
-  base::test::TestFuture<void> future;
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::TestController>()
-      ->UpdateDisplay((uint8_t)screen_count, future.GetCallback());
-  ASSERT_TRUE(future.Wait());
 #endif
-}
-
-bool SupportsDisplaySetting() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosService::Get()
-          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
-      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kUpdateDisplayMinVersion)) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -294,10 +266,6 @@ class GetAllScreensMediaBrowserTestBase : public WebRtcTestBase {
         enable_feature_by_origin_trial_(enable_feature_by_origin_trial) {}
 
   void SetUpOnMainThread() override {
-    if (!SupportsDisplaySetting()) {
-      GTEST_SKIP();
-    }
-
     WebRtcTestBase::SetUpOnMainThread();
 
     // We need to this to be able to serve the files from a constant port, which
@@ -354,15 +322,6 @@ class GetAllScreensMediaBrowserTestBase : public WebRtcTestBase {
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void TearDownOnMainThread() override {
-    if (SupportsDisplaySetting()) {
-      SetScreens(/*screen_count=*/1u);
-    }
-    WebRtcTestBase::TearDownOnMainThread();
-  }
-#endif  // BUIDLFALG(IS_CHROMEOS_LACROS)
 
  protected:
   raw_ptr<content::WebContents, DanglingUntriaged> contents_ = nullptr;
@@ -774,10 +733,6 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
     client_ = static_cast<ChromeContentBrowserClient*>(
         content::SetBrowserClientForTesting(nullptr));
     content::SetBrowserClientForTesting(client_);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ClearAllNotifications();
-    WaitUntilDisplayNotificationCount(/*display_count=*/0u);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -785,50 +740,25 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
     client_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ClearAllNotifications();
-    WaitUntilDisplayNotificationCount(/*display_count=*/0u);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  protected:
   ChromeContentBrowserClient* client() { return client_; }
 
   auto GetAllNotifications() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
     NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
         ->GetDisplayed(get_displayed_future.GetCallback());
-#else
-    base::test::TestFuture<const std::vector<std::string>&>
-        get_displayed_future;
-    auto& remote = chromeos::LacrosService::Get()
-                       ->GetRemote<crosapi::mojom::MessageCenter>();
-    EXPECT_TRUE(remote.get());
-    remote->GetDisplayedNotifications(get_displayed_future.GetCallback());
-#endif
     const auto& notification_ids = get_displayed_future.Get<0>();
     EXPECT_TRUE(get_displayed_future.Wait());
     return notification_ids;
   }
 
   void ClearAllNotifications() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationDisplayService* service =
         NotificationDisplayServiceFactory::GetForProfile(browser()->profile());
-#else
-    base::test::TestFuture<const std::vector<std::string>&>
-        get_displayed_future;
-    auto& service = chromeos::LacrosService::Get()
-                        ->GetRemote<crosapi::mojom::MessageCenter>();
-    EXPECT_TRUE(service.get());
-#endif
     for (const std::string& notification_id : GetAllNotifications()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       service->Close(NotificationHandler::Type::TRANSIENT, notification_id);
-#else
-      service->CloseNotification(notification_id);
-#endif
     }
   }
 
@@ -864,13 +794,8 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
   }
 
   bool NotificationIdContainsLabel() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    return chromeos::LacrosService::Get()
-               ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>() >=
-           (int)crosapi::mojom::MultiCaptureService::MethodMinVersions::
-               kMultiCaptureStartedFromAppMinVersion;
 #else
     NOTREACHED_IN_MIGRATION();
 #endif
@@ -1014,33 +939,19 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
       const MultiScreenCaptureInIsolatedWebAppBrowserTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!SupportsDisplaySetting()) {
-      GTEST_SKIP();
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     web_app::IsolatedWebAppBrowserTestHarness::
         SetUpInProcessBrowserTestFixture();
 
     // For Ash, and end2end test is possible because the policy value can be set
     // up before the keyed service can cache the value.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     provider_.SetDefaultReturns(
         true /* is_initialization_complete_return */,
         true /* is_first_policy_load_complete_return */);
     SetAllowedOriginsPolicy(/*allow_listed_origins=*/{
         "isolated-app://" + app_->web_bundle_id().id()});
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    // For Lacros, a complete end2end test is not possible because Ash is
-    // started long before this test is run and therefore the keyed service
-    // backs up the policy value before this test set it up.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    capture_policy::SetMultiCaptureServiceForTesting(
-        &mock_multi_capture_service_);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> CreateIsolatedWebApp(
@@ -1120,10 +1031,6 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  testing::NiceMock<MockMultiCaptureService> mock_multi_capture_service_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1143,17 +1050,6 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   SetScreens(/*screen_count=*/1u);
   web_app::IsolatedWebAppUrlInfo url_info = app_->Install(profile()).value();
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsPermissionPolicySet()) {
-    EXPECT_CALL(mock_multi_capture_service_,
-                IsMultiCaptureAllowed(url_info.origin().GetURL(), testing::_))
-        .WillOnce(testing::Invoke(
-            [](const GURL& url, base::OnceCallback<void(bool)> callback) {
-              std::move(callback).Run(true);
-            }));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
@@ -1180,17 +1076,6 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   web_app::IsolatedWebAppUrlInfo url_info =
       denied_app->Install(profile()).value();
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsPermissionPolicySet()) {
-    EXPECT_CALL(mock_multi_capture_service_,
-                IsMultiCaptureAllowed(url_info.origin().GetURL(), testing::_))
-        .WillOnce(testing::Invoke(
-            [](const GURL& url, base::OnceCallback<void(bool)> callback) {
-              std::move(callback).Run(false);
-            }));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
