@@ -73,3 +73,9 @@ cr-history-embeddings {
   max-width: var(--cluster-max-width);
   width: calc(100% - 8px);
 }
+
+/* Hide empty history-clusters element when there are history embedding
+ * results to hide the empty placeholder text. */
+:host([has-history-embeddings-results_]) history-clusters[is-empty] {
+  display: none;
+}

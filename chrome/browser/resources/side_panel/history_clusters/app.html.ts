@@ -41,6 +41,7 @@ ${this.enableHistoryEmbeddings_ ? html`
       .inSidePanel="${true}"
       @answer-click="${this.onHistoryEmbeddingsResultClick_}"
       @answer-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
+      @is-empty-changed="${this.onHistoryEmbeddingsIsEmptyChanged_}"
       @result-click="${this.onHistoryEmbeddingsResultClick_}"
       @result-context-menu="${this.onHistoryEmbeddingsResultContextMenu_}"
       @remove-item-click="${this.onHistoryEmbeddingsItemRemoveClick_}">
