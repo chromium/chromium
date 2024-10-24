@@ -63,6 +63,14 @@ class NET_EXPORT RegistrationFetcherParam {
     return authorization_;
   }
 
+  GURL TakeRegistrationEndpoint() { return std::move(registration_endpoint_); }
+
+  std::string TakeChallenge() { return std::move(challenge_); }
+
+  std::optional<std::string> TakeAuthorization() {
+    return std::move(authorization_);
+  }
+
  private:
   RegistrationFetcherParam(
       GURL registration_endpoint,
