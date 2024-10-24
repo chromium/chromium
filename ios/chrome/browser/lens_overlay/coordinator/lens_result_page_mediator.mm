@@ -42,12 +42,57 @@
 
 namespace {
 
-/// Returns whether the navigation is allowed inside of the result page.
-BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
+BOOL URLHostIsGoogle(const GURL& URL) {
   std::string_view host = URL.host_piece();
-  return base::EqualsCaseInsensitiveASCII(host, "google.com") ||
-         base::EqualsCaseInsensitiveASCII(host, "www.google.com") ||
-         base::EqualsCaseInsensitiveASCII(host, "translate.google.com");
+
+  return (base::EqualsCaseInsensitiveASCII(host, "google.com") ||
+          base::EqualsCaseInsensitiveASCII(host, "www.google.com"));
+}
+
+BOOL URLIsFlights(const GURL& URL) {
+  std::string_view path = URL.path_piece();
+  BOOL pathIsFlights = path.rfind("/travel/flights", 0) == 0;
+
+  return URLHostIsGoogle(URL) && pathIsFlights;
+}
+
+BOOL URLIsFinance(const GURL& URL) {
+  std::string_view path = URL.path_piece();
+  BOOL pathIsFinance = path.rfind("/finance", 0) == 0;
+
+  return URLHostIsGoogle(URL) && pathIsFinance;
+}
+
+BOOL URLIsShopping(const GURL& URL) {
+  std::string_view query = URL.query_piece();
+  BOOL queryMatchesShoppingParam = query.find("udm=28") != std::string::npos;
+
+  return URLHostIsGoogle(URL) && queryMatchesShoppingParam;
+}
+
+/// Currently some websites don't render properly in the bottom sheet. Filter
+/// them out explicitly.
+GURL URLByRemovingLensSurfaceParamIfNecessary(const GURL& URL) {
+  // If not a finance or flights URL, do nothing
+  if (URLIsFinance(URL) || URLIsFlights(URL) || URLIsShopping(URL)) {
+    return net::AppendOrReplaceQueryParameter(URL, "lns_surface", std::nullopt);
+  }
+
+  return GURL(URL);
+}
+
+/// Returns whether the navigation is allowed inside of the result page, and the
+/// rewritten URL when applicable. For example, for some websites we temporarily
+/// want to open them in a new tab, and override one of the URL params, while a
+/// server-side fix is pending.
+std::pair<BOOL, std::optional<GURL>> IsValidURLToOpenInResultsPage(
+    const GURL& originalURL) {
+  GURL URL = URLByRemovingLensSurfaceParamIfNecessary(originalURL);
+  if (!URLHostIsGoogle(URL)) {
+    return std::pair(NO, std::nullopt);
+  }
+
+  return std::pair(URL.spec().find("lns_surface=4") != std::string::npos, URL);
 }
 
 /// Detect special URL that requests the bottom sheet resize.
@@ -234,7 +279,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL URL = net::GURLWithNSURL(request.URL);
-  if (requestInfo.target_frame_is_main && !IsValidURLToOpenInResultsPage(URL)) {
+  std::pair<BOOL, std::optional<GURL>> allowURL =
+      IsValidURLToOpenInResultsPage(URL);
+  URL = allowURL.second.value_or(URL);
+
+  if (requestInfo.target_frame_is_main && !allowURL.first) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 
     if (URL.IsAboutBlank()) {

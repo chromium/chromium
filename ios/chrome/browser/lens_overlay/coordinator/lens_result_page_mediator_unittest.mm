@@ -34,7 +34,7 @@
 @interface FakeLensResultPageMediatorDelegate
     : NSObject <LensResultPageMediatorDelegate>
 // Whether an open URL in new tab was issued.
-@property(nonatomic, readonly) BOOL openInNewTabRequested;
+@property(nonatomic, assign) BOOL openInNewTabRequested;
 @end
 
 @implementation FakeLensResultPageMediatorDelegate
@@ -205,9 +205,41 @@ TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
   ASSERT_TRUE([load_params->extra_headers objectForKey:@"X-Client-Data"]);
 }
 
-// Tests that web navigation to google is allowed.
-TEST_F(LensResultPageMediatorTest, ShouldAllowGoogleNavigation) {
-  EXPECT_TRUE(TestShouldAllowRequest(@"https://www.google.com",
+// Tests that web navigation to google properties without lns_surface=4 is not
+// allowed.
+TEST_F(LensResultPageMediatorTest, ShouldNotAllowGeneralGoogleNavigation) {
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+  EXPECT_FALSE(TestShouldAllowRequest(@"https://www.google.com",
+                                      /*target_frame_is_main=*/true));
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
+}
+
+// Tests that web navigation to some google properties with lns_surface=4 is not
+// allowed.
+TEST_F(LensResultPageMediatorTest, ShouldNotAllowGoogleExceptions) {
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+  EXPECT_FALSE(TestShouldAllowRequest(
+      @"https://www.google.com/travel/flights?lns_surface=4",
+      /*target_frame_is_main=*/true));
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
+  fake_delegate_.openInNewTabRequested = NO;
+
+  EXPECT_FALSE(
+      TestShouldAllowRequest(@"https://www.google.com/finance?lns_surface=4",
+                             /*target_frame_is_main=*/true));
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
+  fake_delegate_.openInNewTabRequested = NO;
+
+  EXPECT_FALSE(
+      TestShouldAllowRequest(@"https://www.google.com?lns_surface=4&udm=28",
+                             /*target_frame_is_main=*/true));
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
+  fake_delegate_.openInNewTabRequested = NO;
+}
+
+// Tests that web navigation to google properties with lns_surface=4 is allowed.
+TEST_F(LensResultPageMediatorTest, ShouldAllowLensGoogleNavigation) {
+  EXPECT_TRUE(TestShouldAllowRequest(@"https://www.google.com?lns_surface=4",
                                      /*target_frame_is_main=*/true));
 }
 
