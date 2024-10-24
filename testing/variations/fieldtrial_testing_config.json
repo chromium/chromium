@@ -16091,6 +16091,13 @@
                     "enable_features": [
                         "PMProcessPriorityPolicy",
                         "PriorityOverridePendingViews"
+                    ],
+                    "disable_features": [
+                        "MacAllowBackgroundingRenderProcesses",
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
+                        "UnimportantFramesPriority",
+                        "UserVisibleProcessPriority"
                     ]
                 },
                 {
@@ -16099,6 +16106,12 @@
                         "MacAllowBackgroundingRenderProcesses",
                         "PMProcessPriorityPolicy",
                         "PriorityOverridePendingViews"
+                    ],
+                    "disable_features": [
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
+                        "UnimportantFramesPriority",
+                        "UserVisibleProcessPriority"
                     ]
                 },
                 {
