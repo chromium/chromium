@@ -972,6 +972,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4356872429719185452">Prikaz podrobnosti dostopne točke. Dostopna točka se vklaplja.</translation>
 <translation id="4364101114148522660">Posnetek (<ph name="DURATION" />)</translation>
 <translation id="4371348193907997655">Nastavitve predvajanja</translation>
+<translation id="4371834685492830207">Koda PIN sme vsebovati samo veljavne znake</translation>
 <translation id="4375482231364171368">Iskanje v naslovni vrstici</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, moč signala: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Povezovanje …</translation>
@@ -1557,6 +1558,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6232416233079464213">Od <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno uporablja vašo kamero in mikrofon.</translation>
 <translation id="6237231532760393653">1x</translation>
+<translation id="6240551054644725950">Geslo sme vsebovati samo veljavne znake</translation>
 <translation id="6240603910551255087">Zgornji gumb</translation>
 <translation id="6240821072888636753">Vedno vprašaj</translation>
 <translation id="6247728804802644171">Odpiranje obvestil</translation>

@@ -2165,7 +2165,6 @@
 <translation id="2492461744635776704">მზადდება სერტიფიკატის ხელმოწერის მოთხოვნა</translation>
 <translation id="249330843868392562">ტექსტის გახმოვანების პარამეტრების გახსნა</translation>
 <translation id="2494555621641843783">Steam-ის ინსტალაცია ვერ მოხერხდა</translation>
-<translation id="2495141202137516054">თქვენი Drive-იდან</translation>
 <translation id="2496180316473517155">ნახვის ისტორია</translation>
 <translation id="2496616243169085015">ფოტოგრაფია</translation>
 <translation id="2497229222757901769">მაუსის სიჩქარე</translation>
@@ -5112,7 +5111,6 @@
 <translation id="4635072447747973225">Crostini-ს დეინსტალაცია</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> მიუწვდომელია სტუმარი მომხმარებლებისთვის.</translation>
 <translation id="4636187126182557415">სისტემის პარამეტრები</translation>
-<translation id="4636682061478263818">Drive-ის ფაილები</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
 <translation id="4637083375689622795">სხვა ქმედებები, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">კამერის ხელახლა გამოყენება</translation>
@@ -9889,7 +9887,6 @@
 <translation id="8110393529211831722">გამოწერა დაინსტალირებულია მხოლოდ ამ მოწყობილობაზე და ის არ იქნება სინქრონიზებული თქვენი ანგარიშის სხვა მოწყობილობებთან. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">მიმდინარეობს კონტაქტების სიის ჩამოტვირთვა...</translation>
 <translation id="8114925369073821854">მიკროფონზე წვდომის ნებართვა <ph name="APP_NAME" />-ისთვის</translation>
-<translation id="8115139559594092084">თქვენი Google Drive-იდან</translation>
 <translation id="8116972784401310538">&amp;სანიშნეების მმართველი</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> დაიმახსოვრებს სისტემაში შესვლის ხერხს და ავტომატურად შეგიყვანთ სისტემაში, როცა ეს შესაძლებელია. გამორთვის შემთხვევაში, ყოველ ჯერზე საჭირო იქნება თქვენი დასტური.</translation>
 <translation id="8118362518458010043">გათიშულია Chrome-ის მიერ. ეს გაფართოება შეიძლება არ იყოს უსაფრთხო.</translation>
@@ -9919,7 +9916,6 @@
 <translation id="8138217203226449454">ძიების პროვაიდერის შეცვლა გსურდათ?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" />-ის სტატუსი</translation>
 <translation id="8139440916039659819">კურსორის დაჩქარება</translation>
-<translation id="8139447493436036221">Google Drive ფაილები</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, ხოლო <ph name="BEGIN_LINK" />პროფილს<ph name="END_LINK" /> — <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">თქვენი Google ანგარიში არის ის ანგარიში, რომელსაც იყენებთ Gmail-ისთვის, YouTube-ისთვის, Chrome-ისა და Google-ის სხვა პროდუქტებისთვის.

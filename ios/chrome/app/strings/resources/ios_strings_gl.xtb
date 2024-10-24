@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
+<translation id="1508263560970797965">Continuar no modo de incógnito</translation>
 <translation id="1509486075633541495">Iniciar sesión no sitio web</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
@@ -742,6 +743,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4592672037257622855">{count,plural, =1{Engadiuse a páxina á túa lista de lectura}other{Engadíronse {count} páxinas á túa lista de lectura}}</translation>
 <translation id="459644946100970322">Queres activar as alertas de prezos?</translation>
+<translation id="4597892826846980979">Recibe notificacións de pestanas</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606247758155004938">A túa organización xestiona o teu navegador.</translation>
 <translation id="4611811151908969241">Ocultar Deixar de seguir a <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6606914854592108404">Comprobación de seguranza en curso…</translation>
 <translation id="6609890790934458793">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
+<translation id="6612912757320004438">Permitir notificacións de pestanas…</translation>
 <translation id="6617761071025228250">Borrar o texto</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6624219055418309072">Bloquear no modo de incógnito</translation>
@@ -1806,6 +1809,5 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985379595344853742">Pechar todas as pestanas do modo de incógnito</translation>
 <translation id="988141524645182168">Outros dispositivos</translation>
-<translation id="989697783705943787">Seguranza dos sitios</translation>
 <translation id="999768147936949692">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Invita os membros da familia<ph name="END_LINK" /> a unirse ao teu grupo e aproveita os teus produtos e subscricións de Google.</translation>
 </translationbundle>

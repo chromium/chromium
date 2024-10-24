@@ -969,6 +969,7 @@
 <translation id="4356872429719185452">顯示無線基地台詳細資料。無線基地台正在啟用。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  錄製中</translation>
 <translation id="4371348193907997655">投放設定</translation>
+<translation id="4371834685492830207">PIN 碼只能包含有效的字元</translation>
 <translation id="4375482231364171368">在網址列搜尋</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">連線中…</translation>
@@ -1554,6 +1555,7 @@
 <translation id="6232416233079464213">來自 <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">密碼只能包含有效字元</translation>
 <translation id="6240603910551255087">頂端按鈕</translation>
 <translation id="6240821072888636753">每次都詢問</translation>
 <translation id="6247728804802644171">開啟通知</translation>

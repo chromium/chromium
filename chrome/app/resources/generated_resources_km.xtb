@@ -2178,7 +2178,6 @@
 <translation id="2492461744635776704">កំពុងរៀបចំ​សំណើសុំ​ចុះហត្ថលេខា​លើវិញ្ញាបនបត្រ</translation>
 <translation id="249330843868392562">បើកការកំណត់​ការបំប្លែងអត្ថបទទៅជាការនិយាយ</translation>
 <translation id="2494555621641843783">មិនអាចដំឡើង Steam បានទេ</translation>
-<translation id="2495141202137516054">ពីថាស​របស់អ្នក</translation>
 <translation id="2496180316473517155">ប្រវត្តិរុករក</translation>
 <translation id="2496616243169085015">ការថតរូប</translation>
 <translation id="2497229222757901769">ល្បឿនកណ្តុរ</translation>
@@ -5123,7 +5122,6 @@
 <translation id="4635072447747973225">លុប Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> មិនអាច​ប្រើបាន​សម្រាប់​អ្នកប្រើប្រាស់​ជាភ្ញៀវទេ។</translation>
 <translation id="4636187126182557415">ចំណូលចិត្ត​ប្រព័ន្ធ</translation>
-<translation id="4636682061478263818">ឯកសារ​ក្នុង​ថាស</translation>
 <translation id="4636930964841734540">ព័ត៌មាន</translation>
 <translation id="4637083375689622795">សកម្មភាព​ច្រើនទៀត <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">ប្រើកាមេរ៉ា​ម្ដងទៀត</translation>
@@ -9900,7 +9898,6 @@
 <translation id="8110393529211831722">ការជាវ​ត្រូវបាន​ដំឡើង​នៅលើ​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ និងមិនធ្វើ​សម​កាលកម្ម​ជាមួយឧបករណ៍​ផ្សេងទៀត​ក្នុងគណនី​របស់អ្នកទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">កំពុងទាញយក​បញ្ជី​ទំនាក់ទំនង...</translation>
 <translation id="8114925369073821854">ការអនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូនលើ <ph name="APP_NAME" /></translation>
-<translation id="8115139559594092084">ពី Google ថាសរបស់អ្នក</translation>
 <translation id="8116972784401310538">កម្មវិធីគ្រប់គ្រងចំណាំ</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />ចងចាំ​របៀបដែលអ្នក​បានចូលគណនី និង​នាំអ្នក​ចូលគណនី​ដោយស្វ័យប្រវត្តិ នៅពេល​ដែលអាច។ នៅពេលបិទ អ្នកនឹង​ត្រូវបាន​ស្នើឱ្យ​បញ្ជាក់​គ្រប់ពេល។</translation>
 <translation id="8118362518458010043">បានបិទដោយ Chrome ។ កម្មវិធីបន្ថែមនេះ​អាច​នឹងមិនមានសុវត្ថិភាពទេ។</translation>
@@ -9930,7 +9927,6 @@
 <translation id="8138217203226449454">តើអ្នក​ពិតជាចង់​ប្ដូរ​ក្រុមហ៊ុនផ្ដល់សេវា​ស្វែងរក​របស់អ្នក​មែនឬ?</translation>
 <translation id="8138997515734480534">ស្ថានភាព <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">ការបង្កើន​ល្បឿនទស្សន៍ទ្រនិច​</translation>
-<translation id="8139447493436036221">ឯកសារ Google ថាស</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង<ph name="END_LINK" />របស់ <ph name="BROWSER_DOMAIN" /> ហើយ<ph name="BEGIN_LINK" />កម្រងព័ត៌មាន​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង<ph name="END_LINK" />របស់ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">គណនី Google របស់អ្នក​គឺជាគណនី​តែមួយដែលអ្នកប្រើ​សម្រាប់ Gmail, YouTube, Chrome និង​ផលិតផល Google ផ្សេងទៀត។

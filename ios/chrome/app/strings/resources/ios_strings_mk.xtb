@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Сметката на <ph name="WEBSITE" /> нема да се избрише.</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
 <translation id="1506063256525392513">Ова ви овозможува да фотографирате и да прикачувате фотографии, како и да скенирате QR-кодови</translation>
+<translation id="1508263560970797965">Продолжи во „Инкогнито“</translation>
 <translation id="1509486075633541495">Најавете се на веб-сајтот</translation>
 <translation id="1509960214886564027">Функциите на многу сајтови може да не функционираат</translation>
 <translation id="1513858653616922153">Избриши ја лозинката</translation>
@@ -742,6 +743,7 @@
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4592672037257622855">{count,plural, =1{Додадена е страница во вашиот „Список за читање“}one{Додадени се {count} страница во вашиот „Список за читање“}other{Додадени се {count} страници во вашиот „Список за читање“}}</translation>
 <translation id="459644946100970322">Да се вклучат известувањата за цени?</translation>
+<translation id="4597892826846980979">Добивајте известувања во картичките</translation>
 <translation id="4601095002996233687">Детални скенирања за сомнителни преземања.</translation>
 <translation id="4606247758155004938">Вашата организација управува со прелистувачот.</translation>
 <translation id="4611811151908969241">Скриј „Поништи го следењето на <ph name="DOMAIN_NAME" />“</translation>
@@ -1201,6 +1203,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6606914854592108404">Се врши безбедносна проверка…</translation>
 <translation id="6609890790934458793">Лозинките за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
+<translation id="6612912757320004438">Дозволете известувања во картичките…</translation>
 <translation id="6617761071025228250">Избриши го текстот</translation>
 <translation id="6620279676667515405">Откажи</translation>
 <translation id="6624219055418309072">Блокирај во „Инкогнито“</translation>
@@ -1636,6 +1639,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8601611099293226919">Пребарувајте на екранот со Google Lens</translation>
 <translation id="8605219856220328675">Затвори ја картичката.</translation>
 <translation id="8609743333007776886">Додајте ја ${url} во обележувачите</translation>
+<translation id="8611922158252451755">Секој што го има линкот може да ги изменува сите картички, па споделувајте паметно. Линкот истекува по 48 часа.</translation>
 <translation id="8620640915598389714">Измени</translation>
 <translation id="8625706492572042370">Изменете го почетниот екран</translation>
 <translation id="8633025649649592204">Неодамнешна активност</translation>
@@ -1747,6 +1751,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9032405509996909363">Потврдете го бришењето на податоците од прелистување</translation>
 <translation id="9034759925968272072">Нема да ве одјавиме од сметката на Google. Вашата сметка на Google можеби има други форми на историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Проток</translation>
+<translation id="9057030985451135243">Дознајте повеќе за споделените групи картички</translation>
 <translation id="9057972802061533987">Не може да се следи. Нешто тргна наопаку.</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9066097352053395362">Скриј „Изменете обележувач“</translation>
@@ -1804,6 +1809,5 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="985379595344853742">Затворете ги сите картички „Инкогнито“</translation>
 <translation id="988141524645182168">Други уреди</translation>
-<translation id="989697783705943787">Безбедност на сајтот</translation>
 <translation id="999768147936949692">Засега, лозинки може да споделувате само со членови на семејството. <ph name="BEGIN_LINK" />Испратете покани до членовите на семејството<ph name="END_LINK" /> за да се придружат на вашата група и да го извлечат максимумот од вашите производи и претплати на Google.</translation>
 </translationbundle>

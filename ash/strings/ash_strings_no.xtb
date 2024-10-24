@@ -972,6 +972,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4356872429719185452">Vis detaljer for wifi-sonen. Wifi-sonen slås på.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> – opptak</translation>
 <translation id="4371348193907997655">Cast-innstillinger</translation>
+<translation id="4371834685492830207">PIN-koden kan bare inneholde gyldige tegn</translation>
 <translation id="4375482231364171368">Søk i adressefeltet</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> prosent.</translation>
 <translation id="4378551569595875038">Kobler til …</translation>
@@ -1557,6 +1558,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6232416233079464213">Fra <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> bruker kameraet ditt og mikrofonen din for øyeblikket</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Passordet kan bare inneholde gyldige tegn</translation>
 <translation id="6240603910551255087">Øverste knapp</translation>
 <translation id="6240821072888636753">Spør hver gang</translation>
 <translation id="6247728804802644171">Åpne varsler</translation>

@@ -972,6 +972,7 @@
 <translation id="4356872429719185452">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अन हुँदै छ।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  रेकर्ड गरिँदै छ</translation>
 <translation id="4371348193907997655">कास्टका सेटिङहरू</translation>
+<translation id="4371834685492830207">PIN मा अनिवार्य रूपमा वैध वर्णहरू मात्र समावेश हुनु पर्छ</translation>
 <translation id="4375482231364171368">एड्रेस बारमा खोज्नुहोस्</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत छ</translation>
 <translation id="4378551569595875038">जडान गर्दै...</translation>
@@ -1557,6 +1558,7 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> मार्फत</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ले हाल तपाईंको क्यामेरा र माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">पासवर्डमा अनिवार्य रूपमा वैध वर्णहरू मात्र समावेश हुनु पर्छ</translation>
 <translation id="6240603910551255087">सिरानको बटन</translation>
 <translation id="6240821072888636753">हरेक पटक सोध्नुहोस्</translation>
 <translation id="6247728804802644171">सूचनाहरू खोल्नुहोस्</translation>

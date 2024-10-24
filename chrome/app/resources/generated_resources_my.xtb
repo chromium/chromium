@@ -2159,7 +2159,6 @@
 <translation id="2492461744635776704">အသိအမှတ်ပြုလက်မှတ် ရေးထိုးရန် တောင်းဆိုချက်ကို ပြင်ဆင်နေသည်</translation>
 <translation id="249330843868392562">စာ-မှ-စကား ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="2494555621641843783">Steam ထည့်သွင်း၍မရပါ</translation>
-<translation id="2495141202137516054">သင့်စက်မှ</translation>
 <translation id="2496180316473517155">အသုံးပြုခြင်း မှတ်တမ်း</translation>
 <translation id="2496616243169085015">ဓာတ်ပုံပညာ</translation>
 <translation id="2497229222757901769">မောက်စ်အမြန်နှုန်း</translation>
@@ -5052,6 +5051,7 @@
 <translation id="4602776638371779614">ဤတဘ်သည် ဘလူးတုသ်သုံးစက်များကို ယခု ရှာနေသည်</translation>
 <translation id="4605026046465576953">‘သီးခြားခွဲထားသည့် ဝဘ်အက်ပ်များ’ ကို သင်လုပ်ဆောင်ခွင့် မရှိသောကြောင့် ဤအက်ပ်ကို ဖွင့်၍မရပါ</translation>
 <translation id="4606551464649945562">သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ ပြုလုပ်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
+<translation id="4606933160360542263">စိတ်ကြိုက် ကီးပေါင်းစပ်မှု- <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{တဘ်အုပ်စုကို ဖျက်မလား။}other{တဘ်အုပ်စုများကို ဖျက်မလား။}}</translation>
 <translation id="4608500690299898628">&amp;ရှာရန်...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> တွင် အမှားအယွင်းတစ်ခု ရှိနေသည်</translation>
@@ -5087,7 +5087,6 @@
 <translation id="4635072447747973225">Crostini ဖယ်ရှားရန်</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> သည် 'ဧည့်သည်' အသုံးပြုသူများအတွက် မရနိုင်ပါ။</translation>
 <translation id="4636187126182557415">စနစ်သတ်မှတ်ချက်များ</translation>
-<translation id="4636682061478263818">Drive ဖိုင်များ</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
 <translation id="4637083375689622795">နောက်ထပ် လုပ်ဆောင်ချက်များ၊ <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">ကင်မရာထပ်မံ အသုံးပြုရန်</translation>
@@ -6288,6 +6287,7 @@
 <translation id="5517304475148761050">ဤအက်ပ်က 'Play စတိုး' သို့ ဝင်သုံးခွင့် လိုအပ်သည်</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> လုပ်ဆောင်ချက်ကို ဖယ်ရှားရန်</translation>
 <translation id="5521078259930077036">သင် စောင့်နေခဲ့သည်မှာ ဒီပင်မ စာမျက်နှာလား?</translation>
 <translation id="5522156646677899028">ဒီတိုးချဲ့မှု ထဲတွင် လေးနက်သည့် လုံခြုံရေး ထိပျက်လွယ်မှု တစ်ခု ပါရှိသည်။</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{သင်၏စီမံခန့်ခွဲသူက နောက်ဆက်တွဲကို ထည့်သွင်းလိုက်သည်။}other{သင်၏စီမံခန့်ခွဲသူက နောက်ဆက်တွဲ # ခုကို ထည့်သွင်းလိုက်သည်။}}</translation>
@@ -8981,7 +8981,7 @@
 <translation id="7517959947270534934">သင့်မိသားစုဝင်သည် စကားဝှက်များကို ယခု မရယူနိုင်ပါ။ Chrome အပ်ဒိတ်လုပ်ပြီး သူ၏စကားဝှက်များ စင့်ခ်လုပ်ခိုင်းပါ။</translation>
 <translation id="7518079994230200553">ဤရွေးချယ်စရာကို ယခုမရနိုင်ပါ။</translation>
 <translation id="7520766081042531487">ရုပ်ဖျက်ဌာန-: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">ဖြတ်လမ်းလင့်ခ်များ ပြပါ</translation>
+<translation id="752098910262610337">ဖြတ်လမ်းလင့်ခ်များ ပြရန်</translation>
 <translation id="7521430434164837205">Microsoft 365 ဖိုင်</translation>
 <translation id="7522255036471229694">"Ok Google" ဟုပြောပါ</translation>
 <translation id="7523117833414447032">စာလုံးကြီးများကို ဖတ်သည့်အခါ</translation>
@@ -9828,7 +9828,6 @@
 <translation id="8110393529211831722">စာရင်းသွင်းမှုကို ဤစက်တွင်သာ ထည့်သွင်းထားပြီး သင့်အကောင့်အောက်ရှိ အခြားစက်များနှင့် စင့်ခ်လုပ်ထားခြင်း မရှိပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">အဆက်အသွယ် စာရင်းကို ဒေါင်းလုဒ်လုပ်နေသည်...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> မိုက်ခရိုဖုန်း ခွင့်ပြုချက်</translation>
-<translation id="8115139559594092084">သင်၏ Google Drive မှ</translation>
 <translation id="8116972784401310538">&amp;စာညှပ် မန်နေဂျာ</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> က သင်လက်မှတ်ထိုးဝင်ပုံကို မှတ်ထားပြီး ရနိုင်တိုင်း အလိုအလျောက် လက်မှတ်ထိုးဝင်ပေးသည်။ ပိတ်ထားပါက အကြိမ်တိုင်း အတည်ပြုချက် တောင်းပါမည်။</translation>
 <translation id="8118362518458010043">Chrome ကပိတ်ထားသည်။ ဤနောက်ဆက်တွဲသည် လုံခြုံမှုမရှိနိုင်ပါ။</translation>
@@ -9858,7 +9857,6 @@
 <translation id="8138217203226449454">သင်၏ ရှာဖွေရေး ဝန်ဆောင်မှုစနစ်ကို ပြောင်းလိုသလား။</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> အခြေအနေ</translation>
 <translation id="8139440916039659819">ကာဆာ အရှိန်</translation>
-<translation id="8139447493436036221">Google Drive ဖိုင်များ</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />၊ <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BROWSER_DOMAIN" /> က သင့် <ph name="BEGIN_LINK" />ဘရောင်ဇာကို စီမံခန့်ခွဲ<ph name="END_LINK" /> ပြီး <ph name="PROFILE_DOMAIN" /> က သင့် <ph name="BEGIN_LINK" />ပရိုဖိုင်ကို စီမံခန့်ခွဲသည်<ph name="END_LINK" /></translation>
 <translation id="8140869601171867148">သင့် Google Account သည် Gmail၊ YouTube၊ Chrome နှင့် အခြား Google ထုတ်ကုန်များအတွက် အသုံးပြုသော အကောင့်နှင့် တူညီသည်။
@@ -10269,6 +10267,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> အတွက် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="8431190899827883166">တို့ရန်များကို ပြခြင်း</translation>
 <translation id="843173223122814223">နောက်ခံများကို AI ဖြင့် ပြုလုပ်ခြင်း</translation>
+<translation id="8431977087510901105">ကာဆာဆက်တင်များ ပြင်ဆင်သတ်မှတ်လိုက်ပါပြီ</translation>
 <translation id="8433186206711564395">ကွန်ရက် ဆက်တင်များ</translation>
 <translation id="8434109185104929038">စာဖတ်ရန် ချောင်</translation>
 <translation id="8434480141477525001">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>

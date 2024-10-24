@@ -115,6 +115,7 @@
 <translation id="1498283581832036924"><ph name="WEBSITE" /> аккаунтуңуз өчүрүлбөйт.</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
 <translation id="1506063256525392513">Бул сүрөткө тартууга жана аларды жүктөп берүүгө, ошондой эле, QR коддорун скандоого жол ачат</translation>
+<translation id="1508263560970797965">Жашыруун режимде улантуу</translation>
 <translation id="1509486075633541495">Вебсайтка кирүү</translation>
 <translation id="1509960214886564027">Функциялар көпчүлүк сайттарда туура иштебеши мүмкүн.</translation>
 <translation id="1513858653616922153">Сырсөздү жок кылуу</translation>
@@ -742,6 +743,7 @@
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4592672037257622855">{count,plural, =1{Барак окуу тизмеңизге кошулду}other{{count} барак окуу тизмеңизге кошулду}}</translation>
 <translation id="459644946100970322">Баалардын өзгөрүшү тууралуу кабарлоону күйгүзүлсүнбү?</translation>
+<translation id="4597892826846980979">Өтмөктөр тууралуу билдирмелерди алыңыз</translation>
 <translation id="4601095002996233687">Жүктөлүп алынган шектүү файлдарды тереңирээк текшерүү</translation>
 <translation id="4606247758155004938">Серепчиңиз уюмуңуз тарабынан башкарылат.</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> жазылуу баскычын жашыруу</translation>
@@ -1201,6 +1203,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6606914854592108404">Коопсуздук текшерилүүдө…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> жана <ph name="THIRD_WEBSITE" /> вебсайтынын сырсөздөрү жок кылынат. Аккаунттарыңыз өчүрүлбөйт.</translation>
 <translation id="661266467055912436">Сиз жана башкалар үчүн Интернеттеги коопсуздукту арттырат.</translation>
+<translation id="6612912757320004438">Өтмөктөр тууралуу билдирмелерге уруксат берүү…</translation>
 <translation id="6617761071025228250">Текстти тазалоо</translation>
 <translation id="6620279676667515405">Жокко чыгаруу</translation>
 <translation id="6624219055418309072">Жашыруун режимде бөгөттөө</translation>
@@ -1806,6 +1809,5 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="984275831282074731">Төлөм ыкмалары</translation>
 <translation id="985379595344853742">Бардык жашыруун өтмөктөрдү жабуу</translation>
 <translation id="988141524645182168">Бшк түзмкт</translation>
-<translation id="989697783705943787">Сайттын коопсуздугу</translation>
 <translation id="999768147936949692">Азырынча сырсөздөрдү үй-бүлөлүк топтун мүчөлөрү менен гана бөлүшө аласыз. <ph name="BEGIN_LINK" />Үй-бүлөлүк топтун мүчөлөрүн<ph name="END_LINK" /> топко чакырып, Google кызматтарын жана жазылууларыңызды толук колдонуңуз.</translation>
 </translationbundle>

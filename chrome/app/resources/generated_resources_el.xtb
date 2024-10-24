@@ -1816,6 +1816,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Μετά την έναρξη της εγκατάστασης, δεν είναι δυνατή η ακύρωσή της.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Ανταλλαγή δεδομένων με συσκευές στους τομείς: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Αντιστοίχιση διακόπτη για Επιλογή</translation>
+<translation id="2270668657177045040">Ένας ιστότοπος και οι υποτομείς του μπορούν να δουν ποιες σχετικές εφαρμογές ιστού είναι εγκατεστημένες στη συσκευή σας.</translation>
 <translation id="2271452184061378400">Οι ομάδες καρτελών αποθηκεύονται εδώ</translation>
 <translation id="2271986192355138465">Μάθετε πώς να εγκαθιστάτε εφαρμογές ιστού</translation>
 <translation id="2272430695183451567">Αντιστοιχήθηκαν 0 διακόπτες</translation>
@@ -2160,7 +2161,6 @@
 <translation id="2492461744635776704">Προετοιμασία αιτήματος για υπογραφή πιστοποιητικού</translation>
 <translation id="249330843868392562">Άνοιγμα ρυθμίσεων μετατροπής κειμένου σε ομιλία</translation>
 <translation id="2494555621641843783">Δεν είναι δυνατή η εγκατάσταση του Steam</translation>
-<translation id="2495141202137516054">Από το Drive σας</translation>
 <translation id="2496180316473517155">Ιστορικό περιήγησης</translation>
 <translation id="2496616243169085015">Φωτογραφία</translation>
 <translation id="2497229222757901769">Ταχύτητα ποντικιού</translation>
@@ -5089,7 +5089,6 @@
 <translation id="4635072447747973225">Απεγκατάσταση Crostini</translation>
 <translation id="4635398712689569051">Η σελίδα <ph name="PAGE_NAME" /> δεν είναι διαθέσιμη σε επισκέπτες.</translation>
 <translation id="4636187126182557415">Προτιμήσεις συστήματος</translation>
-<translation id="4636682061478263818">Αρχεία Drive</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
 <translation id="4637083375689622795">Περισσότερες ενέργειες, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Εκ νέου χρήση της κάμερας</translation>
@@ -5335,6 +5334,7 @@
 <translation id="4823193082697477185">Αποκτήστε πρόσβαση σε κοινόχρηστα αρχεία, φακέλους ή δίσκους σε ένα τοπικό δίκτυο. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Ανάγνωση και αλλαγή των ρυθμίσεων χρήστη και συσκευής</translation>
 <translation id="4824037980212326045">Δημιουργία αντιγράφου ασφαλείας και επαναφορά Linux</translation>
+<translation id="4824263260587281352">Αλλαγή συνδυασμού πλήκτρων <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Ακύρωση συγχρονισμού;</translation>
 <translation id="4825462365587146530">Μάθετε περισσότερα σχετικά με το Chrome Root Store σε νέα καρτέλα.</translation>
 <translation id="4825532258163983651">Δεν είναι δυνατή η διαγραφή του κλειδιού πρόσβασης</translation>
@@ -7829,6 +7829,7 @@
 <translation id="6676212663108450937">Μπορείτε να χρησιμοποιήσετε ακουστικά κατά την εκπαίδευση με τη φωνή σας</translation>
 <translation id="6676291960742508499">Οι καρτέλες, οι τίτλοι σελίδων και οι διευθύνσεις URL αποστέλλονται στην Google</translation>
 <translation id="667752334740867460">Λήψη πληροφοριών Wi-Fi…</translation>
+<translation id="6677527809400770913">Η κίνηση <ph name="GESTURE" /> αντιστοιχίστηκε στην ενέργεια <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Μεγάλα κύματα σκάνε στη θάλασσα και στο φόντο φαίνεται η ξηρά. Ένας σκοτεινός ουρανός με λιγοστό πορτοκαλί φως, λίγο πέρα από τον ορίζοντα.</translation>
 <translation id="6678717876183468697">URL ερωτήματος</translation>
 <translation id="6680442031740878064">Διαθέσιμος χώρος: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9834,7 +9835,6 @@
 <translation id="8110393529211831722">Η συνδρομή είναι εγκατεστημένη μόνο σε αυτήν τη συσκευή και δεν έχει συγχρονιστεί με άλλες συσκευές στον λογαριασμό σας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Λήψη λίστας επαφών…</translation>
 <translation id="8114925369073821854">Άδεια μικροφώνου για την εφαρμογή <ph name="APP_NAME" /></translation>
-<translation id="8115139559594092084">Από το Google Drive</translation>
 <translation id="8116972784401310538">&amp;Διαχείριση σελιδοδεικτών</translation>
 <translation id="8118276691321086429">Το <ph name="PASSWORD_MANAGER_BRAND" /> θυμάται πώς συνδεθήκατε και σας συνδέει αυτόματα όταν είναι δυνατό. Όταν είναι απενεργοποιημένη αυτή η ρύθμιση, θα σας ζητείται επιβεβαίωση κάθε φορά.</translation>
 <translation id="8118362518458010043">Απενεργοποιήθηκε από το Chrome. Αυτή η επέκταση μπορεί να μην είναι ασφαλής.</translation>
@@ -9864,7 +9864,6 @@
 <translation id="8138217203226449454">Σκοπεύατε να αλλάξετε τον πάροχο αναζήτησής σας;</translation>
 <translation id="8138997515734480534">Κατάσταση <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Επιτάχυνση δείκτη</translation>
-<translation id="8139447493436036221">Αρχεία Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">Το <ph name="BEGIN_LINK" />πρόγραμμα περιήγησης είναι υπό τη διαχείριση<ph name="END_LINK" /> του τομέα <ph name="BROWSER_DOMAIN" /> και <ph name="BEGIN_LINK" />το προφίλ σας υπό τη διαχείριση<ph name="END_LINK" /> του τομέα <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">Ο Λογαριασμός σας Google είναι ο ίδιος λογαριασμός που χρησιμοποιείτε για το Gmail, το YouTube, το Chrome και άλλα προϊόντα Google.
@@ -10033,6 +10032,7 @@
 <translation id="8261378640211443080">Αυτή η επέκταση δεν αναφέρεται στο <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> και ενδέχεται να έχει προστεθεί εν αγνοία σας.</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8261625296061301062">Εγκαταστάθηκε το λογισμικό σαρωτή</translation>
+<translation id="8263149565724023141">Σχετικές εφαρμογές</translation>
 <translation id="8263228331881858381">Το κλειδί πρόσβασης αποθηκεύτηκε</translation>
 <translation id="8263336784344783289">Ονομάστε αυτή την ομάδα</translation>
 <translation id="8264024885325823677">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας.</translation>

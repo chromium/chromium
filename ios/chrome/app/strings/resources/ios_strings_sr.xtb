@@ -912,6 +912,7 @@
 <translation id="5295239312320826323">Желите да уклоните налог <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5311061401280561833">Приступ камери и микрофону је дозвољен</translation>
+<translation id="531209241254508943">група картица</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
@@ -1826,6 +1827,5 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="984275831282074731">Начини плаћања</translation>
 <translation id="985379595344853742">Затвори све картице без архивирања</translation>
 <translation id="988141524645182168">Други уређаји</translation>
-<translation id="989697783705943787">Безбедност сајта</translation>
 <translation id="999768147936949692">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Позовите чланове породице<ph name="END_LINK" /> да се придруже групи и користите производе и претплате широм Google-а на бољи начин.</translation>
 </translationbundle>

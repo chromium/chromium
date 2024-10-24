@@ -1805,6 +1805,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Установку нельзя будет отменить.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Обмен данными с любыми устройствами в доменах <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Назначьте переключатель для действия "Выбрать"</translation>
+<translation id="2270668657177045040">Сайт и его субдомены могут определять, какие связанные с ними веб-приложения есть на вашем устройстве.</translation>
 <translation id="2271452184061378400">Здесь находятся группы вкладок</translation>
 <translation id="2271986192355138465">Подробнее об установке веб-приложений…</translation>
 <translation id="2272430695183451567">Не назначено переключателей</translation>
@@ -2149,7 +2150,6 @@
 <translation id="2492461744635776704">Подготовка запроса на подпись сертификата</translation>
 <translation id="249330843868392562">Открыть настройки озвучивания текста</translation>
 <translation id="2494555621641843783">Не удается установить Steam</translation>
-<translation id="2495141202137516054">С вашего Диска</translation>
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2496616243169085015">Фотография</translation>
 <translation id="2497229222757901769">Скорость указателя (для мыши)</translation>
@@ -5078,7 +5078,6 @@
 <translation id="4635072447747973225">Удалить Crostini</translation>
 <translation id="4635398712689569051">Страница "<ph name="PAGE_NAME" />" недоступна в гостевом режиме</translation>
 <translation id="4636187126182557415">Системные настройки</translation>
-<translation id="4636682061478263818">Файлы на Диске</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4637083375689622795">Другие действия в аккаунте <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Использовать камеру ещё раз</translation>
@@ -5324,6 +5323,7 @@
 <translation id="4823193082697477185">Открыть доступ к общим файлам, папкам и дискам в локальной сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Просмотр и изменение настроек для пользователей и устройств</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
+<translation id="4824263260587281352">Изменить сочетание клавиш "<ph name="KEY_COMBINATION" />"</translation>
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
 <translation id="4825462365587146530">Подробнее о Chrome Root Store в новой вкладке…</translation>
 <translation id="4825532258163983651">Не удается удалить ключ доступа</translation>
@@ -7822,6 +7822,7 @@
 <translation id="6676212663108450937">Используйте наушники при обучении голосовым командам.</translation>
 <translation id="6676291960742508499">Информация о URL, вкладках и заголовках страниц отправляется в Google.</translation>
 <translation id="667752334740867460">Получение информации о сети Wi-Fi…</translation>
+<translation id="6677527809400770913">На действие "<ph name="ACTION" />" назначен жест "<ph name="GESTURE" />"</translation>
 <translation id="6678604587151240716">В море бушуют волны, вдалеке видна земля. Отблески оранжевого цвета прямо над горизонтом освещают мрачное угрюмое небо.</translation>
 <translation id="6678717876183468697">URL запроса</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9826,7 +9827,6 @@
 <translation id="8110393529211831722">Подписка установлена только на этом устройстве и не синхронизируется с другими устройствами, на которых вы вошли в аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Скачивание списка контактов…</translation>
 <translation id="8114925369073821854">Доступ к микрофону для приложения "<ph name="APP_NAME" />"</translation>
-<translation id="8115139559594092084">С Google Диска</translation>
 <translation id="8116972784401310538">&amp;Диспетчер закладок</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> запоминает, как вы вошли в аккаунт, и автоматически выполняет вход, когда это возможно. Если функция отключена, каждый раз будет запрашиваться подтверждение.</translation>
 <translation id="8118362518458010043">Расширение отключено браузером Chrome. Оно может быть небезопасным.</translation>
@@ -9856,7 +9856,6 @@
 <translation id="8138217203226449454">Вы хотели сменить поисковую систему?</translation>
 <translation id="8138997515734480534">Статус ВМ "<ph name="VM_NAME" />"</translation>
 <translation id="8139440916039659819">Ускорение курсора</translation>
-<translation id="8139447493436036221">Файлы на Google Диске</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">Вашим <ph name="BEGIN_LINK" />браузером управляет<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, а <ph name="BEGIN_LINK" />профилем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="8140869601171867148">Этот аккаунт также используется в других сервисах Google, таких как Gmail, YouTube и Chrome.
@@ -10025,6 +10024,7 @@
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений об этом расширении, то есть оно могло быть установлено без вашего ведома.</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8261625296061301062">ПО для сканера установлено</translation>
+<translation id="8263149565724023141">Связанные приложения</translation>
 <translation id="8263228331881858381">Ключ доступа сохранен</translation>
 <translation id="8263336784344783289">Введите название группы вкладок</translation>
 <translation id="8264024885325823677">Этим параметром управляет администратор.</translation>

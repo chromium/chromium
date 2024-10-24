@@ -973,6 +973,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4356872429719185452">Mostrar os detalles da zona wifi. A zona wifi está activada.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Gravando</translation>
 <translation id="4371348193907997655">Configuración da emisión</translation>
+<translation id="4371834685492830207">O PIN debe conter só caracteres válidos</translation>
 <translation id="4375482231364171368">Buscar na barra de enderezos</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensidade do sinal: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Conectando...</translation>
@@ -1558,6 +1559,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando a cámara e o micrófono nestes intres</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">O contrasinal debe conter só caracteres válidos</translation>
 <translation id="6240603910551255087">Botón superior</translation>
 <translation id="6240821072888636753">Preguntar sempre</translation>
 <translation id="6247728804802644171">Abre as notificacións</translation>

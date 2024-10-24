@@ -1819,6 +1819,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Коли встановлення розпочнеться, його не можна буде скасувати.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Обмінюватися даними з будь-яким пристроєм у доменах: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Призначте перемикач для дії "Вибрати"</translation>
+<translation id="2270668657177045040">Сайт і його субдомени можуть бачити, які пов’язані вебдодатки встановлено на вашому пристрої.</translation>
 <translation id="2271452184061378400">Тут зберігаються групи вкладок</translation>
 <translation id="2271986192355138465">Дізнайтесь, як установлювати веб-додатки</translation>
 <translation id="2272430695183451567">Перемикачів не призначено</translation>
@@ -2163,7 +2164,6 @@
 <translation id="2492461744635776704">Підготовка запиту на підпис сертифіката</translation>
 <translation id="249330843868392562">Відкрити налаштування синтезу мовлення</translation>
 <translation id="2494555621641843783">Не вдалося встановити додаток Steam</translation>
-<translation id="2495141202137516054">З вашого Диска</translation>
 <translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2496616243169085015">Фотографія</translation>
 <translation id="2497229222757901769">Швидкість миші</translation>
@@ -5092,7 +5092,6 @@
 <translation id="4635072447747973225">Видалити Crostini</translation>
 <translation id="4635398712689569051">Сторінка "<ph name="PAGE_NAME" />" недоступна гостям.</translation>
 <translation id="4636187126182557415">Налаштування системи</translation>
-<translation id="4636682061478263818">Файли на Диску</translation>
 <translation id="4636930964841734540">Інформація</translation>
 <translation id="4637083375689622795">Інші дії, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Знову відкрити камеру</translation>
@@ -5338,6 +5337,7 @@
 <translation id="4823193082697477185">Отримувати доступ до спільних файлів, папок або дисків у локальній мережі. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Переглядати та змінювати налаштування користувача й пристрою</translation>
 <translation id="4824037980212326045">Резервне копіювання й відновлення Linux</translation>
+<translation id="4824263260587281352">Змінити комбінацію клавіш <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Скасувати синхронізацію?</translation>
 <translation id="4825462365587146530">Докладніше про Chrome Root Store (відкриється в новій вкладці).</translation>
 <translation id="4825532258163983651">Не вдалося видалити ключ доступу</translation>
@@ -7832,6 +7832,7 @@
 <translation id="6676212663108450937">Скористайтеся навушниками, коли тренуєте голос</translation>
 <translation id="6676291960742508499">Ваші вкладки, назви сторінок і URL-адреси надсилаються в Google</translation>
 <translation id="667752334740867460">Отримання облікових даних для підключення до мережі Wi-Fi…</translation>
+<translation id="6677527809400770913">Для дії "<ph name="ACTION" />" призначено жест "<ph name="GESTURE" />"</translation>
 <translation id="6678604587151240716">Великі хвилі вирують у морі на тлі віддаленого берега. Над горизонтом на темному похмурому небі видніють помаранчеві відблиски.</translation>
 <translation id="6678717876183468697">URL-адреса пошукового запиту</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9836,7 +9837,6 @@
 <translation id="8110393529211831722">Підписку встановлено лише на цьому пристрої. Її не синхронізовано з іншими пристроями у вашому обліковому записі. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Завантаження списку контактів…</translation>
 <translation id="8114925369073821854">Дозвіл на доступ до мікрофона в додатку <ph name="APP_NAME" /></translation>
-<translation id="8115139559594092084">З вашого Google Диска</translation>
 <translation id="8116972784401310538">&amp;Диспетчер закладок</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> запам’ятовує, як ви ввійшли в обліковий запис, і за можливості автоматично входить у нього. Якщо цю функцію вимкнути, потрібно буде підтверджувати дані під час кожного входу.</translation>
 <translation id="8118362518458010043">Розширення вимкнено, оскільки воно може бути небезпечним.</translation>
@@ -9866,7 +9866,6 @@
 <translation id="8138217203226449454">Ви хотіли змінити пошукову систему?</translation>
 <translation id="8138997515734480534">Статус віртуальної машини <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Прискорення руху курсора</translation>
-<translation id="8139447493436036221">Файли з Google Диска</translation>
 <translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
 <translation id="8140108728130537923">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">Ваш обліковий запис Google – це той самий обліковий запис, який ви використовуєте для Gmail, YouTube, Chrome і інших продуктів Google.
@@ -10035,6 +10034,7 @@
 <translation id="8261378640211443080">Це розширення встановлено не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />. Можливо, його було додано без вашого відома.</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8261625296061301062">Програмне забезпечення для сканера встановлено</translation>
+<translation id="8263149565724023141">Пов’язані додатки</translation>
 <translation id="8263228331881858381">Ключ доступу збережено</translation>
 <translation id="8263336784344783289">Введіть назву групи</translation>
 <translation id="8264024885325823677">Цим налаштуванням керує адміністратор.</translation>

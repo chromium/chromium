@@ -973,6 +973,7 @@
 <translation id="4356872429719185452">हॉटस्पॉट की जानकारी दिखाएं. हॉटस्पॉट चालू किया जा रहा है.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  रिकॉर्ड किया जा रहा है</translation>
 <translation id="4371348193907997655">कास्ट करने की सेटिंग</translation>
+<translation id="4371834685492830207">पिन में सिर्फ़ मान्य वर्ण होने चाहिए</translation>
 <translation id="4375482231364171368">पता बार में खोजें</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत है</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
@@ -1558,6 +1559,7 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> से</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />, फ़िलहाल आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">पासवर्ड में सिर्फ़ मान्य वर्ण होने चाहिए</translation>
 <translation id="6240603910551255087">टॉप बटन</translation>
 <translation id="6240821072888636753">हर बार पूछें</translation>
 <translation id="6247728804802644171">सूचनाएं खोलने के लिए</translation>

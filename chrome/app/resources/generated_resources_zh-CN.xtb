@@ -2141,7 +2141,6 @@
 <translation id="2492461744635776704">正在准备证书签名请求</translation>
 <translation id="249330843868392562">打开文字转语音设置</translation>
 <translation id="2494555621641843783">无法安装 Steam</translation>
-<translation id="2495141202137516054">来自您的云端硬盘</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2496616243169085015">摄影</translation>
 <translation id="2497229222757901769">鼠标速度</translation>
@@ -5066,7 +5065,6 @@
 <translation id="4635072447747973225">卸载 Crostini</translation>
 <translation id="4635398712689569051">访客用户无法使用“<ph name="PAGE_NAME" />”页面。</translation>
 <translation id="4636187126182557415">系统偏好设置</translation>
-<translation id="4636682061478263818">云端硬盘文件</translation>
 <translation id="4636930964841734540">信息</translation>
 <translation id="4637083375689622795">更多操作，<ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">再次使用摄像头</translation>
@@ -9807,7 +9805,6 @@
 <translation id="8110393529211831722">订阅仅会安装在此设备上，不会与您账号下的其他设备同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下载联系人列表…</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> 麦克风使用权限</translation>
-<translation id="8115139559594092084">来自您的 Google 云端硬盘</translation>
 <translation id="8116972784401310538">书签管理器(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
 <translation id="8118362518458010043">已被 Chrome 停用。此扩展程序可能不安全。</translation>
@@ -9837,7 +9834,6 @@
 <translation id="8138217203226449454">更改搜索服务提供商是您的本意吗？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 的状态</translation>
 <translation id="8139440916039659819">光标加速</translation>
-<translation id="8139447493436036221">Google 云端硬盘文件</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由 <ph name="BROWSER_DOMAIN" /> 管理，您的<ph name="BEGIN_LINK" />个人资料<ph name="END_LINK" />由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="8140869601171867148">您的 Google 账号即您用于 Gmail、YouTube、Chrome 和其他 Google 产品的账号。

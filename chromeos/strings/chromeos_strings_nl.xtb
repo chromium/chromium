@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
 <translation id="1908394185991500139">pijl-links</translation>
+<translation id="1914144885717544695">op vrijdag</translation>
 <translation id="1923388006036088459">Accentkleuren</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">Voorbijzweven</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Vandaag</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2154460308960858308">Zoekvak wissen</translation>
 <translation id="2157660087437850958">emoji-kiezer</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2715723665057727940">rivier</translation>
 <translation id="2717139507051041123">Modus voor donkere kleuren aanzetten</translation>
+<translation id="2726755229438917165">op maandag</translation>
 <translation id="2728460467788544679">Hele afdrukgeschiedenis wissen</translation>
 <translation id="2731700343119398978">Even geduld...</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3060579846059757016">Details</translation>
 <translation id="3061850252076394168">Selecteer om voor te lezen aanzetten</translation>
+<translation id="3066772729299747758">op dinsdag</translation>
 <translation id="3069085583900247081">Test mislukt</translation>
 <translation id="3078740164268491126">tabel</translation>
 <translation id="3081652522083185657">licht</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Achtergrond Aardestroom</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> achtergrond met de letter <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusief</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">Plaats de cursor voor meer lay-outopties.</translation>
 <translation id="4130750466177569591">Ik ga akkoord</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
+<translation id="4137700675046373159">op zaterdag</translation>
 <translation id="4143226836069425823">Tik op een andere toetsenbordtoets om de toets te vervangen</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">op zondag</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Stijlvol kantoor</translation>
 <translation id="4258281355379922695">HTTP-vertraging</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">weide</translation>
 <translation id="551689408806449779">De verbinding met het apparaat is verbroken. Maak opnieuw verbinding om te testen.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">Microfoonopties</translation>
 <translation id="5534900277405737921">Terrein</translation>
 <translation id="554067135846762198">koraal en lichtbruin</translation>
 <translation id="5543701552415191873">vergrendeld</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">Onbekend wifi-beveiligingsprotocol</translation>
 <translation id="6535178685492749208">Je bent offline. Feedback wordt later verstuurd.</translation>
 <translation id="6543412779435705598">taco's</translation>
+<translation id="6550369542114086980">op donderdag</translation>
 <translation id="6551839203326557324">appels</translation>
 <translation id="65526652485742171">De knop Bevestigen staat nu aan</translation>
 <translation id="6557784757915238407">APN is van het type <ph name="ATTACH" />.</translation>
@@ -1265,6 +1274,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7180865173735832675">Aanpassen</translation>
 <translation id="7182063559013288142">Instant-hotspot</translation>
 <translation id="7184043045742675738">Klik op een toets om je knop aan te passen. Verplaats de toets met de muis of de pijltoetsen.</translation>
+<translation id="7187669805838282391">op woensdag</translation>
 <translation id="7206979415662233817">Servicevoorwaarden</translation>
 <translation id="7210635925306941239">cyaan</translation>
 <translation id="7212547870105584639">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1321,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7388959671917308825">Geïntegreerde touchpad</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
 <translation id="7401543881546089382">Snelle link verwijderen</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is klaar om te worden geüpdatet</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
 <translation id="7425037327577270384">Help me met schrijven</translation>
@@ -1325,6 +1336,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7500205272584643581">Toestaan dat Recorder sprekers herkent en labelt?</translation>
 <translation id="7501957181231305652">of</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
+<translation id="7503342217608032738">Apparaat kan niet worden gebruikt</translation>
 <translation id="7507061649493508884">Een stralende <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">onder</translation>
 <translation id="7514365320538308">Downloaden</translation>
@@ -1337,6 +1349,8 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
 <translation id="7551123448725492271">Apparaat is een audioapparaat.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />De beheerder van <ph name="MANAGER" /> heeft ingesteld wanneer dit <ph name="DEVICE_TYPE" /> kan worden gebruikt.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Je kunt dit apparaat weer gebruiken <ph name="DAY" /> om <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Voorbeeld van screenshot bekijken</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7561759921596375678">Volume aanzetten</translation>
@@ -1398,6 +1412,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-touchscreen</translation>
 <translation id="7859006200041800233">cactusbloem</translation>
+<translation id="7865217133132122390">Microfoon aanzetten</translation>
 <translation id="7869143217755017858">Donkere modus uitzetten</translation>
 <translation id="7878972877380405573">Samenvatten met Help me met lezen</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1426,6 +1441,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is automatisch gestart}other{# apps zijn automatisch gestart}}</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8010765388850538088">Meer informatie over generatieve AI</translation>
 <translation id="8017679124341497925">Snelkoppeling bewerkt</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8028993641010258682">Grootte</translation>
@@ -1435,6 +1451,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8045012663542226664">Microfoon dempen</translation>
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> tegen een achtergrond van <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN is verbonden.</translation>
 <translation id="8067208048261192356">bruin</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> verwijderen</translation>
@@ -1538,6 +1555,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
+<translation id="8584654835905316966">Start je computer opnieuw op om de installatie van firmware voor <ph name="DEVICE_NAME" /> naar versie <ph name="VERSION" /> af te ronden. Je computer lijkt misschien een paar keer opnieuw op te starten. Dit is normaal.</translation>
 <translation id="8593058461203131755">media pauzeren</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
 <translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
@@ -1671,6 +1689,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Je toetsenbord kan automatisch worden afgestemd op je achtergrond</translation>
 <translation id="9189000703457422362">Kan geen verbinding maken met dit netwerk via automatisch waargenomen APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">De geselecteerde joystick-toetsen zijn <ph name="KEYS" />. Tik op de knop om het bedieningselement te bewerken.</translation>
 <translation id="9204237731135241582">Kan geen verbinding maken met de gateway vanuit Android-apps</translation>
@@ -1691,5 +1710,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="982713511914535780">Ontlaadtest uitvoeren</translation>
 <translation id="98515147261107953">Liggend</translation>
 <translation id="987264212798334818">Algemeen</translation>
+<translation id="994473081369871639">Microfoon uitzetten</translation>
 <translation id="995062385528875723">Kan geen letters met diakritische tekens, niet-Latijns alfabet of symbolen gebruiken</translation>
 </translationbundle>

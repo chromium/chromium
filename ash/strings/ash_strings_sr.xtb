@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> од <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Уграђени тачпед је онемогућен. Користите тастатуру или други показивачки уређај да бисте потврдили промену.
+
+У супротном ће уграђени тачпед бити поново омогућен за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
 <translation id="2785499565474703580">1 уређај је повезан</translation>
 <translation id="2791421900609674576">Видећете препоруке да бисте могли да наставите тамо где сте стали.  Можете да додирнете и задржите да бисте уклонили препоруке.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">Истакните претходну ставку на полици</translation>
 <translation id="311799651966070385">Затвори аутоматски подсетник</translation>
 <translation id="3120421559657122717">Желите да искључите уређај?</translation>
+<translation id="3121411970001795539">Уграђени тачпед је онемогућен јер је повезан миш. Користите миш или тастатуру да бисте потврдили промену.
+
+У супротном ће уграђени тачпед бити поново омогућен за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Тип школских задатака</translation>
 <translation id="3126026824346185272">Ctrl</translation>

@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">Включване или изключване на Caret Browsing</translation>
 <translation id="2531025035050312891">устройството е бавно</translation>
 <translation id="2531107890083353124">Докато премествате раздела с плъзгане, натиснете <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Опитвате се да използвате клавиша Home? Натиснете</translation>
 <translation id="254900897760075745">Копиране на избраното съдържание в буферната памет</translation>
 <translation id="2549711466868162843">Подобряване на осветлението</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
@@ -560,6 +561,7 @@
 <translation id="2985148236010982088">Вижте всички приложения</translation>
 <translation id="2992272421330787632">Скриване на всички предложения за мултимедия</translation>
 <translation id="2992327365391326550">Бутонът за микрофона на устройството е изключен.</translation>
+<translation id="2993956882370897557">Опитвате се да използвате клавиша End? Натиснете</translation>
 <translation id="3000461861112256445">Монозвук</translation>
 <translation id="3001391739687111021">Редактиране на размера на екрана</translation>
 <translation id="3009178788565917040">Изход</translation>
@@ -612,6 +614,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> връща устройството ви <ph name="DEVICE_TYPE" /> към по-стара версия. То ще бъде нулирано и всички данни ще бъдат изтрити.</translation>
 <translation id="316798519864381606">Презентация в Google Презентации</translation>
 <translation id="3171170659304083361">Настройки на методите на въвеждане</translation>
+<translation id="3174897399179348329">Опитвате се да използвате клавиша Page Up? Натиснете</translation>
 <translation id="3176221688814061633">Вашият Chromebook или устройството ви с Bluetooth е с по-стара версия на Bluetooth. За по-добро качество на звука включете Bluetooth Super Resolution или използвайте вътрешен микрофон.</translation>
 <translation id="3181441307743005334">Рестартирането може да отнеме известно време</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Установена е връзка с едно устройство}other{Установена е връзка с # устройства}}</translation>
@@ -972,6 +975,7 @@
 <translation id="4356872429719185452">Показване на подробностите за точката за достъп. Точката за достъп се включва.</translation>
 <translation id="4364101114148522660">Запис: <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Настройки за предаване</translation>
+<translation id="4371834685492830207">ПИН кодът трябва да съдържа само валидни знаци</translation>
 <translation id="4375482231364171368">Търсене в адресната лента</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /> процент(а)</translation>
 <translation id="4378551569595875038">Свързване...</translation>
@@ -1258,6 +1262,7 @@
 <translation id="5297704307811127955">Изключено</translation>
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5302048478445481009">Език</translation>
+<translation id="5302531370473608800">Актуализирайте устройството си <ph name="DEVICE_TYPE" />, за да използвате YouTube Music</translation>
 <translation id="5303319262469238330">Оставащият заряд на батерията е <ph name="PERCENTAGE" />.
 Някои функции са ограничени с цел удължаване на живота ѝ.</translation>
 <translation id="5308380583665731573">Свързване</translation>
@@ -1557,6 +1562,7 @@
 <translation id="6232416233079464213">От <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Понастоящем <ph name="APP_NAME" /> използва камерата и микрофона ви</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Паролата трябва да съдържа само валидни знаци</translation>
 <translation id="6240603910551255087">Горен бутон</translation>
 <translation id="6240821072888636753">Запитване всеки път</translation>
 <translation id="6247728804802644171">Отваряне на известията</translation>
@@ -1817,6 +1823,7 @@
 <translation id="7144942256906679589">Състояние на батерията</translation>
 <translation id="7145639536026937076">Батерията е на <ph name="PERCENTAGE" />% и се зарежда. Режимът за запазването ѝ е включен.</translation>
 <translation id="7147587499155271409">Няма история на сърфиране</translation>
+<translation id="7147657298465433425">За достъп до функционалните клавиши натиснете клавиша fn + клавиш от най-горния ред</translation>
 <translation id="7149149900052329230">Управлявайте локалните си файлове и тези в Google Диск от приложението „Файлове“.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1930,7 @@
 <translation id="7557816257942363084">Понастоящем <ph name="APP_NAME" /> използва микрофона ви</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
 <translation id="7564874036684306347">Преместването на прозорци към друг работен плот може да предизвика неочаквано поведение. Последващите известия, прозорци и диалогови прозорци може да бъдат разделени между работните плотове.</translation>
+<translation id="7568154670718626683">Опитвате се да използвате клавиша Delete? Натиснете</translation>
 <translation id="7568790562536448087">Актуализира се</translation>
 <translation id="7569509451529460200">Активирахте функцията за брайлово писмо и ChromeVox</translation>
 <translation id="7569886975397378678">Отхвърляне на настройването на прегледа на известията и приложенията на телефона ви</translation>
@@ -2125,6 +2133,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Сесията ви за концентрация продължи <ph name="FOCUSED_TIME" />. Отворете бързите настройки, за да стартирате нова.</translation>
 <translation id="8203224998425013577">Показване на още емоджита и GIF файлове</translation>
 <translation id="8203795194971602413">Кликване с десния бутон</translation>
+<translation id="8205469348819768313">Опитвате се да използвате клавиша Page Down? Натиснете</translation>
 <translation id="8214996719228530800">Канал Canary</translation>
 <translation id="8219451629189078428">През това време вашият Chromebook трябва да остане включен и свързан със захранването. Уверете се, че зарядното устройство или кабелите на адаптера са включени добре във вашия Chromebook и в електрическия контакт. Не изключвайте Chromebook.</translation>
 <translation id="8220076512072059941">Добавяне на <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2326,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Асистент не поддържа този език.</translation>
 <translation id="8926951137623668982">Лавицата е винаги скрита</translation>
+<translation id="8929566928381252430">Опитвате се да използвате клавиша Caps Lock? Натиснете</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файла}}</translation>
 <translation id="8936501819958976551">деактивирана</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>

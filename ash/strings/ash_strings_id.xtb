@@ -972,6 +972,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4356872429719185452">Tampilkan detail hotspot. Hotspot sedang diaktifkan.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> Merekam</translation>
 <translation id="4371348193907997655">Setelan Transmisi</translation>
+<translation id="4371834685492830207">PIN hanya boleh berisi karakter yang valid</translation>
 <translation id="4375482231364171368">Telusuri dalam kolom URL</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan sinyal <ph name="SIGNAL_STRENGTH" /> persen</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
@@ -1557,6 +1558,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6232416233079464213">Dari <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon Anda</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Sandi hanya boleh berisi karakter yang valid</translation>
 <translation id="6240603910551255087">Tombol Atas</translation>
 <translation id="6240821072888636753">Selalu tanya</translation>
 <translation id="6247728804802644171">Buka notifikasi</translation>

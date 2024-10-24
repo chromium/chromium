@@ -2162,7 +2162,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2492461744635776704">Preparando la solicitud de firma del certificado</translation>
 <translation id="249330843868392562">Abrir la configuración de texto a voz</translation>
 <translation id="2494555621641843783">No se puede instalar Steam</translation>
-<translation id="2495141202137516054">De tu unidad</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2496616243169085015">Fotografía</translation>
 <translation id="2497229222757901769">Velocidad del mouse</translation>
@@ -5109,7 +5108,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> no está disponible para los usuarios invitados.</translation>
 <translation id="4636187126182557415">Preferencias del sistema</translation>
-<translation id="4636682061478263818">Archivos de Drive</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4637083375689622795">Más acciones, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Volver a usar la cámara</translation>
@@ -9889,7 +9887,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8110393529211831722">La suscripción solo está instalada en este dispositivo y no está sincronizada con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Descargando la lista de contactos…</translation>
 <translation id="8114925369073821854">Permiso del micrófono de <ph name="APP_NAME" /></translation>
-<translation id="8115139559594092084">De tu Google Drive</translation>
 <translation id="8116972784401310538">&amp;Administrador de favoritos</translation>
 <translation id="8118276691321086429">El <ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo ingresaste y te da acceso de forma automática cuando es posible. Si esta función está desactivada, siempre se te solicitará confirmación.</translation>
 <translation id="8118362518458010043">Chrome la inhabilitó. Es posible que esta extensión no sea segura.</translation>
@@ -9919,7 +9916,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8138217203226449454">¿Querías cambiar el proveedor de búsqueda?</translation>
 <translation id="8138997515734480534">Estado de <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Aceleración del cursor</translation>
-<translation id="8139447493436036221">Archivos de Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BROWSER_DOMAIN" /> <ph name="BEGIN_LINK" />administra tu navegador<ph name="END_LINK" /> y <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />administra tu perfil<ph name="END_LINK" /></translation>
 <translation id="8140869601171867148">Tu Cuenta de Google es la misma que usas para Gmail, YouTube, Chrome y otros productos de Google.

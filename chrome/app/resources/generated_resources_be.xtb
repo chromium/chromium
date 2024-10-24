@@ -2149,7 +2149,6 @@
 <translation id="2492461744635776704">Рыхтуецца запыт на подпіс сертыфіката</translation>
 <translation id="249330843868392562">Адкрыць налады сінтэзу маўлення</translation>
 <translation id="2494555621641843783">Не ўдалося ўсталяваць Steam</translation>
-<translation id="2495141202137516054">З вашага Дыска</translation>
 <translation id="2496180316473517155">Гісторыя прагляду сайтаў</translation>
 <translation id="2496616243169085015">Фатаграфія</translation>
 <translation id="2497229222757901769">Хуткасць мышы</translation>
@@ -5076,7 +5075,6 @@
 <translation id="4635072447747973225">Выдаліць Crostini</translation>
 <translation id="4635398712689569051">Старонка <ph name="PAGE_NAME" /> недаступная для гасцявых карыстальнікаў.</translation>
 <translation id="4636187126182557415">Налады сістэмы</translation>
-<translation id="4636682061478263818">Файлы на Дыску</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
 <translation id="4637083375689622795">Іншыя дзеянні, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Выкарыстаць камеру яшчэ раз</translation>
@@ -9825,7 +9823,6 @@
 <translation id="8110393529211831722">Падпіска ўсталёўваецца толькі на гэту прыладу і не сінхранізуецца з іншымі прыладамі, на якіх вы ўвайшлі ва ўліковы запіс. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Ідзе спампоўванне спіса кантактаў...</translation>
 <translation id="8114925369073821854">Доступ да мікрафона для праграмы "<ph name="APP_NAME" />"</translation>
-<translation id="8115139559594092084">З Google Дыска</translation>
 <translation id="8116972784401310538">&amp;Менеджар закладак</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> запамінае вашы даныя для ўваходу і, калі магчыма, будзе выконваць уваход аўтаматычна. Калі гэтая функцыя выключана, ад вас будзе патрабавацца пацвярджэнне пры кожным уваходзе.</translation>
 <translation id="8118362518458010043">Выключана браўзерам Chrome. Гэта пашырэнне можа быць небяспечным.</translation>
@@ -9855,7 +9852,6 @@
 <translation id="8138217203226449454">Вы хацелі змяніць пошукавую сістэму?</translation>
 <translation id="8138997515734480534">Стан віртуальнай машыны <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Паскарэнне курсора</translation>
-<translation id="8139447493436036221">Файлы на Google Дыску</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">Ваш Уліковы запіс Google – гэта той самы ўліковы запіс, які вы выкарыстоўваеце для Gmail, YouTube, Chrome і іншых прадуктаў Google.

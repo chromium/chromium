@@ -501,6 +501,9 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> od <ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-om upravlja <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Ugrađeni tačped je onemogućen. Koristite tastaturu ili drugi pokazivački uređaj da biste potvrdili promenu.
+
+U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Izađite iz režima snimanja</translation>
 <translation id="2785499565474703580">1 uređaj je povezan</translation>
 <translation id="2791421900609674576">Videćete preporuke da biste mogli da nastavite tamo gde ste stali.  Možete da dodirnete i zadržite da biste uklonili preporuke.</translation>
@@ -598,6 +601,9 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="3113492864356515707">Istaknite prethodnu stavku na polici</translation>
 <translation id="311799651966070385">Zatvori automatski podsetnik</translation>
 <translation id="3120421559657122717">Želite da isključite uređaj?</translation>
+<translation id="3121411970001795539">Ugrađeni tačped je onemogućen jer je povezan miš. Koristite miš ili tastaturu da biste potvrdili promenu.
+
+U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tip školskih zadataka</translation>
 <translation id="3126026824346185272">Ctrl</translation>

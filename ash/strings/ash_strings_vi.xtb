@@ -500,6 +500,9 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> rồi đến <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+tìm kiếm+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
+<translation id="2781658180588759579">Bàn di chuột tích hợp sẵn đã tắt. Hãy sử dụng bàn phím hoặc thiết bị trỏ khác để xác nhận thay đổi.
+
+Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Thoát khỏi chế độ chụp</translation>
 <translation id="2785499565474703580">1 thiết bị đã kết nối</translation>
 <translation id="2791421900609674576">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể chạm và giữ để xoá đề xuất.</translation>
@@ -596,6 +599,9 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3113492864356515707">Đánh dấu mục trước trên kệ</translation>
 <translation id="311799651966070385">Đóng thông báo nhắc nhở</translation>
 <translation id="3120421559657122717">Tắt thiết bị?</translation>
+<translation id="3121411970001795539">Bàn di chuột tích hợp sẵn tắt vì bạn đã kết nối chuột. Hãy sử dụng chuột hoặc bàn phím để xác nhận thay đổi.
+
+Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Loại bài tập trên lớp</translation>
 <translation id="3126026824346185272">Ctrl</translation>

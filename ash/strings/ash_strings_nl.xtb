@@ -442,6 +442,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2530896289327917474">Browsen met navigatietoetsen aan- of uitzetten</translation>
 <translation id="2531025035050312891">apparaat langzaam</translation>
 <translation id="2531107890083353124">Druk op <ph name="KEY_ONE" /> terwijl je het tabblad sleept</translation>
+<translation id="2545334090614121435">Probeer je Home te gebruiken? Gebruik</translation>
 <translation id="254900897760075745">Geselecteerde content kopiëren naar klembord</translation>
 <translation id="2549711466868162843">Belichting verbeteren</translation>
 <translation id="2549985041256363841">Opname starten</translation>
@@ -560,6 +561,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2985148236010982088">Alle apps bekijken</translation>
 <translation id="2992272421330787632">Alle mediasuggesties verbergen</translation>
 <translation id="2992327365391326550">De microfoonknop van het apparaat staat uit.</translation>
+<translation id="2993956882370897557">Probeer je End te gebruiken? Gebruik</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
 <translation id="3001391739687111021">Schermformaat bewerken</translation>
 <translation id="3009178788565917040">Uitgang</translation>
@@ -612,6 +614,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="316798519864381606">Google-presentatie</translation>
 <translation id="3171170659304083361">Instellingen voor invoermethoden</translation>
+<translation id="3174897399179348329">Probeer je Page Up te gebruiken? Gebruik</translation>
 <translation id="3176221688814061633">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Zet Bluetooth Super Resolution aan of gebruik de interne microfoon voor een betere audiokwaliteit.</translation>
 <translation id="3181441307743005334">Opnieuw opstarten kan even duren</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Verbonden met een apparaat}other{Verbonden met # apparaten}}</translation>
@@ -972,6 +975,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4356872429719185452">Toon de hotspotdetails. Hotspot wordt aangezet.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> opnemen</translation>
 <translation id="4371348193907997655">Cast-instellingen</translation>
+<translation id="4371834685492830207">Pincode mag alleen geldige tekens bevatten</translation>
 <translation id="4375482231364171368">Zoeken via adresbalk</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
@@ -1258,6 +1262,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5297704307811127955">Uit</translation>
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5302048478445481009">Taal</translation>
+<translation id="5302531370473608800">Update je <ph name="DEVICE_TYPE" /> om YouTube Music te gebruiken</translation>
 <translation id="5303319262469238330">Nog <ph name="PERCENTAGE" />% batterijlading.
 Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
@@ -1557,6 +1562,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6232416233079464213">Vanuit <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Wachtwoord mag alleen geldige tekens bevatten</translation>
 <translation id="6240603910551255087">Knop bovenaan</translation>
 <translation id="6240821072888636753">Altijd vragen</translation>
 <translation id="6247728804802644171">Meldingen openen</translation>
@@ -1817,6 +1823,7 @@ Nieuwe installatie</translation>
 <translation id="7144942256906679589">Batterijstatus</translation>
 <translation id="7145639536026937076">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen. Batterijbesparing staat aan.</translation>
 <translation id="7147587499155271409">Geen browsegeschiedenis</translation>
+<translation id="7147657298465433425">Druk op de fn-toets + toetsen op de bovenste rij om toegang te krijgen tot F-toetsen</translation>
 <translation id="7149149900052329230">Beheer je lokale bestanden en je Google Drive-bestanden, allemaal in de Bestanden-app.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1930,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
+<translation id="7568154670718626683">Probeer je Delete te gebruiken? Gebruik</translation>
 <translation id="7568790562536448087">Bijwerken</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>
 <translation id="7569886975397378678">Instellen van de weergave van meldingen en apps van je telefoon sluiten</translation>
@@ -2125,6 +2133,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="820256110035940528"><ph name="TITLE" /> Je hebt je net <ph name="FOCUSED_TIME" /> gefocust. Open Snelle instellingen om opnieuw te focussen.</translation>
 <translation id="8203224998425013577">Meer emoji's en gifjes tonen</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>
+<translation id="8205469348819768313">Probeer je Page Down te gebruiken? Gebruik</translation>
 <translation id="8214996719228530800">Canary-kanaal</translation>
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> toevoegen</translation>
@@ -2317,6 +2326,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">De Google Assistent spreekt deze taal niet.</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
+<translation id="8929566928381252430">Probeer je Caps Lock te gebruiken? Gebruik</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 bestand}other{# bestanden}}</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>

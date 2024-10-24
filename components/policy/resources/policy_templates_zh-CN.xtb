@@ -4797,6 +4797,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 如果未将现有浏览数据添加到受管个人资料名下，系统会创建一份全新的个人资料。现有浏览数据会保留在非受管个人资料名下，用户仍可通过个人资料选择器来访问这份个人资料。</translation>
 <translation id="4668325077104657568">默认图片设置</translation>
+<translation id="4669292863736266737">除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策已设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，否则将此政策设为 <ph name="GLS_ENABLED" /> 会在初始设置期间开启 Google 位置信息服务。如果此政策设为 <ph name="GLS_DISABLED" /> 或不设置，位置信息服务会在设置期间保持关闭状态。
+
+如果此政策设为 <ph name="BR_UNDER_USER_CONTROL" />，系统会通过提示询问用户是否要使用 Google 位置信息服务。如果用户开启了该服务，Android 应用会利用该服务搜索设备位置信息，并向 Google 发送匿名位置数据。
+
+完成初始设置后，用户可以开启或关闭 Google 位置信息服务。</translation>
 <translation id="4670865688564083639">下限：</translation>
 <translation id="467236746355332046">支持的功能：</translation>
 <translation id="4672774129073185053">启用 IPv6 可达性检查覆盖</translation>
@@ -6712,13 +6717,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策已启用，系统将会显示 AI 介绍界面。
 
       如果未设置此政策，系统将为受企业管理的用户跳过 AI 介绍界面，而为非受管用户显示该介绍界面。</translation>
-<translation id="6187573347027372072">警告！此政策已被弃用，请改用 <ph name="CROS_GLS_POLICY_NAME" />。<ph name="PRODUCT_OS_NAME" /> 现在有一个系统位置信息切换开关，用于控制整个系统，包括 <ph name="ANDROID_NAME" />。<ph name="ANDROID_NAME" /> 切换开关现在处于只读状态，反映 <ph name="PRODUCT_OS_NAME" /> 的位置信息服务状态。
-
-除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策已设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，否则将此政策设为 <ph name="GLS_ENABLED" /> 会在初始设置期间开启 Google 位置信息服务。如果此政策设为 <ph name="GLS_DISABLED" /> 或不设置，位置信息服务会在设置期间保持关闭状态。
-
-如果此政策设为 <ph name="GLS_UNDER_USER_CONTROL" />，系统会通过提示询问用户是否要使用 Google 位置信息服务。如果用户开启该服务，<ph name="ANDROID_NAME" /> 应用、<ph name="PRODUCT_OS_NAME" /> 应用、网站和系统服务会使用这些服务搜索设备位置信息，并向 Google 发送匿名位置数据。
-
-完成初始设置后，用户可以开启或关闭 Google 位置信息服务。</translation>
 <translation id="6187632100458475876">受管理账号的工具栏头像标签设置</translation>
 <translation id="6190367314942602985">报告用户标识信息</translation>
 <translation id="6191963383731098056">此政策让管理员能够配置 <ph name="PRODUCT_NAME" /> 主题的颜色。输入的字符串应是有效的十六进制颜色字符串（采用“#RRGGBB”格式）。

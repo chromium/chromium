@@ -2534,6 +2534,7 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2872968825059227580">GIF desteğini devre dışı bırak.</translation>
 <translation id="2874209944580848064">Android uygulamalarını destekleyen <ph name="PRODUCT_OS_NAME" /> cihazlarına ilişkin not:</translation>
 <translation id="287474029350993681">Cihaza içerik yayınlamayı devre dışı bırak</translation>
+<translation id="2874983257003956579">Sınıf yönetimi araçlarını yapılandır</translation>
 <translation id="2875192972412983412">Sunucu yazıcıları için sorgulanacak yazdırma sunucuları alt grubunu belirtir.
 
       Bu politika kullanılırsa kullanıcı yalnızca kimlikleri bu politikadaki değerlerle eşleşen sunucu yazıcıları kullanabilir.
@@ -2659,6 +2660,9 @@ değiştirebilir, ancak bu ayar kullanıcılar tarafından değiştirilemez.</tr
 Sağlanan filtrelerden biriyle eşleşen alan adları için ayarlanan çerezler, taşıma işleminin dışında tutulur. Çerez alan adları, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde belirtilen "ana makine" alan kurallarına göre eşleştirilir. Diğer tüm alanlar yoksayılır. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
 
 <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> politikası öncelikli hale gelir.</translation>
+<translation id="2953447815703785478">Cihaz yönetim protokolü kullanılarak kaydolunması gereken, cihaz genelinde istemci sertifikalarını belirtir.
+
+<ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> anahtar algoritması seçeneği, <ph name="PRODUCT_OS_NAME" /> 132 sürümünden itibaren desteklenmektedir.</translation>
 <translation id="2957506574938329824">Hiçbir sitenin Web Bluetooth API'sı aracılığıyla Bluetooth hizmetlerine erişim istemesine izin verme</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> kimlik doğrulaması için hesap türü</translation>
 <translation id="2959469725686993410">Saat dilimini çözümlerken kablosuz erişim noktalarını her zaman sunucuya gönder</translation>
@@ -4522,6 +4526,7 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, kargolarını <ph
       Bu politika <ph name="PRODUCT_NAME" /> M121 sürümünde kaldırıldı.</translation>
 <translation id="439661169333921592">Giriş ekranında klavye odağını vurgulamayı devre dışı bırak</translation>
 <translation id="4397045637922200204">Hesap kurtarmayı devre dışı bırak</translation>
+<translation id="4397157269508242312">Politikanın ayarlanması kullanıcıların içerik gönderip almak, öğrenci ya da öğretmen olarak altyazı gönderip almak için sınıf yönetim araçlarını kullanıp kullanmayacağını veya sınıf yönetimi araçlarının kullanıcılar için devre dışı bırakılıp bırakılmayacağını belirler.</translation>
 <translation id="4397464099112037398">Varsayılan pencere yerleşimi izni ayarı</translation>
 <translation id="4398803806072237638"><ph name="FIREFOX_PRODUCT_NAME" /> ve <ph name="SAFARI_PRODUCT_NAME" /> tarayıcılarında yapılan değişikliklere uymak için CSS özel durum özelliğinin <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> söz dizimi, <ph name="PRODUCT_NAME" /> tarayıcısında <ph name="CUSTOM_STATE_NEW_SYNTAX" /> olarak değiştiriliyor. Bu politika, desteği sonlandırılmış eski söz diziminin M133 sürümüne kadar etkinleştirilmesine olanak tanır.
 
@@ -4916,6 +4921,11 @@ Mevcut tarama verilerini yönetilen profile taşımak, mevcut profilin yönetile
 
 Mevcut tarama verilerinin yönetilen profile taşınmaması, yeni ve temiz bir profilin oluşturulacağı anlamına gelir. Mevcut tarama verileri, kullanıcının profil seçici aracılığıyla erişebileceği yönetilmeyen bir profilde kalır.</translation>
 <translation id="4668325077104657568">Varsayılan resimler ayarı</translation>
+<translation id="4669292863736266737"><ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> politikası <ph name="BLOCK_GEOLOCATION_SETTING" /> seçeneğine ayarlanmadığı sürece, <ph name="GLS_ENABLED" /> politikasının ayarlanması Google konum hizmetlerini ilk kurulum sırasında açar. Politikayı <ph name="GLS_DISABLED" /> seçeneğine ayarlamak veya ayarlamadan bırakmak, konum hizmetlerini kurulum sırasında kapalı tutar.
+
+Politikanın <ph name="BR_UNDER_USER_CONTROL" /> seçeneğine ayarlanması, kullanıcılardan Google konum hizmetlerinin kullanılıp kullanılmayacağı bilgisini ister. Kullanıcılar, Google konum hizmetlerini açarsa Android uygulamaları cihaz konumunu aramak için bu hizmetleri kullanıp anonimleştirilmiş konum verilerini Google'a gönderir.
+
+Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya kapatabilir.</translation>
 <translation id="4670865688564083639">Minimum:</translation>
 <translation id="467236746355332046">Desteklenen özellikler:</translation>
 <translation id="4672774129073185053">IPv6 erişilebilirlik kontrolünü geçersiz kılmayı etkinleştir</translation>
@@ -4987,6 +4997,7 @@ Bu politika, uzantı kimliklerini veya güncelleme URL'lerini yalnızca kendi ö
 <translation id="4739596156184678950">Dosyaların doğrudan <ph name="GOOGLE_DRIVE_NAME" /> hedefine kaydedilmesine izin ver</translation>
 <translation id="4742973303930120836">Arka plan grafikleri yazdırma modunu kısıtla</translation>
 <translation id="4745232963710538589">Kullanım metriklerini raporlamak için analizler uzantısını etkinleştir</translation>
+<translation id="4746394249367607432">Kullanıcılar bir sınıf yönetimi oturumuna katılabilir ve eklenebilir. Öğretmenler bu kullanıcılara içerik gönderebilir.</translation>
 <translation id="4749670563834935149">Giriş ve kilit ekranında URL listesi için <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> politikasını etkinleştirin.
 
 Bu politika ayarlanırsa onay akışını başlatmak için <ph name="PRODUCT_OS_NAME" /> tarafından hangi URL'lerin sunulacağı belirtilir. İkincisi ise bu web sitelerinin, bağlama duyarlı onaylanmış sinyal grubunu cihazdan almasına olanak tanır.
@@ -6290,6 +6301,9 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Politikanın Devre Dışı değerine ayarlanması, tüm kaynaklardan yazım denetimini kapatır ve kullanıcılar tarafından açılamaz. Bu politika Yanlış değerine ayarlandığında, <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> ve <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> politikalarının herhangi bir etkisi olmaz.
 
       Politika ayarlanmazsa kullanıcılar, dil ayarlarında yazım denetimini açabilir veya kapatabilirler. </translation>
+<translation id="5655060841667911118">Cihaz yönetim protokolü kullanılarak kaydolunması gereken istemci sertifikalarını belirtir.
+
+<ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> anahtar algoritması seçeneği, <ph name="PRODUCT_OS_NAME" /> 132 sürümünden itibaren desteklenmektedir.</translation>
 <translation id="5655553344896004108">Kullanımdan kaldırılan U2F Security Key API'nin kullanılmasına izin ver</translation>
 <translation id="5656177735561364047">Paylaşılan Pano Özelliğini Etkinleştir</translation>
 <translation id="5657752663637568277">Bu politika, <ph name="CLOUD_PRINT_NAME" /> kullanımdan kaldırma uyarılarının baskı önizleme iletişim kutusunda veya ayarlar sayfalarında kullanıcılara gösterilip gösterilmeyeceğini kontrol eder.
@@ -6864,13 +6878,6 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
       Politika, Etkin değerine ayarlanırsa yapay zeka giriş ekranı gösterilir.
 
       Politika ayarlanmadan bırakılırsa yapay zeka giriş ekranı, kuruluş tarafından yönetilen kullanıcılar için atlanır, yönetilmeyen kullanıcılar için gösterilir.</translation>
-<translation id="6187573347027372072">Uyarı! Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="CROS_GLS_POLICY_NAME" /> politikasını kullanın. <ph name="PRODUCT_OS_NAME" /> artık <ph name="ANDROID_NAME" /> dahil tüm sistemi yöneten bir sistem konum anahtarına sahip. <ph name="ANDROID_NAME" /> anahtarı artık salt okunur durumda ve <ph name="PRODUCT_OS_NAME" /> konum durumunu yansıtıyor.
-
-<ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> politikası <ph name="BLOCK_GEOLOCATION_SETTING" /> olarak ayarlanmadığı sürece, <ph name="GLS_ENABLED" /> politikasının ayarlanması Google konum hizmetlerini ilk kurulum sırasında açar. Politikayı <ph name="GLS_DISABLED" /> olarak ayarlamak veya ayarlamadan bırakmak, konum hizmetlerini kurulum sırasında kapalı tutar.
-
-Politikanın <ph name="GLS_UNDER_USER_CONTROL" /> olarak ayarlanması, kullanıcılardan Google konum hizmetlerinin kullanılıp kullanılmayacağı bilgisini ister. Kullanıcılar, Google konum hizmetlerini açarsa <ph name="ANDROID_NAME" /> uygulamaları, <ph name="PRODUCT_OS_NAME" /> uygulamaları, web siteleri ve sisteme ait hizmetler cihaz konumunu aramak için bu hizmetleri kullanıp anonimleştirilmiş konum verilerini Google'a gönderir.
-
-Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya kapatabilir.</translation>
 <translation id="6187632100458475876">Yönetilen araç çubuğu avatarı etiket ayarı</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
@@ -7597,6 +7604,7 @@ Politikada yapılacak değişiklikler yalnızca ARC çalışmıyorken (ör. Chro
 <translation id="6607983779935460461">SVGUseElement için veri URL'si desteği.</translation>
 <translation id="6609867253856597039">Devre dışı bırakılan özelliklerle ilgili kullanıcı deneyimini ayarla</translation>
 <translation id="6614557704487944013">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcıyı kullanmalarına izin ver</translation>
+<translation id="6614648642325603511">Anahtar çifti oluşturmak için kullanılan algoritma. EC seçeneği, 132 sürümünden itibaren desteklenmektedir.</translation>
 <translation id="661610294649586421">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin verme.</translation>
 <translation id="6617589895942747919">Aranın başlangıç zamanı (girilen tarihler dahil).</translation>
 <translation id="6621830999036927230">Politika ayarlanırsa uzaktan erişim ana makinesi, bağlantıları kabul etmek için uzaktan erişim istemcilerinin kimlik doğrulama jetonlarını doğrulamak üzere bu URL'yi kullanır. Boş bırakılır veya ayarlanmazsa bu özellik devre dışı bırakılır.
@@ -7892,6 +7900,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" /> kullanın.</translation>
 <translation id="6847379587945465889">Oturum açma sırasında, SAML TOA Çerezlerinin kullanıcı oturumuna aktarılmasını etkinleştir</translation>
+<translation id="6847810176590195243">Kullanıcılar, içerik bağlayıp öğrencilere dağıtabilir. Web içeriği gönderme ve öğretmenin sesinin canlı altyazılarını/çevirilerini öğrencilere sunma da buna dahildir.</translation>
 <translation id="684856667300805181">Bu politika <ph name="PRODUCT_NAME" /> 68 sürümünde kaldırılmış ve yerine <ph name="ARC_GLS_POLICY_NAME" /> kullanılmaya başlanmıştır.</translation>
 <translation id="684882090733715433">Tarayıcı Etkinliği Raporlama</translation>
 <translation id="6850300477973481112">Masa Bağlayıcı Ayarları</translation>
@@ -9126,6 +9135,7 @@ Internet Explorer'ın <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında d
 <translation id="782661371433719637">Hiçbir sitenin File System API üzerinden dosya ve dizinlere okuma erişimi istemesine izin verme</translation>
 <translation id="7827127381981620448">Platform uygulaması</translation>
 <translation id="7829436838673974723">Sayfa kapatma işlemi sırasında sayfaların eş zamanlı XHR istekleri göndermesine izin ver</translation>
+<translation id="7829546795016635784">Kullanıcılar, sınıf yönetimi özelliklerinden hiçbirini kullanamaz veya bir sınıf yönetimi oturumuna eklenemez.</translation>
 <translation id="782978857350824974">Sorunlu TLS sertifikalarına sahip sitelerde web kimlik doğrulama isteklerine izin ver.</translation>
 <translation id="7830775338190021763">Kurumsal uzaktan destek oturumlarında dosya aktarımı özelliğini etkinleştir</translation>
 <translation id="7832225468415136704">Chrome Temizleme özelliğinin, sistemi düzenli olarak taramasını engelle ve manuel taramaları devre dışı bırak</translation>
@@ -10944,6 +10954,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="943865157632139008"><ph name="PRODUCT_FRAME_NAME" /> yüklendiğinde varsayılan HTML oluşturucusunu yapılandırmanıza olanak verir. Varsayılan ayar, oluşturmayı ana makinenin tarayıcısının yapmasına izin vermektir, ancak isteğe bağlı olarak bunu geçersiz kılabilir ve HTML sayfalarının varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> tarafından oluşturulmasını sağlayabilirsiniz.</translation>
 <translation id="944817693306670849">Disk önbellek boyutunu ayarla</translation>
 <translation id="949192525372487705">Üçüncü taraf şifre yöneticisine geçiş yapmayı engelle</translation>
+<translation id="956107219808875608">Sınıf yönetimi araçlarıyla ilgili ayarları kontrol eder.</translation>
 <translation id="957322141096206402">Sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ işleminin içinde veya dışında çalıştırılabilir.</translation>
 <translation id="957778406002650056"><ph name="PLUGIN_VM_NAME" /> resminin indirilebileceği URL.</translation>
 <translation id="957920984193041197">Sayfaların yüklemesi kaldırılırken pop-up göstermesine izin ver</translation>
@@ -10956,6 +10967,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="966425658642788645">Varsayılan davranışı uygula</translation>
 <translation id="971677226939413180">Resim olarak yazdır seçeneği kullanıcı tarafından seçilemez.</translation>
 <translation id="974349541138387272">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonunu belirler</translation>
+<translation id="978619365985286086">Sınıf yönetimi araçlarıyla ilgili ayarlar</translation>
 <translation id="978658824596356870">24 saatlik biçim</translation>
 <translation id="979467274961593903">Uzaktan hata ayıklama kullanımına izin verme</translation>
 <translation id="980218166381006412">Politika, Etkin değerine ayarlanırsa arka plan modu açılır. Arka plan modunda, OS oturum açma işlemi sırasında bir <ph name="PRODUCT_NAME" /> işlemi başlatılır ve bu işlem son tarayıcı penceresi kapatıldığında çalışmaya devam ederek arka plan uygulamaları ile tarama oturumunun etkin kalmasına izin verir. Arka plan işlemi, sistem tepsisinde bir simge görüntüler ve istendiğinde oradan kapatılabilir.

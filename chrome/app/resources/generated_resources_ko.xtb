@@ -1817,6 +1817,7 @@
     <ph name="BEGIN_PARAGRAPH2" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">도메인(<ph name="DOMAINS" />)에 있는 모든 기기와 데이터 교환</translation>
 <translation id="2270666014403455717">'선택'에 스위치 할당</translation>
+<translation id="2270668657177045040">사이트 및 하위 도메인에서 기기에 설치된 관련 웹 애플리케이션을 확인할 수 있습니다.</translation>
 <translation id="2271452184061378400">탭 그룹이 여기에 저장됩니다.</translation>
 <translation id="2271986192355138465">웹 앱 설치 방법 알아보기</translation>
 <translation id="2272430695183451567">스위치 0개 할당됨</translation>
@@ -2162,7 +2163,6 @@
 <translation id="2492461744635776704">인증서 로그인 요청 준비 중</translation>
 <translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
 <translation id="2494555621641843783">Steam을 설치할 수 없음</translation>
-<translation id="2495141202137516054">Drive에서</translation>
 <translation id="2496180316473517155">인터넷 사용 기록</translation>
 <translation id="2496616243169085015">사진</translation>
 <translation id="2497229222757901769">마우스 속도</translation>
@@ -5090,7 +5090,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4635072447747973225">Crostini 제거</translation>
 <translation id="4635398712689569051">게스트 사용자는 <ph name="PAGE_NAME" />을(를) 사용할 수 없음</translation>
 <translation id="4636187126182557415">시스템 환경설정</translation>
-<translation id="4636682061478263818">Drive 파일</translation>
 <translation id="4636930964841734540">정보</translation>
 <translation id="4637083375689622795">추가 작업, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">다시 카메라 사용</translation>
@@ -5336,6 +5335,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4823193082697477185">로컬 네트워크에서 공유 파일, 폴더, 드라이브에 액세스합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">사용자와 기기 설정 확인 및 변경</translation>
 <translation id="4824037980212326045">Linux 백업 및 복원</translation>
+<translation id="4824263260587281352">키 조합 <ph name="KEY_COMBINATION" /> 변경</translation>
 <translation id="4824958205181053313">동기화를 취소하시겠습니까?</translation>
 <translation id="4825462365587146530">새 탭에서 Chrome Root Store에 관해 자세히 알아보세요.</translation>
 <translation id="4825532258163983651">패스키를 삭제할 수 없음</translation>
@@ -7829,6 +7829,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6676212663108450937">음성을 학습시킬 때 헤드폰 사용을 고려해 보세요.</translation>
 <translation id="6676291960742508499">탭, 페이지 제목, URL이 Google로 전송됩니다.</translation>
 <translation id="667752334740867460">Wi-Fi 정보 수신 중…</translation>
+<translation id="6677527809400770913"><ph name="ACTION" />에 <ph name="GESTURE" /> 동작이 할당됨</translation>
 <translation id="6678604587151240716">바다에 솟구치는 큰 파도 뒤로 멀리 육지가 보입니다. 어둡고 우울한 하늘에 빛나는 주황색 빛이 수평선 너머로 스며들고 있습니다.</translation>
 <translation id="6678717876183468697">쿼리 URL</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9834,7 +9835,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8110393529211831722">구독은 이 기기에만 설치되어 있으며 계정의 다른 기기와 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">연락처 목록 다운로드 중...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> 마이크 권한</translation>
-<translation id="8115139559594092084">내 Google Drive의 파일</translation>
 <translation id="8116972784401310538">북마크 관리자(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />에서는 내가 로그인한 방식을 기억하고 가능한 경우 자동으로 로그인합니다. 이 기능이 사용 중지되어 있는 경우 매번 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="8118362518458010043">Chrome에서 사용 중지했습니다. 이 확장 프로그램은 안전하지 않을 수 있습니다.</translation>
@@ -9864,7 +9864,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8138217203226449454">검색 제공업체를 변경하려고 하셨나요?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 상태</translation>
 <translation id="8139440916039659819">커서 가속</translation>
-<translation id="8139447493436036221">Google Drive 파일</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BROWSER_DOMAIN" />에서 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />하고 <ph name="PROFILE_DOMAIN" />에서 <ph name="BEGIN_LINK" />프로필을 관리<ph name="END_LINK" />합니다.</translation>
 <translation id="8140869601171867148">Google 계정이란 Gmail, YouTube, Chrome, 기타 Google 제품에 사용하는 계정과 동일한 계정입니다.
@@ -10033,6 +10032,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8261378640211443080">이 확장 프로그램은 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않으며 사용자 모르게 추가되었을 수 있습니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8261625296061301062">스캐너 소프트웨어가 설치됨</translation>
+<translation id="8263149565724023141">관련 애플리케이션</translation>
 <translation id="8263228331881858381">패스키 저장됨</translation>
 <translation id="8263336784344783289">그룹 이름 지정</translation>
 <translation id="8264024885325823677">관리자가 관리하는 설정입니다.</translation>

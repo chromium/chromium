@@ -972,6 +972,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4356872429719185452">Ipakita ang mga detalye ng hotspot. Ino-on ang hotspot.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Nire-record</translation>
 <translation id="4371348193907997655">Mga Cast Setting</translation>
+<translation id="4371834685492830207">Binubuo lang dapat ng mga valid na character ang PIN</translation>
 <translation id="4375482231364171368">Maghanap sa address bar</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, lakas ng signal <ph name="SIGNAL_STRENGTH" /> porsyento</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
@@ -1557,6 +1558,7 @@ Walang nakakonektang device.</translation>
 <translation id="6232416233079464213">Mula sa <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong camera at mikropono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Binubuo lang dapat ng mga valid na character ang password</translation>
 <translation id="6240603910551255087">Button sa Itaas</translation>
 <translation id="6240821072888636753">Itanong palagi</translation>
 <translation id="6247728804802644171">Buksan ang mga notification</translation>

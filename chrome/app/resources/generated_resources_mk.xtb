@@ -1817,6 +1817,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Откако ќе започне, инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Разменете податоци со кој било уред во домените: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Доделете прекинувач за „Избери“</translation>
+<translation id="2270668657177045040">Даден сајт и неговите поддомени може да гледаат кои поврзани апликации за прелистувачи се инсталирани на уредот.</translation>
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>
 <translation id="2271986192355138465">Дознајте како да инсталирате веб-апликации</translation>
 <translation id="2272430695183451567">Назначени се 0 копчиња</translation>
@@ -2161,7 +2162,6 @@
 <translation id="2492461744635776704">Се подготвува барање за најавување со сертификат</translation>
 <translation id="249330843868392562">Отвори ги поставките за „Од текст во говор“</translation>
 <translation id="2494555621641843783">Не може да се инсталира Steam</translation>
-<translation id="2495141202137516054">Од вашиот Drive</translation>
 <translation id="2496180316473517155">Историја на прелистување</translation>
 <translation id="2496616243169085015">Фотографија</translation>
 <translation id="2497229222757901769">Брзина на глувче</translation>
@@ -5054,6 +5054,7 @@
 <translation id="4602776638371779614">Картичкава активно скенира уреди со Bluetooth</translation>
 <translation id="4605026046465576953">Апликацијава не може да се отвори затоа што немате дозвола за извршување изолирани веб-апликации</translation>
 <translation id="4606551464649945562">Не дозволувај им на сајтовите да создаваат 3D-карта на опкружувањето или да ја следат позицијата на камерата</translation>
+<translation id="4606933160360542263">Приспособена комбинација на копчиња: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Да се избрише групата картички?}one{Да се избришат групите картички?}other{Да се избришат групите картички?}}</translation>
 <translation id="4608500690299898628">&amp;Најди...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> наиде на грешка</translation>
@@ -5089,7 +5090,6 @@
 <translation id="4635072447747973225">Деинсталирање на Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> не е достапна за гостинските корисници.</translation>
 <translation id="4636187126182557415">Поставки за системот</translation>
-<translation id="4636682061478263818">Датотеки на Drive</translation>
 <translation id="4636930964841734540">Информации</translation>
 <translation id="4637083375689622795">Повеќе дејства, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Употреби ја камерата повторно</translation>
@@ -5335,6 +5335,7 @@
 <translation id="4823193082697477185">Пристапувајте до споделени датотеки, папки или простори на локална мрежа. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Прочитајте ги и сменете ги корисничките поставки и поставките на уредот</translation>
 <translation id="4824037980212326045">Бекап и враќање на Linux</translation>
+<translation id="4824263260587281352">Променете ја комбинацијата на копчињата <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Да се откаже синхронизацијата?</translation>
 <translation id="4825462365587146530">Дознајте повеќе за Chrome Root Store во нова картичка.</translation>
 <translation id="4825532258163983651">Не може да се избрише криптографскиот клуч</translation>
@@ -6289,6 +6290,7 @@
 <translation id="5517304475148761050">Апликацијава бара пристап до Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Отстрани го дејството „<ph name="ACTION_TO_REMOVE" />“</translation>
 <translation id="5521078259930077036">Дали е ова почетната страница што ја очекувавте?</translation>
 <translation id="5522156646677899028">Наставката содржи сериозни слаби страни на безбедноста.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Администраторот инсталирал екстензија}one{Администраторот инсталирал # екстензија}other{Администраторот инсталирал # екстензии}}</translation>
@@ -7829,6 +7831,7 @@
 <translation id="6676212663108450937">Размислете за користење слушалки при обучувањето на гласот.</translation>
 <translation id="6676291960742508499">Вашите картички, наслови на страници и URL-адреси се испраќаат до Google</translation>
 <translation id="667752334740867460">Се примаат податоци за Wi-Fi…</translation>
+<translation id="6677527809400770913">Дејството <ph name="GESTURE" /> е доделено на <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Големи бранови се распрскуваат во морето, со копно далеку во заднината. Зраци портокаловата светлина се наѕираат зад хоризонтот, на инаку темното смрачено небо.</translation>
 <translation id="6678717876183468697">Барај URL</translation>
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9832,7 +9835,6 @@
 <translation id="8110393529211831722">Претплатата е инсталирана само на уредов и не е синхронизирана со други уреди на вашата сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Се презема списокот со контакти…</translation>
 <translation id="8114925369073821854">Дозвола за микрофон за <ph name="APP_NAME" /></translation>
-<translation id="8115139559594092084">Од вашиот Google Drive</translation>
 <translation id="8116972784401310538">&amp;Управник со обележувачи</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> памти како сте се најавиле и кога е тоа можно, ве најавува автоматски. Кога е исклучен, ќе се бара потврда од вас при секое најавување.</translation>
 <translation id="8118362518458010043">Оневозможено од Chrome. Екстензијава може да биде небезбедна.</translation>
@@ -9862,7 +9864,6 @@
 <translation id="8138217203226449454">Дали сакавте да го смените пребарувачот?</translation>
 <translation id="8138997515734480534">Статус на <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Забрзување на курсорот</translation>
-<translation id="8139447493436036221">Датотеки на Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />Со вашиот прелистувач управува<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, <ph name="BEGIN_LINK" />а со вашиот профил управува<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">Вашата сметка на Google е истата сметка што ја користите за Gmail, YouTube, Chrome и други производи на Google.
@@ -10031,6 +10032,7 @@
 <translation id="8261378640211443080">Оваа наставка не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби е додадена без ваше знаење.</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8261625296061301062">Софтверот за скенерот е инсталиран</translation>
+<translation id="8263149565724023141">Поврзани апликации</translation>
 <translation id="8263228331881858381">Криптографскиот клуч е зачуван</translation>
 <translation id="8263336784344783289">Именувајте ја групава</translation>
 <translation id="8264024885325823677">Администраторот управува со поставкава.</translation>
@@ -10275,6 +10277,7 @@
 <translation id="8429928917752180743">Повеќе опции за <ph name="EXTENSION_NAME" /></translation>
 <translation id="8431190899827883166">Прикажувај допири</translation>
 <translation id="843173223122814223">Создавајте заднини со AI</translation>
+<translation id="8431977087510901105">Поставките за курсорот се ресетирани</translation>
 <translation id="8433186206711564395">Мрежни поставки</translation>
 <translation id="8434109185104929038">Катче за читање</translation>
 <translation id="8434480141477525001">Порта за откривање грешки на NaCl</translation>

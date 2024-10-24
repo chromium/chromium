@@ -972,6 +972,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4356872429719185452">Mostra els detalls del punt d'accés Wi‐Fi. El punt d'accés Wi‐Fi s'està activant.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  S'està gravant</translation>
 <translation id="4371348193907997655">Configuració d'emissió</translation>
+<translation id="4371834685492830207">El PIN només pot contenir caràcters vàlids</translation>
 <translation id="4375482231364171368">Cerca a la barra d'adreces</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connectant...</translation>
@@ -1557,6 +1558,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">La contrasenya només pot contenir caràcters vàlids</translation>
 <translation id="6240603910551255087">Botó superior</translation>
 <translation id="6240821072888636753">Pregunta sempre</translation>
 <translation id="6247728804802644171">Obre les notificacions</translation>

@@ -1803,6 +1803,7 @@
     <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">與下列網域中的任何裝置交換資料：<ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">指派代表「選取」的外接切換裝置</translation>
+<translation id="2270668657177045040">網站及其子網域可以查看裝置上安裝哪些相關網頁應用程式。</translation>
 <translation id="2271452184061378400">你的分頁群組會儲存在這裡</translation>
 <translation id="2271986192355138465">瞭解如何安裝網頁應用程式</translation>
 <translation id="2272430695183451567">已指派 0 個按鍵</translation>
@@ -2147,7 +2148,6 @@
 <translation id="2492461744635776704">正在準備憑證簽署要求</translation>
 <translation id="249330843868392562">開啟文字轉語音設定</translation>
 <translation id="2494555621641843783">無法安裝 Steam</translation>
-<translation id="2495141202137516054">你的雲端硬碟</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2496616243169085015">攝影</translation>
 <translation id="2497229222757901769">滑鼠速度</translation>
@@ -5072,7 +5072,6 @@
 <translation id="4635072447747973225">解除安裝 Crostini</translation>
 <translation id="4635398712689569051">訪客使用者無法使用<ph name="PAGE_NAME" />。</translation>
 <translation id="4636187126182557415">系統偏好設定</translation>
-<translation id="4636682061478263818">雲端硬碟檔案</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4637083375689622795">更多動作 (<ph name="EMAIL" />)</translation>
 <translation id="4637189644956543313">再次使用相機</translation>
@@ -5318,6 +5317,7 @@
 <translation id="4823193082697477185">透過區域網路存取共用的檔案、資料夾或雲端硬碟。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">讀取及變更使用者和裝置設定</translation>
 <translation id="4824037980212326045">Linux 備份與還原</translation>
+<translation id="4824263260587281352">變更按鍵組合　<ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">取消同步處理？</translation>
 <translation id="4825462365587146530">在新分頁中進一步瞭解 Chrome Root Store。</translation>
 <translation id="4825532258163983651">無法刪除密碼金鑰</translation>
@@ -7805,6 +7805,7 @@
 <translation id="6676212663108450937">訓練聲音時，建議你使用耳罩式耳機</translation>
 <translation id="6676291960742508499">你的分頁、網頁標題和網址會傳送給 Google</translation>
 <translation id="667752334740867460">正在接收 Wi-Fi 資訊...</translation>
+<translation id="6677527809400770913">已將「<ph name="GESTURE" />」手勢設為<ph name="ACTION" /></translation>
 <translation id="6678604587151240716">海上大浪噴濺，遠處背景可見陸地。在黑暗陰鬱的天空中，地平線上出現些微橘色光芒。</translation>
 <translation id="6678717876183468697">查詢網址</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
@@ -9810,7 +9811,6 @@
 <translation id="8110393529211831722">訂閱項目只會安裝在這部裝置上，不會同步到帳戶中的其他裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下載聯絡人清單...</translation>
 <translation id="8114925369073821854">「<ph name="APP_NAME" />」的麥克風權限</translation>
-<translation id="8115139559594092084">來自你的 Google 雲端硬碟</translation>
 <translation id="8116972784401310538">書籤管理員(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
 <translation id="8118362518458010043">這個擴充功能可能不安全，因此遭到 Chrome 停用。</translation>
@@ -9840,7 +9840,6 @@
 <translation id="8138217203226449454">你要變更搜尋引擎嗎？</translation>
 <translation id="8138997515734480534">「<ph name="VM_NAME" />」狀態</translation>
 <translation id="8139440916039659819">游標加速</translation>
-<translation id="8139447493436036221">Google 雲端硬碟檔案</translation>
 <translation id="8140070492745508800">「<ph name="FIRST_DEVICE" />」、「<ph name="SECOND_DEVICE" />」</translation>
 <translation id="8140108728130537923">你的<ph name="BEGIN_LINK" />瀏覽器是由 <ph name="BROWSER_DOMAIN" /> 管理<ph name="END_LINK" />，<ph name="BEGIN_LINK" />設定檔則是由 <ph name="PROFILE_DOMAIN" /> 管理<ph name="END_LINK" /></translation>
 <translation id="8140869601171867148">Google 帳戶就是你在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。
@@ -10009,6 +10008,7 @@
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8261625296061301062">掃描器軟體安裝完成</translation>
+<translation id="8263149565724023141">相關應用程式</translation>
 <translation id="8263228331881858381">密碼金鑰已儲存</translation>
 <translation id="8263336784344783289">為這個群組命名</translation>
 <translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>

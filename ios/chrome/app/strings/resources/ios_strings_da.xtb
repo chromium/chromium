@@ -116,6 +116,7 @@
 <translation id="1498283581832036924">Din <ph name="WEBSITE" />-konto slettes ikke.</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1506063256525392513">Det giver dig mulighed for at tage og uploade billeder samt scanne QR-koder</translation>
+<translation id="1508263560970797965">Fortsæt i inkognito</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
 <translation id="1509960214886564027">Funktioner på mange websites virker muligvis ikke</translation>
 <translation id="1513858653616922153">Slet adgangskoden</translation>
@@ -750,6 +751,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Siden blev føjet til din læseliste}one{{count} side blev føjet til din læseliste}other{{count} sider blev føjet til din læseliste}}</translation>
 <translation id="459644946100970322">Vil du aktivere prisunderretninger?</translation>
+<translation id="4597892826846980979">Få notifikationer om faner</translation>
 <translation id="4601095002996233687">Grundige scanninger efter mistænkelige downloads.</translation>
 <translation id="4606247758155004938">Din browser administreres af din organisation.</translation>
 <translation id="4611811151908969241">Skjul Følg ikke <ph name="DOMAIN_NAME" /></translation>
@@ -1213,6 +1215,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="6606914854592108404">Der udføres et sikkerhedstjek…</translation>
 <translation id="6609890790934458793">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="THIRD_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
+<translation id="6612912757320004438">Tillad notifikationer om faner…</translation>
 <translation id="6617761071025228250">Ryd tekst</translation>
 <translation id="6620279676667515405">Annuller</translation>
 <translation id="6624219055418309072">Bloker i inkognito</translation>
@@ -1823,6 +1826,5 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="985379595344853742">Luk alle inkognitofaner</translation>
 <translation id="988141524645182168">Andre enheder</translation>
-<translation id="989697783705943787">Sikkerhed på websitet</translation>
 <translation id="999768147936949692">Indtil videre kan du kun dele adgangskoder med familiemedlemmer. <ph name="BEGIN_LINK" />Inviter familiemedlemmer<ph name="END_LINK" /> til at deltage i din gruppe, og få mere ud af dine produkter og abonnementer fra Google.</translation>
 </translationbundle>

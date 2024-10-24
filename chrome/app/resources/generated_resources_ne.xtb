@@ -1800,6 +1800,7 @@
     <ph name="BEGIN_PARAGRAPH2" />इन्स्टल गर्ने प्रक्रिया थालिसकेपछि उक्त प्रक्रिया रद्द गर्न मिल्दैन।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">कुनै पनि यन्त्रमार्फत डोमेनहरू <ph name="DOMAINS" /> मा डेटा सेयर गर्नुहोस्</translation>
 <translation id="2270666014403455717">“चयन” गर्ने कार्यका निम्ति स्विच असाइन गर्नुहोस्</translation>
+<translation id="2270668657177045040">कुनै साइट र त्यसका सबडोमेनहरू तपाईंको डिभाइसमा इन्स्टल गरिएका सम्बन्धित वेब एपहरू हेर्न सक्छन्।</translation>
 <translation id="2271452184061378400">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन्</translation>
 <translation id="2271986192355138465">वेब एप इन्स्टल गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="2272430695183451567">० स्विच तोकियो</translation>
@@ -2144,7 +2145,6 @@
 <translation id="2492461744635776704">प्रमाणपत्रमा हस्ताक्षर गर्ने अनुरोध तयार पार्दै</translation>
 <translation id="249330843868392562">पाठवाचकसम्बन्धी सेटिङहरू खोल्नुहोस्</translation>
 <translation id="2494555621641843783">Steam इन्स्टल सकिँदैन</translation>
-<translation id="2495141202137516054">तपाईंको Drive बाट</translation>
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
 <translation id="2496616243169085015">फोटोग्राफी</translation>
 <translation id="2497229222757901769">माउसको गति</translation>
@@ -5035,6 +5035,7 @@
 <translation id="4602776638371779614">यो ट्याब सक्रिय रूपमा वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरूका लागि स्क्यान गर्दै छ</translation>
 <translation id="4605026046465576953">तपाईंसँग आइसोलेटेड वेब एपहरू चलाउने अनुमति नभएकाले यो एप खोल्न मिल्दैन</translation>
 <translation id="4606551464649945562">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन नदिनुहोस्</translation>
+<translation id="4606933160360542263">कस्टम की कम्बिनेसन: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ट्याब समूह मेटाउने हो?}other{ट्याब समूहहरू मेटाउने हो?}}</translation>
 <translation id="4608500690299898628">&amp;फेला पार्नुहोस्...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> मा त्रुटि भएको छ</translation>
@@ -5070,7 +5071,6 @@
 <translation id="4635072447747973225">Crostini अनइन्स्टल गर्नुहोस्</translation>
 <translation id="4635398712689569051">अतिथि प्रयोगकर्ताहरूका लागि <ph name="PAGE_NAME" /> उपलब्ध छैन।</translation>
 <translation id="4636187126182557415">सिस्टमसम्बन्धी प्राथमिकताहरू</translation>
-<translation id="4636682061478263818">Drive मा भएका फाइलहरू</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4637083375689622795">थप कारबाहीहरू, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">क्यामेरा फेरि प्रयोग गर्नुहोस्</translation>
@@ -5316,6 +5316,7 @@
 <translation id="4823193082697477185">लोकल नेटवर्कमा भएका सेयर गरिएका फाइल, फोल्डर वा ड्राइभहरू एक्सेस गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">पढ्नुहोस् र प्रयोगकर्ता तथा यन्त्र सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="4824037980212326045">Linux को ब्याकअप तथा पुनर्स्थापना</translation>
+<translation id="4824263260587281352">की कम्बिनेसन <ph name="KEY_COMBINATION" /> परिवर्तन गर्नुहोस्</translation>
 <translation id="4824958205181053313">सिंक रद्द गर्ने हो?</translation>
 <translation id="4825462365587146530">Chrome Root Store का बारेमा नयाँ ट्याबमा थप जान्नुहोस्।</translation>
 <translation id="4825532258163983651">पासकी मेटाउन सकिएन</translation>
@@ -6270,6 +6271,7 @@
 <translation id="5517304475148761050">यो एपलाई Play स्टोरमाथिको पहुँच चाहिन्छ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> कारबाही हटाउनुहोस्</translation>
 <translation id="5521078259930077036">के यो तपाईंले अपेक्षा गर्नुभएको गृह पृष्ठ हो?</translation>
 <translation id="5522156646677899028">यो एक्सटेन्सनले गम्भीर सुरक्षा अतिसंवेदनशीलता समावेश गर्छ।</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{तपाईंका व्यवस्थापकले एउटा एक्स्टेन्सन स्थापना गर्नुभएको छ}other{तपाईंका व्यवस्थापकले # वटा एक्स्टेन्सन स्थापना गर्नुभएको छ}}</translation>
@@ -7807,6 +7809,7 @@
 <translation id="6676212663108450937">आफ्नो आवाज पहिचानका लागि तालिम दिँदा कृपया हेडफोन प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6676291960742508499">तपाईंका ट्याब, पेजका शीर्षक र URL हरू Google मा पठाइन्छन्</translation>
 <translation id="667752334740867460">Wi-Fi सम्बन्धी जानकारी प्राप्त गरिँदै छ...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" /> गर्न <ph name="GESTURE" /> जेस्चर असाइन गरिएको छ</translation>
 <translation id="6678604587151240716">ब्याकग्राउन्डमा अलि टाढा जमिन र समुद्रमा ठुला ठुला छालहरू उर्लिरहेका छन्। अँध्यारो आकाशमा क्षितिजको परतिर सुन्तला रङका बत्तीहरू देखिएका छन्।</translation>
 <translation id="6678717876183468697">प्रश्न URL</translation>
 <translation id="6680442031740878064">उपलब्ध खाली ठाउँ: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9810,7 +9813,6 @@
 <translation id="8110393529211831722">यो डिभाइसमा मात्र सदस्यता इन्स्टल गरिएको छ। साथै, उक्त सदस्यता तपाईंको खातामार्फत साइन इन गरिएका अन्य डिभाइसहरूमा सिंक गरिएको छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">सम्पर्क ठेगानाको सूची डाउनलोड गरिँदै छ...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> लाई माइक्रोफोन प्रयोग गर्ने अनुमति</translation>
-<translation id="8115139559594092084">तपाईंको Google Drive बाट</translation>
 <translation id="8116972784401310538">&amp;बुकमार्क व्यवस्थापक</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> ले तपाईंले कसरी साइन इन गर्नुभयो भन्ने कुरा याद गर्छ र सम्भव हुँदा तपाईंलाई स्वतः साइन इन गराउँछ। यो सुविधा अफ भएका बेलामा तपाईंलाई हरेक पटक पुष्टि गर्न लगाइने छ।</translation>
 <translation id="8118362518458010043">Chrome द्वारा असक्षम पारिएको। यो विस्तार असुरक्षित हुनसक्छ।</translation>
@@ -9840,7 +9842,6 @@
 <translation id="8138217203226449454">तपाईंले आफ्नो खोज प्रदायक परिवर्तन गर्न खोज्नुभएको हो?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> को स्थिति</translation>
 <translation id="8139440916039659819">कर्सर एक्सिलेरेसन</translation>
-<translation id="8139447493436036221">Google Drive मा भएका फाइलहरू</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BROWSER_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" />ब्राउजर व्यवस्थापन गर्छ<ph name="END_LINK" /> र <ph name="PROFILE_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" />प्रोफाइल व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="8140869601171867148">तपाईंको Google खाता भनेको तपाईंले Gmail, YouTube र Chrome लगायतका Google का उत्पादनहरूमा प्रयोग गर्ने खाता हो।
@@ -10009,6 +10010,7 @@
 <translation id="8261378640211443080">तपाइँको विस्तार <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मा सूची गरिएको छैन र तपाइँलाई जानकार नगरीकन त्यो थपिएको हुन सक्छ।</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8261625296061301062">स्क्यानर सफ्टवेयर इन्स्टल गरिएको छ</translation>
+<translation id="8263149565724023141">सम्बन्धित एपहरू</translation>
 <translation id="8263228331881858381">पासकी सेभ गरिएको छ</translation>
 <translation id="8263336784344783289">यो समूहको नाम राख्नुहोस्</translation>
 <translation id="8264024885325823677">तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
@@ -10250,6 +10252,7 @@
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> का थप विकल्पहरू</translation>
 <translation id="8431190899827883166">ट्याप देखाउनुहोस्</translation>
 <translation id="843173223122814223">AI प्रयोग गरी ब्याकग्राउन्ड बनाउनुहोस्</translation>
+<translation id="8431977087510901105">कर्सरसम्बन्धी सेटिङ रिसेट गरिएका छन्</translation>
 <translation id="8433186206711564395">नेटवर्क सम्बन्धी सेटिङहरू</translation>
 <translation id="8434109185104929038">पढ्नका लागि शान्त ठाउँ</translation>
 <translation id="8434480141477525001">NaCl डिबग पोर्ट</translation>

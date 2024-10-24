@@ -1800,6 +1800,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ആരംഭിച്ചാൽ അത് റദ്ദാക്കാനാകില്ല.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ഇനി പറയുന്ന ഡൊമെയ്‌നുകളിലുള്ള ഏത് ഉപകരണം ഉപയോഗിച്ചും ഡാറ്റ കൈമാറാം: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“തിരഞ്ഞെടുക്കുക” എന്ന പ്രവർത്തനത്തിന് സ്വിച്ച് അസൈൻ ചെയ്യുക</translation>
+<translation id="2270668657177045040">സൈറ്റിനും അതിന്റെ ഉപഡൊമെയ്‌നുകൾക്കും നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്തിട്ടുള്ള അനുബന്ധ വെബ് ആപ്പുകൾ കാണാനാകും.</translation>
 <translation id="2271452184061378400">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ സംരക്ഷിക്കും</translation>
 <translation id="2271986192355138465">വെബ് ആപ്പുകൾ എങ്ങനെ ഇൻസ്റ്റാൾ ചെയ്യാമെന്ന് അറിയുക</translation>
 <translation id="2272430695183451567">0 സ്വിച്ചുകൾ അസൈൻ ചെയ്തു</translation>
@@ -2144,7 +2145,6 @@
 <translation id="2492461744635776704">സര്‍ട്ടിഫിക്കറ്റ് സൈനിംഗ് അഭ്യർത്ഥന തയ്യാറാക്കുന്നു</translation>
 <translation id="249330843868392562">ടെക്‌സ്‌റ്റ്-ടു-സ്‌പീച്ച് ക്രമീകരണം തുറക്കുക</translation>
 <translation id="2494555621641843783">Steam ഇൻസ്റ്റാൾ ചെയ്യാനാകുന്നില്ല</translation>
-<translation id="2495141202137516054">നിങ്ങളുടെ Drive-ൽ നിന്ന്</translation>
 <translation id="2496180316473517155">ബ്രൗസിംഗ് ചരിത്രം</translation>
 <translation id="2496616243169085015">ഫോട്ടോഗ്രഫി</translation>
 <translation id="2497229222757901769">മൗസിന്റെ വേഗത</translation>
@@ -5072,7 +5072,6 @@
 <translation id="4635072447747973225">Crostini അൺഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="4635398712689569051">അതിഥി ഉപയോക്താക്കൾക്ക്, <ph name="PAGE_NAME" /> ലഭ്യമല്ല.</translation>
 <translation id="4636187126182557415">സിസ്റ്റം മുൻഗണനകൾ</translation>
-<translation id="4636682061478263818">Drive ഫയലുകൾ</translation>
 <translation id="4636930964841734540">വിവരം</translation>
 <translation id="4637083375689622795">കൂടുതൽ പ്രവര്‍ത്തനങ്ങൾ, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">ക്യാമറ വീണ്ടും ഉപയോഗിക്കുക</translation>
@@ -5318,6 +5317,7 @@
 <translation id="4823193082697477185">ലോക്കൽ നെറ്റ്‌വർക്കിലെ, ആക്‌സസ് പങ്കിട്ട ഫയലുകൾ, ഫോൾഡറുകൾ, ഡ്രൈവുകൾ എന്നിവ. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ഉപയോക്തൃ, ഉപകരണ ക്രമീകരണങ്ങൾ റീഡ് ചെയ്‌ത് മാറ്റുക</translation>
 <translation id="4824037980212326045">Linux ബാക്കപ്പെടുത്ത് പുനഃസ്ഥാപിക്കൽ</translation>
+<translation id="4824263260587281352">കീ കോമ്പിനേഷൻ <ph name="KEY_COMBINATION" /> മാറ്റുക</translation>
 <translation id="4824958205181053313">സമന്വയം റദ്ദാക്കണോ?</translation>
 <translation id="4825462365587146530">പുതിയ ടാബിൽ Chrome Root സ്റ്റോറിനെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="4825532258163983651">പാസ്‌കീ ഇല്ലാതാക്കാനാകുന്നില്ല</translation>
@@ -7812,6 +7812,7 @@
 <translation id="6676212663108450937">നിങ്ങളുടെ ശബ്‌ദം പരിശീലിക്കുമ്പോൾ ഹെഡ്‌ഫോൺ ഉപയോഗിക്കുക</translation>
 <translation id="6676291960742508499">നിങ്ങളുടെ ടാബുകളും പേജിന്റെ പേരുകളും URL-കളും Google-ലേക്ക് അയയ്ക്കും</translation>
 <translation id="667752334740867460">വൈഫൈ വിവരങ്ങൾ സ്വീകരിക്കുന്നു...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" /> എന്നതിന് <ph name="GESTURE" /> ജെസ്ച്ചർ അസൈൻ ചെയ്തു</translation>
 <translation id="6678604587151240716">കടലിൽ ആഞ്ഞടിക്കുന്ന വമ്പൻ തിരമാലകൾ, പശ്ചാത്തലത്തിൽ വിദൂരത്തായി സ്ഥിതി ചെയ്യുന്ന കര. ഇരുണ്ട് മൂടിക്കെട്ടിയ ആകാശം, ചക്രവാളത്തിനപ്പുറത്ത് ഓറഞ്ച് നിറത്തിലുള്ള പ്രകാശത്തിന്റെ ചെറുകിരണങ്ങൾ.</translation>
 <translation id="6678717876183468697">ചോദ്യ URL</translation>
 <translation id="6680442031740878064">ലഭ്യമായ ഇടം: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9816,7 +9817,6 @@
 <translation id="8110393529211831722">ഈ ഉപകരണത്തിൽ മാത്രമാണ് സബ്‌സ്‌ക്രിപ്ഷൻ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നത്, നിങ്ങളുടെ അക്കൗണ്ടിന് കീഴിലുള്ള മറ്റ് ഉപകരണങ്ങളുമായി സമന്വയിപ്പിച്ചിട്ടില്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">കോൺടാക്‌റ്റ് ലിസ്‌റ്റ് ഡൗൺലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> എന്നതിനുള്ള മൈക്രോഫോൺ അനുമതി</translation>
-<translation id="8115139559594092084">നിങ്ങളുടെ Google Drive-ൽ നിന്ന്</translation>
 <translation id="8116972784401310538">&amp;ബുക്മാര്‍ക്ക് മാനേജര്‍</translation>
 <translation id="8118276691321086429">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തതെങ്ങനെയെന്ന് <ph name="PASSWORD_MANAGER_BRAND" /> ഓർത്ത് വയ്ക്കുന്നു, സാധ്യമാകുമ്പോൾ നിങ്ങളെ സ്വയമേവ സൈൻ ഇൻ ചെയ്യിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഓരോ തവണയും സ്ഥിരീകരിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.</translation>
 <translation id="8118362518458010043">Chrome പ്രവർത്തനരഹിതമാക്കി. ഈ വിപുലീകരണം സുരക്ഷിതമല്ലായിരിക്കാം.</translation>
@@ -9846,7 +9846,6 @@
 <translation id="8138217203226449454">നിങ്ങളുടെ തിരയൽ ദാതാവിനെ മാറ്റാനാണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> നില</translation>
 <translation id="8139440916039659819">കഴ്‌സർ ആക്സിലറേഷൻ</translation>
-<translation id="8139447493436036221">Google Drive ഫയലുകൾ</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">നിങ്ങളുടെ <ph name="BEGIN_LINK" />ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" /> ഡൊമെയ്‌നും നിങ്ങളുടെ <ph name="BEGIN_LINK" />പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> ഡൊമെയ്‌നും ആണ്</translation>
 <translation id="8140869601171867148">Gmail, YouTube, Chrome, മറ്റ് Google ഉൽപ്പന്നങ്ങൾ എന്നിവയ്‌ക്കായി നിങ്ങൾ ഉപയോഗിക്കുന്ന അക്കൗണ്ട്, നിങ്ങളുടെ Google Account തന്നെയാണ്.
@@ -10015,6 +10014,7 @@
 <translation id="8261378640211443080">ഈ വിപുലീകരണം <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ ലിസ്റ്റ് ചെയ്‌തിട്ടില്ല, ഇത് നിങ്ങളുടെ അറിവില്ലാതെ ചേർത്തിരിക്കാനിടയുണ്ട്.</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8261625296061301062">സ്‌കാനർ സോഫ്റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്തു</translation>
+<translation id="8263149565724023141">അനുബന്ധ ആപ്പുകൾ</translation>
 <translation id="8263228331881858381">പാസ്‌കീ സംരക്ഷിച്ചു</translation>
 <translation id="8263336784344783289">ഈ ഗ്രൂപ്പിന് പേര് നൽകുക</translation>
 <translation id="8264024885325823677">ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്.</translation>

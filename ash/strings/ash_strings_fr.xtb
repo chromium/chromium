@@ -972,6 +972,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4356872429719185452">Voir les détails du point d'accès. Il est en cours d'activation.</translation>
 <translation id="4364101114148522660">Enregistrement de <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Paramètres Cast</translation>
+<translation id="4371834685492830207">Le code ne doit contenir que des caractères valides</translation>
 <translation id="4375482231364171368">Rechercher dans la barre d'adresse</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Connexion</translation>
@@ -1557,6 +1558,7 @@ Aucun appareil connecté.</translation>
 <translation id="6232416233079464213">Source : <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre caméra et votre micro</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Le mot de passe ne doit contenir que des caractères valides</translation>
 <translation id="6240603910551255087">Bouton du haut</translation>
 <translation id="6240821072888636753">Toujours demander</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>

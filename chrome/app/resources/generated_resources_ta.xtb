@@ -1816,6 +1816,7 @@
     <ph name="BEGIN_PARAGRAPH2" />நிறுவத் தொடங்கிய பின்னர் இதனை ரத்துசெய்ய முடியாது.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">பின்வரும் களங்களில் உள்ள எந்தச் சாதனத்துடனும் தரவைப் பரிமாறவும்: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“தேர்ந்தெடு” என்பதற்கு ஸ்விட்ச்சை ஒதுக்குங்கள்</translation>
+<translation id="2270668657177045040">தளமும் அதன் துணை டொமைன்களும் உங்கள் சாதனத்தில் நிறுவப்பட்டுள்ள தொடர்புடைய வெப் ஆப்ஸைப் பார்க்க முடியும்.</translation>
 <translation id="2271452184061378400">உங்கள் பக்கக் குழுக்கள் இங்கே சேமிக்கப்படும்</translation>
 <translation id="2271986192355138465">இணைய ஆப்ஸை நிறுவுவது எப்படி எனத் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="2272430695183451567">0 ஸ்விட்சுகள் ஒதுக்கப்பட்டன</translation>
@@ -2160,7 +2161,6 @@
 <translation id="2492461744635776704">சான்றிதழுக்கான கையொப்பக் கோரிக்கையைத் தயார் செய்கிறது</translation>
 <translation id="249330843868392562">‘உரையிலிருந்து பேச்சு’ அமைப்புகளைத் திற</translation>
 <translation id="2494555621641843783">Steamமை நிறுவ முடியவில்லை</translation>
-<translation id="2495141202137516054">உங்கள் Driveவில் இருந்து பெறப்பட்டவை</translation>
 <translation id="2496180316473517155">உலாவல் வரலாறு</translation>
 <translation id="2496616243169085015">புகைப்படக்கலை</translation>
 <translation id="2497229222757901769">மவுஸின் வேகம்</translation>
@@ -5089,7 +5089,6 @@
 <translation id="4635072447747973225">Crostiniயை நிறுவல் நீக்கு</translation>
 <translation id="4635398712689569051">கெஸ்ட் பயனர்களுக்கு <ph name="PAGE_NAME" /> கிடைக்காது.</translation>
 <translation id="4636187126182557415">சிஸ்டம் விருப்பத்தேர்வுகள்</translation>
-<translation id="4636682061478263818">Drive ஃபைல்கள் </translation>
 <translation id="4636930964841734540">தகவல்</translation>
 <translation id="4637083375689622795">கூடுதல் செயல்கள், <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">மீண்டும் கேமராவைப் பயன்படுத்து</translation>
@@ -5335,6 +5334,7 @@
 <translation id="4823193082697477185">அக நெட்வொர்க்கில் உள்ள அணுகல் பகிரப்பட்ட ஃபைல்கள், ஃபோல்டர்கள் அல்லது டிரைவ்கள். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">பயணர் மற்றும் சாதன அமைப்புகளைப் படிக்கும் மற்றும் மாற்றும்</translation>
 <translation id="4824037980212326045">Linux காப்புப் பிரதி மற்றும் மீட்டெடுப்பு</translation>
+<translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> பட்டன்களின் சேர்க்கையை மாற்றவும்</translation>
 <translation id="4824958205181053313">ஒத்திசைவை ரத்துசெய்யவா?</translation>
 <translation id="4825462365587146530">புதிய பக்கத்தில் Chrome ரூட் ஸ்டோர் குறித்து மேலும் தெரிந்துகொள்ளலாம்.</translation>
 <translation id="4825532258163983651">கடவுக்குறியீடுகளை நீக்க முடியவில்லை</translation>
@@ -7829,6 +7829,7 @@
 <translation id="6676212663108450937">உங்கள் குரலைப் புரிந்துகொள்ளப் பயிற்சி அளிக்கும்போது ஹெட்ஃபோன்களைப் பயன்படுத்தவும்</translation>
 <translation id="6676291960742508499">உங்கள் பக்கங்கள், பக்கத் தலைப்புகள், URLகள் ஆகியவை Googleளுக்கு அனுப்பப்படுகின்றன</translation>
 <translation id="667752334740867460">வைஃபை தகவலைப் பெறுகிறது...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" /> என்பதற்கு <ph name="GESTURE" /> சைகை ஒதுக்கப்பட்டது</translation>
 <translation id="6678604587151240716">வெகுதூரத்தில் நிலம் தெரிய, கடலில் கொந்தளிக்கும் மிகப்பெரிய அலைகள். இருள் சூழ்ந்த பொழுதில் தொடுவானத்திற்குப் பின்னால் ஆரஞ்சு நிற ஒளிக் கீற்றுகள் தெரிகின்றன.</translation>
 <translation id="6678717876183468697">வினவல் URL</translation>
 <translation id="6680442031740878064">இருக்கும் இடம்: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9834,7 +9835,6 @@
 <translation id="8110393529211831722">இந்தச் சாதனத்தில் மட்டும் சந்தா நிறுவப்பட்டது. உங்கள் கணக்குடன் இணைக்கப்பட்டுள்ள மற்ற சாதனங்களில் ஒத்திசைக்கப்படவில்லை. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">தொடர்புப் பட்டியலைப் பதிவிறக்குகிறது...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> ஆப்ஸிற்கான மைக்ரோஃபோன் அனுமதி</translation>
-<translation id="8115139559594092084">Google Driveவில் இருந்து</translation>
 <translation id="8116972784401310538">&amp;புக்மார்க் நிர்வாகி</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> நீங்கள் உள்நுழையும் விதத்தை நினைவில் வைத்திருந்து, சாத்தியமான சூழல்களில் தானாகவே உங்களை உள்நுழையச் செய்யும். முடக்கப்பட்டிருக்கும்போது, ஒவ்வொரு முறை உள்நுழையும்போதும் நீங்கள்தான் உள்நுழைகிறீர்கள் என்பதை உறுதிப்படுத்துமாறு கேட்கப்படும்.</translation>
 <translation id="8118362518458010043">இந்த நீட்டிப்பு பாதுகாப்பற்றதாக இருக்கலாம் என்பதால் Chrome ஆல் முடக்கப்பட்டது.</translation>
@@ -9864,7 +9864,6 @@
 <translation id="8138217203226449454">உங்கள் தேடல் வழங்குநரை மாற்ற விரும்புகிறீர்களா?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> நிலை</translation>
 <translation id="8139440916039659819">கர்சர் ஆக்ஸிலரேஷன்</translation>
-<translation id="8139447493436036221">Google Drive ஃபைல்கள் </translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BROWSER_DOMAIN" /> உங்கள் <ph name="BEGIN_LINK" />உலாவியை நிர்வகிக்கிறது<ph name="END_LINK" />. <ph name="PROFILE_DOMAIN" /> உங்கள் <ph name="BEGIN_LINK" />சுயவிவரத்தை நிர்வகிக்கிறது<ph name="END_LINK" /></translation>
 <translation id="8140869601171867148">உங்கள் Google கணக்கு என்பது Gmail, YouTube, Chrome மற்றும் பிற Google தயாரிப்புகளுக்கு நீங்கள் பயன்படுத்தும் அதே கணக்கு ஆகும்.
@@ -10033,6 +10032,7 @@
 <translation id="8261378640211443080">இந்த நீட்டிப்பு <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படவில்லை, மேலும் அது உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8261625296061301062">ஸ்கேனர் மென்பொருள் நிறுவப்பட்டது</translation>
+<translation id="8263149565724023141">தொடர்புடைய ஆப்ஸ்</translation>
 <translation id="8263228331881858381">கடவுச்சாவி சேமிக்கப்பட்டது</translation>
 <translation id="8263336784344783289">இந்தக் குழுவிற்குப் பெயரிடவும்</translation>
 <translation id="8264024885325823677">உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>

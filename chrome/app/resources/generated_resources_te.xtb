@@ -2159,7 +2159,6 @@
 <translation id="2492461744635776704">సర్టిఫికెట్ సైనింగ్ రిక్వెస్ట్‌ను సిద్ధం చేస్తోంది</translation>
 <translation id="249330843868392562">వచనం నుండి ప్రసంగం సెట్టింగ్‌లను తెరువు</translation>
 <translation id="2494555621641843783">Steamను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు</translation>
-<translation id="2495141202137516054">మీ Drive నుండి</translation>
 <translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2496616243169085015">ఫోటోగ్రఫీ</translation>
 <translation id="2497229222757901769">మౌస్ వేగం</translation>
@@ -5088,7 +5087,6 @@
 <translation id="4635072447747973225">Crostiniని అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="4635398712689569051">గెస్ట్ వినియోగదారులకు <ph name="PAGE_NAME" /> అందుబాటులో లేదు.</translation>
 <translation id="4636187126182557415">సిస్టమ్ ప్రాధాన్యతలు</translation>
-<translation id="4636682061478263818">Drive ఫైళ్లు</translation>
 <translation id="4636930964841734540">సమాచారం</translation>
 <translation id="4637083375689622795">మరిన్ని చర్యలు, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">కెమెరాను మళ్లీ ఉపయోగించండి</translation>
@@ -9829,7 +9827,6 @@
 <translation id="8110393529211831722">సబ్‌స్క్రిప్షన్ ఈ పరికరంలో మాత్రమే ఇన్‌స్టాల్ చేయబడింది, మీ ఖాతాలోని ఇతర పరికరాలతో సింక్ చేయబడదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">కాంటాక్ట్ లిస్ట్‌ను డౌన్‌లోడ్ చేస్తోంది...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> మైక్రోఫోన్ అనుమతులు</translation>
-<translation id="8115139559594092084">మీ Google Drive నుండి</translation>
 <translation id="8116972784401310538">&amp;బుక్‌మార్క్ మేనేజర్</translation>
 <translation id="8118276691321086429">మీరు ఎలా సైన్ ఇన్ చేశారు అనే దానిని <ph name="PASSWORD_MANAGER_BRAND" /> గుర్తుంచుకొని, వీలయినప్పుడు ఆటోమేటిక్‌గా మిమ్మల్ని సైన్ ఇన్ చేస్తుంది. ఇది ఆఫ్‌లో ఉన్నప్పుడు, ప్రతిసారి ధృవీకరించమని మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="8118362518458010043">Chrome నిలిపివేసింది. ఈ ఎక్స్‌టెన్షన్‌ సురక్షితం కాకపోవచ్చు.</translation>
@@ -9859,7 +9856,6 @@
 <translation id="8138217203226449454">మీరు మీ సెర్చ్ ప్రొవైడర్‌ను మార్చాలనుకున్నారా?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> స్టేటస్</translation>
 <translation id="8139440916039659819">కర్సర్ యాక్సిలరేషన్</translation>
-<translation id="8139447493436036221">Google Drive ఫైళ్లు</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">మీ <ph name="BEGIN_LINK" />బ్రౌజర్ మేనేజ్‌మెంట్<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" /> ద్వారా జరుగుతోంది, మీ <ph name="BEGIN_LINK" />ప్రొఫైల్ మేనేజ్‌మెంట్<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> ద్వారా జరుగుతోంది</translation>
 <translation id="8140869601171867148">ఒకటే Google ఖాతాను మీరు Gmail, YouTube, Chrome, ఇతర Google ప్రోడక్ట్‌లలో ఉపయోగిస్తారు.

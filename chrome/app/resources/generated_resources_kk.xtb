@@ -1800,6 +1800,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Орнату басталcа, одан бас тарту мүмкін болмайды.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Келесі домендердегі кез келген құрылғымен деректер алмасу: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">"Таңдау" әрекетіне ауыстырғыш тағайындау</translation>
+<translation id="2270668657177045040">Сайт және оның ішкі домендері құрылғыңызға қандай ұқсас веб-қолданбалар орнатылғанын көреді.</translation>
 <translation id="2271452184061378400">Қойындылар топтары осы жерде сақталады.</translation>
 <translation id="2271986192355138465">Веб-қолданбаларды орнату жолын білу</translation>
 <translation id="2272430695183451567">Ешқандай ауыстырғыш тағайындалмаған.</translation>
@@ -2144,7 +2145,6 @@
 <translation id="2492461744635776704">Сертификатқа қол қою сұрауы дайындалуда</translation>
 <translation id="249330843868392562">Мәтінді дыбыстау параметрлерін ашу</translation>
 <translation id="2494555621641843783">Steam қолданбасын орнату мүмкін емес</translation>
-<translation id="2495141202137516054">Drive дискіңізден</translation>
 <translation id="2496180316473517155">Шолу журналы</translation>
 <translation id="2496616243169085015">Фотосурет</translation>
 <translation id="2497229222757901769">Тінтуір жылдамдығы</translation>
@@ -5071,7 +5071,6 @@
 <translation id="4635072447747973225">Crostini жүйесін жою</translation>
 <translation id="4635398712689569051">Қонақ пайдаланушылар <ph name="PAGE_NAME" /> бетіне кіре алмайды.</translation>
 <translation id="4636187126182557415">Жүйе параметрлері</translation>
-<translation id="4636682061478263818">Drive файлдары</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
 <translation id="4637083375689622795">Қосымша әрекеттер, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Камераны қайта пайдалану</translation>
@@ -5317,6 +5316,7 @@
 <translation id="4823193082697477185">Жергілікті желідегі ортақ файлдарға, қалталарға немесе дискілерге кіріңіз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Пайдаланушы және құрылғы параметрлерін оқу және өзгерту</translation>
 <translation id="4824037980212326045">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау және оларды қалпына келтіру</translation>
+<translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> пернелер тіркесімін өзгерту</translation>
 <translation id="4824958205181053313">Синхрондауды тоқтату қажет пе?</translation>
 <translation id="4825462365587146530">Chrome Root Store туралы толық ақпараты бар жаңа қойындыны ашу.</translation>
 <translation id="4825532258163983651">Кіру кілтін жою мүмкін емес</translation>
@@ -7805,6 +7805,7 @@
 <translation id="6676212663108450937">Дауысыңызды жазу кезінде құлақаспаптарды пайдаланыңыз</translation>
 <translation id="6676291960742508499">Қойындыларыңыз, бет атаулары мен URL мекенжайлары Google-ға жіберіледі.</translation>
 <translation id="667752334740867460">Wi-Fi туралы ақпарат алынып жатыр...</translation>
+<translation id="6677527809400770913"><ph name="GESTURE" /> қимылы <ph name="ACTION" /> әрекетіне тағайындалды</translation>
 <translation id="6678604587151240716">Теңізде биік толқын тулайды. Алыста жер көрінеді. Қошқыл аспан көлегейлеп, көкжиектен қызғылт сары жарық ұшқындары сығалайды.</translation>
 <translation id="6678717876183468697">Сұрау URL мекенжайы</translation>
 <translation id="6680442031740878064">Бос: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9807,7 +9808,6 @@
 <translation id="8110393529211831722">Жазылым тек осы құрылғыда орнатылған және аккаунтыңыздағы басқа құрылғылармен синхрондалмаған. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Контактілер тізімі жүктеп алынуда…</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> микрофон рұқсаты</translation>
-<translation id="8115139559594092084">Google Drive дискісінен</translation>
 <translation id="8116972784401310538">&amp;Бетбелгілер реттегіші</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> аккаунтқа қалай кіргеніңізді есте сақтайды және сізді мүмкіндігінше автоматты түрде кіргізеді. Өшірулі кезде сізден әрдайым растау сұралады.</translation>
 <translation id="8118362518458010043">Chrome арқылы өшірілген. Бұл кеңейтім қауіпті болуы мүмкін.</translation>
@@ -9837,7 +9837,6 @@
 <translation id="8138217203226449454">Іздеу провайдерін өзгерткіңіз келе ме?</translation>
 <translation id="8138997515734480534">"<ph name="VM_NAME" />" күйі</translation>
 <translation id="8139440916039659819">Курсорды үдету</translation>
-<translation id="8139447493436036221">Google Drive файлдары</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />Браузеріңізді<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, ал <ph name="BEGIN_LINK" />профиліңізді<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> басқарады.</translation>
 <translation id="8140869601171867148">Google аккаунты — Gmail, YouTube, Chrome және басқа Google өнімдері үшін пайдаланылатын бір аккаунт.
@@ -10006,6 +10005,7 @@
 <translation id="8261378640211443080">Бұл кеңейтім <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ішінде көрсетілмеген және сізге білдірмей қосылған болуы мүмкін.</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8261625296061301062">Сканердің бағдарламалық құралы орнатылды</translation>
+<translation id="8263149565724023141">Ұқсас қолданбалар</translation>
 <translation id="8263228331881858381">Кіру кілті сақталды</translation>
 <translation id="8263336784344783289">Топтың атауын енгізіңіз</translation>
 <translation id="8264024885325823677">Бұл параметрді әкімшіңіз басқарады.</translation>

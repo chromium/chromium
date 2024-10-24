@@ -1816,6 +1816,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="BEGIN_PARAGRAPH2" />Орнотулуп баштагандан кийин аны жокко чыгарууга болбойт.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Домендердеги каалаган түзмөк менен дайындарды алмашуу: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“Тандоо” үчүн которгучту дайындоо</translation>
+<translation id="2270668657177045040">Сайт жана анын субдомендери түзмөгүңүзгө кайсы тиешелүү веб колдонмолор орнотулганын көрө алат.</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2271986192355138465">Веб-колдонмолорду орнотконду үйрөнүп алыңыз</translation>
 <translation id="2272430695183451567">0 которгуч дайындалды</translation>
@@ -2160,7 +2161,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2492461744635776704">Тастыктамага кол коюу сурамы даярдалууда</translation>
 <translation id="249330843868392562">Кеп синтезаторунун параметрлерин ачуу</translation>
 <translation id="2494555621641843783">Steam орнотулбай жатат</translation>
-<translation id="2495141202137516054">Drive кызматыңыздан</translation>
 <translation id="2496180316473517155">Серептөө таржымалы</translation>
 <translation id="2496616243169085015">Фотосүрөт</translation>
 <translation id="2497229222757901769">Чычкандын тездиги</translation>
@@ -5089,7 +5089,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4635072447747973225">Crostini'ни чыгарып салуу</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> Конок режиминдеги колдонуучулар үчүн жеткиликсиз.</translation>
 <translation id="4636187126182557415">Тутумдун параметрлери</translation>
-<translation id="4636682061478263818">Drive файлдары</translation>
 <translation id="4636930964841734540">Маалымат</translation>
 <translation id="4637083375689622795">Көбүрөөк аракеттер, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Камераны кайра колдонуу</translation>
@@ -5335,6 +5334,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4823193082697477185">Жергиликтүү тармактагы жалпы файлдарга, папкаларга же дисктерге кириңиз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Колдонуучунун жана түзмөктүн параметрлерин окуп, өзгөртүү</translation>
 <translation id="4824037980212326045">Linux'тун камдык көчүрмөсүн сактоо жана калыбына келтирүү</translation>
+<translation id="4824263260587281352">Баскычтардын айкалышын (<ph name="KEY_COMBINATION" />) өзгөртүү</translation>
 <translation id="4824958205181053313">Шайкештештирүү жокко чыгарылсынбы?</translation>
 <translation id="4825462365587146530">Жаңы өтмөктө Chrome Root Store тууралуу кеңири маалымат алыңыз</translation>
 <translation id="4825532258163983651">Киргизүүчү ачкыч өчкөн жок</translation>
@@ -7828,6 +7828,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6676212663108450937">Үнүңүздү тааныганды үйрөтүп жатканда, гарнитураны колдонсоңуз туура болот</translation>
 <translation id="6676291960742508499">Өтмөктөрүңүз, беттин аталыштары жана URL даректери Google'га жөнөтүлөт</translation>
 <translation id="667752334740867460">Wi-Fi маалыматы алынууда...</translation>
+<translation id="6677527809400770913">"<ph name="ACTION" />" аракетине "<ph name="GESTURE" />" жаңсоосу дайындалды</translation>
 <translation id="6678604587151240716">Бийик толкундуу деңиз жана алыскы фондогу жер. Караңгы асманда горизонттон көрүнгөн кызгылт сары жарыктын шоолалары.</translation>
 <translation id="6678717876183468697">Сурам URL'и</translation>
 <translation id="6680442031740878064">Бош орун: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9831,7 +9832,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8110393529211831722">Жазылуу ушул түзмөккө гана орнотулат жана аккаунтуңузга кирип турган башка түзмөктөр менен шайкештирилбейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Байланыштар тизмеси жүктөлүп алынууда...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> колдонмосунун микрофон уруксаты</translation>
-<translation id="8115139559594092084">Google Drive'дан</translation>
 <translation id="8116972784401310538">&amp;Кыстармаларды башкаргыч</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> аккаунтка кантип киргениңизди эстеп калып, сизди, мүмкүн болгондо, автоматтык түрдө киргизип турат. Өчүрүлсө, аккаунтка кирген сайын сырсөздү ырастоого туура келет.</translation>
 <translation id="8118362518458010043">Chrome өчүрүп койду. Бул кеңейтүү кооптуу болушу мүмкүн.</translation>
@@ -9861,7 +9861,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8138217203226449454">Издөө кызматын башкага өзгөртөйүн дедиңиз беле?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> абалы</translation>
 <translation id="8139440916039659819">Курсорду ылдамдатуу</translation>
-<translation id="8139447493436036221">Google Drive файлдары</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />Серепчиңиз<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, ал эми <ph name="BEGIN_LINK" />профилиңиз<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> тарабынан тескелет</translation>
 <translation id="8140869601171867148">Google аккаунтуңуз — Gmail, YouTube, Chrome жана башка Google кызматтарында колдонулган ошол эле аккаунт.
@@ -10030,6 +10029,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8261378640211443080">Бул кеңейтүү <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичиндеги тизмеде камтылган эмес жана сизге эскертилбестен кошулуп калган окшойт.</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8261625296061301062">Сканердин программасы орнотулду</translation>
+<translation id="8263149565724023141">Тиешелүү колдонмолор</translation>
 <translation id="8263228331881858381">Киргизүүчү ачкыч сакталды</translation>
 <translation id="8263336784344783289">Бул топко ат коюңуз</translation>
 <translation id="8264024885325823677">Бул параметрди администраторуңуз башкарат.</translation>

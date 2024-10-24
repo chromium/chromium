@@ -1799,6 +1799,7 @@
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。データをバックアップしていることを確認してください。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ドメイン <ph name="DOMAINS" /> のデバイスとのデータ交換</translation>
 <translation id="2270666014403455717">スイッチを「選択」に割り当てます</translation>
+<translation id="2270668657177045040">サイトとそのサブドメインは、デバイスにインストールされている関連ウェブ アプリケーションを確認する場合があります。</translation>
 <translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2271986192355138465">ウェブアプリをインストールする方法</translation>
 <translation id="2272430695183451567">割り当てられているスイッチはありません</translation>
@@ -2142,7 +2143,6 @@
 <translation id="2492461744635776704">証明書の署名のリクエストを準備しています</translation>
 <translation id="249330843868392562">テキスト読み上げの設定を開く</translation>
 <translation id="2494555621641843783">Steam をインストールできません</translation>
-<translation id="2495141202137516054">ドライブから</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2496616243169085015">写真</translation>
 <translation id="2497229222757901769">マウスの速度</translation>
@@ -5065,7 +5065,6 @@
 <translation id="4635072447747973225">Crostini のアンインストール</translation>
 <translation id="4635398712689569051">ゲストユーザーは <ph name="PAGE_NAME" /> を利用できません。</translation>
 <translation id="4636187126182557415">システム環境設定</translation>
-<translation id="4636682061478263818">ドライブのファイル</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4637083375689622795">その他の操作（<ph name="EMAIL" />）</translation>
 <translation id="4637189644956543313">もう一度カメラを使用する</translation>
@@ -5311,6 +5310,7 @@
 <translation id="4823193082697477185">ローカル ネットワーク上の共有ファイル、フォルダ、ドライブにアクセスします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ユーザー設定とデバイス設定の読み取りと変更</translation>
 <translation id="4824037980212326045">Linux のバックアップと復元</translation>
+<translation id="4824263260587281352">キーの組み合わせ <ph name="KEY_COMBINATION" /> を変更</translation>
 <translation id="4824958205181053313">同期をキャンセルしますか？</translation>
 <translation id="4825462365587146530">Chrome Root Store の詳細を新しいタブで開きます。</translation>
 <translation id="4825532258163983651">パスキーを削除できません</translation>
@@ -7799,6 +7799,7 @@
 <translation id="6676212663108450937">音声を認識させる場合はヘッドフォンの使用をご検討ください</translation>
 <translation id="6676291960742508499">タブ、ページのタイトル、URL が Google に送信されます</translation>
 <translation id="667752334740867460">Wi-Fi 情報を受信しています...</translation>
+<translation id="6677527809400770913">ジェスチャー <ph name="GESTURE" /> を <ph name="ACTION" /> に割り当てました</translation>
 <translation id="6678604587151240716">しぶきを上げる海の大波と遠景の陸地。暗鬱な空の下、地平線にほのかに見えるオレンジ色の光。</translation>
 <translation id="6678717876183468697">クエリ URL</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
@@ -9801,7 +9802,6 @@
 <translation id="8110393529211831722">登録はこのデバイスにのみインストールされ、アカウントの他のデバイスとは同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">連絡先リストをダウンロードしています...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> のマイクへのアクセス権</translation>
-<translation id="8115139559594092084">Google ドライブから</translation>
 <translation id="8116972784401310538">ブックマーク マネージャ(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
 <translation id="8118362518458010043">Chrome によって無効にされました。この拡張機能は安全ではない可能性があります。</translation>
@@ -9831,7 +9831,6 @@
 <translation id="8138217203226449454">検索プロバイダを変更するつもりでしたか？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ステータス</translation>
 <translation id="8139440916039659819">カーソル アクセラレーション</translation>
-<translation id="8139447493436036221">Google ドライブのファイル</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">お使いの<ph name="BEGIN_LINK" />ブラウザは <ph name="BROWSER_DOMAIN" /><ph name="END_LINK" /> によって、<ph name="BEGIN_LINK" />プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
 <translation id="8140869601171867148">Google アカウントは、Gmail、YouTube、Chrome などの Google サービスで使用しているのと同じアカウントです。
@@ -10000,6 +9999,7 @@
 <translation id="8261378640211443080">この拡張機能は <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供されていません。知らないうちに追加された可能性があります。</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8261625296061301062">スキャナ ソフトウェアをインストールしました</translation>
+<translation id="8263149565724023141">関連アプリケーション</translation>
 <translation id="8263228331881858381">パスキーを保存しました</translation>
 <translation id="8263336784344783289">このグループに名前を付ける</translation>
 <translation id="8264024885325823677">この設定は管理者によって管理されています。</translation>

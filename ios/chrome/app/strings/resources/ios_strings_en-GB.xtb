@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Your <ph name="WEBSITE" /> account won't be deleted.</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1506063256525392513">This lets you take and upload photos, as well as scan QR codes</translation>
+<translation id="1508263560970797965">Continue in Incognito</translation>
 <translation id="1509486075633541495">Sign in to website</translation>
 <translation id="1509960214886564027">Features on many sites may break</translation>
 <translation id="1513858653616922153">Delete password</translation>
@@ -742,6 +743,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page added to your reading list}other{{count} pages added to your reading list}}</translation>
 <translation id="459644946100970322">Turn on price alerts?</translation>
+<translation id="4597892826846980979">Get tabs notifications</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
 <translation id="4611811151908969241">Hide Unfollow <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6606914854592108404">Safety Check is running…</translation>
 <translation id="6609890790934458793">Passwords for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> and <ph name="THIRD_WEBSITE" /> will be deleted. Your accounts won't be deleted.</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
+<translation id="6612912757320004438">Allow tabs notifications…</translation>
 <translation id="6617761071025228250">Clear text</translation>
 <translation id="6620279676667515405">Cancel</translation>
 <translation id="6624219055418309072">Block in Incognito</translation>
@@ -1806,6 +1809,5 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="984275831282074731">Payment methods</translation>
 <translation id="985379595344853742">Close all Incognito tabs</translation>
 <translation id="988141524645182168">Other devices</translation>
-<translation id="989697783705943787">Site security</translation>
 <translation id="999768147936949692">For now, you can only share passwords with family members. <ph name="BEGIN_LINK" />Invite family members<ph name="END_LINK" /> to join your group and get more from your products and subscriptions across Google.</translation>
 </translationbundle>

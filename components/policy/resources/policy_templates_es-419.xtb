@@ -5090,6 +5090,11 @@ Si se incorporan los datos de navegación existentes al perfil administrado, el 
 
 Si no se incorporan los datos de navegación existentes al perfil administrado, se creará un nuevo perfil sin datos. Los datos de navegación existentes permanecerán en un perfil no administrado al que el usuario seguirá teniendo acceso a través del selector de perfiles.</translation>
 <translation id="4668325077104657568">Configuración de imágenes predeterminadas</translation>
+<translation id="4669292863736266737">A menos que establezcas la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> como <ph name="BLOCK_GEOLOCATION_SETTING" />, el parámetro de configuración <ph name="GLS_ENABLED" /> activará los Servicios de ubicación de Google durante la configuración inicial. Si la estableces como <ph name="GLS_DISABLED" /> o no la estableces, los Servicios de ubicación se mantendrán desactivados durante la configuración.
+
+Si estableces la política como <ph name="BR_UNDER_USER_CONTROL" />, se enviará un mensaje a los usuarios para que acepten o rechacen el uso de los Servicios de ubicación de Google. Si lo aceptan, las apps para Android usarán los servicios para buscar la ubicación del dispositivo y enviarán datos de ubicación anónimos a Google.
+
+Después de la configuración inicial, los usuarios podrán activar o desactivar los Servicios de ubicación de Google.</translation>
 <translation id="4670865688564083639">Mínimo:</translation>
 <translation id="467236746355332046">Características admitidas</translation>
 <translation id="4672774129073185053">Habilitar la anulación de verificación de accesibilidad de IPv6</translation>
@@ -7136,13 +7141,6 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
       Si la habilitas, se mostrará la pantalla de presentación de la IA.
 
       Si no la estableces, se omitirá la pantalla de presentación de la IA para los usuarios administrados por empresas y se mostrará a los usuarios no administrados.</translation>
-<translation id="6187573347027372072">¡Advertencia! Esta política dejó de estar disponible; usa <ph name="CROS_GLS_POLICY_NAME" /> en su lugar. <ph name="PRODUCT_OS_NAME" /> ahora tiene un botón de activación de ubicación del sistema, que controla todo el sistema, incluido <ph name="ANDROID_NAME" />. El botón de activación de <ph name="ANDROID_NAME" /> ahora es de solo lectura y refleja el estado de ubicación de <ph name="PRODUCT_OS_NAME" />.
-
-A menos que establezcas la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> como <ph name="BLOCK_GEOLOCATION_SETTING" />, el parámetro de configuración <ph name="GLS_ENABLED" /> activará los Servicios de ubicación de Google durante la configuración inicial. Si la estableces como <ph name="GLS_DISABLED" /> o no la estableces, los Servicios de ubicación se mantendrán desactivados durante la configuración.
-
-Si estableces la política como <ph name="GLS_UNDER_USER_CONTROL" />, se enviará un mensaje a los usuarios para que acepten o rechacen el uso de los Servicios de ubicación de Google. Si lo aceptan, las apps de <ph name="ANDROID_NAME" /> y de <ph name="PRODUCT_OS_NAME" />, los sitios web y los servicios del sistema usarán los servicios para buscar la ubicación del dispositivo y enviar datos de ubicación anónimos a Google.
-
-Después de la configuración inicial, los usuarios podrán activar o desactivar los Servicios de ubicación de Google.</translation>
 <translation id="6187632100458475876">Configuración de etiquetas de avatar de la barra de herramientas administrada</translation>
 <translation id="6190367314942602985">Enviar la información de identificación del usuario</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La string de entrada debe ser una string válida de un código hexadecimal de color que coincida con el formato "#RRGGBB".
