@@ -53,7 +53,6 @@
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
@@ -100,7 +99,6 @@
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/sync/os_crypt.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -504,16 +502,6 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
 }
 
 int ChromeBrowserMainPartsWin::PreCreateThreads() {
-  static constexpr std::string_view kIsEnterpriseManaged =
-      "is-enterprise-managed";
-  crash_keys::AllocateCrashKeyInBrowserAndChildren(
-      kIsEnterpriseManaged,
-      policy::ManagementServiceFactory::GetForPlatform()
-                  ->GetManagementAuthorityTrustworthiness() >=
-              policy::ManagementAuthorityTrustworthiness::TRUSTED
-          ? "yes"
-          : "no");
-
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/579504.
   const auto& details = install_static::InstallDetails::Get();

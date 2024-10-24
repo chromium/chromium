@@ -27,7 +27,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/policy/core/browser/webui/policy_data_utils.h"
+#include "components/policy/core/browser/policy_data_utils.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"

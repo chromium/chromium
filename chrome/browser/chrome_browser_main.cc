@@ -147,6 +147,8 @@
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/policy/core/browser/policy_data_utils.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1086,6 +1088,17 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
         "ChromeBrowserMainParts::PreCreateThreadsImpl:InitBrowserProcessImpl");
     browser_process_->Init();
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::optional<std::string> managed_by =
+      policy::GetManagedBy(browser_process_->browser_policy_connector()
+                               ->machine_level_user_cloud_policy_manager());
+  if (managed_by) {
+    static constexpr std::string_view kEnrollmentDomain = "enrollment-domain";
+    crash_keys::AllocateCrashKeyInBrowserAndChildren(kEnrollmentDomain,
+                                                     managed_by.value());
+  }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // These members must be initialized before returning from this function.

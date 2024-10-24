@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_DATA_UTILS_H_
-#define COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_DATA_UTILS_H_
+#ifndef COMPONENTS_POLICY_CORE_BROWSER_POLICY_DATA_UTILS_H_
+#define COMPONENTS_POLICY_CORE_BROWSER_POLICY_DATA_UTILS_H_
 
 #include <optional>
 #include <string>
@@ -22,4 +22,4 @@ POLICY_EXPORT std::optional<std::string> GetManagedBy(
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_BROWSER_WEBUI_POLICY_DATA_UTILS_H_
+#endif  // COMPONENTS_POLICY_CORE_BROWSER_POLICY_DATA_UTILS_H_
