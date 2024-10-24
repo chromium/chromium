@@ -29,6 +29,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1330562121671411446">Taal herkennen</translation>
 <translation id="1342274909142618978">Gegevens ook verwijderen uit Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Vastgezet. Je krijgt weer toegang tot Zoeken met afbeelding via de nieuwe knop op de werkbalk.</translation>
+<translation id="1356661055722410047">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen</translation>
 <translation id="1414495520565016063">Je bent ingelogd bij Chromium.</translation>
 <translation id="1478370723027452770">Hulp bij Chrome for Testing</translation>
 <translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
@@ -130,8 +131,10 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2738871930057338499">Kan geen verbinding maken met internet. HTTP 403 Verboden. Check je proxyconfiguratie.</translation>
 <translation id="2753623023919742414">Klik om te zoeken</translation>
 <translation id="2770231113462710648">Standaardbrowser wijzigen in:</translation>
+<translation id="277338894894732084">Chromium vraagt je later of je opgeslagen informatie wilt gebruiken om formulieren automatisch in te vullen</translation>
 <translation id="2785438272836277133">Deze extensie bevat malware en is onveilig. Verwijder de extensie van Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
+<translation id="2806241689335397269">Chromium vraagt of je formuliergegevens wilt opslaan, zoals je geboortedatum, leeftijd en paspoortnummer</translation>
 <translation id="2837693172913560447">Hiermee maak je een nieuw Chromium-profiel voor <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2841525013647267359">Vertalen uit het</translation>
 <translation id="2846251086934905009">Installatiefout: Het installatieprogramma is niet afgerond. De installatie is afgebroken.</translation>
@@ -232,6 +235,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="4148957013307229264">Installeren...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk - Chromium</translation>
 <translation id="421369550622382712">Ontdek fantastische apps, games, extensies en thema's voor Chromium.</translation>
+<translation id="4217972271355023382">Als je online veiliger wilt blijven met de keuzes van je ouder, wissel je naar het Chromium-profiel waarop je al bent ingelogd als <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Annuleren…</translation>
 <translation id="4224210481850767180">De installatie is geannuleerd.</translation>
 <translation id="4230135487732243613">Wil je je Chromium-gegevens aan dit account koppelen?</translation>
@@ -439,6 +443,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6843464627590537736">Zoekballon voor Zoeken met afbeelding</translation>
 <translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="684888714667046800">Kan geen verbinding maken met internet. Als je een firewall gebruikt, zorg je dat <ph name="PRODUCT_EXE_NAME" /> op de toelatingslijst staat.</translation>
+<translation id="685279860330610299">Chromium kan meer typen informatie begrijpen en formulieren sneller automatisch invullen. Meer informatie over <ph name="BEGIN_LINK" />Automatisch invullen in Chrome<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium heeft vastgesteld dat <ph name="EXTENSION_NAME" /> malware bevat</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
@@ -550,6 +555,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8397248745433792218">Chromium raadt je aan deze extensie te verwijderen. <ph name="BEGIN_LINK" />Meer informatie over ondersteunde extensies<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">De publicatie van deze extensie is ongedaan gemaakt door de ontwikkelaar en deze is mogelijk onveilig. Verwijder de extensie van Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium binnen een dag opnieuw}other{Start Chromium binnen # dagen opnieuw}}</translation>
+<translation id="8438543370129609977">Als je Zoeken met afbeelding gebruikt, worden de paginatitel, URL en content, waaronder pdf's, naar de server gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Het archief van het installatieprogramma is beschadigd of ongeldig. Download Chromium opnieuw.</translation>
 <translation id="8458614432758743027">Voor Chromium is Windows 10 of hoger vereist.</translation>
 <translation id="8463672209299734063">Optioneel: Help de functies en prestaties van Chromium OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
@@ -561,6 +567,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8568283329061645092">Chromium kan je wachtwoorden checken als je inlogt met je Google-account</translation>
 <translation id="8576826849825683917">Meerdere organisaties beheren Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
+<translation id="8601359445272098721">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen door de knop Scherm vertalen te selecteren</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chromium opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="8619360774459241877">Chromium starten…</translation>
 <translation id="8621669128220841554">De installatie is mislukt wegens een onbekende fout. Download Chromium opnieuw.</translation>

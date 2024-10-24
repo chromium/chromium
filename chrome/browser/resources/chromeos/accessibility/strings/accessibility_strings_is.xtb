@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="100421257800558142">Ýttu á ör til hægri</translation>
 <translation id="100506692671054486">engin fyrri skipun</translation>
 <translation id="1009046985747440431">Ýttu á ör upp eða niður til að fletta og Enter til að velja</translation>
 <translation id="1011903154582639569">Finndu lykil og lyftu síðan til að slá inn</translation>
@@ -59,6 +60,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="1291286136605998134">Hnappur til að slökkva og kveikja</translation>
 <translation id="1299774449519412690">Ljóshiminblár</translation>
 <translation id="1303806948938513162">Ýttu með fjórum fingrum til að opna valmyndir ChromeVox</translation>
+<translation id="1304162325618937178">Ýttu á bilslá</translation>
 <translation id="1313373992684326101">Fara yfir í fyrri hluta. Þar eru m.a. stöðusvæði og ræsiforrit.</translation>
 <translation id="1315077335264761176">Stefna snertingar</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, hringhnappur valmyndaratriðis ekki valinn</translation>
@@ -112,6 +114,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="1616111909442424068">Hveitigulur</translation>
 <translation id="1618597272655350600">Gefur ítarlega lýsingu á núverandi stöðu</translation>
 <translation id="1627222324347828322">Fölhvítur</translation>
+<translation id="1632810692616643246">Opna eða loka flettistillingu</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{stærra en}one{# stærra en-merki}other{# stærra en-merki}}</translation>
 <translation id="1653266918374749391">Fyrri 3. stigs fyrirsögn</translation>
 <translation id="1657616855184033958">Sýna síur viðburðarstraums</translation>
@@ -165,6 +168,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2045055672832940894">Engin fyrri stýring</translation>
 <translation id="2045606329038304310">Reitastýring eyðublaðs</translation>
 <translation id="2063539687800151747">Upphafstilvitnun</translation>
+<translation id="2067158561093481039">Framkvæmdu sérsniðna lyklasamsetningu</translation>
 <translation id="2086961585857038472">Næsta orð</translation>
 <translation id="2087981446621639008">uppl á lýslista</translation>
 <translation id="2089387485033699258">is</translation>
@@ -184,9 +188,11 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2197863150503783129">Söðulbrúnn</translation>
 <translation id="2199994615414171367">Fyrri stærðfræðisegð</translation>
 <translation id="2203046366315513658">Minnka gildi</translation>
+<translation id="2206580811360135054">Sýna eða fela gluggayfirlit</translation>
 <translation id="2216790501338699346">Vefslóð tengils: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Fara aftur um einn staf</translation>
 <translation id="2220529011494928058">Tilkynna vandamál</translation>
+<translation id="2239819015858077439">Ýttu á ör niður</translation>
 <translation id="2243633977138166243">Ýttu á ör til hægri eða vinstri til að fletta; „Enter“ til að kveikja</translation>
 <translation id="224426591676115802">Engin rödd er í boði fyrir þetta tungumál: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Slekkur á fræðslustillingu</translation>
@@ -535,6 +541,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4432457053224379116">Rauðbrúnn</translation>
 <translation id="4432896207833262240">Merkt efni</translation>
 <translation id="4437615272777527928">Skrifaðu til að leita í valmyndunum. Notaðu upp- og niðurörvarnar til að fletta í gegnum niðurstöður. Notaðu örvarnar til vinstri og hægri til að færa textabendilinn til og fara á milli valmynda.</translation>
+<translation id="4441677939526091190">Ýttu á ör upp</translation>
 <translation id="4453530046591759283">Ýttu á Ctrl+F1 til að stökkva yfir á aðra hluta skjásins, eins og tækjastiku og kerfisbakka. F1 er fyrsti lykillinn til hægri við Esc-lykilinn.</translation>
 <translation id="4457472090507035117">Velja núverandi rödd:</translation>
 <translation id="4476183483923481720">ný lína</translation>
@@ -713,6 +720,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="5653397561111110475">Nota aðgengiseiginleika Chromebook snertiskjásins</translation>
 <translation id="5655682562155942719">Stökkskipanir</translation>
 <translation id="56637627897541303">Textasvæði</translation>
+<translation id="5666746275818170484">Ýttu á ör til vinstri</translation>
 <translation id="5669637233317991674">Ýttu á leitarlykilinn + ör til hægri eða leitarlykilinn + ör til vinstri til að fletta í þessari leiðsögn</translation>
 <translation id="5677240841070992068">Núverandi staðsetning</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="7161771961008409533">Sprettihnappur</translation>
 <translation id="7167657087543110">upplestur stafa</translation>
 <translation id="7173102181852295013">Miðnæturblár</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Stækkað</translation>
 <translation id="7209751026933045237">Enginn næsti sleði</translation>
 <translation id="7218782500591078391">Dökkgulbrúnn</translation>
@@ -1090,6 +1099,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="8378855320830505539">Svæði</translation>
 <translation id="8382679411218029383">Flýtiritun í línu og lista</translation>
 <translation id="8394908167088220973">Spila/gera hlé á margmiðlunarefni</translation>
+<translation id="8409502156784390079">Flettistilling virk</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8428603554127842284">stig <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="8986362086234534611">Gleyma</translation>
 <translation id="8989104346085848538">Ýttu á Control-lykilinn til að láta ChromeVox hætta að tala.</translation>
 <translation id="9014206344398081366">ChromeVox leiðsögn</translation>
+<translation id="9034592733577768445">Hlé gert á andlitsstýringu</translation>
 <translation id="9040132695316389094">Fyrirsögn 1</translation>
 <translation id="9061884144798498064">Velja átta punkta blindraleturstöflu:</translation>
 <translation id="9063946545000394379">færa á fyrri staf</translation>

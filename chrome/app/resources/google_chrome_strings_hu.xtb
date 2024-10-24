@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">Nyelvfelismerés</translation>
 <translation id="1335640173511558774">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa el, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Google ChromeOS Flex Általános Szerződési Feltételeit.</translation>
 <translation id="1341711321000856656">Átválthat másik Chrome-profilra, ha meg szeretné nézni annak jelszavait</translation>
+<translation id="1356661055722410047">Új! A képernyőn megjelenő szöveget és képeket is lefordíthatja.</translation>
 <translation id="1363996462118479832">A ChromeOS egy bejelentkezési hiba miatt nem tudta szinkronizálni az adatokat.</translation>
 <translation id="137466361146087520">Google Chrome Béta</translation>
 <translation id="1399397803214730675">A számítógépen már megtalálható a Google Chrome újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Google Chrome-ot, majd próbálkozzon újra.</translation>
@@ -49,6 +50,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja:<ph name="END_BOLD" /> Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Arra is lehetősége van, hogy eltávolítsa azokat az érdeklődési köröket, amelyeket nem szeretne, hogy a Chrome figyelembe vegyen.</translation>
 <translation id="1628000112320670027">Segítség a Chrome használatával kapcsolatban</translation>
 <translation id="1640672724030957280">Letöltés...</translation>
+<translation id="1651617469580841801">A Google Lens használatakor a rendszer elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">A ChromeOS Flex névjegye</translation>
 <translation id="1674870198290878346">Link megnyitása Chrome-inko&amp;gnitóablakban</translation>
 <translation id="1682634494516646069">A Chrome nem tudja olvasni és írni az adatkönyvtárát: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -193,6 +195,7 @@
 <translation id="3261565993776444564">Próbáljon ki egy új színt a böngésző személyre szabásához</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
+<translation id="3289358082435924389">A Chrome később rákérdez arra, hogy szeretné-e a mentett adatokat használni az űrlapok automatikus kitöltéséhez.</translation>
 <translation id="3292333338048274092">Ezután újra kell indítania a Chrome-ot.</translation>
 <translation id="3360895254066713204">Chrome segéd</translation>
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
@@ -504,6 +507,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7308322188646931570">A Chrome-nak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
 <translation id="7339898014177206373">Új ablak</translation>
 <translation id="7352881504289275361">A Biztonságos Böngészés fokozott védelemmel funkció a Chrome legerősebb online védelmi megoldását kínálja, hogy megvédje Önt böngészés közben</translation>
+<translation id="7386878009611068389">Ha szeretnéd, hogy a szülőd által kiválasztott beállításokkal nagyobb biztonságban legyél az interneten, válts a Chrome-profilodra, amelybe már be vagy jelentkezve a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7394745511930161845">Hozza létre saját témáját az AI segítségével, hogy egyedi megjelenést kölcsönözzön böngészőjének</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chrome-ba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
 <translation id="7412494426921990001">Kattintson a Chrome menüre</translation>
@@ -517,6 +521,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7477130805345743099">A Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="7481213027396403996">Állítsa be a Chrome legerősebb védelmét</translation>
 <translation id="749228101751499733">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chrome-ban. A(z) <ph name="SHORTCUT" /> billentyűparancs módosíthatja a Google-szolgáltatásokra vonatkozó beállításait.</translation>
+<translation id="7512187482580860950">A Chrome többféle információt is képes értelmezni, és gyorsabban töltheti ki az űrlapokat. További információ a <ph name="BEGIN_LINK" />Chrome automatikus kitöltés funkciójáról<ph name="END_LINK" />.</translation>
 <translation id="7514258452813684157">Google-frissítési szolgáltatás</translation>
 <translation id="7515191208480168435">Az egyszerű hozzáférés érdekében kitűzheti a Google Lens funkciót</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -559,6 +564,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7886087451482920026">Szöveg kijelölése a Google Lens segítségével</translation>
 <translation id="7890208801193284374">Ha megoszt egy számítógépet, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chrome-ot.</translation>
 <translation id="7896673875602241923">Valaki korábban <ph name="ACCOUNT_EMAIL_LAST" /> néven bejelentkezett a Chrome-ba erről a számítógépről. Az adatai elkülönítéséhez hozzon létre új Chrome-felhasználót.</translation>
+<translation id="7917470403848199310">A Chrome rákérdez arra, hogy szeretné-e menteni az űrlapon megadott adatokat (például születési dátumát, életkorát és útlevele számát)</translation>
 <translation id="7917876797003313048">Kezelheti a bejelentkezett Google-fiókjait. Google-fiókjait használhatja a Chrome böngészőben, a Play Áruházban, a Gmailben és még sok más helyen. Ha más számára szeretne hozzáadni fiókot (például családtagjának), inkább új személyt adjon hozzá <ph name="DEVICE_TYPE" /> eszközéhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">A Chrome letiltotta ezt a letöltést, mert a fájl megtévesztő, és váratlan módosításokat végezhet az eszközön</translation>
 <translation id="7947083960301164556">Nézze meg az újdonságokat</translation>
@@ -615,6 +621,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8550334526674375523">Ez a munkaprofil teljesen el van választva a személyes profiljától.</translation>
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">A Chrome-profilokkal különválaszthatja minden Chrome-anyagát. Így könnyebben különítheti el egymástól a munkát és a szórakozást.</translation>
+<translation id="8601359445272098721">Új! A „Képernyő fordítása” gombbal a képernyőn megjelenő szöveget és képeket is lefordíthatja</translation>
 <translation id="8614913330719544658">A Google Chrome nem válaszol. Újraindítja most?</translation>
 <translation id="861702415419836452">A Chrome-nak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
 <translation id="8625237574518804553">{0,plural, =1{A Chrome 1 percen belül újraindul}other{A Chrome # percen belül újraindul}}</translation>

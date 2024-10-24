@@ -445,6 +445,7 @@ Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedé
 <translation id="2530896289327917474">A billentyűzettel böngészés be- vagy kikapcsolása</translation>
 <translation id="2531025035050312891">eszköz lassú</translation>
 <translation id="2531107890083353124">A lap húzása közben nyomja le a(z) <ph name="KEY_ONE" /> billentyűt</translation>
+<translation id="2545334090614121435">A Home billentyűt próbálja használni? Használja a következőt:</translation>
 <translation id="254900897760075745">Kijelölt tartalom másolása a vágólapra</translation>
 <translation id="2549711466868162843">Megvilágítás javítása</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
@@ -563,6 +564,7 @@ Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedé
 <translation id="2985148236010982088">Összes alkalmazás megjelenítése</translation>
 <translation id="2992272421330787632">Az összes médiajavaslat elrejtése</translation>
 <translation id="2992327365391326550">Az eszköz mikrofongombját kikapcsolták.</translation>
+<translation id="2993956882370897557">Az End billentyűt próbálja használni? Használja a következőt:</translation>
 <translation id="3000461861112256445">Monó hang</translation>
 <translation id="3001391739687111021">Képernyőméret módosítása</translation>
 <translation id="3009178788565917040">Kimenet</translation>
@@ -615,6 +617,7 @@ Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedé
 <translation id="316356270129335934">A(z) <ph name="MANAGER" /> visszaállítja <ph name="DEVICE_TYPE" /> eszköze korábbi verzióját. Eszköze újra fog indulni, és minden adat törlődik róla.</translation>
 <translation id="316798519864381606">Google-dia</translation>
 <translation id="3171170659304083361">Beviteli módszerek beállításai</translation>
+<translation id="3174897399179348329">A Page Up billentyűt próbálja használni? Használja a következőt:</translation>
 <translation id="3176221688814061633">Chromebookja vagy Bluetooth-eszköze régebbi Bluetooth-verziót használ. Kapcsolja be a szuperfelbontású Bluetootht, vagy használjon belső mikrofont a jobb hangminőség érdekében.</translation>
 <translation id="3181441307743005334">Az újraindítás eltarthat egy ideig</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Egy eszközhöz csatlakoztatva}other{# eszközhöz csatlakoztatva}}</translation>
@@ -1262,6 +1265,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5297704307811127955">Ki</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5302048478445481009">Nyelv</translation>
+<translation id="5302531370473608800">A YouTube Music használatához frissítse a(z) <ph name="DEVICE_TYPE" /> alkalmazást</translation>
 <translation id="5303319262469238330">Az akkumulátor töltöttségi szintje: <ph name="PERCENTAGE" />%.
 Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozottan használhatók.</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
@@ -1821,6 +1825,7 @@ Frissen telepítve</translation>
 <translation id="7144942256906679589">Akkumulátorállapot</translation>
 <translation id="7145639536026937076">Az akkumulátor töltöttsége <ph name="PERCENTAGE" />%, és a töltés jelenleg is folyamatban van. Az Akkumulátorkímélő mód be van kapcsolva.</translation>
 <translation id="7147587499155271409">Nincsenek böngészési előzmények</translation>
+<translation id="7147657298465433425">Az F-billentyűk használatához nyomja le az fn billentyűt és a felső sor billentyűi közül az egyiket</translation>
 <translation id="7149149900052329230">Helyi és Google Drive-fájljait is kezelheti a Fájlok alkalmazásban.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedé
 <translation id="7557816257942363084">A(z) <ph name="APP_NAME" /> jelenleg használja a mikrofont</translation>
 <translation id="7561982940498449837">Menü bezárása</translation>
 <translation id="7564874036684306347">Az ablakok másik asztalra történő áthelyezése váratlan viselkedést eredményezhet. Az ezt követő értesítéseket, ablakokat és párbeszédpaneleket a rendszer megoszthatja az asztalok között.</translation>
+<translation id="7568154670718626683">Törölni próbál? Használja a következőt:</translation>
 <translation id="7568790562536448087"> frissítése</translation>
 <translation id="7569509451529460200">Braille és ChromeVox bekapcsolva</translation>
 <translation id="7569886975397378678">A telefon értesítéseinek és alkalmazásainak megtekintésére vonatkozó beállítás elvetése</translation>
@@ -2132,6 +2138,7 @@ Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedé
 <translation id="820256110035940528"><ph name="TITLE" /> Az összpontosítás időtartama <ph name="FOCUSED_TIME" /> volt. Ha megint szeretné használni az Összpontosítási üzemmódot, nyissa meg a Gyorsbeállításokat.</translation>
 <translation id="8203224998425013577">További emojik és GIF-ek megjelenítése</translation>
 <translation id="8203795194971602413">Kattintás jobb egérgombbal</translation>
+<translation id="8205469348819768313">A Page Down billentyűt próbálja használni? Használja a következőt:</translation>
 <translation id="8214996719228530800">Canary csatorna</translation>
 <translation id="8219451629189078428">Ez idő alatt Chromebookjának bekapcsolva kell maradnia, és csatlakoztatva kell lennie áramforráshoz. Gondoskodjon arról, hogy a töltő-, illetve adapterkábelek teljes mértékben csatlakoztatva legyenek mind a Chromebookhoz, mind a konnektorhoz. Ne kapcsolja ki a Chromebookot.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> hozzáadása</translation>
@@ -2324,6 +2331,7 @@ Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedé
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">A Google Segéd nem beszél ezen a nyelven.</translation>
 <translation id="8926951137623668982">A polc mindig rejtve lesz</translation>
+<translation id="8929566928381252430">A Caps Lock billentyűt próbálja használni? Használja a következőt:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fájl}other{# fájl}}</translation>
 <translation id="8936501819958976551">deaktiválva</translation>
 <translation id="8938800817013097409">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>

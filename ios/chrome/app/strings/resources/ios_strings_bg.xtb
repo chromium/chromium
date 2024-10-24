@@ -38,6 +38,7 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1164891049599601209">Въведена в измамнически сайт</translation>
 <translation id="1165039591588034296">Грешка</translation>
+<translation id="1172240852337942024">Отхвърляне на избора</translation>
 <translation id="1172898394251786223">Следващото поле</translation>
 <translation id="1179890706672152411">Хранилището ви е пълно</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -189,6 +190,7 @@
 <translation id="1854463785401910334">Търсене в отворените раздели</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} от {count} парола}other{{position} от {count} пароли}}</translation>
 <translation id="1861262398884155592">Тази папка е празна</translation>
+<translation id="1864266050569350424">На сайт, за който сте запазили парола, докоснете полето за въвеждане на парола за вход.</translation>
 <translation id="1872096359983322073">Фенерче</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Изпращане на покана до членове на семейството</translation>
@@ -199,6 +201,8 @@
 <translation id="1890237935065108104">Тази настройка не е налице.</translation>
 <translation id="1894023287452300670">Проследявайте цени оттук</translation>
 <translation id="189531189292803889">Вашият iPad наскоро бе възстановен. Това може да е променило браузъра ви по подразбиране.</translation>
+<translation id="1901366738768303267">Как да използвам тази функция?</translation>
+<translation id="1901600657316773839">Запазване на избора</translation>
 <translation id="1904580727789512086">URL адресите, които посещавате, се запазват в профила ви в Google</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1923342640370224680">Последният час</translation>
@@ -508,6 +512,8 @@
 <translation id="3443810440409579745">Получен раздел.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344589138074534176">Научете повече за Google Обектив</translation>
+<translation id="3447332786336558089">След като излезете от профила си, разделите ще бъдат затворени и незапазените данни в него ще бъдат изтрити от това устройство. Те може да включват пароли, история и др.</translation>
+<translation id="3449016921756175697">Полезни предложения, които подобряват и улесняват сърфирането.</translation>
 <translation id="345348365500626747">Адресът е намерен</translation>
 <translation id="3464194322481586217">Следенето на цената не бе успешно.</translation>
 <translation id="3469117812148449995">Опции за запазване на паролата</translation>
@@ -688,6 +694,7 @@
 <translation id="4320848494125124980">Скорошни</translation>
 <translation id="4322394346347055525">Затваряне на другите раздели</translation>
 <translation id="4324735664183300693">Включване на известията</translation>
+<translation id="4326912346867677256">Докоснете „Използване на паролата“, за да влезете в профила си по сигурен начин.</translation>
 <translation id="4328843285884395590">Моят диск</translation>
 <translation id="4331177082088332784">Можете да управлявате тази функция в BEGIN_LINKнастройките за съдържаниетоEND_LINK</translation>
 <translation id="4334428914252001502">1 непрочетена статия.</translation>
@@ -975,6 +982,7 @@
 <translation id="5652623411397330904">Продуктите, които следите, ще се показват тук.</translation>
 <translation id="5657156137487675418">Разрешаване на всички „бисквитки“</translation>
 <translation id="5659593005791499971">Имейл</translation>
+<translation id="5666313630530585305">Влезте в уебсайт.</translation>
 <translation id="5669335982068190158">Излязохте от профила си при нулирането на своя iPhone. Докоснете бутона за продължаване по-долу, за да влезете отново.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
@@ -1037,6 +1045,7 @@
 <translation id="594324569139756587">Блокиране на трети страни</translation>
 <translation id="5944869793365969636">Сканиране на QR кода</translation>
 <translation id="5948291296578561264">Това ви позволява да запазвате снимки във фотобиблиотеката си.</translation>
+<translation id="5952641243319721872">Наистина ли искате да отхвърлите избора си?</translation>
 <translation id="5956112131836209882">Група раздели – раздел <ph name="TAB_INDEX_IN_GROUP" /> от <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се създаде връзка към откроения текст.</translation>
@@ -1124,6 +1133,7 @@
 <translation id="6301104306974789820">Получаване на известия за проследяване на цените</translation>
 <translation id="6303969859164067831">Изход от профила и изключване на синхронизирането</translation>
 <translation id="6310451064941005489">Опции за паролите</translation>
+<translation id="6316141353357700666">Изберете паролата, която искате да използвате, от показания списък.</translation>
 <translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6337234675334993532">Шифроване</translation>
 <translation id="633809752005859102">Нещо сериозно се обърка. Ще работим по него.</translation>
@@ -1543,6 +1553,7 @@
 <translation id="8173034266693057059">Дължина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и още 1}other{За {website_1}, {website_2} и още {more_count}}}</translation>
+<translation id="8189615296021678665">Докоснете „Запазване“, за да имате лесен достъп до тази парола следващия път, когато влезете в профила си.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавяне на парола</translation>
 <translation id="8202744799033457229">Показване на историята</translation>
@@ -1556,12 +1567,14 @@
 <translation id="8219424187226230983">Преглед на офлайн версията в нов раздел</translation>
 <translation id="8230355548492839438">Търсене на предишното</translation>
 <translation id="8232956427053453090">Запазване на данните</translation>
+<translation id="8242644458318193141">За да защитим сигурността на организацията ви, разделите ще бъдат затворени и незапазените данни в профила ще бъдат изтрити от това устройство. Те може да включват пароли, история и др.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="82619448491672958">Преглед на другите раздели</translation>
 <translation id="8263809106706527890">Възможно е да има промяна в стандартните настройки на браузъра ви. Можете да проверите това в настройките.</translation>
 <translation id="8264966119170358612">Някои от запазените ви пароли са били разкрити вследствие на нарушение на сигурността на данните извън Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPad. За да влезете отново, докоснете „Напред“ по-долу.</translation>
 <translation id="8273982424131314219">Ще попълните информацията на адрес <ph name="URL" /></translation>
+<translation id="827464923811805683">Всеки, който разполага с връзката, може да редактира всички раздели, затова споделяйте разумно. Връзката изтича след 48 часа. <ph name="BEGIN_LINK" />Научете повече за споделените групи раздели<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">Още…</translation>
 <translation id="8278488584187265939">Персонализиране на началната страница</translation>
 <translation id="8281781826761538115">Стандартно – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1574,6 +1587,7 @@
 <translation id="8299613349954694191">Отворете раздел в режим „инкогнито“, за да сърфирате частно в мрежата.</translation>
 <translation id="8307481894409578819">Този файл не бе качен</translation>
 <translation id="8319076807703933069">Ново търсене</translation>
+<translation id="8320212361750431956">Скорошна активност</translation>
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8366466717204352506">Проверката не се е изпълнявала</translation>
@@ -1754,6 +1768,7 @@
 <translation id="9081058212938299310">Да се актуализира ли паролата за <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Имате {count} ненадеждна парола, която може да представлява риск за сигурността ви. Коригирайте я сега, за да сте в безопасност.}other{Имате {count} ненадеждни пароли, които могат да представляват риск за сигурността ви. Коригирайте ги сега, за да сте в безопасност.}}</translation>
+<translation id="9084369964545892485">Нов раздел в режим „инкогнито“ в група</translation>
 <translation id="9087339162317338348">Използвайте HTTPS при възможност и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол.</translation>
 <translation id="9090979472668095374">Произнасяне на отговорите</translation>
 <translation id="9094033019050270033">Актуализиране на паролата</translation>

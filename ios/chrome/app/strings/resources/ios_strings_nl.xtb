@@ -38,6 +38,7 @@
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1165039591588034296">Fout</translation>
+<translation id="1172240852337942024">Selectie verwijderen</translation>
 <translation id="1172898394251786223">Volgend veld</translation>
 <translation id="1179890706672152411">Je opslag is vol</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -189,6 +190,7 @@
 <translation id="1854463785401910334">Geopende tabbladen doorzoeken</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} van {count} wachtwoord}other{{position} van {count} wachtwoorden}}</translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
+<translation id="1864266050569350424">Tik op een site waar je een wachtwoord hebt opgeslagen op het veld voor het inlogwachtwoord.</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Gezinsleden uitnodigen</translation>
@@ -199,6 +201,8 @@
 <translation id="1890237935065108104">Deze instelling is niet beschikbaar.</translation>
 <translation id="1894023287452300670">Hier kun je de prijs volgen</translation>
 <translation id="189531189292803889">Je iPad is recent hersteld, waardoor je standaardbrowser misschien is veranderd.</translation>
+<translation id="1901366738768303267">Hoe gebruik ik deze functie?</translation>
+<translation id="1901600657316773839">Selectie behouden</translation>
 <translation id="1904580727789512086">De URL's die je bezoekt, worden opgeslagen in je Google-account</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
 <translation id="1923342640370224680">Afgelopen uur</translation>
@@ -508,6 +512,8 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3443810440409579745">Tabblad ontvangen.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344589138074534176">Meer informatie over Google Lens</translation>
+<translation id="3447332786336558089">Nadat je bent uitgelogd, worden tabbladen gesloten en worden niet-opgeslagen accountgegevens van dit apparaat verwijderd. Dit kunnen onder andere wachtwoorden en geschiedenis zijn.</translation>
+<translation id="3449016921756175697">Handige suggesties die browsen beter en makkelijker maken.</translation>
 <translation id="345348365500626747">Adres gevonden</translation>
 <translation id="3464194322481586217">Kan de prijs niet volgen.</translation>
 <translation id="3469117812148449995">Opties om een wachtwoord op te slaan</translation>
@@ -688,6 +694,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4320848494125124980">Recent</translation>
 <translation id="4322394346347055525">Andere tabbladen sluiten</translation>
 <translation id="4324735664183300693">Meldingen aanzetten</translation>
+<translation id="4326912346867677256">Tik op Wachtwoord gebruiken om beveiligd in te loggen.</translation>
 <translation id="4328843285884395590">Mijn Drive</translation>
 <translation id="4331177082088332784">Je kunt dit beheren via de BEGIN_LINK contentinstellingen END_LINK</translation>
 <translation id="4334428914252001502">1 ongelezen artikel.</translation>
@@ -975,6 +982,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5652623411397330904">De producten die je volgt, worden hier getoond.</translation>
 <translation id="5657156137487675418">Alle cookies toestaan</translation>
 <translation id="5659593005791499971">E-mail</translation>
+<translation id="5666313630530585305">Log in bij een website.</translation>
 <translation id="5669335982068190158">Je bent uitgelogd omdat je iPhone wordt gereset. Tik hieronder op Doorgaan om in te loggen.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versie <ph name="PRODUCT_VERSION" /></translation>
@@ -1037,6 +1045,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="594324569139756587">Cookies van derden blokkeren</translation>
 <translation id="5944869793365969636">QR-code scannen</translation>
 <translation id="5948291296578561264">Hiermee kun je foto's opslaan in je fotobibliotheek.</translation>
+<translation id="5952641243319721872">Weet je zeker dat je je selectie niet wilt opslaan?</translation>
 <translation id="5956112131836209882">Tabblad in tabbladgroep. <ph name="TAB_INDEX_IN_GROUP" /> van <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Zoeken met <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Er kan geen link naar de markering worden gemaakt.</translation>
@@ -1124,6 +1133,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6310451064941005489">Wachtwoordopties</translation>
+<translation id="6316141353357700666">Kies het wachtwoord dat je wilt gebruiken in de lijst die verschijnt.</translation>
 <translation id="6321526113093607004">Toevoegen aan bookmarks</translation>
 <translation id="6337234675334993532">Versleuteling</translation>
 <translation id="633809752005859102">Er is iets goed misgegaan. We gaan op zoek naar een oplossing.</translation>
@@ -1543,6 +1553,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8173034266693057059">Lengte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Voor {website_1}}=2{Voor {website_1}, {website_2}}=3{Voor {website_1}, {website_2} en nog 1}other{Voor {website_1}, {website_2} en nog {more_count}}}</translation>
+<translation id="8189615296021678665">Tik op Opslaan om dit wachtwoord makkelijk te vinden als je de volgende keer inlogt.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Je apparaten<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Wachtwoord toevoegen</translation>
 <translation id="8202744799033457229">Geschiedenis weergeven</translation>
@@ -1556,12 +1567,14 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8219424187226230983">Offline versie bekijken op nieuw tabblad</translation>
 <translation id="8230355548492839438">Vorige zoeken</translation>
 <translation id="8232956427053453090">Gegevens behouden</translation>
+<translation id="8242644458318193141">Tabbladen worden gesloten en niet-opgeslagen accountgegevens worden verwijderd van dit apparaat om je organisatie te beschermen. Dit kunnen onder andere wachtwoorden en geschiedenis zijn.</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="82619448491672958">Andere tabbladen bekijken</translation>
 <translation id="8263809106706527890">Je standaard browserinstellingen zijn misschien gewijzigd. Je kunt dit nagaan in de instellingen.</translation>
 <translation id="8264966119170358612">Sommige van je opgeslagen wachtwoorden zijn openbaar gemaakt bij een gegevenslek van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
 <translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
+<translation id="827464923811805683">Iedereen met de link kan alle tabbladen bewerken. Wees dus voorzichtig met delen. De link verloopt over 48 uur. <ph name="BEGIN_LINK" />Meer informatie over gedeelde tabbladgroepen<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">Meer…</translation>
 <translation id="8278488584187265939">Homepage aanpassen</translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1574,6 +1587,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8299613349954694191">Open een incognitotabblad om privé op internet te browsen.</translation>
 <translation id="8307481894409578819">Dit bestand kan niet worden geüpload</translation>
 <translation id="8319076807703933069">Nieuwe zoekopdracht</translation>
+<translation id="8320212361750431956">Recente activiteit</translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8366466717204352506">Check nooit uitgevoerd</translation>
@@ -1754,6 +1768,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
 <translation id="9083838294503912307">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Je hebt {count} zwak wachtwoord dat een beveiligingsrisico kan vormen. Pas dit nu aan om beveiligd te blijven.}other{Je hebt {count} zwakke wachtwoorden die een beveiligingsrisico kunnen vormen. Pas ze nu aan om beveiligd te blijven.}}</translation>
+<translation id="9084369964545892485">Nieuw incognitotabblad in groep</translation>
 <translation id="9087339162317338348">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen.</translation>
 <translation id="9090979472668095374">Antwoorden uitspreken</translation>
 <translation id="9094033019050270033">Wachtwoord updaten</translation>
