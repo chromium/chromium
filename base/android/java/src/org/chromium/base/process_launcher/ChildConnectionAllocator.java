@@ -21,10 +21,10 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,30 +101,12 @@ public abstract class ChildConnectionAllocator {
 
     /* package */ ConnectionFactory mConnectionFactory = new ConnectionFactoryImpl();
 
-    // Need to call an internal method to work around a framework bug.
-    @SuppressWarnings("PrivateApi")
-    private static void workAroundWebViewPackageVisibility() {
-        try {
-            Class wvus = Class.forName("android.webkit.WebViewUpdateService");
-            Method getWVPN = wvus.getDeclaredMethod("getCurrentWebViewPackageName");
-            // Calling this for the side effect of granting implicit visibility..
-            getWVPN.invoke(null);
-        } catch (Exception e) {
-            // Don't crash the host app; the workaround is only necessary in a few special cases,
-            // so failing is okay.
-            Log.w(TAG, "workAroundWebViewPackageVisibility failed", e);
-        }
-    }
-
     private static void checkServiceExists(
             Context context, String packageName, String serviceClassName) {
-        // On R/S/T it's possible for the app to lose visibility of the WebView package in rare
-        // cases; see crbug.com/1363832 - we attempt to get re-granted visibility here to work
-        // around it.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && !packageName.equals(context.getPackageName())) {
-            workAroundWebViewPackageVisibility();
+        if (!packageName.equals(context.getPackageName())) {
+            // If the service isn't in our own package we may need to work
+            // around crbug.com/1363832.
+            PackageUtils.maybeWorkAroundWebViewPackageVisibility();
         }
 
         PackageManager packageManager = context.getPackageManager();

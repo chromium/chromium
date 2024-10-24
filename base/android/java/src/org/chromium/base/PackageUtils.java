@@ -8,12 +8,14 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -60,17 +62,48 @@ public class PackageUtils {
         return getPackageInfo(packageName, 0) != null;
     }
 
-    /** Returns the PackageInfo for the current app, as retrieve by PackageManager. */
+    /** Returns the PackageInfo for the Chromium app, as retrieved by PackageManager. */
     public static PackageInfo getApplicationPackageInfo(int flags) {
-        PackageInfo ret = getPackageInfo(BuildInfo.getInstance().packageName, flags);
+        BuildInfo bi = BuildInfo.getInstance();
+
+        // In WebView the Chromium app is not the same package as the current app, and there is a
+        // platform bug where this lookup can fail in rare cases; try to work around it.
+        if (!bi.packageName.equals(bi.hostPackageName)) {
+            maybeWorkAroundWebViewPackageVisibility();
+        }
+
+        PackageInfo ret = getPackageInfo(bi.packageName, flags);
         assert ret != null;
         return ret;
+    }
+
+    // Need to call an internal method to work around a framework bug.
+    @SuppressWarnings("PrivateApi")
+    public static void maybeWorkAroundWebViewPackageVisibility() {
+        // On R/S/T it's possible for the app to lose visibility of the WebView package in rare
+        // cases; see crbug.com/1363832 - we attempt to get re-granted visibility to work around it.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return;
+        }
+
+        try {
+            Class wvus = Class.forName("android.webkit.WebViewUpdateService");
+            Method getWebViewPackageName = wvus.getDeclaredMethod("getCurrentWebViewPackageName");
+            // Calling this for the side effect of granting implicit visibility..
+            getWebViewPackageName.invoke(null);
+        } catch (Exception e) {
+            // Don't crash the host app; the workaround is only necessary in a few special cases,
+            // so failing is okay.
+            Log.w(TAG, "maybeWorkAroundWebViewPackageVisibility failed", e);
+        }
     }
 
     /**
      * Computes the SHA256 certificates for the given package name. The app with the given package
      * name has to be installed on device. The output will be a list of 30 long HEX strings with :
      * between each value. There will be one string for each signature the app is signed with.
+     *
      * @param packageName The package name to query the signature for.
      * @return The SHA256 certificate for the package name.
      */
