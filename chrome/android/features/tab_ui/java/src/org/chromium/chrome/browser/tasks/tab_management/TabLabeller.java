@@ -14,11 +14,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.messaging.CollaborationEvent;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.messaging.MessageUtils;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
-import org.chromium.components.tab_group_sync.messaging.UserAction;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,9 +50,9 @@ public class TabLabeller extends TabObjectLabeller {
 
     @Override
     protected int getTextRes(PersistentMessage message) {
-        if (message.action == UserAction.TAB_ADDED) {
+        if (message.collaborationEvent == CollaborationEvent.TAB_ADDED) {
             return org.chromium.chrome.tab_ui.R.string.tab_added_label;
-        } else if (message.action == UserAction.TAB_NAVIGATED) {
+        } else if (message.collaborationEvent == CollaborationEvent.TAB_NAVIGATED) {
             return org.chromium.chrome.tab_ui.R.string.tab_changed_label;
         } else {
             return Resources.ID_NULL;

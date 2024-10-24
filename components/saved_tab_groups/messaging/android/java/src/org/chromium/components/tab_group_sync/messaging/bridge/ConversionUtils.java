@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.messaging.ActivityLogItem;
+import org.chromium.components.tab_group_sync.messaging.CollaborationEvent;
 import org.chromium.components.tab_group_sync.messaging.InstantMessage;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationType;
@@ -20,7 +21,6 @@ import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
 import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.TabMessageMetadata;
-import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -85,11 +85,11 @@ class ConversionUtils {
     private static PersistentMessage createPersistentMessageAndMaybeAddToList(
             @Nullable ArrayList<PersistentMessage> list,
             MessageAttribution attribution,
-            @UserAction int action,
+            @CollaborationEvent int collaborationEvent,
             @PersistentNotificationType int type) {
         PersistentMessage message = new PersistentMessage();
         message.attribution = attribution;
-        message.action = action;
+        message.collaborationEvent = collaborationEvent;
         message.type = type;
 
         if (list != null) {
@@ -102,12 +102,12 @@ class ConversionUtils {
     @CalledByNative
     private static InstantMessage createInstantMessage(
             MessageAttribution attribution,
-            @UserAction int action,
+            @CollaborationEvent int collaborationEvent,
             @InstantNotificationLevel int level,
             @InstantNotificationType int type) {
         InstantMessage message = new InstantMessage();
         message.attribution = attribution;
-        message.action = action;
+        message.collaborationEvent = collaborationEvent;
         message.level = level;
         message.type = type;
 
@@ -122,13 +122,13 @@ class ConversionUtils {
     @CalledByNative
     private static ActivityLogItem createActivityLogItemAndMaybeAddToList(
             @Nullable ArrayList<ActivityLogItem> list,
-            @UserAction int userActionType,
+            @CollaborationEvent int collaborationEvent,
             String titleText,
             String descriptionText,
             String timestampText,
             MessageAttribution activityMetadata) {
         ActivityLogItem activityLogItem = new ActivityLogItem();
-        activityLogItem.userActionType = userActionType;
+        activityLogItem.collaborationEvent = collaborationEvent;
         activityLogItem.titleText = titleText;
         activityLogItem.descriptionText = descriptionText;
         activityLogItem.timestampText = timestampText;

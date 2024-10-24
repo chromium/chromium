@@ -30,8 +30,8 @@ struct ActivityLogItem {
   std::string description_text;
   std::string timestamp_text;
 
-  // The type of action associated with the log item.
-  UserAction user_action_type;
+  // The type of event associated with the log item.
+  CollaborationEvent collaboration_event;
 
   // Implicit metadata that will be used to invoke the delegate when the
   // activity row is clicked.

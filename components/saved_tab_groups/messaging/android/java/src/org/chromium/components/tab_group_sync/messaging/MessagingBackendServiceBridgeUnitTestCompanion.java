@@ -78,7 +78,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         InstantMessage message = mInstantMessageCaptor.getValue();
         Assert.assertEquals(InstantNotificationLevel.SYSTEM, message.level);
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
-        Assert.assertEquals(UserAction.TAB_REMOVED, message.action);
+        Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);
 
         // MessageAttribution.
         MessageAttribution attribution = message.attribution;
@@ -115,12 +115,13 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         List<ActivityLogItem> logItems = mService.getActivityLog(queryParams);
         Assert.assertEquals(2, logItems.size());
 
-        Assert.assertEquals(UserAction.TAB_NAVIGATED, logItems.get(0).userActionType);
+        Assert.assertEquals(CollaborationEvent.TAB_NAVIGATED, logItems.get(0).collaborationEvent);
         Assert.assertEquals("title 1", logItems.get(0).titleText);
         Assert.assertEquals("description 1", logItems.get(0).descriptionText);
         Assert.assertEquals("timestamp 1", logItems.get(0).timestampText);
 
-        Assert.assertEquals(UserAction.COLLABORATION_USER_JOINED, logItems.get(1).userActionType);
+        Assert.assertEquals(
+                CollaborationEvent.COLLABORATION_USER_JOINED, logItems.get(1).collaborationEvent);
         Assert.assertEquals("title 2", logItems.get(1).titleText);
         Assert.assertEquals("description 2", logItems.get(1).descriptionText);
         Assert.assertEquals("timestamp 2", logItems.get(1).timestampText);

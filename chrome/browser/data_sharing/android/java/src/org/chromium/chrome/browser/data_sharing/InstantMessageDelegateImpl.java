@@ -25,12 +25,12 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.tab_group_sync.messaging.CollaborationEvent;
 import org.chromium.components.tab_group_sync.messaging.InstantMessage;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
 import org.chromium.components.tab_group_sync.messaging.MessageUtils;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService.InstantMessageDelegate;
-import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -111,10 +111,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
             @NonNull
             TabGroupModelFilter tabGroupModelFilter = attachedWindowInfo.tabGroupModelFilter;
-            @UserAction int userAction = message.action;
+            @CollaborationEvent int collaborationEvent = message.collaborationEvent;
 
             if (message.level == InstantNotificationLevel.SYSTEM) {
-                if (userAction == UserAction.COLLABORATION_USER_JOINED) {
+                if (collaborationEvent == CollaborationEvent.COLLABORATION_USER_JOINED) {
                     @NonNull
                     DataSharingNotificationManager dataSharingNotificationManager =
                             attachedWindowInfo.dataSharingNotificationManager;
@@ -127,14 +127,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
                 if (messageDispatcher == null) return;
 
-                if (userAction == UserAction.TAB_REMOVED) {
+                if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
                     showTabRemoved(message, context, messageDispatcher);
-                } else if (userAction == UserAction.TAB_NAVIGATED) {
+                } else if (collaborationEvent == CollaborationEvent.TAB_NAVIGATED) {
                     showTabChange(message, context, messageDispatcher);
-                } else if (userAction == UserAction.COLLABORATION_USER_JOINED) {
+                } else if (collaborationEvent == CollaborationEvent.COLLABORATION_USER_JOINED) {
                     showCollaborationUserJoined(
                             message, context, messageDispatcher, tabGroupModelFilter);
-                } else if (userAction == UserAction.COLLABORATION_REMOVED) {
+                } else if (collaborationEvent == CollaborationEvent.COLLABORATION_REMOVED) {
                     showCollaborationRemoved(
                             message, context, messageDispatcher, tabGroupModelFilter);
                 }

@@ -108,7 +108,8 @@ ScopedJavaLocalRef<jobject> CreatePersistentMessageAndMaybeAddToListHelper(
   ScopedJavaLocalRef<jobject> jmessage =
       Java_ConversionUtils_createPersistentMessageAndMaybeAddToList(
           env, jlist, MessageAttributionToJava(env, message.attribution),
-          static_cast<int>(message.action), static_cast<int>(message.type));
+          static_cast<int>(message.collaboration_event),
+          static_cast<int>(message.type));
 
   return jmessage;
 }
@@ -138,8 +139,8 @@ ScopedJavaLocalRef<jobject> InstantMessageToJava(
     const InstantMessage& message) {
   return Java_ConversionUtils_createInstantMessage(
       env, MessageAttributionToJava(env, message.attribution),
-      static_cast<int>(message.action), static_cast<int>(message.level),
-      static_cast<int>(message.type));
+      static_cast<int>(message.collaboration_event),
+      static_cast<int>(message.level), static_cast<int>(message.type));
 }
 
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
@@ -150,7 +151,7 @@ ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
 
   for (const auto& activity_log_item : activity_log_items) {
     Java_ConversionUtils_createActivityLogItemAndMaybeAddToList(
-        env, jlist, static_cast<int>(activity_log_item.user_action_type),
+        env, jlist, static_cast<int>(activity_log_item.collaboration_event),
         ConvertUTF8ToJavaString(env, activity_log_item.title_text),
         ConvertUTF8ToJavaString(env, activity_log_item.description_text),
         ConvertUTF8ToJavaString(env, activity_log_item.timestamp_text),

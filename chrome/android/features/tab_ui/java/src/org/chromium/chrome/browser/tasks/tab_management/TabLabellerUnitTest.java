@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.messaging.MessagingBackendServiceFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.messaging.CollaborationEvent;
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService.PersistentMessageObserver;
@@ -40,7 +41,6 @@ import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
 import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.TabMessageMetadata;
-import org.chromium.components.tab_group_sync.messaging.UserAction;
 
 import java.util.List;
 import java.util.Map;
@@ -84,7 +84,7 @@ public class TabLabellerUnitTest {
         message.attribution.tabMetadata.localTabId = 1;
         message.attribution.tabGroupMetadata = new TabGroupMessageMetadata();
         message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(GROUP_ID1);
-        message.action = UserAction.TAB_ADDED;
+        message.collaborationEvent = CollaborationEvent.TAB_ADDED;
         return message;
     }
 
@@ -195,7 +195,7 @@ public class TabLabellerUnitTest {
     @Test
     public void testShowAll_WrongUserAction() {
         PersistentMessage message = makeStandardMessage();
-        message.action = UserAction.COLLABORATION_REMOVED;
+        message.collaborationEvent = CollaborationEvent.COLLABORATION_REMOVED;
         List<PersistentMessage> messageList = List.of(message);
         when(mMessagingBackendService.getMessagesForGroup(any(), any())).thenReturn(messageList);
 
@@ -206,7 +206,7 @@ public class TabLabellerUnitTest {
     @Test
     public void testShowAll_Changed() {
         PersistentMessage message = makeStandardMessage();
-        message.action = UserAction.TAB_NAVIGATED;
+        message.collaborationEvent = CollaborationEvent.TAB_NAVIGATED;
         List<PersistentMessage> messageList = List.of(message);
         when(mMessagingBackendService.getMessagesForGroup(any(), any())).thenReturn(messageList);
 

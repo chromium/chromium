@@ -71,11 +71,11 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.messaging.CollaborationEvent;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
-import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -1313,13 +1313,14 @@ public class TabGridDialogMediator
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessagesForGroup(
                         eitherGroupId, /* type= */ Optional.empty());
-        Map<Integer, Integer> actionCounts = new HashMap<>();
+        Map<Integer, Integer> collaborationEventCounts = new HashMap<>();
         for (PersistentMessage message : messages) {
-            actionCounts.merge(message.action, 1, Integer::sum);
+            collaborationEventCounts.merge(message.collaborationEvent, 1, Integer::sum);
         }
-        int tabsAdded = actionCounts.getOrDefault(UserAction.TAB_ADDED, 0);
-        int tabsChanged = actionCounts.getOrDefault(UserAction.TAB_NAVIGATED, 0);
-        int tabsClosed = actionCounts.getOrDefault(UserAction.TAB_REMOVED, 0);
+        int tabsAdded = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_ADDED, 0);
+        int tabsChanged =
+                collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_NAVIGATED, 0);
+        int tabsClosed = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_REMOVED, 0);
         if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
             removeCollaborationActivityMessageCard();
             return;

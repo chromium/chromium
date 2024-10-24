@@ -11,6 +11,6 @@ package org.chromium.components.tab_group_sync.messaging;
  */
 public class PersistentMessage {
     public MessageAttribution attribution;
-    @UserAction public int action;
+    @CollaborationEvent public int collaborationEvent;
     @PersistentNotificationType public int type;
 }

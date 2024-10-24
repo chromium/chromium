@@ -167,7 +167,7 @@ InstantMessage CreateInstantMessage() {
   InstantMessage message;
   message.level = InstantNotificationLevel::SYSTEM;
   message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
-  message.action = UserAction::TAB_REMOVED;
+  message.collaboration_event = CollaborationEvent::TAB_REMOVED;
 
   // Attribution.
   message.attribution.collaboration_id = data_sharing::GroupId("my group");
@@ -241,13 +241,14 @@ TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageFailure) {
 TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   // Create two activity log items.
   ActivityLogItem activity_log_item1;
-  activity_log_item1.user_action_type = UserAction::TAB_NAVIGATED;
+  activity_log_item1.collaboration_event = CollaborationEvent::TAB_NAVIGATED;
   activity_log_item1.title_text = "title 1";
   activity_log_item1.description_text = "description 1";
   activity_log_item1.timestamp_text = "timestamp 1";
 
   ActivityLogItem activity_log_item2;
-  activity_log_item2.user_action_type = UserAction::COLLABORATION_USER_JOINED;
+  activity_log_item2.collaboration_event =
+      CollaborationEvent::COLLABORATION_USER_JOINED;
   activity_log_item2.title_text = "title 2";
   activity_log_item2.description_text = "description 2";
   activity_log_item2.timestamp_text = "timestamp 2";

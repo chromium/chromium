@@ -21,7 +21,7 @@ namespace tab_groups::messaging {
 // Actions that have been taken.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.tab_group_sync.messaging)
-enum class UserAction {
+enum class CollaborationEvent {
   // Used for messages such as an implicitly dirty tab group.
   UNDEFINED,
 
@@ -156,8 +156,8 @@ struct InstantMessage {
  public:
   MessageAttribution attribution;
 
-  // The type of action associated with the message.
-  UserAction action;
+  // The collaboration event associated with the message.
+  CollaborationEvent collaboration_event;
 
   // The level of instant notification to show.
   InstantNotificationLevel level;
@@ -172,8 +172,8 @@ struct PersistentMessage {
  public:
   MessageAttribution attribution;
 
-  // The type of action associated with the message.
-  UserAction action;
+  // The collaboration event associated with the message.
+  CollaborationEvent collaboration_event;
 
   // The type of persistent notification to show.
   PersistentNotificationType type;

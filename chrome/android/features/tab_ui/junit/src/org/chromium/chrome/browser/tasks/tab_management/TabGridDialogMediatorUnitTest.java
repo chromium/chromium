@@ -107,12 +107,12 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.messaging.CollaborationEvent;
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.TabMessageMetadata;
-import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -1626,7 +1626,7 @@ public class TabGridDialogMediatorUnitTest {
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());
         mPersistentMessageObserverCaptor
                 .getValue()
-                .displayPersistentMessage(makePersistentMessage(UserAction.TAB_REMOVED));
+                .displayPersistentMessage(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
         verify(mDialogController)
                 .addMessageCardItem(/* position= */ eq(0), mMessageCardModelCaptor.capture());
         text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
@@ -1637,7 +1637,7 @@ public class TabGridDialogMediatorUnitTest {
         mockPersistentMessages(/* added= */ 0, /* navigated= */ 2, /* removed= */ 4);
         mPersistentMessageObserverCaptor
                 .getValue()
-                .hidePersistentMessage(makePersistentMessage(UserAction.TAB_ADDED));
+                .hidePersistentMessage(makePersistentMessage(CollaborationEvent.TAB_ADDED));
         verify(mDialogController)
                 .addMessageCardItem(/* position= */ eq(0), mMessageCardModelCaptor.capture());
         text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
@@ -1781,7 +1781,7 @@ public class TabGridDialogMediatorUnitTest {
         }
     }
 
-    private PersistentMessage makePersistentMessage(@UserAction int action) {
+    private PersistentMessage makePersistentMessage(@CollaborationEvent int collaborationEvent) {
         MessageAttribution attribution = new MessageAttribution();
         attribution.tabMetadata = new TabMessageMetadata();
         attribution.tabMetadata.localTabId = TAB1_ID;
@@ -1789,20 +1789,20 @@ public class TabGridDialogMediatorUnitTest {
         attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
         PersistentMessage message = new PersistentMessage();
         message.attribution = attribution;
-        message.action = action;
+        message.collaborationEvent = collaborationEvent;
         return message;
     }
 
     private void mockPersistentMessages(int added, int navigated, int removed) {
         List<PersistentMessage> messageList = new ArrayList<>();
         for (int i = 0; i < added; i++) {
-            messageList.add(makePersistentMessage(UserAction.TAB_ADDED));
+            messageList.add(makePersistentMessage(CollaborationEvent.TAB_ADDED));
         }
         for (int i = 0; i < navigated; i++) {
-            messageList.add(makePersistentMessage(UserAction.TAB_NAVIGATED));
+            messageList.add(makePersistentMessage(CollaborationEvent.TAB_NAVIGATED));
         }
         for (int i = 0; i < removed; i++) {
-            messageList.add(makePersistentMessage(UserAction.TAB_REMOVED));
+            messageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
         }
         when(mMessagingBackendService.getMessagesForGroup(any(), any())).thenReturn(messageList);
     }

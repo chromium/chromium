@@ -20,21 +20,21 @@ namespace {
 // The size of image of a user's icon and a favicon.
 const CGFloat kImageSize = 22;
 
-ActivityLogType ConvertUserAction(
-    tab_groups::messaging::UserAction user_action) {
-  switch (user_action) {
-    case tab_groups::messaging::UserAction::TAB_ADDED:
+ActivityLogType ConvertCollaborationEvent(
+    tab_groups::messaging::CollaborationEvent collaboration_event) {
+  switch (collaboration_event) {
+    case tab_groups::messaging::CollaborationEvent::TAB_ADDED:
       return ActivityLogType::kTabAdded;
-    case tab_groups::messaging::UserAction::TAB_REMOVED:
+    case tab_groups::messaging::CollaborationEvent::TAB_REMOVED:
       return ActivityLogType::kTabRemoved;
-    case tab_groups::messaging::UserAction::TAB_NAVIGATED:
+    case tab_groups::messaging::CollaborationEvent::TAB_NAVIGATED:
       return ActivityLogType::kTabNavigated;
-    case tab_groups::messaging::UserAction::TAB_GROUP_VISUALS_UPDATED:
+    case tab_groups::messaging::CollaborationEvent::TAB_GROUP_VISUALS_UPDATED:
       // TODO(crbug.com/370897655): Confirm how to know that a user changed a
       // color or a name of a group. Return kGroupNameChanged if the name is
       // updated.
       return ActivityLogType::kGroupColorChanged;
-    case tab_groups::messaging::UserAction::COLLABORATION_USER_LEFT:
+    case tab_groups::messaging::CollaborationEvent::COLLABORATION_USER_LEFT:
       return ActivityLogType::kUserLeft;
     default:
       return ActivityLogType::kUndefined;
@@ -106,7 +106,7 @@ std::string CollaborationId(
 
   for (auto& log : _messagingService->GetActivityLog(params)) {
     RecentActivityLogItem* item = [[RecentActivityLogItem alloc] init];
-    item.type = ConvertUserAction(log.user_action_type);
+    item.type = ConvertCollaborationEvent(log.collaboration_event);
     item.title = base::SysUTF8ToNSString(log.title_text);
     item.actionDescription = base::SysUTF8ToNSString(log.description_text);
     item.timestamp = base::SysUTF8ToNSString(log.timestamp_text);

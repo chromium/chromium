@@ -8,12 +8,12 @@
 
 namespace tab_groups::messaging {
 
-MessageConfigBase::MessageConfigBase(UserAction action,
+MessageConfigBase::MessageConfigBase(CollaborationEvent collab_event,
                                      BrowserStateRequirement display_req,
                                      UserRequirement user_req,
                                      DelayPolicy delay_pol,
                                      uint64_t delay_pol_ttl)
-    : user_action(action),
+    : collaboration_event(collab_event),
       display_requirement(display_req),
       initiator_user_requirement(user_req),
       delay_policy(delay_pol),
@@ -22,14 +22,14 @@ MessageConfigBase::MessageConfigBase(UserAction action,
 MessageConfigBase::~MessageConfigBase() = default;
 
 InstantMessageConfig::InstantMessageConfig(
-    UserAction user_action,
+    CollaborationEvent collab_event,
     UserRequirement user_requirement,
     BrowserStateRequirement display_requirement,
     InstantNotificationLevel level,
     InstantNotificationType type,
     DelayPolicy delay_policy,
     uint64_t delay_policy_ttl)
-    : MessageConfigBase(user_action,
+    : MessageConfigBase(collab_event,
                         display_requirement,
                         user_requirement,
                         delay_policy,
@@ -40,14 +40,14 @@ InstantMessageConfig::InstantMessageConfig(
 InstantMessageConfig::~InstantMessageConfig() = default;
 
 PersistentMessageConfig::PersistentMessageConfig(
-    UserAction user_action,
+    CollaborationEvent collab_event,
     UserRequirement user_requirement,
     BrowserStateRequirement display_requirement,
     BrowserStateRequirement hide_req,
     PersistentNotificationType type,
     DelayPolicy delay_policy,
     uint64_t delay_policy_ttl)
-    : MessageConfigBase(user_action,
+    : MessageConfigBase(collab_event,
                         display_requirement,
                         user_requirement,
                         delay_policy,

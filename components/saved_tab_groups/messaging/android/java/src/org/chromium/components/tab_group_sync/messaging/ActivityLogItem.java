@@ -10,8 +10,8 @@ package org.chromium.components.tab_group_sync.messaging;
  * for specific details.
  */
 public class ActivityLogItem {
-    // The type of action associated with the log item.
-    @UserAction public int userActionType;
+    // The type of collaboration event associated with the log item.
+    @CollaborationEvent public int collaborationEvent;
 
     // Explicit display metadata to be shown in the UI.
     public String titleText;
