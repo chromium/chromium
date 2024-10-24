@@ -419,7 +419,8 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     iossim_util.add_simulator_runtime(dmg_path)
 
     calls = [
-        mock.call(['xcrun', 'simctl', 'runtime', 'add', dmg_path]),
+        mock.call(['xcrun', 'simctl', 'runtime', 'add', dmg_path, '--verbose'],
+                  stderr=subprocess.STDOUT),
     ]
 
     check_output_mock.assert_has_calls(calls)
