@@ -181,21 +181,30 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 
   _allowButton = [[UIButton alloc] init];
-  _allowButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_allowButton
-      setTitle:l10n_util::GetNSString(
-                   IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW)
-      forState:UIControlStateNormal];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  buttonConfiguration.attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(
+                         IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW)
+          attributes:@{
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+          }];
+  _allowButton.configuration = buttonConfiguration;
   [_allowButton setTitleColor:[UIColor colorNamed:kBlueColor]
                      forState:UIControlStateNormal];
-  _allowButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _allowButton.isAccessibilityElement = YES;
-  _allowButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  _allowButton.titleLabel.numberOfLines = 1;
+  _allowButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+
+  _allowButton.contentHorizontalAlignment =
+      UIControlContentHorizontalAlignmentTrailing;
+  _allowButton.accessibilityIdentifier = _allowButton.titleLabel.text;
   _tapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(allowPriceTrackingTapped:)];
-
   [_allowButton addGestureRecognizer:_tapRecognizer];
 
   _separator = [[UIView alloc] init];
@@ -252,7 +261,7 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (NSString*)allowLabelTextForTesting {
-  return self->_allowButton.currentTitle;
+  return [self->_allowButton.configuration.attributedTitle string];
 }
 
 @end
