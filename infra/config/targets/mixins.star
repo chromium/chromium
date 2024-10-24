@@ -493,6 +493,9 @@ targets.mixin(
 
 targets.mixin(
     name = "chromium_nexus_5x_oreo",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "device_os": "OPR4.170623.020",
@@ -506,7 +509,9 @@ targets.mixin(
 
 targets.mixin(
     name = "chromium_pixel_2_pie",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "device_os": "PQ3A.190801.002",
@@ -726,7 +731,9 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_nvidia_shield_tv_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -740,6 +747,8 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_pixel_4_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -754,6 +763,8 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_pixel_6_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -768,6 +779,8 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_pixel_6_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -782,7 +795,9 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_a13_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -796,7 +811,9 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_a23_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -810,7 +827,9 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_s23_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             # Unfortunately, "s23" is not exposed as a dimension. "dm1q" appears
@@ -827,7 +846,9 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_s24_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             # Unfortunately, "s24" is not exposed as a dimension. "e2s" appears
@@ -1060,6 +1081,8 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_amd_rx_5500_xt",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1073,6 +1096,8 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_intel_uhd_630_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1086,6 +1111,8 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_intel_uhd_630_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1098,7 +1125,9 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_intel_uhd_770_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "8086:4680-23.2.1",
@@ -1111,6 +1140,8 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_nvidia_gtx_1660_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1123,6 +1154,8 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_nvidia_gtx_1660_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
@@ -1308,7 +1341,9 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m1_gpu_experimental",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1323,7 +1358,9 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m1_gpu_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1338,7 +1375,9 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m2_retina_gpu_experimental",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1354,7 +1393,9 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_arm64_apple_m2_retina_gpu_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1415,6 +1456,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_mini_intel_gpu_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1428,6 +1471,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_mini_intel_gpu_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
@@ -1445,7 +1490,9 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_pro_amd_gpu",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1459,6 +1506,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_amd_gpu_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1474,6 +1523,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_amd_gpu_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1489,6 +1540,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_nvidia_gpu_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     # Currently the same as the stable version.
     swarming = targets.swarming(
@@ -1505,6 +1558,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_nvidia_gpu_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -1951,7 +2006,9 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_amd_rx_5500_xt_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -1977,7 +2034,9 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_intel_uhd_630_experimental",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -1990,6 +2049,8 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_intel_uhd_630_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -2003,6 +2064,8 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_intel_uhd_770_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
@@ -2016,7 +2079,9 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_gtx_1660_experimental",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -2029,6 +2094,8 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_gtx_1660_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
     # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
@@ -2046,7 +2113,9 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_rtx_4070_super_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -2059,7 +2128,9 @@ targets.mixin(
 
 targets.mixin(
     name = "win11_qualcomm_adreno_690_stable",
-    generate_pyl_entry = False,
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
