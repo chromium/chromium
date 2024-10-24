@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_rewrite_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -62,21 +64,25 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
                                  AIMetrics::AISessionType::kRewriter),
                              int(input.CharactersSizeInBytes()));
   CHECK(options);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<IDLString>();
+    resolver->Reject(signal->reason(script_state));
+    return promise;
   }
   const String context_string = options->getContextOr(String());
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kExceptionMessageRewriterDestroyed);
-    return ScriptPromise<IDLString>();
+    return promise;
   }
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter,
-      base::DoNothing());
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, signal, resolver, task_runner_,
+      AIMetrics::AISessionType::kWriter, base::DoNothing());
   remote_->Rewrite(input, context_string, std::move(pending_remote));
   return promise;
 }
@@ -99,6 +105,8 @@ ReadableStream* AIRewriter::rewriteStreaming(
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
+    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
+    // the streaming API.
     ThrowAbortedException(exception_state);
     return nullptr;
   }

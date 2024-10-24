@@ -25,11 +25,12 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
                            public mojom::blink::AIManagerCreateWriterClient,
                            public AIMojoClient<AIWriter> {
  public:
-  CreateWriterClient(AI* ai,
+  CreateWriterClient(ScriptState* script_state,
+                     AI* ai,
                      ScriptPromiseResolver<AIWriter>* resolver,
                      AbortSignal* signal,
                      String shared_context_string)
-      : AIMojoClient(ai, resolver, signal),
+      : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         shared_context_string_(shared_context_string) {
@@ -96,14 +97,15 @@ ScriptPromise<AIWriter> AIWriterFactory::create(
     return ScriptPromise<AIWriter>();
   }
   CHECK(options);
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<AIWriter>();
-  }
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIWriter>>(script_state);
   auto promise = resolver->Promise();
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
 
   if (!ai_->GetAIRemote().is_connected()) {
     RejectPromiseWithInternalError(resolver);
@@ -111,7 +113,8 @@ ScriptPromise<AIWriter> AIWriterFactory::create(
   }
 
   MakeGarbageCollected<CreateWriterClient>(
-      ai_, resolver, signal, options->getSharedContextOr(String()));
+      script_state, ai_, resolver, signal,
+      options->getSharedContextOr(String()));
   return promise;
 }
 

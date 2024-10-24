@@ -61,7 +61,9 @@ void ThrowAbortedException(ExceptionState& exception_state) {
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
-  resolver->Reject(CreateInternalErrorException());
+  if (resolver) {
+    resolver->Reject(CreateInternalErrorException());
+  }
 }
 
 DOMException* CreateInternalErrorException() {

@@ -38,10 +38,11 @@ class Responder final : public GarbageCollected<Responder>,
  public:
   Responder(ScriptState* script_state,
             AbortSignal* signal,
+            ScriptPromiseResolver<IDLString>* resolver,
             AIMetrics::AISessionType session_type,
             base::OnceCallback<void(std::optional<uint64_t>)> complete_callback)
-      : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
-            script_state)),
+      : script_state_(script_state),
+        resolver_(resolver),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
         session_type_(session_type),
@@ -59,6 +60,7 @@ class Responder final : public GarbageCollected<Responder>,
 
   void Trace(Visitor* visitor) const override {
     ContextLifecycleObserver::Trace(visitor);
+    visitor->Trace(script_state_);
     visitor->Trace(resolver_);
     visitor->Trace(receiver_);
     visitor->Trace(abort_signal_);
@@ -112,11 +114,10 @@ class Responder final : public GarbageCollected<Responder>,
 
  private:
   void OnAborted() {
-    if (resolver_) {
-      resolver_->Reject(DOMException::Create(
-          kExceptionMessageRequestAborted,
-          DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+    if (!resolver_) {
+      return;
     }
+    resolver_->Reject(abort_signal_->reason(script_state_));
     Cleanup();
   }
 
@@ -130,6 +131,7 @@ class Responder final : public GarbageCollected<Responder>,
     }
   }
 
+  Member<ScriptState> script_state_;
   Member<ScriptPromiseResolver<IDLString>> resolver_;
   String response_;
   int response_callback_count_ = 0;
@@ -247,6 +249,8 @@ class StreamingResponder final
 
  private:
   void OnAborted() {
+    // TODO(crbug.com/374879795): fix the abort handling for streaming
+    // responder.
     Controller()->Error(DOMException::Create(
         kExceptionMessageRequestAborted,
         DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
@@ -279,19 +283,19 @@ class StreamingResponder final
 
 }  // namespace
 
-std::tuple<ScriptPromise<IDLString>,
-           mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>>
+mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
+    ScriptPromiseResolver<IDLString>* resolver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
         complete_callback) {
   Responder* responder = MakeGarbageCollected<Responder>(
-      script_state, signal, session_type, std::move(complete_callback));
-  return std::make_tuple(responder->GetPromise(),
-                         responder->BindNewPipeAndPassRemote(task_runner));
+      script_state, signal, resolver, session_type,
+      std::move(complete_callback));
+  return responder->BindNewPipeAndPassRemote(task_runner);
 }
 
 std::tuple<ReadableStream*,
@@ -310,4 +314,5 @@ CreateModelExecutionStreamingResponder(
       streaming_responder->CreateReadableStream(),
       streaming_responder->BindNewPipeAndPassRemote(task_runner));
 }
+
 }  // namespace blink

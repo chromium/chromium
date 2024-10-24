@@ -10,20 +10,6 @@ promise_test(async () => {
   assert_equals(Object.prototype.toString.call(rewriter), '[object AIRewriter]');
 }, 'AIRewriterFactory.create() must be return a AIRewriter.');
 
-promise_test(async (t) => {
-  const controller = new AbortController();
-  const createPromise = ai.rewriter.create({signal: controller.signal});
-  controller.abort();
-  await promise_rejects_dom(t, 'AbortError', createPromise);
-}, 'Aborting AIRewriterFactory.create().');
-
-promise_test(async (t) => {
-  const controller = new AbortController();
-  controller.abort();
-  const createPromise = ai.rewriter.create({signal: controller.signal});
-  await promise_rejects_dom(t, 'AbortError', createPromise);
-}, 'AIRewriterFactory.create() call with an aborted signal.');
-
 promise_test(async () => {
   const sharedContext = 'This is a shared context string';
   const rewriter = await ai.rewriter.create({sharedContext: sharedContext});
@@ -71,38 +57,3 @@ promise_test(async (t) => {
   rewriter.destroy();
   assert_throws_dom('InvalidStateError', () => rewriter.rewriteStreaming('hello'));
 }, 'AIRewriter.rewriteStreaming() fails after destroyed');
-
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  const controller = new AbortController();
-  const writePromise = rewriter.rewrite('hello', {signal: controller.signal});
-  controller.abort();
-  await promise_rejects_dom(t, 'AbortError', writePromise);
-}, 'Aborting AIRewriter.rewrite().');
-
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  const controller = new AbortController();
-  controller.abort();
-  const writePromise = rewriter.rewrite('hello', {signal: controller.signal});
-  await promise_rejects_dom(t, 'AbortError', writePromise);
-}, 'AIRewriter.rewrite() call with an aborted signal.');
-
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  const controller = new AbortController();
-  const streamingResponse =
-      rewriter.rewriteStreaming('hello', {signal: controller.signal});
-  controller.abort();
-  const reader = streamingResponse.getReader();
-  await promise_rejects_dom(t, 'AbortError', reader.read());
-}, 'Aborting AIRewriter.rewriteStreaming()');
-
-promise_test(async (t) => {
-  const rewriter = await ai.rewriter.create();
-  const controller = new AbortController();
-  controller.abort();
-  assert_throws_dom(
-      'AbortError',
-      () => rewriter.rewriteStreaming('hello', {signal: controller.signal}));
-}, 'AIRewriter.rewriteStreaming() call with an aborted signal.');

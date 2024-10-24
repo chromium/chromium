@@ -62,14 +62,18 @@ ScriptPromise<IDLString> AISummarizer::summarize(
     return ScriptPromise<IDLString>();
   }
 
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<IDLString>();
+    resolver->Reject(signal->reason(script_state));
+    return promise;
   }
 
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, signal, task_runner_, AIMetrics::AISessionType::kSummarizer,
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, signal, resolver, task_runner_,
+      AIMetrics::AISessionType::kSummarizer,
       /*complete_callback=*/base::DoNothing());
   summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),
                                 std::move(pending_remote));
@@ -103,6 +107,8 @@ ReadableStream* AISummarizer::summarizeStreaming(
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
+    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
+    // the streaming API.
     ThrowAbortedException(exception_state);
     return nullptr;
   }

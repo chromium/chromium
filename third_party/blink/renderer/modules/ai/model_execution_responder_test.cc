@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -56,8 +59,11 @@ TEST(CreateModelExecutionResponder, Simple) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   base::RunLoop callback_runloop;
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, /*signal=*/nullptr,
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, /*signal=*/nullptr, resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kAssistant,
       base::BindOnce(
@@ -95,8 +101,11 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, /*signal=*/nullptr,
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, /*signal=*/nullptr, resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kAssistant,
       /*complete_callback=*/base::DoNothing());
@@ -128,8 +137,11 @@ TEST(CreateModelExecutionResponder, AbortWithoutResponse) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   auto* controller = AbortController::Create(scope.GetScriptState());
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, controller->signal(),
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, controller->signal(), resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kAssistant,
       /*complete_callback=*/base::DoNothing());
@@ -160,8 +172,11 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   auto* controller = AbortController::Create(scope.GetScriptState());
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, controller->signal(),
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, controller->signal(), resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kAssistant,
       /*complete_callback=*/base::DoNothing());

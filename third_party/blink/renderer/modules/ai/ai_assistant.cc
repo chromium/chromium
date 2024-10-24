@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -28,11 +29,12 @@ class CloneAssistantClient
       public mojom::blink::AIManagerCreateAssistantClient,
       public AIMojoClient<AIAssistant> {
  public:
-  CloneAssistantClient(AIAssistant* assistant,
+  CloneAssistantClient(ScriptState* script_state,
+                       AIAssistant* assistant,
                        ScriptPromiseResolver<AIAssistant>* resolver,
                        AbortSignal* signal,
                        base::PassKey<AIAssistant> pass_key)
-      : AIMojoClient(assistant, resolver, signal),
+      : AIMojoClient(script_state, assistant, resolver, signal),
         pass_key_(pass_key),
         assistant_(assistant),
         receiver_(this, assistant->GetExecutionContext()) {
@@ -88,11 +90,12 @@ class CountPromptTokensClient
       public mojom::blink::AIAssistantCountPromptTokensClient,
       public AIMojoClient<IDLUnsignedLongLong> {
  public:
-  CountPromptTokensClient(AIAssistant* assistant,
+  CountPromptTokensClient(ScriptState* script_state,
+                          AIAssistant* assistant,
                           ScriptPromiseResolver<IDLUnsignedLongLong>* resolver,
                           AbortSignal* signal,
                           const WTF::String& input)
-      : AIMojoClient(assistant, resolver, signal),
+      : AIMojoClient(script_state, assistant, resolver, signal),
         assistant_(assistant),
         receiver_(this, assistant->GetExecutionContext()) {
     mojo::PendingRemote<mojom::blink::AIAssistantCountPromptTokensClient>
@@ -171,20 +174,24 @@ ScriptPromise<IDLString> AIAssistant::prompt(
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kAssistant),
                              int(input.CharactersSizeInBytes()));
+  ScriptPromiseResolver<IDLString>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
 
   if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
-    return ScriptPromise<IDLString>();
+    return promise;
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<IDLString>();
+    resolver->Reject(signal->reason(script_state));
+    return promise;
   }
 
-  auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, signal, task_runner_, AIMetrics::AISessionType::kAssistant,
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, signal, resolver, task_runner_,
+      AIMetrics::AISessionType::kAssistant,
       WTF::BindOnce(&AIAssistant::OnResponseComplete,
                     WrapWeakPersistent(this)));
   assistant_remote_->Prompt(input, std::move(pending_remote));
@@ -216,6 +223,8 @@ ReadableStream* AIAssistant::promptStreaming(
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
+    // TODO(crbug.com/374879796): figure out how to handling aborted signal for
+    // the streaming API.
     ThrowAbortedException(exception_state);
     return nullptr;
   }
@@ -245,22 +254,23 @@ ScriptPromise<AIAssistant> AIAssistant::clone(
 
   ScriptPromiseResolver<AIAssistant>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
+  auto promise = resolver->Promise();
 
   if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
-    return resolver->Promise();
+    return promise;
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<AIAssistant>();
+    resolver->Reject(signal->reason(script_state));
+    return promise;
   }
 
-  MakeGarbageCollected<CloneAssistantClient>(this, resolver, signal,
-                                             base::PassKey<AIAssistant>());
+  MakeGarbageCollected<CloneAssistantClient>(
+      script_state, this, resolver, signal, base::PassKey<AIAssistant>());
 
-  return resolver->Promise();
+  return promise;
 }
 
 ScriptPromise<IDLUnsignedLongLong> AIAssistant::countPromptTokens(
@@ -280,21 +290,23 @@ ScriptPromise<IDLUnsignedLongLong> AIAssistant::countPromptTokens(
   ScriptPromiseResolver<IDLUnsignedLongLong>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUnsignedLongLong>>(
           script_state);
+  auto promise = resolver->Promise();
 
   if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
-    return resolver->Promise();
+    return promise;
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<IDLUnsignedLongLong>();
+    resolver->Reject(signal->reason(script_state));
+    return promise;
   }
 
-  MakeGarbageCollected<CountPromptTokensClient>(this, resolver, signal, input);
+  MakeGarbageCollected<CountPromptTokensClient>(script_state, this, resolver,
+                                                signal, input);
 
-  return resolver->Promise();
+  return promise;
 }
 
 // TODO(crbug.com/355967885): reset the remote to destroy the session.

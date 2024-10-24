@@ -59,11 +59,12 @@ class CreateSummarizerClient
       public AIMojoClient<AISummarizer>,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
-  explicit CreateSummarizerClient(AI* ai,
+  explicit CreateSummarizerClient(ScriptState* script_state,
+                                  AI* ai,
                                   ScriptPromiseResolver<AISummarizer>* resolver,
                                   AbortSignal* signal,
                                   const AISummarizerCreateOptions* options)
-      : AIMojoClient(ai, resolver, signal),
+      : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         type_(options->type()),
@@ -181,22 +182,23 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kSummarizer),
       AIMetrics::AIAPI::kSummarizerCreate);
 
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<AISummarizer>();
-  }
-
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AISummarizer>>(script_state);
   auto promise = resolver->Promise();
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
+
   if (!ai_->GetAIRemote().is_connected()) {
     RejectPromiseWithInternalError(resolver);
     return promise;
   }
 
-  MakeGarbageCollected<CreateSummarizerClient>(ai_.Get(), resolver, signal,
-                                               options)
+  MakeGarbageCollected<CreateSummarizerClient>(script_state, ai_.Get(),
+                                               resolver, signal, options)
       ->CreateSummarizer();
   return promise;
 }

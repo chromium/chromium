@@ -45,13 +45,14 @@ class CreateAssistantClient
       public AIMojoClient<AIAssistant> {
  public:
   CreateAssistantClient(
+      ScriptState* script_state,
       AI* ai,
       ScriptPromiseResolver<AIAssistant>* resolver,
       AbortSignal* signal,
       mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
       Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts)
-      : AIMojoClient(ai, resolver, signal),
+      : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()) {
     mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
@@ -198,8 +199,8 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
   if (options) {
     signal = options->getSignalOr(nullptr);
     if (signal && signal->aborted()) {
-      ThrowAbortedException(exception_state);
-      return ScriptPromise<AIAssistant>();
+      resolver->Reject(signal->reason(script_state));
+      return promise;
     }
 
     if (!options->hasTopK() && !options->hasTemperature()) {
@@ -252,8 +253,8 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
   }
 
   MakeGarbageCollected<CreateAssistantClient>(
-      ai_, resolver, signal, std::move(sampling_params), system_prompt,
-      std::move(initial_prompts));
+      script_state, ai_, resolver, signal, std::move(sampling_params),
+      system_prompt, std::move(initial_prompts));
 
   return promise;
 }

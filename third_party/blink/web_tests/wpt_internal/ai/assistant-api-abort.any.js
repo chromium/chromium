@@ -2,30 +2,28 @@
 // META: script=resources/utils.js
 
 promise_test(async (t) => {
-  const controller = new AbortController();
-  const createPromise = ai.languageModel.create({ signal: controller.signal });
-  controller.abort();
-  await promise_rejects_dom(t, 'AbortError', createPromise);
-
-  // Using an aborted controller will get the `AbortError` as well.
-  const anotherCreatePromise = ai.languageModel.create({ signal: controller.signal });
-  await promise_rejects_dom(t, 'AbortError', anotherCreatePromise);
-}, "Aborting AIAssistantFactory.create()");
+  testAbort(t, (signal) => {
+    return ai.languageModel.create({
+      signal: signal
+    });
+  });
+}, "Aborting AIAssistantFactory.create().");
 
 promise_test(async (t) => {
-  const controller = new AbortController();
   const session = await ai.languageModel.create();
-  const clonePromise = session.clone({ signal: controller.signal });
-  controller.abort();
-  await promise_rejects_dom(t, 'AbortError', clonePromise);
-}, "Aborting AIAssistant.clone");
+  testAbort(t, (signal) => {
+    return session.clone({
+      signal: signal
+    });
+  });
+}, "Aborting AIAssistant.clone().");
 
 promise_test(async (t) => {
-  const controller = new AbortController();
   const session = await ai.languageModel.create();
-  const promptPromise = session.prompt(
-    "Write a poem", { signal: controller.signal }
-  );
-  controller.abort();
-  await promise_rejects_dom(t, 'AbortError', promptPromise);
-}, "Aborting AIAssistant.prompt");
+  testAbort(t, (signal) => {
+    return session.prompt(
+      "Write a poem", { signal: signal }
+    );
+  });
+}, "Aborting AIAssistant.prompt().");
+

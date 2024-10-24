@@ -50,13 +50,14 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
                              public mojom::blink::AIManagerCreateRewriterClient,
                              public AIMojoClient<AIRewriter> {
  public:
-  CreateRewriterClient(AI* ai,
+  CreateRewriterClient(ScriptState* script_state,
+                       AI* ai,
                        ScriptPromiseResolver<AIRewriter>* resolver,
                        AbortSignal* signal,
                        V8AIRewriterTone tone,
                        V8AIRewriterLength length,
                        String shared_context_string)
-      : AIMojoClient(ai, resolver, signal),
+      : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         shared_context_string_(shared_context_string),
@@ -130,14 +131,14 @@ ScriptPromise<AIRewriter> AIRewriterFactory::create(
     return ScriptPromise<AIRewriter>();
   }
   CHECK(options);
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<AIRewriter>();
-  }
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIRewriter>>(script_state);
   auto promise = resolver->Promise();
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
 
   if (!ai_->GetAIRemote().is_connected()) {
     RejectPromiseWithInternalError(resolver);
@@ -145,7 +146,7 @@ ScriptPromise<AIRewriter> AIRewriterFactory::create(
   }
 
   MakeGarbageCollected<CreateRewriterClient>(
-      ai_, resolver, signal, options->tone(), options->length(),
+      script_state, ai_, resolver, signal, options->tone(), options->length(),
       options->getSharedContextOr(String()));
   return promise;
 }
