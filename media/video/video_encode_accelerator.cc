@@ -20,10 +20,6 @@ Vp9Metadata::Vp9Metadata() = default;
 Vp9Metadata::~Vp9Metadata() = default;
 Vp9Metadata::Vp9Metadata(const Vp9Metadata&) = default;
 
-Av1Metadata::Av1Metadata() = default;
-Av1Metadata::~Av1Metadata() = default;
-Av1Metadata::Av1Metadata(const Av1Metadata&) = default;
-
 BitstreamBufferMetadata::BitstreamBufferMetadata()
     : payload_size_bytes(0), key_frame(false) {}
 BitstreamBufferMetadata::BitstreamBufferMetadata(
@@ -289,10 +285,6 @@ bool operator==(const H264Metadata& l, const H264Metadata& r) {
   return l.temporal_idx == r.temporal_idx && l.layer_sync == r.layer_sync;
 }
 
-bool operator==(const H265Metadata& l, const H265Metadata& r) {
-  return l.temporal_idx == r.temporal_idx;
-}
-
 bool operator==(const Vp8Metadata& l, const Vp8Metadata& r) {
   return l.non_reference == r.non_reference &&
          l.temporal_idx == r.temporal_idx && l.layer_sync == r.layer_sync;
@@ -309,10 +301,6 @@ bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
          l.p_diffs == r.p_diffs;
 }
 
-bool operator==(const Av1Metadata& l, const Av1Metadata& r) {
-  return l.temporal_idx == r.temporal_idx;
-}
-
 bool operator==(const SVCGenericMetadata& l, const SVCGenericMetadata& r) {
   return l.follow_svc_spec == r.follow_svc_spec &&
          l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
@@ -325,7 +313,7 @@ bool operator==(const BitstreamBufferMetadata& l,
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
          l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
-         l.av1 == r.av1 && l.h265 == r.h265 && l.svc_generic == r.svc_generic;
+         l.svc_generic == r.svc_generic;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,

@@ -53,12 +53,6 @@ struct MEDIA_EXPORT H264Metadata final {
   bool layer_sync = false;
 };
 
-// Metadata for H265 bitstream buffer.
-//  |temporal_idx|  indicates the temporal index of this frame.
-struct MEDIA_EXPORT H265Metadata final {
-  uint8_t temporal_idx = 0;
-};
-
 //  Metadata for a VP8 bitstream buffer.
 //  |non_reference| is true iff this frame does not update any reference buffer,
 //                  meaning dropping this frame still results in a decodable
@@ -119,15 +113,6 @@ struct MEDIA_EXPORT Vp9Metadata final {
   std::vector<uint8_t> p_diffs;
 };
 
-// Metadata for an AV1 bitstream buffer.
-struct MEDIA_EXPORT Av1Metadata final {
-  Av1Metadata();
-  ~Av1Metadata();
-  Av1Metadata(const Av1Metadata&);
-  // The temporal index for this frame.
-  uint8_t temporal_idx = 0;
-};
-
 // Metadata for filling webrtc::CodecSpecificInfo.generic_frame_info.
 struct MEDIA_EXPORT SVCGenericMetadata final {
   // True iff the reference dependency follows any of the scalability modes
@@ -180,15 +165,13 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool dropped_frame() const;
   std::optional<uint8_t> spatial_idx() const;
 
-  // |drop|, |h264|, |vp8|, |vp9|, |av1| and |h265| may be set, but not multiple
-  // of them. Presumably, it's also possible for none of them to be set.
+  // |drop|, |h264|, |vp8| and |vp9| may be set, but not multiple of them.
+  // Presumably, it's also possible for none of them to be set.
   // |drop| is set if and only if the frame is dropped.
   std::optional<DropFrameMetadata> drop;
   std::optional<H264Metadata> h264;
   std::optional<Vp8Metadata> vp8;
   std::optional<Vp9Metadata> vp9;
-  std::optional<Av1Metadata> av1;
-  std::optional<H265Metadata> h265;
 
   // Metadata for SVC encoding is expected to be set in |svc_generic|.
   // TODO: Deprecate the above legacy codec specific medadata and replace them
@@ -536,7 +519,6 @@ MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
                              const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
-MEDIA_EXPORT bool operator==(const Av1Metadata& l, const Av1Metadata& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,
                              const BitstreamBufferMetadata& r);
 MEDIA_EXPORT bool operator==(

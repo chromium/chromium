@@ -2682,7 +2682,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     if (codec_ == VideoCodec::kH264) {
       md.h264.emplace().temporal_idx = temporal_id;
     } else if (codec_ == VideoCodec::kHEVC) {
-      md.h265.emplace().temporal_idx = temporal_id;
+      md.svc_generic.emplace().temporal_idx = temporal_id;
     } else if (codec_ == VideoCodec::kVP9) {
       Vp9Metadata& vp9 = md.vp9.emplace();
       if (keyframe) {

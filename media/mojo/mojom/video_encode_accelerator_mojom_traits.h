@@ -162,17 +162,12 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
       return media::mojom::OptionalMetadataDataView::Tag::kVp8;
     } else if (metadata.vp9) {
       return media::mojom::OptionalMetadataDataView::Tag::kVp9;
-    } else if (metadata.av1) {
-      return media::mojom::OptionalMetadataDataView::Tag::kAv1;
-    } else if (metadata.h265) {
-      return media::mojom::OptionalMetadataDataView::Tag::kH265;
     }
     NOTREACHED();
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {
-    return !metadata.drop && !metadata.h264 && !metadata.vp8 && !metadata.vp9 &&
-           !metadata.av1 && !metadata.h265;
+    return !metadata.drop && !metadata.h264 && !metadata.vp8 && !metadata.vp9;
   }
 
   static void SetToNull(media::BitstreamBufferMetadata* metadata) {
@@ -180,8 +175,6 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
     metadata->h264.reset();
     metadata->vp8.reset();
     metadata->vp9.reset();
-    metadata->av1.reset();
-    metadata->h265.reset();
   }
 
   static const media::DropFrameMetadata& drop(
@@ -201,16 +194,6 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
   static const media::Vp9Metadata& vp9(
       const media::BitstreamBufferMetadata& metadata) {
     return *metadata.vp9;
-  }
-
-  static const media::Av1Metadata& av1(
-      const media::BitstreamBufferMetadata& metadata) {
-    return *metadata.av1;
-  }
-
-  static const media::H265Metadata& h265(
-      const media::BitstreamBufferMetadata& metadata) {
-    return *metadata.h265;
   }
 
   static bool Read(media::mojom::OptionalMetadataDataView data,
@@ -283,17 +266,6 @@ class StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata> {
 };
 
 template <>
-class StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata> {
- public:
-  static uint8_t temporal_idx(const media::H265Metadata& h265) {
-    return h265.temporal_idx;
-  }
-
-  static bool Read(media::mojom::H265MetadataDataView data,
-                   media::H265Metadata* out_metadata);
-};
-
-template <>
 class StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata> {
  public:
   static bool non_reference(const media::Vp8Metadata& vp8) {
@@ -354,17 +326,6 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
 
   static bool Read(media::mojom::Vp9MetadataDataView data,
                    media::Vp9Metadata* out_metadata);
-};
-
-template <>
-class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
- public:
-  static uint8_t temporal_idx(const media::Av1Metadata& av1) {
-    return av1.temporal_idx;
-  }
-
-  static bool Read(media::mojom::Av1MetadataDataView data,
-                   media::Av1Metadata* out_metadata);
 };
 
 template <>

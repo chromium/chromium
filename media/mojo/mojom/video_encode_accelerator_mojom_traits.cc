@@ -207,12 +207,6 @@ bool UnionTraits<media::mojom::OptionalMetadataDataView,
     case media::mojom::OptionalMetadataDataView::Tag::kVp9: {
       return data.ReadVp9(&out->vp9);
     }
-    case media::mojom::OptionalMetadataDataView::Tag::kAv1: {
-      return data.ReadAv1(&out->av1);
-    }
-    case media::mojom::OptionalMetadataDataView::Tag::kH265: {
-      return data.ReadH265(&out->h265);
-    }
   }
   NOTREACHED();
 }
@@ -261,14 +255,6 @@ bool StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata>::
 }
 
 // static
-bool StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata>::
-    Read(media::mojom::H265MetadataDataView data,
-         media::H265Metadata* out_metadata) {
-  out_metadata->temporal_idx = data.temporal_idx();
-  return true;
-}
-
-// static
 bool StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata>::Read(
     media::mojom::Vp8MetadataDataView data,
     media::Vp8Metadata* out_metadata) {
@@ -298,14 +284,6 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
   return data.ReadSpatialLayerResolutions(
              &out_metadata->spatial_layer_resolutions) &&
          data.ReadPDiffs(&out_metadata->p_diffs);
-}
-
-// static
-bool StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata>::Read(
-    media::mojom::Av1MetadataDataView data,
-    media::Av1Metadata* out_metadata) {
-  out_metadata->temporal_idx = data.temporal_idx();
-  return true;
 }
 
 // static

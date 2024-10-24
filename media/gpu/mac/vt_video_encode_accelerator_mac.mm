@@ -854,7 +854,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
       md.h264.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
       break;
     case VideoCodec::kHEVC:
-      md.h265.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
+      md.svc_generic.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
       break;
     default:
       NOTREACHED_IN_MIGRATION();
