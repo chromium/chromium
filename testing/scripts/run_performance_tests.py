@@ -95,6 +95,7 @@ else:
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
 ADB_TOOL = THIRD_PARTY_DIR / 'catapult/devil/bin/deps/linux2/x86_64/bin/adb'
+GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
 
@@ -856,6 +857,7 @@ class CrossbenchTest(object):
 
     env = os.environ.copy()
     env['CHROME_HEADLESS'] = '1'
+    env['PATH'] = f'{GSUTIL_DIR}:' + env['PATH']
 
     return_code = 1
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
@@ -876,7 +878,8 @@ class CrossbenchTest(object):
                                                               handle,
                                                               env=env)
 
-      if return_code == 0:
+      # TODO(crbug.com/371988599): Convert loadline test results
+      if return_code == 0 and not benchmark.startswith('loadline'):
         crossbench_result_converter.convert(
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,

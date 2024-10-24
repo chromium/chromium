@@ -2,14 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+COMMON_PERF_DATA = [
+  "//third_party/crossbench/.vpython3",
+  "//third_party/crossbench/cb.py",
+  "//third_party/crossbench/crossbench/",
+  "//third_party/crossbench/config/",
+]
+
 if (!is_android) {
   group("perf") {
     testonly = true
-    data = [
-      "//third_party/crossbench/.vpython3",
-      "//third_party/crossbench/cb.py",
-      "//third_party/crossbench/crossbench/",
-    ]
+    data = COMMON_PERF_DATA
     data_deps = [
       ":perf_without_chrome",
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
@@ -23,11 +26,7 @@ if (!is_android) {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
       testonly = true
-      data = [
-        "//third_party/crossbench/.vpython3",
-        "//third_party/crossbench/cb.py",
-        "//third_party/crossbench/crossbench/",
-      ]
+      data = COMMON_PERF_DATA
       data_deps = [
         ":perf_without_chrome",
         "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
