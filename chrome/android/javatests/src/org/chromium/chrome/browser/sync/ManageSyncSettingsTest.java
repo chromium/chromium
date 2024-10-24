@@ -104,6 +104,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -522,6 +523,39 @@ public class ManageSyncSettingsTest {
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
         Assert.assertFalse(history_and_tabs_toggle.isChecked());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testRemoveAccountFromDeviceShouldClearSyncPrefs() {
+        SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
+        signinTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ChromeSwitchPreference passwords_toggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
+        mSyncTestRule.togglePreference(passwords_toggle);
+        Assert.assertFalse(passwords_toggle.isChecked());
+
+        mSyncTestRule.signOut();
+        signinTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        // Add the same account again, and open the sync settings to check that prefs was cleared
+        // upon the account removal.
+        signinTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        fragment = startManageSyncPreferences();
+
+        passwords_toggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
+        Assert.assertTrue(passwords_toggle.isChecked());
     }
 
     @Test
