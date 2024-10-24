@@ -82,6 +82,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -98,6 +99,10 @@
 #endif
 
 namespace {
+
+constexpr int kBusinessIconPadding = 4;
+constexpr int kBusinessIconSize =
+    ProfileMenuViewBase::kManagementBadgeSize - 2 * kBusinessIconPadding;
 
 // Helpers --------------------------------------------------------------------
 
@@ -551,8 +556,13 @@ void ProfileMenuView::BuildIdentity() {
                            ->GetManagementIcon()) {
         badge_image_model = *icon;
       } else {
-        badge_image_model = ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessIcon, ui::kColorMenuIcon, 24);
+        gfx::ImageSkia sized_icon = gfx::CreateVectorIcon(gfx::IconDescription(
+            vector_icons::kBusinessIcon, kBusinessIconSize,
+            browser()->window()->GetColorProvider()->GetColor(
+                ui::kColorMenuIcon)));
+        badge_image_model =
+            ui::ImageModel::FromImageSkia(gfx::CanvasImageSource::CreatePadded(
+                sized_icon, gfx::Insets(kBusinessIconPadding)));
       }
     }
 

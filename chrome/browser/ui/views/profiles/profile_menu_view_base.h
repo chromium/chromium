@@ -100,6 +100,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   static constexpr int kIdentityImageSize = 64;
   // Size of the large identity image in the identity info section.
   static constexpr int kIdentityInfoImageSize = 56;
+  // Size of the badge shown with the identity image when the profile is
+  // managed. This can be the business icon or a logo set by the
+  // `EnterpriseLogoUrl` policy.
+  static constexpr int kManagementBadgeSize = 24;
 
   ProfileMenuViewBase(views::Button* anchor_button,
                       Browser* browser);
