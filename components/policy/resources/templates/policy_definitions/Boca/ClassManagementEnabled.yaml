@@ -25,7 +25,7 @@ schema:
   - student
   - teacher
   type: string
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:132-
 tags: []
 type: string-enum
