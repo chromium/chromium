@@ -29,11 +29,7 @@ FontFallbackIterator::FontFallbackIterator(
       current_font_data_index_(0),
       segmented_face_index_(0),
       fallback_stage_(kFontGroupFonts),
-      font_fallback_priority_(font_fallback_priority) {
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-    HarfBuzzFace::SetIsSystemFallbackStage(false);
-  }
-}
+      font_fallback_priority_(font_fallback_priority) {}
 
 void FontFallbackIterator::Reset() {
   DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
@@ -44,9 +40,6 @@ void FontFallbackIterator::Reset() {
   unique_font_data_for_range_sets_returned_.clear();
   first_candidate_ = nullptr;
   tracked_loading_range_sets_.clear();
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-    HarfBuzzFace::SetIsSystemFallbackStage(false);
-  }
 }
 
 bool FontFallbackIterator::AlreadyLoadingRangeForHintChar(UChar32 hint_char) {
@@ -194,9 +187,6 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
     fallback_stage_ = IsNonTextFallbackPriority(font_fallback_priority_)
                           ? kFallbackPriorityFonts
                           : kSystemFonts;
-    if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-      HarfBuzzFace::SetIsSystemFallbackStage(true);
-    }
     return Next(hint_list);
   }
 
