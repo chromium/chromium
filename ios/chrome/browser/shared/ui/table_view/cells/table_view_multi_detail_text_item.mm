@@ -151,13 +151,19 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
 #pragma mark - NSObject(Accessibility)
 
 - (NSString*)accessibilityLabel {
+  NSString* accessibilityText = self.textLabel.text;
+  if (self.leadingDetailTextLabel.text) {
+    accessibilityText =
+        [NSString stringWithFormat:@"%@, %@", accessibilityText,
+                                   self.leadingDetailTextLabel.text];
+  }
+
   if (self.trailingDetailTextLabel.text) {
-    return [NSString stringWithFormat:@"%@, %@, %@", self.textLabel.text,
-                                      self.leadingDetailTextLabel.text,
+    return [NSString stringWithFormat:@"%@, %@", accessibilityText,
                                       self.trailingDetailTextLabel.text];
   }
-  return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
-                                    self.leadingDetailTextLabel.text];
+
+  return accessibilityText;
 }
 
 @end
