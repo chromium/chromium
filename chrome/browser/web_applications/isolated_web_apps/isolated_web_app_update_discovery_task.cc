@@ -4,10 +4,16 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 
+#include <cstdint>
 #include <optional>
 #include <ostream>
+#include <string>
+#include <vector>
 
+#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/containers/to_value_list.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -244,6 +250,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   bool same_version_update_allowed_by_key_rotation = false;
   bool pending_info_overwrite_allowed_by_key_rotation = false;
+  std::optional<std::vector<uint8_t>> rotated_key;
   switch (
       LookupRotatedKey(task_params_.url_info().web_bundle_id(), debug_log_)) {
     case KeyRotationLookupResult::kNoKeyRotation:
@@ -251,6 +258,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     case KeyRotationLookupResult::kKeyFound: {
       KeyRotationData data = GetKeyRotationData(
           task_params_.url_info().web_bundle_id(), isolation_data);
+      rotated_key = base::ToVector(data.rotated_key);
       if (!data.current_installation_has_rk) {
         same_version_update_allowed_by_key_rotation = true;
       }
@@ -289,7 +297,36 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     return;
   }
 
-  CreateTempFile(std::move(*latest_version_entry));
+  bundle_downloader_ = IsolatedWebAppDownloader::Create(url_loader_factory_);
+  if (!rotated_key) {
+    CreateTempFile(std::move(*latest_version_entry));
+    return;
+  }
+  bundle_downloader_->DownloadInitialBytes(
+      latest_version_entry->src(), kWebBundleDownloadTrafficAnnotation,
+      base::BindOnce(
+          &IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey,
+          weak_factory_.GetWeakPtr(), std::move(*latest_version_entry),
+          std::move(*rotated_key)));
+}
+
+void IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey(
+    UpdateManifest::VersionEntry version_entry,
+    std::vector<uint8_t> rotated_key,
+    std::optional<std::string> initial_bytes) {
+  // If it contains at least 2 of "📦", it means that both the beginning of the
+  // integrity block and the beginning of the web bundle itself are in the
+  // downloaded chunk - hence, the chunk contains the whole integrity block and
+  // all the public keys. This is a heuristic to skip downloading the entire,
+  // potentially big, bundle if it is not signed by the appropriate rotated key.
+  if (initial_bytes &&
+      initial_bytes->rfind("📦") != initial_bytes->find("📦") &&
+      !base::Contains(initial_bytes.value(),
+                      base::as_string_view(rotated_key))) {
+    FailWith(Error::kUpdateManifestNoApplicableVersion);
+    return;
+  }
+  CreateTempFile(version_entry);
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::CreateTempFile(
@@ -309,9 +346,10 @@ void IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated(
   bundle_ = std::move(bundle);
 
   debug_log_.Set("bundle_download_path", bundle_.path().LossyDisplayName());
-  bundle_downloader_ = IsolatedWebAppDownloader::CreateAndStartDownloading(
+
+  CHECK(bundle_downloader_);
+  bundle_downloader_->DownloadSignedWebBundle(
       version_entry.src(), bundle_.path(), kWebBundleDownloadTrafficAnnotation,
-      url_loader_factory_,
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded,
                      weak_factory_.GetWeakPtr(), version_entry.version()));
 }

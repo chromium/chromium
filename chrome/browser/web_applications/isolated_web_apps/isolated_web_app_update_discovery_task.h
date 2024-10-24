@@ -107,6 +107,11 @@ class IsolatedWebAppUpdateDiscoveryTask {
       base::expected<UpdateManifest, UpdateManifestFetcher::Error>
           fetch_result);
 
+  void CheckIntegrityBundleForRotatedKey(
+      UpdateManifest::VersionEntry version_entry,
+      std::vector<uint8_t> rotated_key,
+      std::optional<std::string> initial_bytes);
+
   void CreateTempFile(UpdateManifest::VersionEntry version_entry);
 
   void OnTempFileCreated(UpdateManifest::VersionEntry version_entry,
