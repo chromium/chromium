@@ -12917,6 +12917,12 @@
                     "enable_features": [
                         "KioskHeartbeatsViaERP"
                     ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "KioskHeartbeatsViaERP"
+                    ]
                 }
             ]
         }
