@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -104,61 +107,6 @@ struct TestParam {
   bool with_updated_profile_creation_screen = false;
 };
 
-// Returned type is optional, because for the kButtonsStillLoading no buttons
-// are yet presented (consequently, no metric recorded).
-std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
-    SyncButtonsFeatureConfig config) {
-  switch (config) {
-    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
-      return ::signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
-    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
-      return ::signin_metrics::SyncButtonsType::
-          kSyncEqualWeightedFromCapability;
-    case SyncButtonsFeatureConfig::kDeadlined:
-      return ::signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
-    default:
-      return std::nullopt;
-  }
-}
-
-::signin_metrics::SyncButtonClicked ExpectedOptInButtonClickedMetric(
-    SyncButtonsFeatureConfig config) {
-  switch (config) {
-    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
-      return ::signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted;
-    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
-    case SyncButtonsFeatureConfig::kDeadlined:
-      return ::signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted;
-    default:
-      NOTREACHED();
-  }
-}
-
-::signin_metrics::SyncButtonClicked ExpectedDeclinedButtonClickedMetric(
-    SyncButtonsFeatureConfig config) {
-  switch (config) {
-    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
-      return ::signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted;
-    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
-    case SyncButtonsFeatureConfig::kDeadlined:
-      return ::signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted;
-    default:
-      NOTREACHED();
-  }
-}
-
-::signin_metrics::SyncButtonClicked ExpectedSettingsButtonClickedMetric(
-    SyncButtonsFeatureConfig config) {
-  switch (config) {
-    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
-      return ::signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted;
-    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
-    case SyncButtonsFeatureConfig::kDeadlined:
-      return ::signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted;
-    case SyncButtonsFeatureConfig::kButtonsStillLoading:
-      return ::signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
-  }
-}
 
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
   return info.param.test_suffix;
@@ -702,12 +650,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester().ExpectUniqueSample(
-      "Signin.SyncButtons.Shown",
-      *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
-  histogram_tester().ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      ExpectedOptInButtonClickedMetric(SyncButtonsFeatureConfig()), 1);
-  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
@@ -777,12 +719,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
-  histogram_tester().ExpectUniqueSample(
-      "Signin.SyncButtons.Shown",
-      *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
-  histogram_tester().ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      ExpectedDeclinedButtonClickedMetric(SyncButtonsFeatureConfig()), 1);
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
@@ -858,16 +794,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-
-  if (ExpectedButtonShownMetric(SyncButtonsFeatureConfig()).has_value()) {
-    histogram_tester().ExpectUniqueSample(
-        "Signin.SyncButtons.Shown",
-        *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
-  }
-  histogram_tester().ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      ExpectedSettingsButtonClickedMetric(SyncButtonsFeatureConfig()), 1);
-
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
