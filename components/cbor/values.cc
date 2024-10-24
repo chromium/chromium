@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cbor/values.h"
 
 #include <new>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -24,10 +20,7 @@ namespace cbor {
 
 // static
 Value Value::InvalidUTF8StringValueForTesting(std::string_view in_string) {
-  return Value(
-      base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(in_string.data()), in_string.size()),
-      Type::INVALID_UTF8);
+  return Value(base::as_byte_span(in_string), Type::INVALID_UTF8);
 }
 
 Value::Value() noexcept : type_(Type::NONE) {}
