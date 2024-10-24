@@ -9,6 +9,7 @@ load("//lib/builders.star", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify_builder")
+load("//lib/targets.star", "targets")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
@@ -30,6 +31,12 @@ try_.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_linking = True,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.list_view(
@@ -306,6 +313,29 @@ try_.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_webkit_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "blink_tests",
+        ],
+        mixins = [
+            "linux-xenial",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--flag-specific=enable-editing-ng",
+                ],
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--flag-specific=enable-editing-ng",
+                ],
+            ),
+        },
     ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -887,6 +917,15 @@ try_.gpu.optional_tests_builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
     ),
     main_list_view = "try",
     tryjob = try_.job(

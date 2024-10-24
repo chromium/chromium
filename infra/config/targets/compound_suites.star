@@ -42,40 +42,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-# Pixel tests only enabled on Win 10. So this is
-# 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
-# 'non_android_chromium_gtests_skia_gold'. When changing
-# something here, also change chromium_win10_gtests_once in the same way.
-targets.legacy_compound_suite(
-    name = "chromium_win10_gtests",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_win_and_linux_only",
-        "fieldtrial_browser_tests",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
-        "non_android_chromium_gtests_skia_gold",
-        "pixel_browser_tests_gtests",
-        "vr_platform_specific_chromium_gtests",
-        "win_specific_chromium_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromium_win_rel_isolated_scripts",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "components_perftests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "telemetry_desktop_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-        "win_specific_isolated_scripts",
-    ],
-)
-
 targets.legacy_compound_suite(
     name = "devtools_gtests",
     basic_suites = [
@@ -141,20 +107,6 @@ targets.legacy_compound_suite(
         "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_pixel_4_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
     ],
 )
 

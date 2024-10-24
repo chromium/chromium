@@ -37,7 +37,8 @@
           "builder": "linux-layout-tests-edit-ng",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-layout-tests-edit-ng/targets"
     }
   },
   "$build/reclient": {

@@ -43,7 +43,8 @@
           "builder": "android_blink_rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android_blink_rel/targets"
     }
   },
   "$build/reclient": {

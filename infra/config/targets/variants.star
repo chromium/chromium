@@ -107,6 +107,7 @@ targets.variant(
 targets.variant(
     name = "LINUX_INTEL_UHD_630_STABLE",
     identifier = "UHD 630",
+    generate_pyl_entry = False,
     mixins = [
         "linux_intel_uhd_630_stable",
     ],
@@ -115,6 +116,7 @@ targets.variant(
 targets.variant(
     name = "LINUX_NVIDIA_GTX_1660_STABLE",
     identifier = "GTX 1660",
+    generate_pyl_entry = False,
     mixins = [
         "linux_nvidia_gtx_1660_stable",
     ],
@@ -123,6 +125,7 @@ targets.variant(
 targets.variant(
     name = "MAC_MINI_INTEL_GPU_STABLE",
     identifier = "8086:3e9b",
+    generate_pyl_entry = False,
     mixins = [
         "mac_mini_intel_gpu_stable",
     ],
@@ -131,6 +134,7 @@ targets.variant(
 targets.variant(
     name = "MAC_RETINA_AMD_GPU_STABLE",
     identifier = "1002:7340",
+    generate_pyl_entry = False,
     mixins = [
         "mac_retina_amd_gpu_stable",
     ],
@@ -139,6 +143,7 @@ targets.variant(
 targets.variant(
     name = "MAC_RETINA_NVIDIA_GPU_STABLE",
     identifier = "10de:0fe9",
+    generate_pyl_entry = False,
     mixins = [
         "mac_retina_nvidia_gpu_stable",
     ],
@@ -551,6 +556,7 @@ targets.variant(
 targets.variant(
     name = "WIN10_INTEL_UHD_630_STABLE",
     identifier = "8086:9bc5",
+    generate_pyl_entry = False,
     mixins = [
         "swarming_containment_auto",
         "win10_intel_uhd_630_stable",
@@ -560,6 +566,7 @@ targets.variant(
 targets.variant(
     name = "WIN10_NVIDIA_GTX_1660_STABLE",
     identifier = "10de:2184",
+    generate_pyl_entry = False,
     mixins = [
         "win10_nvidia_gtx_1660_stable",
     ],

@@ -6,9 +6,10 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
-load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
+load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
 try_.defaults.set(
@@ -28,6 +29,12 @@ try_.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.list_view(
@@ -1244,6 +1251,20 @@ try_.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_android_webkit_gtests",
+        ],
+        mixins = [
+            "12-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
 )
 
 try_.builder(
@@ -1459,6 +1480,59 @@ try_.gpu.optional_tests_builder(
             "static_angle",
             "arm",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_pixel_4_telemetry_tests",
+            "android_webview_gpu_telemetry_tests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "gpu_pixel_4_stable",
+        ],
+        per_test_modifications = {
+            "expected_color_pixel_passthrough_test": targets.mixin(
+                args = [
+                    # See Android FYI Release (Pixel 4).
+                    "--extra-browser-args=--disable-wcg-for-test",
+                ],
+            ),
+            "expected_color_pixel_validating_test": targets.mixin(
+                args = [
+                    # See Android FYI Release (Pixel 4).
+                    "--extra-browser-args=--disable-wcg-for-test",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_test": targets.mixin(
+                args = [
+                    # See Android FYI Release (Pixel 4).
+                    "--extra-browser-args=--disable-wcg-for-test",
+                ],
+            ),
+            "pixel_skia_gold_validating_test": targets.mixin(
+                args = [
+                    # See Android FYI Release (Pixel 4).
+                    "--extra-browser-args=--disable-wcg-for-test",
+                ],
+            ),
+            "screenshot_sync_passthrough_tests": targets.mixin(
+                args = [
+                    # See Android FYI Release (Pixel 4).
+                    "--extra-browser-args=--disable-wcg-for-test",
+                ],
+            ),
+            "screenshot_sync_validating_tests": targets.mixin(
+                args = [
+                    # See Android FYI Release (Pixel 4).
+                    "--extra-browser-args=--disable-wcg-for-test",
+                ],
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.ANDROID_CHROMIUM,
+        os_type = targets.os_type.ANDROID,
+        use_android_merge_script_by_default = False,
     ),
     main_list_view = "try",
     tryjob = try_.job(

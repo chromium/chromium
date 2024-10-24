@@ -6,10 +6,11 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "siso")
-load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify_builder")
+load("//lib/targets.star", "targets")
+load("//lib/try.star", "try_")
 load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
@@ -37,6 +38,12 @@ def ios_builder(*, name, **kwargs):
     kwargs.setdefault("ssd", None)
     kwargs.setdefault("xcode", xcode.xcode_default)
     return try_.builder(name = name, **kwargs)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
+)
 
 consoles.list_view(
     name = "tryserver.chromium.mac",
@@ -777,6 +784,16 @@ try_.gpu.optional_tests_builder(
             "mac",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "mac_optional_gpu_tests_rel_gtests",
+            "mac_optional_gpu_tests_rel_gpu_telemetry_tests",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
     ),
     cpu = cpu.ARM64,
     ssd = None,

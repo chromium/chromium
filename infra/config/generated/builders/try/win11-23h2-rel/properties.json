@@ -41,7 +41,8 @@
           "builder": "win11-23h2-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win11-23h2-rel/targets"
     }
   },
   "$build/code_coverage": {

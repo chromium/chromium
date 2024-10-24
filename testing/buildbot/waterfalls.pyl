@@ -30,6 +30,14 @@
   #   chromium.updater
   #   chromium.win
   #
+  # The following builder groups have been migrated to set their targets in the
+  # builders' declarations in
+  # //infra/config/subprojects/try/<builder-group>.star
+  #   tryserver.chromium.android
+  #   tryserver.chromium.linux
+  #   tryserver.chromium.mac
+  #   tryserver.chromium.win
+  #
   # The following builder group has been migrated to set their targets in the
   # builders' declarations in
   # //infra/config/subprojects/build/build.fyi.star
@@ -1808,101 +1816,6 @@
         },
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-    },
-  },
-  {
-    'name': 'tryserver.chromium.android',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'android_blink_rel': {
-        'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_android_webkit_gtests',
-        },
-        'os_type': 'android',
-      },
-      'android_optional_gpu_tests_rel': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'gpu_pixel_4_stable',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_pixel_4_telemetry_tests',
-          'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
-        },
-      },
-    },
-  },
-  {
-    'name': 'tryserver.chromium.linux',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'linux-layout-tests-edit-ng': {
-        'additional_compile_targets': [
-          'blink_tests',
-        ],
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'linux_optional_gpu_tests_rel': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'test_suites': {
-          'gpu_telemetry_tests': 'linux_optional_gpu_tests_rel_gpu_telemetry_tests',
-        },
-      },
-    },
-  },
-  {
-    'name': 'tryserver.chromium.mac',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'mac_optional_gpu_tests_rel': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'test_suites': {
-          'gtest_tests': 'mac_optional_gpu_tests_rel_gtests',
-          'gpu_telemetry_tests': 'mac_optional_gpu_tests_rel_gpu_telemetry_tests',
-        },
-      },
-    },
-  },
-  {
-    'name': 'tryserver.chromium.win',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'win11-23h2-rel': {
-        'mixins': [
-          'x86-64',
-          'win11-23h2',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-        },
-      },
-      'win_optional_gpu_tests_rel': {
-        'os_type': 'win',
-        'browser_config': 'release_x64',
-        'test_suites': {
-          'gpu_telemetry_tests': 'win_optional_gpu_tests_rel_gpu_telemetry_tests',
-          'gtest_tests': 'win_optional_gpu_tests_rel_gtests',
-          'isolated_scripts': 'win_optional_gpu_tests_rel_isolated_scripts',
         },
       },
     },

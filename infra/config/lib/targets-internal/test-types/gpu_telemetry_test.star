@@ -67,8 +67,14 @@ def _gpu_telemetry_test_spec_finalize(builder_name, test_name, settings, spec_va
     # reproduce GC-related bugs in the V8 bindings.
     extra_browser_args.append("--js-flags=--expose-gc")
 
+    telemetry_test_name = spec_value["telemetry_test_name"]
+    if not telemetry_test_name:
+        telemetry_test_name = test_name
+        if "variant_id" in spec_value:
+            telemetry_test_name = telemetry_test_name[:-(len(spec_value["variant_id"]) + 1)]
+
     spec_value["args"] = args_lib.listify(
-        spec_value["telemetry_test_name"] or test_name,
+        telemetry_test_name,
         "--show-stdout",
         "--browser={}".format(browser_config),
         # --passthrough displays more of the logging in Telemetry when run via

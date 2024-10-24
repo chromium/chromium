@@ -53,11 +53,6 @@
           'hard_timeout': 2400,
         },
       },
-      'linux-layout-tests-edit-ng': {
-        'args': [
-          '--flag-specific=enable-editing-ng',
-        ],
-      },
       'mac11.0-blink-rel': {
         'swarming': {
           'shards': 5,
@@ -112,11 +107,6 @@
         'swarming': {
           'hard_timeout': 2400,
         },
-      },
-      'linux-layout-tests-edit-ng': {
-        'args': [
-          '--flag-specific=enable-editing-ng',
-        ],
       },
       'mac11.0-blink-rel': {
         'swarming': {
@@ -232,14 +222,6 @@
     },
   },
   'expected_color_pixel_passthrough_test': {
-    'modifications': {
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See Android FYI Release (Pixel 4).
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -283,14 +265,6 @@
     },
   },
   'expected_color_pixel_validating_test': {
-    'modifications': {
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See Android FYI Release (Pixel 4).
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -418,14 +392,6 @@
     },
   },
   'pixel_skia_gold_passthrough_test': {
-    'modifications': {
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See Android FYI Release (Pixel 4).
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -469,14 +435,6 @@
     },
   },
   'pixel_skia_gold_validating_test': {
-    'modifications': {
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See Android FYI Release (Pixel 4).
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -484,26 +442,6 @@
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
-      },
-    },
-  },
-  'screenshot_sync_passthrough_tests': {
-    'modifications': {
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See Android FYI Release (Pixel 4).
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
-  },
-  'screenshot_sync_validating_tests': {
-    'modifications': {
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See Android FYI Release (Pixel 4).
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
       },
     },
   },
@@ -524,12 +462,6 @@
     'remove_from': [
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
-    ],
-  },
-  'trace_test 8086:9bc5': {
-    'remove_from': [
-      # TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.
-      'win_optional_gpu_tests_rel',
     ],
   },
   'unit_tests': {
@@ -598,12 +530,6 @@
       'Win V8 FYI Release (NVIDIA)',
     ],
   },
-  'webgl2_conformance_d3d11_passthrough_tests 8086:9bc5': {
-    'remove_from': [
-      # TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.
-      'win_optional_gpu_tests_rel',
-    ],
-  },
   'webgl2_conformance_gl_passthrough_ganesh_tests': {
     'remove_from': [
       'Mac V8 FYI Release (Intel)',
@@ -622,16 +548,5 @@
       # upstream test coverage without the capacity hit from WebGL 2.
       'Mac V8 FYI Release (Intel)',
     ],
-  },
-  'xr_browser_tests 8086:9bc5': {
-    'modifications': {
-      'win_optional_gpu_tests_rel': {
-        'args': [
-           # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
-           # resolved.
-           '--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop',
-        ],
-      },
-    },
   },
 }

@@ -71,6 +71,7 @@ targets.mixin(
 
 targets.mixin(
     name = "12-x64-emulator",
+    generate_pyl_entry = False,
     description = "Run with android_31_google_apis_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
@@ -601,6 +602,7 @@ targets.mixin(
 
 targets.mixin(
     name = "emulator-8-cores",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_os": None,
@@ -1038,6 +1040,7 @@ targets.mixin(
 # migrated to focal.
 targets.mixin(
     name = "linux-xenial",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Ubuntu-16.04",
@@ -2082,6 +2085,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win11-23h2",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Windows-11-22631",

@@ -6,11 +6,12 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
-load("//lib/html.star", "linkify_builder")
-load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
-load("//project.star", "settings")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify_builder")
+load("//lib/targets.star", "targets")
+load("//lib/try.star", "try_")
+load("//project.star", "settings")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -31,6 +32,12 @@ try_.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.list_view(
@@ -344,6 +351,17 @@ try_.builder(
         "partial_code_coverage_instrumentation",
         "enable_dangling_raw_ptr_feature_flag",
     ]),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win10_gtests",
+            "chromium_win_rel_isolated_scripts",
+        ],
+        mixins = [
+            "x86-64",
+            "win11-23h2",
+            "isolate_profile_data",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
@@ -510,6 +528,32 @@ try_.gpu.optional_tests_builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "win_optional_gpu_tests_rel_gpu_telemetry_tests",
+            "win_optional_gpu_tests_rel_gtests",
+            "win_optional_gpu_tests_rel_isolated_scripts",
+        ],
+        per_test_modifications = {
+            "trace_test 8086:9bc5": targets.remove(
+                reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
+            ),
+            "webgl2_conformance_d3d11_passthrough_tests 8086:9bc5": targets.remove(
+                reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
+            ),
+            "xr_browser_tests 8086:9bc5": targets.mixin(
+                # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
+                # resolved.
+                args = [
+                    "--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop",
+                ],
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
     ),
     os = os.WINDOWS_DEFAULT,
     # default is 6 in _gpu_optional_tests_builder()

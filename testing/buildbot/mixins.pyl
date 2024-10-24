@@ -26,25 +26,6 @@
       ],
     },
   },
-  '12-x64-emulator': {
-    'description': 'Run with android_31_google_apis_x64',
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'android_31_google_apis_x64',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'android_31_google_apis_x64',
-          'path': '.android_emulator/android_31_google_apis_x64',
-        },
-      ],
-    },
-  },
   'amd_radeon_rx_5500_xt': {
     'swarming': {
       'dimensions': {
@@ -194,16 +175,6 @@
       '--test-launcher-batch-limit=512',
     ],
   },
-  'emulator-8-cores': {
-    'swarming': {
-      'dimensions': {
-        'device_os': None,
-        'device_type': None,
-        'pool': 'chromium.tests.avd',
-        'cores': '8',
-      },
-    },
-  },
   'experiments': {
     'experiment_percentage': 100,
   },
@@ -304,13 +275,6 @@
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-22.04',
-      },
-    },
-  },
-  'linux-xenial': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-16.04',
       },
     },
   },
@@ -701,14 +665,6 @@
       'dimensions': {
         'os': 'Windows-11-22000',
       },
-    },
-  },
-  'win11-23h2': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-11-22631',
-      },
-      'expiration': 36000,
     },
   },
   'x86-64': {

@@ -762,6 +762,25 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_webview_gpu_telemetry_tests",
+    targets = [
+        "android_webview_pixel_skia_gold_test",
+    ],
+    per_test_modifications = {
+        "android_webview_pixel_skia_gold_test": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--test-machine-name",
+                    "${buildername}",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
     name = "android_wpr_record_replay_tests",
     targets = [
         "chrome_java_test_wpr_tests",
@@ -1236,6 +1255,14 @@ targets.bundle(
     name = "chromium_android_scripts",
     targets = [
         "check_network_annotations",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_android_webkit_gtests",
+    targets = [
+        "blink_heap_unittests",
+        "webkit_unit_tests",
     ],
 )
 
@@ -1909,6 +1936,27 @@ targets.bundle(
     },
 )
 
+# Pixel tests only enabled on Win 10. So this is
+# 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
+# 'non_android_chromium_gtests_skia_gold'. When changing
+# something here, also change chromium_win10_gtests_once in the same way.
+targets.bundle(
+    name = "chromium_win10_gtests",
+    targets = [
+        "aura_gtests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_win_and_linux_only",
+        "fieldtrial_browser_tests",
+        "non_android_and_cast_and_chromeos_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
+        "non_android_chromium_gtests_skia_gold",
+        "pixel_browser_tests_gtests",
+        "vr_platform_specific_chromium_gtests",
+        "win_specific_chromium_gtests",
+    ],
+)
+
 targets.bundle(
     name = "chromium_win_dbg_isolated_scripts",
     targets = [
@@ -1931,6 +1979,19 @@ targets.bundle(
         "non_android_chromium_gtests_no_nacl",
         "vr_platform_specific_chromium_gtests",
         "win_specific_chromium_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_win_rel_isolated_scripts",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "telemetry_desktop_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+        "win_specific_isolated_scripts",
     ],
 )
 
@@ -2198,6 +2259,33 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 3,
             ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "fieldtrial_browser_tests",
+    targets = [
+        "browser_tests_no_field_trial",
+        "components_browsertests_no_field_trial",
+        "interactive_ui_tests_no_field_trial",
+        "sync_integration_tests_no_field_trial",
+    ],
+    per_test_modifications = {
+        "browser_tests_no_field_trial": targets.mixin(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+        "components_browsertests_no_field_trial": targets.mixin(
+            ci_only = True,
+        ),
+        "interactive_ui_tests_no_field_trial": targets.mixin(
+            ci_only = True,
+        ),
+        "sync_integration_tests_no_field_trial": targets.mixin(
+            ci_only = True,
         ),
     },
 )
@@ -2692,6 +2780,26 @@ targets.bundle(
     targets = [
         "gpu_webgl_conformance_telemetry_tests",
     ],
+)
+
+# The command buffer perf tests are only run on Windows.
+# They are mostly driver and platform independent.
+targets.bundle(
+    name = "gpu_command_buffer_perf_passthrough_isolated_scripts",
+    targets = [
+        "passthrough_command_buffer_perftests",
+    ],
+    per_test_modifications = {
+        "passthrough_command_buffer_perftests": targets.mixin(
+            args = [
+                "--gtest-benchmark-name=passthrough_command_buffer_perftests",
+                "-v",
+                "--use-cmd-decoder=passthrough",
+                "--use-angle=gl-null",
+                "--fast-run",
+            ],
+        ),
+    },
 )
 
 targets.bundle(
@@ -3213,6 +3321,40 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_default_and_optional_win_media_foundation_specific_gtests",
+    targets = [
+        # MediaFoundation browser tests, which currently only run on Windows OS,
+        # and require physical hardware.
+        "media_foundation_browser_tests",
+    ],
+    per_test_modifications = {
+        "media_foundation_browser_tests": targets.mixin(
+            args = [
+                "--use-gpu-in-tests",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_default_and_optional_win_specific_gtests",
+    targets = [
+        "xr_browser_tests",
+    ],
+    per_test_modifications = {
+        "xr_browser_tests": targets.mixin(
+            args = [
+                # The Windows machines this is run on should always meet all the
+                # requirements, so skip the runtime checks to help catch issues, e.g.
+                # if we're incorrectly being told a DirectX 11.1 device isn't
+                # available
+                "--ignore-runtime-requirements=*",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_desktop_passthrough_gtests",
     targets = [
         "gpu_angle_unit_gtests",
@@ -3236,6 +3378,31 @@ targets.bundle(
             ],
             linux_args = [
                 "--no-xvfb",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_fyi_and_optional_non_linux_gtests",
+    targets = [
+        # gpu_unittests is killing the Swarmed Linux GPU bots similarly to
+        # how content_unittests was: http://crbug.com/763498 .
+        "gpu_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_and_optional_win_specific_gtests",
+    targets = [
+        # WebNN DirectML backend unit tests, which currently only run on
+        # Windows OS, and require physical hardware.
+        "services_webnn_unittests",
+    ],
+    per_test_modifications = {
+        "services_webnn_unittests": targets.mixin(
+            args = [
+                "--use-gpu-in-tests",
             ],
         ),
     },
@@ -3409,6 +3576,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_fyi_mac_specific_gtests",
+    targets = [
+        # Face and barcode detection unit tests, which currently only run on
+        # Mac OS, and require physical hardware.
+        "services_unittests",
+    ],
+    per_test_modifications = {
+        "services_unittests": targets.mixin(
+            args = [
+                "--gtest_filter=*Detection*",
+                "--use-gpu-in-tests",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_fyi_vulkan_swiftshader_gtests",
     targets = [
         "vulkan_swiftshader_content_browsertests",
@@ -3547,6 +3731,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_pixel_4_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_validating_telemetry_tests",
+        "gpu_webcodecs_validating_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_validating_telemetry_tests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_pixel_6_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -3592,6 +3790,48 @@ targets.bundle(
                     "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
                 ],
                 ci_only = True,
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webcodecs_validating_telemetry_test",
+    targets = [
+        "webcodecs_tests",
+    ],
+    per_test_modifications = {
+        "webcodecs_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=validating",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl2_conformance_validating_telemetry_tests",
+    targets = [
+        "webgl2_conformance_validating_tests",
+    ],
+    per_test_modifications = {
+        "webgl2_conformance_validating_tests": [
+            targets.mixin(
+                args = [
+                    "--webgl-conformance-version=2.0.1",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                    # On dual-GPU devices we want the high-performance GPU to be active
+                    "--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu",
+                ],
+                swarming = targets.swarming(
+                    # These tests currently take about an hour and fifteen minutes
+                    # to run. Split them into roughly 5-minute shards.
+                    shards = 20,
+                ),
             ),
             "gpu_integration_test_common_args",
         ],
@@ -4685,6 +4925,40 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
+    targets = [
+        targets.bundle(
+            targets = "gpu_common_and_optional_telemetry_tests",
+            variants = [
+                "LINUX_INTEL_UHD_630_STABLE",
+                "LINUX_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webcodecs_telemetry_test",
+            variants = [
+                "LINUX_INTEL_UHD_630_STABLE",
+                "LINUX_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
+            variants = [
+                "LINUX_INTEL_UHD_630_STABLE",
+                "LINUX_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+            variants = [
+                "LINUX_INTEL_UHD_630_STABLE",
+                "LINUX_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "linux_specific_xr_gtests",
     targets = [
         "xr_browser_tests",
@@ -4721,6 +4995,106 @@ targets.bundle(
         "net_unittests",
         # TODO(crbug.com/40274401): Enable this.
         # "rust_gtest_interop_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "mac_optional_gpu_tests_rel_gpu_telemetry_tests",
+    targets = [
+        targets.bundle(
+            targets = "gpu_common_and_optional_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+                "MAC_RETINA_NVIDIA_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_gl_passthrough_ganesh_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_metal_passthrough_ganesh_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+                "MAC_RETINA_NVIDIA_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "mac_optional_gpu_tests_rel_gtests",
+    targets = [
+        targets.bundle(
+            targets = "gpu_fyi_and_optional_non_linux_gtests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+                "MAC_RETINA_NVIDIA_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_fyi_mac_specific_gtests",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+                "MAC_RETINA_NVIDIA_GPU_STABLE",
+            ],
+        ),
     ],
 )
 
@@ -4781,6 +5155,70 @@ targets.bundle(
                 shards = 15,
             ),
         ),
+    },
+)
+
+targets.bundle(
+    name = "non_android_and_cast_and_chromeos_chromium_gtests",
+    targets = [
+        "cronet_tests",
+        "cronet_unittests",
+        "headless_browsertests",
+        "headless_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "non_android_chromium_gtests_no_nacl",
+    targets = [
+        "accessibility_unittests",
+        "app_shell_unittests",
+        "blink_fuzzer_unittests",
+        "browser_tests",
+        "chrome_app_unittests",
+        "chromedriver_unittests",
+        "extensions_browsertests",
+        "extensions_unittests",
+        "filesystem_service_unittests",
+        "interactive_ui_tests",
+        "message_center_unittests",
+        "native_theme_unittests",
+        "pdf_unittests",
+        "printing_unittests",
+        "remoting_unittests",
+        "snapshot_unittests",
+        "sync_integration_tests",
+        "ui_unittests",
+        "views_unittests",
+    ],
+    per_test_modifications = {
+        "browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+        "interactive_ui_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+        "sync_integration_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "non_android_chromium_gtests_skia_gold",
+    targets = [
+        "views_examples_unittests",
+    ],
+    per_test_modifications = {
+        "views_examples_unittests": [
+            "skia_gold_test",
+        ],
     },
 )
 
@@ -4865,6 +5303,21 @@ targets.bundle(
             ),
             resultdb = targets.resultdb(
                 enable = True,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "pixel_browser_tests_gtests",
+    targets = [
+        "pixel_browser_tests",
+        "pixel_interactive_ui_tests",
+    ],
+    per_test_modifications = {
+        "pixel_browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
             ),
         ),
     },
@@ -5014,6 +5467,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "telemetry_desktop_minidump_unittests_isolated_scripts",
+    targets = [
+        # Takes ~2.5 minutes of bot time to run.
+        "telemetry_desktop_minidump_unittests",
+    ],
+    per_test_modifications = {
+        "telemetry_desktop_minidump_unittests": targets.mixin(
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "telemetry_perf_unittests_isolated_scripts_android",
     targets = [
         "telemetry_perf_unittests_android_chrome",
@@ -5160,6 +5628,15 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "vr_platform_specific_chromium_gtests",
+    targets = [
+        # Only run on platforms that intend to support WebVR in the near
+        # future.
+        "vr_common_unittests",
+    ],
 )
 
 targets.bundle(
@@ -5507,6 +5984,155 @@ targets.bundle(
     targets = [
         "webview_ui_test_app_test_apk_no_field_trial",
     ],
+)
+
+targets.bundle(
+    name = "win_optional_gpu_tests_rel_gpu_telemetry_tests",
+    targets = [
+        targets.bundle(
+            targets = "gpu_common_and_optional_telemetry_tests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_passthrough_graphite_telemetry_tests",
+            variants = [
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webcodecs_telemetry_test",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "win_optional_gpu_tests_rel_gtests",
+    targets = [
+        targets.bundle(
+            targets = "gpu_default_and_optional_win_media_foundation_specific_gtests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_default_and_optional_win_specific_gtests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_fyi_and_optional_non_linux_gtests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_fyi_and_optional_win_specific_gtests",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "win_optional_gpu_tests_rel_isolated_scripts",
+    targets = [
+        targets.bundle(
+            targets = "gpu_command_buffer_perf_passthrough_isolated_scripts",
+            variants = [
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "win_specific_chromium_gtests",
+    targets = [
+        "chrome_elf_unittests",
+        "delayloads_unittests",
+        "elevated_tracing_service_unittests",
+        "elevation_service_unittests",
+        "gcp_unittests",
+        "install_static_unittests",
+        "installer_util_unittests",
+        "notification_helper_unittests",
+        "sbox_integration_tests",
+        "sbox_unittests",
+        "sbox_validation_tests",
+        "setup_unittests",
+        "updater_tests",
+        "updater_tests_system",
+        "zucchini_unittests",
+    ],
+    per_test_modifications = {
+        "installer_util_unittests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "integrity": "high",
+                },
+            ),
+        ),
+        "sbox_integration_tests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "integrity": "high",
+                },
+            ),
+        ),
+        "setup_unittests": targets.mixin(
+            swarming = targets.swarming(
+                dimensions = {
+                    "integrity": "high",
+                },
+            ),
+        ),
+        "updater_tests_system": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+                hard_timeout_sec = 7200,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
