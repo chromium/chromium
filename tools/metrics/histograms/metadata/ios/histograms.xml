@@ -2802,6 +2802,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Omaha.HoursSinceLastSuccess" units="hours"
+    expires_after="2025-10-15">
+  <owner>rohitrao@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The elapsed (wall clock) time since the last successful Omaha ping. This is
+    recorded each time a ping receives a success response.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Omnibox.DeviceSwitcherResult.{Context}"
     enum="OmniboxDeviceSwitcherResult" expires_after="2025-02-10">
   <owner>christianxu@chromium.org</owner>

@@ -16,6 +16,7 @@
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/rand_util.h"
 #import "base/strings/stringprintf.h"
@@ -904,6 +905,7 @@ void OmahaService::OnURLLoadComplete(
           ? base::Time::Now()
           : base::Time::Now() + base::Hours(kHoursBetweenRequests);
   current_ping_time_ = next_tries_time_;
+  base::Time original_last_sent_time = last_sent_time_;
   last_sent_time_ = base::Time::Now();
   last_sent_version_ = version_info::GetVersion();
   sending_install_event_ = false;
@@ -911,6 +913,11 @@ void OmahaService::OnURLLoadComplete(
   ClearInstallRetryRequestId();
   PersistStates();
   bool need_to_schedule_ping = true;
+
+  // Log metrics.
+  base::TimeDelta success_delta = last_sent_time_ - original_last_sent_time;
+  base::UmaHistogramCounts1000("IOS.Omaha.HoursSinceLastSuccess",
+                               success_delta.InHours());
 
   // Send notification for updates if needed.
   UpgradeRecommendedDetails* details = [delegate upgradeRecommendedDetails];
