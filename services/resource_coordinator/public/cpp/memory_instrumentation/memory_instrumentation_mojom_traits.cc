@@ -43,9 +43,7 @@ bool EnumTraits<memory_instrumentation::mojom::DumpType,
       *out = base::trace_event::MemoryDumpType::kSummaryOnly;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid type: " << static_cast<uint8_t>(input);
-      return false;
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
   }
   return true;
 }
@@ -85,9 +83,7 @@ bool EnumTraits<memory_instrumentation::mojom::LevelOfDetail,
       *out = base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid type: " << static_cast<uint8_t>(input);
-      return false;
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
   }
   return true;
 }
@@ -122,9 +118,7 @@ bool EnumTraits<memory_instrumentation::mojom::Determinism,
       *out = base::trace_event::MemoryDumpDeterminism::kForceGc;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid type: " << static_cast<uint8_t>(input);
-      return false;
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
   }
   return true;
 }

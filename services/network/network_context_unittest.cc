@@ -510,8 +510,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
       const net::HostResolver::ManagerOptions& options,
       std::string_view host_mapping_rules,
       bool enable_caching) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
  private:
@@ -571,8 +570,7 @@ class NetworkContextTest : public testing::Test {
       break;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
+    NOTREACHED();
   }
 
   mojom::NetworkService* network_service() const {

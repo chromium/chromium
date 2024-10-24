@@ -37,8 +37,7 @@ EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::ToMojom(
       return network::mojom::NetLogCaptureMode::EVERYTHING;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::NetLogCaptureMode::DEFAULT;
+  NOTREACHED();
 }
 
 // static
@@ -72,8 +71,7 @@ EnumTraits<network::mojom::NetLogEventPhase, net::NetLogEventPhase>::ToMojom(
       return network::mojom::NetLogEventPhase::NONE;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::NetLogEventPhase::NONE;
+  NOTREACHED();
 }
 
 }  // namespace mojo

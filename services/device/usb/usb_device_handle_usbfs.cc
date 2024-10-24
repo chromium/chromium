@@ -57,8 +57,7 @@ uint8_t ConvertEndpointDirection(UsbTransferDirection direction) {
     case UsbTransferDirection::OUTBOUND:
       return USB_DIR_OUT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 uint8_t ConvertRequestType(UsbControlTransferType request_type) {
@@ -72,8 +71,7 @@ uint8_t ConvertRequestType(UsbControlTransferType request_type) {
     case UsbControlTransferType::RESERVED:
       return USB_TYPE_RESERVED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 uint8_t ConvertRecipient(UsbControlTransferRecipient recipient) {
@@ -87,8 +85,7 @@ uint8_t ConvertRecipient(UsbControlTransferRecipient recipient) {
     case UsbControlTransferRecipient::OTHER:
       return USB_RECIP_OTHER;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 scoped_refptr<base::RefCountedBytes> BuildControlTransferBuffer(
@@ -127,8 +124,7 @@ uint8_t ConvertTransferType(UsbTransferType type) {
     case UsbTransferType::INTERRUPT:
       return USBDEVFS_URB_TYPE_INTERRUPT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 UsbTransferStatus ConvertTransferResult(int rc) {

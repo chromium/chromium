@@ -20,8 +20,7 @@ network::mojom::ReportingApiReportStatus EnumTraits<
     case net::ReportingReport::Status::SUCCESS:
       return network::mojom::ReportingApiReportStatus::kSuccess;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::ReportingApiReportStatus::kQueued;
+  NOTREACHED();
 }
 
 // static
@@ -43,8 +42,7 @@ bool EnumTraits<network::mojom::ReportingApiReportStatus,
       *output = net::ReportingReport::Status::SUCCESS;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

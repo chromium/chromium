@@ -356,8 +356,7 @@ net::ReferrerPolicy ReferrerPolicyForUrlRequest(
     case mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+  NOTREACHED();
 }
 
 namespace debug {

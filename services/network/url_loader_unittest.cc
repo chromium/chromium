@@ -161,8 +161,7 @@ URLLoader::DeleteCallback DeleteLoaderCallback(
 // this method, as URLLoaders don't expect to be alive after they invoke their
 // delete callback.
 URLLoader::DeleteCallback NeverInvokedDeleteLoaderCallback() {
-  return base::BindOnce(
-      [](URLLoader* /* loader*/) { NOTREACHED_IN_MIGRATION(); });
+  return base::BindOnce([](URLLoader* /* loader*/) { NOTREACHED(); });
 }
 
 constexpr char kTestAuthURL[] = "/auth-basic?password=PASS&realm=REALM";
@@ -4280,8 +4279,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
         std::move(client_cert_responder_remote));
     switch (certificate_response_) {
       case CertificateResponse::INVALID:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case CertificateResponse::URL_LOADER_REQUEST_CANCELLED:
         ASSERT_TRUE(url_loader_remote_);
         url_loader_remote_->reset();
@@ -4559,7 +4557,7 @@ TEST_F(URLLoaderTest, FollowRedirectTwice) {
   client()->RunUntilRedirectReceived();
 
   url_loader->FollowRedirect({}, {}, {}, std::nullopt);
-  EXPECT_DCHECK_DEATH(url_loader->FollowRedirect({}, {}, {}, std::nullopt));
+  EXPECT_NOTREACHED_DEATH(url_loader->FollowRedirect({}, {}, {}, std::nullopt));
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6462,7 +6460,7 @@ class MockTrustTokenRequestHelperFactory
         return;
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

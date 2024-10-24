@@ -90,10 +90,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   void Close() override {}
 
-  int GetPeerAddress(net::IPEndPoint* address) const override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_SOCKET_NOT_CONNECTED;
-  }
+  int GetPeerAddress(net::IPEndPoint* address) const override { NOTREACHED(); }
 
   int GetLocalAddress(net::IPEndPoint* address) const override {
     *address = address_;

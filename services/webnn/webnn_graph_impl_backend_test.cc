@@ -1138,7 +1138,7 @@ struct UnaryOperatorTester {
         builder.BuildTanh(input_operand_id, output_operand_id);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     base::flat_map<std::string, base::span<const T>> named_inputs;

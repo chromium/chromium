@@ -69,8 +69,7 @@ int DataPipeToSourceStream::Read(net::IOBuffer* buf,
       handle_watcher_.ArmOrNotify();
       return net::ERR_IO_PENDING;
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(result);
-  return net::ERR_UNEXPECTED;
+  NOTREACHED() << static_cast<int>(result);
 }
 
 void DataPipeToSourceStream::OnReadable(MojoResult unused) {
@@ -97,7 +96,7 @@ void DataPipeToSourceStream::OnReadable(MojoResult unused) {
       handle_watcher_.ArmOrNotify();
       return;
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(result);
+  NOTREACHED() << static_cast<int>(result);
 }
 
 void DataPipeToSourceStream::FinishReading() {

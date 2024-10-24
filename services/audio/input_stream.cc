@@ -46,9 +46,8 @@ const char* ErrorCodeToString(InputController::ErrorCode error) {
     case (InputController::STREAM_OPEN_DEVICE_IN_USE_ERROR):
       return "STREAM_OPEN_DEVICE_IN_USE_ERROR";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "UNKNOWN_ERROR";
 }
 
 std::string GetCtorLogString(const std::string& device_id,

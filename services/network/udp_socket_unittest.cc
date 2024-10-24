@@ -54,14 +54,12 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
   int Connect(const net::IPEndPoint& remote_addr,
               mojom::UDPSocketOptionsPtr options,
               net::IPEndPoint* local_addr_out) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
+    NOTREACHED();
   }
   int Bind(const net::IPEndPoint& local_addr,
            mojom::UDPSocketOptionsPtr options,
            net::IPEndPoint* local_addr_out) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
+    NOTREACHED();
   }
   int SendTo(
       net::IOBuffer* buf,
@@ -69,43 +67,25 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
       const net::IPEndPoint& dest_addr,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
+    NOTREACHED();
   }
-  int SetBroadcast(bool broadcast) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
-  }
-  int SetSendBufferSize(int send_buffer_size) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
-  }
-  int SetReceiveBufferSize(int receive_buffer_size) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
-  }
-  int JoinGroup(const net::IPAddress& group_address) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
-  }
-  int LeaveGroup(const net::IPAddress& group_address) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
-  }
+  int SetBroadcast(bool broadcast) override { NOTREACHED(); }
+  int SetSendBufferSize(int send_buffer_size) override { NOTREACHED(); }
+  int SetReceiveBufferSize(int receive_buffer_size) override { NOTREACHED(); }
+  int JoinGroup(const net::IPAddress& group_address) override { NOTREACHED(); }
+  int LeaveGroup(const net::IPAddress& group_address) override { NOTREACHED(); }
   int Write(
       net::IOBuffer* buf,
       int buf_len,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
+    NOTREACHED();
   }
   int RecvFrom(net::IOBuffer* buf,
                int buf_len,
                net::IPEndPoint* address,
                net::CompletionOnceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_NOT_IMPLEMENTED;
+    NOTREACHED();
   }
 };
 

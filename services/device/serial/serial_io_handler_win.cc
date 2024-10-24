@@ -323,7 +323,7 @@ void SerialIoHandlerWin::OnIOCompleted(
       WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "Invalid IOContext";
+    NOTREACHED() << "Invalid IOContext";
   }
 }
 

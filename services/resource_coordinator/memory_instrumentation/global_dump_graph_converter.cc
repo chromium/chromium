@@ -152,7 +152,7 @@ GlobalDumpGraphConverter::ConvertScalarUnits(
       return ChromeScalarUnits::kBytes;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace memory_instrumentation

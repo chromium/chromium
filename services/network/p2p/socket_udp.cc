@@ -501,9 +501,7 @@ void P2PSocketUdp::Send(base::span<const uint8_t> data,
 bool P2PSocketUdp::SendPacket(base::span<const uint8_t> data,
                               const P2PPacketInfo& packet_info) {
   if (data.size() > kMaximumPacketSize) {
-    NOTREACHED_IN_MIGRATION();
-    OnError();
-    return false;
+    NOTREACHED();
   }
   if (interceptor_) {
     P2PPendingPacket packet(packet_info.destination, data,
@@ -563,7 +561,7 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
       socket_->SetRecvTos();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

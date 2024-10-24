@@ -46,8 +46,7 @@ const char* TrackErrorToString(TrackError error) {
     case TrackError::kMixedPlaybackFailed:
       return "Error during mixed playback";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "No error";
+      NOTREACHED();
   }
 }
 
@@ -774,8 +773,7 @@ const char* OutputDeviceMixerImpl::ErrorToString(MixingError error) {
     case MixingError::kPlaybackFailed:
       return "Error during mixed playback";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "No error";
+      NOTREACHED();
   }
 }
 

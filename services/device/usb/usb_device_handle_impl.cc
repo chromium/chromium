@@ -54,8 +54,7 @@ uint8_t ConvertTransferDirection(UsbTransferDirection direction) {
     case UsbTransferDirection::OUTBOUND:
       return LIBUSB_ENDPOINT_OUT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 uint8_t CreateRequestType(UsbTransferDirection direction,
@@ -114,8 +113,7 @@ static UsbTransferStatus ConvertTransferStatus(
     case LIBUSB_TRANSFER_CANCELLED:
       return UsbTransferStatus::CANCELLED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UsbTransferStatus::TRANSFER_ERROR;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -472,8 +470,7 @@ void UsbDeviceHandleImpl::Transfer::ProcessCompletion() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid usb transfer type";
-      break;
+      NOTREACHED() << "Invalid usb transfer type";
   }
 }
 

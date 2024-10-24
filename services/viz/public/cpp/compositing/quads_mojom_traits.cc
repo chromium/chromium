@@ -62,8 +62,7 @@ viz::DrawQuad* AllocateAndConstruct(
       quad->material = viz::DrawQuad::Material::kSharedElement;
       return quad;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static

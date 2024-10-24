@@ -83,7 +83,7 @@ class MockClientAndObserver : public media::mojom::AudioInputStreamClient,
 
   MOCK_METHOD1(OnError, void(media::mojom::InputStreamErrorCode));
   MOCK_METHOD0(DidStartRecording, void());
-  void OnMutedStateChanged(bool) override { NOTREACHED_IN_MIGRATION(); }
+  void OnMutedStateChanged(bool) override { NOTREACHED(); }
 
  private:
   mojo::Receiver<media::mojom::AudioInputStreamClient> client_receiver_{this};

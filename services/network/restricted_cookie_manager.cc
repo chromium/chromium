@@ -545,7 +545,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
         continue;
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     if (access_result.status.IsInclude()) {

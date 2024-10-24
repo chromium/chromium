@@ -70,7 +70,7 @@ void PlatformSensorProviderLinuxBase::CreateFusionSensor(
           false /* absolute */);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   DCHECK(fusion_algorithm);

@@ -431,10 +431,7 @@ void CorsURLLoader::FollowRedirect(
 
   if (new_url && (new_url->DeprecatedGetOriginAsURL() !=
                   deferred_redirect_url_->DeprecatedGetOriginAsURL())) {
-    NOTREACHED_IN_MIGRATION()
-        << "Can only change the URL within the same origin.";
-    HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
-    return;
+    NOTREACHED() << "Can only change the URL within the same origin.";
   }
 
   deferred_redirect_url_.reset();

@@ -125,7 +125,7 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
 
 void TestURLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // RESET FACTORY PARAMS

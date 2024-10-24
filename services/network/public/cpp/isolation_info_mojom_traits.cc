@@ -42,8 +42,7 @@ network::mojom::IsolationInfoRequestType EnumTraits<
       return network::mojom::IsolationInfoRequestType::kOther;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::IsolationInfoRequestType::kOther;
+  NOTREACHED();
 }
 
 bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::

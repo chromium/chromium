@@ -36,8 +36,7 @@ const uint32_t kStunMagicCookie = 0x2112A442;
 static SocketErrorCode MapNetErrorToSocketErrorCode(int net_err) {
   switch (net_err) {
     case net::OK:
-      NOTREACHED_IN_MIGRATION();
-      return SocketErrorCode::ERR_OTHER;
+      NOTREACHED();
     case net::ERR_MSG_TOO_BIG:
       return SocketErrorCode::ERR_MSG_TOO_BIG;
     case net::ERR_ADDRESS_UNREACHABLE:
@@ -158,8 +157,7 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
           traffic_annotation, proxy_resolving_socket_factory);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 mojo::PendingRemote<mojom::P2PSocketClient>

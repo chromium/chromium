@@ -438,7 +438,7 @@ int LIBUSB_CALL UsbServiceImpl::HotplugCallback(libusb_context* context,
                                     self->weak_self_, std::move(device)));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return 0;

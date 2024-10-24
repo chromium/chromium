@@ -270,8 +270,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::WorkerSrc:
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   };
 }
 
@@ -1228,8 +1227,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::UpgradeInsecureRequests:
       return CSPDirectiveName::Unknown;
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      return CSPDirectiveName::Unknown;
+      NOTREACHED();
   }
 }
 
@@ -1618,8 +1616,7 @@ std::string ToString(CSPDirectiveName name) {
     case CSPDirectiveName::Unknown:
       return "";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 bool AllowCspFromAllowOrigin(

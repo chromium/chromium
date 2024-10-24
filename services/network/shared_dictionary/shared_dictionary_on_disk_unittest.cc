@@ -91,9 +91,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id*/ "", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
   EXPECT_EQ(expected_size, dictionary->size());
   EXPECT_EQ(hash, dictionary->hash());
@@ -158,9 +156,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
@@ -219,9 +215,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
@@ -277,9 +271,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
 
   auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
       expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
-      /*disk_cache_error_callback=*/base::BindOnce([]() {
-        NOTREACHED_IN_MIGRATION();
-      }),
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   // ReadAll() synchronously returns OK.

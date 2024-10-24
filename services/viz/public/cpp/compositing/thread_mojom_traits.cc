@@ -22,8 +22,7 @@ EnumTraits<viz::mojom::ThreadType, viz::Thread::Type>::ToMojom(
     case viz::Thread::Type::kOther:
       return viz::mojom::ThreadType::kOther;
   }
-  NOTREACHED_IN_MIGRATION();
-  return viz::mojom::ThreadType::kOther;
+  NOTREACHED();
 }
 
 // static

@@ -2272,7 +2272,7 @@ void NetworkContext::CreateMdnsResponder(
 
   mdns_responder_manager_->CreateMdnsResponder(std::move(responder_receiver));
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_MDNS)
 }
 

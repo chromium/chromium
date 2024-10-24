@@ -175,8 +175,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   Tag type() const {
     switch (variant_.index()) {
       case 0:
-        NOTREACHED_IN_MIGRATION();
-        return Tag::kBytes;
+        NOTREACHED();
       case 1:
         return Tag::kBytes;
       case 2:
@@ -186,8 +185,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
       case 4:
         return Tag::kFile;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return Tag::kBytes;
+        NOTREACHED();
     }
   }
 

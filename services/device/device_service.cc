@@ -350,7 +350,7 @@ void DeviceService::BindSerialPortManager(
   serial_port_manager_.AsyncCall(&SerialPortManagerImpl::Bind, FROM_HERE)
       .WithArgs(std::move(receiver));
 #else   // defined(IS_SERIAL_ENABLED_PLATFORM)
-  NOTREACHED_IN_MIGRATION() << "Serial devices not supported on this platform.";
+  NOTREACHED() << "Serial devices not supported on this platform.";
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 }
 

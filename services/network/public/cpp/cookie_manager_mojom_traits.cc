@@ -58,8 +58,7 @@ EnumTraits<network::mojom::CookiePriority, net::CookiePriority>::ToMojom(
     case net::COOKIE_PRIORITY_HIGH:
       return network::mojom::CookiePriority::HIGH;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::CookiePriority>(input);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookiePriority, net::CookiePriority>::FromMojom(
@@ -94,8 +93,7 @@ EnumTraits<network::mojom::CookieSameSite, net::CookieSameSite>::ToMojom(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::CookieSameSite>(input);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookieSameSite, net::CookieSameSite>::FromMojom(
@@ -137,8 +135,7 @@ network::mojom::CookieEffectiveSameSite EnumTraits<
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::CookieEffectiveSameSite>(input);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookieEffectiveSameSite,
@@ -178,8 +175,7 @@ EnumTraits<network::mojom::CookieSourceScheme,
     case net::CookieSourceScheme::kSecure:
       return network::mojom::CookieSourceScheme::kSecure;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::CookieSourceScheme>(input);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookieSourceScheme, net::CookieSourceScheme>::
@@ -212,8 +208,7 @@ network::mojom::CookieAccessSemantics EnumTraits<
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::CookieAccessSemantics>(input);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookieAccessSemantics,
@@ -252,8 +247,7 @@ EnumTraits<network::mojom::ContextType,
     case net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE:
       return network::mojom::ContextType::CROSS_SITE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return network::mojom::ContextType::CROSS_SITE;
+      NOTREACHED();
   }
 }
 
@@ -518,8 +512,7 @@ EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::ToMojom(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::CookieChangeCause>(input);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::
@@ -632,8 +625,7 @@ bool EnumTraits<network::mojom::AncestorChainBit,
     case network::mojom::AncestorChainBit::kCrossSite:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 network::mojom::AncestorChainBit EnumTraits<

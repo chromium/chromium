@@ -64,7 +64,7 @@ void DeviceFactoryAdapterLacros::WrapNewDeviceInProxy(
           kServiceDeviceLauncherServiceRespondedWithDeviceNotFound;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected device access result code";
+      NOTREACHED() << "Unexpected device access result code";
   }
 
   if (video_capture_result_code != media::VideoCaptureError::kNone) {
@@ -94,27 +94,27 @@ void DeviceFactoryAdapterLacros::AddSharedMemoryVirtualDevice(
     mojo::PendingRemote<mojom::Producer> producer,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
         virtual_device_receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DeviceFactoryAdapterLacros::AddTextureVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingReceiver<mojom::TextureVirtualDevice>
         virtual_device_receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DeviceFactoryAdapterLacros::AddGpuMemoryBufferVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
         virtual_device_receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DeviceFactoryAdapterLacros::RegisterVirtualDevicesChangedObserver(
     mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
     bool raise_event_if_virtual_devices_already_present) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DeviceFactoryAdapterLacros::OnClientConnectionErrorOrClose(

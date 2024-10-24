@@ -32,8 +32,7 @@ int MojoSSLVersionToNetSSLVersion(network::mojom::SSLVersion mojo_version) {
     case network::mojom::SSLVersion::kTLS13:
       return net::SSL_PROTOCOL_VERSION_TLS1_3;
   }
-  NOTREACHED_IN_MIGRATION();
-  return net::SSL_PROTOCOL_VERSION_TLS1_3;
+  NOTREACHED();
 }
 
 net::SSLContextConfig MojoSSLConfigToSSLContextConfig(

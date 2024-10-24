@@ -346,8 +346,7 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
           perfetto::TraceConfig::BufferConfig::RING_BUFFER);
       break;
     case base::trace_event::ECHO_TO_CONSOLE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   AdaptBuiltinDataSourcesConfig(perfetto_config.mutable_builtin_data_sources(),
