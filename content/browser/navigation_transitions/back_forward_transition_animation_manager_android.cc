@@ -40,6 +40,8 @@ BackForwardTransitionAnimationManagerAndroid::
 
 BackForwardTransitionAnimationManagerAndroid::
     ~BackForwardTransitionAnimationManagerAndroid() {
+  // `this` must be destroyed before the `NavigationController`.
+  CHECK(navigation_controller_);
   if (animator_) {
     animator_->AbortAnimation(AnimationAbortReason::kAnimationManagerDestroyed);
     DestroyAnimator();

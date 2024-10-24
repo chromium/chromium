@@ -1386,6 +1386,11 @@ WebContentsImpl::~WebContentsImpl() {
 #endif
   find_request_manager_.reset();
 
+  // crbug.com/373898450: The `FrameTree` should outlive the animation manager.
+  if (view_) {
+    view_->DestroyBackForwardTransitionAnimationManager();
+  }
+
   // Shutdown the primary FrameTree.
   primary_frame_tree_.Shutdown();
 
