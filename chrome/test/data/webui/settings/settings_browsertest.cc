@@ -28,6 +28,10 @@
 #include "chrome/browser/browser_features.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/compose_enabling.h"
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
+
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() { set_test_loader_host(chrome::kChromeUISettingsHost); }
@@ -537,8 +541,14 @@ class SettingsComposePageTest : public SettingsBrowserTest {
         /*disabled_features=*/{});
   }
 
+  void SetUpOnMainThread() override {
+    SettingsBrowserTest::SetUpOnMainThread();
+    scoped_enable_compose_ = ComposeEnabling::ScopedEnableComposeForTesting();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ComposeEnabling::ScopedOverride scoped_enable_compose_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsComposePageTest, ComposePage) {

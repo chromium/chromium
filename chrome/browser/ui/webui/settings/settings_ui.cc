@@ -386,9 +386,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableLinkedServicesSetting",
       base::FeatureList::IsEnabled(features::kLinkedServicesSetting));
 
-  html_source->AddBoolean("enableComposeProactiveNudge",
-                          base::FeatureList::IsEnabled(
-                              compose::features::kEnableComposeProactiveNudge));
+#if BUILDFLAG(ENABLE_COMPOSE)
+  const bool compose_enabled = ComposeEnabling::IsEnabledForProfile(profile);
+#else
+  const bool compose_enabled = false;
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
+  html_source->AddBoolean(
+      "enableComposeProactiveNudge",
+      compose_enabled && base::FeatureList::IsEnabled(
+                             compose::features::kEnableComposeProactiveNudge));
 
   html_source->AddBoolean(
       "enablePageContentSetting",
@@ -581,7 +587,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       optimization_guide::features::kAiSettingsPageRefresh);
 
   if (ai_settings_refresh_enabled) {
-    const bool compose_enabled = ComposeEnabling::IsEnabledForProfile(profile);
     const bool tab_organization_enabled =
         TabOrganizationUtils::GetInstance()->IsEnabled(profile);
     const bool wallpaper_search_enabled =
