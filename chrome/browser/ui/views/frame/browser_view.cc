@@ -5104,7 +5104,7 @@ void BrowserView::LoadAccelerators() {
 #endif
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
-    // In app mode, only allow accelerators of white listed commands to pass
+    // In app mode, only allow accelerators of allowlisted commands to pass
     // through.
     if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
                                                   browser()->is_type_popup())) {
