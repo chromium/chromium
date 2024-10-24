@@ -110,30 +110,6 @@
       'nvidia_geforce_gtx_1660',
     ],
   },
-  'SIM_IPAD_AIR_6TH_GEN_18_0': {
-    'identifier': 'iPad Air (6th generation) 18.0',
-    'args': [
-      '--platform',
-      'iPad Air 11-inch (M2)',
-      '--version',
-      '18.0',
-    ],
-    'mixins': [
-      'ios_runtime_cache_18_0',
-    ],
-  },
-  'SIM_IPHONE_15_18_0': {
-    'identifier': 'iPhone 15 18.0',
-    'args': [
-      '--platform',
-      'iPhone 15',
-      '--version',
-      '18.0',
-    ],
-    'mixins': [
-      'ios_runtime_cache_18_0',
-    ],
-  },
   'WIN10_INTEL_UHD_630_STABLE': {
     'identifier': '8086:9bc5',
     'mixins': [

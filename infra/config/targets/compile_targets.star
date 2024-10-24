@@ -286,6 +286,8 @@ targets.compile_target(
 targets.compile_target(
     name = "ios_chrome_clusterfuzz_asan_build",
     label = "//ios/chrome/test/wpt:ios_chrome_clusterfuzz_asan_build",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

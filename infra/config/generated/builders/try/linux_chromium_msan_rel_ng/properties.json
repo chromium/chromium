@@ -74,7 +74,8 @@
           "builder": "Linux MSan Tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_msan_rel_ng/targets"
     }
   },
   "$build/reclient": {

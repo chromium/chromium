@@ -15,55 +15,6 @@ load("//lib/targets.star", "targets")
 # consistent and move the information onto the binaries
 
 targets.legacy_basic_suite(
-    name = "android_smoke_tests",
-    tests = {
-        "chrome_public_smoke_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "android_specific_chromium_gtests",
-    tests = {
-        "android_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-        "android_sync_integration_tests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-batch-limit=1",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-        "android_webview_unittests": targets.legacy_test_config(),
-        "content_shell_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-        # TODO(kbr): these are actually run on many of the GPU bots, which have
-        # physical hardware for several of the desktop OSs. Once the GPU JSON
-        # generation script is merged with this one, this should be promoted from
-        # the Android-specific section.
-        "gl_tests_validating": targets.legacy_test_config(),
-        # TODO(kbr): these are actually run on many of the GPU bots, which have
-        # physical hardware for several of the desktop OSs. Once the GPU JSON
-        # generation script is merged with this one, this should be promoted from
-        # the Android-specific section.
-        "gl_unittests": targets.legacy_test_config(),
-        "mojo_test_apk": targets.legacy_test_config(),
-        "ui_android_unittests": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "android_webview_gpu_telemetry_tests",
     tests = {
         "android_webview_pixel_skia_gold_test": targets.legacy_test_config(
@@ -136,22 +87,6 @@ targets.legacy_basic_suite(
     name = "chrome_private_code_test_isolated_scripts",
     tests = {
         "chrome_private_code_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chrome_public_tests",
-    tests = {
-        "chrome_public_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 19,
-            ),
-        ),
-        "chrome_public_unit_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
     },
 )
 
@@ -573,21 +508,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_gtests_for_linux_and_mac_only",
-    tests = {
-        "openscreen_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromium_gtests_for_linux_only",
-    tests = {
-        "ozone_unittests": targets.legacy_test_config(),
-        "ozone_x11_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromium_gtests_for_win_and_linux_only",
     tests = {
         # pthreadpool is only built on Windows and Linux platforms, that is
@@ -866,21 +786,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "gl_gtests_passthrough",
-    tests = {
-        "gl_tests_passthrough": targets.legacy_test_config(
-            linux_args = [
-                "--no-xvfb",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "gl_unittests": targets.legacy_test_config(),
-    },
-)
-
 # BEGIN tests which run on the GPU bots
 
 # The command buffer perf tests are only run on Windows.
@@ -1152,29 +1057,6 @@ targets.legacy_basic_suite(
             args = [
                 "--gtest_filter=*Detection*",
                 "--use-gpu-in-tests",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_fyi_vulkan_swiftshader_gtests",
-    tests = {
-        "vulkan_swiftshader_content_browsertests": targets.legacy_test_config(
-            args = [
-                "--enable-gpu",
-                "--test-launcher-bot-mode",
-                "--test-launcher-jobs=1",
-                "--test-launcher-filter-file=../../testing/buildbot/filters/vulkan.content_browsertests.filter",
-                "--enable-features=UiGpuRasterization,Vulkan",
-                "--use-vulkan=swiftshader",
-                "--enable-gpu-rasterization",
-                "--disable-software-compositing-fallback",
-                "--disable-vulkan-fallback-to-gl-for-testing",
-                "--disable-headless-mode",
-            ],
-            linux_args = [
-                "--no-xvfb",
             ],
         ),
     },
@@ -1935,47 +1817,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "ios_common_tests",
-    tests = {
-        "absl_hardening_tests": targets.legacy_test_config(),
-        "boringssl_crypto_tests": targets.legacy_test_config(),
-        "boringssl_ssl_tests": targets.legacy_test_config(),
-        "crashpad_tests": targets.legacy_test_config(),
-        "crypto_unittests": targets.legacy_test_config(),
-        "google_apis_unittests": targets.legacy_test_config(),
-        "ios_components_unittests": targets.legacy_test_config(),
-        "ios_net_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-        "ios_testing_unittests": targets.legacy_test_config(),
-        "net_unittests": targets.legacy_test_config(),
-        # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Enable this.
-        # "rust_gtest_interop_unittests": None,
-        "services_unittests": targets.legacy_test_config(),
-        "sql_unittests": targets.legacy_test_config(),
-        "url_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ios_screen_size_dependent_tests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(),
-        "components_unittests": targets.legacy_test_config(),
-        "gfx_unittests": targets.legacy_test_config(),
-        "ios_chrome_unittests": targets.legacy_test_config(),
-        "ios_web_inttests": targets.legacy_test_config(),
-        "ios_web_unittests": targets.legacy_test_config(),
-        "ios_web_view_inttests": targets.legacy_test_config(),
-        "ios_web_view_unittests": targets.legacy_test_config(),
-        "skia_unittests": targets.legacy_test_config(),
-        "ui_base_unittests": targets.legacy_test_config(),
-    },
-)
-
 # END tests which run on the GPU bots
 
 targets.legacy_basic_suite(
@@ -1983,20 +1824,6 @@ targets.legacy_basic_suite(
     tests = {
         # Chrome OS (Ash) and Lacros only.
         "chromeos_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "linux_chromeos_oobe_specific_tests",
-    tests = {
-        # TODO(crbug.com/40126889): Merge this suite back in to the main
-        # browser_tests when the tests no longer fail on MSAN.
-        "oobe_only_browser_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-            experiment_percentage = 100,
-        ),
     },
 )
 
@@ -2074,49 +1901,6 @@ targets.legacy_basic_suite(
                 shards = 2,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "linux_specific_xr_gtests",
-    tests = {
-        "xr_browser_tests": targets.legacy_test_config(),
-    },
-)
-
-# TODO(crbug.com/40223516): Remove this set of test suites when LSan can be
-# enabled Mac ASan bots. This list will be gradually filled with more tests
-# until the bot has parity with ASan bots, and the ASan bot can then enable
-# LSan and the mac-lsan-fyi-rel bot go away.
-targets.legacy_basic_suite(
-    name = "mac_lsan_fyi_gtests",
-    tests = {
-        "absl_hardening_tests": targets.legacy_test_config(),
-        "accessibility_unittests": targets.legacy_test_config(),
-        "app_shell_unittests": targets.legacy_test_config(),
-        "base_unittests": targets.legacy_test_config(),
-        "blink_heap_unittests": targets.legacy_test_config(),
-        "blink_platform_unittests": targets.legacy_test_config(),
-        "blink_unittests": targets.legacy_test_config(),
-        "cc_unittests": targets.legacy_test_config(),
-        "components_unittests": targets.legacy_test_config(),
-        "content_unittests": targets.legacy_test_config(),
-        "crashpad_tests": targets.legacy_test_config(),
-        "cronet_unittests": targets.legacy_test_config(),
-        "device_unittests": targets.legacy_test_config(),
-        "net_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/40274401): Enable this.
-        # "rust_gtest_interop_unittests": None,
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "mac_specific_chromium_gtests",
-    tests = {
-        "power_sampler_unittests": targets.legacy_test_config(),
-        "sandbox_unittests": targets.legacy_test_config(),
-        "updater_tests": targets.legacy_test_config(),
-        "xr_browser_tests": targets.legacy_test_config(),
     },
 )
 
@@ -2603,24 +2387,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Not applicable for android x86 & x64 since the targets here assert
-# "enable_vr" in GN which is only true for android arm & arm64.
-# For details, see the following files:
-#  * //chrome/android/BUILD.gn
-#  * //chrome/browser/android/vr/BUILD.gn
-#  * //device/vr/buildflags/buildflags.gni
-targets.legacy_basic_suite(
-    name = "vr_android_specific_chromium_tests",
-    tests = {
-        "chrome_public_test_vr_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "vr_android_unittests": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "vr_platform_specific_chromium_gtests",
     tests = {
@@ -2718,18 +2484,6 @@ targets.legacy_basic_suite(
                 "external/wpt/webrtc-stats",
                 "external/wpt/webrtc-svc",
             ],
-        ),
-    },
-)
-
-# This target is only to run on Android versions <= Android Q (10).
-targets.legacy_basic_suite(
-    name = "webview_instrumentation_test_apk_single_process_mode_gtests",
-    tests = {
-        "webview_instrumentation_test_apk_single_process_mode": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
         ),
     },
 )

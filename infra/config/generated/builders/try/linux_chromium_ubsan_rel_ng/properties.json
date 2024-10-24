@@ -74,7 +74,8 @@
           "builder": "Linux UBSan Tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_ubsan_rel_ng/targets"
     }
   },
   "$build/reclient": {

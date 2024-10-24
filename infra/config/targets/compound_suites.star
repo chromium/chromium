@@ -20,102 +20,12 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_android_gtests",
-    basic_suites = [
-        "android_smoke_tests",
-        "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chrome_public_tests",
-        "linux_flavor_specific_chromium_gtests",
-        "vr_android_specific_chromium_tests",
-        "vr_platform_specific_chromium_gtests",
-        "webview_instrumentation_test_apk_single_process_mode_gtests",
-    ],
-)
-
-# This is meant to be a superset of 'chromium_linux_and_gl_gtests'. Any
-# changes there must be reflected here.
-targets.legacy_compound_suite(
-    name = "chromium_linux_and_gl_and_vulkan_gtests",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_chromeos_only",
-        "chromium_gtests_for_linux_and_mac_only",
-        "chromium_gtests_for_linux_only",
-        "chromium_gtests_for_win_and_linux_only",
-        "linux_flavor_specific_chromium_gtests",
-        "linux_specific_xr_gtests",
-        "gl_gtests_passthrough",
-        "gpu_fyi_vulkan_swiftshader_gtests",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
-        "vr_platform_specific_chromium_gtests",
-    ],
-)
-
-# gl_tests requires dedicated machines with GPUs on linux, so have a separate
-# test list with gl_tests included. This is chromium_linux_gtests + gl_gtests.
-targets.legacy_compound_suite(
-    name = "chromium_linux_and_gl_gtests",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_chromeos_only",
-        "chromium_gtests_for_linux_and_mac_only",
-        "chromium_gtests_for_linux_only",
-        "chromium_gtests_for_win_and_linux_only",
-        "linux_flavor_specific_chromium_gtests",
-        "linux_specific_xr_gtests",
-        "gl_gtests_passthrough",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
-        "vr_platform_specific_chromium_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_linux_blink_rel_isolated_scripts",
     basic_suites = [
         "chromium_webkit_isolated_scripts",
         "linux_specific_chromium_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
-    ],
-)
-
-# When changing something here, change chromium_linux_and_gl_gtests,
-# chromium_linux_and_gl_and_vulkan_gtests in the same way.
-targets.legacy_compound_suite(
-    name = "chromium_linux_gtests",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_chromeos_only",
-        "chromium_gtests_for_linux_and_mac_only",
-        "chromium_gtests_for_linux_only",
-        "chromium_gtests_for_win_and_linux_only",
-        "linux_flavor_specific_chromium_gtests",
-        "linux_specific_xr_gtests",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
-        "vr_platform_specific_chromium_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromium_mac_gtests",
-    basic_suites = [
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_mac_only",
-        "mac_specific_chromium_gtests",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
     ],
 )
 
@@ -148,20 +58,6 @@ targets.legacy_compound_suite(
         "non_android_chromium_gtests_no_nacl",
         "non_android_chromium_gtests_skia_gold",
         "pixel_browser_tests_gtests",
-        "vr_platform_specific_chromium_gtests",
-        "win_specific_chromium_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromium_win_gtests",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_win_and_linux_only",
-        "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
         "vr_platform_specific_chromium_gtests",
         "win_specific_chromium_gtests",
     ],
@@ -285,22 +181,6 @@ targets.legacy_compound_suite(
         "chromium_gtests_for_linux_and_chromeos_only",
         "chromium_gtests_for_win_and_linux_only",
         "linux_chromeos_lacros_gtests",
-        "linux_chromeos_specific_gtests",
-        "linux_flavor_specific_chromium_gtests",
-        "non_android_chromium_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "linux_chromeos_gtests_oobe",
-    basic_suites = [
-        "aura_gtests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chromium_gtests_for_linux_and_chromeos_only",
-        "chromium_gtests_for_win_and_linux_only",
-        "linux_chromeos_lacros_gtests",
-        "linux_chromeos_oobe_specific_tests",
         "linux_chromeos_specific_gtests",
         "linux_flavor_specific_chromium_gtests",
         "non_android_chromium_gtests",

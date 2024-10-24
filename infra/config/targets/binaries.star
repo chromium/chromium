@@ -17,11 +17,15 @@ targets.binaries.console_test_launcher(
 targets.binaries.windowed_test_launcher(
     name = "android_browsertests",
     label = "//chrome/test:android_browsertests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "android_sync_integration_tests",
     label = "//chrome/test:android_sync_integration_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -34,6 +38,8 @@ targets.binaries.generated_script(
 targets.binaries.console_test_launcher(
     name = "android_webview_unittests",
     label = "//android_webview/test:android_webview_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
@@ -469,6 +475,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "chrome_public_smoke_test",
     label = "//chrome/android:chrome_public_smoke_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 # TODO(crbug.com/40193330): Rename to chrome_public_integration_test_apk
@@ -1098,6 +1106,8 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.generated_script(
     name = "ios_chrome_unittests",
     label = "//ios/chrome/test:ios_chrome_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -1159,21 +1169,29 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "ios_components_unittests",
     label = "//ios/components:ios_components_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_net_unittests",
     label = "//ios/net:ios_net_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_testing_unittests",
     label = "//ios/testing:ios_testing_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_web_inttests",
     label = "//ios/web:ios_web_inttests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -1186,16 +1204,22 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "ios_web_unittests",
     label = "//ios/web:ios_web_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_web_view_inttests",
     label = "//ios/web_view:ios_web_view_inttests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
     name = "ios_web_view_unittests",
     label = "//ios/web_view:ios_web_view_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1387,6 +1411,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "mojo_test_apk",
     label = "//mojo/public/java/system:mojo_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1498,6 +1524,8 @@ targets.binaries.generated_script(
 targets.binaries.console_test_launcher(
     name = "openscreen_unittests",
     label = "//chrome/browser/media/router:openscreen_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1636,6 +1664,8 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "power_sampler_unittests",
     label = "//tools/mac/power:power_sampler_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1697,6 +1727,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "sandbox_unittests",
     label = "//sandbox:sandbox_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(
@@ -1970,6 +2002,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "ui_android_unittests",
     label = "//ui/android:ui_android_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
@@ -2119,6 +2153,8 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.console_test_launcher(
     name = "vr_android_unittests",
     label = "//chrome/browser/android/vr:vr_android_unittests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.script(
@@ -2359,6 +2395,8 @@ targets.binaries.script(
 targets.binaries.console_test_launcher(
     name = "webview_instrumentation_test_apk",
     label = "//android_webview/test:webview_instrumentation_test_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.console_test_launcher(

@@ -44,7 +44,8 @@
           "builder": "ios-asan",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-asan/targets"
     }
   },
   "$build/reclient": {

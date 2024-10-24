@@ -23,33 +23,7 @@
 # The goal is to drive the number of exceptions to zero, to make all
 # the bots behave similarly. whitespace
 {
-  'accessibility_unittests': {
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        'args': [
-            # TODO(crbug.com/40266898): Re-enable.
-          '--gtest_filter=-AXPlatformNodeAuraLinuxTest.AtkComponentScrollTo:'
-          'AtkUtilAuraLinuxTest.*',
-        ],
-      },
-    },
-  },
-  'android_browsertests': {
-    'modifications': {
-      'android-asan': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
   'android_webview_unittests': {
-  },
-  'angle_unittests': {
-    'remove_from': [
-      # Times out listing tests crbug.com/1167314
-      'android-asan',
-    ],
   },
   'blink_web_tests': {
     'modifications': {
@@ -57,36 +31,6 @@
         'args': [
           '--flag-specific=future-js',
         ],
-      },
-      'WebKit Linux ASAN': {
-        'args': [
-          '--timeout-ms',
-          '48000',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'WebKit Linux Leak': {
-        'args': [
-          '--timeout-ms',
-          '48000',
-        ],
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'WebKit Linux MSAN': {
-        'args': [
-          '--timeout-ms',
-          '66000',
-        ],
-        'swarming': {
-          'expiration': 36000,
-          'hard_timeout': 10800,
-          'io_timeout': 3600,
-          'shards': 8,
-        },
       },
       'devtools_frontend_linux_blink_light_rel': {
         'args': [
@@ -164,36 +108,6 @@
           '--flag-specific=future-js',
         ],
       },
-      'WebKit Linux ASAN': {
-        'args': [
-          '--timeout-ms',
-          '48000',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'WebKit Linux Leak': {
-        'args': [
-          '--timeout-ms',
-          '48000',
-        ],
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'WebKit Linux MSAN': {
-        'args': [
-          '--timeout-ms',
-          '66000',
-        ],
-        'swarming': {
-          'expiration': 36000,
-          'hard_timeout': 10800,
-          'io_timeout': 3600,
-          'shards': 12,
-        },
-      },
       'linux-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -245,7 +159,6 @@
   },
   'browser_tests': {
     'remove_from': [
-      'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
     'modifications': {
@@ -253,59 +166,6 @@
         'swarming': {
           'shards': 10,
         },
-      },
-      'Linux ASan LSan Tests (1)': {
-        'ci_only': True,
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'Linux CFI': {
-        'swarming': {
-          'shards': 20,  # https://crbug.com/1361973
-        },
-      },
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        # And even more slow on linux-chromeos: crbug.com/1491533.
-        'swarming': {
-          'shards': 140,
-          'hard_timeout': 7200,
-        },
-      },
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot, most likely because browser_tests on cros has ~40% more tests. Also, these tests
-        # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
-        # crbug.com/40585695 and crbug.com/326621525
-        'swarming': {
-          'shards': 100,
-        },
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
-        ],
-      },
-      'Linux MSan Tests': {
-        'swarming': {
-          'shards': 23,
-        },
-      },
-      'Linux UBSan Tests': {
-        'swarming': {
-          'shards': 20,
-        }
-      },
-      'Mac ASan 64 Tests (1)': {
-        'swarming': {
-          'shards': 30,
-        },
-        # crbug.com/1196416
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
-        ],
-        'experiment_percentage': 100, # https://crbug.com/1251657
       },
       'linux-chromeos-chrome': {
         # TODO(crbug.com/40614042): Promote out of experiment when the
@@ -317,17 +177,6 @@
           'shards': 20,
         },
       },
-      'win-asan': {
-         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
-        'args': [
-          '--test-launcher-jobs=3',
-        ],
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 60,
-        },
-      },
     },
   },
   'capture_unittests': {
@@ -337,15 +186,6 @@
           'dimensions': {
             'os': 'Ubuntu-22.04|Ubuntu-18.04',
           },
-        },
-      },
-    },
-  },
-  'cc_unittests': {
-    'modifications': {
-      'Linux TSan Tests': {
-        'swarming': {
-          'shards': 3,
         },
       },
     },
@@ -370,98 +210,11 @@
       },
     },
   },
-  'chrome_public_test_apk': {
-    'remove_from': [
-      'android-asan',  # https://crbug.com/964562
-    ],
-  },
-  'chrome_public_test_vr_apk': {
-    'remove_from': [
-      'android-asan',  # https://crbug.com/964562
-    ],
-  },
-  'chrome_public_unit_test_apk': {
-    'remove_from': [
-      'android-asan',  # https://crbug.com/964562
-    ],
-  },
-  'components_browsertests': {
-    'modifications': {
-      'Linux TSan Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'android-asan': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
-  },
-  'components_unittests': {
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'Linux TSan Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'win-asan': {
-        # TODO(crbug.com/41491387): With a single shard seems to hit time limit.
-        'swarming': {
-          'shards': 4,
-        },
-      },
-    },
-  },
   'content_browsertests': {
     'remove_from': [
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
     'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        'swarming': {
-          'shards': 24,
-        },
-      },
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        'swarming': {
-          'shards': 14, # https://crbug.com/1471857
-        },
-      },
-      'Linux MSan Tests': {
-        'swarming': {
-          'shards': 10, # https://crbug.com/1497706
-        },
-      },
-      'Linux TSan Tests': {
-        'ci_only': True, # https://crbug.com/1498240
-        'swarming': {
-          'shards': 30,
-        },
-      },
-      'Linux UBSan Tests': {
-        'swarming': {
-          'shards': 16,
-        }
-      },
-      'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
-        'experiment_percentage': 100,
-      },
       'WebRTC Chromium FYI Android Tests (dbg)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
@@ -472,56 +225,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
         ],
       },
-      'android-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 25,
-        },
-      },
-      'win-asan': {
-         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
-        'args': [
-          '--test-launcher-jobs=3',
-        ],
-        'swarming': {
-          # ASAN bot is slow: https://crbug.com/1484550#c3
-          'shards': 32,
-        },
-      },
     },
-  },
-  'content_shell_test_apk': {
-    'remove_from': [
-      'android-asan',  # https://crbug.com/964562
-    ],
-  },
-  'content_unittests': {
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        # These are slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
-  'crashpad_tests': {
-    'remove_from': [
-      # https://crbug.com/crashpad/304
-      'Linux TSan Tests',
-      # https://crbug.com/crashpad/306
-      'Linux CFI',
-    ],
   },
   'expected_color_pixel_gl_passthrough_ganesh_test': {
     'replacements': {
@@ -620,89 +324,6 @@
       },
     },
   },
-  'gcp_unittests': {
-    'modifications': {
-      # Flakily times out with only a single shard due to slow runtime.
-      'win-asan': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
-  'gin_unittests': {
-    'remove_from': [
-      'Linux ASan LSan Tests (1)',  # https://crbug.com/831667
-      'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
-    ],
-  },
-  'gl_tests_passthrough': {
-    'remove_from': [
-      # Can't run on MSAN because gl_tests uses the hardware driver,
-      # which isn't instrumented.
-      'Linux MSan Tests',
-    ],
-    'modifications': {
-      # TODO(kbr): figure out a better way to specify blocks of
-      # arguments like this for tests on multiple machines.
-      'Linux ASan LSan Tests (1)': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
-          'dimensions': {
-            'gpu': '10de:2184-440.100',
-            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
-            'pool': 'chromium.tests.gpu',
-          },
-        },
-      },
-      'Linux CFI': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
-          'dimensions': {
-            'gpu': '10de:2184-440.100',
-            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
-            'pool': 'chromium.tests.gpu',
-          },
-        },
-      },
-      'Linux TSan Tests': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
-          'dimensions': {
-            'gpu': '10de:2184-440.100',
-            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
-            'pool': 'chromium.tests.gpu',
-          },
-        },
-      },
-    },
-  },
-  'gl_unittests': {
-    'remove_from': [
-      # Can't run on MSAN because gl_unittests uses the hardware driver,
-      # which isn't instrumented.
-      'Linux MSan Tests',
-    ],
-  },
-  'gl_unittests_ozone': {
-    'remove_from': [
-      # Can't run on MSAN because gl_unittests_ozone uses the hardware driver,
-      # which isn't instrumented.
-      'Linux ChromiumOS MSan Tests',
-    ],
-  },
   'info_collection_tests': {
     'remove_from': [
       'Android V8 FYI Release (Nexus 5X)',
@@ -719,80 +340,11 @@
           'shards': 3,
         },
       },
-      'Linux ASan LSan Tests (1)': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
-        # These are slow on the ASan trybot for some reason, crbug.com/1257927
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'Linux CFI': {
-        # Slow on certain debug builders, see crbug.com/1513713.
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # These are slow on the ASan trybot for some reason, crbug.com/1257927
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'Linux MSan Tests': {
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'Linux TSan Tests': {
-        'ci_only': True, # https://crbug.com/1498240
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
-        # These are slow on the TSan bots for some reason, crbug.com/1257927
-        'swarming': {
-          'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
-        },
-      },
-      'Linux UBSan Tests': {
-        'swarming': {
-          'shards': 6,
-        }
-      },
-      'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
-        'experiment_percentage': 100,
-      },
       # TODO(crbug.com/40630654): Remove these filters.
       'linux-chromeos-chrome': {
         'args': [
           '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
         ],
-      },
-      'win-asan': {
-         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
-        'args': [
-          '--test-launcher-jobs=3',
-        ],
-        'swarming': {
-          'shards': 9,
-        },
-      },
-    },
-  },
-  'ipc_tests': {
-    'modifications': {
-      'android-asan': {
-        'swarming': {
-          'shards': 2,
-        },
       },
     },
   },
@@ -802,58 +354,6 @@
         'args': [
           '--target-platform=win32',
         ],
-      },
-    },
-  },
-  'mojo_unittests': {
-    'modifications': {
-      'android-asan': {
-        'swarming': {
-          'shards': 5,
-        },
-      },
-    },
-  },
-  'nacl_loader_unittests': {
-    # If you change this, make similar changes in ppapi_unittests
-    'remove_from': [
-      'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
-      'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
-    ],
-  },
-  'net_unittests': {
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 16,
-        },
-      },
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 8,
-        }
-      },
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Linux TSan Tests': {
-        'swarming': {
-          'shards': 4,
-        }
-      },
-      'win-asan': {
-        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
-        'swarming': {
-          'shards': 16,
-        },
       },
     },
   },
@@ -912,12 +412,6 @@
         ],
       },
     },
-  },
-  'perfetto_unittests': {
-    'remove_from': [
-      # TODO(crbug.com/41440830): Fix permission issue when creating tmp files
-      'android-asan',
-    ]
   },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
     'replacements': {
@@ -1016,18 +510,6 @@
       },
     },
   },
-  'ppapi_unittests': {
-    # If you change this, make similar changes in nacl_loader_unittests
-    'remove_from': [
-      'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
-      'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
-    ],
-  },
-  'sandbox_linux_unittests': {
-    'remove_from': [
-      'android-asan',  # https://crbug.com/962650
-    ],
-  },
   'screenshot_sync_passthrough_tests': {
     'modifications': {
       'android_optional_gpu_tests_rel': {
@@ -1045,41 +527,6 @@
           # See Android FYI Release (Pixel 4).
           '--extra-browser-args=--disable-wcg-for-test',
         ],
-      },
-    },
-  },
-  'services_unittests': {
-    'remove_from': [
-      'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
-      'Linux MSan Tests',  # https://crbug.com/831676
-    ],
-  },
-  'sync_integration_tests': {
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'Linux TSan Tests': {
-        'ci_only': True, # https://crbug.com/1498240
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'Mac ASan 64 Tests (1)': {
-        'swarming': {
-          'shards': 3,
-          },
-      },
-      'win-asan': {
-         # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
-        'args': [
-          '--test-launcher-jobs=3',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
       },
     },
   },
@@ -1110,50 +557,6 @@
   },
   'unit_tests': {
     'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
-        # These are slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # These are slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Linux TSan Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Linux UBSan Tests': {
-        'swarming': {
-          'shards': 2,
-        }
-      },
-      'Mac ASan 64 Tests (1)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'android-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter',
-        ],
-      },
       'linux-chromeos-chrome': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
@@ -1163,22 +566,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
         ],
-      },
-      'win-asan': {
-        'swarming': {
-          # ASAN bot is slow: https://crbug.com/1484550#c4
-          'shards': 4,
-        },
-      },
-    },
-  },
-  'updater_tests_system': {
-    'modifications': {
-      'win-asan': {
-        # crbug.com/369478225: These are slow and could timeout on the ASAN
-        'swarming': {
-          'shards': 2,
-        },
       },
     },
   },
@@ -1257,46 +644,6 @@
       # Removed from V8 builders since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Mac V8 FYI Release (Intel)',
-    ],
-  },
-  'webkit_unit_tests': {
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'Linux TSan Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Linux UBSan Tests': {
-        'swarming': {
-          'shards': 2,
-        }
-      },
-      'win-asan': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-    },
-  },
-  'webkit_unit_tests_v2':{
-    'modifications': {
-      'win-asan': {
-        'swarming': {
-          'shards': 6,  # crbug.com/326231701
-        },
-      },
-    },
-  },
-  'webview_instrumentation_test_apk_multiple_process_mode': {
-    'remove_from': [
-      'android-asan',  # https://crbug.com/964562
     ],
   },
   'xr_browser_tests 8086:9bc5': {

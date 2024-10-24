@@ -677,6 +677,57 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_smoke_tests",
+    targets = [
+        "chrome_public_smoke_test",
+    ],
+)
+
+targets.bundle(
+    name = "android_specific_chromium_gtests",
+    targets = [
+        "android_browsertests",
+        "android_sync_integration_tests",
+        "android_webview_unittests",
+        "content_shell_test_apk",
+        "mojo_test_apk",
+        "ui_android_unittests",
+        "webview_instrumentation_test_apk_multiple_process_mode",
+        # TODO(kbr): these are actually run on many of the GPU bots, which have
+        # physical hardware for several of the desktop OSs. Once the GPU JSON
+        # generation script is merged with this one, this should be promoted from
+        # the Android-specific section.
+        "gl_tests_validating",
+        "gl_unittests",
+    ],
+    per_test_modifications = {
+        "android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+        "android_sync_integration_tests": targets.mixin(
+            args = [
+                "--test-launcher-batch-limit=1",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "content_shell_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "android_specific_coverage_java_tests",
     targets = [
         "content_shell_test_apk",
@@ -850,6 +901,26 @@ targets.bundle(
         "chrome_public_apk_profile_tests": targets.mixin(
             ci_only = True,
             experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "chrome_public_tests",
+    targets = [
+        "chrome_public_test_apk",
+        "chrome_public_unit_test_apk",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 19,
+            ),
+        ),
+        "chrome_public_unit_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
     },
 )
@@ -1147,6 +1218,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_android_gtests",
+    targets = [
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "vr_android_specific_chromium_tests",
+        "vr_platform_specific_chromium_gtests",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
+    ],
+)
+
+targets.bundle(
     name = "chromium_android_scripts",
     targets = [
         "check_network_annotations",
@@ -1271,6 +1357,21 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "chromium_gtests_for_linux_and_mac_only",
+    targets = [
+        "openscreen_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_gtests_for_linux_only",
+    targets = [
+        "ozone_unittests",
+        "ozone_x11_unittests",
+    ],
 )
 
 targets.bundle(
@@ -1492,6 +1593,22 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_linux_and_gl_and_vulkan_gtests",
+    targets = [
+        "chromium_linux_and_gl_gtests",
+        "gpu_fyi_vulkan_swiftshader_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_linux_and_gl_gtests",
+    targets = [
+        "chromium_linux_gtests",
+        "gl_gtests_passthrough",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_cast_receiver",
     additional_compile_targets = [
         "cast_shell",
@@ -1522,6 +1639,24 @@ targets.bundle(
         "desktop_chromium_isolated_scripts",
         "linux_specific_chromium_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_linux_gtests",
+    targets = [
+        "aura_gtests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_linux_and_chromeos_only",
+        "chromium_gtests_for_linux_and_mac_only",
+        "chromium_gtests_for_linux_only",
+        "chromium_gtests_for_win_and_linux_only",
+        "linux_flavor_specific_chromium_gtests",
+        "linux_specific_xr_gtests",
+        "non_android_and_cast_and_chromeos_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
+        "vr_platform_specific_chromium_gtests",
     ],
 )
 
@@ -1586,6 +1721,18 @@ targets.bundle(
         "checkperms",
         "metrics_python_tests",
         "webkit_lint",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_mac_gtests",
+    targets = [
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_linux_and_mac_only",
+        "mac_specific_chromium_gtests",
+        "non_android_and_cast_and_chromeos_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
     ],
 )
 
@@ -1770,6 +1917,20 @@ targets.bundle(
         "desktop_chromium_isolated_scripts",
         "performance_smoke_test_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_win_gtests",
+    targets = [
+        "aura_gtests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_win_and_linux_only",
+        "non_android_and_cast_and_chromeos_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
+        "vr_platform_specific_chromium_gtests",
+        "win_specific_chromium_gtests",
     ],
 )
 
@@ -2389,6 +2550,24 @@ targets.bundle(
         "web_engine_integration_tests",
         "web_engine_unittests",
     ],
+)
+
+targets.bundle(
+    name = "gl_gtests_passthrough",
+    targets = [
+        "gl_tests_passthrough",
+        "gl_unittests",
+    ],
+    per_test_modifications = {
+        "gl_tests_passthrough": targets.mixin(
+            linux_args = [
+                "--no-xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -3221,6 +3400,32 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_fyi_vulkan_swiftshader_gtests",
+    targets = [
+        "vulkan_swiftshader_content_browsertests",
+    ],
+    per_test_modifications = {
+        "vulkan_swiftshader_content_browsertests": targets.mixin(
+            args = [
+                "--enable-gpu",
+                "--test-launcher-bot-mode",
+                "--test-launcher-jobs=1",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/vulkan.content_browsertests.filter",
+                "--enable-features=UiGpuRasterization,Vulkan",
+                "--use-vulkan=swiftshader",
+                "--enable-gpu-rasterization",
+                "--disable-software-compositing-fallback",
+                "--disable-vulkan-fallback-to-gl-for-testing",
+                "--disable-headless-mode",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_fyi_win_amd_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -3671,6 +3876,26 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "ios_asan_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "ios_blink_dbg_tests",
     targets = [
         targets.bundle(
@@ -3930,6 +4155,34 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "ios_common_tests",
+    targets = [
+        "absl_hardening_tests",
+        "boringssl_crypto_tests",
+        "boringssl_ssl_tests",
+        "crashpad_tests",
+        "crypto_unittests",
+        "google_apis_unittests",
+        "ios_components_unittests",
+        "ios_net_unittests",
+        "ios_testing_unittests",
+        "net_unittests",
+        # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Enable this.
+        # "rust_gtest_interop_unittests",
+        "services_unittests",
+        "sql_unittests",
+        "url_unittests",
+    ],
+    per_test_modifications = {
+        "ios_net_unittests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "ios_crash_xcuitests",
     targets = [
         "ios_crash_xcuitests_module",
@@ -4046,6 +4299,22 @@ targets.bundle(
                 "SIM_IPHONE_15_PRO_MAX_18_0",
             ],
         ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_screen_size_dependent_tests",
+    targets = [
+        "base_unittests",
+        "components_unittests",
+        "gfx_unittests",
+        "ios_chrome_unittests",
+        "ios_web_inttests",
+        "ios_web_unittests",
+        "ios_web_view_inttests",
+        "ios_web_view_unittests",
+        "skia_unittests",
+        "ui_base_unittests",
     ],
 )
 
@@ -4317,6 +4586,39 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "linux_chromeos_gtests_oobe",
+    targets = [
+        "aura_gtests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_linux_and_chromeos_only",
+        "chromium_gtests_for_win_and_linux_only",
+        "linux_chromeos_lacros_gtests",
+        "linux_chromeos_oobe_specific_tests",
+        "linux_chromeos_specific_gtests",
+        "linux_flavor_specific_chromium_gtests",
+        "non_android_chromium_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "linux_chromeos_oobe_specific_tests",
+    targets = [
+        # TODO(crbug.com/40126889): Merge this suite back in to the main
+        # browser_tests when the tests no longer fail on MSAN.
+        "oobe_only_browser_tests",
+    ],
+    per_test_modifications = {
+        "oobe_only_browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+            experiment_percentage = 100,
+        ),
+    },
+)
+
 # This is for linux-chromeos-rel CQ builder.
 targets.bundle(
     name = "linux_chromeos_rel_cq",
@@ -4374,9 +4676,52 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "linux_specific_xr_gtests",
+    targets = [
+        "xr_browser_tests",
+    ],
+)
+
+targets.bundle(
     name = "linux_viz_gtests",
     targets = [
         "gpu_fyi_vulkan_swiftshader_gtests",
+    ],
+)
+
+# TODO(crbug.com/40223516): Remove this set of test suites when LSan can be
+# enabled Mac ASan bots. This list will be gradually filled with more tests
+# until the bot has parity with ASan bots, and the ASan bot can then enable
+# LSan and the mac-lsan-fyi-rel bot go away.
+targets.bundle(
+    name = "mac_lsan_fyi_gtests",
+    targets = [
+        "absl_hardening_tests",
+        "accessibility_unittests",
+        "app_shell_unittests",
+        "base_unittests",
+        "blink_heap_unittests",
+        "blink_platform_unittests",
+        "blink_unittests",
+        "cc_unittests",
+        "components_unittests",
+        "content_unittests",
+        "crashpad_tests",
+        "cronet_unittests",
+        "device_unittests",
+        "net_unittests",
+        # TODO(crbug.com/40274401): Enable this.
+        # "rust_gtest_interop_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "mac_specific_chromium_gtests",
+    targets = [
+        "power_sampler_unittests",
+        "sandbox_unittests",
+        "updater_tests",
+        "xr_browser_tests",
     ],
 )
 
@@ -4717,6 +5062,27 @@ targets.bundle(
     ],
 )
 
+# Not applicable for android x86 & x64 since the targets here assert
+# "enable_vr" in GN which is only true for android arm & arm64.
+# For details, see the following files:
+#  * //chrome/android/BUILD.gn
+#  * //chrome/browser/android/vr/BUILD.gn
+#  * //device/vr/buildflags/buildflags.gni
+targets.bundle(
+    name = "vr_android_specific_chromium_tests",
+    targets = [
+        "chrome_public_test_vr_apk",
+        "vr_android_unittests",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_vr_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
 targets.bundle(
     name = "webview_64_cts_tests_suite",
     targets = [
@@ -4851,6 +5217,21 @@ targets.bundle(
         "webview_ui_instrumentation_tests",
         "webview_ui_instrumentation_tests_no_field_trial",
     ],
+)
+
+# This target is only to run on Android versions <= Android Q (10).
+targets.bundle(
+    name = "webview_instrumentation_test_apk_single_process_mode_gtests",
+    targets = [
+        "webview_instrumentation_test_apk_single_process_mode",
+    ],
+    per_test_modifications = {
+        "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+    },
 )
 
 targets.bundle(

@@ -200,6 +200,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_AIR_6TH_GEN_18_0",
     identifier = "iPad Air (6th generation) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -349,6 +350,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_15_18_0",
     identifier = "iPhone 15 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],

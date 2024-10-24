@@ -4,11 +4,12 @@
 """Definitions of builders in the chromium.memory.fyi builder group."""
 
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -24,6 +25,12 @@ ci.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.console_view(
@@ -59,6 +66,19 @@ ci.builder(
             "remoteexec",
             "mac",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "mac_lsan_fyi_gtests",
+        ],
+        mixins = [
+            targets.mixin(
+                args = [
+                    "--test-launcher-print-test-stdio=always",
+                ],
+            ),
+            "mac_default_x64",
         ],
     ),
     builderless = 1,
@@ -102,6 +122,19 @@ ci.builder(
             "remoteexec",
             "mac",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_mac_gtests",
+        ],
+        mixins = [
+            targets.mixin(
+                args = [
+                    "--test-launcher-print-test-stdio=always",
+                ],
+            ),
+            "mac_default_x64",
         ],
     ),
     builderless = 1,

@@ -72,14 +72,6 @@
       '--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json',
     ],
   },
-  'bullhead': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'bullhead',
-        'os': 'Android',
-      },
-    },
-  },
   'chrome-finch-swarming-pool': {
     'swarming': {
       'dimensions': {
@@ -314,16 +306,6 @@
       'dimensions': {
         'gpu': '8086:9bc5|8086:4680',
       },
-    },
-  },
-  'ios_runtime_cache_18_0': {
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'runtime_ios_18_0',
-          'path': 'Runtime-ios-18.0',
-        },
-      ],
     },
   },
   'isolate_profile_data': {
@@ -599,13 +581,6 @@
       },
     },
   },
-  'nougat': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'N2G48C',
-      },
-    },
-  },
   'nvidia_geforce_gtx_1660': {
     'swarming': {
       'dimensions': {
@@ -694,13 +669,6 @@
         'os': 'Android',
       },
     },
-  },
-  'web-test-leak': {
-    'args': [
-      '--additional-expectations',
-      '../../third_party/blink/web_tests/LeakExpectations',
-      '--enable-leak-detection',
-    ],
   },
   'webgpu_telemetry_cts': {
     'args': [

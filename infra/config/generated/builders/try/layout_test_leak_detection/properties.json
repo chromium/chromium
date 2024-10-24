@@ -38,7 +38,8 @@
           "builder": "WebKit Linux Leak",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/layout_test_leak_detection/targets"
     }
   },
   "$build/reclient": {

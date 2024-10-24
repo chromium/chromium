@@ -330,6 +330,7 @@ targets.mixin(
 
 targets.mixin(
     name = "bullhead",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_type": "bullhead",
@@ -940,6 +941,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_runtime_cache_18_0",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
@@ -1583,6 +1585,7 @@ targets.mixin(
 
 targets.mixin(
     name = "nougat",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_os": "N2G48C",
@@ -1861,6 +1864,7 @@ targets.mixin(
 
 targets.mixin(
     name = "web-test-leak",
+    generate_pyl_entry = False,
     args = [
         "--additional-expectations",
         "../../third_party/blink/web_tests/LeakExpectations",
