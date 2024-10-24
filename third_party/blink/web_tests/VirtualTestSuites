@@ -2362,7 +2362,7 @@
   "N.B. skip_base_tests is needed only because of https://crbug.com/1471996",
   {
     "prefix": "generic-sensor-extra-classes",
-    "owners": ["raphael.kubo.da.costa@intel.com", "reillyg@chromium.org"],
+    "owners": ["arnaud.mandy@intel.com", "reillyg@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/ambient-light",
