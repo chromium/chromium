@@ -299,6 +299,17 @@ const CGFloat kSymbolSize = 15;
     [self updateForAccessibilityContentSizeCategory:
               UIContentSizeCategoryIsAccessibilityCategory(
                   self.traitCollection.preferredContentSizeCategory)];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -360,18 +371,15 @@ const CGFloat kSymbolSize = 15;
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isCurrentCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isCurrentCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateForAccessibilityContentSizeCategory:
-              isCurrentCategoryAccessibility];
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - UITableViewCell
 
@@ -439,6 +447,20 @@ const CGFloat kSymbolSize = 15;
 // Returns the error icon image.
 - (UIImage*)errorImage {
   return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+}
+
+// Updates the view's accessiblity properties when the device's
+// UITraitPreferredContentSizeCategory is modified.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  BOOL isCurrentCategoryAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isCurrentCategoryAccessibility !=
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateForAccessibilityContentSizeCategory:
+              isCurrentCategoryAccessibility];
+  }
 }
 
 @end
