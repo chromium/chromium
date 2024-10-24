@@ -269,28 +269,12 @@ void HostVerifierImpl::AttemptHostVerification() {
   PA_LOG(VERBOSE) << "HostVerifierImpl::AttemptHostVerification(): Attempting "
                   << "host verification now.";
 
-  if (features::ShouldUseV1DeviceSync()) {
-    if (current_host->instance_id().empty()) {
-      device_sync_client_->FindEligibleDevices(
-          multidevice::SoftwareFeature::kBetterTogetherHost,
-          base::BindOnce(&HostVerifierImpl::OnFindEligibleDevicesResult,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      device_sync_client_->NotifyDevices(
-          {current_host->instance_id()},
-          cryptauthv2::TargetService::DEVICE_SYNC,
-          multidevice::SoftwareFeature::kBetterTogetherHost,
-          base::BindOnce(&HostVerifierImpl::OnNotifyDevicesFinished,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  } else {
-    DCHECK(!current_host->instance_id().empty());
-    device_sync_client_->NotifyDevices(
-        {current_host->instance_id()}, cryptauthv2::TargetService::DEVICE_SYNC,
-        multidevice::SoftwareFeature::kBetterTogetherHost,
-        base::BindOnce(&HostVerifierImpl::OnNotifyDevicesFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  DCHECK(!current_host->instance_id().empty());
+  device_sync_client_->NotifyDevices(
+      {current_host->instance_id()}, cryptauthv2::TargetService::DEVICE_SYNC,
+      multidevice::SoftwareFeature::kBetterTogetherHost,
+      base::BindOnce(&HostVerifierImpl::OnNotifyDevicesFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HostVerifierImpl::OnFindEligibleDevicesResult(
