@@ -23,6 +23,8 @@ message ModelPrototypingLoggingData {
   ModelPrototypingRequest request = 1;
 
   ModelPrototypingResponse response = 2;
+
+  ModelPrototypingMetadata metadata = 3;
 }
 
 message ModelPrototypingRequest {
@@ -103,4 +105,9 @@ message ModelPrototypingResponse {
 
   // The responses from the model corresponding to |model_prompts|.
   repeated string model_responses = 2;
+}
+
+message ModelPrototypingMetadata {
+  // An optional tag to use for querying the record from MQLS logs.
+  string logging_tag = 1;
 }
