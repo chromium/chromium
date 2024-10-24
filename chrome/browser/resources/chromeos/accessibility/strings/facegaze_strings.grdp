@@ -21,6 +21,9 @@
   <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_RIGHT" desc="This text describes an action to press the right arrow key.">
     Press the right arrow key
   </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_SCREENSHOT" desc="This text describes an action that a user can take on their computer to take a screenshot.">
+    Take a screenshot
+  </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_SPACE" desc="This text describes an action to press the space key.">
     Press the space key
   </message>

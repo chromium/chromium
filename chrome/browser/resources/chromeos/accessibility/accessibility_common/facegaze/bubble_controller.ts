@@ -77,6 +77,8 @@ export class BubbleController {
         return chrome.i18n.getMessage('facegaze_macro_text_media_play_pause');
       case MacroName.KEY_PRESS_RIGHT:
         return chrome.i18n.getMessage('facegaze_macro_text_key_press_right');
+      case MacroName.KEY_PRESS_SCREENSHOT:
+        return chrome.i18n.getMessage('facegaze_macro_text_screenshot');
       case MacroName.KEY_PRESS_SPACE:
         return chrome.i18n.getMessage('facegaze_macro_text_key_press_space');
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:

@@ -2070,6 +2070,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
     MacroName.KEY_PRESS_LEFT,
     MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
     MacroName.KEY_PRESS_RIGHT,
+    MacroName.KEY_PRESS_SCREENSHOT,
     MacroName.KEY_PRESS_SPACE,
     MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
     MacroName.KEY_PRESS_UP,
