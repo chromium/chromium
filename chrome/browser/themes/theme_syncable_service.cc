@@ -158,8 +158,9 @@ sync_pb::ThemeSpecifics::NtpCustomBackground SpecificsNtpBackgroundFromDict(
 bool AreSpecificsNtpBackgroundEquivalent(
     const sync_pb::ThemeSpecifics::NtpCustomBackground& a,
     const sync_pb::ThemeSpecifics::NtpCustomBackground& b) {
-  return a.url() == b.url() && a.collection_id() == b.collection_id() &&
-         a.main_color() == b.main_color();
+  // MessageDifferencer cannot be used and explicitly comparing all the fields
+  // is maintenance-heavy.
+  return a.SerializeAsString() == b.SerializeAsString();
 }
 
 }  // namespace
