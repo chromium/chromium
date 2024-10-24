@@ -7,7 +7,9 @@
 
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -33,6 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
 
  private:
   mojo::Receiver<media_app_ui::mojom::MantisMediaAppUntrustedService> receiver_;
+  mojo::Remote<mantis::mojom::MantisService> service_;
 };
 
 }  // namespace ash

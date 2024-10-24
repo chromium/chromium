@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is copied from
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/odml/mojom/mantis_service.mojom
+// Doc: go/mantis-bl-dd
+module mantis.mojom;
+
+import "chromeos/ash/components/mantis/mojom/mantis_processor.mojom";
+
+// The feature status used to restrict Mantis functionality if applicable.
+[Stable, Extensible]
+enum MantisFeatureStatus {
+  [Default] kDeviceNotSupported,
+  kARCVMDisabled,
+  kAvailable,
+};
+
+// The model initialization result.
+[Stable, Extensible]
+enum InitializeResult {
+  kSuccess,
+  kGpuBlocked,
+  [Default] kFailedToLoadLibrary,
+};
+
+// An observer to report the current platform model loading progress.
+[Stable]
+interface PlatformModelProgressObserver {
+  // The progress value is between 0.0 and 1.0.
+  Progress@0(double progress);
+};
+
+// Interface for checking Mantis feature availability and initialize it if
+// available.
+// The availability is based on device type, user account, and others.
+//
+// This interface is served by `odmld` process in CrOS to be used by image
+// editing UI (e.g. Media App WebUI).
+[Stable]
+interface MantisService {
+  // Gets Mantis feature status which can be used to restrict Mantis
+  // functionality by returning a status other than kAvailable.
+  [MinVersion=1]
+  GetMantisFeatureStatus@1() => (MantisFeatureStatus status);
+
+  // Loads the assets from DLC and initializes the processor for subsequent
+  // queries. The model loading progress can be observed by `progress_observer`.
+  Initialize@0(
+      pending_remote<PlatformModelProgressObserver>? progress_observer,
+      pending_receiver<MantisProcessor> processor)
+      => (InitializeResult result);
+};

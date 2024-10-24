@@ -15,6 +15,8 @@ component("media_app") {
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
+    "//chromeos/ash/components/mantis/mojom",
+    "//chromeos/ash/components/mojo_service_manager",
     "//mojo/public/cpp/bindings",
   ]
 }
