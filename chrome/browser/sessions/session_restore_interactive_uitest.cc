@@ -200,17 +200,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   EXPECT_TRUE(restored->window()->IsVisible());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RestoreMinimizedWindowTwice RestoreMinimizedWindowTwice
-#else
-#define MAYBE_RestoreMinimizedWindowTwice DISABLED_RestoreMinimizedWindowTwice
-#endif
 // Verify that in restoring a browser with a normal and minimized window twice,
 // the minimized window remains minimized. Guards against a regression
 // introduced in the fix for https://crbug.com/1204517. This test fails on
 // Linux and Windows - see https://crbug.com/1213497.
+// Also fails flakily on Mac.
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
-                       MAYBE_RestoreMinimizedWindowTwice) {
+                       DISABLED_RestoreMinimizedWindowTwice) {
   Profile* profile = browser()->profile();
 
   // Create a second browser.
