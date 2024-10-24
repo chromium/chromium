@@ -128,11 +128,16 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           webrtc::H264SupportedLevel(width * height, kDefaultFps);
       const webrtc::H264ProfileLevelId profile_level_id(
           h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
+      const std::optional<std::string> h264_profile_level_string =
+          webrtc::H264ProfileLevelIdToString(profile_level_id);
+      if (!h264_profile_level_string) {
+        // Unsupported combination of profile and level.
+        return std::nullopt;
+      }
 
       webrtc::SdpVideoFormat format(cricket::kH264CodecName);
       format.parameters = {
-          {cricket::kH264FmtpProfileLevelId,
-           *webrtc::H264ProfileLevelIdToString(profile_level_id)},
+          {cricket::kH264FmtpProfileLevelId, *h264_profile_level_string},
           {cricket::kH264FmtpLevelAsymmetryAllowed, "1"}};
       return format;
     }
@@ -337,7 +342,9 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
           hevc_main_max_size, gfx::Rect(hevc_main_max_size), hevc_main_max_size,
           media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
       auto format = VdcToWebRtcFormat(hevc_main_config);
-      supported_formats.push_back(*format);
+      if (format) {
+        supported_formats.push_back(*format);
+      }
     }
     if (hevc_main10_supported) {
       media::VideoDecoderConfig hevc_main10_config(
@@ -348,7 +355,9 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
           hevc_main10_max_size, media::EmptyExtraData(),
           media::EncryptionScheme::kUnencrypted);
       auto format = VdcToWebRtcFormat(hevc_main10_config);
-      supported_formats.push_back(*format);
+      if (format) {
+        supported_formats.push_back(*format);
+      }
     }
   }
 #endif  // BUILDFLAG(RTC_USE_H265)
