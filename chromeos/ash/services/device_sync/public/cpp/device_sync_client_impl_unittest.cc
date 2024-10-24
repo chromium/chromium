@@ -562,7 +562,7 @@ class DeviceSyncClientImplTest : public testing::Test {
     for (auto device : remote_device_ref_list)
       ref_public_keys.push_back(device.public_key());
     std::sort(ref_public_keys.begin(), ref_public_keys.end(),
-              [](auto public_key_1, auto public_key_2) {
+              [](const auto& public_key_1, const auto& public_key_2) {
                 return public_key_1 < public_key_2;
               });
 
@@ -570,7 +570,7 @@ class DeviceSyncClientImplTest : public testing::Test {
     for (auto device : remote_device_list)
       public_keys.push_back(device.public_key);
     std::sort(public_keys.begin(), public_keys.end(),
-              [](auto public_key_1, auto public_key_2) {
+              [](const auto& public_key_1, const auto& public_key_2) {
                 return public_key_1 < public_key_2;
               });
 
