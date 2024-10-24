@@ -505,6 +505,7 @@ targets.mixin(
 
 targets.mixin(
     name = "chromium_pixel_2_pie",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_os": "PQ3A.190801.002",

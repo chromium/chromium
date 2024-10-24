@@ -69,7 +69,8 @@
           "builder": "WebRTC Chromium Linux Tester",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Linux Tester/targets"
     }
   },
   "$build/reclient": {

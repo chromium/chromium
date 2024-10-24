@@ -178,17 +178,6 @@
       },
     },
   },
-  'chromium_pixel_2_pie': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'PQ3A.190801.002',
-        'device_os_flavor': 'google',
-        'device_type': 'walleye',
-        'os': 'Android',
-        'pool': 'chromium.tests',
-      },
-    },
-  },
   'cros-cbx-dut': {
     'cros_cbx': True,
   },

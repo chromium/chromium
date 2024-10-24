@@ -36,6 +36,10 @@
   #   chromium.build.fyi
   #
   # The following builder group has been migrated to set their targets in the
+  # builders' declarations in //infra/config/subprojects/webrtc/webrtc.star
+  #   chromium.webrtc
+  #
+  # The following builder group has been migrated to set their targets in the
   # builders' declarations in //infra/config/dev/subprojects/chromium/ci.star
   #   chromium.dev
   {
@@ -1080,63 +1084,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
-        },
-      },
-    },
-  },
-  {
-    'name': 'chromium.webrtc',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'WebRTC Chromium Android Builder': {},
-      'WebRTC Chromium Android Tester': {
-        'os_type': 'android',
-        'mixins': [
-          'chromium_pixel_2_pie',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_simple_gtests',
-        },
-      },
-      'WebRTC Chromium Linux Builder': {
-        'additional_compile_targets': [
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium Linux Tester': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium Mac Builder': {
-        'additional_compile_targets': [
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium Mac Tester': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium Win Builder': {
-        'additional_compile_targets': [
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium Win10 Tester': {
-        'swarming': {
-          'dimensions': {
-            'os': 'Windows-10',
-          },
-        },
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
         },
       },
     },

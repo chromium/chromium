@@ -179,17 +179,6 @@
       },
     },
   },
-  'capture_unittests': {
-    'modifications': {
-      'WebRTC Chromium Linux Tester': {
-        'swarming': {
-          'dimensions': {
-            'os': 'Ubuntu-22.04|Ubuntu-18.04',
-          },
-        },
-      },
-    },
-  },
   'chrome_all_tast_tests': {
     'modifications': {
       'chromeos-eve-chrome': {

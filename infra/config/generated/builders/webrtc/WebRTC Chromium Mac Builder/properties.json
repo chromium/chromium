@@ -79,7 +79,8 @@
           "builder": "WebRTC Chromium Mac Tester",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Mac Builder/targets"
     }
   },
   "$build/reclient": {

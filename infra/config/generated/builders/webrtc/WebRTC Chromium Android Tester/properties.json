@@ -82,7 +82,8 @@
           "builder": "WebRTC Chromium Android Tester",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Android Tester/targets"
     }
   },
   "$build/reclient": {
