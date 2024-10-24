@@ -314,6 +314,11 @@ void CastComponent::Stop() {
       kStopTimeout.ToZxDuration())));
 }
 
+void CastComponent::handle_unknown_method(uint64_t ordinal,
+                                          bool method_has_response) {
+  LOG(ERROR) << "Unknown method called on CastComponent. Ordinal: " << ordinal;
+}
+
 void CastComponent::OnZxHandleSignalled(zx_handle_t handle,
                                         zx_signals_t signals) {
   DCHECK_EQ(signals, ZX_SOCKET_PEER_CLOSED);
