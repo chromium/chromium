@@ -65,7 +65,9 @@ std::unique_ptr<WindowTreeHost> WindowTreeHost::Create(
 WindowTreeHostPlatform::WindowTreeHostPlatform(
     ui::PlatformWindowInitProperties properties,
     std::unique_ptr<Window> window)
-    : WindowTreeHost(std::move(window)) {
+    : WindowTreeHost(std::move(window)),
+      widget_(gfx::kNullAcceleratedWidget),
+      current_cursor_(ui::mojom::CursorType::kNull) {
   size_in_pixels_ = properties.bounds.size();
   CreateCompositor(false, false, properties.enable_compositing_based_throttling,
                    properties.compositor_memory_limit_mb);
