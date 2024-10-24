@@ -4,7 +4,6 @@
 
 package org.chromium.base.task;
 
-import android.os.Process;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -221,29 +220,13 @@ public class TaskRunnerImpl implements TaskRunner {
                 if (mPreNativeTasks == null) return;
                 task = mPreNativeTasks.poll();
             }
-            switch (mTaskTraits) {
-                case TaskTraits.BEST_EFFORT:
-                case TaskTraits.BEST_EFFORT_MAY_BLOCK:
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                    break;
-                case TaskTraits.USER_VISIBLE:
-                case TaskTraits.USER_VISIBLE_MAY_BLOCK:
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-                    break;
-                case TaskTraits.USER_BLOCKING:
-                case TaskTraits.USER_BLOCKING_MAY_BLOCK:
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_MORE_FAVORABLE);
-                    break;
-                    // We don't want to lower the Thread Priority of the UI Thread, especially
-                    // pre-native, as the Thread is oversubscribed, highly latency sensitive, and
-                    // there's only a single task queue so low priority tasks can run ahead of high
-                    // priority tasks.
-                case TaskTraits.UI_BEST_EFFORT: // Fall-through.
-                case TaskTraits.UI_USER_VISIBLE: // Fall-through.
-                case TaskTraits.UI_USER_BLOCKING: // Fall-through.
-                    break;
-                    // lint ensures all cases are checked.
-            }
+            // Wait, what about thread priorities?
+            //
+            // You may expect that thread priorities are set according to the task traits. We don't,
+            // as on Android as of 2024, all tasks run at default priority in the native thread
+            // pool. See base/task/thread_pool/environment_config.cc, as
+            // base::Lock::CanHandleMultipleThreadPriorities() returns false, we do not use
+            // background thread priorities.
             task.run();
         }
     }
