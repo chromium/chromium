@@ -13,6 +13,22 @@ pub fn byte_range(this: &Span) -> Range<usize> {
     this.byte_range()
 }
 
+pub fn start(this: &Span) -> Span {
+    this.start()
+}
+
+pub fn end(this: &Span) -> Span {
+    this.end()
+}
+
+pub fn line(this: &Span) -> usize {
+    this.line()
+}
+
+pub fn column(this: &Span) -> usize {
+    this.column()
+}
+
 pub fn join(this: &Span, other: Span) -> Option<Span> {
     this.join(other)
 }

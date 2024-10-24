@@ -3,6 +3,8 @@
 
 use std::env;
 use std::ffi::OsString;
+use std::fs;
+use std::io::ErrorKind;
 use std::iter;
 use std::path::Path;
 use std::process::{self, Command, Stdio};
@@ -146,7 +148,15 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
 
     let rustc = cargo_env_var("RUSTC");
     let out_dir = cargo_env_var("OUT_DIR");
+    let out_subdir = Path::new(&out_dir).join("probe");
     let probefile = Path::new("build").join("probe.rs");
+
+    if let Err(err) = fs::create_dir(&out_subdir) {
+        if err.kind() != ErrorKind::AlreadyExists {
+            eprintln!("Failed to create {}: {}", out_subdir.display(), err);
+            process::exit(1);
+        }
+    }
 
     let rustc_wrapper = env::var_os("RUSTC_WRAPPER").filter(|wrapper| !wrapper.is_empty());
     let rustc_workspace_wrapper =
@@ -169,7 +179,7 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
         .arg("--cap-lints=allow")
         .arg("--emit=dep-info,metadata")
         .arg("--out-dir")
-        .arg(out_dir)
+        .arg(&out_subdir)
         .arg(probefile);
 
     if let Some(target) = env::var_os("TARGET") {
@@ -185,10 +195,22 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
         }
     }
 
-    match cmd.status() {
+    let success = match cmd.status() {
         Ok(status) => status.success(),
         Err(_) => false,
+    };
+
+    // Clean up to avoid leaving nondeterministic absolute paths in the dep-info
+    // file in OUT_DIR, which causes nonreproducible builds in build systems
+    // that treat the entire OUT_DIR as an artifact.
+    if let Err(err) = fs::remove_dir_all(&out_subdir) {
+        if err.kind() != ErrorKind::NotFound {
+            eprintln!("Failed to clean up {}: {}", out_subdir.display(), err);
+            process::exit(1);
+        }
     }
+
+    success
 }
 
 fn rustc_minor_version() -> Option<u32> {
