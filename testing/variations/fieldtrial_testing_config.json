@@ -6301,6 +6301,8 @@
                 {
                     "name": "Enabled_Teamfood",
                     "params": {
+                        "file-upload-limit-bytes": "200000000",
+                        "use-optimized-request-flow": "true",
                         "use-pdfs-as-context": "true"
                     },
                     "enable_features": [
