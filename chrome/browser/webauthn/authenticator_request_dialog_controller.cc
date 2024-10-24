@@ -1034,9 +1034,12 @@ void AuthenticatorRequestDialogController::OnRequestComplete() {
     auto* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
     if (web_contents && render_frame_host) {
-      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
-          ->GetDelegateForFrame(render_frame_host)
-          ->NotifyWebAuthnRequestAborted();
+      ChromeWebAuthnCredentialsDelegate* delegate =
+          ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
+              ->GetDelegateForFrame(render_frame_host);
+      if (delegate) {
+        delegate->NotifyWebAuthnRequestAborted();
+      }
     }
   }
   SetCurrentStep(Step::kClosed);
@@ -1851,12 +1854,12 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
             weak_factory_.GetWeakPtr()));
   }
 
-  auto* webauthn_credentials_delegate_factory =
+  ChromeWebAuthnCredentialsDelegate* webauthn_credentials_delegate =
       ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
           ->GetDelegateForFrame(render_frame_host);
-  if (webauthn_credentials_delegate_factory) {
+  if (webauthn_credentials_delegate) {
     // May be null on tests.
-    webauthn_credentials_delegate_factory->OnCredentialsReceived(
+    webauthn_credentials_delegate->OnCredentialsReceived(
         std::move(credentials),
         ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
             is_security_key_or_hybrid_flow_available));
