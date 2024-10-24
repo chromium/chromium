@@ -115,18 +115,6 @@ class AutofillPredictionImprovementsManager
  private:
   friend class AutofillPredictionImprovementsManagerTestApi;
 
-  // Returns the suggestions the user sees first during a filling flow, i.e.
-  // when this class is in `kReady` state. This would either be trigger or
-  // loading suggestions, depending on `kTriggerAutomatically`.
-  //
-  // Also stores `autofill_suggestions`.
-  //
-  // Note that this is also called as a least-priority fallback when this class
-  // is in `kDoneSuccess` or `kDoneError` state. In this case, it will always
-  // return the trigger suggestion.
-  std::vector<autofill::Suggestion> GetTriggerOrLoadingSuggestions(
-      const std::vector<autofill::Suggestion>& autofill_suggestions);
-
   // Event handler called when the loading suggestion is shown. Used for the
   // automatic triggering path.
   void OnLoadingSuggestionShown(
@@ -188,10 +176,6 @@ class AutofillPredictionImprovementsManager
   // `ShouldProvidePredictionImprovements()` this method does not check whether
   // the pref is enabled.
   bool IsURLEligibleForPredictionImprovements(const GURL& url) const;
-
-  // Creates a suggestion that calls `OnClickedTriggerSuggestion()` when
-  // invoked.
-  std::vector<autofill::Suggestion> CreateTriggerSuggestion();
 
   // Creates filling suggestions listing the ones for prediction improvements
   // first and `address_suggestions` afterwards.

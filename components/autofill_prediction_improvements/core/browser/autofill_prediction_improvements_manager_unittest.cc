@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
@@ -212,6 +213,7 @@ class AutofillPredictionImprovementsManagerTest
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   user_annotations::TestUserAnnotationsService user_annotations_service_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
 };
@@ -259,7 +261,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RejctedPromptStrikeCounting) {
 // Tests that when the server fails to return suggestions, we show an error
 // suggestion.
 TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -310,7 +311,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
 // error suggestions.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        RetrievalFailed_FallbackToAutofill) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -345,6 +345,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
                                        update_suggestions_callback.Get());
   std::move(axtree_received_callback).Run({});
+  // Simulate empty server response.
   std::move(predictions_received_callback).Run(PredictionsByGlobalId{}, "");
   base::test::RunUntil([this]() {
     return !test_api(*manager_).loading_suggestion_timer().IsRunning();
@@ -362,7 +363,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // Tests that the `update_suggestions_callback` is called eventually with the
 // `kFillPredictionImprovements` suggestion.
 TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -439,6 +439,71 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
           HasType(SuggestionType::kFillPredictionImprovements),
           HasType(SuggestionType::kSeparator),
           HasType(SuggestionType::kEditPredictionImprovementsInformation)));
+}
+
+// Tests that when the user triggers suggestions on a field having autofill
+// suggestions, but then changes focus while predictions are loading to a field
+// that doesn't have autofill suggestion, the initial autofill suggestions are
+// cleared and not used.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       AutofillSuggestionsAreCachedOnMultipleFocus) {
+  // Empty form, as seen by the user.
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST},
+                 {.role = autofill::NAME_LAST,
+                  .heuristic_type = autofill::NAME_LAST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+
+  AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
+  AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
+      predictions_received_callback;
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
+  std::vector<Suggestion> filling_suggestion;
+
+  {
+    InSequence s;
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(client_, GetAXTree)
+        .WillOnce(MoveArg<0>(&axtree_received_callback));
+    EXPECT_CALL(filling_engine_, GetPredictions)
+        .WillOnce(MoveArg<4>(&predictions_received_callback));
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&filling_suggestion));
+  }
+
+  std::vector<Suggestion> autofill_suggestions = {
+      Suggestion(SuggestionType::kAddressEntry),
+      Suggestion(SuggestionType::kSeparator),
+      Suggestion(SuggestionType::kManageAddress)};
+  manager_->GetSuggestions(autofill_suggestions, form, form.fields().front());
+  manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
+                                       update_suggestions_callback.Get());
+  std::move(axtree_received_callback).Run({});
+
+  // Simulate the user clicking on a second field AFTER triggering filling
+  // suggestions but BEFORE the server replies with the predictions (hence in
+  // the loading stage).
+  manager_->GetSuggestions({}, form, form.fields().back());
+
+  // Simulate empty server response.
+  std::move(predictions_received_callback).Run(PredictionsByGlobalId{}, "");
+  base::test::RunUntil([this]() {
+    return !test_api(*manager_).loading_suggestion_timer().IsRunning();
+  });
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_THAT(
+      filling_suggestion,
+      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 struct GetSuggestionsFormNotEqualCachedFormTestData {
@@ -1066,7 +1131,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // retrieved for form A, while a field of form B is focused.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        GetSuggestionsReturnsEmptyVectorIfRequestedFromNewFormWhileLoading) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST,
@@ -1157,7 +1221,6 @@ class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
 // `kTriggerAutomatically` parameter is enabled.
 TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
        OnLoadingSuggestionShownGetsAXTreeIfParamEnabled) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
@@ -1226,7 +1289,6 @@ class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsNotEligibleIfFlagDisabled) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndDisableFeature(kAutofillPredictionImprovements);
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
@@ -1239,7 +1301,6 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsNotEligibleIfDeciderIsNull) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, nullptr,
@@ -1253,7 +1314,6 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsEligibleIfSkipAllowlistIsTrue) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
@@ -1268,7 +1328,6 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsNotEligibleIfPrefIsDisabled) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
@@ -1286,7 +1345,6 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsNotEligibleIfOptimizationGuideCannotBeApplied) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
@@ -1304,7 +1362,6 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsEligibleIfOptimizationGuideCanBeApplied) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
@@ -1321,7 +1378,6 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 
 TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
        IsNotEligibleForNotHttps) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
