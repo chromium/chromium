@@ -2483,6 +2483,18 @@ user-id 55123 maps to https://crates.io/users/rust-lang-owner who has published
 https://crates.io/crates/libc/0.2.158
 """
 
+[[trusted.libc]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 55123 # rust-lang-owner
+start = "2024-10-17"
+end = "2025-10-24"
+notes = """
+Same justification as for the other `trusted.libc` entry above.
+
+user-id 55123 maps to https://crates.io/users/rust-lang-owner who has published
+https://crates.io/crates/libc/0.2.161
+"""
+
 [[trusted.windows-sys]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 user-id = 64539 # Kenny Kerr (kennykerr)
