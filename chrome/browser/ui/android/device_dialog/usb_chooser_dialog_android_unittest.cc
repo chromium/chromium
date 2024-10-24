@@ -16,7 +16,7 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "ui/android/window_android.h"
 
 namespace {

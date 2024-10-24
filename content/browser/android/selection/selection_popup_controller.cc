@@ -19,7 +19,7 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/point_conversions.h"

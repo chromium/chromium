@@ -2650,6 +2650,7 @@ fuzzer_test("math_transform_fuzzer") {
   ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/math_transform.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("layout_locale_fuzzer") {
@@ -2658,6 +2659,7 @@ fuzzer_test("layout_locale_fuzzer") {
     ":blink_fuzzer_test_support",
     ":platform",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("segmented_string_fuzzer") {
@@ -2666,6 +2668,7 @@ fuzzer_test("segmented_string_fuzzer") {
     ":blink_fuzzer_test_support",
     ":platform",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::FindCategory.
@@ -2677,6 +2680,7 @@ fuzzer_test("mathml_operator_dictionary_fuzzer") {
   ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 if (rtc_use_h265) {
@@ -2688,6 +2692,7 @@ if (rtc_use_h265) {
       ":platform",
     ]
     libfuzzer_options = [ "rss_limit_mb=8192" ]
+    additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
   }
 }
 
@@ -2702,6 +2707,7 @@ fuzzer_test("open_type_math_support_fuzzer") {
     "//third_party/blink/web_tests/external/wpt/fonts/math",
     "//testing/libfuzzer/fuzzers/woff2_corpus",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::StretchyOperatorShaper
@@ -2715,6 +2721,7 @@ fuzzer_test("stretchy_operator_shaper_fuzzer") {
     "//third_party/blink/web_tests/external/wpt/fonts/math",
     "//testing/libfuzzer/fuzzers/woff2_corpus",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::MHTMLParser.
@@ -2729,6 +2736,7 @@ fuzzer_test("mhtml_parser_fuzzer") {
   additional_configs = [
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
   ]
 }
 
@@ -2740,6 +2748,7 @@ fuzzer_test("web_icon_sizes_fuzzer") {
     ":platform",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/web_icon_sizes.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::AVIFImageDecoder
@@ -2751,6 +2760,7 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::CrabbyAVIFImageDecoder
@@ -2762,6 +2772,7 @@ fuzzer_test("blink_crabbyavif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::ICOImageDecoder.
@@ -2773,6 +2784,7 @@ fuzzer_test("blink_ico_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/icofuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::GIFImageDecoder
@@ -2784,6 +2796,7 @@ fuzzer_test("blink_gif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/giffuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_png_decoder_fuzzer") {
@@ -2801,6 +2814,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
     "//third_party/blink/web_tests/images/resources/pngfuzz",
   ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_jpeg_decoder_fuzzer") {
@@ -2812,6 +2826,7 @@ fuzzer_test("blink_jpeg_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_bmp_decoder_fuzzer") {
@@ -2826,6 +2841,7 @@ fuzzer_test("blink_bmp_decoder_fuzzer") {
   # TODO: crbug.com/324586211 - raise the memory limit to avoid OOMs in the
   # fuzzer harness. This can be removed once the global memory limit is raised.
   libfuzzer_options = [ "rss_limit_mb=4096" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::WEBPImageDecoder.
@@ -2837,6 +2853,7 @@ fuzzer_test("blink_webp_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/webpfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::DateTimeFormat.
@@ -2848,6 +2865,7 @@ fuzzer_test("blink_date_time_format_fuzzer") {
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/date.dict"
   seed_corpus = "text/date_time_format_fuzzer_seed_corpus"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::JSONParser.
@@ -2858,6 +2876,7 @@ fuzzer_test("blink_json_parser_fuzzer") {
     ":platform",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::SecurityOrigin.
@@ -2868,7 +2887,7 @@ fuzzer_test("blink_security_origin_fuzzer") {
     ":platform",
   ]
   dict = "//url/gurl_fuzzer.dict"
-  defines = [ "INSIDE_BLINK" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
@@ -2879,6 +2898,7 @@ fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
     "//third_party/icu",
   ]
   libfuzzer_options = [ "max_len=256" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_http_parsers_fuzzer") {
@@ -2888,6 +2908,7 @@ fuzzer_test("blink_http_parsers_fuzzer") {
     ":platform",
   ]
   dict = "network/HTTPParsersFuzzer.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_storage_key_fuzzer") {
@@ -2897,6 +2918,7 @@ fuzzer_test("blink_storage_key_fuzzer") {
     "//third_party/blink/public/common",
   ]
   seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer template for WTF::TextCodec.
@@ -2912,7 +2934,10 @@ template("blink_text_codec_fuzzer") {
       ":blink_fuzzer_test_support",
       ":platform",
     ]
-    additional_configs = [ ":" + name + "_config" ]
+    additional_configs = [
+      ":" + name + "_config",
+      "//third_party/blink/renderer:inside_blink",
+    ]
     seed_corpus = "text_codec_fuzzer_seed_corpus"
   }
 }

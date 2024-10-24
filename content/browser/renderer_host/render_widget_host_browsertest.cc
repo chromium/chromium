@@ -50,7 +50,7 @@
 #include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #endif
 
