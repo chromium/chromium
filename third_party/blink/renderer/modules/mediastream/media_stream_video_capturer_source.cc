@@ -252,6 +252,9 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
           case RunState::kCameraBusyError:
             result = MediaStreamRequestResult::DEVICE_IN_USE;
             break;
+          case RunState::kStartTimeoutError:
+            result = MediaStreamRequestResult::START_TIMEOUT;
+            break;
           default:
             result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;
         }

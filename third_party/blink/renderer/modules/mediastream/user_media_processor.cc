@@ -124,6 +124,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "DEVICE_IN_USE";
     case MediaStreamRequestResult::REQUEST_CANCELLED:
       return "REQUEST_CANCELLED";
+    case MediaStreamRequestResult::START_TIMEOUT:
+      return "START_TIMEOUT";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       return "NUM_MEDIA_REQUEST_RESULTS";
     default:
@@ -311,6 +313,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Device in use";
     case MediaStreamRequestResult::REQUEST_CANCELLED:
       return "Request was cancelled";
+    case MediaStreamRequestResult::START_TIMEOUT:
+      return "Timeout starting video source";
     default:
       NOTREACHED_IN_MIGRATION();
       return "";

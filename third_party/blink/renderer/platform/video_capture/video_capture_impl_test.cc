@@ -789,7 +789,8 @@ TEST_F(VideoCaptureImplTest,
 TEST_F(VideoCaptureImplTest, StartTimeout) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR));
+  EXPECT_CALL(*this,
+              OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT));
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
 
   ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
