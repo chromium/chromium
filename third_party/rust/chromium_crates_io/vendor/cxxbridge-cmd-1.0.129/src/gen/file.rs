@@ -11,13 +11,14 @@ pub(crate) struct File {
 impl Parse for File {
     fn parse(input: ParseStream) -> Result<Self> {
         let mut modules = Vec::new();
-        input.call(Attribute::parse_inner)?;
         parse(input, &mut modules)?;
         Ok(File { modules })
     }
 }
 
 fn parse(input: ParseStream, modules: &mut Vec<Module>) -> Result<()> {
+    input.call(Attribute::parse_inner)?;
+
     while !input.is_empty() {
         let mut cxx_bridge = false;
         let mut namespace = Namespace::ROOT;
@@ -60,6 +61,7 @@ fn parse(input: ParseStream, modules: &mut Vec<Module>) -> Result<()> {
             }
         }
     }
+
     Ok(())
 }
 

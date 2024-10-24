@@ -110,7 +110,7 @@ impl<'s, 'a, T> Iterator for Iter<'s, 'a, T> {
     }
 }
 
-impl<'a, T> Debug for OrderedSet<&'a T>
+impl<T> Debug for OrderedSet<&T>
 where
     T: Debug,
 {

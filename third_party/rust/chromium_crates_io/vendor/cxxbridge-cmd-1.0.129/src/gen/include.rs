@@ -180,7 +180,7 @@ impl<'i, 'a> Extend<&'i Include> for Includes<'a> {
     }
 }
 
-impl<'i> From<&'i syntax::Include> for Include {
+impl From<&syntax::Include> for Include {
     fn from(include: &syntax::Include) -> Self {
         Include {
             path: include.path.clone(),
