@@ -230,6 +230,10 @@ class BocaAppPageHandlerTest : public testing::Test {
         &session_client_impl_);
   }
 
+  void TearDown() override {
+    EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  }
+
  protected:
   MockSessionClientImpl* session_client_impl() { return &session_client_impl_; }
   MockBocaAppClient* boca_app_client() { return boca_app_client_.get(); }

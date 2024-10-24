@@ -173,6 +173,12 @@ BocaAppHandler::BocaAppHandler(
 
 BocaAppHandler::~BocaAppHandler() {
   BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
+  // Always turn off local caption when app close.
+  ::boca::CaptionsConfig local_caption_config;
+  local_caption_config.set_captions_enabled(false);
+  local_caption_config.set_translations_enabled(false);
+  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
+      std::move(local_caption_config));
 }
 
 void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
