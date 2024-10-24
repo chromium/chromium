@@ -5,9 +5,15 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_NATIVE_SCREEN_CAPTURE_PICKER_MAC_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_NATIVE_SCREEN_CAPTURE_PICKER_MAC_H_
 
-#include "content/browser/media/capture/native_screen_capture_picker.h"
+#include <memory>
+
+#include "build/build_config.h"
+
+static_assert(BUILDFLAG(IS_MAC));
 
 namespace content {
+
+class NativeScreenCapturePicker;
 
 std::unique_ptr<NativeScreenCapturePicker> CreateNativeScreenCapturePickerMac();
 

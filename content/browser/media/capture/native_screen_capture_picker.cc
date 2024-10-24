@@ -4,8 +4,10 @@
 
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
 #include "media/base/media_switches.h"
+#endif
 
 namespace content {
 

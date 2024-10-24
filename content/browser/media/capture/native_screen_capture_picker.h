@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_NATIVE_SCREEN_CAPTURE_PICKER_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_NATIVE_SCREEN_CAPTURE_PICKER_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
@@ -32,8 +35,8 @@ class NativeScreenCapturePicker {
       DesktopMediaID::Type type,
       base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
-      base::OnceCallback<void()> cancel_callback,
-      base::OnceCallback<void()> error_callback) = 0;
+      base::OnceClosure cancel_callback,
+      base::OnceClosure error_callback) = 0;
 
   // Closes the picker.
   virtual void Close(DesktopMediaID device_id) = 0;
