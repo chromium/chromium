@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Records `true` when `PrefetchResponseReader::CreateRequestHandler` couldn't
-    get valid `body`.
+    get valid `body`. `false` is never recorded.
 
     It is used for investigation crbug.com/374039756.
   </summary>
