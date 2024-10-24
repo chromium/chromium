@@ -1198,7 +1198,7 @@ void AttributionDataHostManagerImpl::HandleNextRegistrationData(
   CHECK(it != registrations_.end());
   CHECK(!it->pending_registration_data().empty());
 
-  {
+  do {
     auto& pending_registration_data = it->pending_registration_data().front();
 
     if (!pending_registration_data.headers.info_header.empty()) {
@@ -1211,15 +1211,11 @@ void AttributionDataHostManagerImpl::HandleNextRegistrationData(
 
     HandleRegistrationInfo(*it, std::move(pending_registration_data),
                            attribution_reporting::RegistrationInfo());
-  }
 
-  it->pending_registration_data().pop_front();
+    it->pending_registration_data().pop_front();
+  } while (!it->pending_registration_data().empty());
 
-  if (!it->pending_registration_data().empty()) {
-    HandleNextRegistrationData(it);
-  } else {
-    MaybeOnRegistrationsFinished(it);
-  }
+  MaybeOnRegistrationsFinished(it);
 }
 
 void AttributionDataHostManagerImpl::OnInfoHeaderParsed(
