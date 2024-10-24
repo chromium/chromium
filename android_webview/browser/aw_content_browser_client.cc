@@ -913,6 +913,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     content::RenderFrameHost* initiator_document,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Sandbox flags
   // =============
   //
@@ -947,39 +949,28 @@ bool AwContentBrowserClient::HandleExternalProtocol(
   // be schemes unrelated to the regular network stack so it doesn't make sense
   // to look for cookies. Providing a nullopt for the cookie manager lets
   // the AwProxyingURLLoaderFactory know to skip that work.
-  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
-    // Manages its own lifetime.
-    new android_webview::AwProxyingURLLoaderFactory(
-        std::nullopt /* cookie_manager */, nullptr /* cookie_access_policy */,
-        isolation_info, web_contents_key, frame_tree_node_id,
-        std::move(receiver), mojo::NullRemote(), true /* intercept_only */,
-        std::nullopt /* security_options */,
-        nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle),
-        std::nullopt /* navigation_id */);
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-               std::optional<WebContentsKey> web_contents_key,
-               content::FrameTreeNodeId frame_tree_node_id,
-               scoped_refptr<AwBrowserContextIoThreadHandle>
-                   browser_context_handle,
-               const net::IsolationInfo& isolation_info) {
-              // Manages its own lifetime.
-              new android_webview::AwProxyingURLLoaderFactory(
-                  std::nullopt /* cookie_manager */,
-                  nullptr /* cookie_access_policy */, isolation_info,
-                  web_contents_key, frame_tree_node_id, std::move(receiver),
-                  mojo::NullRemote(), true /* intercept_only */,
-                  std::nullopt /* security_options */,
-                  nullptr /* xrw_allowlist_matcher */,
-                  std::move(browser_context_handle),
-                  std::nullopt /* navigation_id */);
-            },
-            std::move(receiver), web_contents_key, frame_tree_node_id,
-            std::move(browser_context_handle), isolation_info));
-  }
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+             std::optional<WebContentsKey> web_contents_key,
+             content::FrameTreeNodeId frame_tree_node_id,
+             scoped_refptr<AwBrowserContextIoThreadHandle>
+                 browser_context_handle,
+             const net::IsolationInfo& isolation_info) {
+            // Manages its own lifetime.
+            new android_webview::AwProxyingURLLoaderFactory(
+                std::nullopt /* cookie_manager */,
+                nullptr /* cookie_access_policy */, isolation_info,
+                web_contents_key, frame_tree_node_id, std::move(receiver),
+                mojo::NullRemote(), true /* intercept_only */,
+                std::nullopt /* security_options */,
+                nullptr /* xrw_allowlist_matcher */,
+                std::move(browser_context_handle),
+                std::nullopt /* navigation_id */);
+          },
+          std::move(receiver), web_contents_key, frame_tree_node_id,
+          std::move(browser_context_handle), isolation_info));
   return false;
 }
 
