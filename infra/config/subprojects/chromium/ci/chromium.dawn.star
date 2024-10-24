@@ -2323,6 +2323,7 @@ ci.gpu.windows_builder(
 
 ci.gpu.windows_builder(
     name = "Dawn Win11 arm64 DEPS Builder",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Compiles DEPSed binaries for Windows/ARM64",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

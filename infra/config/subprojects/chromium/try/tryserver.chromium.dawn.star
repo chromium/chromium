@@ -273,6 +273,7 @@ try_.builder(
 
 try_.builder(
     name = "dawn-win11-arm64-deps-rel",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Dawn Win11 arm64 DEPS Builder",
     ],
