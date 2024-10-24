@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -161,26 +160,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             getBrowserControlsManager().getBrowserVisibilityDelegate().showControlsTransient();
         }
         super.tabCreated(id, sourceId, launchType, incognito, willBeSelected, originX, originY);
-    }
-
-    @Override
-    public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout && !incognito) {
-            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
-        }
-        super.onTabsAllClosing(incognito);
-    }
-
-    @Override
-    protected void tabModelSwitched(boolean incognito) {
-        super.tabModelSwitched(incognito);
-        getTabModelSelector().commitAllTabClosures();
-        if (getActiveLayout() == mStaticLayout
-                && !incognito
-                && getTabModelSelector().getModel(false).getCount() == 0
-                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
-            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
-        }
     }
 
     @Override

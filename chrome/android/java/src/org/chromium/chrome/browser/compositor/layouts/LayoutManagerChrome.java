@@ -292,9 +292,22 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout) return;
-
+        if (getActiveLayout() == mStaticLayout && !incognito) {
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+        }
         super.onTabsAllClosing(incognito);
+    }
+
+    @Override
+    protected void tabModelSwitched(boolean incognito) {
+        super.tabModelSwitched(incognito);
+        getTabModelSelector().commitAllTabClosures();
+        if (getActiveLayout() == mStaticLayout
+                && !incognito
+                && getTabModelSelector().getModel(false).getCount() == 0
+                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+        }
     }
 
     /** Initializes HubLayout without needing to open the Tab Switcher. */
