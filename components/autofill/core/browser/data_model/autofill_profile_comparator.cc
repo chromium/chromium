@@ -426,68 +426,6 @@ bool AutofillProfileComparator::MergeNames(const AutofillProfile& p1,
   return true;
 }
 
-bool AutofillProfileComparator::MergeCJKNames(const AutofillProfile& p1,
-                                              const AutofillProfile& p2,
-                                              NameInfo& info) const {
-  DCHECK(data_util::IsCJKName(p1.GetInfo(NAME_FULL, app_locale_)));
-  DCHECK(data_util::IsCJKName(p2.GetInfo(NAME_FULL, app_locale_)));
-
-  struct Name {
-    std::u16string given;
-    std::u16string surname;
-    std::u16string full;
-  };
-
-  Name name1 = {p1.GetRawInfo(NAME_FIRST), p1.GetRawInfo(NAME_LAST),
-                p1.GetRawInfo(NAME_FULL)};
-  Name name2 = {p2.GetRawInfo(NAME_FIRST), p2.GetRawInfo(NAME_LAST),
-                p2.GetRawInfo(NAME_FULL)};
-
-  const Name* most_recent_name =
-      p2.use_date() >= p1.use_date() ? &name2 : &name1;
-
-  // The two |NameInfo| objects might disagree about what the full name looks
-  // like. If only one of the two has an explicit (user-entered) full name, use
-  // that as ground truth. Otherwise, use the most recent profile.
-  const Name* full_name_candidate;
-  if (name1.full.empty()) {
-    full_name_candidate = &name2;
-  } else if (name2.full.empty()) {
-    full_name_candidate = &name1;
-  } else {
-    full_name_candidate = most_recent_name;
-  }
-
-  // The two |NameInfo| objects might disagree about how the name is split into
-  // given/surname. If only one of the two has an explicit (user-entered)
-  // given/surname pair, use that as ground truth. Otherwise, use the most
-  // recent profile.
-  const Name* name_parts_candidate;
-  if (name1.given.empty() || name1.surname.empty()) {
-    name_parts_candidate = &name2;
-  } else if (name2.given.empty() || name2.surname.empty()) {
-    name_parts_candidate = &name1;
-  } else {
-    name_parts_candidate = most_recent_name;
-  }
-
-  if (name_parts_candidate->given.empty() ||
-      name_parts_candidate->surname.empty()) {
-    // The name was not split correctly into a given/surname, so use the logic
-    // from |SplitName()|.
-    info.SetInfo(NAME_FULL, full_name_candidate->full, app_locale_);
-  } else {
-    // The name was already split into a given/surname, so keep those intact.
-    if (!full_name_candidate->full.empty()) {
-      info.SetRawInfo(NAME_FULL, full_name_candidate->full);
-    }
-    info.SetRawInfo(NAME_FIRST, name_parts_candidate->given);
-    info.SetRawInfo(NAME_LAST, name_parts_candidate->surname);
-  }
-
-  return true;
-}
-
 bool AutofillProfileComparator::IsNameVariantOf(
     const std::u16string& full_name_1,
     const std::u16string& full_name_2) const {

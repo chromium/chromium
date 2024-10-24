@@ -791,7 +791,7 @@ TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
   NameInfo name6 = CreateNameInfo(u"", u"", u"", u"ゲイツ・ビル");
   NameInfo name7 = CreateNameInfo(u"ビル", u"", u"ゲイツ", u"");
 
-  // Set the use dates for the profiles, because |MergeCJKNames()| tries to use
+  // Set the use dates for the profiles, because `MergeNames()` tries to use
   // the most recent profile if there is a conflict. The ordering is
   // p1 > p2 > p3 > p4 > p5, with p1 being the most recent.
   AutofillProfile p1 = CreateProfileWithName(name1);

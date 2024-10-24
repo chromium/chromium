@@ -307,13 +307,6 @@ class AutofillProfileComparator {
   bool HaveMergeableAddresses(const AutofillProfile& p1,
                               const AutofillProfile& p2) const;
 
-  // Populates |name_info| with the result of merging the Chinese, Japanese or
-  // Korean names in |p1| and |p2|. Returns true if successful. Expects that
-  // |p1| and |p2| have already been found to be mergeable, and have CJK names.
-  bool MergeCJKNames(const AutofillProfile& p1,
-                     const AutofillProfile& p2,
-                     NameInfo& info) const;
-
  private:
   const std::string app_locale_;
 };
