@@ -4170,15 +4170,27 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         self.WaitForCondition(
             lambda: len(self._driver.GetWindowHandles()) == 1))
 
+  def _sessionIsOver(self):
+    try:
+      self._driver.GetWindowHandles()
+      return False
+    except chromedriver.InvalidSessionId:
+      return True
+
   def testCloseLastWindow(self):
-      def sessionIsOver():
-          try:
-              self._driver.GetWindowHandles()
-              return False
-          except chromedriver.InvalidSessionId:
-              return True
-      self._driver.CloseWindow()
-      self.WaitForCondition(sessionIsOver)
+    self._driver.CloseWindow()
+    self.WaitForCondition(self._sessionIsOver)
+
+  def testDoesntCrashOnClosingBrowserFromAsyncScript(self):
+    # Regression test for https://crbug.com/42323264.
+    old_handles = self._driver.GetWindowHandles()
+    self._driver.ExecuteScript('window.open()')
+    new_window = self.WaitForNewWindow(self._driver, old_handles)
+    self._driver.CloseWindow()
+    self._driver.SwitchToWindow(new_window)
+    self._driver.ExecuteAsyncScript(
+        'done=arguments[0]; setTimeout(() => {done();}, 1); window.close()')
+    self.WaitForCondition(self._sessionIsOver)
 
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
