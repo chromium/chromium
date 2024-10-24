@@ -1446,9 +1446,9 @@ TEST_F(
       kTestOrigin, kTestPathInfo2, HandleType::kFile, UserAction::kSave);
   auto grants = permission_context()->ConvertObjectsToGrants(
       permission_context()->GetGrantedObjects(kTestOrigin));
-  std::vector<base::FilePath> expected_file_write_grants = {kTestPathInfo.path};
-  std::vector<base::FilePath> expected_file_read_grants = {kTestPathInfo2.path,
-                                                           kTestPathInfo.path};
+  std::vector<PathInfo> expected_file_write_grants = {kTestPathInfo};
+  std::vector<PathInfo> expected_file_read_grants = {kTestPathInfo2,
+                                                     kTestPathInfo};
   EXPECT_EQ(grants.file_write_grants, expected_file_write_grants);
   EXPECT_EQ(grants.file_read_grants, expected_file_read_grants);
 

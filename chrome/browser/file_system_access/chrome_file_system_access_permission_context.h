@@ -261,10 +261,10 @@ class ChromeFileSystemAccessPermissionContext
     Grants(Grants&&);
     Grants& operator=(Grants&&);
 
-    std::vector<base::FilePath> file_read_grants;
-    std::vector<base::FilePath> file_write_grants;
-    std::vector<base::FilePath> directory_read_grants;
-    std::vector<base::FilePath> directory_write_grants;
+    std::vector<content::PathInfo> file_read_grants;
+    std::vector<content::PathInfo> file_write_grants;
+    std::vector<content::PathInfo> directory_read_grants;
+    std::vector<content::PathInfo> directory_write_grants;
   };
   Grants ConvertObjectsToGrants(std::vector<std::unique_ptr<Object>> objects);
 

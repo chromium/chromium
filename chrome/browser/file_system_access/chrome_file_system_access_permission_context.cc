@@ -590,6 +590,14 @@ std::string StringOrEmpty(const std::string* s) {
   return s ? *s : std::string();
 }
 
+bool PathInfosContains(const std::vector<content::PathInfo>& path_infos,
+                       const base::FilePath& path) {
+  return base::ranges::any_of(path_infos,
+                              [&path](const content::PathInfo& path_info) {
+                                return path_info.path == path;
+                              });
+}
+
 }  // namespace
 
 ChromeFileSystemAccessPermissionContext::Grants::Grants() = default;
@@ -2176,6 +2184,8 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
     const base::Value::Dict& object_dict = object->value;
     const base::FilePath path =
         base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
+    const std::string display_name =
+        StringOrEmpty(object_dict.FindString(kPermissionDisplayNameKey));
     HandleType handle_type =
         object_dict.FindBool(kPermissionIsDirectoryKey).value()
             ? HandleType::kDirectory
@@ -2187,20 +2197,21 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
 
     if (handle_type == HandleType::kDirectory) {
       if (is_write_grant &&
-          !base::Contains(grants.directory_write_grants, path)) {
-        grants.directory_write_grants.push_back(path);
+          !PathInfosContains(grants.directory_write_grants, path)) {
+        grants.directory_write_grants.emplace_back(path, display_name);
       }
       if (is_read_grant &&
-          !base::Contains(grants.directory_read_grants, path)) {
-        grants.directory_read_grants.push_back(path);
+          !PathInfosContains(grants.directory_read_grants, path)) {
+        grants.directory_read_grants.emplace_back(path, display_name);
       }
     }
     if (handle_type == HandleType::kFile) {
-      if (is_write_grant && !base::Contains(grants.file_write_grants, path)) {
-        grants.file_write_grants.push_back(path);
+      if (is_write_grant &&
+          !PathInfosContains(grants.file_write_grants, path)) {
+        grants.file_write_grants.emplace_back(path, display_name);
       }
-      if (is_read_grant && !base::Contains(grants.file_read_grants, path)) {
-        grants.file_read_grants.push_back(path);
+      if (is_read_grant && !PathInfosContains(grants.file_read_grants, path)) {
+        grants.file_read_grants.emplace_back(path, display_name);
       }
     }
   }

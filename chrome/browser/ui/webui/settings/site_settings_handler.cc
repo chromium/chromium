@@ -2603,10 +2603,10 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
 
     // Populate the `file_system_permission_grant` object with allowed
     // permissions.
-    for (auto& file_path : grantObj.directory_write_grants) {
+    for (auto& path_info : grantObj.directory_write_grants) {
       base::Value::Dict directory_write_grant;
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       directory_write_grant.Set(site_settings::kOrigin, origin_string);
       directory_write_grant.Set(site_settings::kFileSystemFilePath,
                                 file_path_string);
@@ -2616,9 +2616,9 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       edit_grants.Append(std::move(directory_write_grant));
     }
 
-    for (auto& file_path : grantObj.directory_read_grants) {
+    for (auto& path_info : grantObj.directory_read_grants) {
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       if (base::Contains(directory_edit_grants_file_paths, file_path_string)) {
         continue;
       }
@@ -2631,10 +2631,10 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       view_grants.Append(std::move(directory_read_grant));
     }
 
-    for (auto& file_path : grantObj.file_write_grants) {
+    for (auto& path_info : grantObj.file_write_grants) {
       base::Value::Dict file_write_grant;
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       file_write_grant.Set(site_settings::kOrigin, origin_string);
       file_write_grant.Set(site_settings::kFileSystemFilePath,
                            file_path_string);
@@ -2644,9 +2644,9 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       edit_grants.Append(std::move(file_write_grant));
     }
 
-    for (auto& file_path : grantObj.file_read_grants) {
+    for (auto& path_info : grantObj.file_read_grants) {
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       if (base::Contains(file_edit_grants_file_paths, file_path_string)) {
         continue;
       }
