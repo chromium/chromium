@@ -35,7 +35,8 @@ class VideoEncoderImpl final : public VideoEncoder {
       scoped_refptr<CastEnvironment> cast_environment,
       const FrameSenderConfig& video_config,
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
-      StatusChangeCallback status_change_cb);
+      StatusChangeCallback status_change_cb,
+      FrameEncodedCallback output_cb);
 
   VideoEncoderImpl(const VideoEncoderImpl&) = delete;
   VideoEncoderImpl& operator=(const VideoEncoderImpl&) = delete;
@@ -44,14 +45,14 @@ class VideoEncoderImpl final : public VideoEncoder {
 
   // VideoEncoder implementation.
   bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                        base::TimeTicks reference_time,
-                        FrameEncodedCallback frame_encoded_callback) final;
+                        base::TimeTicks reference_time) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
 
  private:
   scoped_refptr<CastEnvironment> cast_environment_;
   CodecDynamicConfig dynamic_config_;
+  FrameEncodedCallback output_cb_;
 
   // This member belongs to the video encoder thread. It must not be
   // dereferenced on the main thread. We manage the lifetime of this member

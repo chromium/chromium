@@ -15,8 +15,7 @@
 #include "media/cast/common/rtp_time.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 // A combination of metadata and data for one encoded frame.  This can contain
 // audio data or video data or other.
@@ -71,7 +70,6 @@ struct EncodedFrame {
   std::string data;
 };
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_COMMON_ENCODED_FRAME_H_

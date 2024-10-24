@@ -81,9 +81,7 @@ class VideoSender : public FrameSender::Client {
 
  private:
   // Called by the |video_encoder_| with the next EncodedFrame to send.
-  void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                           const base::TimeTicks reference_time,
-                           std::unique_ptr<SenderEncodedFrame> encoded_frame);
+  void OnEncodedVideoFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame);
 
   // The backing frame sender implementation.
   std::unique_ptr<FrameSender> frame_sender_;
