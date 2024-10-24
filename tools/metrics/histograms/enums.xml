@@ -29230,6 +29230,8 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Received bad printer settings (Deprecated)"/>
   <int value="8" label="Capture metadata failed (Deprecated)"/>
   <int value="9" label="Got empty printer settings"/>
+  <int value="10" label="No Canvas"/>
+  <int value="11" label="No RenderFrame"/>
 </enum>
 
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">

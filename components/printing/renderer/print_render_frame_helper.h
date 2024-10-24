@@ -207,6 +207,8 @@ class PrintRenderFrameHelper
     // kInvalidPrinterSettingsDeprecated = 7,
     // kMetafileCaptureFailedDeprecated = 8,
     kEmptyPrinterSettings = 9,
+    kNoCanvas = 10,
+    kNoRenderFrame = 11,
     kLastEnum  // Always last.
   };
 
@@ -220,6 +222,12 @@ class PrintRenderFrameHelper
   enum class PrintRequestType {
     kRegular,
     kScripted,
+  };
+
+  enum class PrintPageInternalResult {
+    kSuccess,
+    kNoCanvas,
+    kNoRenderFrame,
   };
 
   // Helper to make it easy to correctly call IPCReceived() and IPCProcessed().
@@ -367,12 +375,13 @@ class PrintRenderFrameHelper
                            const blink::WebNode& node);
 
   // Helper function for rendering page at `page_index` to `metafile`.
-  void PrintPageInternal(const mojom::PrintParams& params,
-                         uint32_t page_index,
-                         uint32_t page_count,
-                         blink::WebLocalFrame* frame,
-                         blink::WebLocalFrame* header_footer_frame,
-                         MetafileSkia* metafile);
+  PrintPageInternalResult PrintPageInternal(
+      const mojom::PrintParams& params,
+      uint32_t page_index,
+      uint32_t page_count,
+      blink::WebLocalFrame* frame,
+      blink::WebLocalFrame* header_footer_frame,
+      MetafileSkia* metafile);
 
   // Helper methods -----------------------------------------------------------
 
