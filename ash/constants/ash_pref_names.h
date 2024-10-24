@@ -2273,6 +2273,11 @@ inline constexpr char kFocusModeYTMDisplayOAuthConsent[] =
 inline constexpr char kFocusModeYTMDisplayFreeTrial[] =
     "ash.focus_mode.youtube_music.free_trial";
 
+// A string pref holding the value of the demo account obfuscated gaia id for
+// current session. The account will be clean up at the beginning of next
+// session.
+inline constexpr char kDemoAccountGaiaId[] = "demo_mode.obfuscated_gaia_id";
+
 // An integer pref that holds enum value of current demo mode configuration.
 // Values are defined by DemoSession::DemoModeConfig enum.
 inline constexpr char kDemoModeConfig[] = "demo_mode.config";

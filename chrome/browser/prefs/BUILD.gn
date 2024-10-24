@@ -218,6 +218,7 @@ source_set("impl") {
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/boca/on_task",
       "//chromeos/ash/components/carrier_lock",
+      "//chromeos/ash/components/demo_mode",
       "//chromeos/ash/components/local_search_service",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/policy",

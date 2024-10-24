@@ -381,8 +381,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -439,6 +437,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector_chromeos.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_prefs.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
@@ -1763,8 +1762,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   ash::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
       registry);
-  ash::DemoSession::RegisterLocalStatePrefs(registry);
-  ash::DemoSetupController::RegisterLocalStatePrefs(registry);
+  ash::demo_mode::RegisterLocalStatePrefs(registry);
   ash::DeviceNameStore::RegisterLocalStatePrefs(registry);
   ash::DozeModePowerStatusScheduler::RegisterLocalStatePrefs(registry);
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);

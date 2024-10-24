@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -20,6 +21,7 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -274,6 +276,12 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
     return;
   }
 
+  // TODO(crbug.com/370808139): Implement account clean up on next session
+  // start.
+  auto* local_state = g_browser_process->local_state();
+  CHECK(local_state->GetString(prefs::kDemoAccountGaiaId).empty());
+  local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
+
   LoginDemoAccount(*email, *gaia_id, *auth_code, device_id);
 }
 
@@ -286,9 +294,5 @@ void DemoLoginController::OnSetupDemoAccountError(
     std::move(setup_failed_callback_for_testing_).Run(result_code);
   }
 }
-
-// TODO(crbug.com/370808139): Implement account clean up on session end.
-// Persist its state to locale state if not success and try again on login
-// screen.
 
 }  // namespace ash

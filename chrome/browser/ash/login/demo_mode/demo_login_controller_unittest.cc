@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/test_login_screen.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,7 +29,7 @@ namespace {
 constexpr char kValidGaiaCreds[] =
     R"({
       "username":"example@gmail.com",
-      "obfuscatedGaiaId":"123",
+      "obfuscatedGaiaId":"%s",
       "authorizationCode":"abc"
     })";
 
@@ -83,22 +86,29 @@ class DemoLoginControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedStubInstallAttributes attributes_;
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   // Dependencies for `LoginScreenClientImpl`:
   session_manager::SessionManager session_manager_;
   TestLoginScreen test_login_screen_;
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
+
   std::unique_ptr<DemoLoginController> demo_login_controller_;
 };
 
 TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccess) {
-  test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kValidGaiaCreds);
+  const std::string gaia_id = "123";
+  test_url_loader_factory_.AddResponse(
+      GetSetupUrl().spec(), base::StringPrintf(kValidGaiaCreds, gaia_id));
 
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin)
       .Times(1)
       .WillOnce(testing::Invoke([&](const UserContext& user_context) {
         EXPECT_FALSE(user_context.GetDeviceId().empty());
+        EXPECT_EQ(g_browser_process->local_state()->GetString(
+                      prefs::kDemoAccountGaiaId),
+                  gaia_id);
         loop.Quit();
       }));
   login_screen_client()->OnLoginScreenShown();

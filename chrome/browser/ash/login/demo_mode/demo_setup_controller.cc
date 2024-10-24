@@ -33,6 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -405,13 +406,6 @@ std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
                             debug_message_.c_str());
 }
 
-void DemoSetupController::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kDemoModeConfig,
-      static_cast<int>(DemoSession::DemoModeConfig::kNone));
-}
-
 // static
 void DemoSetupController::ClearDemoRequisition() {
   if (policy::EnrollmentRequisitionManager::GetDeviceRequisition() ==
@@ -460,7 +454,7 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   std::string country_lowercase = base::ToLowerASCII(country);
 
   // Exclude US as it is the default country.
-  if (base::Contains(DemoSession::kSupportedCountries, country_uppercase)) {
+  if (base::Contains(demo_mode::kSupportedCountries, country_uppercase)) {
     if (chromeos::features::IsCloudGamingDeviceEnabled()) {
       return base::StringPrintf("admin-%s-blazey@%s", country_lowercase.c_str(),
                                 policy::kDemoModeDomain);
