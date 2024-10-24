@@ -79,7 +79,8 @@ bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
 }
 
 void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
-    const GURL& url) {}
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {}
 
 std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingURL(
     const GroupData& group_data) {

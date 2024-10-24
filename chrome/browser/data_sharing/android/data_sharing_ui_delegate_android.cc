@@ -23,7 +23,9 @@ DataSharingUIDelegateAndroid::DataSharingUIDelegateAndroid(Profile* profile) {
 
 DataSharingUIDelegateAndroid::~DataSharingUIDelegateAndroid() = default;
 
-void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(const GURL& url) {
+void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DataSharingUIDelegateAndroid_handleShareURLIntercepted(
       env, java_obj_, url::GURLAndroid::FromNativeGURL(env, url));

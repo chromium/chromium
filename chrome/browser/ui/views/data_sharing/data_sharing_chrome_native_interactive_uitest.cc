@@ -194,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
         auto* data_sharing_service =
             data_sharing::DataSharingServiceFactory::GetForProfile(
                 browser()->profile());
-        data_sharing_service->HandleShareURLNavigationIntercepted(share_link);
+        data_sharing_service->HandleShareURLNavigationIntercepted(share_link,
+                                                                  nullptr);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {

@@ -96,7 +96,9 @@ class DataSharingServiceImpl : public DataSharingService,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
-  void HandleShareURLNavigationIntercepted(const GURL& url) override;
+  void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) override;
   std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
   ParseURLResult ParseDataSharingURL(const GURL& url) override;
   void Shutdown() override;

@@ -24,7 +24,9 @@ class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
   DataSharingUIDelegateIOS& operator=(DataSharingUIDelegateIOS&&) = delete;
 
   // DataSharingUIDelegate implementation.
-  void HandleShareURLIntercepted(const GURL& url) override;
+  void HandleShareURLIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) override;
 
  private:
   raw_ptr<ShareKitService> share_kit_service_;

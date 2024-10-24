@@ -20,7 +20,9 @@ DataSharingUIDelegateDesktop::DataSharingUIDelegateDesktop(Profile* profile)
 
 DataSharingUIDelegateDesktop::~DataSharingUIDelegateDesktop() = default;
 
-void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(const GURL& url) {
+void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {
   DataSharingService* const service =
       DataSharingServiceFactory::GetForProfile(profile_);
   const data_sharing::DataSharingService::ParseURLResult token =

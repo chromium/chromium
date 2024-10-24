@@ -61,7 +61,8 @@ class MockDataSharingService : public DataSharingService {
                     const std::string&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD1(ShouldInterceptNavigationForShareURL, bool(const GURL&));
-  MOCK_METHOD1(HandleShareURLNavigationIntercepted, void(const GURL&));
+  MOCK_METHOD2(HandleShareURLNavigationIntercepted,
+               void(const GURL&, std::unique_ptr<ShareURLInterceptionContext>));
   MOCK_METHOD1(GetDataSharingURL, std::unique_ptr<GURL>(const GroupData&));
   MOCK_METHOD1(ParseDataSharingURL, ParseURLResult(const GURL&));
   MOCK_METHOD2(

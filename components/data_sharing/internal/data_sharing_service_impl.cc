@@ -487,11 +487,12 @@ bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
 }
 
 void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
-    const GURL& url) {
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {
   if (!ui_delegate_) {
     return;
   }
-  ui_delegate_->HandleShareURLIntercepted(url);
+  ui_delegate_->HandleShareURLIntercepted(url, std::move(context));
 }
 
 std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingURL(

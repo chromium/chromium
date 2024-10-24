@@ -16,6 +16,7 @@
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/service_status.h"
+#include "components/data_sharing/public/share_url_interception_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
@@ -184,7 +185,9 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
 
   // Called when a data sharing type URL has been intercepted.
-  virtual void HandleShareURLNavigationIntercepted(const GURL& url) = 0;
+  virtual void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) = 0;
 
   // Create a data sharing URL used for sharing. This does not validate if the
   // group is still active nor guarantee that the URL is not expired. The caller

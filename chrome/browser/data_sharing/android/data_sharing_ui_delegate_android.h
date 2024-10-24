@@ -23,7 +23,9 @@ class DataSharingUIDelegateAndroid : public DataSharingUIDelegate {
   ~DataSharingUIDelegateAndroid() override;
 
   // DataSharingUIDelegate implementation.
-  void HandleShareURLIntercepted(const GURL& url) override;
+  void HandleShareURLIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) override;
 
   ScopedJavaLocalRef<jobject> GetJavaObject() override;
 

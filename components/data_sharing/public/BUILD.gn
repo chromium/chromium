@@ -20,6 +20,8 @@ source_set("public") {
     "group_data.h",
     "service_status.cc",
     "service_status.h",
+    "share_url_interception_context.cc",
+    "share_url_interception_context.h",
   ]
 
   public_deps = [
