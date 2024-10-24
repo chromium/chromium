@@ -68,8 +68,8 @@ void TranslationManagerImpl::CanCreateTranslator(
     const std::string& target_lang,
     CanCreateTranslatorCallback callback) {
   CHECK(browser_context_);
-  on_device_translation::RecordTranslationAPICallForLanguagePair(
-      "CanTranslate", source_lang, target_lang);
+  RecordTranslationAPICallForLanguagePair("CanTranslate", source_lang,
+                                          target_lang);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())
               ->GetPrefs()
@@ -88,8 +88,7 @@ void TranslationManagerImpl::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<blink::mojom::Translator> receiver,
     CreateTranslatorCallback callback) {
-  on_device_translation::RecordTranslationAPICallForLanguagePair(
-      "Create", source_lang, target_lang);
+  RecordTranslationAPICallForLanguagePair("Create", source_lang, target_lang);
   CHECK(browser_context_);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())

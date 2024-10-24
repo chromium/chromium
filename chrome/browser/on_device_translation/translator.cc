@@ -24,10 +24,9 @@ Translator::~Translator() = default;
 
 void Translator::Translate(const std::string& input,
                            TranslateCallback callback) {
-  on_device_translation::RecordTranslationAPICallForLanguagePair(
-      "Translate", source_lang_, target_lang_);
-  on_device_translation::RecordTranslationCharacterCount(
-      source_lang_, target_lang_, input.size());
+  RecordTranslationAPICallForLanguagePair("Translate", source_lang_,
+                                          target_lang_);
+  RecordTranslationCharacterCount(source_lang_, target_lang_, input.size());
   if (translator_remote_.is_connected()) {
     translator_remote_->Translate(
         input, base::BindOnce(

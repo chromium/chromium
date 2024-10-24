@@ -289,7 +289,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
             kTranslationAPILimitLanguagePackCountMax) {
           // TODO(crbug.com/358030919): Consider printing errors
           // to DevTool's console.
-          on_device_translation::RecordLanguagePairUma(
+          RecordLanguagePairUma(
               "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
               source_lang, target_lang);
           std::move(callback).Run(false);
@@ -298,10 +298,10 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       }
 
       for (const auto& language_pack : to_be_registered_packs) {
-        on_device_translation::RecordLanguagePairUma(
+        RecordLanguagePairUma(
             "Translate.OnDeviceTranslation.Download.LanguagePair",
-            on_device_translation::GetSourceLanguageCode(language_pack),
-            on_device_translation::GetTargetLanguageCode(language_pack));
+            GetSourceLanguageCode(language_pack),
+            GetTargetLanguageCode(language_pack));
         // Register the language pack component.
         RegisterLanguagePackComponent(language_pack);
       }
