@@ -1271,7 +1271,7 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
     wtf_size_t end_index) {
   DCHECK(RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled());
   DCHECK(selector_list);
-  DCHECK_LT(start_index, end_index);
+  DCHECK_LE(start_index, end_index);
 
   // Create a nested declarations rule containing all declarations
   // in [start_index, end_index).
@@ -1324,8 +1324,15 @@ void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
     return;
   }
   wtf_size_t end_index = parsed_properties_.size();
-  if (start_index >= end_index) {
-    // No need to emit a rule with nothing in it.
+  if (start_index == kNotFound) {
+    return;
+  }
+  // The spec only allows creating non-empty rules, however, the inspector needs
+  // empty rules to appear as well. This has no effect on the styles seen by
+  // the page (the styles parsed with an `observer_` are for local use in the
+  // inspector only).
+  const bool emit_empty_rule = observer_;
+  if (start_index >= end_index && !emit_empty_rule) {
     return;
   }
 

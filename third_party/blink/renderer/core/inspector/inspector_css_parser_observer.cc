@@ -472,23 +472,38 @@ void InspectorCSSParserObserver::ObserveNestedDeclarations(
   // only exist in one place.
   property_data.resize(property_data.size() - nested_property_data.size());
 
-  CHECK(!nested_property_data.empty());
+  // Determine the range for the CSSNestedDeclarations rule body.
+  SourceRange range;
+
+  if (!nested_property_data.empty()) {
+    range.start = nested_property_data.front().range.start;
+    range.end = nested_property_data.back().range.end;
+  } else {
+    // Completely empty CSSNestedDeclarations rules can happen when there are no
+    // declarations at at all (not even a commented-out/invalid declaration).
+    // In this case, we need to pick another reasonable location for the
+    // would-be CSSNestedDeclarations rule.
+    if (preceding_rule) {
+      // Add one to move past the final '}'.
+      range.start = preceding_rule->rule_body_range.end + 1;
+      range.end = range.start;
+    } else {
+      range.start = rule->rule_body_range.start;
+      range.end = range.start;
+    }
+  }
 
   // Note that the nested declarations rule has no prelude (i.e. no selector
   // list), and no curly brackets surrounding its body. Therefore, the header
   // range is empty, and exists at the same offset as the body-start.
   auto* nested_declarations_rule =
       MakeGarbageCollected<CSSRuleSourceData>(StyleRule::kStyle);
-  nested_declarations_rule->rule_header_range.start =
-      nested_property_data.front().range.start;
-  nested_declarations_rule->rule_header_range.end =
-      nested_property_data.front().range.start;
-  nested_declarations_rule->rule_body_range.start =
-      nested_property_data.front().range.start;
-  nested_declarations_rule->rule_body_range.end =
-      nested_property_data.back().range.end;
-  nested_declarations_rule->rule_declarations_range =
-      nested_declarations_rule->rule_body_range;
+  // Note: CSSNestedDeclarations rules have no prelude, hence
+  // `rule_header_range` is always empty.
+  nested_declarations_rule->rule_header_range.start = range.start;
+  nested_declarations_rule->rule_header_range.end = range.start;
+  nested_declarations_rule->rule_body_range = range;
+  nested_declarations_rule->rule_declarations_range = range;
   nested_declarations_rule->property_data = std::move(nested_property_data);
   child_rules.insert(insert_rule_index, nested_declarations_rule);
 }

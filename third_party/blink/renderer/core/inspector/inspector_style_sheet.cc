@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 using blink::protocol::Array;
@@ -224,9 +225,21 @@ bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
   if (rule_count != 1 || source_data->at(0)->type != StyleRule::kStyle) {
     return false;
   }
-  const CSSRuleSourceData& property_data = *source_data->front();
-
-  return property_data.child_rules.size() == 2;
+  const CSSRuleSourceData& rule_data = *source_data->front();
+  if (rule_data.child_rules.size() != 2) {
+    return false;
+  }
+  // It is not allowed to create a CSSNestedDeclarations rule without
+  // any valid properties.
+  // TODO(crbug.com/363985597): List this restriction.
+  auto is_valid = [](const CSSPropertySourceData& data) {
+    return data.parsed_ok && !data.disabled;
+  };
+  if (!base::ranges::any_of(rule_data.child_rules[1]->property_data,
+                            is_valid)) {
+    return false;
+  }
+  return true;
 }
 
 bool VerifyPropertyNameText(Document* document, const String& name_text) {
