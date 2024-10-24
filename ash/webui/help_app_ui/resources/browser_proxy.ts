@@ -303,6 +303,11 @@ guestMessagePipe.registerHandler(
     Message.SET_HAS_VISITED_HOW_TO_PAGE,
     () => void helpApp.handler.setHasVisitedHowToPage());
 
+guestMessagePipe.registerHandler(
+    Message.OPEN_APP_MALL_PATH, ({path}: {path: string}) => {
+      window.open(`chrome://mall/${path}`);
+    });
+
 /** Compare two positions by their start index. Use for sorting. */
 function compareByStart(a: Position, b: Position): number {
   return a.start - b.start;

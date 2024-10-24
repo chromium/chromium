@@ -136,6 +136,20 @@ class HelpAppIntegrationTestWithAutoTriggerDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class HelpAppIntegrationTestWithAppMallEnabled : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationTestWithAppMallEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            chromeos::features::kCrosMall,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class HelpAppIntegrationTestWithFirstRunEnabled
     : public HelpAppIntegrationTest {
  public:
@@ -793,6 +807,38 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
+// Test that the Help App's `openAppMallPath` opens the App Mall SWA.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAppMallEnabled,
+                       HelpAppV2ShowAppMallSWA) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // There should be two browser windows, one regular and one for the newly
+  // opened help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  const GURL expected_url("chrome://mall/");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Script that tells the Help App to show parental controls.
+  constexpr char kScript[] = R"(
+    (async () => {
+      await window.customLaunchData.delegate.openAppMallPath('');
+    })();
+  )";
+  // Trigger the script, then wait for settings to open. Use ExecJs
+  // instead of EvalJsInAppFrame because the script needs to run in the same
+  // world as the page's code.
+  EXPECT_TRUE(content::ExecJs(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  navigation_observer.Wait();
+
+  // The app mall should be active in a new window.
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+}
+
 // Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` can open
 // valid URLs if the `kHelpAppAutoTriggerInstallDialog` feature is disabled.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
@@ -1319,4 +1365,7 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithBirchFeatureEnabled);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationTestWithAppMallEnabled);
 }  // namespace ash

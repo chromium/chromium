@@ -28,4 +28,5 @@ export enum Message {
   SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST =
       'set-has-completed-new-device-checklist',
   SET_HAS_VISITED_HOW_TO_PAGE = 'set-has-visited-how-to-page',
+  OPEN_APP_MALL_PATH = 'open-app-mall-path',
 }

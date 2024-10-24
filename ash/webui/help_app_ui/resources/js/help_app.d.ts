@@ -200,6 +200,10 @@ declare interface ClientApiDelegate {
    * the how to page.
    */
   setHasVisitedHowToPage: () => undefined;
+  /**
+   * Opens the App Mall app at the specified path.
+   */
+  openAppMallPath: (path: string) => undefined;
 }
 
 /** Launch data that can be read by the app when it first loads. */

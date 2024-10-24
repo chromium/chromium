@@ -79,6 +79,9 @@ const DELEGATE: ClientApiDelegate = {
   setHasVisitedHowToPage() {
     parentMessagePipe.sendMessage(Message.SET_HAS_VISITED_HOW_TO_PAGE);
   },
+  openAppMallPath(path: string) {
+    parentMessagePipe.sendMessage(Message.OPEN_APP_MALL_PATH, {path});
+  },
 };
 
 window.customLaunchData = {
