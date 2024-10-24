@@ -19823,6 +19823,24 @@
             ]
         }
     ],
+    "ResolutionBasedDecoderPriority": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ResolutionBasedDecoderPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetainOmniboxOnFocus": [
         {
             "platforms": [
