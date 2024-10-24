@@ -273,9 +273,18 @@ message DeviceRegisterRequest {
     // is mandatory and should be token-based.
     FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED = 18;
     // Device state downloaded from the server indicated that initial
-    // token-based enrollment is mandatory, but it failed and we are doing
-    // fallback to manual enrollment.
+    // token-based enrollment is mandatory, but it failed and we are falling
+    // back to manual enrollment.
     FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 19;
+    // Operating system was remotely installed, and device state downloaded
+    // from the server indicated that initial token-based enrollment is
+    // mandatory.
+    FLAVOR_ENROLLMENT_REMOTE_DEPLOYMENT_SERVER_FORCED = 20;
+    // Operating system was remotely installed, and device state downloaded
+    // from the server indicated that initial token-based enrollment is
+    // mandatory, but enrollment failed and we are falling back to manual
+    // enrollment.
+    FLAVOR_ENROLLMENT_REMOTE_DEPLOYMENT_MANUAL_FALLBACK = 21;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
