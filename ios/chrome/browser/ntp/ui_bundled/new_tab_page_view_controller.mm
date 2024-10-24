@@ -802,10 +802,11 @@ const CGFloat kFeedContainerExtraHeight = 500;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  // If `feedWrapperViewController` is nil, then the NTP is either being created
-  // or updated and is not ready to handle scroll events. Doing so could cause
-  // unexpected behavior, such as breaking the layout or causing crashes.
-  if (!self.feedWrapperViewController) {
+  // If either of these properties are nil, then the NTP is either being
+  // created, stopped or updated and is not ready to handle scroll events. Doing
+  // so could cause unexpected behavior, such as breaking the layout or causing
+  // crashes.
+  if (!self.feedWrapperViewController || !self.viewControllersAboveFeed) {
     return;
   }
   // Scroll events might still be queued for a previous scroll view which was
