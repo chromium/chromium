@@ -405,6 +405,16 @@ struct MilDataTypeMap<int32_t> {
       CoreML::Specification::MILSpec::DataType::INT32;
 };
 template <>
+struct MilDataTypeMap<int8_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::INT8;
+};
+template <>
+struct MilDataTypeMap<uint8_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::UINT8;
+};
+template <>
 struct MilDataTypeMap<Float16> {
   static constexpr CoreML::Specification::MILSpec::DataType value =
       CoreML::Specification::MILSpec::DataType::FLOAT16;
@@ -441,6 +451,20 @@ void SetTensorValueForImmediateValue<Float16>(
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
+template <>
+void SetTensorValueForImmediateValue<int8_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const int8_t> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(
+      base::as_string_view(base::as_bytes(value)));
+}
+template <>
+void SetTensorValueForImmediateValue<uint8_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const uint8_t> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(base::as_string_view(value));
+}
+
 template <>
 void SetTensorValueForImmediateValue<float>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
@@ -3207,7 +3231,8 @@ void GraphBuilderCoreml::AddConstantImmediateValue(
     uint64_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
   auto* op = block.add_operations();
-  PopulateConstantOpFromOperand(constant_id, *op);
+  op->set_type(kOpConstTypeName);
+  PopulateNamedValueType(constant_id, *op->add_outputs());
 
   google::protobuf::Map<std::string, ::CoreML::Specification::MILSpec::Value>&
       attributes = *op->mutable_attributes();
@@ -3248,11 +3273,29 @@ void GraphBuilderCoreml::AddConstantImmediateValue(
           constant_operand->descriptor().shape(), ints);
       break;
     }
+    case OperandDataType::kInt8: {
+      base::FixedArray<int8_t> int8s(value.size() / sizeof(int8_t));
+      for (size_t i = 0u; i < int8s.size(); ++i) {
+        int8s[i] = base::I8FromNativeEndian(
+            value.subspan(i * sizeof(int8_t)).first<1u>());
+      }
+      attributes["val"] = CreateTensorImmediateValue<int8_t>(
+          constant_operand->descriptor().shape(), int8s);
+      break;
+    }
+    case OperandDataType::kUint8: {
+      base::FixedArray<uint8_t> uint8s(value.size() / sizeof(uint8_t));
+      for (size_t i = 0u; i < uint8s.size(); ++i) {
+        uint8s[i] = base::U8FromNativeEndian(
+            value.subspan(i * sizeof(uint8_t)).first<1u>());
+      }
+      attributes["val"] = CreateTensorImmediateValue<uint8_t>(
+          constant_operand->descriptor().shape(), uint8s);
+      break;
+    }
     case OperandDataType::kUint32:
     case OperandDataType::kInt64:
     case OperandDataType::kUint64:
-    case OperandDataType::kInt8:
-    case OperandDataType::kUint8:
     case OperandDataType::kInt4:
     case OperandDataType::kUint4: {
       NOTREACHED() << "Unsupported data type.";
@@ -3281,17 +3324,6 @@ const mojom::Operand& GraphBuilderCoreml::GetOperand(
 [[nodiscard]] const GraphBuilderCoreml::OperandInfo&
 GraphBuilderCoreml::GetOperandInfo(uint64_t operand_id) const {
   return result_->GetOperandInfo(operand_id);
-}
-
-void GraphBuilderCoreml::PopulateConstantOpFromOperand(
-    uint64_t constant_id,
-    CoreML::Specification::MILSpec::Operation& op) {
-  CoreML::Specification::MILSpec::DataType mil_data_type =
-      GetOperandInfo(constant_id).mil_data_type;
-  CHECK(kFloatsAndInt32DataTypes.contains(mil_data_type));
-
-  op.set_type(kOpConstTypeName);
-  PopulateNamedValueType(constant_id, *op.add_outputs());
 }
 
 base::expected<void, mojom::ErrorPtr>

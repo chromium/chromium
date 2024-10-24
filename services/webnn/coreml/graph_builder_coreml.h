@@ -40,7 +40,7 @@ template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
 concept IsSupportedTensorType =
-    IsAnyOf<T, Float16, float, int32_t, int8_t, char, bool>;
+    IsAnyOf<T, Float16, float, int32_t, int8_t, uint8_t, char, bool>;
 }  // namespace internal
 
 inline constexpr char kPlaceholderInputName[] = "placeholder";
@@ -326,11 +326,6 @@ class GraphBuilderCoreml {
   CoreML::Specification::MILSpec::Value CreateConstantFileValue(
       uint64_t constant_id,
       uint64_t offset);
-
-  // Populate generic fields that apply to all `const` operations.
-  void PopulateConstantOpFromOperand(
-      uint64_t constant_id,
-      CoreML::Specification::MILSpec::Operation& op);
 
   // Helpers.
   const mojom::Operand& GetOperand(uint64_t operand_id) const;
