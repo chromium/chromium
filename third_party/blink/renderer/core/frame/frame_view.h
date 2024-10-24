@@ -91,6 +91,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   bool DisplayLockedInParentFrame();
 
   virtual void VisibilityChanged(mojom::blink::FrameVisibility visibilty) = 0;
+  std::optional<mojom::blink::FrameVisibility> frame_visibility() const {
+    return frame_visibility_;
+  }
 
  private:
   PhysicalRect rect_in_parent_;
