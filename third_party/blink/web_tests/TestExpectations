@@ -3532,12 +3532,6 @@ crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_i
 
 ### external/wpt/speculation-rules/prerender
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
-# Failures on tests with non-ascii search params.
-crbug.com/340928303 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search.https.html?27-27 [ Failure ]
-crbug.com/340928303 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search.https.html?28-28 [ Failure ]
-crbug.com/340928303 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search.https.html?29-29 [ Failure ]
-crbug.com/343754418 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search-hint.https.html?27-27 [ Failure ]
-crbug.com/343754418 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search-hint.https.html?28-last [ Failure ]
 # Failures for other reasons.
 crbug.com/343754418 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search-hint.https.html?17-17 [ Failure ]
 
