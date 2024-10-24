@@ -134,6 +134,12 @@ def main():
   # See crbug.com/1457463
   os.utime(os.path.join(SDK_ROOT, 'meta', 'manifest.json'), None)
 
+  root_dir = os.path.dirname(os.path.realpath(__file__))
+  build_def_cmd = [
+      os.path.join(root_dir, 'gen_build_defs.py'),
+  ]
+  subprocess.run(build_def_cmd, check=True)
+
   return 0
 
 

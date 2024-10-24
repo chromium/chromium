@@ -5147,7 +5147,7 @@ hooks = [
   {
     'name': 'Download Fuchsia SDK',
     'pattern': '.',
-    'condition': 'checkout_fuchsia and not checkout_fuchsia_no_hooks',
+    'condition': 'checkout_fuchsia',
     'action': [
       'python3',
       'src/build/fuchsia/update_sdk.py',
@@ -5175,16 +5175,6 @@ hooks = [
                'src/build/fuchsia/update_product_bundles.py',
                '{checkout_fuchsia_internal_images}',
                '--internal'],
-  },
-
-  {
-    'name': 'Create Fuchsia GN sdk build rules',
-    'pattern': '.',
-    'condition': 'checkout_fuchsia or checkout_fuchsia_no_hooks',
-    'action': [
-      'python3',
-      'src/build/fuchsia/gen_build_defs.py',
-    ],
   },
 
   {
