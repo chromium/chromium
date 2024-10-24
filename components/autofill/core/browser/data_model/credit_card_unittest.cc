@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -20,7 +21,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -86,7 +86,7 @@ const char* const kEmptyNickname = "";
 // Use this function to generate a year in the future.
 std::u16string GetYearInTheFuture() {
   base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
+  base::Time::Now().LocalExplode(&now);
   return base::NumberToString16(now.year + 4);
 }
 
@@ -1481,7 +1481,7 @@ TEST(CreditCardTest,
 TEST(CreditCardTest, IsValidCardNumberAndExpiryDate) {
   CreditCard card;
   // Invalid because expired
-  const base::Time now(AutofillClock::Now());
+  const base::Time now(base::Time::Now());
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH,
@@ -1657,11 +1657,13 @@ TEST(CreditCardTest, IsDeletable) {
   // threshold later than that time. This sets the year to 2007. The code
   // expects valid expiration years to be between 2000 and 2999. However,
   // because of the year 2018 problem, we need to pick an earlier year.
-  const base::Time kArbitraryTime =
+  constexpr auto kArbitraryTime =
       base::Time::FromSecondsSinceUnixEpoch(1000000000);
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::Days(1));
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  task_environment.AdvanceClock(kArbitraryTime +
+                                kDisusedDataModelDeletionTimeDelta +
+                                base::Days(1) - base::Time::Now());
 
   // Created a card that has not been used since over the deletion threshold.
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -1670,19 +1672,19 @@ TEST(CreditCardTest, IsDeletable) {
 
   // Set the card to be expired before the threshold.
   base::Time::Exploded now_exploded;
-  AutofillClock::Now().LocalExplode(&now_exploded);
+  base::Time::Now().LocalExplode(&now_exploded);
   card.SetExpirationYear(now_exploded.year - 5);
   card.SetExpirationMonth(1);
-  ASSERT_TRUE(card.IsExpired(AutofillClock::Now() -
-                             kDisusedDataModelDeletionTimeDelta));
+  ASSERT_TRUE(
+      card.IsExpired(base::Time::Now() - kDisusedDataModelDeletionTimeDelta));
 
   // Make sure the card is deletable.
   EXPECT_TRUE(card.IsDeletable());
 
   // Set the card to not be expired.
   card.SetExpirationYear(now_exploded.year + 5);
-  ASSERT_FALSE(card.IsExpired(AutofillClock::Now() -
-                              kDisusedDataModelDeletionTimeDelta));
+  ASSERT_FALSE(
+      card.IsExpired(base::Time::Now() - kDisusedDataModelDeletionTimeDelta));
 
   // Make sure the card is not deletable.
   EXPECT_FALSE(card.IsDeletable());
@@ -1864,9 +1866,7 @@ constexpr base::TimeDelta kOneYear = base::Days(365);
 constexpr base::TimeDelta kOneMonth = base::Days(31);
 
 void MonthAndYearFromDelta(base::TimeDelta time_delta, int& month, int& year) {
-  base::Time now = AutofillClock::Now();
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(now);
+  const base::Time now = base::Time::Now();
   base::Time::Exploded exploded;
   (now + time_delta).LocalExplode(&exploded);
   month = exploded.month;
@@ -1957,7 +1957,7 @@ struct VirtualCardRankingTestCase {
   Expectation expectation;
 };
 
-base::Time current_time = AutofillClock::Now();
+base::Time current_time = base::Time::Now();
 
 class VirtualCardRankingTest
     : public testing::TestWithParam<VirtualCardRankingTestCase> {};
