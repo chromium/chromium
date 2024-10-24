@@ -451,7 +451,11 @@ export class CertificateManagerV2Element extends
         hideHeader:
             !this.showClientCertImport_ && !this.showClientCertImportAndBind_,
         // </if>
-        // <if expr="not chromeos_ash">
+        // <if expr="is_linux">
+        showImport: true,
+        hideHeader: false,
+        // </if>
+        // <if expr="not chromeos_ash and not is_linux">
         hideHeader: true,
         // </if>
       },

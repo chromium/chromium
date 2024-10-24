@@ -29,7 +29,7 @@ std::unique_ptr<CertificateManagerPageHandler::CertSource>
 CreateExtensionsClientCertSource(Profile* profile);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
 class ClientCertManagementAccessControls {
  public:
   enum KeyStorage {
@@ -59,9 +59,11 @@ class ClientCertManagementAccessControls {
                        CertLocation cert_location) const;
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_guest_;
   const bool is_kiosk_;
   const ClientCertificateManagementPermission client_cert_policy_;
+#endif
 };
 #endif
 

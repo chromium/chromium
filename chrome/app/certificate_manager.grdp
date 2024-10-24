@@ -154,7 +154,7 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CERT_TITLE" desc="Title of certificate manager dialog confirming deletion of a certificate">
       Delete "<ph name="CERT_NAME">$1<ex>VeriSign Browser Certificate</ex></ph>"?
     </message>
-    <if expr="is_chromeos">
+    <if expr="is_chromeos or is_linux">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CLIENT_CERT_DESCRIPTION" desc="Contents of certificate manager dialog confirming deletion of a client certificate.">
         If you delete one of your own certificates, you can no longer use it to identify yourself.
       </message>
@@ -177,7 +177,7 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_ERROR_TITLE" desc="Title of dialog  displayed in certificate manager when the user tried to import a certificate but their was an error preventing the certificate from being imported.">
       Error importing certificate
     </message>
-    <if expr="is_chromeos">
+    <if expr="is_chromeos or is_linux">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_FAILED" desc="Error message displayed in certificate manager when the user tried to import a certificate but their was an error preventing the certificate from being imported.">
         Unable to import certificate
       </message>

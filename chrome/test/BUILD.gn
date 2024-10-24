@@ -8103,7 +8103,6 @@ test("unit_tests") {
       "../browser/ui/views/mahi/mahi_condensed_menu_view_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
-      "../browser/ui/webui/certificate_manager/client_cert_sources_ash_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
       "../browser/upgrade_detector/installed_version_updater_chromeos_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_chromeos_unittest.cc",
@@ -9801,7 +9800,10 @@ test("unit_tests") {
     }
   }
   if (use_nss_certs) {
-    sources += [ "../browser/certificate_manager_model_unittest.cc" ]
+    sources += [
+      "../browser/certificate_manager_model_unittest.cc",
+      "../browser/ui/webui/certificate_manager/client_cert_sources_writable_unittest.cc",
+    ]
     if (is_chromeos) {
       sources += [
         "../browser/net/nss_temp_certs_cache_chromeos_unittest.cc",

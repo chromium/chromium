@@ -8,16 +8,10 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
-#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,14 +24,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/nss_util_internal.h"
-#include "crypto/scoped_test_nss_chromeos_user.h"
-#include "crypto/scoped_test_system_nss_key_slot.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/test/test_data_directory.h"
@@ -46,18 +36,37 @@
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "crypto/scoped_test_nss_chromeos_user.h"
+#include "crypto/scoped_test_system_nss_key_slot.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/net/fake_nss_service.h"
+#endif
+
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kUsername[] = "test@example.com";
-
-// The SHA256 hash of the certificate in client.p12, as a hex string.
-constexpr char kTestClientCertHashHex[] =
-    "c72ab9295a0e056fc4390032fe15170a7bdc8aceb920a7254060780b3973fba7";
 
 // The SHA256 hash of the certificate in client_with_ec_key.p12, as a hex
 // string.
 constexpr char kTestEcClientCertHashHex[] =
     "e3ba2f8302c0a82f933f216d999eb3e85a4d709a3166333015f09903be0e6273";
+#endif
+
+// The SHA256 hash of the certificate in client.p12, as a hex string.
+constexpr char kTestClientCertHashHex[] =
+    "c72ab9295a0e056fc4390032fe15170a7bdc8aceb920a7254060780b3973fba7";
 
 bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
   if (!slot) {
@@ -116,26 +125,39 @@ class FakeCertificateManagerPage
 
 }  // namespace
 
-class ClientCertSourceAshUnitTest
+class ClientCertSourceWritableUnitTest
     : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>>
+#else
+      // In the non-ChromeOS case, the test does not actually need any
+      // parameters, but to allow more commonality between the platforms keep
+      // it as a parameterized test with a single param that is ignored.
+      public testing::WithParamInterface<bool>
+#endif
+{
  public:
   void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_TRUE(test_nss_user_.constructed_successfully());
     test_nss_user_.FinishInit();
 
     feature_list_.InitWithFeatureStates(
         {{chromeos::features::kEnablePkcs12ToChapsDualWrite,
           dual_write_enabled()},
-         {ash::features::kUseKcerClientCertStore, kcer_enabled()}});
+         { ash::features::kUseKcerClientCertStore,
+           kcer_enabled() }});
 
-    ASSERT_TRUE(profile_manager_.SetUp());
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+#endif
 
     ChromeRenderViewHostTestHarness::SetUp();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     // is_affiliated=true is required for nss_service_chromeos to configure the
     // system slot.
@@ -144,6 +166,9 @@ class ClientCertSourceAshUnitTest
         profile());
     fake_user_manager_->OnUserProfileCreated(account_, profile()->GetPrefs());
     fake_user_manager_->LoginUser(account_);
+#else
+    nss_service_ = FakeNssService::InitializeForBrowserContext(profile());
+#endif
 
     fake_page_ = std::make_unique<FakeCertificateManagerPage>(
         fake_page_remote_.BindNewPipeAndPassReceiver());
@@ -155,13 +180,18 @@ class ClientCertSourceAshUnitTest
   void TearDown() override {
     ui::SelectFileDialog::SetFactory(nullptr);
     cert_source_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_user_manager_.Reset();
     crosapi_manager_.reset();
     ash::LoginState::Shutdown();
     kcer::KcerFactoryAsh::ClearNssTokenMapForTesting();
+#else
+    nss_service_ = nullptr;
+#endif
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool dual_write_enabled() const { return std::get<0>(GetParam()); }
   bool kcer_enabled() const { return std::get<1>(GetParam()); }
   bool use_hardware_backed() const { return std::get<2>(GetParam()); }
@@ -169,9 +199,11 @@ class ClientCertSourceAshUnitTest
   std::string username_hash() const {
     return user_manager::FakeUserManager::GetFakeUsernameHash(account_);
   }
+#endif
 
   void DoImport(
       CertificateManagerPageHandler::ImportCertificateCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (use_hardware_backed()) {
       cert_source_->ImportAndBindCertificate(web_contents()->GetWeakPtr(),
                                              std::move(callback));
@@ -179,6 +211,10 @@ class ClientCertSourceAshUnitTest
       cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
                                       std::move(callback));
     }
+#else
+    cert_source_->ImportCertificate(web_contents()->GetWeakPtr(),
+                                    std::move(callback));
+#endif
   }
 
   std::optional<certificate_manager_v2::mojom::SummaryCertInfoPtr>
@@ -221,6 +257,7 @@ class ClientCertSourceAshUnitTest
     net::NSSCertDatabase* nss_db = nss_waiter.Get();
 
     crypto::ScopedPK11Slot slot;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (import_to_system_slot) {
       slot = nss_db->GetSystemSlot();
     } else if (use_hardware_backed()) {
@@ -228,6 +265,10 @@ class ClientCertSourceAshUnitTest
     } else {
       slot = nss_db->GetPublicSlot();
     }
+#else
+    slot = crypto::ScopedPK11Slot(
+        PK11_ReferenceSlot(nss_service_->GetPublicSlot()));
+#endif
 
     std::string file_data;
     if (!base::ReadFileToString(file_path, &file_data)) {
@@ -259,7 +300,17 @@ class ClientCertSourceAshUnitTest
                             /*import_to_system_slot=*/true);
   }
 
+  bool NSSContainsCertWithHash(std::string_view hash_hex) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return SlotContainsCertWithHash(
+        crypto::GetPublicSlotForChromeOSUser(username_hash()).get(), hash_hex);
+#else
+    return SlotContainsCertWithHash(nss_service_->GetPublicSlot(), hash_hex);
+#endif
+  }
+
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList feature_list_;
   AccountId account_{AccountId::FromUserEmail(kUsername)};
   crypto::ScopedTestNSSChromeOSUser test_nss_user_{username_hash()};
@@ -269,6 +320,10 @@ class ClientCertSourceAshUnitTest
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+#else
+  raw_ptr<FakeNssService> nss_service_;
+#endif
+
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 
   mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
@@ -279,17 +334,17 @@ class ClientCertSourceAshUnitTest
 
 // Test importing from a PKCS #12 file and then deleting the imported cert,
 // with no policy set.
-TEST_P(ClientCertSourceAshUnitTest,
+TEST_P(ClientCertSourceWritableUnitTest,
        ImportPkcs12AndGetCertificateInfosAndDelete) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist));
+#endif
 
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
-  EXPECT_FALSE(SlotContainsCertWithHash(
-      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
-      kTestClientCertHashHex));
+  EXPECT_FALSE(NSSContainsCertWithHash(kTestClientCertHashHex));
   EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 
   {
@@ -314,24 +369,18 @@ TEST_P(ClientCertSourceAshUnitTest,
         import_waiter.Take();
     ASSERT_TRUE(import_result);
     EXPECT_TRUE(import_result->is_success());
-    // The cert should be dual written only if dual-write feature is enabled
-    // and the import was not hardware backed (if it's hardware backed it
-    // already gets imported to Chaps so the dual write isn't needed.)
-    EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
-                  prefs::kNssChapsDualWrittenCertsExist),
-              dual_write_enabled() && !use_hardware_backed());
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The cert should be dual written only if dual-write feature is enabled
   // and the import was not hardware backed (if it's hardware backed it
   // already gets imported to Chaps so the dual write isn't needed.)
   EXPECT_EQ(
       profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist),
       dual_write_enabled() && !use_hardware_backed());
+#endif
 
-  EXPECT_TRUE(SlotContainsCertWithHash(
-      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
-      kTestClientCertHashHex));
+  EXPECT_TRUE(NSSContainsCertWithHash(kTestClientCertHashHex));
   EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
   EXPECT_TRUE(GetCertificateInfosIsCertDeletable(kTestClientCertHashHex));
 
@@ -350,13 +399,12 @@ TEST_P(ClientCertSourceAshUnitTest,
     ASSERT_TRUE(delete_result->is_success());
   }
 
-  EXPECT_FALSE(SlotContainsCertWithHash(
-      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
-      kTestClientCertHashHex));
+  EXPECT_FALSE(NSSContainsCertWithHash(kTestClientCertHashHex));
   EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, PolicyAllAllowsDeletion) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
@@ -404,7 +452,7 @@ TEST_P(ClientCertSourceAshUnitTest, PolicyAllAllowsDeletion) {
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceAshUnitTest,
+TEST_P(ClientCertSourceWritableUnitTest,
        PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
@@ -467,7 +515,7 @@ TEST_P(ClientCertSourceAshUnitTest,
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, PolicyNoneDoesNotAllowDeletion) {
+TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
@@ -521,7 +569,7 @@ TEST_P(ClientCertSourceAshUnitTest, PolicyNoneDoesNotAllowDeletion) {
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12NotAllowedByPolicy) {
+TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12NotAllowedByPolicy) {
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
       static_cast<int>(ClientCertificateManagementPermission::kNone));
@@ -534,8 +582,9 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12NotAllowedByPolicy) {
   ASSERT_TRUE(import_result->is_error());
   EXPECT_EQ(import_result->get_error(), "not allowed");
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
+TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12PasswordWrong) {
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
@@ -564,7 +613,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
                 IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_BAD_PASSWORD));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordEntryCancelled) {
+TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12PasswordEntryCancelled) {
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
@@ -590,7 +639,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordEntryCancelled) {
   EXPECT_FALSE(import_result);
 }
 
-TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileNotFound) {
+TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12FileNotFound) {
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
@@ -616,7 +665,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileNotFound) {
                 IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
+TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12FileSelectionCancelled) {
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
@@ -637,7 +686,8 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
   EXPECT_FALSE(import_result);
 }
 
-TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateConfirmationCancelled) {
+TEST_P(ClientCertSourceWritableUnitTest,
+       DeleteCertificateConfirmationCancelled) {
   // A certificate is required to be present for the delete dialog to display,
   // so import the test cert first.
   {
@@ -680,7 +730,7 @@ TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateConfirmationCancelled) {
   EXPECT_FALSE(delete_result);
 }
 
-TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateNotFound) {
+TEST_P(ClientCertSourceWritableUnitTest, DeleteCertificateNotFound) {
   fake_page_->set_mocked_confirmation_result(true);
 
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
@@ -697,7 +747,12 @@ TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateNotFound) {
 }
 
 INSTANTIATE_TEST_SUITE_P(Foo,
-                         ClientCertSourceAshUnitTest,
+                         ClientCertSourceWritableUnitTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
-                                          testing::Bool()));
+                                          testing::Bool())
+#else
+                         testing::Values(true)
+#endif
+);
