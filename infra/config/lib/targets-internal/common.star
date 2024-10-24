@@ -27,7 +27,6 @@ _browser_config = enums.enum(
     WEB_ENGINE_SHELL = "web-engine-shell",
 )
 
-# TODO: crbug.com/40258588 - Add support for remaining OS types
 _os_type = enums.enum(
     ANDROID = "android",
     CROS = "chromeos",
