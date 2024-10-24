@@ -1240,8 +1240,6 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   auto* student_groups = roster->mutable_student_groups()->Add();
   auto* student_1 = student_groups->mutable_students()->Add();
   student_1->set_gaia_id("2");
-  auto* student_2 = student_groups->mutable_students()->Add();
-  student_2->set_gaia_id("3");
 
   auto* student_groups_2 = roster->mutable_student_groups()->Add();
   auto* student_3 = student_groups_2->mutable_students()->Add();
@@ -1260,7 +1258,7 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   RemoveStudentRequest request(nullptr, kGaiaId, session_id,
                                future.GetCallback());
 
-  const char student_id[] = "2";
+  const char student_id[] = "4";
   EXPECT_CALL(*session_client_impl(), RemoveStudent(_))
       .WillOnce(WithArg<0>(
           // Unique pointer have ownership issue, have to do manual deep copy
@@ -1276,8 +1274,8 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
   EXPECT_EQ(2, session->roster().student_groups().size());
-  EXPECT_EQ(1, session->roster().student_groups()[0].students().size());
-  EXPECT_EQ("3", session->roster().student_groups()[0].students()[0].gaia_id());
+  EXPECT_EQ(1, session->roster().student_groups()[1].students().size());
+  EXPECT_EQ("5", session->roster().student_groups()[1].students()[0].gaia_id());
 }
 
 TEST_F(BocaAppPageHandlerTest, RemoveStudentWithHTTPFailure) {

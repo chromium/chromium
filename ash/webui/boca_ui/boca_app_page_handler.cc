@@ -566,13 +566,13 @@ void BocaAppHandler::OnStudentRemoved(
     std::move(callback).Run(mojom::RemoveStudentError::kHTTPError);
     return;
   }
-  std::move(callback).Run(std::nullopt);
 
+  std::move(callback).Run(std::nullopt);
   // Remove student from local session
   for (int i = 0; i < current_session->roster().student_groups().size(); i++) {
     auto* group = current_session->mutable_roster()->mutable_student_groups(i);
     for (int j = 0; j < group->students().size(); j++) {
-      if (group->students()[i].gaia_id() == id) {
+      if (group->students()[j].gaia_id() == id) {
         group->mutable_students()->DeleteSubrange(j, 1);
         break;
       }
