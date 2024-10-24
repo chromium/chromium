@@ -64,25 +64,114 @@ enum class LaunchedAppType {
 
 // Returns information useful for the browser to show UI affordances if a web
 // app handles the navigation.
-struct AppNavigationResult {
+class AppNavigationResult {
+  STACK_ALLOCATED();
+
+ public:
+  // No navigation capturing will happen for this navigation.
+  static AppNavigationResult CapturingDisabled();
+  // The navigation itself will be cancelled.
+  static AppNavigationResult CancelNavigation();
+
+  static AppNavigationResult NoCapturingOverrideBrowser(Browser* browser);
+
+  // TODO(crbug.com/370856876): Possibly remove `disposition`.
+  static AppNavigationResult AuxiliaryContext(WindowOpenDisposition disposition,
+                                              base::Value::Dict debug_data);
+
+  // TODO(crbug.com/370856876): Possibly remove `source_browser_app_id` and
+  // `disposition`.
+  static AppNavigationResult AuxiliaryContextInAppWindow(
+      const webapps::AppId& source_browser_app_id,
+      WindowOpenDisposition disposition,
+      Browser* app_browser,
+      base::Value::Dict debug_data);
+
+  // Populates redirection info in case future redirects apply to an
+  // application.
+  static AppNavigationResult NoInitialActionRedirectionHandlingEligible(
+      std::optional<webapps::AppId> source_browser_app_id,
+      WindowOpenDisposition disposition,
+      base::Value::Dict debug_data);
+
+  // Create AppNavigationResult for a navigation triggered by user modified link
+  // clicks that creates a new app container.
+  // TODO(crbug.com/370856876): Possibly merge this with `CapturedNewClient`, if
+  // this enum in the redirection info has equivalent behavior to the captured
+  // one for navigate-new (and possibly merge enums).
+  static AppNavigationResult ForcedNewAppContext(
+      std::optional<webapps::AppId> source_browser_app_id,
+      const webapps::AppId capturing_app_id,
+      Browser* app_browser,
+      WindowOpenDisposition disposition,
+      base::Value::Dict debug_data);
+
+  // Create AppNavigationResult for a navigation that is captured by non user
+  // modified link clicks that launch a new app container (either window or
+  // tab).
+  static AppNavigationResult CapturedNewClient(
+      std::optional<webapps::AppId> source_browser_app_id,
+      const webapps::AppId capturing_app_id,
+      Browser* app_browser,
+      WindowOpenDisposition disposition,
+      base::Value::Dict debug_data);
+
+  // Create AppNavigationResult for a navigation that is captured by non user
+  // modified link clicks that uses an existing app container (either window or
+  // tab).
+  static AppNavigationResult CapturedNavigateExisting(
+      std::optional<webapps::AppId> source_browser_app_id,
+      const webapps::AppId capturing_app_id,
+      Browser* app_browser,
+      int browser_tab,
+      WindowOpenDisposition disposition,
+      base::Value::Dict debug_data);
+
+  AppNavigationResult(AppNavigationResult&&);
+  AppNavigationResult& operator=(AppNavigationResult&&);
+
+  // If false, then `OnWebAppNavigationAfterWebContentsCreation() exits early`.
+  bool capturing_feature_enabled() const { return capturing_feature_enabled_; }
+
   // The browser instance to perform navigation in, and the tab inside the
   // browser if overridden by the web app system. If std::nullopt, performs the
   // default navigation behavior in browser_navigator.cc.
-  std::optional<std::tuple<Browser*, int>> browser_tab_override;
+  const std::optional<std::tuple<Browser*, int>>& browser_tab_override() const {
+    return browser_tab_override_;
+  }
 
-  // Set to true if the `MaybeHandleAppNavigation` considered this navigation to
+  // True if the `MaybeHandleAppNavigation` considered this navigation to
   // be capturable, and the resulting navigation should be considered a launch
   // for the given app (and do things like enqueue launch params and show IPH).
-  bool perform_app_handling_tasks_in_web_contents = false;
+  bool perform_app_handling_tasks_in_web_contents() const {
+    return perform_app_handling_tasks_in_web_contents_;
+  }
 
   // Information necessary for handling redirection after a response is received
   // as part of a navigation.
-  NavigationCapturingRedirectionInfo redirection_info;
+  const NavigationCapturingRedirectionInfo& redirection_info() const {
+    return redirection_info_;
+  }
+
+  base::Value::Dict TakeDebugData();
+
+ private:
+  AppNavigationResult(
+      bool capturing_feature_enabled,
+      std::optional<std::tuple<Browser*, int>> browser_tab_override,
+      bool perform_app_handling_tasks_in_web_contents,
+      const NavigationCapturingRedirectionInfo& redirection_info,
+      base::Value::Dict debug_value);
+
+  bool capturing_feature_enabled_ = false;
+
+  std::optional<std::tuple<Browser*, int>> browser_tab_override_;
+  bool perform_app_handling_tasks_in_web_contents_ = false;
+
+  NavigationCapturingRedirectionInfo redirection_info_;
 
   // Debug information persisted to chrome://web-app-internals.
-  base::Value::Dict debug_value;
-
-  STACK_ALLOCATED();
+  base::Value::Dict debug_value_;
 };
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);

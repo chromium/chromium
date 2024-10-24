@@ -766,15 +766,18 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // TODO(crbug.com/364657540): Revisit integration with web_application system
   // later if needed.
   int singleton_index;
-  web_app::AppNavigationResult app_navigation_result;
-#if !BUILDFLAG(IS_ANDROID)
-  app_navigation_result = web_app::MaybeHandleAppNavigation(*params);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+  web_app::AppNavigationResult app_navigation_result =
+      web_app::MaybeHandleAppNavigation(*params);
   std::tie(params->browser, singleton_index) =
-      app_navigation_result.browser_tab_override.has_value()
-          ? app_navigation_result.browser_tab_override.value()
+      app_navigation_result.browser_tab_override().has_value()
+          ? *app_navigation_result.browser_tab_override()
           : GetBrowserAndTabForDisposition(*params);
+#else  // !BUILDFLAG(IS_ANDROID)
+  std::tie(params->browser, singleton_index) =
+      GetBrowserAndTabForDisposition(*params);
+#endif
 
   if (!params->browser) {
     return nullptr;

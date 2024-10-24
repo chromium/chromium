@@ -249,17 +249,16 @@ bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
   return false;
 }
 
-// Do not store redirection handling information in the navigation stack if it
-// was triggered in an auxiliary browsing context, or an app was launched in a
-// flow that is not a part of navigation handling by the web app system.
 bool ShouldEnqueueNavigationHandlingInfoForRedirects(
     const NavigationHandlingInitialResult initial_result) {
   switch (initial_result) {
     case NavigationHandlingInitialResult::kBrowserTab:
-    case NavigationHandlingInitialResult::kAppWindowNavigationCaptured:
-    case NavigationHandlingInitialResult::kAppWindowForcedNewContext:
+    case NavigationHandlingInitialResult::kNavigateCaptured:
+    case NavigationHandlingInitialResult::kForcedNewAppContext:
+    // To prevent the 'v1' throttle from enabling, still attach the navigation
+    // handling info for aux contexts.
+    case NavigationHandlingInitialResult::kAuxContext:
       return true;
-    case NavigationHandlingInitialResult::kAppWindowAuxContext:
     case NavigationHandlingInitialResult::kNotHandledByNavigationHandling:
       return false;
   }
@@ -270,10 +269,10 @@ bool ShouldEnqueueNavigationHandlingInfoForRedirects(
 void MaybePopulateNavigationHandlingInfoForRedirects(
     base::WeakPtr<content::NavigationHandle> navigation_handle,
     content::WebContents* web_contents,
-    web_app::NavigationCapturingRedirectionInfo redirection_info) {
+    const web_app::NavigationCapturingRedirectionInfo& redirection_info) {
   CHECK(web_contents);
   if (!ShouldEnqueueNavigationHandlingInfoForRedirects(
-          redirection_info.initial_nav_handling_result)) {
+          redirection_info.initial_nav_handling_result())) {
     return;
   }
 
@@ -314,6 +313,151 @@ bool IsNavigationCapturingReimplExperimentEnabled(
 }
 
 }  // namespace
+
+// static
+AppNavigationResult AppNavigationResult::CapturingDisabled() {
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/false, std::nullopt,
+      /*perform_app_handling_tasks_in_web_contents=*/false,
+      NavigationCapturingRedirectionInfo::Disabled(), base::Value::Dict());
+}
+
+// static
+AppNavigationResult AppNavigationResult::CancelNavigation() {
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/false,
+      /*browser_tab_override=*/{{nullptr, -1}},
+      /*perform_app_handling_tasks_in_web_contents=*/false,
+      NavigationCapturingRedirectionInfo::Disabled(), base::Value::Dict());
+}
+
+// static
+AppNavigationResult AppNavigationResult::NoCapturingOverrideBrowser(
+    Browser* browser) {
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/false,
+      /*browser_tab_override=*/{{browser, -1}},
+      /*perform_app_handling_tasks_in_web_contents=*/false,
+      NavigationCapturingRedirectionInfo::Disabled(), base::Value::Dict());
+}
+
+// static
+AppNavigationResult AppNavigationResult::AuxiliaryContext(
+    WindowOpenDisposition disposition,
+    base::Value::Dict debug_data) {
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/true, /*browser_tab_override=*/std::nullopt,
+      /*perform_app_handling_tasks_in_web_contents=*/false,
+      NavigationCapturingRedirectionInfo::AuxiliaryContext(
+          /*source_browser_app_id=*/std::nullopt, disposition),
+      std::move(debug_data));
+}
+
+// static
+AppNavigationResult AppNavigationResult::AuxiliaryContextInAppWindow(
+    const webapps::AppId& source_browser_app_id,
+    WindowOpenDisposition disposition,
+    Browser* app_browser,
+    base::Value::Dict debug_data) {
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/true,
+      /*browser_tab_override=*/{{app_browser, -1}},
+      /*perform_app_handling_tasks_in_web_contents=*/false,
+      NavigationCapturingRedirectionInfo::AuxiliaryContext(
+          source_browser_app_id, disposition),
+      std::move(debug_data));
+}
+
+// static
+AppNavigationResult
+AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
+    std::optional<webapps::AppId> source_browser_app_id,
+    WindowOpenDisposition disposition,
+    base::Value::Dict debug_data) {
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/true,
+      /*browser_tab_override=*/std::nullopt,
+      /*perform_app_handling_tasks_in_web_contents=*/false,
+      NavigationCapturingRedirectionInfo::
+          NoInitialActionRedirectionHandlingEligible(source_browser_app_id,
+                                                     disposition),
+      std::move(debug_data));
+}
+
+// static
+AppNavigationResult AppNavigationResult::ForcedNewAppContext(
+    std::optional<webapps::AppId> source_browser_app_id,
+    const webapps::AppId capturing_app_id,
+    Browser* app_browser,
+    WindowOpenDisposition disposition,
+    base::Value::Dict debug_data) {
+  CHECK(disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
+        disposition == WindowOpenDisposition::NEW_WINDOW);
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/true,
+      /*browser_tab_override=*/{{app_browser, -1}},
+      /*perform_app_handling_tasks_in_web_contents=*/true,
+      NavigationCapturingRedirectionInfo::ForcedNewContext(
+          source_browser_app_id, capturing_app_id, disposition),
+      std::move(debug_data));
+}
+
+// static
+AppNavigationResult AppNavigationResult::CapturedNewClient(
+    std::optional<webapps::AppId> source_browser_app_id,
+    const webapps::AppId capturing_app_id,
+    Browser* app_browser,
+    WindowOpenDisposition disposition,
+    base::Value::Dict debug_data) {
+  CHECK(disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/true,
+      /*browser_tab_override=*/{{app_browser, -1}},
+      /*perform_app_handling_tasks_in_web_contents=*/true,
+      NavigationCapturingRedirectionInfo::CapturedNewContext(
+          source_browser_app_id, capturing_app_id, disposition),
+      std::move(debug_data));
+}
+
+// static
+AppNavigationResult AppNavigationResult::CapturedNavigateExisting(
+    std::optional<webapps::AppId> source_browser_app_id,
+    const webapps::AppId capturing_app_id,
+    Browser* app_browser,
+    int browser_tab,
+    WindowOpenDisposition disposition,
+    base::Value::Dict debug_data) {
+  CHECK(disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  CHECK(browser_tab != -1);
+  return AppNavigationResult(
+      /*capturing_feature_enabled=*/true,
+      /*browser_tab_override=*/{{app_browser, browser_tab}},
+      /*perform_app_handling_tasks_in_web_contents=*/true,
+      NavigationCapturingRedirectionInfo::CapturedNavigateExisting(
+          source_browser_app_id, capturing_app_id, disposition),
+      std::move(debug_data));
+}
+
+AppNavigationResult::AppNavigationResult(AppNavigationResult&&) = default;
+AppNavigationResult& AppNavigationResult::operator=(AppNavigationResult&&) =
+    default;
+
+AppNavigationResult::AppNavigationResult(
+    bool capturing_feature_enabled,
+    std::optional<std::tuple<Browser*, int>> browser_tab_override,
+    bool perform_app_handling_tasks_in_web_contents,
+    const NavigationCapturingRedirectionInfo& redirection_info,
+    base::Value::Dict debug_value)
+    : capturing_feature_enabled_(capturing_feature_enabled),
+      browser_tab_override_(std::move(browser_tab_override)),
+      perform_app_handling_tasks_in_web_contents_(
+          perform_app_handling_tasks_in_web_contents),
+      redirection_info_(redirection_info),
+      debug_value_(std::move(debug_value)) {}
+
+base::Value::Dict AppNavigationResult::TakeDebugData() {
+  return std::move(debug_value_);
+}
 
 void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
                                         content::WebContents* web_contents,
@@ -1025,28 +1169,12 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
 AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-  NavigationCapturingRedirectionInfo redirection_info;
-  // Populate the WindowOpenDisposition before Navigate() changes it.
-  redirection_info.disposition = params.disposition;
-
-  // Populate the app_id of the current app browser window before
-  // `params.browser` is changed by Navigate().
-  std::optional<webapps::AppId> source_browser_app_id =
-      params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
-          ? std::optional(params.browser->app_controller()->app_id())
-          : std::nullopt;
-  redirection_info.app_id_source_browser = source_browser_app_id;
-
   if (!AreWebAppsEnabled(profile)) {
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::CapturingDisabled();
   }
   base::Value::Dict debug_data;
 
   if (params.open_pwa_window_if_possible) {
-    // Set up `initial_nav_handling_result` so that redirection logic can figure
-    // out when to not handle.
-    redirection_info.initial_nav_handling_result =
-        NavigationHandlingInitialResult::kNotHandledByNavigationHandling;
     std::optional<webapps::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
                                                 /*window_only=*/true);
@@ -1058,10 +1186,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       // This isn't a supported way to launch isolated apps, so we can cancel
       // the navigation, but if we want to support it in the future we'll need
       // to block until `WebAppRegistrar` is loaded.
-      return {.browser_tab_override =
-                  std::make_optional<std::tuple<Browser*, int>>({nullptr, -1}),
-              .perform_app_handling_tasks_in_web_contents = false,
-              .redirection_info = redirection_info};
+      return AppNavigationResult::CancelNavigation();
     }
     if (app_id) {
       // Reuse the existing browser for in-app same window navigations.
@@ -1070,11 +1195,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
           web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
       if (navigating_same_app) {
         if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-          return {.browser_tab_override =
-                      std::make_optional<std::tuple<Browser*, int>>(
-                          {params.browser, -1}),
-                  .perform_app_handling_tasks_in_web_contents = false,
-                  .redirection_info = redirection_info};
+          return AppNavigationResult::NoCapturingOverrideBrowser(
+              params.browser);
         }
 
         // If the browser window does not yet have any tabs, and we are
@@ -1085,11 +1207,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         bool browser_has_no_tabs =
             params.browser && params.browser->tab_strip_model()->empty();
         if (navigating_new_tab && browser_has_no_tabs) {
-          return {.browser_tab_override =
-                      std::make_optional<std::tuple<Browser*, int>>(
-                          {params.browser, -1}),
-                  .perform_app_handling_tasks_in_web_contents = false,
-                  .redirection_info = redirection_info};
+          return AppNavigationResult::NoCapturingOverrideBrowser(
+              params.browser);
         }
       }
 
@@ -1113,33 +1232,28 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
                 params.window_features.bounds, profile, params.user_gesture);
         browser_params.initial_origin_specified = GetOriginSpecified(params);
         Browser* browser = Browser::Create(browser_params);
-        return {
-            .browser_tab_override =
-                std::make_optional<std::tuple<Browser*, int>>({browser, -1}),
-            .perform_app_handling_tasks_in_web_contents = false,
-            .redirection_info = redirection_info};
+        return AppNavigationResult::NoCapturingOverrideBrowser(browser);
       }
     }
   }
 
-  // Reset the initial navigation handling result so that
-  // `kNotHandledByNavigationHandling` is not used for the web app system.
-  redirection_info.initial_nav_handling_result =
-      NavigationHandlingInitialResult::kBrowserTab;
-
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
   if (params.started_from_context_menu) {
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::CapturingDisabled();
   }
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider) {
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::CapturingDisabled();
   }
   web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
 
+  std::optional<webapps::AppId> source_browser_app_id =
+      params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
+          ? std::optional(params.browser->app_controller()->app_id())
+          : std::nullopt;
   std::optional<DisplayMode> controlling_app_display_mode;
   std::optional<webapps::AppId> controlling_app_id =
       registrar.FindAppThatCapturesLinksInScope(params.url);
@@ -1158,9 +1272,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // needed.
   if (!IsNavigationCapturingReimplExperimentEnabled(
           source_browser_app_id, params.url, controlling_app_id)) {
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::CapturingDisabled();
   }
-  redirection_info.capturing_enabled = true;
 
   content::WebContents* source_contents = params.source_contents;
   // Note: Navigations either happen after this function call, or they are
@@ -1222,30 +1335,24 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   if (IsAuxiliaryBrowsingContext(params)) {
     debug_data.Set("is_auxiliary_browsing_context", true);
     if (source_browser_app_id.has_value()) {
-      // Populate the `redirection_info` for auxiliary contexts.
-      redirection_info.initial_nav_handling_result =
-          NavigationHandlingInitialResult::kAppWindowAuxContext;
-      redirection_info.first_navigation_app_id = *source_browser_app_id;
-
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
           *source_browser_app_id, params,
           params.disposition == WindowOpenDisposition::NEW_POPUP);
 
-      return {
-          .browser_tab_override =
-              std::make_optional<std::tuple<Browser*, int>>({app_window, -1}),
-          .perform_app_handling_tasks_in_web_contents = false,
-          .redirection_info = redirection_info,
-          .debug_value = std::move(debug_data)};
+      return AppNavigationResult::AuxiliaryContextInAppWindow(
+          *source_browser_app_id, params.disposition, app_window,
+          std::move(debug_data));
     }
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::AuxiliaryContext(params.disposition,
+                                                 std::move(debug_data));
   }
   debug_data.Set("is_auxiliary_browsing_context", false);
 
   // If no app controls the the target url, then there cannot be any further
   // capturing logic unless a redirect occurs.
   if (!controlling_app_id) {
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
+        source_browser_app_id, params.disposition, std::move(debug_data));
   }
   CHECK(controlling_app_display_mode);
   const webapps::AppId& app_id = *controlling_app_id;
@@ -1256,7 +1363,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
     // the controlling app's display mode is 'browser'.
     if (!source_browser_app_id.has_value() &&
         controlling_app_display_mode != DisplayMode::kBrowser) {
-      return {.redirection_info = redirection_info};
+      return AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
+          source_browser_app_id, params.disposition, std::move(debug_data));
     }
     // Case: Shift-clicks with a new top level browsing context.
     if (params.disposition == WindowOpenDisposition::NEW_WINDOW) {
@@ -1268,17 +1376,9 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         app_host_window =
             CreateWebAppWindowFromNavigationParams(app_id, params);
       }
-      // Populate the redirection information for shift clicks.
-      redirection_info.first_navigation_app_id = app_id;
-      redirection_info.initial_nav_handling_result =
-          NavigationHandlingInitialResult::kAppWindowForcedNewContext;
-
-      return {
-          .browser_tab_override = std::make_optional<std::tuple<Browser*, int>>(
-              {app_host_window, -1}),
-          .perform_app_handling_tasks_in_web_contents = true,
-          .redirection_info = redirection_info,
-          .debug_value = std::move(debug_data)};
+      return AppNavigationResult::ForcedNewAppContext(
+          source_browser_app_id, app_id, app_host_window, params.disposition,
+          std::move(debug_data));
     }
 
     bool is_in_source_app_with_url_in_scope =
@@ -1291,21 +1391,13 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         (controlling_app_display_mode == DisplayMode::kBrowser ||
          (app_id == source_browser_app_id &&
           is_in_source_app_with_url_in_scope))) {
-      // Populate the redirection information for middle clicks.
-      redirection_info.first_navigation_app_id = app_id;
-      redirection_info.initial_nav_handling_result =
-          NavigationHandlingInitialResult::kAppWindowForcedNewContext;
-
       if (source_browser_app_id.has_value() &&
           !params.browser->app_controller()->ShouldHideNewTabButton()) {
         // Apps that support tabbed mode can open a new tab in the current app
         // browser itself.
-        return {.browser_tab_override =
-                    std::make_optional<std::tuple<Browser*, int>>(
-                        {params.browser, -1}),
-                .perform_app_handling_tasks_in_web_contents = true,
-                .redirection_info = redirection_info,
-                .debug_value = std::move(debug_data)};
+        return AppNavigationResult::ForcedNewAppContext(
+            source_browser_app_id, app_id, params.browser, params.disposition,
+            std::move(debug_data));
       }
       Browser* app_host_window;
       if (controlling_app_display_mode == DisplayMode::kBrowser) {
@@ -1319,25 +1411,18 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         app_host_window =
             CreateWebAppWindowFromNavigationParams(app_id, params);
       }
-
-      return {
-          .browser_tab_override = std::make_optional<std::tuple<Browser*, int>>(
-              {app_host_window, -1}),
-          .perform_app_handling_tasks_in_web_contents = true,
-          .redirection_info = redirection_info,
-          .debug_value = std::move(debug_data)};
+      return AppNavigationResult::ForcedNewAppContext(
+          source_browser_app_id, app_id, app_host_window, params.disposition,
+          std::move(debug_data));
     }
+    return AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
+        source_browser_app_id, params.disposition, std::move(debug_data));
   }
 
   if (params.disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-    return {.redirection_info = redirection_info};
+    return AppNavigationResult::CapturingDisabled();
   }
   // Case: Left click, non-user-modified. Capturable.
-
-  // Populate the redirection information for left clicks.
-  redirection_info.first_navigation_app_id = app_id;
-  redirection_info.initial_nav_handling_result =
-      NavigationHandlingInitialResult::kAppWindowNavigationCaptured;
 
   blink::mojom::DisplayMode app_display_mode =
       registrar.GetAppEffectiveDisplayMode(app_id);
@@ -1399,13 +1484,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
                           apps::LaunchSource::kFromNavigationCapturing,
                           params.url, contents);
-
-      // Do not populate the `redirection_info` since apps that focus existing
-      // windows stop the current navigation, so redirections cannot occur.
-      return {.browser_tab_override =
-                  std::make_optional<std::tuple<Browser*, int>>({nullptr, -1}),
-              .perform_app_handling_tasks_in_web_contents = false,
-              .debug_value = std::move(debug_data)};
+      return AppNavigationResult::CancelNavigation();
     }
 
     // Fallback to creating a new instance.
@@ -1415,16 +1494,13 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Navigate existing.
   if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
-    if (controlling_app_host_browser_and_tab.has_value()) {
-      redirection_info.effective_launch_handling_mode =
-          InitialNavigationCapturedBehavior::kNavigatedExisting;
-      return {
-          .browser_tab_override = std::make_optional<std::tuple<Browser*, int>>(
-              {controlling_app_host_browser_and_tab->first,
-               controlling_app_host_browser_and_tab->second}),
-          .perform_app_handling_tasks_in_web_contents = true,
-          .redirection_info = redirection_info,
-          .debug_value = std::move(debug_data)};
+    if (controlling_app_host_browser_and_tab.has_value() &&
+        controlling_app_host_browser_and_tab->second != -1) {
+      return AppNavigationResult::CapturedNavigateExisting(
+          source_browser_app_id, app_id,
+          controlling_app_host_browser_and_tab->first,
+          controlling_app_host_browser_and_tab->second, params.disposition,
+          std::move(debug_data));
     }
     client_mode = LaunchHandler::ClientMode::kNavigateNew;
     debug_data.Set("client_mode", base::ToString(client_mode));
@@ -1432,8 +1508,6 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Navigate new.
   CHECK(client_mode == LaunchHandler::ClientMode::kNavigateNew);
-  redirection_info.effective_launch_handling_mode =
-      InitialNavigationCapturedBehavior::kNavigatedNew;
 
   Browser* host_window = nullptr;
   switch (app_display_mode) {
@@ -1464,11 +1538,9 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       NOTREACHED_NORETURN();
   }
 
-  return {.browser_tab_override =
-              std::make_optional<std::tuple<Browser*, int>>({host_window, -1}),
-          .perform_app_handling_tasks_in_web_contents = true,
-          .redirection_info = redirection_info,
-          .debug_value = std::move(debug_data)};
+  return AppNavigationResult::CapturedNewClient(source_browser_app_id, app_id,
+                                                host_window, params.disposition,
+                                                std::move(debug_data));
 }
 
 void EnqueueLaunchParams(content::WebContents* contents,
@@ -1488,34 +1560,29 @@ void OnWebAppNavigationAfterWebContentsCreation(
     web_app::AppNavigationResult app_navigation_result,
     const NavigateParams& params,
     base::WeakPtr<content::NavigationHandle> navigation_handle) {
-  if (!app_navigation_result.redirection_info.capturing_enabled) {
+  if (!app_navigation_result.capturing_feature_enabled()) {
     // Don't attach info for redirects nor perform any other logic below if the
     // capturing wasn't enabled for the navigation.
     return;
   }
+  CHECK(AreWebAppsEnabled(params.initiating_profile));
+  CHECK(!params.open_pwa_window_if_possible);
 
-  // Exclude the `open_pwa_window_if_possible`, which is specific to IWA app
-  // launches which are excluded from navigation capturing.
-  if (params.open_pwa_window_if_possible) {
-    return;
-  }
-  if (!AreWebAppsEnabled(params.initiating_profile)) {
-    return;
-  }
   std::optional<webapps::AppId> first_navigation_app_id =
-      app_navigation_result.redirection_info.first_navigation_app_id;
+      app_navigation_result.redirection_info().first_navigation_app_id();
   MaybePopulateNavigationHandlingInfoForRedirects(
       navigation_handle, params.navigated_or_inserted_contents,
-      app_navigation_result.redirection_info);
+      app_navigation_result.redirection_info());
 
-  base::Value::Dict& debug_value = app_navigation_result.debug_value;
+  base::Value::Dict debug_value = app_navigation_result.TakeDebugData();
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(params.initiating_profile);
 
   // Exclude all cases where there isn't navigation capturing logic occurring.
-  if (!app_navigation_result.browser_tab_override) {
-    // Also record debug information for ALL navigations if DCHECK is enabled.
-#if DCHECK_IS_ON()
+  if (!app_navigation_result.browser_tab_override()) {
+    // Also record debug information for ALL navigations if expensive DCHECKs
+    // are enabled.
+#if EXPENSIVE_DCHECKS_ARE_ON()
     debug_value.Set("handled_by_app", false);
     debug_value.Set("result.browser", base::ToString(params.browser.get()));
     debug_value.Set("result.tab_index", params.tabstrip_index);
@@ -1527,14 +1594,14 @@ void OnWebAppNavigationAfterWebContentsCreation(
   CHECK(params.browser);
 
   std::tuple<Browser*, int> browser_tab_override =
-      *app_navigation_result.browser_tab_override;
+      *app_navigation_result.browser_tab_override();
   debug_value.Set("handled_by_app", true);
   debug_value.Set("result.browser",
                   base::ToString(std::get<Browser*>(browser_tab_override)));
   debug_value.Set("result.tab_index", std::get<int>(browser_tab_override));
   debug_value.Set(
       "result.perform_app_handling_tasks_in_web_contents",
-      app_navigation_result.perform_app_handling_tasks_in_web_contents);
+      app_navigation_result.perform_app_handling_tasks_in_web_contents());
   debug_value.Set("params.navigated_or_inserted_contents",
                   base::ToString(params.navigated_or_inserted_contents));
   provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
@@ -1542,7 +1609,7 @@ void OnWebAppNavigationAfterWebContentsCreation(
 
   // Enqueue launch params and show the IPH bubble denoting that an app has
   // handled the navigation.
-  if (app_navigation_result.perform_app_handling_tasks_in_web_contents) {
+  if (app_navigation_result.perform_app_handling_tasks_in_web_contents()) {
     CHECK(first_navigation_app_id);
     EnqueueLaunchParams(params.navigated_or_inserted_contents,
                         *first_navigation_app_id, params.url,

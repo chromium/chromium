@@ -150,13 +150,13 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
 
   NavigationCapturingRedirectionInfo redirection_info =
       handle_user_data->redirection_info();
-  WindowOpenDisposition link_click_disposition = redirection_info.disposition;
+  WindowOpenDisposition link_click_disposition = redirection_info.disposition();
   NavigationHandlingInitialResult initial_nav_handling_result =
-      redirection_info.initial_nav_handling_result;
+      redirection_info.initial_nav_handling_result();
   std::optional<webapps::AppId> source_app_id =
-      redirection_info.app_id_source_browser;
+      redirection_info.app_id_source_browser();
   std::optional<webapps::AppId> navigation_handling_first_stage_app =
-      redirection_info.first_navigation_app_id;
+      redirection_info.first_navigation_app_id();
 
   // Do not handle redirections for navigations that create an auxiliary
   // browsing context, or if the app window that opened is not a part of the
@@ -164,7 +164,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   if (initial_nav_handling_result ==
           NavigationHandlingInitialResult::kNotHandledByNavigationHandling ||
       initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kAppWindowAuxContext) {
+          NavigationHandlingInitialResult::kAuxContext) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -210,11 +210,11 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
       (link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) ||
       (link_click_disposition == WindowOpenDisposition::NEW_WINDOW);
   if (initial_nav_handling_result ==
-      NavigationHandlingInitialResult::kAppWindowForcedNewContext) {
-    CHECK(redirection_info.app_id_source_browser.has_value());
-    // Note:
-    // - kAppWindowForcedNewContext implies we started from an app window, and
-    // the intermediary container must be an app.
+      NavigationHandlingInitialResult::kForcedNewAppContext) {
+    CHECK(redirection_info.app_id_source_browser().has_value());
+    // TODO(crbug.com/336371044): This is no longer true due to apps being
+    // open-in-browser-tab too for this case. Fix here (or verify this can't
+    // happen).
     CHECK(chrome::FindBrowserWithTab(web_contents_for_navigation)
               ->app_controller());
     if (target_app_id.has_value() && !is_source_app_matching_final_target) {
@@ -278,8 +278,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   }
 
   if (initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kAppWindowNavigationCaptured &&
-      redirection_info.effective_launch_handling_mode ==
+          NavigationHandlingInitialResult::kNavigateCaptured &&
+      redirection_info.effective_launch_handling_mode() ==
           InitialNavigationCapturedBehavior::kNavigatedNew) {
     if (!target_app_id) {
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
@@ -303,7 +303,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // window that opened as a result of a capturable navigation.
   bool final_navigation_can_be_capturable =
       initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kAppWindowNavigationCaptured ||
+          NavigationHandlingInitialResult::kNavigateCaptured ||
       initial_nav_handling_result ==
           NavigationHandlingInitialResult::kBrowserTab;
   if (!final_navigation_can_be_capturable) {
@@ -342,7 +342,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
     // navigation to mimic the behavior where the redirected url matches an
     // outcome without redirection. Any residual app windows or tabs that were
     // there before the current navigation started shouldn't be closed.
-    if (redirection_info.effective_launch_handling_mode ==
+    if (redirection_info.effective_launch_handling_mode() ==
             InitialNavigationCapturedBehavior::kNavigatedNew ||
         initial_nav_handling_result ==
             NavigationHandlingInitialResult::kBrowserTab) {
