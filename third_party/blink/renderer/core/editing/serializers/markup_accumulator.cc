@@ -183,15 +183,15 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
 
 void MarkupAccumulator::AppendCustomAttributes(const Element&) {}
 
-MarkupAccumulator::EmitChoice MarkupAccumulator::WillProcessAttribute(
+MarkupAccumulator::EmitAttributeChoice MarkupAccumulator::WillProcessAttribute(
     const Element& element,
     const Attribute& attribute) const {
-  return EmitChoice::kEmit;
+  return EmitAttributeChoice::kEmit;
 }
 
-MarkupAccumulator::EmitChoice MarkupAccumulator::WillProcessElement(
+MarkupAccumulator::EmitElementChoice MarkupAccumulator::WillProcessElement(
     const Element& element) {
-  return EmitChoice::kEmit;
+  return EmitElementChoice::kEmit;
 }
 
 AtomicString MarkupAccumulator::AppendElement(const Element& element) {
@@ -210,7 +210,8 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
       AppendAttribute(element, Attribute(html_names::kIsAttr, is_value));
     }
     for (const auto& attribute : attributes) {
-      if (EmitChoice::kEmit == WillProcessAttribute(element, attribute)) {
+      if (EmitAttributeChoice::kEmit ==
+          WillProcessAttribute(element, attribute)) {
         AppendAttribute(element, attribute);
       }
     }
@@ -226,7 +227,8 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
         if (!EqualIgnoringNullity(attribute.Value(), element.namespaceURI()))
           continue;
       }
-      if (EmitChoice::kEmit == WillProcessAttribute(element, attribute)) {
+      if (EmitAttributeChoice::kEmit ==
+          WillProcessAttribute(element, attribute)) {
         AppendAttribute(element, attribute);
       }
     }
@@ -631,7 +633,8 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
   }
 
   const auto& target_element = To<Element>(target_node);
-  if (WillProcessElement(target_element) == EmitChoice::kIgnore) {
+  EmitElementChoice emit_choice = WillProcessElement(target_element);
+  if (emit_choice == EmitElementChoice::kIgnore) {
     return;
   }
 
@@ -644,33 +647,37 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
   bool has_end_tag =
       !(SerializeAsHTML() && ElementCannotHaveEndTag(target_element));
   if (has_end_tag) {
-    const Node* parent = &target_element;
-    if (auto* template_element =
-            DynamicTo<HTMLTemplateElement>(target_element)) {
-      // Declarative shadow roots that are currently being parsed will have a
-      // null content() - don't serialize contents in this case.
-      parent = template_element->content();
-    }
-
-    // Traverses the shadow tree.
-    std::pair<ShadowRoot*, Element*> auxiliary_pair =
-        GetShadowTree(target_element);
-    if (ShadowRoot* auxiliary_tree = auxiliary_pair.first) {
-      Element* enclosing_element = auxiliary_pair.second;
-      AtomicString enclosing_element_prefix;
-      if (enclosing_element)
-        enclosing_element_prefix = AppendElement(*enclosing_element);
-      for (const Node& child : Strategy::ChildrenOf(*auxiliary_tree))
-        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
-      if (enclosing_element) {
-        WillCloseSyntheticTemplateElement(*auxiliary_tree);
-        AppendEndTag(*enclosing_element, enclosing_element_prefix);
+    if (emit_choice != EmitElementChoice::kEmitButIgnoreChildren) {
+      const Node* parent = &target_element;
+      if (auto* template_element =
+              DynamicTo<HTMLTemplateElement>(target_element)) {
+        // Declarative shadow roots that are currently being parsed will have a
+        // null content() - don't serialize contents in this case.
+        parent = template_element->content();
       }
-    }
 
-    if (parent) {
-      for (const Node& child : Strategy::ChildrenOf(*parent)) {
-        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+      // Traverses the shadow tree.
+      std::pair<ShadowRoot*, Element*> auxiliary_pair =
+          GetShadowTree(target_element);
+      if (ShadowRoot* auxiliary_tree = auxiliary_pair.first) {
+        Element* enclosing_element = auxiliary_pair.second;
+        AtomicString enclosing_element_prefix;
+        if (enclosing_element) {
+          enclosing_element_prefix = AppendElement(*enclosing_element);
+        }
+        for (const Node& child : Strategy::ChildrenOf(*auxiliary_tree)) {
+          SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+        }
+        if (enclosing_element) {
+          WillCloseSyntheticTemplateElement(*auxiliary_tree);
+          AppendEndTag(*enclosing_element, enclosing_element_prefix);
+        }
+      }
+
+      if (parent) {
+        for (const Node& child : Strategy::ChildrenOf(*parent)) {
+          SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+        }
       }
     }
 

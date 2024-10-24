@@ -7355,6 +7355,8 @@ data/media/webrtc_test_common.js
 data/media/webrtc_test_utilities.js
 data/mhtml/custom_element_defined.html
 data/mhtml/custom_element_defined_in_frame.html
+data/mhtml/imported_imported.css
+data/mhtml/imported_inline.css
 data/mhtml/style.css
 data/mhtml/styles.html
 data/midi/request_midi_access.html

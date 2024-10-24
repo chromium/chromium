@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -45,6 +46,16 @@ class LocalFrame;
 class Frame;
 
 struct SerializedResource;
+
+// Internal functionality exposed for unit testing.
+namespace internal {
+// Returns the result of replacing all case-insensitive occurrences of `from` in
+// `source` with the result of `transform.Run(match)`.
+CORE_EXPORT String
+ReplaceAllCaseInsensitive(String source,
+                          const String& from,
+                          base::FunctionRef<String(const String&)> transform);
+}  // namespace internal
 
 // This class is used to serialize frame's contents to MHTML. It serializes
 // frame's document and resources such as images and CSS stylesheets.

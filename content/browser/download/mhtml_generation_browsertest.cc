@@ -78,7 +78,18 @@ const char kGetPageInfoScript[] = R"js(
   const styleKeys = ['font-family', 'line-height', 'display'];
   function elementStyles(el) {
     const styles = window.getComputedStyle(el);
-    return Object.fromEntries(styleKeys.map(name => [name, styles[name]]));
+    const result = Object.fromEntries(styleKeys
+        .map(name => [name, styles[name]])
+        .filter(v=>v[1]));
+    // add background-image, but only the file name because the full path will
+    // change in the saved page.
+    let m = styles.backgroundImage.match(/url\((.*)\)/);
+    if (m) {
+      const url = m[1];
+      const parts = url.split('/');
+      result['backgroundImageFile'] = parts[parts.length-1];
+    }
+    return result;
   }
   function isVisible(el) {
     const styles = window.getComputedStyle(el);
@@ -157,8 +168,7 @@ struct CompareResult {
 // A dummy WebContentsDelegate which tracks the results of a find operation.
 class FindTrackingDelegate : public WebContentsDelegate {
  public:
-  explicit FindTrackingDelegate(const std::string& search)
-      : search_(search), matches_(-1) {}
+  explicit FindTrackingDelegate(const std::string& search) : search_(search) {}
 
   FindTrackingDelegate(const FindTrackingDelegate&) = delete;
   FindTrackingDelegate& operator=(const FindTrackingDelegate&) = delete;
@@ -197,7 +207,7 @@ class FindTrackingDelegate : public WebContentsDelegate {
 
  private:
   std::string search_;
-  int matches_;
+  int matches_ = -1;
   base::RunLoop run_loop_;
 };
 
@@ -373,7 +383,6 @@ class RespondAndDisconnectMockWriter
 
   ~RespondAndDisconnectMockWriter() override = default;
 };
-
 
 class MHTMLGenerationTest : public ContentBrowserTest,
                             public testing::WithParamInterface<bool> {
@@ -986,7 +995,8 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Styles) {
 
   CompareOptions options;
   options.expected_number_of_frames = 1;
-  options.expected_substrings = {"hidden1", "hidden4"};
+  options.expected_substrings = {"hidden1", "hidden4",
+                                 "This should show if inline CSS is escaped."};
   options.forbidden_substrings = {"hidden2", "hidden3"};
   CompareResult result = TestOriginalVsSavedPage(
       embedded_test_server()->GetURL("/mhtml/styles.html"), params, options);

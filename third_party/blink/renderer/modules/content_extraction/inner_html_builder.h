@@ -35,7 +35,7 @@ class MODULES_EXPORT InnerHtmlBuilder final : public MarkupAccumulator {
   String Build(HTMLElement& body);
 
   // MarkupAccumulator:
-  EmitChoice WillProcessElement(const Element& e) override;
+  EmitElementChoice WillProcessElement(const Element& e) override;
 };
 
 }  // namespace blink

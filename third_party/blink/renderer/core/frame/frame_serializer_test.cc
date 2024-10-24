@@ -548,4 +548,26 @@ TEST_F(FrameSerializerTest, markOfTheWebDeclaration) {
                 KURL("http://foo.com#bar--baz")));
 }
 
+TEST_F(FrameSerializerTest, ReplaceAllCaseInsensitive) {
+  auto transform = [](const String& from) { return String("</HI>"); };
+  EXPECT_EQ(
+      blink::internal::ReplaceAllCaseInsensitive("", "</style>", transform),
+      "");
+  EXPECT_EQ(
+      blink::internal::ReplaceAllCaseInsensitive("test", "</style>", transform),
+      "test");
+  EXPECT_EQ(blink::internal::ReplaceAllCaseInsensitive("</Style>", "</style>",
+                                                       transform),
+            "</HI>");
+  EXPECT_EQ(blink::internal::ReplaceAllCaseInsensitive("x</Style>", "</style>",
+                                                       transform),
+            "x</HI>");
+  EXPECT_EQ(blink::internal::ReplaceAllCaseInsensitive("</Style>x", "</style>",
+                                                       transform),
+            "</HI>x");
+  EXPECT_EQ(blink::internal::ReplaceAllCaseInsensitive(
+                "test</Style>test</Style>testagain", "</style>", transform),
+            "test</HI>test</HI>testagain");
+}
+
 }  // namespace blink

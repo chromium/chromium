@@ -125,6 +125,33 @@ void AppendLinkElement(StringBuilder& markup, const KURL& url) {
 
 }  // namespace
 
+namespace internal {
+// TODO(crbug.com/363289333): Try to add this functionality to wtf::String.
+String ReplaceAllCaseInsensitive(
+    String source,
+    const String& from,
+    base::FunctionRef<String(const String&)> transform) {
+  size_t offset = 0;
+  size_t pos;
+  StringBuilder builder;
+  for (;;) {
+    pos = source.Find(from, offset,
+                      TextCaseSensitivity::kTextCaseASCIIInsensitive);
+    if (pos == kNotFound) {
+      break;
+    }
+    builder.Append(source.Substring(offset, pos - offset));
+    builder.Append(transform(source.Substring(pos, from.length())));
+    offset = pos + from.length();
+  }
+  if (builder.empty()) {
+    return source;
+  }
+  builder.Append(source.Substring(offset));
+  return builder.ToString();
+}
+}  // namespace internal
+
 // Stores the list of serialized resources which constitute the frame. The
 // first resource should be the frame's content (usually HTML).
 class MultiResourcePacker {
@@ -301,8 +328,9 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     return true;
   }
 
-  EmitChoice WillProcessAttribute(const Element& element,
-                                  const Attribute& attribute) const override {
+  EmitAttributeChoice WillProcessAttribute(
+      const Element& element,
+      const Attribute& attribute) const override {
     // TODO(fgorski): Presence of srcset attribute causes MHTML to not display
     // images, as only the value of src is pulled into the archive. Discarding
     // srcset prevents the problem. Long term we should make sure to MHTML plays
@@ -310,7 +338,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     if (IsA<HTMLImageElement>(element) &&
         (attribute.LocalName() == html_names::kSrcsetAttr ||
          attribute.LocalName() == html_names::kSizesAttr)) {
-      return EmitChoice::kIgnore;
+      return EmitAttributeChoice::kIgnore;
     }
 
     // Do not save ping attribute since anyway the ping will be blocked from
@@ -318,7 +346,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     // TODO(crbug.com/369219144): Should this be IsA<HTMLAnchorElementBase>?
     if (IsA<HTMLAnchorElement>(element) &&
         attribute.LocalName() == html_names::kPingAttr) {
-      return EmitChoice::kIgnore;
+      return EmitAttributeChoice::kIgnore;
     }
 
     // The special attribute in a template element to denote the shadow DOM
@@ -328,7 +356,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
         (attribute.LocalName() == kShadowModeAttributeName ||
          attribute.LocalName() == kShadowDelegatesFocusAttributeName) &&
         !shadow_template_elements_.Contains(&element)) {
-      return EmitChoice::kIgnore;
+      return EmitAttributeChoice::kIgnore;
     }
 
     // If srcdoc attribute for frame elements will be rewritten as src attribute
@@ -339,22 +367,22 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     String new_link_for_the_element;
     if (is_src_doc_attribute &&
         RewriteLink(element, new_link_for_the_element)) {
-      return EmitChoice::kEmit;
+      return EmitAttributeChoice::kEmit;
     }
 
     //  Drop integrity attribute for those links with subresource loaded.
     auto* html_link_element = DynamicTo<HTMLLinkElement>(element);
     if (attribute.LocalName() == html_names::kIntegrityAttr &&
         html_link_element && html_link_element->sheet()) {
-      return EmitChoice::kIgnore;
+      return EmitAttributeChoice::kIgnore;
     }
 
     // Do not include attributes that contain javascript. This is because the
     // script will not be executed when a MHTML page is being loaded.
     if (element.IsScriptingAttribute(attribute)) {
-      return EmitChoice::kIgnore;
+      return EmitAttributeChoice::kIgnore;
     }
-    return EmitChoice::kEmit;
+    return EmitAttributeChoice::kEmit;
   }
 
   bool RewriteLink(const Element& element, String& rewritten_link) const {
@@ -457,16 +485,16 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     }
   }
 
-  EmitChoice WillProcessElement(const Element& element) override {
+  EmitElementChoice WillProcessElement(const Element& element) override {
     if (IsA<HTMLScriptElement>(element)) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
     if (IsA<HTMLNoScriptElement>(element)) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
     auto* meta = DynamicTo<HTMLMetaElement>(element);
     if (meta && meta->ComputeEncoding().IsValid()) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
 
     if (MHTMLImprovementsEnabled()) {
@@ -476,33 +504,43 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
               DynamicTo<HTMLStyleElement>(element)) {
         CSSStyleSheet* sheet = style_element->sheet();
         if (sheet) {
-          AppendStylesheet(*sheet);
-          return EmitChoice::kIgnore;
+          // JS may update styles programmatically for a <style> node. We detect
+          // whether this has happened, and serialize the stylesheet if it has.
+          // Otherwise, we leave the <style> node unmodified. Because CSS
+          // serialization isn't perfect, it's better to leave the original
+          // <style> element if possible.
+          SerializeCSSResources(*sheet);
+          if (!sheet->Contents()->IsMutable()) {
+            return EmitElementChoice::kEmit;
+          } else {
+            style_elements_to_replace_contents_.insert(style_element);
+            return EmitElementChoice::kEmitButIgnoreChildren;
+          }
         }
       }
     } else {
       // A <link> element is inserted in `AppendExtraForHeadElement()` as a
       // substitute for this element.
       if (IsA<HTMLStyleElement>(element)) {
-        return EmitChoice::kIgnore;
+        return EmitElementChoice::kIgnore;
       }
     }
 
     if (ShouldIgnoreHiddenElement(element)) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
     if (ShouldIgnoreMetaElement(element)) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
     if (web_delegate_->RemovePopupOverlay() &&
         ShouldIgnorePopupOverlayElement(element)) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
     // Remove <link> for stylesheets that do not load.
     auto* html_link_element = DynamicTo<HTMLLinkElement>(element);
     if (html_link_element && html_link_element->RelAttribute().IsStyleSheet() &&
         !html_link_element->sheet()) {
-      return EmitChoice::kIgnore;
+      return EmitElementChoice::kIgnore;
     }
     return MarkupAccumulator::WillProcessElement(element);
   }
@@ -534,6 +572,14 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
       // processed after other stylesheets.
       if (IsA<HTMLHtmlElement>(element)) {
         AppendAdoptedStyleSheets(document_);
+      }
+
+      if (const HTMLStyleElement* style_element =
+              DynamicTo<HTMLStyleElement>(element)) {
+        if (style_elements_to_replace_contents_.Contains(style_element)) {
+          CSSStyleSheet* sheet = style_element->sheet();
+          markup_.Append(SerializeInlineCSSStyleSheet(*sheet));
+        }
       }
     }
     MarkupAccumulator::AppendEndTag(element, prefix);
@@ -736,6 +782,44 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     }
   }
 
+  // Serializes `style_sheet` as text that can be added to an inline <style>
+  // tag. Ensures the style sheet does not include the </style> end tag.
+  String SerializeInlineCSSStyleSheet(CSSStyleSheet& style_sheet) {
+    StringBuilder css_text;
+    for (unsigned i = 0; i < style_sheet.length(); ++i) {
+      CSSRule* rule = style_sheet.ItemInternal(i);
+      String item_text = rule->cssText();
+      if (!item_text.empty()) {
+        css_text.Append(item_text);
+        if (i < style_sheet.length() - 1) {
+          css_text.Append("\n\n");
+        }
+      }
+    }
+
+    // `css_text` is the text that has already been parsed from the <style> tag,
+    // so it does not retain escape sequences. The only time we would need to
+    // emit an escape sequence is if the </style> tag appears within `css_text`.
+    // Parsing <style> contents is described in
+    // https://html.spec.whatwg.org/multipage/parsing.html#rawtext-state.
+    // Note that when replacing the "style" text. HTML tags are case
+    // insensitive, but this is escaped, so it's not not actually an HTML end
+    // tag.
+    return blink::internal::ReplaceAllCaseInsensitive(
+        css_text.ToString(), "</style", [](const String& text) {
+          StringBuilder builder;
+          builder.Append("\\3C/");  // \3C = '<'.
+          builder.Append(text.Substring(2));
+          return builder.ReleaseString();
+        });
+  }
+
+  // Attempts to serialize a stylesheet, if necessary. Does a couple things:
+  // 1. If `url` is valid and not a data URL, and we haven't already serialized
+  // this url, then serialize the stylesheet into a new resource. Note that this
+  // process is lossy, and may not perfectly reflect the intended style.
+  // 2. Even if `url` is invalid or a data URL, serialize the resources within
+  // `style_sheet`.
   void SerializeCSSStyleSheet(CSSStyleSheet& style_sheet, const KURL& url) {
     // If the URL is invalid or if it is a data URL this means that this CSS is
     // defined inline, respectively in a <style> tag or in the data URL itself.
@@ -794,12 +878,17 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
 
     // Sub resources need to be serialized even if the CSS definition doesn't
     // need to be.
+    SerializeCSSResources(style_sheet);
+  }
+
+  // Serializes resources referred to by `style_sheet`.
+  void SerializeCSSResources(CSSStyleSheet& style_sheet) {
     for (unsigned i = 0; i < style_sheet.length(); ++i) {
-      SerializeCSSRule(style_sheet.ItemInternal(i));
+      SerializeCSSRuleResources(style_sheet.ItemInternal(i));
     }
   }
 
-  void SerializeCSSRule(CSSRule* rule) {
+  void SerializeCSSRuleResources(CSSRule* rule) {
     DCHECK(rule->parentStyleSheet()->OwnerDocument());
     Document& document = *rule->parentStyleSheet()->OwnerDocument();
 
@@ -815,6 +904,9 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
         DCHECK(sheet_base_url.IsValid());
         KURL import_url = KURL(sheet_base_url, import_rule->href());
         if (import_rule->styleSheet()) {
+          // TODO(crbug.com/363289333): When MHTMLImprovementsEnabled(), we
+          // should avoid serializing the imported stylesheet, and instead fetch
+          // the raw CSS resource.
           SerializeCSSStyleSheet(*import_rule->styleSheet(), import_url);
         }
         break;
@@ -830,7 +922,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
       case CSSRule::kStartingStyleRule: {
         CSSRuleList* rule_list = rule->cssRules();
         for (unsigned i = 0; i < rule_list->length(); ++i) {
-          SerializeCSSRule(rule_list->item(i));
+          SerializeCSSRuleResources(rule_list->item(i));
         }
         break;
       }
@@ -925,6 +1017,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
   // * Serialize styleSheets on shadow roots
   // * Retain stylesheet order, previously order of stylesheets
   //   was sometimes wrong.
+  // * Serialize <style> nodes as <style> nodes instead of <link> nodes.
+  // * Leave <style> nodes alone if their stylesheet is unmodified.
   bool MHTMLImprovementsEnabled() const {
     return base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements);
   }
@@ -941,6 +1035,11 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
   // Adopted stylesheets can be reused. This stores the set of stylesheets
   // already serialized as resources, along with their URL.
   HeapHashMap<Member<blink::CSSStyleSheet>, KURL> stylesheet_pseudo_urls_;
+
+  // Style elements whose contents will be serialized just before inserting
+  // </style>.
+  HeapHashSet<Member<const HTMLStyleElement>>
+      style_elements_to_replace_contents_;
 };
 
 // TODO(tiger): Right now there is no support for rewriting URLs inside CSS
