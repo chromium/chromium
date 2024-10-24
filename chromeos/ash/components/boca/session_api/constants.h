@@ -17,6 +17,7 @@ inline constexpr char kCreateSessionUrlTemplate[] = "v1/teachers/$1/sessions";
 inline constexpr char kContentTypeApplicationJson[] = "application/json";
 
 inline constexpr char kMainStudentGroupName[] = "main";
+inline constexpr char kAccessCodeGroupName[] = "accessCode";
 
 inline constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";

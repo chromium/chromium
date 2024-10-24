@@ -297,10 +297,17 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"sessionId\":\"sessionId\",\"studentGroupConfigs\":{\"main\":{"
+      "{\"sessionId\":\"sessionId\",\"studentGroupConfigs\":{\"accessCode\":{"
       "\"captionsConfig\":{\"captionsEnabled\":true,\"translationsEnabled\":"
       "true},\"onTaskConfig\":{\"activeBundle\":{\"contentConfigs\":[{"
       "\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
+      "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
+      "\"youtube\",\"url\":\"https://"
+      "youtube.com\"}],\"locked\":true}}},\"main\":{\"captionsConfig\":{"
+      "\"captionsEnabled\":true,\"translationsEnabled\":true},\"onTaskConfig\":"
+      "{\"activeBundle\":{\"contentConfigs\":[{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
       "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"

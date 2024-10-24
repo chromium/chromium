@@ -208,15 +208,23 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
   EXPECT_EQ("/v1/teachers/1/sessions", http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"duration\":{\"seconds\":120},\"roster\":{\"studentGroups\":{"
-      "\"students\":[{\"email\":\"cat@gmail.com\",\"fullName\":\"cat\","
-      "\"gaiaId\":\"2\",\"photoUrl\":\"data:image/"
+      "{\"duration\":{\"seconds\":120},\"joinCode\":{\"enabled\":true},"
+      "\"roster\":{\"studentGroups\":[{\"students\":[{\"email\":\"cat@gmail."
+      "com\",\"fullName\":\"cat\",\"gaiaId\":\"2\",\"photoUrl\":\"data:image/"
       "123\"},{\"email\":\"dog@gmail.com\",\"fullName\":\"dog\",\"gaiaId\":"
       "\"3\",\"photoUrl\":\"data:image/"
-      "123\"}],\"title\":\"main\"}},\"sessionState\":2,\"studentGroupConfigs\":"
-      "{\"main\":{\"captionsConfig\":{\"captionsEnabled\":true,"
-      "\"translationsEnabled\":true},\"onTaskConfig\":{\"activeBundle\":{"
-      "\"contentConfigs\":[{\"faviconUrl\":\"data:image/"
+      "123\"}],\"title\":\"main\"},{\"groupSource\":2,\"title\":\"accessCode\"}"
+      "]},\"sessionState\":2,\"studentGroupConfigs\":{\"accessCode\":{"
+      "\"captionsConfig\":{\"captionsEnabled\":true,\"translationsEnabled\":"
+      "true},\"onTaskConfig\":{\"activeBundle\":{\"contentConfigs\":[{"
+      "\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
+      "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
+      "\"youtube\",\"url\":\"https://"
+      "youtube.com\"}],\"locked\":true}}},\"main\":{\"captionsConfig\":{"
+      "\"captionsEnabled\":true,\"translationsEnabled\":true},\"onTaskConfig\":"
+      "{\"activeBundle\":{\"contentConfigs\":[{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
       "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
@@ -260,9 +268,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {
   EXPECT_EQ("/v1/teachers/1/sessions", http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"duration\":{\"seconds\":120},\"sessionState\":2,\"studentGroup"
-      "Configs\":{\"main\":{}},\"teacher\":{\"email\":\"\",\"fullName\":\"\","
-      "\"gaiaId\":\"1\"}}";
+      "{\"duration\":{\"seconds\":120},\"joinCode\":{\"enabled\":true},"
+      "\"sessionState\":2,\"studentGroupConfigs\":{\"accessCode\":{},\"main\":{"
+      "}},\"teacher\":{\"email\":\"\",\"fullName\":\"\",\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.has_value());
@@ -299,9 +307,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
   EXPECT_EQ("/v1/teachers/1/sessions", http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"duration\":{\"seconds\":120},\"sessionState\":2,\"studentGroup"
-      "Configs\":{\"main\":{}},\"teacher\":{\"email\":\"\",\"fullName\":\"\","
-      "\"gaiaId\":\"1\"}}";
+      "{\"duration\":{\"seconds\":120},\"joinCode\":{\"enabled\":true},"
+      "\"sessionState\":2,\"studentGroupConfigs\":{\"accessCode\":{},\"main\":{"
+      "}},\"teacher\":{\"email\":\"\",\"fullName\":\"\",\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());

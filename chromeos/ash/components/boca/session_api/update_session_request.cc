@@ -106,10 +106,12 @@ bool UpdateSessionRequest::GetContentData(std::string* upload_content_type,
       student_config.Set(kCaptionsConfig, std::move(caption_config));
     }
 
-    base::Value::Dict main_group_student_config;
-    main_group_student_config.Set(kMainStudentGroupName,
-                                  std::move(student_config));
-    root.Set(kStudentGroupsConfig, std::move(main_group_student_config));
+    base::Value::Dict group_student_config;
+    group_student_config.Set(kMainStudentGroupName, student_config.Clone());
+    // TODO(crbug.com/375051415): We duplicate the session config for access
+    // code student for now, this should eventually be moved to server.
+    group_student_config.Set(kAccessCodeGroupName, std::move(student_config));
+    root.Set(kStudentGroupsConfig, std::move(group_student_config));
   }
 
   base::JSONWriter::Write(root, upload_content);

@@ -349,10 +349,11 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
 
 void ParseRosterJsonFromProto(::boca::Roster* roster,
                               base::Value::Dict* roster_dict) {
+  base::Value::List student_groups;
   if (roster && !roster->student_groups().empty()) {
-    base::Value::Dict student_groups;
+    base::Value::Dict main_group;
     // Only handle main roster student for now.
-    student_groups.Set(kTitle, kMainStudentGroupName);
+    main_group.Set(kTitle, kMainStudentGroupName);
     base::Value::List students;
     for (const auto& student : roster->student_groups()[0].students()) {
       base::Value::Dict item;
@@ -362,9 +363,15 @@ void ParseRosterJsonFromProto(::boca::Roster* roster,
       item.Set(kPhotoUrl, student.photo_url());
       students.Append(std::move(item));
     }
-    student_groups.Set(kStudents, base::Value(std::move(students)));
-    roster_dict->Set(kStudentGroups, std::move(student_groups));
+    main_group.Set(kStudents, base::Value(std::move(students)));
+    student_groups.Append(std::move(main_group));
   }
+  // Always create empty group for join code.
+  base::Value::Dict access_code_group;
+  access_code_group.Set(kTitle, kAccessCodeGroupName);
+  access_code_group.Set(kGroupSource, ::boca::StudentGroup::JOIN_CODE);
+  student_groups.Append(std::move(access_code_group));
+  roster_dict->Set(kStudentGroups, std::move(student_groups));
 }
 
 void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
