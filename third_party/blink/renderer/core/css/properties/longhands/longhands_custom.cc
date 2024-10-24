@@ -5,7 +5,6 @@
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
-#include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
@@ -106,47 +105,6 @@ CSSCustomIdentValue* ConsumeCustomIdentExcludingNone(
     return nullptr;
   }
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
-}
-
-// ConsumeAppearanceAutoBaseSelect is used for parsing values of properties
-// which need to support -internal-appearance-auto-base-select() in the UA
-// stylesheet. `consume_value` is a function which consumes the individual
-// values provided inside -internal-appearance-auto-base-select() and is called
-// twice in order to consume each value. If
-// -internal-appearance-auto-base-select() is not found, then this function just
-// calls consume_value on the input and returns the result.
-template <typename Func, typename... Args>
-const CSSValue* ConsumeAppearanceAutoBaseSelect(Func consume_value,
-                                                CSSParserTokenStream& stream,
-                                                const CSSParserContext& context,
-                                                Args&&... args) {
-  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
-      !IsUASheetBehavior(context.Mode()) ||
-      stream.Peek().FunctionId() !=
-          CSSValueID::kInternalAppearanceAutoBaseSelect) {
-    return consume_value(stream, context, std::forward<Args>(args)...);
-  }
-
-  const CSSValue* auto_value;
-  const CSSValue* base_select_value;
-  {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    auto_value = consume_value(stream, context, std::forward<Args>(args)...);
-    if (!auto_value ||
-        !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-      return nullptr;
-    }
-    base_select_value =
-        consume_value(stream, context, std::forward<Args>(args)...);
-    if (!base_select_value || !stream.AtEnd()) {
-      return nullptr;
-    }
-    guard.Release();
-  }
-  stream.ConsumeWhitespace();
-  return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
-      auto_value, base_select_value);
 }
 
 }  // namespace
@@ -2760,7 +2718,7 @@ const CSSValue* ParseContentValue(CSSParserTokenStream& stream,
 const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
                                           const CSSParserContext& context,
                                           const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(ParseContentValue, stream, context);
+  return ParseContentValue(stream, context);
 }
 
 const CSSValue* Content::CSSValueFromComputedStyleInternal(
@@ -6332,9 +6290,8 @@ const CSSValue* MinBlockSize::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(
-      css_parsing_utils::ConsumeWidthOrHeight, stream, context,
-      css_parsing_utils::UnitlessQuirk::kForbid);
+  return css_parsing_utils::ConsumeWidthOrHeight(
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
 const CSSValue* MinHeight::ParseSingleValue(
@@ -6364,9 +6321,8 @@ const CSSValue* MinInlineSize::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(
-      css_parsing_utils::ConsumeWidthOrHeight, stream, context,
-      css_parsing_utils::UnitlessQuirk::kForbid);
+  return css_parsing_utils::ConsumeWidthOrHeight(
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
 }
 
 const CSSValue* MinWidth::ParseSingleValue(CSSParserTokenStream& stream,
@@ -7016,9 +6972,8 @@ const CSSValue* PaddingBottom::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(
-      css_parsing_utils::ConsumeLengthOrPercent, stream, context,
-      CSSPrimitiveValue::ValueRange::kNonNegative,
+  return css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       css_parsing_utils::UnitlessQuirk::kAllow, kCSSAnchorQueryTypesNone,
       css_parsing_utils::AllowCalcSize::kForbid);
 }
@@ -7075,9 +7030,8 @@ const CSSValue* PaddingLeft::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(
-      css_parsing_utils::ConsumeLengthOrPercent, stream, context,
-      CSSPrimitiveValue::ValueRange::kNonNegative,
+  return css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       css_parsing_utils::UnitlessQuirk::kAllow, kCSSAnchorQueryTypesNone,
       css_parsing_utils::AllowCalcSize::kForbid);
 }
@@ -7106,9 +7060,8 @@ const CSSValue* PaddingRight::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(
-      css_parsing_utils::ConsumeLengthOrPercent, stream, context,
-      CSSPrimitiveValue::ValueRange::kNonNegative,
+  return css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       css_parsing_utils::UnitlessQuirk::kAllow, kCSSAnchorQueryTypesNone,
       css_parsing_utils::AllowCalcSize::kForbid);
 }
@@ -7137,9 +7090,8 @@ const CSSValue* PaddingTop::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return ConsumeAppearanceAutoBaseSelect(
-      css_parsing_utils::ConsumeLengthOrPercent, stream, context,
-      CSSPrimitiveValue::ValueRange::kNonNegative,
+  return css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       css_parsing_utils::UnitlessQuirk::kAllow, kCSSAnchorQueryTypesNone,
       css_parsing_utils::AllowCalcSize::kForbid);
 }

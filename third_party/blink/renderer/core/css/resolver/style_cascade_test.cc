@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
-#include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
@@ -4175,20 +4174,35 @@ TEST_F(StyleCascadeTest, FlipToAnchorInvalid) {
   EXPECT_EQ("auto", cascade.ComputedValue("bottom"));
 }
 
+TEST_F(StyleCascadeTest, AppearanceAutoBaseSelectValueShorthand) {
+  SetBodyInnerHTML("<select id=select></select>");
+  Element* select = GetDocument().getElementById(AtomicString("select"));
+  ASSERT_TRUE(select);
+
+  const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
+      R"CSS(
+      border:-internal-appearance-auto-base-select(1px solid green, 1px solid red);
+    )CSS",
+      kUASheetMode);
+
+  TestCascade cascade(GetDocument(), select);
+  cascade.Add(set);
+  cascade.Apply();
+  EXPECT_EQ("1px", cascade.ComputedValue("border-left-width"));
+  EXPECT_EQ("solid", cascade.ComputedValue("border-left-style"));
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("border-left-color"));
+}
+
 TEST_F(StyleCascadeTest, RevertInAppearanceAutoBaseSelectValue) {
   SetBodyInnerHTML("<select id=select></select>");
   Element* select = GetDocument().getElementById(AtomicString("select"));
   ASSERT_TRUE(select);
 
-  // left:-internal-appearance-auto-base-select(revert, 2px)
-  // (Not possible to create with the parser currently).
-  const CSSValue* first = cssvalue::CSSRevertValue::Create();
-  const CSSValue* second =
-      css_test_helpers::ParseValue(GetDocument(), "<length>", "2px");
-  auto* set = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
-  set->SetProperty(CSSPropertyID::kLeft,
-                   *MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
-                       first, second));
+  const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
+      R"CSS(
+      left:-internal-appearance-auto-base-select(revert, 2px);
+    )CSS",
+      kUASheetMode);
 
   TestCascade cascade(GetDocument(), select);
   cascade.Add("left:300px", {.origin = CascadeOrigin::kUser});
@@ -4214,6 +4228,23 @@ TEST_F(StyleCascadeTest, EnvInAppearanceAutoBaseSelectValue) {
   cascade.Add(set);
   cascade.Apply();
   EXPECT_EQ("7px", cascade.ComputedValue("border-left-width"));
+}
+
+TEST_F(StyleCascadeTest, AppearanceAutoBaseSelectCycle) {
+  SetBodyInnerHTML("<select id=select></select>");
+  Element* select = GetDocument().getElementById(AtomicString("select"));
+  ASSERT_TRUE(select);
+
+  const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
+      R"CSS(
+      appearance:-internal-appearance-auto-base-select(auto, auto);
+    )CSS",
+      kUASheetMode);
+
+  TestCascade cascade(GetDocument(), select);
+  cascade.Add(set);
+  cascade.Apply();
+  EXPECT_EQ("none", cascade.ComputedValue("appearance"));
 }
 
 TEST_F(StyleCascadeTest, LhUnitCycle) {

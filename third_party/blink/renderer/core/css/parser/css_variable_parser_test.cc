@@ -70,6 +70,26 @@ const char* invalid_attr_values[] = {
     // clang-format on
 };
 
+const char* valid_appearance_auto_base_select_values[] = {
+    // clang-format off
+    "-internal-appearance-auto-base-select(foo, bar)",
+    "-internal-appearance-auto-base-select(inherit, auto)",
+    "-internal-appearance-auto-base-select( 100px ,  200px)",
+    "-internal-appearance-auto-base-select(100px,)",
+    "-internal-appearance-auto-base-select(,100px)",
+    // clang-format on
+};
+
+const char* invalid_appearance_auto_base_select_values[] = {
+    // clang-format off
+    "-internal-appearance-auto-base-select()",
+    "-internal-appearance-auto-base-select(100px)",
+    "-internal-appearance-auto-base-select(100px;200px)",
+    "-internal-appearance-auto-base-select(foo, bar,)",
+    "-internal-appearance-auto-base-select(foo, bar, baz)",
+    // clang-format on
+};
+
 class ValidVariableReferenceTest
     : public testing::Test,
       public testing::WithParamInterface<const char*> {
@@ -91,7 +111,7 @@ TEST_P(ValidVariableReferenceTest, ConsumeUnparsedDeclaration) {
       stream, /*allow_important_annotation=*/false,
       /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
       /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
-      context->GetExecutionContext()));
+      *context));
 }
 
 TEST_P(ValidVariableReferenceTest, ParseUniversalSyntaxValue) {
@@ -124,7 +144,7 @@ TEST_P(InvalidVariableReferenceTest, ConsumeUnparsedDeclaration) {
       stream, /*allow_important_annotation=*/false,
       /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
       /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
-      context->GetExecutionContext()));
+      *context));
 }
 
 TEST_P(InvalidVariableReferenceTest, ParseUniversalSyntaxValue) {
@@ -176,7 +196,7 @@ TEST_P(ValidAttrTest, ContainsValidAttr) {
       stream, /*allow_important_annotation=*/false,
       /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
       /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
-      context->GetExecutionContext()));
+      *context));
 }
 
 class InvalidAttrTest : public testing::Test,
@@ -198,7 +218,53 @@ TEST_P(InvalidAttrTest, ContainsValidAttr) {
       stream, /*allow_important_annotation=*/false,
       /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
       /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
-      context->GetExecutionContext()));
+      *context));
+}
+
+class ValidAppearanceAutoBaseSelectTest
+    : public testing::Test,
+      public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ValidAppearanceAutoBaseSelectTest,
+    testing::ValuesIn(valid_appearance_auto_base_select_values));
+
+TEST_P(ValidAppearanceAutoBaseSelectTest, ContainsValidFunction) {
+  SCOPED_TRACE(GetParam());
+  CSSParserTokenStream stream{GetParam()};
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kUASheetMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_TRUE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
+}
+
+class InvalidAppearanceAutoBaseSelectTest
+    : public testing::Test,
+      public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InvalidAppearanceAutoBaseSelectTest,
+    testing::ValuesIn(invalid_appearance_auto_base_select_values));
+
+TEST_P(InvalidAppearanceAutoBaseSelectTest, ContainsInvalidFunction) {
+  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
+
+  SCOPED_TRACE(GetParam());
+  CSSParserTokenStream stream{GetParam()};
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kUASheetMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_FALSE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context));
 }
 
 }  // namespace blink

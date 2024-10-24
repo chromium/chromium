@@ -440,7 +440,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
               /*is_animation_tainted=*/false,
               /*must_contain_variable_reference=*/false,
               /*restricted_value=*/false, /*comma_ends_declaration=*/false,
-              important_ignored, context.GetExecutionContext());
+              important_ignored, context);
       if (variable_data) {
         return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
                                                                  &context);

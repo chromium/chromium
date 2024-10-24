@@ -2406,8 +2406,7 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
         stream, /*allow_important_annotation=*/false,
         /*is_animation_tainted=*/false,
         /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
-        /*comma_ends_declaration=*/false, important_ignored,
-        context_->GetExecutionContext());
+        /*comma_ends_declaration=*/false, important_ignored, *context_);
   }
 
   while (!stream.AtEnd()) {
@@ -3115,7 +3114,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                 /*is_animation_tainted=*/false,
                 /*must_contain_variable_reference=*/false,
                 /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-                important, context_->GetExecutionContext());
+                important, *context_);
           }
         } else {
           ConsumeDeclarationValue(stream, unresolved_property,
@@ -3138,7 +3137,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/false,
           /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-          important, context_->GetExecutionContext());
+          important, *context_);
     }
     // The end offset is the offset of the terminating token, which is peeked
     // but not yet consumed.
@@ -3168,7 +3167,7 @@ bool CSSParserImpl::ConsumeVariableValue(CSSParserTokenStream& stream,
             stream, allow_important_annotation, is_animation_tainted,
             /*must_contain_variable_reference=*/false,
             /*restricted_value=*/false, /*comma_ends_declaration=*/false,
-            important, context_->GetExecutionContext());
+            important, *context_);
     if (!variable_data) {
       return false;
     }

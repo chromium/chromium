@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
-#include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
@@ -817,34 +816,6 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   }
   stream.ConsumeWhitespace();
   return MakeGarbageCollected<CSSLightDarkValuePair>(light_value, dark_value);
-}
-
-CSSAppearanceAutoBaseSelectValuePair* ConsumeAppearanceAutoBaseSelectColor(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
-  if (stream.Peek().FunctionId() !=
-      CSSValueID::kInternalAppearanceAutoBaseSelect) {
-    return nullptr;
-  }
-
-  CSSValue* auto_value;
-  CSSValue* base_select_value;
-  {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    auto_value = ConsumeColor(stream, context);
-    if (!auto_value || !ConsumeCommaIncludingWhitespace(stream)) {
-      return nullptr;
-    }
-    base_select_value = ConsumeColor(stream, context);
-    if (!base_select_value || !stream.AtEnd()) {
-      return nullptr;
-    }
-    guard.Release();
-  }
-  stream.ConsumeWhitespace();
-  return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
-      auto_value, base_select_value);
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-any-value
@@ -2142,14 +2113,6 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     return functional_syntax_color;
   }
 
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-      IsUASheetBehavior(context.Mode())) {
-    if (CSSAppearanceAutoBaseSelectValuePair* auto_base_select_pair =
-            ConsumeAppearanceAutoBaseSelectColor(stream, context)) {
-      return auto_base_select_pair;
-    }
-  }
-
   if (allowed_colors == AllowedColors::kAll) {
     return ConsumeLightDark(ConsumeColor, stream, context);
   }
@@ -3202,7 +3165,7 @@ static CSSValue* ConsumePaint(CSSParserTokenStream& stream,
         /*is_animation_tainted=*/false,
         /*must_contain_variable_reference=*/false,
         /*restricted_value=*/false, /*comma_ends_declaration=*/true,
-        important_ignored, context.GetExecutionContext());
+        important_ignored, context);
     if (!argument) {
       return nullptr;
     }
@@ -4999,29 +4962,6 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
 
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-      IsUASheetBehavior(context.Mode()) &&
-      stream.Peek().FunctionId() ==
-          CSSValueID::kInternalAppearanceAutoBaseSelect) {
-    CSSValue* auto_value;
-    CSSValue* base_select_value;
-    {
-      CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      stream.ConsumeWhitespace();
-      auto_value = ConsumeIdent(stream);
-      if (!auto_value || !ConsumeCommaIncludingWhitespace(stream)) {
-        return nullptr;
-      }
-      base_select_value = ConsumeIdent(stream);
-      if (!base_select_value || !stream.AtEnd()) {
-        return nullptr;
-      }
-      guard.Release();
-    }
-    stream.ConsumeWhitespace();
-    return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
-        auto_value, base_select_value);
-  }
   return ParseLonghand(CSSPropertyID::kBorderLeftStyle, CSSPropertyID::kBorder,
                        context, stream);
 }
@@ -7363,12 +7303,6 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
   bool allow_quirky_colors = IsQuirksModeBehavior(context.Mode()) &&
                              (shorthand == CSSPropertyID::kInvalid ||
                               shorthand == CSSPropertyID::kBorderColor);
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-      stream.Peek().FunctionId() ==
-          CSSValueID::kInternalAppearanceAutoBaseSelect &&
-      IsUASheetBehavior(context.Mode())) {
-    return ConsumeAppearanceAutoBaseSelectColor(stream, context);
-  }
   return ConsumeColorInternal(stream, context, allow_quirky_colors,
                               AllowedColors::kAll);
 }
@@ -7376,29 +7310,6 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
 CSSValue* ConsumeBorderWidth(CSSParserTokenStream& stream,
                              const CSSParserContext& context,
                              UnitlessQuirk unitless) {
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-      IsUASheetBehavior(context.Mode()) &&
-      stream.Peek().FunctionId() ==
-          CSSValueID::kInternalAppearanceAutoBaseSelect) {
-    CSSValue* auto_value;
-    CSSValue* base_select_value;
-    {
-      CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      stream.ConsumeWhitespace();
-      auto_value = ConsumeLineWidth(stream, context, unitless);
-      if (!auto_value || !ConsumeCommaIncludingWhitespace(stream)) {
-        return nullptr;
-      }
-      base_select_value = ConsumeLineWidth(stream, context, unitless);
-      if (!base_select_value || !stream.AtEnd()) {
-        return nullptr;
-      }
-      guard.Release();
-    }
-    stream.ConsumeWhitespace();
-    return MakeGarbageCollected<CSSAppearanceAutoBaseSelectValuePair>(
-        auto_value, base_select_value);
-  }
   return ConsumeLineWidth(stream, context, unitless);
 }
 

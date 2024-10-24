@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -948,11 +949,11 @@ TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {
 }
 
 TEST(CSSPropertyParserTest, UAAppearanceAutoBaseSelectSerialization) {
-  auto* ua_context = MakeGarbageCollected<CSSParserContext>(
-      kUASheetMode, SecureContextMode::kInsecureContext);
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundColor,
-      "-internal-appearance-auto-base-select(red, blue)", ua_context);
+  // Note: we're not using CSSParser::ParseSingleValue, because it expects
+  // arbitrary function substitution to already have happened.
+  const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
+      "color:-internal-appearance-auto-base-select(red, blue)", kUASheetMode);
+  const CSSValue* value = set->GetPropertyCSSValue(CSSPropertyID::kColor);
   ASSERT_TRUE(value);
   EXPECT_EQ("-internal-appearance-auto-base-select(red, blue)",
             value->CssText());

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -636,6 +637,8 @@ TEST(CSSParserImplTest,
       {"7px !important !important", "PARSE ERROR", true},
       {"8px important", "8px important", false},
   };
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   for (auto current_case : test_cases) {
     SCOPED_TRACE(current_case.input);
     CSSParserTokenStream stream(current_case.input);
@@ -645,8 +648,7 @@ TEST(CSSParserImplTest,
         /*is_animation_tainted=*/false,
         /*must_contain_variable_reference=*/false,
         /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-        is_important,
-        /*context=*/nullptr);
+        is_important, *context);
     if (current_case.expected_text == "PARSE ERROR") {
       EXPECT_FALSE(data);
     } else {

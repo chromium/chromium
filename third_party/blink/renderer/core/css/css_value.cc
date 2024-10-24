@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
-#include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
@@ -337,9 +336,6 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSFlipRevertValue>(*this, other);
       case kLightDarkValuePairClass:
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
-      case kAppearanceAutoBaseSelectValuePairClass:
-        return CompareCSSValues<CSSAppearanceAutoBaseSelectValuePair>(*this,
-                                                                      other);
       case kScrollClass:
         return CompareCSSValues<cssvalue::CSSScrollValue>(*this, other);
       case kViewClass:
@@ -500,8 +496,6 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSFlipRevertValue>(this)->CustomCSSText();
     case kLightDarkValuePairClass:
       return To<CSSLightDarkValuePair>(this)->CustomCSSText();
-    case kAppearanceAutoBaseSelectValuePairClass:
-      return To<CSSAppearanceAutoBaseSelectValuePair>(this)->CustomCSSText();
     case kScrollClass:
       return To<cssvalue::CSSScrollValue>(this)->CustomCSSText();
     case kViewClass:
@@ -568,7 +562,6 @@ unsigned CSSValue::Hash() const {
     case kQuadClass:
     case kURIClass:
     case kLightDarkValuePairClass:
-    case kAppearanceAutoBaseSelectValuePairClass:
     case kScrollClass:
     case kViewClass:
     case kRatioClass:
@@ -878,10 +871,6 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kLightDarkValuePairClass:
       To<CSSLightDarkValuePair>(this)->TraceAfterDispatch(visitor);
       return;
-    case kAppearanceAutoBaseSelectValuePairClass:
-      To<CSSAppearanceAutoBaseSelectValuePair>(this)->TraceAfterDispatch(
-          visitor);
-      return;
     case kScrollClass:
       To<cssvalue::CSSScrollValue>(this)->TraceAfterDispatch(visitor);
       return;
@@ -936,8 +925,6 @@ String CSSValue::ClassTypeToString() const {
       return "ValuePairClass";
     case kLightDarkValuePairClass:
       return "LightDarkValuePairClass";
-    case kAppearanceAutoBaseSelectValuePairClass:
-      return "AppearanceAutoBaseSelectValuePairClass";
     case kScrollClass:
       return "ScrollClass";
     case kViewClass:

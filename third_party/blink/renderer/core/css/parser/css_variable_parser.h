@@ -64,7 +64,7 @@ class CORE_EXPORT CSSVariableParser {
       bool restricted_value,
       bool comma_ends_declaration,
       bool& important,
-      const ExecutionContext* context);
+      const CSSParserContext& context);
 
   // Custom properties registered with universal syntax [1] are parsed with
   // this function.

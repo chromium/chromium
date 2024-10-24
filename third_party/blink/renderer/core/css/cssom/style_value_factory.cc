@@ -342,7 +342,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/false,
           /*restricted_value=*/false, /*comma_ends_declaration=*/false,
-          important_ignored, parser_context->GetExecutionContext());
+          important_ignored, *parser_context);
   if (variable_data) {
     if ((property_id == CSSPropertyID::kVariable &&
          variable_data->OriginalText().length() > 0) ||
