@@ -3536,13 +3536,6 @@ using UserFeedbackDataCallback =
   }
 }
 
-- (UIViewController*)topPresentedViewController {
-  // TODO(crbug.com/40534720): Implement TopPresentedViewControllerFrom()
-  // privately.
-  return top_view_controller::TopPresentedViewControllerFrom(
-      self.mainCoordinator.baseViewController);
-}
-
 // Interrupts the sign-in coordinator actions and dismisses its views either
 // with or without animation.
 - (void)interruptSigninCoordinatorAnimated:(BOOL)animated
@@ -3954,28 +3947,6 @@ using UserFeedbackDataCallback =
                   prefService:self.currentInterface.profile->GetPrefs()
                     initStage:self.sceneState.profileState.initStage];
   }
-}
-
-- (WrangledBrowser*)extractInterfaceBaseOnMode:
-    (ApplicationModeForTabOpening)targetMode {
-  DCHECK(targetMode != ApplicationModeForTabOpening::UNDETERMINED);
-  ApplicationMode applicationMode;
-
-  if (targetMode == ApplicationModeForTabOpening::CURRENT) {
-    applicationMode = self.currentInterface.incognito
-                          ? ApplicationMode::INCOGNITO
-                          : ApplicationMode::NORMAL;
-  } else if (targetMode == ApplicationModeForTabOpening::NORMAL) {
-    applicationMode = ApplicationMode::NORMAL;
-  } else {
-    applicationMode = ApplicationMode::INCOGNITO;
-  }
-
-  WrangledBrowser* targetInterface = applicationMode == ApplicationMode::NORMAL
-                                         ? self.mainInterface
-                                         : self.incognitoInterface;
-
-  return targetInterface;
 }
 
 #pragma mark - TabGrid helpers
