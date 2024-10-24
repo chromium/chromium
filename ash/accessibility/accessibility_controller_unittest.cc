@@ -2543,7 +2543,8 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
   ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
 
   const std::u16string kTouchpadDisabled = u"Built-in touchpad is disabled";
-  const std::u16string kPressEscape = u"Esc 5 times";
+  const std::u16string kPressEscape =
+      u"Press Esc 5 times to enable the touchpad";
 
   notifications = MessageCenter::Get()->GetVisibleNotifications();
 
