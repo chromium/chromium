@@ -23782,6 +23782,26 @@
             ]
         }
     ],
+    "TrackingProtection3pcdUx": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Rewind",
+                    "disable_features": [
+                        "TrackingProtection3pcdUx"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrackpadDropdownMenu": [
         {
             "platforms": [
