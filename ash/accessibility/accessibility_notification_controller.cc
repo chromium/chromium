@@ -56,6 +56,10 @@ void AccessibilityNotificationController::ShowToast(
   }
 }
 
+void AccessibilityNotificationController::CancelToast() {
+  Shell::Get()->toast_manager()->Cancel(kAccessibilityToastId);
+}
+
 void AccessibilityNotificationController::AddShowToastCallbackForTesting(
     base::RepeatingCallback<void(AccessibilityToastType)> callback) {
   show_anchored_nudge_callback_for_testing_ = std::move(callback);

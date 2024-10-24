@@ -22,6 +22,7 @@ class ASH_EXPORT AccessibilityNotificationController {
   ~AccessibilityNotificationController();
 
   void ShowToast(AccessibilityToastType type);
+  void CancelToast();
   void AddShowToastCallbackForTesting(
       base::RepeatingCallback<void(AccessibilityToastType)> callback);
 

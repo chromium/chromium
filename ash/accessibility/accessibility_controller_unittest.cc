@@ -65,6 +65,7 @@ namespace {
 constexpr char kDictationLanguageUpgradedNudgeId[] =
     "dictation_language_upgraded.nudge_id";
 
+const std::string kAccessibilityToast = "AccessibilityToast";
 const int kDialogTimeoutSeconds = 30;
 const int kInternalTouchpadDeviceId = 30;
 const int kUsbMouseDeviceId = 20;
@@ -2576,7 +2577,7 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
             prefs()->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
 
   auto* toast_manager = Shell::Get()->toast_manager();
-  ASSERT_FALSE(toast_manager->IsToastShown("AccessibilityToast"));
+  ASSERT_FALSE(toast_manager->IsToastShown(kAccessibilityToast));
 
   // Switch the mode to kAlways, then back to kNever.
   prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
@@ -2584,13 +2585,13 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
 
   ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
   ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
-  ASSERT_FALSE(toast_manager->IsToastShown("AccessibilityToast"));
+  ASSERT_FALSE(toast_manager->IsToastShown(kAccessibilityToast));
 
   controller()->DismissDisableTouchpadDialogForTesting();
   ASSERT_FALSE(disable_touchpad_event_rewriter()->IsEnabled());
 
   ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
-  ASSERT_TRUE(toast_manager->IsToastShown("AccessibilityToast"));
+  ASSERT_TRUE(toast_manager->IsToastShown(kAccessibilityToast));
 }
 
 TEST_F(AccessibilityControllerDisableTouchpadTest,
@@ -2645,6 +2646,70 @@ TEST_F(AccessibilityControllerDisableTouchpadTest, DialogClosesAfter30Seconds) {
 
   ASSERT_FALSE(disable_touchpad_event_rewriter()->IsEnabled());
   ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
+}
+
+TEST_F(AccessibilityControllerDisableTouchpadTest,
+       TouchpadDisabledNotificationRemovedWhenTouchpadEnabledToastIsShown) {
+  // Default kNever mode should not show a toast.
+  ASSERT_EQ(static_cast<int>(DisableTouchpadMode::kNever),
+            prefs()->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+
+  auto* toast_manager = Shell::Get()->toast_manager();
+  ASSERT_FALSE(toast_manager->IsToastShown(kAccessibilityToast));
+
+  // Switch the mode to kAlways, then back to kNever.
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kAlways));
+
+  // Accept the confirmation dialog to disable the touchpad.
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_FALSE(toast_manager->IsToastShown(kAccessibilityToast));
+  controller()->AcceptDisableTouchpadDialogForTesting();
+  ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
+
+  // Ensure touchpad disabled notification shows up.
+  auto notifications = MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  // Switch the mode back to kNever.
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kNever));
+
+  // Ensure touchpad disabled notification is removed, and toast shows up.
+  ASSERT_TRUE(toast_manager->IsToastShown(kAccessibilityToast));
+  ASSERT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
+}
+
+TEST_F(AccessibilityControllerDisableTouchpadTest,
+       TouchpadEnabledToastRemovedWhenConfirmationDialogIsShown) {
+  // Note the disable touchpad pref's default state is kNever,
+  // but explicitly calling `SetInteger`triggers an update.
+
+  // Switch the disabled touchpad mode to kNever.
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kNever));
+
+  // Ensure enable touchpad toast shows up, and disable notification touchpad
+  // is invisible.
+  auto notifications = MessageCenter::Get()->GetVisibleNotifications();
+  auto* toast_manager = Shell::Get()->toast_manager();
+
+  ASSERT_TRUE(toast_manager->IsToastShown(kAccessibilityToast));
+  ASSERT_EQ(0u, notifications.size());
+
+  // Switch the disabled touchpad mode to kAlways.
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kAlways));
+
+  // Ensure the enabled touchpad toast is removed, and the confirmation dialog
+  // is shown.
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_touchpad_event_rewriter()->IsEnabled());
+  ASSERT_FALSE(toast_manager->IsToastShown(kAccessibilityToast));
+
+  controller()->AcceptDisableTouchpadDialogForTesting();
+  notifications = MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
 }
 
 }  // namespace ash

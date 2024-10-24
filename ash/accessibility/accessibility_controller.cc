@@ -2980,6 +2980,10 @@ void AccessibilityController::DisableTouchpadWithDialog() {
       break;
 
     case DisableTouchpadMode::kNever:
+      message_center::MessageCenter* message_center =
+          message_center::MessageCenter::Get();
+      message_center->RemoveNotification(kNotificationId, false /* by_user */);
+
       ShowToast(AccessibilityToastType::kTouchpadDisabled);
       disable_touchpad_event_rewriter_->SetEnabled(false);
       break;
@@ -3011,6 +3015,7 @@ void AccessibilityController::ExternalDeviceConnected() {
 }
 
 void AccessibilityController::ShowDisableTouchpadDialog() {
+  accessibility_notification_controller_->CancelToast();
   // The internal touchpad should be disabled before the user clicks "Accept",
   // This is done to ensure the user can navigate with their keyboard.
   disable_touchpad_event_rewriter_->SetEnabled(true);
