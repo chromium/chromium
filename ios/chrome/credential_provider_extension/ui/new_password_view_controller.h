@@ -36,6 +36,9 @@
                               gaia:(NSString*)gaia
                      shouldReplace:(BOOL)shouldReplace;
 
+// Returns the gaia for the account used for credential creation.
+- (NSString*)gaia;
+
 @end
 
 // View Controller where a user can create a new credential and use a suggested

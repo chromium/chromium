@@ -37,6 +37,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential_store.h"
+#import "ios/components/credential_provider_extension/password_util.h"
 
 namespace {
 
@@ -313,6 +314,13 @@ void CredentialProviderService::SyncAllCredentials(
   SyncStore();
 }
 
+bool CredentialProviderService::SaveGaia() {
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return credential_provider_extension::StoreGaiaInKeychain(
+      base::SysUTF8ToNSString(account.gaia));
+}
+
 void CredentialProviderService::SyncStore() {
   base::UmaHistogramBoolean(kSyncStoreHistogramName, true);
 
@@ -327,6 +335,9 @@ void CredentialProviderService::SyncStore() {
   __weak id<CredentialStore> weak_credential_store = dual_credential_store_;
   [dual_credential_store_ saveDataWithCompletion:^(NSError* error) {
     if (error) {
+      return;
+    }
+    if (!SaveGaia()) {
       return;
     }
     if (weak_credential_store) {

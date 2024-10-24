@@ -17,6 +17,14 @@ NSString* PasswordWithKeychainIdentifier(NSString* identifier);
 // for later query. Returns `YES` if saving was successful and `NO` otherwise.
 BOOL StorePasswordInKeychain(NSString* password, NSString* identifier);
 
+// Queries Keychain Services for the stored gaia.
+// Returns nil if no gaia is found.
+NSString* LoadGaiaFromKeychain();
+
+// Stores `gaia` in Keychain Services.
+// Returns `YES` if saving was successful and `NO` otherwise.
+BOOL StoreGaiaInKeychain(NSString* gaia);
+
 }  // namespace credential_provider_extension
 
 #endif  // IOS_COMPONENTS_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_UTIL_H_

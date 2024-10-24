@@ -34,6 +34,7 @@
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
+#import "ios/components/credential_provider_extension/password_util.h"
 
 namespace {
 UIColor* BackgroundColor() {
@@ -431,6 +432,23 @@ UIColor* BackgroundColor() {
   [self.extensionContext completeExtensionConfigurationRequest];
 }
 
+- (NSString*)gaia {
+  NSString* gaia = credential_provider_extension::LoadGaiaFromKeychain();
+  if (gaia.length > 0) {
+    return gaia;
+  }
+
+  // As a fallback, attempt to get a valid gaia from existing credentials.
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return credential.gaia.length > 0;
+      }];
+  return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
+                                       : nil;
+}
+
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
 - (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
@@ -753,21 +771,6 @@ UIColor* BackgroundColor() {
                                          allowRetry:NO];
                     }];
   }
-}
-
-// Returns the gaia for the account used for passkey creation.
-- (NSString*)gaia {
-  // TODO(crbug.com/355041765): Get gaia from ios keychain instead of the
-  // credential store, since that would fail if there are no synced credentials
-  // in the store.
-  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
-  NSUInteger credentialIndex =
-      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
-                                                  NSUInteger idx, BOOL* stop) {
-        return credential.gaia.length > 0;
-      }];
-  return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
-                                       : nil;
 }
 
 // Triggers the process to fetch the security domain secret and calls the

@@ -39,6 +39,9 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
 
 - (void)completeExtensionConfigurationRequest;
 
+// Returns the gaia for the account used for credential creation.
+- (NSString*)gaia;
+
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_CREDENTIAL_RESPONSE_HANDLER_H_

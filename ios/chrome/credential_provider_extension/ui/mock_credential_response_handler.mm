@@ -57,4 +57,8 @@ NSData* SecurityDomainSecret() {
   // No-op.
 }
 
+- (NSString*)gaia {
+  return nil;
+}
+
 @end

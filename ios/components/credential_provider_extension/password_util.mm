@@ -8,6 +8,41 @@
 
 #import "base/logging.h"
 
+namespace {
+
+constexpr NSString* kGaiaIdentifier = @"credential_provider_extension.gaia";
+
+NSDictionary* GaiaLoadQuery() {
+  return @{
+    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+    (__bridge id)kSecAttrAccount : kGaiaIdentifier,
+    (__bridge id)kSecReturnData : @YES,
+  };
+}
+
+NSDictionary* GaiaStoreQuery(NSData* gaia) {
+  return @{
+    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+    (__bridge id)
+    kSecAttrAccessible : (__bridge id)kSecAttrAccessibleWhenUnlocked,
+    (__bridge id)kSecValueData : gaia,
+    (__bridge id)kSecAttrAccount : kGaiaIdentifier,
+  };
+}
+
+NSDictionary* GaiaUpdateQuery() {
+  return @{
+    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+    (__bridge id)kSecAttrAccount : kGaiaIdentifier,
+  };
+}
+
+NSDictionary* GaiaUpdateAttribs(NSData* gaia) {
+  return @{(__bridge id)kSecValueData : gaia};
+}
+
+}  // namespace
+
 namespace credential_provider_extension {
 
 NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
@@ -52,6 +87,47 @@ BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {
   };
 
   OSStatus status = SecItemAdd((__bridge CFDictionaryRef)query, NULL);
+  return status == errSecSuccess;
+}
+
+NSString* LoadGaiaFromKeychain() {
+  NSDictionary* gaiaLoadQuery = GaiaLoadQuery();
+
+  // Get the keychain item containing the password.
+  CFDataRef sec_data_ref = nullptr;
+  OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)gaiaLoadQuery,
+                                        (CFTypeRef*)&sec_data_ref);
+
+  if (status != errSecSuccess) {
+    DLOG(ERROR) << "Error retrieving gaia, OSStatus: " << status;
+    return nil;
+  }
+
+  // This is safe because SecItemCopyMatching either assign an owned reference
+  // to sec_data_ref, or leave it unchanged, and bridging maps nullptr to nil.
+  NSData* data = (__bridge_transfer NSData*)sec_data_ref;
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
+BOOL StoreGaiaInKeychain(NSString* gaia) {
+  NSData* gaiaData = [gaia dataUsingEncoding:NSUTF8StringEncoding];
+
+  // Check that there is not already a gaia.
+  OSStatus status =
+      SecItemCopyMatching((__bridge CFDictionaryRef)GaiaLoadQuery(),
+                          /*result=*/nullptr);
+  if (status == errSecItemNotFound) {
+    // A new entry must be created.
+    status = SecItemAdd((__bridge CFDictionaryRef)GaiaStoreQuery(gaiaData),
+                        /*result=*/nullptr);
+
+  } else if (status == noErr) {
+    // The entry must be updated.
+    status =
+        SecItemUpdate((__bridge CFDictionaryRef)GaiaUpdateQuery(),
+                      (__bridge CFDictionaryRef)GaiaUpdateAttribs(gaiaData));
+  }
+
   return status == errSecSuccess;
 }
 

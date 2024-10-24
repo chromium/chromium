@@ -110,6 +110,10 @@ using base::SysUTF16ToNSString;
              }];
 }
 
+- (NSString*)gaia {
+  return [self.credentialResponseHandler gaia];
+}
+
 #pragma mark - Private
 
 // Checks whether a credential already exists with the given username.

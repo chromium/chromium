@@ -130,4 +130,18 @@ TEST_F(PasswordUtilKeychainTest, StoreEmptyIdentifier) {
   EXPECT_FALSE(StorePasswordInKeychain(kCredentialPassword1, @""));
 }
 
+// Tests storing and loading a gaia.
+TEST_F(PasswordUtilKeychainTest, StoreGaia) {
+  EXPECT_TRUE(StoreGaiaInKeychain(kCredentialKey1));
+  EXPECT_NSEQ(LoadGaiaFromKeychain(), kCredentialKey1);
+}
+
+// Tests updating an existing gaia.
+TEST_F(PasswordUtilKeychainTest, UpdateGaia) {
+  EXPECT_TRUE(StoreGaiaInKeychain(kCredentialKey1));
+  EXPECT_NSEQ(LoadGaiaFromKeychain(), kCredentialKey1);
+  EXPECT_TRUE(StoreGaiaInKeychain(kCredentialKey2));
+  EXPECT_NSEQ(LoadGaiaFromKeychain(), kCredentialKey2);
+}
+
 }  // credential_provider_extension
