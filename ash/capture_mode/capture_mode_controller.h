@@ -252,8 +252,9 @@ class ASH_EXPORT CaptureModeController
 
   // Called only while a capture session is in progress to perform the actual
   // capture depending on the current selected `source_` and `type_`, and ends
-  // the capture session.
-  void PerformCapture();
+  // the capture session. `capture_type` indicates what type of capture to do.
+  void PerformCapture(
+      PerformCaptureType capture_type = PerformCaptureType::kCapture);
 
   // Called by a capture session behavior to perform an image capture search.
   void PerformImageSearch();
@@ -584,8 +585,10 @@ class ASH_EXPORT CaptureModeController
   // Called by the DLP manager when it's checked for any on-screen content
   // restriction at the time when the capture operation is attempted. `proceed`
   // will be set to true if the capture operation should continue, false if it
-  // should be aborted.
-  void OnDlpRestrictionCheckedAtPerformingCapture(bool proceed);
+  // should be aborted. `capture_type` indicates what type of capture to do.
+  void OnDlpRestrictionCheckedAtPerformingCapture(
+      PerformCaptureType capture_type,
+      bool proceed);
 
   // Called after the video recording was written to the final file location.
   // `should_delete_file` indicates if the file was deleted due to an error.

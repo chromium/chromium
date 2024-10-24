@@ -879,7 +879,7 @@ void CaptureModeController::CaptureScreenshotOfGivenWindow(
       BehaviorType::kGameDashboard);
 }
 
-void CaptureModeController::PerformCapture() {
+void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
   DCHECK(IsActive());
 
   if (pending_dlp_check_)
@@ -897,12 +897,10 @@ void CaptureModeController::PerformCapture() {
       capture_params->window, capture_params->bounds,
       base::BindOnce(
           &CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), capture_type));
 }
 
 void CaptureModeController::PerformImageSearch() {
-  DCHECK_EQ(capture_mode_session_->active_behavior()->behavior_type(),
-            BehaviorType::kSunfish);
   DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
   const std::optional<CaptureParams> capture_params = GetCaptureParams();
@@ -2124,6 +2122,7 @@ void CaptureModeController::InterruptVideoRecording() {
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
+    PerformCaptureType capture_type,
     bool proceed) {
   pending_dlp_check_ = false;
 
@@ -2137,6 +2136,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   // We don't need to bring capture mode UIs back if `proceed` is false or if
   // the session is about to shutdown. See also
   // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture()`.
+  // TODO(b/374381937): Determine whether to reshow UIs or end the session.
   auto* active_behavior = capture_mode_session_->active_behavior();
   capture_mode_session_->OnWaitingForDlpConfirmationEnded(
       /*reshow_uis=*/proceed &&
@@ -2157,7 +2157,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   if (type_ == CaptureModeType::kImage) {
-    if (active_behavior->behavior_type() == BehaviorType::kSunfish) {
+    if (active_behavior->behavior_type() == BehaviorType::kSunfish ||
+        capture_type == PerformCaptureType::kSearch) {
       // Sunfish behavior doesn't need the file path and does specific image
       // capture handling.
       PerformImageSearch();

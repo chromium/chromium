@@ -328,6 +328,9 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture() const override { return true; }
+  bool ShouldShowSearchButtonAfterRegionSelected() const override {
+    return false;
+  }
   bool ShouldShowCaptureButtonAfterRegionSelected() const override {
     return false;
   }
@@ -477,11 +480,17 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
 
 bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture() const {
   // We don't need to bring capture mode UIs back if `type_` is
-  // `CaptureModeType::kImage`, since the session is about to shutdown anyways
-  // at these use cases, so it's better to avoid any wasted effort. In the case
-  // of video recording, we need to reshow the UIs so that we can start the
-  // 3-second count down animation.
+  // `CaptureModeType::kImage`, except if the capture type is search, since the
+  // session is about to shutdown anyways at these use cases, so it's better to
+  // avoid any wasted effort. In the case of video recording, we need to reshow
+  // the UIs so that we can start the 3-second count down animation.
   return CaptureModeController::Get()->type() != CaptureModeType::kImage;
+}
+
+bool CaptureModeBehavior::ShouldShowSearchButtonAfterRegionSelected() const {
+  auto* controller = CaptureModeController::Get();
+  return controller->type() == CaptureModeType::kImage &&
+         controller->source() == CaptureModeSource::kRegion;
 }
 
 bool CaptureModeBehavior::ShouldShowCaptureButtonAfterRegionSelected() const {

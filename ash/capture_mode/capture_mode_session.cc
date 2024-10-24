@@ -1391,7 +1391,6 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 
 void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
   DCHECK(features::IsSunfishFeatureEnabled());
-  DCHECK_EQ(active_behavior()->behavior_type(), BehaviorType::kSunfish);
 
   if (!search_results_panel_widget_) {
     search_results_panel_widget_ =
@@ -1861,6 +1860,11 @@ void CaptureModeSession::MaybeCreateUserNudge() {
 
 void CaptureModeSession::DoPerformCapture() {
   controller_->PerformCapture();  // `this` can be deleted after this.
+}
+
+void CaptureModeSession::DoPerformImageSearch() {
+  controller_->PerformCapture(
+      PerformCaptureType::kSearch);  // `this` can be deleted after this.
 }
 
 void CaptureModeSession::OnRecordingTypeDropDownButtonPressed(
@@ -2481,6 +2485,18 @@ void CaptureModeSession::OnLocatedEventReleased(
     return;
   }
 
+  // TODO(b/367882127): May also need to check if the user has opted in.
+  if (features::IsSunfishFeatureEnabled() &&
+      active_behavior_->ShouldShowSearchButtonAfterRegionSelected()) {
+    DCHECK(action_container_widget_);
+    // TODO(b/373896226): Update string and icon with UX specs.
+    capture_mode_util::AddActionButton(
+        base::BindRepeating(&CaptureModeSession::DoPerformImageSearch,
+                            weak_ptr_factory_.GetWeakPtr()),
+        u"Search", &kCaptureModeImageIcon,
+        ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));
+  }
+
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
 
   A11yAlertCaptureSource(/*trigger_now=*/true);
@@ -3057,9 +3073,10 @@ bool CaptureModeSession::IsPointOverSelectedWindow(
 
 // TODO(http://b/363069895): Upload strings for translation.
 void CaptureModeSession::UpdateActionContainerWidget() {
-  // TODO: crbug.com/373896226 - Allow this widget to be shown when the
-  // "Search with Lens" button is added to a regular capture session.
-  if (active_behavior()->behavior_type() != BehaviorType::kSunfish) {
+  const bool show_action_container =
+      active_behavior_->behavior_type() == BehaviorType::kSunfish ||
+      active_behavior_->ShouldShowSearchButtonAfterRegionSelected();
+  if (!show_action_container) {
     return;
   }
 

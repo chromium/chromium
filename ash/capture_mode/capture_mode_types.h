@@ -112,6 +112,13 @@ enum class ActionButtonType {
   kSunfish,
 };
 
+// Defines the capture type to be performed when "Capture" or "Search" is
+// pressed.
+enum class PerformCaptureType {
+  kCapture,
+  kSearch,
+};
+
 // Defines the rank of an action button for a selected region. Higher ranked
 // buttons are placed further to the right than lower ranked ones. Lower ranked
 // buttons may not be visible if there are too many action buttons available.

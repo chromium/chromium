@@ -682,6 +682,31 @@ TEST_F(SunfishTest, ActionContainerWidgetOpacity) {
   EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
 }
 
+// Tests that the search action button is shown in default capture mode.
+TEST_F(SunfishTest, SearchActionButton) {
+  // Start default capture mode *not* region selection.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  // Since we cannot select a region, no action buttons are shown.
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Set the source type to region, then select a region.
+  controller->SetSource(CaptureModeSource::kRegion);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // TODO(b/373896226): Determine whether to end capture mode session.
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest() = default;
