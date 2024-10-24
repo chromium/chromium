@@ -76,6 +76,10 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
       return V8GPUFeatureName::Enum::kClipDistances;
     case wgpu::FeatureName::MultiDrawIndirect:
       return V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
+    case wgpu::FeatureName::Unorm16TextureFormats:
+      return V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats;
+    case wgpu::FeatureName::Snorm16TextureFormats:
+      return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
     default:
       return std::nullopt;
   }

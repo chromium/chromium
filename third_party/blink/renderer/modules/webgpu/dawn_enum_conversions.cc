@@ -338,6 +338,20 @@ wgpu::TextureFormat AsDawnEnum(const V8GPUTextureFormat& webgpu_enum) {
       return wgpu::TextureFormat::ASTC12x12Unorm;
     case V8GPUTextureFormat::Enum::kAstc12X12UnormSrgb:
       return wgpu::TextureFormat::ASTC12x12UnormSrgb;
+
+      // R/RG/RGBA16 norm texture formats
+    case V8GPUTextureFormat::Enum::kR16Unorm:
+      return wgpu::TextureFormat::R16Unorm;
+    case V8GPUTextureFormat::Enum::kRg16Unorm:
+      return wgpu::TextureFormat::RG16Unorm;
+    case V8GPUTextureFormat::Enum::kRgba16Unorm:
+      return wgpu::TextureFormat::RGBA16Unorm;
+    case V8GPUTextureFormat::Enum::kR16Snorm:
+      return wgpu::TextureFormat::R16Snorm;
+    case V8GPUTextureFormat::Enum::kRg16Snorm:
+      return wgpu::TextureFormat::RG16Snorm;
+    case V8GPUTextureFormat::Enum::kRgba16Snorm:
+      return wgpu::TextureFormat::RGBA16Snorm;
   }
   NOTREACHED();
 }
@@ -554,6 +568,20 @@ V8GPUTextureFormat FromDawnEnum(wgpu::TextureFormat dawn_enum) {
       return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kAstc12X12Unorm);
     case wgpu::TextureFormat::ASTC12x12UnormSrgb:
       return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kAstc12X12UnormSrgb);
+
+    // R/RG/RGBA16 norm texture formats
+    case wgpu::TextureFormat::R16Unorm:
+      return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kR16Unorm);
+    case wgpu::TextureFormat::RG16Unorm:
+      return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kRg16Unorm);
+    case wgpu::TextureFormat::RGBA16Unorm:
+      return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kRgba16Unorm);
+    case wgpu::TextureFormat::R16Snorm:
+      return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kR16Snorm);
+    case wgpu::TextureFormat::RG16Snorm:
+      return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kRg16Snorm);
+    case wgpu::TextureFormat::RGBA16Snorm:
+      return V8GPUTextureFormat(V8GPUTextureFormat::Enum::kRgba16Snorm);
     default:
       break;
   }
@@ -701,6 +729,10 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::ClipDistances;
     case V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect:
       return wgpu::FeatureName::MultiDrawIndirect;
+    case V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats:
+      return wgpu::FeatureName::Unorm16TextureFormats;
+    case V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats:
+      return wgpu::FeatureName::Snorm16TextureFormats;
   }
 }
 
