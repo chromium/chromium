@@ -29,10 +29,6 @@ component("idle") {
     "//ui/base",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/dbus/session_manager" ]
-  }
-
   sources = [
     "idle.cc",
     "idle.h",
@@ -43,13 +39,9 @@ component("idle") {
     "idle_time_provider.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "idle_chromeos.cc" ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "idle_lacros.cc" ]
-    deps += [ "//chromeos/lacros" ]
+    deps += [ "//chromeos/ash/components/dbus/session_manager" ]
   }
 
   if (is_mac) {
