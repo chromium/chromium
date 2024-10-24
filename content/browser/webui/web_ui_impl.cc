@@ -99,6 +99,11 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
   return loader_config;
 }
 
+bool IsForTestMessage(const std::string& message) {
+  return base::EndsWith(message, "ForTest") ||
+         base::EndsWith(message, "ForTesting");
+}
+
 }  // namespace
 
 const WebUI::TypeID WebUI::kNoWebUI = nullptr;
@@ -292,8 +297,10 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
     return;
   }
 
-  DUMP_WILL_BE_NOTREACHED() << "Unhandled chrome.send(\"" << message << "\", "
-                            << args << "); from " << source_url;
+  if (!IsForTestMessage(message)) {
+    DUMP_WILL_BE_NOTREACHED() << "Unhandled chrome.send(\"" << message << "\", "
+                              << args << "); from " << source_url;
+  }
 }
 
 std::vector<std::unique_ptr<WebUIMessageHandler>>*
