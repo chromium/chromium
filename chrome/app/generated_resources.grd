@@ -7628,21 +7628,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Pa&amp;ste and Go
         </message>
       </if>
-      <message name="IDS_OMNIBOX_KEYWORD_HINT" desc="Shown to the user when the url in the omnibox has a keyword associated with it. $1 is replaced with an image showing the tab key. $2 is replaced with the description of the keyword.">
-        Press <ph name="SEARCH_KEY">$1<ex>Tab</ex></ph> to search <ph name="SITE_NAME">$2<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_OMNIBOX_EXTENSION_KEYWORD_HINT" desc="Shown to the user when the word(s) in the omnibox has an extension keyword associated with it. $1 is replaced with an image showing the tab key. $2 is replaced with the description of the keyword.">
-        Press <ph name="SEARCH_KEY">$1<ex>Tab</ex></ph> to send commands to <ph name="EXTENSION_NAME">$2<ex>Google Talk</ex></ph>
-      </message>
-      <message name="IDS_OMNIBOX_KEYWORD_HINT_KEY_ACCNAME" desc="The accessible name of the tab key image">
-        Tab
-      </message>
-      <message name="IDS_OMNIBOX_KEYWORD_HINT_TOUCH" desc="Shown to the user when the url in the omnibox has a keyword associated with it and we are in touch mode (i.e. the on screen keyboard is visible).">
-        Search <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_OMNIBOX_EXTENSION_KEYWORD_HINT_TOUCH" desc="Shown to the user when the word(s) in the omnibox has an extension keyword associated with it and we are in touch mode (i.e. the onscreen keyboard is visible).">
-        Send commands to <ph name="EXTENSION_NAME">$1<ex>ACME Music App</ex></ph>
-      </message>
       <message name="IDS_OMNIBOX_KEYWORD_TEXT" desc="Text shown in the search button at the front of the omnibox when the user has selected a keyword">
         Search <ph name="SITE_NAME">$1<ex>google.com</ex></ph>:
       </message>
@@ -14221,26 +14206,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <!-- Mac Menubar Menus -->
       <if expr="is_macosx">
         <!-- Menubar Menu Titles -->
-        <!-- NOTE: Some of these exist in context menus with Title Case support, but we use different IDs in case we need slightly different strings in some language due to the different context. -->
-        <message name="IDS_FILE_MENU_MAC" desc="The menu title of the Mac file menu.">
+        <!-- NOTE: Some of these exist in context menus with Title Case support, but we use different IDs and explicit meaning strings so that we can get different strings in some languages due to the different context. -->
+        <message name="IDS_FILE_MENU_MAC" desc="The menu title of the Mac file menu." meaning="Top-level menu">
           File
         </message>
-        <message name="IDS_EDIT_MENU_MAC" desc="The menu title of the Mac edit menu.">
+        <message name="IDS_EDIT_MENU_MAC" desc="The menu title of the Mac edit menu." meaning="Top-level menu">
           Edit
         </message>
-        <message name="IDS_VIEW_MENU_MAC" desc="The menu title of the Mac view menu.">
+        <message name="IDS_VIEW_MENU_MAC" desc="The menu title of the Mac view menu." meaning="Top-level menu">
           View
         </message>
-        <message name="IDS_HISTORY_MENU_MAC" desc="The menu title of the Mac history menu.">
+        <message name="IDS_HISTORY_MENU_MAC" desc="The menu title of the Mac history menu." meaning="Top-level menu">
           History
         </message>
-        <message name="IDS_WINDOW_MENU_MAC" desc="The menu title of the Mac window menu.">
+        <message name="IDS_WINDOW_MENU_MAC" desc="The menu title of the Mac window menu." meaning="Top-level menu">
           Window
         </message>
-        <message name="IDS_TAB_MENU_MAC" desc="The menu title of the Mac tab menu.">
+        <message name="IDS_TAB_MENU_MAC" desc="The menu title of the Mac tab menu." meaning="Top-level menu, tab as in the UI element in the tabstrip containing a website">
           Tab
         </message>
-        <message name="IDS_HELP_MENU_MAC" desc="The menu title of the Mac help menu.">
+        <message name="IDS_HELP_MENU_MAC" desc="The menu title of the Mac help menu." meaning="Top-level menu">
           Help
         </message>
         <!-- App menu -->

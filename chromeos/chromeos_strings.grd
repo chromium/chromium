@@ -1652,7 +1652,7 @@
         <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_SHIFT_RIGHT" desc="Describes the right Shift key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Right shift key not pressed', 'Right shift key pressed', or 'Right shift key tested').">
           Right shift
         </message>
-        <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TAB" desc="Describes the Tab key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Tab key not pressed', 'Tab key pressed', or 'Tab key tested').">
+        <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_TAB" desc="Describes the Tab key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Tab key not pressed', 'Tab key pressed', or 'Tab key tested')." meaning="Tab key on the keyboard">
           Tab
         </message>
 

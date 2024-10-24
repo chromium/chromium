@@ -674,7 +674,7 @@ need to be translated for each locale.-->
       <message name="IDS_APP_ESC_KEY" desc="Escape key">
         Esc
       </message>
-      <message name="IDS_APP_TAB_KEY" desc="Tab key" meaning="Tab key">
+      <message name="IDS_APP_TAB_KEY" desc="Tab key" meaning="Tab key on the keyboard">
         Tab
       </message>
       <message name="IDS_APP_INSERT_KEY" desc="Insert key">

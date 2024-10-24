@@ -4907,7 +4907,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_IDENTIFIER_UNNAMED" desc="Content description for group identifiers without a name.">
         Unnamed group
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_IDENTIFIER" desc="Content description for tabs that are not selected">
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_IDENTIFIER" desc="Content description for tabs that are not selected" meaning="Tab as in the UI element in the tabstrip containing a website">
         Tab
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_IDENTIFIER_SELECTED" desc="Content description for the tab that is selected">
