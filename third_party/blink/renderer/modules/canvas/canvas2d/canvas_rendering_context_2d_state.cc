@@ -133,7 +133,7 @@ FontSelectionValue CanvasFontStretchToSelectionValue(
   return stretch_value;
 }
 
-TextRenderingMode CanvasTextRenderingToTextRendering(
+TextRenderingMode CanvasTextRenderingToTextRenderingMode(
     V8CanvasTextRendering text_rendering) {
   TextRenderingMode text_rendering_mode;
   switch (text_rendering.AsEnum()) {
@@ -141,13 +141,13 @@ TextRenderingMode CanvasTextRenderingToTextRendering(
       text_rendering_mode = TextRenderingMode::kAutoTextRendering;
       break;
     case (V8CanvasTextRendering::Enum::kOptimizeSpeed):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      text_rendering_mode = TextRenderingMode::kOptimizeSpeed;
       break;
     case (V8CanvasTextRendering::Enum::kOptimizeLegibility):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      text_rendering_mode = TextRenderingMode::kOptimizeLegibility;
       break;
     case (V8CanvasTextRendering::Enum::kGeometricPrecision):
-      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      text_rendering_mode = TextRenderingMode::kGeometricPrecision;
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -387,7 +387,7 @@ void CanvasRenderingContext2DState::SetFont(
   }
   font_description.SetKerning(font_kerning_);
   font_description.SetTextRendering(
-      CanvasTextRenderingToTextRendering(text_rendering_mode_));
+      CanvasTextRenderingToTextRenderingMode(text_rendering_mode_));
   font_variant_caps_ = font_description.VariantCaps();
   std::optional<blink::V8CanvasFontStretch> font_value =
       V8CanvasFontStretch::Create(
@@ -925,7 +925,7 @@ void CanvasRenderingContext2DState::SetTextRendering(
     FontSelector* selector) {
   DCHECK(realized_font_);
   TextRenderingMode text_rendering_mode =
-      CanvasTextRenderingToTextRendering(text_rendering);
+      CanvasTextRenderingToTextRenderingMode(text_rendering);
   FontDescription font_description(GetFontDescription());
   font_description.SetTextRendering(text_rendering_mode);
   text_rendering_mode_ = text_rendering;
