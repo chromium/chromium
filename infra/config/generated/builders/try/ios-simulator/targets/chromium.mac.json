@@ -34,7 +34,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -83,7 +83,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -132,7 +132,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -181,7 +181,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -230,7 +230,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -279,7 +279,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -328,7 +328,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -377,7 +377,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -426,7 +426,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -475,7 +475,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -524,7 +524,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -573,7 +573,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -622,7 +622,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -671,7 +671,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -720,7 +720,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -769,7 +769,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -818,7 +818,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -867,7 +867,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -916,7 +916,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -965,7 +965,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1014,7 +1014,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1063,7 +1063,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1112,7 +1112,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1161,7 +1161,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1213,7 +1213,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1266,7 +1266,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1316,7 +1316,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1365,7 +1365,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1414,7 +1414,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1463,7 +1463,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1512,7 +1512,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1561,7 +1561,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1610,7 +1610,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1660,7 +1660,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1710,7 +1710,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1759,7 +1759,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1808,7 +1808,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1857,7 +1857,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1906,7 +1906,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -1955,7 +1955,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2005,7 +2005,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2055,7 +2055,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2104,7 +2104,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2153,7 +2153,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2202,7 +2202,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2251,7 +2251,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2300,7 +2300,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2349,7 +2349,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2398,7 +2398,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2447,7 +2447,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2496,7 +2496,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2545,7 +2545,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2594,7 +2594,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2643,7 +2643,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2692,7 +2692,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2741,7 +2741,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2790,7 +2790,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2839,7 +2839,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2888,7 +2888,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2937,7 +2937,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -2986,7 +2986,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3035,7 +3035,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3084,7 +3084,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3133,7 +3133,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3182,7 +3182,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3231,7 +3231,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3280,7 +3280,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3329,7 +3329,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3378,7 +3378,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
@@ -3427,7 +3427,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-14"
           },
           "named_caches": [
