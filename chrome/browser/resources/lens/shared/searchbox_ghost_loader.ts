@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_spinner_style.css.js';
-import '/lens/shared/searchbox_shared_style.css.js';
+import './searchbox_shared_style.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
