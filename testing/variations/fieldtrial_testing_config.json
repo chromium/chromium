@@ -25878,47 +25878,6 @@
             ]
         }
     ],
-    "WaitForLateScrollEvents": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DispatchImmediately",
-                    "params": {
-                        "mode": "DispatchScrollEventsImmediately"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
-                    ]
-                },
-                {
-                    "name": "UseScrollPredictorForDeadline",
-                    "params": {
-                        "mode": "UseScrollPredictorForDeadline"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
-                    ]
-                },
-                {
-                    "name": "UseScrollPredictorForEmptyQueue",
-                    "params": {
-                        "mode": "UseScrollPredictorForEmptyQueue"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkAllowIconUpdate": [
         {
             "platforms": [

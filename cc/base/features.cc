@@ -175,7 +175,7 @@ BASE_FEATURE(kMetricsBackfillAdjustmentHoldback,
 
 BASE_FEATURE(kWaitForLateScrollEvents,
              "WaitForLateScrollEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kWaitForLateScrollEventsDeadlineRatio{
     &kWaitForLateScrollEvents, "deadline_ratio", 0.333};
@@ -199,16 +199,16 @@ bool IsCCSlimmingEnabled() {
   return enabled;
 }
 
-const base::FeatureParam<std::string> kScrollEventDispatchMode(
-    &kWaitForLateScrollEvents,
-    "mode",
-    "EnqueueScrollEvents");
 constexpr const char kScrollEventDispatchModeDispatchScrollEventsImmediately[] =
     "DispatchScrollEventsImmediately";
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
     "UseScrollPredictorForEmptyQueue";
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForDeadline[] =
     "UseScrollPredictorForDeadline";
+const base::FeatureParam<std::string> kScrollEventDispatchMode(
+    &kWaitForLateScrollEvents,
+    "mode",
+    kScrollEventDispatchModeDispatchScrollEventsImmediately);
 
 BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
 

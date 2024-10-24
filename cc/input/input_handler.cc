@@ -99,8 +99,10 @@ void InputHandler::BindToClient(InputHandlerClient* client) {
   DCHECK(input_handler_client_ == nullptr);
   input_handler_client_ = client;
   input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
-  input_handler_client_->SetScrollEventDispatchMode(
-      GetScrollEventDispatchMode());
+  if (base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents)) {
+    input_handler_client_->SetScrollEventDispatchMode(
+        GetScrollEventDispatchMode());
+  }
 }
 
 InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
