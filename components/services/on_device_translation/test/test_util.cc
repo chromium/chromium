@@ -98,9 +98,9 @@ base::ScopedTempDir FakeFileOperationProxy::SetupDataDir(
         tmp_dir.GetPath().Append(base::FilePath::FromASCII(file.relative_path));
     if (!base::DirectoryExists(path.DirName())) {
       CHECK(base::CreateDirectory(path.DirName()));
-      CHECK(base::File(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
-                .WriteAndCheck(0, base::as_byte_span(file.content)));
     }
+    CHECK(base::File(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
+              .WriteAndCheck(0, base::as_byte_span(file.content)));
   }
   return tmp_dir;
 }
