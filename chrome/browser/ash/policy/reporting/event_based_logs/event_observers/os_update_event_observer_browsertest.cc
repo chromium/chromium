@@ -12,20 +12,16 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/reporting/util/status.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -72,9 +68,6 @@ class OsUpdateEventObserverBrowserTest
 
   void SetUpOnMainThread() override {
     login_manager_mixin_.SetShouldLaunchBrowser(true);
-    PrefService* local_state = g_browser_process->local_state();
-    static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
-        ->RegisterDictionaryPref(policy::prefs::kEventBasedLogLastUploadTimes);
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }
 

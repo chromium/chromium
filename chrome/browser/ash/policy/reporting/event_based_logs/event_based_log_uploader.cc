@@ -16,7 +16,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +26,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/util/status.h"
+#include "components/user_manager/user_manager.h"
 #include "record.pb.h"
 
 namespace {
@@ -118,7 +118,7 @@ void EventBasedLogUploaderImpl::UploadEventBasedLogs(
   event_type_ = event_type;
   on_upload_completed_ = std::move(on_upload_completed);
 
-  Profile* profile = GetCurrentUserSessionType() == UserSessionType::NO_SESSION
+  Profile* profile = !user_manager::UserManager::Get()->IsUserLoggedIn()
                          ? Profile::FromBrowserContext(
                                CHECK_DEREF(ash::BrowserContextHelper::Get())
                                    .GetSigninBrowserContext())

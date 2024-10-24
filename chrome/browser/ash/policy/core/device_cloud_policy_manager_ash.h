@@ -59,6 +59,7 @@ class ReportingUserTracker;
 class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
+class EventBasedLogManager;
 
 // CloudPolicyManager specialization for device policy in Ash.
 class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
@@ -235,6 +236,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
 
   // Object that initiates device metrics collection and reporting.
   std::unique_ptr<reporting::MetricReportingManager> metric_reporting_manager_;
+
+  // Helper object that handles the event based log uploads.
+  std::unique_ptr<EventBasedLogManager> event_based_log_manager_;
 
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

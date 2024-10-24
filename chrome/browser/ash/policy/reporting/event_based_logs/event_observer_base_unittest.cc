@@ -68,11 +68,6 @@ class EventObserverBaseTest : public testing::Test {
   EventObserverBaseTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
-  void SetUp() override {
-    testing_local_state_.Get()->registry()->RegisterDictionaryPref(
-        policy::prefs::kEventBasedLogLastUploadTimes);
-  }
-
   void SetLastUploadTime(const std::string event_name,
                          base::Time last_upload_time) {
     testing_local_state_.Get()->SetDict(

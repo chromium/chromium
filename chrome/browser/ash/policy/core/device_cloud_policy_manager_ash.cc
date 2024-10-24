@@ -12,6 +12,7 @@
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
+#include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
 #include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_reporter.h"
@@ -41,6 +43,7 @@
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -133,6 +136,7 @@ void DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver(
 
 // Keep clean up order as the reversed creation order.
 void DeviceCloudPolicyManagerAsh::Shutdown() {
+  event_based_log_manager_.reset();
   os_updates_reporter_.reset();
   metric_reporting_manager_.reset();
   lock_unlock_reporter_.reset();
@@ -162,6 +166,8 @@ void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kLastRsuDeviceIdUploaded,
                                std::string());
   registry->RegisterListPref(prefs::kStoreLogStatesAcrossReboots);
+  registry->RegisterDictionaryPref(
+      policy::prefs::kEventBasedLogLastUploadTimes);
 }
 
 void DeviceCloudPolicyManagerAsh::StartConnection(
@@ -245,6 +251,9 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
+    if (base::FeatureList::IsEnabled(features::kEventBasedLogUpload)) {
+      event_based_log_manager_ = std::make_unique<EventBasedLogManager>();
+    }
   }
 
   NotifyConnected();

@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
-#include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -29,7 +28,6 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/reporting/util/status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -80,13 +78,6 @@ class FatalCrashEventLogObserverBrowserTest
     policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
         command_line);
     policy::DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  void SetUpOnMainThread() override {
-    PrefService* local_state = g_browser_process->local_state();
-    static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
-        ->RegisterDictionaryPref(policy::prefs::kEventBasedLogLastUploadTimes);
-    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }
 
   // healthd emits a crash.
