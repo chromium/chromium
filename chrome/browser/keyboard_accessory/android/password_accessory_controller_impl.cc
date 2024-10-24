@@ -97,7 +97,8 @@ autofill::UserInfo TranslateCredentials(const UiCredential& credential,
   std::u16string username = GetDisplayUsername(credential);
   user_info.add_field(
       AccessorySheetField::Builder()
-          .SetSuggestionType(autofill::AccessorySuggestionType::USERNAME)
+          .SetSuggestionType(
+              autofill::AccessorySuggestionType::kCredentialUsername)
           .SetDisplayText(username)
           .SetSelectable(!credential.username().empty())
           .SetIconId(username_icon_id)
@@ -105,7 +106,8 @@ autofill::UserInfo TranslateCredentials(const UiCredential& credential,
 
   user_info.add_field(
       AccessorySheetField::Builder()
-          .SetSuggestionType(autofill::AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(
+              autofill::AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(credential.password())
           .SetA11yDescription(l10n_util::GetStringFUTF16(
               IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username))

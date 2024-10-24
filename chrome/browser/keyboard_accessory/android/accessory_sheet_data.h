@@ -77,7 +77,7 @@ class AccessorySheetField final {
 
   void set_icon_id(int icon_id) { icon_id_ = icon_id; }
 
-  AccessorySuggestionType suggestion_type_ = AccessorySuggestionType::COUNT;
+  AccessorySuggestionType suggestion_type_ = AccessorySuggestionType::kMaxValue;
   std::u16string display_text_;
   // The string that would be used to fill in the form, for cases when it is
   // different from |display_text_|. For example: For unmasked credit cards,

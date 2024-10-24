@@ -47,7 +47,7 @@ public final class UserInfoField {
             int iconId,
             boolean isObfuscated,
             @Nullable Callback<UserInfoField> callback) {
-        assert suggestionType != AccessorySuggestionType.COUNT;
+        assert suggestionType != AccessorySuggestionType.MAX_VALUE + 1;
         mSuggestionType = suggestionType;
         mDisplayText = Objects.requireNonNull(displayText, "Display text can't be null");
         mTextToFill = Objects.requireNonNull(textToFill, "Text to fill can't be null");
@@ -118,7 +118,8 @@ public final class UserInfoField {
 
     /** Builder for the {@link UserInfoField}. */
     public static final class Builder {
-        private @AccessorySuggestionType int mSuggestionType = AccessorySuggestionType.COUNT;
+        private @AccessorySuggestionType int mSuggestionType =
+                AccessorySuggestionType.MAX_VALUE + 1;
         private String mDisplayText = "";
         private String mTextToFill = "";
         private String mA11yDescription = "";

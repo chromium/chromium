@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 
 namespace autofill {
@@ -26,7 +27,8 @@ AccessorySheetField& AccessorySheetField::operator=(AccessorySheetField&&) =
     default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
-  os << "(display text: \"" << field.display_text() << "\", "
+  os << "(suggestion_type: " << base::to_underlying(field.suggestion_type())
+     << ", " << "display text: \"" << field.display_text() << "\", "
      << "text_to_fill: \"" << field.text_to_fill() << "\", "
      << "a11y_description: \"" << field.a11y_description() << "\", " << "id: \""
      << field.id() << "\", " << "icon_id: \"" << field.icon_id() << "\", "
@@ -167,7 +169,7 @@ PlusAddressInfo::PlusAddressInfo(std::string origin,
     : origin_(std::move(origin)),
       plus_address_(
           AccessorySheetField::Builder()
-              .SetSuggestionType(AccessorySuggestionType::PLUS_ADDRESS)
+              .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
               .SetDisplayText(std::move(plus_address))
               .SetSelectable(true)
               .Build()) {}
@@ -242,7 +244,7 @@ std::ostream& operator<<(std::ostream& os,
 PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
                              std::u16string details_text)
     : promo_code_(AccessorySheetField::Builder()
-                      .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+                      .SetSuggestionType(AccessorySuggestionType::kPromoCode)
                       .SetDisplayText(std::move(promo_code))
                       .SetSelectable(true)
                       .Build()),
@@ -269,7 +271,7 @@ IbanInfo::IbanInfo(std::u16string value,
                    std::u16string text_to_fill,
                    std::string id)
     : value_(AccessorySheetField::Builder()
-                 .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+                 .SetSuggestionType(AccessorySuggestionType::kIban)
                  .SetDisplayText(std::move(value))
                  .SetTextToFill(std::move(text_to_fill))
                  .SetId(std::move(id))

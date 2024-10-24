@@ -51,10 +51,10 @@ AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds",
                                      /*plus_address_title=*/std::u16string())
       .AddUserInfo("example.com", autofill::UserInfo::IsExactMatch(true))
-      .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben", false,
-                   true)
-      .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3", u"Ben's PW",
-                   true, false)
+      .AppendField(AccessorySuggestionType::kCredentialUsername, u"Ben", u"Ben",
+                   false, true)
+      .AppendField(AccessorySuggestionType::kCredentialPassword, u"S3cur3",
+                   u"Ben's PW", true, false)
       .Build();
 }
 

@@ -33,6 +33,12 @@ chromium-metrics-reviews@google.com.
                passwords"/>
 </variants>
 
+<variants name="AccessorySheetType">
+  <variant name="Addresses"/>
+  <variant name="Passwords"/>
+  <variant name="Payments"/>
+</variants>
+
 <variants name="CustomPassphraseStatus">
   <variant name=""/>
   <variant name=".WithCustomPassphrase"
@@ -180,16 +186,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="KeyboardAccessory.AccessorySheetSuggestionsSelected"
-    enum="AccessorySuggestionType" expires_after="2025-03-30">
-  <owner>friedrichh@chromium.org</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Android only. Records which type of suggestion was selected from an open
-    sheet.
-  </summary>
-</histogram>
-
 <histogram name="KeyboardAccessory.AccessorySheetTriggered"
     enum="AccessorySheetTrigger" expires_after="2025-03-30">
   <owner>friedrichh@chromium.org</owner>
@@ -248,6 +244,18 @@ chromium-metrics-reviews@google.com.
     <variant name="Automatic" summary="automatic generation"/>
     <variant name="Manual" summary="manual generation"/>
   </token>
+</histogram>
+
+<histogram name="KeyboardAccessory.SuggestionSelected.{AccessorySheetType}"
+    enum="AccessorySuggestionTypeV2" expires_after="2025-03-30">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Android only. Records which type of suggestion that was selected from the
+    Keyboard Accessory manual filling sheet.
+  </summary>
+  <token key="AccessorySheetType" variants="AccessorySheetType"/>
 </histogram>
 
 <histogram name="KeyboardAccessory.TouchEventFiltered" enum="BooleanYesNo"

@@ -320,31 +320,34 @@ public class CreditCardAccessorySheetViewTest {
                     UserInfo infoWithUnclickableField = new UserInfo("", false);
                     infoWithUnclickableField.addField(
                             new UserInfoField.Builder()
-                                    .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                    .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
                                     .setDisplayText("4111111111111111")
                                     .setA11yDescription("4111111111111111")
                                     .build());
                     infoWithUnclickableField.addField(
                             new UserInfoField.Builder()
-                                    .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                    .setSuggestionType(
+                                            AccessorySuggestionType.CREDIT_CARD_EXPIRATION_MONTH)
                                     .setDisplayText("month")
                                     .setId("month")
                                     .build());
                     infoWithUnclickableField.addField(
                             new UserInfoField.Builder()
-                                    .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                    .setSuggestionType(
+                                            AccessorySuggestionType.CREDIT_CARD_EXPIRATION_YEAR)
                                     .setDisplayText("year")
                                     .setId("year")
                                     .build());
                     infoWithUnclickableField.addField(
                             new UserInfoField.Builder()
-                                    .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                    .setSuggestionType(
+                                            AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
                                     .setDisplayText("name")
                                     .setId("name")
                                     .build());
                     infoWithUnclickableField.addField(
                             new UserInfoField.Builder()
-                                    .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                    .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_CVC)
                                     .setDisplayText("cvc")
                                     .setId("cvc")
                                     .build());
@@ -440,7 +443,7 @@ public class CreditCardAccessorySheetViewTest {
                     PromoCodeInfo info = new PromoCodeInfo();
                     info.setPromoCode(
                             new UserInfoField.Builder()
-                                    .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                    .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                     .setDisplayText(kPromoCode)
                                     .setA11yDescription("Promo code for test store")
                                     .setCallback(item -> clicked.set(true))
@@ -496,35 +499,35 @@ public class CreditCardAccessorySheetViewTest {
         UserInfo info = new UserInfo(origin, true, iconUrl);
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
                         .setDisplayText(number)
                         .setA11yDescription(number)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_EXPIRATION_MONTH)
                         .setDisplayText(month)
                         .setA11yDescription(month)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_EXPIRATION_YEAR)
                         .setDisplayText(year)
                         .setA11yDescription(year)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
                         .setDisplayText(name)
                         .setA11yDescription(name)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_CVC)
                         .setDisplayText(cvc)
                         .setA11yDescription(cvc)
                         .setCallback(item -> clickRecorder.set(true))

@@ -505,10 +505,10 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .Build());
 }
 
@@ -523,14 +523,15 @@ TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField);
 
-  EXPECT_EQ(controller()->GetSheetData(),
-            PasswordAccessorySheetDataBuilderEmptyTitle()
-                .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, no_user_str(),
-                             no_user_str(), false, false)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(no_user_str()), true, false)
-                .Build());
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilderEmptyTitle()
+          .AddUserInfo(kExampleSite)
+          .AppendField(AccessorySuggestionType::kCredentialUsername,
+                       no_user_str(), no_user_str(), false, false)
+          .AppendField(AccessorySuggestionType::kCredentialPassword, u"S3cur3",
+                       password_for_str(no_user_str()), true, false)
+          .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
@@ -554,25 +555,25 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Alf", u"Alf",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"PWD",
-                             password_for_str(u"Alf"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Alf", u"Alf", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"PWD", password_for_str(u"Alf"), true, false)
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Cat", u"Cat",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"M1@u",
-                             password_for_str(u"Cat"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Cat", u"Cat", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"M1@u", password_for_str(u"Cat"), true, false)
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Zebra",
-                             u"Zebra", false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"M3h",
-                             password_for_str(u"Zebra"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Zebra", u"Zebra", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"M3h", password_for_str(u"Zebra"), true, false)
                 .Build());
 }
 
@@ -591,10 +592,10 @@ TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .Build());
 }
 
@@ -632,15 +633,16 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"No username",
-                             u"No username", false, false)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"p455w0rd",
-                             password_for_str(u"No username"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"No username", u"No username", false, false)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"p455w0rd", password_for_str(u"No username"),
+                             true, false)
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .Build());
 
   // Pretend that we focus a password field now: By triggering a refresh with
@@ -652,15 +654,16 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"No username",
-                             u"No username", false, false)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"p455w0rd",
-                             password_for_str(u"No username"), true, true)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"No username", u"No username", false, false)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"p455w0rd", password_for_str(u"No username"),
+                             true, true)
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, true)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, true)
                 .Build());
 }
 
@@ -678,10 +681,10 @@ TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .Build());
 
   std::vector<PasswordForm> changed_matches = {CreateEntry(
@@ -696,10 +699,10 @@ TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Alf", u"Alf",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"M3lm4k",
-                             password_for_str(u"Alf"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Alf", u"Alf", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"M3lm4k", password_for_str(u"Alf"), true, false)
                 .Build());
 }
 
@@ -722,16 +725,18 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben",
                              /*is_obfuscated=*/false, /*selectable=*/true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"),
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"),
                              /*is_obfuscated=*/true, /*selectable=*/false)
                 .AddUserInfo(kExampleSiteMobile, IsExactMatch(false))
-                .AppendField(AccessorySuggestionType::USERNAME, u"Alf", u"Alf",
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Alf", u"Alf",
                              /*is_obfuscated=*/false, /*selectable=*/true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"R4nd0m",
-                             password_for_str(u"Alf"),
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"R4nd0m", password_for_str(u"Alf"),
                              /*is_obfuscated=*/true, /*selectable=*/false)
                 .Build());
 }
@@ -752,10 +757,10 @@ TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .Build());
 
   // Pretend that the focus was lost or moved to an unfillable field. Now, only
@@ -785,10 +790,10 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
-                .AppendField(AccessorySuggestionType::USERNAME, u"Ben", u"Ben",
-                             false, true)
-                .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
-                             password_for_str(u"Ben"), true, false)
+                .AppendField(AccessorySuggestionType::kCredentialUsername,
+                             u"Ben", u"Ben", false, true)
+                .AppendField(AccessorySuggestionType::kCredentialPassword,
+                             u"S3cur3", password_for_str(u"Ben"), true, false)
                 .Build());
 
   // Pretend that the focus was lost or moved to an unfillable field.
@@ -1050,11 +1055,11 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
       PasswordAccessorySheetDataBuilderEmptyTitle()
           .AddUserInfo(kExampleSite)
           .AppendField(
-              AccessorySuggestionType::USERNAME, u"example@gmail",
+              AccessorySuggestionType::kCredentialUsername, u"example@gmail",
               u"example@gmail", u"example@gmail", "",
               ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_PLUS_ADDRESS),
               false, true)
-          .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
+          .AppendField(AccessorySuggestionType::kCredentialPassword, u"S3cur3",
                        password_for_str(u"example@gmail"), true, false)
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
@@ -1095,10 +1100,10 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
                                         plus_address_title(kExampleDomain))
           .AddUserInfo(kExampleSite)
           .AddPlusAddressInfo("https://foo.com", u"example@gmail")
-          .AppendField(AccessorySuggestionType::USERNAME, u"foo.bar@gmail",
-                       u"foo.bar@gmail",
+          .AppendField(AccessorySuggestionType::kCredentialUsername,
+                       u"foo.bar@gmail", u"foo.bar@gmail",
                        /*is_obfuscated=*/false, /*selectable=*/true)
-          .AppendField(AccessorySuggestionType::PASSWORD, u"S3cur3",
+          .AppendField(AccessorySuggestionType::kCredentialPassword, u"S3cur3",
                        password_for_str(u"foo.bar@gmail"), true, false)
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
@@ -1347,7 +1352,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::USERNAME)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialUsername)
           .SetDisplayText(u"Ben")
           .SetSelectable(true)
           .Build();
@@ -1375,7 +1380,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1412,7 +1417,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1454,7 +1459,7 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1497,7 +1502,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1775,7 +1780,7 @@ TEST_F(PasswordAccessoryControllerTest,
       FocusedFieldType::kFillableUsernameField);
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1817,7 +1822,7 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1856,7 +1861,7 @@ TEST_F(PasswordAccessoryControllerTest,
       FocusedFieldType::kFillableUsernameField);
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)
@@ -1905,7 +1910,7 @@ TEST_F(PasswordAccessoryControllerTest,
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PASSWORD)
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
           .SetDisplayText(u"S3cur3")
           .SetIsObfuscated(true)
           .SetSelectable(true)

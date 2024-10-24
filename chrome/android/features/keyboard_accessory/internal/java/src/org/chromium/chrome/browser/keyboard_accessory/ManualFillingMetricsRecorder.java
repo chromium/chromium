@@ -20,13 +20,12 @@ public class ManualFillingMetricsRecorder {
             "KeyboardAccessory.AccessoryToggleClicked";
     public static final String UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED =
             "KeyboardAccessory.AccessorySheetTriggered";
-    private static final String UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED =
-            "KeyboardAccessory.AccessorySheetSuggestionsSelected";
+    private static final String UMA_KEYBOARD_ACCESSORY_SUGGESTION_SELECTED =
+            "KeyboardAccessory.SuggestionSelected";
     private static final String UMA_KEYBOARD_ACCESSORY_TOUCH_EVENT_FILTERED =
             "KeyboardAccessory.TouchEventFiltered";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_PASSWORDS = "Passwords";
-    private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_CREDIT_CARDS =
-            "CreditCards";
+    private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_CREDIT_CARDS = "Payments";
     private static final String UMA_KEYBOARD_ACCESSORY_SHEET_TYPE_SUFFIX_ADDRESSES = "Addresses";
 
     /** The Recorder itself should be stateless and have no need for an instance. */
@@ -130,13 +129,13 @@ public class ManualFillingMetricsRecorder {
         // TODO(crbug.com/41460210): Double-check we don't record twice with new address filling.
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramForType(
-                        UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED, AccessoryTabType.ALL),
+                        UMA_KEYBOARD_ACCESSORY_SUGGESTION_SELECTED, AccessoryTabType.ALL),
                 suggestionType,
-                AccessorySuggestionType.COUNT);
+                AccessorySuggestionType.MAX_VALUE + 1);
         RecordHistogram.recordEnumeratedHistogram(
-                getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTION_SELECTED, tabType),
+                getHistogramForType(UMA_KEYBOARD_ACCESSORY_SUGGESTION_SELECTED, tabType),
                 suggestionType,
-                AccessorySuggestionType.COUNT);
+                AccessorySuggestionType.MAX_VALUE + 1);
     }
 
     /**

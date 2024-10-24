@@ -56,13 +56,15 @@ std::u16string GetTitle(bool has_suggestions) {
                    IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
 }
 
-void AddSimpleField(std::u16string data, UserInfo* user_info, bool enabled) {
-  user_info->add_field(
-      AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
-          .SetDisplayText(std::move(data))
-          .SetSelectable(enabled)
-          .Build());
+void AddSimpleField(std::u16string data,
+                    UserInfo* user_info,
+                    AccessorySuggestionType suggestion_type,
+                    bool enabled) {
+  user_info->add_field(AccessorySheetField::Builder()
+                           .SetSuggestionType(suggestion_type)
+                           .SetDisplayText(std::move(data))
+                           .SetSelectable(enabled)
+                           .Build());
 }
 
 void AddCardDetailsToUserInfo(const CreditCard& card,
@@ -70,19 +72,28 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
                               std::u16string cvc,
                               bool enabled) {
   if (card.HasValidExpirationDate()) {
-    AddSimpleField(card.Expiration2DigitMonthAsString(), user_info, enabled);
-    AddSimpleField(card.Expiration4DigitYearAsString(), user_info, enabled);
+    AddSimpleField(card.Expiration2DigitMonthAsString(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationMonth,
+                   enabled);
+    AddSimpleField(card.Expiration4DigitYearAsString(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationYear, enabled);
   } else {
-    AddSimpleField(std::u16string(), user_info, enabled);
-    AddSimpleField(std::u16string(), user_info, enabled);
+    AddSimpleField(std::u16string(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationMonth,
+                   enabled);
+    AddSimpleField(std::u16string(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationYear, enabled);
   }
 
   if (card.HasNameOnCard()) {
-    AddSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL), user_info, enabled);
+    AddSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL), user_info,
+                   AccessorySuggestionType::kCreditCardNameFull, enabled);
   } else {
-    AddSimpleField(std::u16string(), user_info, enabled);
+    AddSimpleField(std::u16string(), user_info,
+                   AccessorySuggestionType::kCreditCardNameFull, enabled);
   }
-  AddSimpleField(cvc, user_info, enabled);
+  AddSimpleField(cvc, user_info, AccessorySuggestionType::kCreditCardCvc,
+                 enabled);
 }
 
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
@@ -97,7 +108,7 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   // the card and fill the form accordingly.
   user_info.add_field(
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
           .SetDisplayText(obfuscated_number)
           .SetId(data->guid())
           .SetSelectable(enabled)
@@ -115,7 +126,7 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
   user_info.add_field(
       AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::PAYMENT_INFO)
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
           .SetDisplayText(card.FullDigitsForDisplay())
           .SetTextToFill(card_number)
           .SetA11yDescription(card_number)

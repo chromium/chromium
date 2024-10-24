@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -38,28 +39,31 @@ namespace {
 
 // Defines which types to load from the Personal data manager and add as field
 // to the address sheet. Order matters.
-constexpr FieldType kTypesToInclude[] = {
-    FieldType::NAME_FULL,
-    FieldType::COMPANY_NAME,
-    FieldType::ADDRESS_HOME_LINE1,
-    FieldType::ADDRESS_HOME_LINE2,
-    FieldType::ADDRESS_HOME_ZIP,
-    FieldType::ADDRESS_HOME_CITY,
-    FieldType::ADDRESS_HOME_STATE,
-    FieldType::ADDRESS_HOME_COUNTRY,
-    FieldType::PHONE_HOME_WHOLE_NUMBER,
-    FieldType::EMAIL_ADDRESS,
-};
+constexpr std::array<std::pair<FieldType, AccessorySuggestionType>, 10>
+    kTypesToInclude = {{
+        {FieldType::NAME_FULL, AccessorySuggestionType::kNameFull},
+        {FieldType::COMPANY_NAME, AccessorySuggestionType::kCompanyName},
+        {FieldType::ADDRESS_HOME_LINE1, AccessorySuggestionType::kAddressLine1},
+        {FieldType::ADDRESS_HOME_LINE2, AccessorySuggestionType::kAddressLine2},
+        {FieldType::ADDRESS_HOME_ZIP, AccessorySuggestionType::kZip},
+        {FieldType::ADDRESS_HOME_CITY, AccessorySuggestionType::kCity},
+        {FieldType::ADDRESS_HOME_STATE, AccessorySuggestionType::kState},
+        {FieldType::ADDRESS_HOME_COUNTRY, AccessorySuggestionType::kCountry},
+        {FieldType::PHONE_HOME_WHOLE_NUMBER,
+         AccessorySuggestionType::kPhoneNumber},
+        {FieldType::EMAIL_ADDRESS, AccessorySuggestionType::kEmailAddress},
+    }};
 
 void AddProfileInfoAsSelectableField(UserInfo* info,
                                      const AutofillProfile* profile,
-                                     FieldType type) {
-  std::u16string field = profile->GetRawInfo(type);
-  if (type == FieldType::NAME_MIDDLE && field.empty()) {
+                                     FieldType field_type,
+                                     AccessorySuggestionType suggestion_type) {
+  std::u16string field = profile->GetRawInfo(field_type);
+  if (field_type == FieldType::NAME_MIDDLE && field.empty()) {
     field = profile->GetRawInfo(FieldType::NAME_MIDDLE_INITIAL);
   }
   info->add_field(AccessorySheetField::Builder()
-                      .SetSuggestionType(AccessorySuggestionType::ADDRESS_INFO)
+                      .SetSuggestionType(suggestion_type)
                       .SetDisplayText(std::move(field))
                       .SetSelectable(true)
                       .Build());
@@ -67,8 +71,9 @@ void AddProfileInfoAsSelectableField(UserInfo* info,
 
 UserInfo TranslateProfile(const AutofillProfile* profile) {
   UserInfo info;
-  for (FieldType field_type : kTypesToInclude) {
-    AddProfileInfoAsSelectableField(&info, profile, field_type);
+  for (auto field_info : kTypesToInclude) {
+    AddProfileInfoAsSelectableField(&info, profile, field_info.first,
+                                    field_info.second);
   }
   return info;
 }

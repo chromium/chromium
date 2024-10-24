@@ -162,7 +162,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
                                 .setDisplayText("Todd")
                                 .setA11yDescription("Todd")
                                 .setCallback(field -> {})
@@ -171,7 +171,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
                                 .setDisplayText("**** 9219")
                                 .setA11yDescription("**** 9219")
                                 .setIsObfuscated(true)
@@ -182,7 +182,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .setPromoCode(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})
@@ -236,7 +236,7 @@ public class CreditCardAccessorySheetControllerTest {
                 .get(0)
                 .setPromoCode(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})

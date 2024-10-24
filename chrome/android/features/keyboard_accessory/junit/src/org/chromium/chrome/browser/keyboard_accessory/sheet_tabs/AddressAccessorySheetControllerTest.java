@@ -170,7 +170,7 @@ public class AddressAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.NAME_FULL)
                                 .setDisplayText("Name")
                                 .setA11yDescription("Name")
                                 .build());
@@ -178,7 +178,7 @@ public class AddressAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE1)
                                 .setDisplayText("Street")
                                 .setA11yDescription("Street")
                                 .setIsObfuscated(true)

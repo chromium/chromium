@@ -197,7 +197,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.USERNAME)
+                                .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
                                 .setDisplayText("No username")
                                 .setA11yDescription("No username")
                                 .build());
@@ -205,7 +205,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PASSWORD)
+                                .setSuggestionType(AccessorySuggestionType.CREDENTIAL_PASSWORD)
                                 .setDisplayText("Password")
                                 .setA11yDescription("Password for No username")
                                 .setIsObfuscated(true)
@@ -278,7 +278,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
                                 .setDisplayText("**** 9219")
                                 .setA11yDescription("Card for Todd Tester")
                                 .setId("1")
@@ -288,7 +288,8 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(
+                                        AccessorySuggestionType.CREDIT_CARD_EXPIRATION_MONTH)
                                 .setDisplayText("10")
                                 .setA11yDescription("10")
                                 .setId("-1")
@@ -298,7 +299,8 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(
+                                        AccessorySuggestionType.CREDIT_CARD_EXPIRATION_YEAR)
                                 .setDisplayText("2021")
                                 .setA11yDescription("2021")
                                 .setId("-1")
@@ -308,7 +310,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
                                 .setDisplayText("Todd Tester")
                                 .setA11yDescription("Todd Tester")
                                 .setId("0")
@@ -318,7 +320,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_CVC)
                                 .setDisplayText("123")
                                 .setA11yDescription("123")
                                 .setId("-1")
@@ -329,7 +331,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .setPromoCode(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setId("1")
@@ -368,7 +370,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .setValue(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.PAYMENT_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
                                 .setDisplayText("CH56 •••• •••• •••• •800 9")
                                 .setId("123456")
                                 .setCallback(result -> {})
@@ -403,7 +405,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.NAME_FULL)
                                 .setDisplayText("Todd Tester")
                                 .setA11yDescription("Todd Tester")
                                 .setCallback(item -> {})
@@ -412,7 +414,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField( // Unused company name field.
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.COMPANY_NAME)
                                 .setDisplayText("")
                                 .setCallback(item -> {})
                                 .build());
@@ -420,7 +422,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE2)
                                 .setDisplayText("112 Second Str")
                                 .setA11yDescription("112 Second Str")
                                 .setCallback(item -> {})
@@ -429,7 +431,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField( // Unused address line 2 field.
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE2)
                                 .setDisplayText("")
                                 .setCallback(item -> {})
                                 .build());
@@ -437,7 +439,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField( // Unused ZIP code field.
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.ZIP)
                                 .setDisplayText("")
                                 .setCallback(item -> {})
                                 .build());
@@ -445,7 +447,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.CITY)
                                 .setDisplayText("Budatest")
                                 .setA11yDescription("Budatest")
                                 .setCallback(item -> {})
@@ -454,7 +456,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField( // Unused state field.
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.STATE)
                                 .setDisplayText("")
                                 .setCallback(item -> {})
                                 .build());
@@ -462,7 +464,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField( // Unused country field.
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.COUNTRY)
                                 .setDisplayText("")
                                 .setCallback(item -> {})
                                 .build());
@@ -470,7 +472,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.PHONE_NUMBER)
                                 .setDisplayText("+088343188321")
                                 .setA11yDescription("+088343188321")
                                 .setCallback(item -> {})
@@ -479,7 +481,7 @@ public class AccessorySheetRenderTest {
                 .get(0)
                 .addField(
                         new UserInfoField.Builder()
-                                .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                                .setSuggestionType(AccessorySuggestionType.EMAIL_ADDRESS)
                                 .setDisplayText("todd.tester@gmail.com")
                                 .setA11yDescription("todd.tester@gmail.com")
                                 .setCallback(item -> {})

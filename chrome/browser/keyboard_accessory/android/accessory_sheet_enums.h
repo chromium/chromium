@@ -28,13 +28,37 @@ enum class AccessoryTabType {
 // in enums.xml. A java IntDef@ is generated from this.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
 enum class AccessorySuggestionType {
-  USERNAME = 0,
-  PASSWORD = 1,
-  PAYMENT_INFO = 2,
-  ADDRESS_INFO = 3,
-  OBSOLETE_TOUCH_TO_FILL_INFO = 4,
-  PLUS_ADDRESS = 5,
-  COUNT,
+  // Address manual filling sheet suggestion types:
+  kNameFull = 0,
+  kCompanyName = 1,
+  kAddressLine1 = 2,
+  kAddressLine2 = 3,
+  kZip = 4,
+  kCity = 5,
+  kState = 6,
+  kCountry = 7,
+  kPhoneNumber = 8,
+  kEmailAddress = 9,
+
+  // Payments manual filling sheet suggestion types:
+  kCreditCardNumber = 10,
+  kCreditCardExpirationMonth = 11,
+  kCreditCardExpirationYear = 12,
+  kCreditCardNameFull = 13,
+  kCreditCardCvc = 14,
+  kIban = 15,
+  kPromoCode = 16,
+
+  // Password manual filling sheet suggestion types:
+  kCredentialUsername = 17,
+  kCredentialPassword = 18,
+  kPasskey = 19,
+
+  // Plus address suggestion types are accessible from both address and
+  // passwords manual filling sheets.
+  kPlusAddress = 20,
+
+  kMaxValue = kPlusAddress,
 };
 
 // Describes possible actions in the keyboard accessory and its sheets. Used to

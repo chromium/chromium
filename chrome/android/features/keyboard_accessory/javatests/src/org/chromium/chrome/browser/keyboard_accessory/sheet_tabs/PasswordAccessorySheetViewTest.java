@@ -163,14 +163,14 @@ public class PasswordAccessorySheetViewTest {
         UserInfo testInfo = new UserInfo("", false);
         testInfo.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.USERNAME)
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
                         .setDisplayText("Name Suggestion")
                         .setA11yDescription("Name Suggestion")
                         .setCallback(item -> clicked.set(true))
                         .build());
         testInfo.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PASSWORD)
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_PASSWORD)
                         .setDisplayText("Password Suggestion")
                         .setA11yDescription("Password Suggestion")
                         .setIsObfuscated(true)
@@ -272,14 +272,14 @@ public class PasswordAccessorySheetViewTest {
         UserInfo usernameEnabled = new UserInfo("", false);
         usernameEnabled.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.USERNAME)
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
                         .setDisplayText("username1")
                         .setA11yDescription("username1")
                         .setCallback(item -> clicked.set(true))
                         .build());
         usernameEnabled.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.PASSWORD)
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_PASSWORD)
                         .setDisplayText("pa55w0rd")
                         .setA11yDescription("Password for username1")
                         .setIsObfuscated(true)
@@ -312,7 +312,7 @@ public class PasswordAccessorySheetViewTest {
         assertThat(mView.get().getChildCount(), is(0));
         final UserInfoField kUnusedInfoField =
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.USERNAME)
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
                         .setDisplayText("Unused Name")
                         .setA11yDescription("Unused Password")
                         .setCallback(cb -> {})

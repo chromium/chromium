@@ -242,70 +242,70 @@ public class AddressAccessorySheetViewTest {
         UserInfo info = new UserInfo("", false);
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.NAME_FULL)
                         .setDisplayText(nameFull)
                         .setA11yDescription(nameFull)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.COMPANY_NAME)
                         .setDisplayText(companyName)
                         .setA11yDescription(companyName)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE1)
                         .setDisplayText(addressHomeLine1)
                         .setA11yDescription(addressHomeLine1)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE2)
                         .setDisplayText(addressHomeLine2)
                         .setA11yDescription(addressHomeLine2)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.ZIP)
                         .setDisplayText(addressHomeZip)
                         .setA11yDescription(addressHomeZip)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.CITY)
                         .setDisplayText(addressHomeCity)
                         .setA11yDescription(addressHomeCity)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.STATE)
                         .setDisplayText(addressHomeState)
                         .setA11yDescription(addressHomeState)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.COUNTRY)
                         .setDisplayText(addressHomeCountry)
                         .setA11yDescription(addressHomeCountry)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.PHONE_NUMBER)
                         .setDisplayText(phoneHomeWholeNumber)
                         .setA11yDescription(phoneHomeWholeNumber)
                         .setCallback(item -> clickRecorder.set(true))
                         .build());
         info.addField(
                 new UserInfoField.Builder()
-                        .setSuggestionType(AccessorySuggestionType.ADDRESS_INFO)
+                        .setSuggestionType(AccessorySuggestionType.EMAIL_ADDRESS)
                         .setDisplayText(emailAddress)
                         .setA11yDescription(emailAddress)
                         .setCallback(item -> clickRecorder.set(true))
