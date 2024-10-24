@@ -165,38 +165,9 @@ class ExtensionActionViewControllerBrowserTest : public InProcessBrowserTest {
   gfx::Size view_size() { return container()->GetToolbarActionSize(); }
 };
 
-// Temporary test class to test functionality while kExtensionsMenuAccessControl
-// feature is being rolled out.
-// TODO(crbug.com/40857680): Remove once feature is fully enabled.
-class ExtensionActionViewControllerFeatureRolloutBrowserTest
-    : public ExtensionActionViewControllerBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ExtensionActionViewControllerFeatureRolloutBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          extensions_features::kExtensionsMenuAccessControl);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          extensions_features::kExtensionsMenuAccessControl);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ExtensionActionViewControllerFeatureRolloutBrowserTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "FeatureEnabled"
-                                             : "FeatureDisabled";
-                         });
-
 // Tests the icon appearance of extension actions in the toolbar.
 // Extensions that don't want to run should have their icons grayscaled.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        ExtensionActionWantsToRunAppearance) {
   Init();
   const std::string id =
@@ -219,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 }
 
 // Tests the appearance of browser actions with blocked script actions.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        BrowserActionBlockedActions) {
   Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
@@ -245,7 +216,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
-  // Request a script injection, so it can be marked as blocked.
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
@@ -255,12 +225,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
-  // Browser action has a decoration only when the feature is disabled.
-  bool is_feature_enabled = GetParam();
-  EXPECT_EQ(image_source->paint_blocked_actions_decoration(),
-            !is_feature_enabled);
+  EXPECT_TRUE(image_source->paint_blocked_actions_decoration());
 
-  // Verify running the action removes the decoration, if existent.
   action_runner->RunForTesting(extension.get());
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
@@ -269,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 }
 
 // Tests the appearance of page actions with blocked script actions.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        PageActionBlockedActions) {
   Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
@@ -301,10 +267,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
-  // Page action has a decoration only when the feature is disabled.
-  bool is_feature_enabled = GetParam();
-  EXPECT_EQ(image_source->paint_blocked_actions_decoration(),
-            !is_feature_enabled);
+  EXPECT_TRUE(image_source->paint_blocked_actions_decoration());
 
   // Simulate NativeTheme update after `image_source` is created.
   // `image_source` should paint fine without hitting use-after-free in such
@@ -316,18 +279,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 
 // Tests the appearance of extension actions for extensions without a browser or
 // page action defined in their manifest, but with host permissions on a page.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        OnlyHostPermissionsAppearance) {
   Init();
-  bool is_feature_enabled = GetParam();
-  const std::u16string kWantsAccessTooltip =
-      is_feature_enabled ? u"just hosts\nRequesting to read & change this site"
-                         : u"just hosts\nWants access to this site";
-  const std::u16string kHasAccessTooltip =
-      is_feature_enabled ? u"just hosts\nAllowed to read & change this site"
-                         : u"just hosts\nHas access to this site";
-  const std::u16string kNoAccessTooltip = u"just hosts";
-
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("just hosts")
           .SetLocation(ManifestLocation::kInternal)
@@ -355,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(action_controller->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-  EXPECT_EQ(kNoAccessTooltip, action_controller->GetTooltip(web_contents));
+  EXPECT_EQ(u"just hosts", action_controller->GetTooltip(web_contents));
 
   // Navigate to a url the extension does have permissions to. The extension is
   // set to run on click and has the current URL withheld, so it should not be
@@ -366,7 +320,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_TRUE(action_controller->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-  EXPECT_EQ(kWantsAccessTooltip, action_controller->GetTooltip(web_contents));
+  EXPECT_EQ(u"just hosts\nWants access to this site",
+            action_controller->GetTooltip(web_contents));
 
   // After triggering the action it should have access, which is reflected in
   // the tooltip.
@@ -377,18 +332,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(action_controller->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-  EXPECT_EQ(kHasAccessTooltip, action_controller->GetTooltip(web_contents));
+  EXPECT_EQ(u"just hosts\nHas access to this site",
+            action_controller->GetTooltip(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        ExtensionActionContextMenuVisibility) {
   Init();
-  bool is_feature_enabled = GetParam();
-  const std::u16string pin_label =
-      is_feature_enabled ? u"Pin to toolbar" : u"Pin";
-  const std::u16string unpin_label =
-      is_feature_enabled ? u"Unpin from toolbar" : u"Unpin";
-
   std::string id =
       CreateAndAddExtension("extension", extensions::ActionInfo::Type::kBrowser)
           ->id();
@@ -396,27 +346,28 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   // Check that the context menu has the proper string for the action's pinned
   // state.
   auto check_visibility_string = [](ToolbarActionViewController* action,
-                                    std::u16string expected_label) {
+                                    int expected_visibility_string) {
     ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
         action->GetContextMenu(extensions::ExtensionContextMenuModel::
                                    ContextMenuSource::kToolbarAction));
     std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
         extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
     ASSERT_TRUE(visibility_index.has_value());
-    std::u16string actual_label =
+    std::u16string visibility_label =
         context_menu->GetLabelAt(visibility_index.value());
-    EXPECT_EQ(expected_label, actual_label);
+    EXPECT_EQ(l10n_util::GetStringUTF16(expected_visibility_string),
+              visibility_label);
   };
 
   ExtensionActionViewController* const action = GetViewControllerForId(id);
   ASSERT_TRUE(action);
 
   // Default state: unpinned.
-  check_visibility_string(action, pin_label);
+  check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);
 
   // Pin the extension; re-check.
   toolbar_model()->SetActionVisibility(id, true);
-  check_visibility_string(action, unpin_label);
+  check_visibility_string(action, IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR);
 
   // Unpin the extension and ephemerally pop it out.
   toolbar_model()->SetActionVisibility(id, false);
@@ -425,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   container()->PopOutAction(id, run_loop.QuitClosure());
   EXPECT_TRUE(container()->IsActionVisibleOnToolbar(id));
   // The string should still just be "pin".
-  check_visibility_string(action, pin_label);
+  check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);
 }
 
 enum class PermissionType {
@@ -663,18 +614,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerGrayscaleTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        RuntimeHostsTooltip) {
   Init();
-  bool is_feature_enabled = GetParam();
-  const std::u16string kWantsAccessTooltip =
-      is_feature_enabled
-          ? u"extension name\nRequesting to read & change this site"
-          : u"extension name\nWants access to this site";
-  const std::u16string kHasAccessTooltip =
-      is_feature_enabled ? u"extension name\nAllowed to read & change this site"
-                         : u"extension name\nHas access to this site";
-
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "extension name", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
@@ -695,7 +637,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   EXPECT_EQ(extensions::PermissionsData::PageAccess::kWithheld,
             extension->permissions_data()->GetPageAccess(kUrl, tab_id,
                                                          /*error=*/nullptr));
-  EXPECT_EQ(kWantsAccessTooltip, controller->GetTooltip(web_contents));
+  EXPECT_EQ(u"extension name\nWants access to this site",
+            controller->GetTooltip(web_contents));
 
   // Request access.
   extensions::ExtensionActionRunner* action_runner =
@@ -703,31 +646,29 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   action_runner->RequestScriptInjectionForTesting(
       extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
-  EXPECT_EQ(kWantsAccessTooltip, controller->GetTooltip(web_contents));
+  EXPECT_EQ(u"extension name\nWants access to this site",
+            controller->GetTooltip(web_contents));
 
   // Grant access.
   action_runner->ClearInjectionsForTesting(*extension);
   permissions_modifier.GrantHostPermission(kUrl);
-  EXPECT_EQ(kHasAccessTooltip, controller->GetTooltip(web_contents));
+  EXPECT_EQ(u"extension name\nHas access to this site",
+            controller->GetTooltip(web_contents));
 }
 
 // Tests the appearance of extension actions for an extension with the activeTab
 // permission and no browser or page action defined in their manifest.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        ActiveTabIconAppearance) {
   Init();
-  bool is_feature_enabled = GetParam();
-  const std::u16string kWantsAccessTooltip =
-      is_feature_enabled ? u"active tab\nRequesting to read & change this site"
-                         : u"active tab\nWants access to this site";
-  const std::u16string kHasAccessTooltip =
-      is_feature_enabled ? u"active tab\nAllowed to read & change this site"
-                         : u"active tab\nHas access to this site";
-  const std::u16string kNoAccessTooltip = u"active tab";
-
   const GURL kUnlistedHost("https://www.example.com");
   const GURL kGrantedHost("https://www.google.com");
   const GURL kRestrictedHost("chrome://extensions");
+  static constexpr char16_t kWantsAccessTooltip[] =
+      u"active tab\nWants access to this site";
+  static constexpr char16_t kHasAccessTooltip[] =
+      u"active tab\nHas access to this site";
+  static constexpr char16_t kNoAccessTooltip[] = u"active tab";
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("active tab")
           .AddAPIPermission("activeTab")
@@ -789,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 
 // Tests that an extension with the activeTab permission has active tab site
 // interaction except for restricted URLs.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        GetSiteInteractionWithActiveTab) {
   Init();
   // Note: Not using `CreateAndAddExtensionWithGrantedHostPermissions` because
@@ -835,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 
 // Tests that file URLs only have active tab site interaction if the extension
 // has active tab permission and file URL access.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        GetSiteInteractionActiveTabWithFileURL) {
   Init();
   // We need to use a TestExtensionDir here to allow for the reload when giving
@@ -895,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 // null web contents if the tab strip model doesn't know of an active tab
 // (though it's a bit unclear when this is the case).
 // See https://crbug.com/888121
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
                        TestGetIconWithNullWebContents) {
   Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
