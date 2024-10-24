@@ -155,7 +155,10 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::Call(
   if constexpr (return_type_is_promise == CallbackReturnTypeIsPromise::kYes) {
     v8::TryCatch block(callback_->GetIsolate());
     if (!CallInternal(argc, argv)) {
-      result_ = ScriptPromiseUntyped::Reject(
+      // We don't know the type of the promise here - but given that we're only
+      // going to extract the v8::Value and discard the ScriptPromise, it
+      // doesn't matter what type we use.
+      result_ = ScriptPromise<IDLUndefined>::Reject(
                     callback_->CallbackRelevantScriptState(), block.Exception())
                     .V8Value();
     }

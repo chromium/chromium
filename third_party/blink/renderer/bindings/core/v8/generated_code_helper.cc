@@ -96,9 +96,13 @@ void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
   // As exceptions must always be created in the current realm, reject
   // promises must also be created in the current realm while regular promises
   // are created in the relevant realm of the context object.
-  ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
-  bindings::V8SetReturnValue(info_, ScriptPromiseUntyped::Reject(
-                                        script_state, try_catch_.Exception()));
+  //
+  // We don't know the type of the promise here - but given that we're only
+  // going to extract the v8::Value and discard the ScriptPromise, it
+  // doesn't matter what type we use.
+  bindings::V8SetReturnValue(
+      info_, ScriptPromise<IDLUndefined>::Reject(
+                 ScriptState::ForCurrentRealm(info_), try_catch_.Exception()));
 }
 
 namespace bindings {

@@ -18,7 +18,6 @@ namespace blink {
 class ExceptionContext;
 class ExceptionState;
 class ExecutionContext;
-class ScriptPromiseUntyped;
 template <typename IDLResolvedType>
 class ScriptPromise;
 
@@ -97,7 +96,7 @@ class ScriptPromise;
 //
 //    private:
 //     ScriptIterator iterator_;
-//     ScriptPromiseUntyped next_promise_;
+//     ScriptPromise<IDLAny> next_promise_;
 //   };
 //
 // Sync iterable usage:

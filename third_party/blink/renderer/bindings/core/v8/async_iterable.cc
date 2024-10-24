@@ -149,7 +149,7 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     ScriptState* script_state,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  ScriptPromiseUntyped return_steps_promise;
+  ScriptPromise<IDLAny> return_steps_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
     // step 10.2. Let onSettled be CreateBuiltinFunction(returnSteps, << >>).

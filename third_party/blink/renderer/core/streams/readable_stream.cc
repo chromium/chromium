@@ -65,7 +65,7 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
-    ScriptPromiseUntyped promise;
+    ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
       v8::TryCatch try_catch(script_state->GetIsolate());
       {
@@ -113,7 +113,7 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
                              int argc,
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
-    ScriptPromiseUntyped promise;
+    ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
       v8::TryCatch try_catch(script_state->GetIsolate());
       {

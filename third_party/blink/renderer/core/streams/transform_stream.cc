@@ -44,7 +44,7 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
                                              isolate, "invalid realm"));
     }
     v8::TryCatch try_catch(isolate);
-    ScriptPromiseUntyped promise;
+    ScriptPromise<IDLUndefined> promise;
     {
       // This is needed because the realm of the transformer can be different
       // from the realm of the transform stream.

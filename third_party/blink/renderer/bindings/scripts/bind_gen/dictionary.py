@@ -48,12 +48,6 @@ class _DictionaryMember(object):
     of IDL dictionary.
     """
 
-    # Map from Blink member type to presence expression.
-    _MEMBER_TYPE_TO_PRESENCE_EXPR = {
-        "ScriptPromiseUntyped": "!{}.IsEmpty()",
-        "ScriptValue": "!{}.IsEmpty()",
-    }
-
     def __init__(self, dict_member):
         assert isinstance(dict_member, web_idl.DictionaryMember)
 
@@ -141,16 +135,19 @@ class _DictionaryMember(object):
     def presence_expr(self):
         if self.is_always_present:
             return "true"
-        expr = self._MEMBER_TYPE_TO_PRESENCE_EXPR.get(self.type_info.member_t)
-        if expr:
-            return expr.format(self.value_var)
-        return self.presence_var
+        if self.does_use_presence_var:
+            return self.presence_var
+        return "!{}.IsEmpty()".format(self.value_var)
 
     @property
     def does_use_presence_var(self):
-        return not (
-            self.is_always_present
-            or self.type_info.member_t in self._MEMBER_TYPE_TO_PRESENCE_EXPR)
+        if self.is_always_present:
+            return False
+        if self._idl_type.is_promise:
+            return False
+        if "ScriptValue" == self.type_info.member_t:
+            return False
+        return True
 
     @property
     def is_always_present(self):

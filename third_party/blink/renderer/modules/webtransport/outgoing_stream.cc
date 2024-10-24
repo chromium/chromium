@@ -247,7 +247,7 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
   // does not throw an exception, and hence a proper ExceptionState does not
   // have to be passed since it is not used.
   auto* underlying_sink = MakeGarbageCollected<UnderlyingSink>(stream);
-  ScriptPromiseUntyped abort_promise =
+  ScriptPromise<IDLUndefined> abort_promise =
       underlying_sink->abort(script_state_, reason, ASSERT_NO_EXCEPTION);
 
   // 6. Upon fulfillment of promise, reject pendingOperation with reason.
