@@ -14,11 +14,6 @@ namespace messages {
 // TODO(https://crbug.com/40258218): Remove flag.
 BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 
-// Feature that controls whether "save card" prompts use Messages or
-// Infobars infrastructure.
-// TODO(https://crbug.com/40258224): Remove flag.
-BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
-
 // Feature that exposes a listener to notify whether the current message
 // is fully visible.
 BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
