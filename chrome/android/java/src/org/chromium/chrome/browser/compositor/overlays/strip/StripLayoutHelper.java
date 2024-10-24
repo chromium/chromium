@@ -447,7 +447,6 @@ public class StripLayoutHelper
 
     // Tab Drag and Drop state to set correct reorder state when dragging on/off tab strip.
     private float mLastOffsetX;
-    private float mLastTrailingMargin;
 
     // Tab hover state.
     private StripLayoutTab mLastHoveredTab;
@@ -3880,7 +3879,6 @@ public class StripLayoutHelper
         // 6. Reset the tab drop state. Must occur after the rest of the state is reset, since some
         // logic depends on these values.
         mReorderDelegate.setReorderingForTabDrop(false);
-        mLastTrailingMargin = 0;
 
         // 7. Request an update.
         startAnimations(animationList, getTabGroupMarginAnimatorListener());
@@ -4287,7 +4285,7 @@ public class StripLayoutHelper
 
             finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
-            setTrailingMarginForTab(interactingTab, mLastTrailingMargin, animationList);
+            setTrailingMarginForTab(interactingTab, /* trailingMargin= */ 0, animationList);
             mReorderDelegate.setInteractingTab(null);
             startAnimations(animationList, getTabGroupMarginAnimatorListener());
 
@@ -4303,11 +4301,10 @@ public class StripLayoutHelper
             // 3.a. Reset the state for the previous "interacting" tab.
             ArrayList<Animator> animationList = new ArrayList<>();
             if (interactingTab != null) {
-                setTrailingMarginForTab(interactingTab, mLastTrailingMargin, animationList);
+                setTrailingMarginForTab(interactingTab, /* trailingMargin= */ 0, animationList);
             }
 
             // 3.b. Set state for the new "interacting" tab.
-            mLastTrailingMargin = hoveredTab.getTrailingMargin();
             setTrailingMarginForTab(hoveredTab, mHalfTabWidth, animationList);
             mReorderDelegate.setInteractingTab(hoveredTab);
 
