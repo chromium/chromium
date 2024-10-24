@@ -55,6 +55,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/browser/interest_group/test_same_process_auction_process_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
@@ -72,10 +73,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "content/services/auction_worklet/auction_v8_helper.h"
-#include "content/services/auction_worklet/auction_worklet_service_impl.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/test_content_browser_client.h"
 #include "crypto/sha2.h"
@@ -738,33 +735,6 @@ class NetworkResponder {
   base::OnceClosure quit_report_wait_loop_callback_ GUARDED_BY(lock_);
 };
 
-// AuctionProcessManager that allows running auctions in-proc.
-class SameProcessAuctionProcessManager : public DedicatedAuctionProcessManager {
- public:
-  SameProcessAuctionProcessManager() = default;
-  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
-      delete;
-  SameProcessAuctionProcessManager& operator=(
-      const SameProcessAuctionProcessManager&) = delete;
-  ~SameProcessAuctionProcessManager() override = default;
-
- private:
-  WorkletProcess::ProcessContext CreateProcessInternal(
-      WorkletProcess& worklet_process) override {
-    // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
-    // production code. Don't bother to delete the service on pipe close,
-    // though; just keep it in a vector instead.
-    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-    auction_worklet_services_.push_back(
-        auction_worklet::AuctionWorkletServiceImpl::CreateForService(
-            service.InitWithNewPipeAndPassReceiver()));
-    return WorkletProcess::ProcessContext(std::move(service));
-  }
-
-  std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
-      auction_worklet_services_;
-};
-
 class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
  public:
   TestKAnonymityServiceDelegate() = default;
@@ -900,7 +870,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     // Process creation crashes in the Chrome zygote init in unit tests, so run
     // the auction "processes" in-process instead.
     manager_->set_auction_process_manager_for_testing(
-        std::make_unique<SameProcessAuctionProcessManager>());
+        std::make_unique<TestSameProcessAuctionProcessManager>());
     manager_->set_k_anonymity_manager_for_testing(
         std::make_unique<InterestGroupKAnonymityManager>(
             manager_.get(),

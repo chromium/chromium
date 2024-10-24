@@ -447,7 +447,7 @@ mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
     "//content/browser:browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
-    "//content/services/auction_worklet:auction_worklet",
+    "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
   ]
 

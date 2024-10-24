@@ -59,6 +59,7 @@
 #include "content/browser/interest_group/mock_auction_process_manager.h"
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
+#include "content/browser/interest_group/test_same_process_auction_process_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/page.h"
@@ -109,19 +110,6 @@ using auction_worklet::TestDevToolsAgentClient;
 using testing::HasSubstr;
 
 namespace content {
-class ProcessHandleTestPeer {
- public:
-  explicit ProcessHandleTestPeer(
-      const AuctionProcessManager::ProcessHandle* handle)
-      : handle_(handle) {}
-
-  void CallOnLaunchedWithPidForCurrentProcess() {
-    handle_->OnBaseProcessLaunchedForTesting(base::Process::Current());
-  }
-
- private:
-  raw_ptr<const AuctionProcessManager::ProcessHandle> handle_;
-};
 
 namespace {
 
@@ -1442,64 +1430,6 @@ CreateBiddingAndAuctionEncryptionContext() {
   return std::move(request).ReleaseContext();
 }
 
-class SameProcessAuctionProcessManager : public DedicatedAuctionProcessManager {
- public:
-  SameProcessAuctionProcessManager() = default;
-  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
-      delete;
-  SameProcessAuctionProcessManager& operator=(
-      const SameProcessAuctionProcessManager&) = delete;
-  ~SameProcessAuctionProcessManager() override = default;
-
-  // Resume all worklets paused waiting for debugger on startup.
-  void ResumeAllPaused() {
-    for (const auto& svc : auction_worklet_services_) {
-      for (const auto& v8_helper : svc->AuctionV8HelpersForTesting()) {
-        v8_helper->v8_runner()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](scoped_refptr<auction_worklet::AuctionV8Helper> v8_helper) {
-                  v8_helper->ResumeAllForTesting();
-                },
-                v8_helper));
-      }
-    }
-  }
-
-  int NumBidderWorklets() const {
-    int total = 0;
-    for (const auto& svc : auction_worklet_services_) {
-      total += svc->NumBidderWorkletsForTesting();
-    }
-    return total;
-  }
-
-  int NumSellerWorklets() const {
-    int total = 0;
-    for (const auto& svc : auction_worklet_services_) {
-      total += svc->NumSellerWorkletsForTesting();
-    }
-    return total;
-  }
-
- private:
-  WorkletProcess::ProcessContext CreateProcessInternal(
-      WorkletProcess& worklet_process) override {
-    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-    auction_worklet_services_.push_back(
-        auction_worklet::AuctionWorkletServiceImpl::CreateForService(
-            service.InitWithNewPipeAndPassReceiver()));
-    return WorkletProcess::ProcessContext(std::move(service));
-  }
-
-  void OnNewProcessAssigned(const ProcessHandle* handle) override {
-    ProcessHandleTestPeer(handle).CallOnLaunchedWithPidForCurrentProcess();
-  }
-
-  std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
-      auction_worklet_services_;
-};
-
 MATCHER_P2(HasMetricWithValue, key, matcher, "") {
   if (!arg.contains(key)) {
     *result_listener << "which does not contain " << key;
@@ -1956,7 +1886,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     if (!auction_process_manager_) {
       auto same_process_auction_process_manager =
-          std::make_unique<SameProcessAuctionProcessManager>();
+          std::make_unique<TestSameProcessAuctionProcessManager>();
       same_process_auction_process_manager_ =
           same_process_auction_process_manager.get();
       auction_process_manager_ =
@@ -3423,9 +3353,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // This is used (and consumed) when starting an auction, if non-null. Allows
   // either using a MockAuctionProcessManager instead of a
-  // SameProcessAuctionProcessManager, or using a
-  // SameProcessAuctionProcessManager that has already vended processes. If
-  // nullptr, a new SameProcessAuctionProcessManager() is created when an
+  // TestSameProcessAuctionProcessManager, or using a
+  // TestSameProcessAuctionProcessManager that has already vended processes. If
+  // nullptr, a new TestSameProcessAuctionProcessManager() is created when an
   // auction is started.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;
 
@@ -3434,10 +3364,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // InterestGroupManager.
   raw_ptr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
 
-  // If StartAuction() created a SameProcessAuctionProcessManager for
+  // If StartAuction() created a TestSameProcessAuctionProcessManager for
   // `auction_process_manager_`, this alises it.
   // Reset by other things that set `auction_process_manager_`.
-  raw_ptr<SameProcessAuctionProcessManager>
+  raw_ptr<TestSameProcessAuctionProcessManager>
       same_process_auction_process_manager_ = nullptr;
 
   // The TestInterestGroupManager is recreated and repopulated for each auction.
@@ -7593,7 +7523,7 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignalsDeliveredBeforeWorklet) {
   // Create AuctionProcessManager in advance of starting the auction so can
   // create worklets before the auction starts.
   auction_process_manager_ =
-      std::make_unique<SameProcessAuctionProcessManager>();
+      std::make_unique<TestSameProcessAuctionProcessManager>();
 
   std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
       busy_processes;
@@ -10196,7 +10126,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
       // Create AuctionProcessManager in advance of starting the auction so can
       // create worklets before the auction starts.
       auction_process_manager_ =
-          std::make_unique<SameProcessAuctionProcessManager>();
+          std::make_unique<TestSameProcessAuctionProcessManager>();
 
       AuctionProcessManager* auction_process_manager =
           auction_process_manager_.get();
@@ -10388,7 +10318,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
       // Create AuctionProcessManager in advance of starting the auction so can
       // create worklets before the auction starts.
       auction_process_manager_ =
-          std::make_unique<SameProcessAuctionProcessManager>();
+          std::make_unique<TestSameProcessAuctionProcessManager>();
 
       AuctionProcessManager* auction_process_manager =
           auction_process_manager_.get();
@@ -10599,7 +10529,7 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
   // Create AuctionProcessManager in advance of starting the auction so can
   // create worklets before the auction starts.
   auction_process_manager_ =
-      std::make_unique<SameProcessAuctionProcessManager>();
+      std::make_unique<TestSameProcessAuctionProcessManager>();
 
   // Make kMaxBidderProcesses bidder worklet requests for different origins.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
@@ -10683,7 +10613,7 @@ TEST_F(AuctionRunnerTest,
           /*bid_from_component_auction_wins=*/true));
 
   auction_process_manager_ =
-      std::make_unique<SameProcessAuctionProcessManager>();
+      std::make_unique<TestSameProcessAuctionProcessManager>();
 
   // Take up all but 1 of the seller worklet process slots.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
@@ -15135,7 +15065,7 @@ TEST_F(AuctionRunnerTest,
 // Test the phase metrics for the WorkletCreation phase.
 TEST_F(AuctionRunnerTest, VerifyWorkletCreationPhaseMetrics) {
   auto same_process_auction_process_manager =
-      std::make_unique<SameProcessAuctionProcessManager>();
+      std::make_unique<TestSameProcessAuctionProcessManager>();
   same_process_auction_process_manager_ =
       same_process_auction_process_manager.get();
   auction_process_manager_ = std::move(same_process_auction_process_manager);

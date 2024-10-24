@@ -33,6 +33,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/test_same_process_auction_process_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -42,7 +43,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host.h"
@@ -162,34 +162,6 @@ class NetworkResponder {
                           base::Unretained(this))};
 
   std::optional<std::string> script_ GUARDED_BY(lock_);
-};
-
-// AuctionProcessManager that allows running auctions in-proc.
-class SameProcessAuctionProcessManager
-    : public content::DedicatedAuctionProcessManager {
- public:
-  SameProcessAuctionProcessManager() = default;
-  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
-      delete;
-  SameProcessAuctionProcessManager& operator=(
-      const SameProcessAuctionProcessManager&) = delete;
-  ~SameProcessAuctionProcessManager() override = default;
-
- private:
-  WorkletProcess::ProcessContext CreateProcessInternal(
-      WorkletProcess& worklet_process) override {
-    // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
-    // production code. Don't bother to delete the service on pipe close,
-    // though; just keep it in a vector instead.
-    mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-    auction_worklet_services_.push_back(
-        auction_worklet::AuctionWorkletServiceImpl::CreateForService(
-            service.InitWithNewPipeAndPassReceiver()));
-    return WorkletProcess::ProcessContext(std::move(service));
-  }
-
-  std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
-      auction_worklet_services_;
 };
 
 const char* const kCmdline[] = {"ad_auction_service_mojolpm_fuzzer", nullptr};
@@ -376,7 +348,7 @@ void AdAuctionServiceTestcase::SetUpOnUIThread() {
   // Process creation crashes in the Chrome zygote init in unit tests, so run
   // the auction "processes" in-process instead.
   manager_->set_auction_process_manager_for_testing(
-      std::make_unique<SameProcessAuctionProcessManager>());
+      std::make_unique<TestSameProcessAuctionProcessManager>());
 }
 
 void AdAuctionServiceTestcase::TearDown(base::OnceClosure done_closure) {

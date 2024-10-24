@@ -60,32 +60,6 @@
 using testing::UnorderedElementsAre;
 
 namespace content {
-class ProcessHandleTestPeer {
- public:
-  explicit ProcessHandleTestPeer(
-      const AuctionProcessManager::ProcessHandle* handle)
-      : handle_(handle) {}
-
-  void CallOnLaunchedWithPid() {
-    handle_->OnBaseProcessLaunchedForTesting(base::Process::Current());
-  }
-
-  std::unique_ptr<AuctionProcessManager::ProcessHandle> CloneHandle(
-      AuctionProcessManager& auction_process_manager) {
-    auto new_handle = std::make_unique<AuctionProcessManager::ProcessHandle>();
-    base::test::TestFuture<void> process_available;
-    if (!auction_process_manager.RequestWorkletService(
-            handle_->worklet_type_, handle_->origin_,
-            /*frame_site_instance=*/nullptr, new_handle.get(),
-            process_available.GetCallback())) {
-      CHECK(process_available.Wait());
-    }
-    return new_handle;
-  }
-
- private:
-  raw_ptr<const AuctionProcessManager::ProcessHandle> handle_;
-};
 
 namespace {
 
@@ -582,10 +556,18 @@ class MockAuctionProcessManager
 
   void OnNewProcessAssigned(const ProcessHandle* handle) override {
     if (defer_on_launched_for_handles_) {
-      deferred_on_launch_call_handles_.push_back(
-          ProcessHandleTestPeer(handle).CloneHandle(*this));
+      auto new_handle =
+          std::make_unique<AuctionProcessManager::ProcessHandle>();
+      base::test::TestFuture<void> process_available;
+      if (!RequestWorkletService(handle->worklet_type(), handle->origin(),
+                                 /*frame_site_instance=*/nullptr,
+                                 new_handle.get(),
+                                 process_available.GetCallback())) {
+        CHECK(process_available.Wait());
+      }
+      deferred_on_launch_call_handles_.push_back(std::move(new_handle));
     } else {
-      ProcessHandleTestPeer(handle).CallOnLaunchedWithPid();
+      handle->OnBaseProcessLaunchedForTesting(base::Process::Current());
     }
   }
 
@@ -593,7 +575,7 @@ class MockAuctionProcessManager
 
   void CallOnLaunchedWithPidForAllHandles() {
     for (auto& handle : deferred_on_launch_call_handles_) {
-      ProcessHandleTestPeer(handle.get()).CallOnLaunchedWithPid();
+      handle->OnBaseProcessLaunchedForTesting(base::Process::Current());
     }
     deferred_on_launch_call_handles_.clear();
   }

@@ -280,15 +280,14 @@ class CONTENT_EXPORT AuctionProcessManager {
     std::optional<base::ProcessId> GetPid(
         base::OnceCallback<void(base::ProcessId)> callback);
 
-   private:
-    friend class ProcessHandleTestPeer;
-    friend class AuctionProcessManager;
-    friend class InRendererAuctionProcessManager;
-    friend class DedicatedAuctionProcessManager;
-
     // Tests can call this function to configure this ProcessHandle's worklet
     // process's PID to this process.
     void OnBaseProcessLaunchedForTesting(const base::Process& process) const;
+
+   private:
+    friend class AuctionProcessManager;
+    friend class InRendererAuctionProcessManager;
+    friend class DedicatedAuctionProcessManager;
 
     // Assigns `worklet_process` to `this`. If `callback_` is non-null, queues a
     // task to invoke it asynchronously, and GetService() will return nullptr

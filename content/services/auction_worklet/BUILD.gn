@@ -136,7 +136,10 @@ source_set("auction_worklet") {
 
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
-  visibility = [ ":tests" ]
+  visibility = [
+    ":tests",
+    "//content/test:test_support",
+  ]
   if (!is_component_build) {
     public_deps = [ ":auction_worklet" ]
   } else {
