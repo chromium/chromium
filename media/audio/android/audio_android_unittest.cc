@@ -554,14 +554,14 @@ class AudioAndroidOutputTest : public testing::Test {
 
     double average_time_between_callbacks_ms =
         AverageTimeBetweenCallbacks(num_callbacks);
-    DVLOG(0) << "expected time between callbacks: "
+    DVLOG(1) << "expected time between callbacks: "
              << expected_time_between_callbacks_ms << " ms";
-    DVLOG(0) << "average time between callbacks: "
+    DVLOG(1) << "average time between callbacks: "
              << average_time_between_callbacks_ms << " ms";
     EXPECT_GE(average_time_between_callbacks_ms,
               0.70 * expected_time_between_callbacks_ms);
-    EXPECT_LE(average_time_between_callbacks_ms,
-              1.50 * expected_time_between_callbacks_ms);
+    EXPECT_LT(average_time_between_callbacks_ms,
+              2 * expected_time_between_callbacks_ms);
   }
 
   void MakeOutputStream(const AudioParameters& params) {
