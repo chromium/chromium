@@ -12,6 +12,7 @@ load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
 load("./cros.star", "cros")
 load("./gn_logs.star", "gn_logs")
+load("./win_sdk.star", "win_sdk")
 
 # TODO: b/323091468 - Propagate target android ABI and android SDK version
 # from GN, and remove the hardcoded filegroups.
@@ -89,7 +90,8 @@ def __filegroups(ctx):
                     "type": "glob",
                     "includes": ["*"],
                 }
-
+    if win_sdk.enabled(ctx):
+        fg.update(win_sdk.filegroups(ctx))
     fg.update(clang_all.filegroups(ctx))
     return fg
 
@@ -234,6 +236,36 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
     ])
+    if win_sdk.enabled(ctx):
+        step_config["rules"].extend([
+            {
+                "name": "clang-cl/cxx",
+                "action": "(.*_)?cxx",
+                "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang-cl ",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang-cl",
+                ],
+                "exclude_input_patterns": ["*.stamp"],
+                "remote": True,
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
+            },
+            {
+                "name": "clang-cl/cc",
+                "action": "(.*_)?cc",
+                "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang-cl ",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang-cl",
+                ],
+                "exclude_input_patterns": ["*.stamp"],
+                "remote": True,
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
+            },
+        ])
+        win_sdk.step_config(ctx, step_config)
 
     # TODO: crbug.com/372355740 - Enable remote links for CrOS toolchain builds.
     if not (cros.custom_toolchain(ctx) or cros.custom_sysroot(ctx)):
