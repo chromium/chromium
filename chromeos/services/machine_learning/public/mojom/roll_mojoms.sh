@@ -47,9 +47,6 @@ fi
 echo "Copying mojoms from Chrome OS side ..."
 cp $1/platform2/ml/mojom/*.mojom . || exit 1
 
-echo "Removing big_buffer.mojom ..."
-rm big_buffer.mojom || exit 1
-
 echo "Removing file_path.mojom ..."
 rm file_path.mojom || exit 1
 
