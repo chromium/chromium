@@ -71,6 +71,7 @@ message FuzzCommand {
     DestructBackend destruct_backend = 22;
 
     AddRealDelay add_real_delay = 23;
+    SetMaxSize recreate_with_size = 24;
 
     // Not included: GetStats, CalculateSizesOf, GetEntryInMemoryData,
     // SetEntryInMemoryData, CouldBeSparse, ReadyForSparseIO

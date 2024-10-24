@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/file.h"
 #include "net/disk_cache/cache_util.h"
@@ -76,8 +77,9 @@ bool CheckCacheIntegrity(const base::FilePath& path,
                          int max_size,
                          uint32_t mask) {
   auto cache = std::make_unique<disk_cache::BackendImpl>(
-      path, mask, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      net::DISK_CACHE, nullptr);
+      path, mask, /* cleanup_tracker = */ nullptr,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), net::DISK_CACHE,
+      nullptr);
   if (max_size)
     cache->SetMaxSize(max_size);
   if (!cache.get())

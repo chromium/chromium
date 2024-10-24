@@ -187,6 +187,9 @@ class DiskCacheLPMFuzzer {
   // Closes any non-nullptr entries in open_cache_entries_.
   void CloseAllRemainingEntries();
 
+  // Fully shuts down and cleans up the cache backend.
+  void ShutdownBackend();
+
   int64_t ComputeMaxSize(const disk_cache_fuzzer::SetMaxSize* maybe_max_size);
   void CreateBackend(
       disk_cache_fuzzer::FuzzCommands::CacheBackend cache_backend,
@@ -1095,6 +1098,19 @@ void DiskCacheLPMFuzzer::RunCommands(
         cache_.reset();
         break;
       }
+      case disk_cache_fuzzer::FuzzCommand::kRecreateWithSize: {
+        if (!cache_) {
+          continue;
+        }
+        MAYBE_PRINT << "RecreateWithSize("
+                    << command.recreate_with_size().size() << ")" << std::endl;
+        ShutdownBackend();
+        // re-create backend with same config but (potentially) different size.
+        CreateBackend(commands.cache_backend(), mask,
+                      &command.recreate_with_size(), type,
+                      commands.simple_cache_wait_for_index());
+        break;
+      }
       case disk_cache_fuzzer::FuzzCommand::kAddRealDelay: {
         if (!command.add_real_delay().actually_delay())
           continue;
@@ -1129,6 +1145,26 @@ void DiskCacheLPMFuzzer::CreateBackend(
     const disk_cache_fuzzer::SetMaxSize* maybe_max_size,
     net::CacheType type,
     bool simple_cache_wait_for_index) {
+  scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker;
+
+  if (cache_backend != disk_cache_fuzzer::FuzzCommands::IN_MEMORY) {
+    // Make sure nothing is still messing with the directory.
+    int count = 0;
+    while (true) {
+      ++count;
+      CHECK_LT(count, 1000);
+
+      base::RunLoop run_dir_ready;
+      cleanup_tracker = disk_cache::BackendCleanupTracker::TryCreate(
+          cache_path_, run_dir_ready.QuitClosure());
+      if (cleanup_tracker) {
+        break;
+      } else {
+        run_dir_ready.Run();
+      }
+    }
+  }
+
   if (cache_backend == disk_cache_fuzzer::FuzzCommands::IN_MEMORY) {
     MAYBE_PRINT << "Using in-memory cache." << std::endl;
     auto cache = disk_cache::MemBackendImpl::CreateBackend(
@@ -1145,9 +1181,9 @@ void DiskCacheLPMFuzzer::CreateBackend(
       simple_file_tracker_ =
           std::make_unique<disk_cache::SimpleFileTracker>(kMaxFdsSimpleCache);
     auto simple_backend = std::make_unique<disk_cache::SimpleBackendImpl>(
-        /*file_operations=*/nullptr, cache_path_,
-        /*cleanup_tracker=*/nullptr, simple_file_tracker_.get(),
-        ComputeMaxSize(maybe_max_size), type, /*net_log=*/nullptr);
+        /*file_operations=*/nullptr, cache_path_, std::move(cleanup_tracker),
+        simple_file_tracker_.get(), ComputeMaxSize(maybe_max_size), type,
+        /*net_log=*/nullptr);
     simple_backend->Init(cb.callback());
     CHECK_EQ(cb.WaitForResult(), net::OK);
     simple_cache_impl_ = simple_backend.get();
@@ -1169,13 +1205,14 @@ void DiskCacheLPMFuzzer::CreateBackend(
       MAYBE_PRINT << ", mask = " << mask << std::endl;
       cache = std::make_unique<disk_cache::BackendImpl>(
           cache_path_, mask,
+          /* cleanup_tracker = */ std::move(cleanup_tracker),
           /* runner = */ nullptr, type,
           /* net_log = */ nullptr);
     } else {
       MAYBE_PRINT << "." << std::endl;
       cache = std::make_unique<disk_cache::BackendImpl>(
           cache_path_,
-          /* cleanup_tracker = */ nullptr,
+          /* cleanup_tracker = */ std::move(cleanup_tracker),
           /* runner = */ nullptr, type,
           /* net_log = */ nullptr);
     }
@@ -1206,7 +1243,7 @@ void DiskCacheLPMFuzzer::CloseAllRemainingEntries() {
   }
 }
 
-DiskCacheLPMFuzzer::~DiskCacheLPMFuzzer() {
+void DiskCacheLPMFuzzer::ShutdownBackend() {
   // |block_impl_| leaks a lot more if we don't close entries before destructing
   // the backend.
   if (block_impl_) {
@@ -1252,6 +1289,10 @@ DiskCacheLPMFuzzer::~DiskCacheLPMFuzzer() {
   if (simple_cache_impl_)
     CHECK(simple_file_tracker_->IsEmptyForTesting());
   base::RunLoop().RunUntilIdle();
+}
+
+DiskCacheLPMFuzzer::~DiskCacheLPMFuzzer() {
+  ShutdownBackend();
 
   DeleteCache(cache_path_);
 }

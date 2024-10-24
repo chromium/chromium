@@ -408,9 +408,10 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
 
   std::unique_ptr<disk_cache::BackendImpl> cache;
   if (mask_) {
-    cache = std::make_unique<disk_cache::BackendImpl>(cache_path_, mask_,
-                                                      runner, type_,
-                                                      /* net_log = */ nullptr);
+    cache = std::make_unique<disk_cache::BackendImpl>(
+        cache_path_, mask_,
+        /* cleanup_tracker = */ nullptr, runner, type_,
+        /* net_log = */ nullptr);
   } else {
     cache = std::make_unique<disk_cache::BackendImpl>(
         cache_path_, /* cleanup_tracker = */ nullptr, runner, type_,
