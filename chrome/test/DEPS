@@ -15,6 +15,7 @@ include_rules = [
   "+components/bookmarks/common",
   "+components/browser_ui/desktop_windowing/android",
   "+components/captive_portal",
+  "+components/collaboration",
   "+components/color",
   "+components/commerce/core",
   "+components/component_updater",

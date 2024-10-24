@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
@@ -179,6 +180,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   autofill::AutofillLogRouterFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::StrikeDatabaseFactory::GetInstance();
+  collaboration::CollaborationServiceFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
   data_sharing::DataSharingServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
