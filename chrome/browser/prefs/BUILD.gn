@@ -197,7 +197,7 @@ source_set("impl") {
       "//chrome/browser/ash/system_web_apps/apps/help_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/wallpaper_handlers",
-      "//chrome/browser/chromeos/enterprise/cloud_storage",
+      "//chrome/browser/chromeos/enterprise/cloud_storage:cloud_storage_pref_utils",
       "//chrome/browser/chromeos/extensions/echo_private:echo_private_api_util",
       "//chrome/browser/chromeos/extensions/login_screen/login",
       "//chrome/browser/chromeos/policy/dlp",

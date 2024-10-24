@@ -12,10 +12,12 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/chromeos/enterprise/cloud_storage",
-  "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/extensions/extension_api_unittest.h",
+  "+chrome/browser/extensions",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/webui/ash/cloud_upload",
+  "+chrome/browser/ui",
+  "+chrome/browser/sessions/session_tab_helper_factory.h",
+  "+chrome/browser/web_applications",
   "+chrome/common",
+  "+chrome/test/base",
 ]

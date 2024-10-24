@@ -36,3 +36,17 @@ static_library("cloud_storage") {
     "//chrome/browser/chromeos/upload_office_to_cloud",
   ]
 }
+
+source_set("cloud_storage_pref_utils") {
+  sources = [
+    "pref_utils.cc",
+    "pref_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}
