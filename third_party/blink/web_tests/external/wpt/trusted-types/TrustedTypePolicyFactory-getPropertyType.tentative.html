@@ -139,5 +139,11 @@
     assert_equals(trustedTypes.getAttributeType("script", "href", NSURI_SVG, NSURI_XLINK), "TrustedScriptURL", "local name 'href'");
     assert_equals(trustedTypes.getAttributeType("script", "xlink:href", NSURI_SVG, NSURI_XLINK), null, "qualified name 'xlink:href'");
   }, "getAttributeType with qualified attribute name");
+
+  test(t => {
+    assert_equals(trustedTypes.getPropertyType("iframe", "srcdoc", null), "TrustedHTML", "null elementNs in getPropertyType");
+    assert_equals(trustedTypes.getAttributeType("iframe", "srcdoc", null, NSURI_EMPTY), "TrustedHTML", "null elementNs in getAttributeType");
+    assert_equals(trustedTypes.getAttributeType("iframe", "srcdoc", NSURI_HTML, null), "TrustedHTML", "null attrNs in getAttributeType");
+  }, "getPropertyType/getAttributeType with explicit null elementNs/attrNs");
 </script>
 </body>

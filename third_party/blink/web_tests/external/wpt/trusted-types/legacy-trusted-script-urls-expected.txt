@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] getPropertyType() with legacy TrustedScriptURLs properties return null.
+  assert_equals: expected (object) null but got (string) "TrustedScriptURL"
+[FAIL] getAttributeType() with legacy TrustedScriptURLs attributes return null.
+  assert_equals: expected (object) null but got (string) "TrustedScriptURL"
+[FAIL] Legacy TrustedScriptURLs properties accept arbitrary strings.
+  Failed to set the 'src' property on 'HTMLEmbedElement': This document requires 'TrustedScriptURL' assignment.
+[FAIL] Legacy TrustedScriptURLs attributes accept arbitrary strings.
+  Failed to execute 'setAttribute' on 'Element': This document requires 'TrustedScriptURL' assignment.
+Harness: the test ran to completion.
+
