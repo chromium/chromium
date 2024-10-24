@@ -117,7 +117,7 @@ void VideoFrameCompositor::OnRendererStateUpdate(bool new_state) {
   if (!auto_open_close_) {
     auto_open_close_ = std::make_unique<
         base::trace_event::AutoOpenCloseEvent<kTracingCategory>>(
-        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::ASYNC,
+        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::kAsync,
         "VideoPlayback");
   }
 

@@ -212,7 +212,7 @@ bool StructTraits<memory_instrumentation::mojom::RawAllocatorDumpDataView,
       absolute_name, level_of_detail,
       base::trace_event::MemoryAllocatorDumpGuid(input.id()));
   if (input.weak())
-    mad->set_flags(base::trace_event::MemoryAllocatorDump::WEAK);
+    mad->set_flags(base::trace_event::MemoryAllocatorDump::kWeak);
   if (!input.ReadEntries(mad->mutable_entries_for_serialization()))
     return false;
   *out = std::move(mad);

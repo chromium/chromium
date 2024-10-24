@@ -168,7 +168,7 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
   }
   static bool weak(
       const std::unique_ptr<base::trace_event::MemoryAllocatorDump>& mad) {
-    return mad->flags() & base::trace_event::MemoryAllocatorDump::WEAK;
+    return mad->flags() & base::trace_event::MemoryAllocatorDump::kWeak;
   }
   static base::trace_event::MemoryDumpLevelOfDetail level_of_detail(
       const std::unique_ptr<base::trace_event::MemoryAllocatorDump>& mad) {

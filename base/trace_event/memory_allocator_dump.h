@@ -37,10 +37,10 @@ class TracedValue;
 class BASE_EXPORT MemoryAllocatorDump {
  public:
   enum Flags {
-    DEFAULT = 0,
+    kDefault = 0,
 
     // A dump marked weak will be discarded by TraceViewer.
-    WEAK = 1 << 0,
+    kWeak = 1 << 0,
   };
 
   // In the TraceViewer UI table each MemoryAllocatorDump becomes
