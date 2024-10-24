@@ -14,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,8 +33,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -62,6 +67,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -96,6 +102,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ActivityTabProvider mTabProvider;
@@ -216,6 +224,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 };
     }
 
+    @After
+    public void tearDown() {
+        mFakeTimeTestRule.resetTimes();
+    }
+
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
@@ -329,6 +342,23 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         assertNull(
                 "Should NOT create checker for no app ID",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker(null));
+
+        SigninPreferencesManager.getInstance()
+                .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
+        assertNull(
+                "Should NOT create checker when the FRE was recently completed",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+
+        // Advance the clock so that the suppression period start is no longer recent.
+        mFakeTimeTestRule.advanceMillis(DateUtils.WEEK_IN_MILLIS * 10);
+        assertNotNull(
+                "Should create a checker",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+        Assert.assertEquals(
+                "The pref saving the FRE completion time should have been cleared",
+                0L,
+                SigninPreferencesManager.getInstance()
+                        .getCctMismatchNoticeSuppressionPeriodStart());
 
         // No profile
         when(mProfileSupplier.get()).thenReturn(null);

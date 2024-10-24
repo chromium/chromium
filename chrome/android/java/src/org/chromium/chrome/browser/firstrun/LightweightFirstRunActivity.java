@@ -20,11 +20,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -243,6 +245,8 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
     public void completeFirstRunExperience() {
         FirstRunStatus.setLightweightFirstRunFlowComplete(true);
+        SigninPreferencesManager.getInstance()
+                .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
         exitLightweightFirstRun();
     }
 

@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import android.content.Intent;
 import android.graphics.Rect;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -73,6 +75,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -307,6 +310,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         && SigninFeatureMap.sCctSignInPrompt.isEnabled();
         if (!signInPromptEnabled) return null;
 
+        if (isMismatchNotificationSuppressed()) return null;
+
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         Intent intent = mIntentDataProvider.get().getIntent();
         if (!connection.isAppForAccountMismatchNotification(intent)) return null;
@@ -334,6 +339,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     }
                     return show;
                 });
+    }
+
+    private static boolean isMismatchNotificationSuppressed() {
+        final long suppressionPeriodStart =
+                SigninPreferencesManager.getInstance().getCctMismatchNoticeSuppressionPeriodStart();
+        if (suppressionPeriodStart == 0) return false;
+        final long currentTime = TimeUtils.currentTimeMillis();
+        // We suppress the notification for two weeks after the FRE was completed.
+        if (currentTime - suppressionPeriodStart < 2 * DateUtils.WEEK_IN_MILLIS) {
+            return true;
+        }
+        SigninPreferencesManager.getInstance().clearCctMismatchNoticeSuppressionPeriodStart();
+        return false;
     }
 
     @Override
