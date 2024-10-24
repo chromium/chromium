@@ -14,7 +14,7 @@ namespace {
 
 std::string SessionIdJson(const std::string& session_id) {
   return session_id.empty() ? std::string()
-                            : ",\"session_id\":\"" + session_id + "\"";
+                            : ",\"sessionId\":\"" + session_id + "\"";
 }
 
 }  // namespace
@@ -72,9 +72,9 @@ SyncWebSocket::StatusCode LogReplaySocket::ReceiveNextMessage(
     return SyncWebSocket::StatusCode::kOk;
   }
   // it's an event
-  *message = "{\"method\":\"" + next->command_name +
-             SessionIdJson(next->session_id) +
-             "\",\"params\":" + next->payload + "}";
+  *message = "{\"method\":\"" + next->command_name + "\"" +
+             SessionIdJson(next->session_id) + ",\"params\":" + next->payload +
+             "}";
   return SyncWebSocket::StatusCode::kOk;
 }
 
