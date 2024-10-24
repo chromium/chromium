@@ -44,10 +44,6 @@ class AnchorElementPreloaderBrowserTest
   static constexpr char kOrigin1[] = "https://www.origin1.com/";
   static constexpr char kOrigin2[] = "https://www.origin2.com/";
 
-  virtual base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams() {
-    return {};
-  }
-
   virtual base::FieldTrialParams GetNavigationPredictorFieldTrialParams() {
     return {};
   }
@@ -55,9 +51,7 @@ class AnchorElementPreloaderBrowserTest
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kNavigationPredictor,
-          GetNavigationPredictorFieldTrialParams()},
-         {blink::features::kAnchorElementInteraction,
-          GetAnchorElementInteractionFieldTrialParams()}},
+          GetNavigationPredictorFieldTrialParams()}},
         {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
@@ -155,6 +149,8 @@ class AnchorElementPreloaderBrowserTest
  protected:
   int preresolve_count_;
   base::test::ScopedFeatureList feature_list_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -164,8 +160,6 @@ class AnchorElementPreloaderBrowserTest
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
-  // Disable sampling of UKM preloading logs.
-  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
@@ -349,10 +343,11 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
 
 class AnchorElementPreloaderHoldbackBrowserTest
     : public AnchorElementPreloaderBrowserTest {
- public:
-  base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams()
-      override {
-    return {{"preconnect_holdback", "true"}};
+  void SetUp() override {
+    preloading_config_override_.SetHoldback(
+        content::PreloadingType::kPreconnect,
+        chrome_preloading_predictor::kPointerDownOnAnchor, true);
+    AnchorElementPreloaderBrowserTest::SetUp();
   }
 };
 
@@ -386,61 +381,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   EXPECT_EQ(ukm_entries[0], expected_entry)
       << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
                                                          expected_entry);
-}
-
-class AnchorElementPreloaderLimitedBrowserTest
-    : public AnchorElementPreloaderBrowserTest {
- public:
-  base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams()
-      override {
-    return {{"max_preloading_attempts", "1"}};
-  }
-};
-
-// TODO(crbug.com/40878140): Re-enable this test
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
-                       DISABLED_LimitExceeded) {
-  const GURL& url = GetTestURL("/many_anchors.html");
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // First link with mousedown event should get preconnected.
-  SimulateMouseDownElementWithId("anchor1_origin1");
-  WaitForPreresolveCountForURL(1);
-
-  // Second mousedown event to a different origin: limit should be exceeded.
-  SimulateMouseDownElementWithId("anchor1_origin2");
-
-  // Navigate away to the first origin that was preconnected. This should flush
-  // the Preloading UKM logs.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kOrigin1) + "foo")));
-  ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
-  auto ukm_entries = test_ukm_recorder()->GetEntries(
-      Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
-  EXPECT_EQ(ukm_entries.size(), 2u);
-  std::vector<UkmEntry> expected_entries = {
-      // Successful preconnect to first origin.
-      ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingType::kPreconnect,
-          content::PreloadingEligibility::kEligible,
-          content::PreloadingHoldbackStatus::kAllowed,
-          content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
-          content::PreloadingFailureReason::kUnspecified,
-          /*accurate=*/true),
-      // LimitExceeded for second origin.
-      ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingType::kPreconnect,
-          content::PreloadingEligibility::kEligible,
-          content::PreloadingHoldbackStatus::kAllowed,
-          content::PreloadingTriggeringOutcome::kFailure,
-          ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded),
-          /*accurate=*/false),
-  };
-  EXPECT_THAT(ukm_entries, testing::UnorderedElementsAreArray(expected_entries))
-      << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                           expected_entries);
 }
 
 class AnchorElementSetIsNavigationInDomainBrowserTest

@@ -95,14 +95,8 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
 
   attempt->SetEligibility(content::PreloadingEligibility::kEligible);
 
-  // In addition to the globally-controlled preloading config, check for the
-  // feature-specific holdback. We disable the feature if the user is in either
-  // of those holdbacks.
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          blink::features::kAnchorElementInteraction, "preconnect_holdback",
-          false)) {
-    attempt->SetHoldbackStatus(content::PreloadingHoldbackStatus::kHoldback);
-  }
+  // There is no feature-specific holdback, but the attempt could be held back
+  // due to other holdbacks.
   if (attempt->ShouldHoldback()) {
     return;
   }
@@ -114,16 +108,7 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
         content::PreloadingTriggeringOutcome::kDuplicate);
     return;
   }
-  int max_preloading_attempts = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kAnchorElementInteraction, "max_preloading_attempts",
-      -1);
-  if (max_preloading_attempts >= 0 &&
-      preconnected_targets_.size() >=
-          static_cast<size_t>(max_preloading_attempts)) {
-    attempt->SetFailureReason(
-        ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded));
-    return;
-  }
+
   preconnected_targets_.insert(scheme_host_port);
   attempt->SetTriggeringOutcome(
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown);
