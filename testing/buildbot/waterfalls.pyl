@@ -766,26 +766,31 @@
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Android (reclient)': {
         'additional_compile_targets': [
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Mac (reclient)': {
         'additional_compile_targets': [
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Mac arm64 (reclient)': {
         'additional_compile_targets': [
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Mac arm64 on arm64 (reclient)': {
         'additional_compile_targets': [
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Simple Chrome (reclient)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -796,6 +801,7 @@
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Windows (8 cores) (reclient)': {
         'mixins': [
           'isolate_profile_data',
@@ -804,6 +810,7 @@
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison Windows (reclient)': {
         'mixins': [
           'isolate_profile_data',
@@ -812,6 +819,7 @@
           'all'
         ],
       },
+      # This builder uses a recipe that is incompatible with tests in starlark
       'Comparison ios (reclient)': {
         'additional_compile_targets': [
           'all',
