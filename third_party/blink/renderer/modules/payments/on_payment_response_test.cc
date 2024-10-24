@@ -10,10 +10,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_response.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_response.h"
@@ -28,7 +28,6 @@ namespace {
 TEST(OnPaymentResponseTest, RejectMissingShippingOption) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -41,11 +40,14 @@ TEST(OnPaymentResponseTest, RejectMissingShippingOption) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests shipping information, but the browser does not
@@ -53,7 +55,6 @@ TEST(OnPaymentResponseTest, RejectMissingShippingOption) {
 TEST(OnPaymentResponseTest, RejectMissingAddress) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -65,11 +66,14 @@ TEST(OnPaymentResponseTest, RejectMissingAddress) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests a payer name, but the browser does not provide it,
@@ -77,7 +81,6 @@ TEST(OnPaymentResponseTest, RejectMissingAddress) {
 TEST(OnPaymentResponseTest, RejectMissingName) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerName(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -88,11 +91,14 @@ TEST(OnPaymentResponseTest, RejectMissingName) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests an email address, but the browser does not provide
@@ -100,7 +106,6 @@ TEST(OnPaymentResponseTest, RejectMissingName) {
 TEST(OnPaymentResponseTest, RejectMissingEmail) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerEmail(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -111,11 +116,14 @@ TEST(OnPaymentResponseTest, RejectMissingEmail) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests a phone number, but the browser does not provide it,
@@ -123,7 +131,6 @@ TEST(OnPaymentResponseTest, RejectMissingEmail) {
 TEST(OnPaymentResponseTest, RejectMissingPhone) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerPhone(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -134,11 +141,14 @@ TEST(OnPaymentResponseTest, RejectMissingPhone) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests shipping information, but the browser provides an
@@ -146,7 +156,6 @@ TEST(OnPaymentResponseTest, RejectMissingPhone) {
 TEST(OnPaymentResponseTest, RejectEmptyShippingOption) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -160,11 +169,14 @@ TEST(OnPaymentResponseTest, RejectEmptyShippingOption) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests shipping information, but the browser provides an
@@ -172,7 +184,7 @@ TEST(OnPaymentResponseTest, RejectEmptyShippingOption) {
 TEST(OnPaymentResponseTest, RejectEmptyAddress) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
+  ;
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -185,11 +197,14 @@ TEST(OnPaymentResponseTest, RejectEmptyAddress) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests a payer name, but the browser provides an empty
@@ -197,7 +212,6 @@ TEST(OnPaymentResponseTest, RejectEmptyAddress) {
 TEST(OnPaymentResponseTest, RejectEmptyName) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerName(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -209,11 +223,14 @@ TEST(OnPaymentResponseTest, RejectEmptyName) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests an email, but the browser provides an empty string
@@ -221,7 +238,6 @@ TEST(OnPaymentResponseTest, RejectEmptyName) {
 TEST(OnPaymentResponseTest, RejectEmptyEmail) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerEmail(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -233,11 +249,14 @@ TEST(OnPaymentResponseTest, RejectEmptyEmail) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests a phone number, but the browser provides an empty
@@ -245,7 +264,6 @@ TEST(OnPaymentResponseTest, RejectEmptyEmail) {
 TEST(OnPaymentResponseTest, RejectEmptyPhone) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerPhone(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -257,11 +275,14 @@ TEST(OnPaymentResponseTest, RejectEmptyPhone) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant does not request shipping information, but the browser
@@ -269,7 +290,6 @@ TEST(OnPaymentResponseTest, RejectEmptyPhone) {
 TEST(OnPaymentResponseTest, RejectNotRequestedAddress) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -282,11 +302,14 @@ TEST(OnPaymentResponseTest, RejectNotRequestedAddress) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant does not request shipping information, but the browser
@@ -294,7 +317,6 @@ TEST(OnPaymentResponseTest, RejectNotRequestedAddress) {
 TEST(OnPaymentResponseTest, RejectNotRequestedShippingOption) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -306,11 +328,14 @@ TEST(OnPaymentResponseTest, RejectNotRequestedShippingOption) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant does not request a payer name, but the browser provides it,
@@ -318,7 +343,6 @@ TEST(OnPaymentResponseTest, RejectNotRequestedShippingOption) {
 TEST(OnPaymentResponseTest, RejectNotRequestedName) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerName(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -330,11 +354,14 @@ TEST(OnPaymentResponseTest, RejectNotRequestedName) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant does not request an email, but the browser provides it,
@@ -342,7 +369,6 @@ TEST(OnPaymentResponseTest, RejectNotRequestedName) {
 TEST(OnPaymentResponseTest, RejectNotRequestedEmail) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerEmail(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -354,11 +380,14 @@ TEST(OnPaymentResponseTest, RejectNotRequestedEmail) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant does not request a phone number, but the browser provides it,
@@ -366,7 +395,6 @@ TEST(OnPaymentResponseTest, RejectNotRequestedEmail) {
 TEST(OnPaymentResponseTest, RejectNotRequestedPhone) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerPhone(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -378,11 +406,14 @@ TEST(OnPaymentResponseTest, RejectNotRequestedPhone) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 // If the merchant requests shipping information, but the browser provides an
@@ -390,7 +421,6 @@ TEST(OnPaymentResponseTest, RejectNotRequestedPhone) {
 TEST(OnPaymentResponseTest, RejectInvalidAddress) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -404,31 +434,28 @@ TEST(OnPaymentResponseTest, RejectInvalidAddress) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
-class PaymentResponseFunction : public ScriptFunction::Callable {
+class PaymentResponseFunction
+    : public ThenCallable<PaymentResponse, PaymentResponseFunction> {
  public:
-  explicit PaymentResponseFunction(ScriptValue* out_value) : value_(out_value) {
-    DCHECK(value_);
-  }
-
-  ScriptValue Call(ScriptState*, ScriptValue value) override {
-    DCHECK(!value.IsEmpty());
-    *value_ = value;
-    return value;
+  void React(ScriptState*, PaymentResponse* response) { response_ = response; }
+  PaymentResponse* Response() const { return response_; }
+  void Trace(Visitor* visitor) const override {
+    ThenCallable<PaymentResponse, PaymentResponseFunction>::Trace(visitor);
+    visitor->Trace(response_);
   }
 
  private:
-  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (GC'ed type), so
-  // there is no benefit to using a raw_ptr, only cost.
-  // TODO(crbug.com/348793154): Remove once clang plugin no longer enforces
-  // those.
-  RAW_PTR_EXCLUSION ScriptValue* const value_;
+  Member<PaymentResponse> response_;
 };
 
 // If the merchant requests shipping information, the resolved show() promise
@@ -436,7 +463,6 @@ class PaymentResponseFunction : public ScriptFunction::Callable {
 TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -450,20 +476,16 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* resp =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_EQ("standardShipping", resp->shippingOption());
+  EXPECT_EQ("standardShipping",
+            response_function->Response()->shippingOption());
 }
 
 // If the merchant requests a payer name, the resolved show() promise should
@@ -471,7 +493,6 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
 TEST(OnPaymentResponseTest, CanRequestName) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerName(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -484,20 +505,15 @@ TEST(OnPaymentResponseTest, CanRequestName) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* pr =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_EQ("Jon Doe", pr->payerName());
+  EXPECT_EQ("Jon Doe", response_function->Response()->payerName());
 }
 
 // If the merchant requests an email address, the resolved show() promise should
@@ -505,7 +521,6 @@ TEST(OnPaymentResponseTest, CanRequestName) {
 TEST(OnPaymentResponseTest, CanRequestEmail) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerEmail(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -517,20 +532,15 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* pr =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_EQ("abc@gmail.com", pr->payerEmail());
+  EXPECT_EQ("abc@gmail.com", response_function->Response()->payerEmail());
 }
 
 // If the merchant requests a phone number, the resolved show() promise should
@@ -538,7 +548,6 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
 TEST(OnPaymentResponseTest, CanRequestPhone) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerPhone(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -550,20 +559,14 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* pr =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-
-  EXPECT_EQ("0123", pr->payerPhone());
+  EXPECT_EQ("0123", response_function->Response()->payerPhone());
 }
 
 // If the merchant does not request shipping information, the resolved show()
@@ -571,7 +574,6 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
 TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -580,21 +582,16 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(BuildPaymentResponseForTest());
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* resp =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_TRUE(resp->shippingOption().IsNull());
-  EXPECT_EQ(nullptr, resp->shippingAddress());
+  EXPECT_TRUE(response_function->Response()->shippingOption().IsNull());
+  EXPECT_EQ(nullptr, response_function->Response()->shippingAddress());
 }
 
 // If the merchant does not request a phone number, the resolved show() promise
@@ -602,7 +599,6 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
 TEST(OnPaymentResponseTest, PhoneNotRequired) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerPhone(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -614,20 +610,15 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* pr =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_TRUE(pr->payerPhone().IsNull());
+  EXPECT_TRUE(response_function->Response()->payerPhone().IsNull());
 }
 
 // If the merchant does not request a payer name, the resolved show() promise
@@ -635,7 +626,6 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
 TEST(OnPaymentResponseTest, NameNotRequired) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerName(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -647,20 +637,15 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* pr =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_TRUE(pr->payerName().IsNull());
+  EXPECT_TRUE(response_function->Response()->payerName().IsNull());
 }
 
 // If the merchant does not request an email address, the resolved show()
@@ -668,7 +653,6 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
 TEST(OnPaymentResponseTest, EmailNotRequired) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestPayerEmail(false);
   PaymentRequest* request = PaymentRequest::Create(
@@ -680,20 +664,15 @@ TEST(OnPaymentResponseTest, EmailNotRequired) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptValue out_value;
+  auto* response_function = MakeGarbageCollected<PaymentResponseFunction>();
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
-            funcs.ExpectNoCall());
+      .React(scope.GetScriptState(), response_function);
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(std::move(response));
 
   scope.PerformMicrotaskCheckpoint();
-  PaymentResponse* pr =
-      V8PaymentResponse::ToWrappable(scope.GetIsolate(), out_value.V8Value());
-  EXPECT_TRUE(pr->payerEmail().IsNull());
+  EXPECT_TRUE(response_function->Response()->payerEmail().IsNull());
 }
 
 }  // namespace

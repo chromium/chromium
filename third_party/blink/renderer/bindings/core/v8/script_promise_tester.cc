@@ -28,4 +28,10 @@ ScriptValue ScriptPromiseTester::Value() const {
   return value_object_->Value();
 }
 
+String ScriptPromiseTester::ValueAsString() const {
+  String result;
+  Value().ToString(result);
+  return result;
+}
+
 }  // namespace blink

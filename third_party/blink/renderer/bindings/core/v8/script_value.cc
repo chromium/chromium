@@ -56,10 +56,10 @@ bool ScriptValue::ToString(String& result) const {
   if (IsEmpty())
     return false;
 
-  v8::Local<v8::Value> string = V8Value();
-  if (string.IsEmpty() || !string->IsString())
-    return false;
-  result = ToCoreString(GetIsolate(), v8::Local<v8::String>::Cast(string));
+  DCHECK(GetIsolate()->InContext());
+  v8::Local<v8::String> string =
+      V8Value()->ToString(GetIsolate()->GetCurrentContext()).ToLocalChecked();
+  result = ToCoreString(GetIsolate(), string);
   return true;
 }
 

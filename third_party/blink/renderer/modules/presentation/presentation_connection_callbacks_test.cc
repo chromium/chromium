@@ -11,8 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -47,11 +47,11 @@ static PresentationRequest* MakeRequest(V8TestingScope* scope) {
 TEST(PresentationConnectionCallbacksTest, HandleSuccess) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationConnection>>(
           scope.GetScriptState());
-  resolver->Promise().Then(funcs.ExpectCall(), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(scope.GetScriptState(),
+                                     resolver->Promise());
 
   PresentationConnectionCallbacks callbacks(resolver, MakeRequest(&scope));
 
@@ -75,18 +75,21 @@ TEST(PresentationConnectionCallbacksTest, HandleSuccess) {
 
   // Connection must be closed before the next connection test.
   connection->close();
+
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PresentationInfoPtr info = PresentationInfo::New(
       url_test_helpers::ToKURL(kPresentationUrl), kPresentationId);
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationConnection>>(
           scope.GetScriptState());
-  resolver->Promise().Then(funcs.ExpectCall(), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(scope.GetScriptState(),
+                                     resolver->Promise());
 
   auto* connection = ControllerPresentationConnection::Take(
       resolver, *info, MakeRequest(&scope));
@@ -113,16 +116,19 @@ TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
 
   // Connection must be closed before the next connection test.
   connection->close();
+
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST(PresentationConnectionCallbacksTest, HandleError) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationConnection>>(
           scope.GetScriptState());
-  resolver->Promise().Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(scope.GetScriptState(),
+                                     resolver->Promise());
 
   PresentationConnectionCallbacks callbacks(resolver, MakeRequest(&scope));
 
@@ -136,6 +142,9 @@ TEST(PresentationConnectionCallbacksTest, HandleError) {
 
   // No connection was created.
   EXPECT_FALSE(callbacks.connection_);
+
+  scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 }  // namespace blink

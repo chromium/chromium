@@ -159,6 +159,7 @@ class CORE_EXPORT ScriptValue final {
   // this "clones" the v8 value and returns it.
   v8::Local<v8::Value> V8ValueFor(ScriptState*) const;
 
+  // Coereces the underlying v8::Value to a string.
   bool ToString(String&) const;
 
   static ScriptValue CreateNull(v8::Isolate*);

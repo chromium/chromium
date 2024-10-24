@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
@@ -32,9 +33,10 @@ void PaymentRequestUpdateEvent::SetPaymentRequest(
   request_ = request;
 }
 
-void PaymentRequestUpdateEvent::updateWith(ScriptState* script_state,
-                                           ScriptPromiseUntyped promise,
-                                           ExceptionState& exception_state) {
+void PaymentRequestUpdateEvent::updateWith(
+    ScriptState* script_state,
+    ScriptPromise<PaymentDetailsUpdate> promise,
+    ExceptionState& exception_state) {
   if (!isTrusted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -62,15 +64,9 @@ void PaymentRequestUpdateEvent::updateWith(ScriptState* script_state,
   stopImmediatePropagation();
   wait_for_update_ = true;
 
-  promise.Then(
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<UpdatePaymentDetailsFunction>(
-              request_, UpdatePaymentDetailsFunction::ResolveType::kFulfill)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<UpdatePaymentDetailsFunction>(
-              request_, UpdatePaymentDetailsFunction::ResolveType::kReject)));
+  promise.React(script_state,
+                MakeGarbageCollected<UpdatePaymentDetailsResolve>(request_),
+                MakeGarbageCollected<UpdatePaymentDetailsReject>(request_));
 }
 
 void PaymentRequestUpdateEvent::Trace(Visitor* visitor) const {

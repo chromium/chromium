@@ -55,6 +55,8 @@ class ScriptPromiseTester final {
   // The value the promise fulfilled or rejected with.
   ScriptValue Value() const;
 
+  String ValueAsString() const;
+
  private:
   enum class State { kNotSettled, kFulfilled, kRejected };
 
