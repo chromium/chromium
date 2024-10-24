@@ -191,8 +191,10 @@ void TPMAutoUpdateModePolicyHandler::ShowTPMAutoUpdateNotification(
 
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
-  if (!user_manager->IsUserLoggedIn() || user_manager->IsLoggedInAsKioskApp())
+  if (!user_manager->IsUserLoggedIn() ||
+      user_manager->IsLoggedInAsAnyKioskApp()) {
     return;
+  }
 
   base::Time notification_shown =
       local_state_->GetTime(prefs::kTPMUpdatePlannedNotificationShownTime);
