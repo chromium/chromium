@@ -20,14 +20,22 @@ extern const subresource_filter::RulesetConfig
 // Fingerprinting Protection.
 extern const base::FilePath::CharType kUnindexedRulesetDataFileName[];
 
+const char kPageActivationThrottleNameForLogging[] =
+    "FingerprintingProtectionPageActivationThrottle";
+
+// Histogram names
 const char ActivationDecisionHistogramName[] =
     "FingerprintingProtection.PageLoad.ActivationDecision";
 
 const char ActivationLevelHistogramName[] =
     "FingerprintingProtection.PageLoad.ActivationLevel";
 
-const char kPageActivationThrottleNameForLogging[] =
-    "FingerprintingProtectionPageActivationThrottle";
+const char MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName[] =
+    "FingerprintingProtection.MainFrameLoad."
+    "RulesetIsAvailableAnyActivationLevel";
+
+const char DocumentLoadRulesetIsAvailableHistogramName[] =
+    "FingerprintingProtection.DocumentLoad.RulesetIsAvailable";
 
 // Console messages
 // ----------------

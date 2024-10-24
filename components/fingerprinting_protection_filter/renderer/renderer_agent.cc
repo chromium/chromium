@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/shared/common/utils.h"
@@ -130,7 +132,6 @@ void RendererAgent::RequestActivationState() {
 void RendererAgent::Initialize() {
   current_document_url_ = GetMainDocumentUrl();
   pending_activation_ = true;
-
   if (!IsTopLevelMainFrame() || HasValidOpener()) {
     // Attempt to inherit activation only for child frames or main frames that
     // are opened from another page.
@@ -139,14 +140,10 @@ void RendererAgent::Initialize() {
     if (inherited_state.has_value()) {
       activation_state_ = inherited_state.value();
       pending_activation_ = false;
-      bool activation_enabled =
-          activation_state_.activation_level !=
-          subresource_filter::mojom::ActivationLevel::kDisabled;
-      if (activation_enabled) {
-        MaybeCreateNewFilter();
-      }
+      MaybeCreateNewFilter();
     }
   }
+
   if (pending_activation_) {
     RequestActivationState();
   }
@@ -217,10 +214,7 @@ void RendererAgent::OnActivationComputed(
   activation_state_ = *activation_state;
   pending_activation_ = false;
 
-  if (activation_state_.activation_level !=
-      subresource_filter::mojom::ActivationLevel::kDisabled) {
-    MaybeCreateNewFilter();
-  }
+  MaybeCreateNewFilter();
 
   for (auto& callback : pending_activation_callbacks_) {
     std::move(callback).Run(activation_state_);
@@ -273,24 +267,35 @@ void RendererAgent::SetFilter(
 }
 
 void RendererAgent::MaybeCreateNewFilter() {
-  if (pending_activation_ ||
-      activation_state_.activation_level ==
-          subresource_filter::mojom::ActivationLevel::kDisabled) {
+  if (pending_activation_ || !ruleset_dealer_) {
     return;
   }
 
-  if (!ruleset_dealer_ || !ruleset_dealer_->IsRulesetFileAvailable()) {
+  if (current_document_url_ == GURL()) {
+    // There is no valid document to filter.
     return;
   }
 
+  const bool should_record_histograms =
+      !IsTopLevelMainFrame() || current_document_url_.SchemeIsHTTPOrHTTPS() ||
+      current_document_url_.IsAboutBlank() ||
+      current_document_url_.SchemeIsFile();
+  if (should_record_histograms) {
+    RecordHistogramsOnFilterCreation(activation_state_);
+  }
+
+  // Note: Even if there is a memory mapping failure for the ruleset, the
+  // ruleset dealer can still have ruleset file(s) to read from,. Hence, the
+  // relevant histogram(s) are still emitted prior.
   scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset =
       ruleset_dealer_->GetRuleset();
   if (!ruleset) {
     return;
   }
 
-  if (current_document_url_ == GURL()) {
-    // There is no valid document to filter.
+  if (activation_state_.activation_level ==
+          subresource_filter::mojom::ActivationLevel::kDisabled ||
+      !ruleset_dealer_->IsRulesetFileAvailable()) {
     return;
   }
 
@@ -303,6 +308,26 @@ void RendererAgent::SendDocumentLoadStatistics(
     const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
   GetFingerprintingProtectionHost()->SetDocumentLoadStatistics(
       statistics.Clone());
+}
+
+// Record histograms when a new document is created, in particular when the
+// current document is an interesting root frame document (e.g. a filter child,
+// a file URL, http/https scheme).
+void RendererAgent::RecordHistogramsOnFilterCreation(
+    const subresource_filter::mojom::ActivationState& activation_state) {
+  subresource_filter::mojom::ActivationLevel activation_level =
+      activation_state.activation_level;
+
+  if (IsTopLevelMainFrame()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName,
+        ruleset_dealer_->IsRulesetFileAvailable());
+  }
+  if (activation_level !=
+      subresource_filter::mojom::ActivationLevel::kDisabled) {
+    UMA_HISTOGRAM_BOOLEAN(DocumentLoadRulesetIsAvailableHistogramName,
+                          ruleset_dealer_->IsRulesetFileAvailable());
+  }
 }
 
 }  // namespace fingerprinting_protection_filter

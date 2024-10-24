@@ -146,6 +146,9 @@ class RendererAgent
   // Initializes `filter_`. Assumes that activation has been computed.
   void MaybeCreateNewFilter();
 
+  void RecordHistogramsOnFilterCreation(
+      const subresource_filter::mojom::ActivationState& activation_state);
+
   // Remote used to pass messages to the browser-side `ThrottleManager`.
   mojo::AssociatedRemote<mojom::FingerprintingProtectionHost>
       fingerprinting_protection_host_;
