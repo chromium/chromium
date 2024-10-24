@@ -463,8 +463,10 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.
-  // Request for zero-prefix suggestions in OTR contexts is not allowed.
-  DCHECK(!client()->IsOffTheRecord());
+  // Request for zero-prefix suggestions in OTR contexts is not allowed; except
+  // for the Lens searchboxes.
+  DCHECK(!client()->IsOffTheRecord() ||
+         omnibox::IsLensSearchbox(input.current_page_classification()));
   loader_ =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)

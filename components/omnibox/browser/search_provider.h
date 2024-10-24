@@ -110,6 +110,8 @@ class SearchProvider : public BaseSearchProvider,
                            SendRequestWithLensInteractionResponse);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
                            SendRequestWithoutLensInteractionResponse);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderOTRTest, DoesNotSendSuggestRequest);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderOTRTest, SendSuggestRequestForLens);
 
   // Manages the providers (TemplateURLs) used by SearchProvider. Two providers
   // may be used:

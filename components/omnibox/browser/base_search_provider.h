@@ -122,9 +122,11 @@ class BaseSearchProvider : public AutocompleteProvider {
   // It requires that all the following hold:
   // * Suggest URL is not empty or misconfigured.
   // * The user has suggest enabled in their settings.
-  //   * Or the request is being made from the Lens searchboxes which have their
-  //     own privacy model.
+  //   * Unless the request is being made from the Lens searchboxes which have
+  //     their own privacy model.
   // * The user is not in incognito mode. Incognito disables suggest entirely.
+  //   * Unless the request is being made from the Lens searchboxes which have
+  //     their own privacy model.
   static bool CanSendSuggestRequest(
       metrics::OmniboxEventProto::PageClassification page_classification,
       const TemplateURL* template_url,

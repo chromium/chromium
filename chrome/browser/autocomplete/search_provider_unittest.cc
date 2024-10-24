@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
@@ -254,6 +255,14 @@ class BaseSearchProviderTest : public testing::Test,
         base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
 
     profile_ = profile_builder.Build();
+
+    TestingProfile::Builder otr_profile_builder;
+    otr_profile_builder.AddTestingFactory(
+        RemoteSuggestionsServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildRemoteSuggestionsServiceWithURLLoader,
+                            &test_url_loader_factory_));
+    otr_profile_builder.BuildOffTheRecord(profile_.get(),
+                                          Profile::OTRProfileID::PrimaryID());
   }
 
   BaseSearchProviderTest(const BaseSearchProviderTest&) = delete;
@@ -3593,11 +3602,13 @@ TEST_F(SearchProviderTest, CanSendRequestWithURL) {
 
   // Incognito profile.
   ChromeAutocompleteProviderClient incognito_client(
-      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false));
 
+  // Can make Suggest requests in incognito mode.
+  EXPECT_TRUE(test_lens(&google_template_url, &incognito_client));
   // Don't make Suggest requests in incognito mode.
-  EXPECT_FALSE(test_lens(&google_template_url, &incognito_client));
   EXPECT_FALSE(test_other(&google_template_url, &incognito_client));
+  // Don't make Suggest requests in incognito mode.
   EXPECT_FALSE(test_srp(&google_template_url, &incognito_client));
 
   // Create a non-Google search provider.
@@ -4038,6 +4049,110 @@ TEST_F(SearchProviderInvalidSuggestEndpointTest, DoesNotSendSuggestRequest) {
 
   // Make sure the default provider's suggest service was not queried.
   EXPECT_FALSE(test_url_loader_factory_.IsPending("http://defaulturl/query"));
+}
+
+// SearchProviderOTRTest ------------------------------------------------
+//
+// Test environment with an OTR profile.
+class SearchProviderOTRTest : public SearchProviderTest {
+ public:
+  SearchProviderOTRTest() = default;
+
+  void SetUp() override {
+    SearchProviderTest::SetUp();
+
+    // Set up a Google default search provider.
+    TemplateURLData google_template_url_data;
+    google_template_url_data.SetShortName(u"t");
+    google_template_url_data.SetURL(
+        "https://www.google.com/search?q={searchTerms}");
+    google_template_url_data.suggestions_url =
+        "https://www.google.com/suggest?q={searchTerms}";
+
+    TemplateURLService* turl_model =
+        TemplateURLServiceFactory::GetForProfile(otr_profile());
+    TemplateURL* template_url = turl_model->Add(
+        std::make_unique<TemplateURL>(google_template_url_data));
+    turl_model->SetUserSelectedDefaultSearchProvider(template_url);
+    ASSERT_NE(0, template_url->id());
+
+    otr_client_ = std::make_unique<TestAutocompleteProviderClient>(
+        otr_profile(), &test_url_loader_factory_);
+    provider_ = new TestSearchProvider(otr_client_.get(), this);
+    zero_suggest_provider_ = new ZeroSuggestProvider(otr_client_.get(), this);
+  }
+
+  void TearDown() override {
+    BaseSearchProviderTest::TearDown();
+
+    // Shutdown the provider before the profile.
+    zero_suggest_provider_ = nullptr;
+  }
+
+ protected:
+  Profile* otr_profile() {
+    return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+  }
+
+  std::unique_ptr<TestAutocompleteProviderClient> otr_client_;
+  scoped_refptr<ZeroSuggestProvider> zero_suggest_provider_;
+};
+
+TEST_F(SearchProviderOTRTest, DoesNotSendSuggestRequest) {
+  // Start a query.
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
+                          ChromeAutocompleteSchemeClassifier(otr_profile()));
+  provider_->Start(input, false);
+
+  // Make sure the provider was not run and the default search engine's suggest
+  // endpoint was not queried.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+  EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
+}
+
+TEST_F(SearchProviderOTRTest, DoesNotSendZeroSuggestRequest) {
+  // Start a zero-prefix query.
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
+                          ChromeAutocompleteSchemeClassifier(otr_profile()));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  zero_suggest_provider_->Start(input, false);
+
+  // Make sure the provider was not run and the default search engine's suggest
+  // endpoint was not queried.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(zero_suggest_provider_->done());
+  EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
+}
+
+TEST_F(SearchProviderOTRTest, SendSuggestRequestForLens) {
+  // Start a query.
+  AutocompleteInput input(u"foo",
+                          metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  provider_->Start(input, false);
+
+  // Make sure the provdier was run and the default search engine's suggest
+  // endpoint was queried.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(
+      "https://www.google.com/suggest?q=foo&client=chrome-multimodal"));
+}
+
+TEST_F(SearchProviderOTRTest, SendZeroSuggestRequestForLens) {
+  // Start a zero-prefix query.
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  zero_suggest_provider_->Start(input, false);
+
+  // Make sure the provdier was run and the default search engine's suggest
+  // endpoint was queried.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(zero_suggest_provider_->done());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(
+      "https://www.google.com/suggest?q=&client=chrome-contextual"));
 }
 
 // SearchProviderCommandLineOverrideTest -------------------------------------
