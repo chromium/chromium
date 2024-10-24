@@ -22,7 +22,7 @@ const char kExecutableName[] = "enterprise_companion.exe";
 // Returns the installation directory.
 std::optional<base::FilePath> GetInstallDirectory() {
   base::FilePath program_files_dir;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &program_files_dir)) {
+  if (!base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files_dir)) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return {};
   }
