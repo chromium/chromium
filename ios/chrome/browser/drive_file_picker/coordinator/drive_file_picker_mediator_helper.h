@@ -54,6 +54,13 @@ bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
 // Returns the subtitle which contains the last modified date for `item`.
 NSString* DriveFilePickerItemSubtitleModified(const DriveItem& item);
 
+// Returns the subtitle which contains the date when `item` was last modified by
+// the user.
+NSString* DriveFilePickerItemSubtitleModifiedByMe(const DriveItem& item);
+
+// Returns the subtitle which contains the creation date for `item`.
+NSString* DriveFilePickerItemSubtitleCreated(const DriveItem& item);
+
 // Returns the subtitle which contains the last opened date for `item`.
 NSString* DriveFilePickerItemSubtitleOpened(const DriveItem& item);
 

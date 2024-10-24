@@ -299,6 +299,33 @@ NSString* DriveFilePickerItemSubtitleModified(const DriveItem& item) {
                                  base::SysNSStringToUTF16(modified_time_str));
 }
 
+NSString* DriveFilePickerItemSubtitleModifiedByMe(const DriveItem& item) {
+  if (!item.modified_by_me_time) {
+    return nil;
+  }
+  NSString* modified_by_me_time_str =
+      [NSDateFormatter localizedStringFromDate:item.modified_by_me_time
+                                     dateStyle:NSDateFormatterMediumStyle
+                                     timeStyle:NSDateFormatterNoStyle];
+  // TODO(crbug.com/375391461): Use a proper "Modified by me" string.
+  return l10n_util::GetNSStringF(
+      IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_MODIFIED,
+      base::SysNSStringToUTF16(modified_by_me_time_str));
+}
+
+NSString* DriveFilePickerItemSubtitleCreated(const DriveItem& item) {
+  if (!item.created_time) {
+    return nil;
+  }
+  NSString* created_time_str =
+      [NSDateFormatter localizedStringFromDate:item.created_time
+                                     dateStyle:NSDateFormatterMediumStyle
+                                     timeStyle:NSDateFormatterNoStyle];
+  // TODO(crbug.com/375391461): Use a proper "Created" or "Uploaded" string.
+  return l10n_util::GetNSStringF(IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_MODIFIED,
+                                 base::SysNSStringToUTF16(created_time_str));
+}
+
 NSString* DriveFilePickerItemSubtitleOpened(const DriveItem& item) {
   if (!item.viewed_by_me_time) {
     return nil;
@@ -326,12 +353,28 @@ NSString* DriveFilePickerItemSubtitleShareWithMe(const DriveItem& item) {
 }
 
 NSString* DriveFilePickerItemSubtitleRecent(const DriveItem& item) {
-  if (!item.viewed_by_me_time || !item.modified_time) {
-    return nil;
+  NSMutableArray<NSDate*>* times = [NSMutableArray array];
+  if (item.created_time) {
+    [times addObject:item.created_time];
   }
-  return [item.viewed_by_me_time compare:item.modified_time]
-             ? DriveFilePickerItemSubtitleOpened(item)
-             : DriveFilePickerItemSubtitleModified(item);
+  if (item.viewed_by_me_time) {
+    [times addObject:item.viewed_by_me_time];
+  }
+  if (item.modified_by_me_time) {
+    [times addObject:item.modified_by_me_time];
+  }
+  NSDate* most_recent_time =
+      [times sortedArrayUsingSelector:@selector(compare:)].lastObject;
+  if ([most_recent_time isEqualToDate:item.created_time]) {
+    return DriveFilePickerItemSubtitleCreated(item);
+  }
+  if ([most_recent_time isEqualToDate:item.modified_by_me_time]) {
+    return DriveFilePickerItemSubtitleModifiedByMe(item);
+  }
+  if ([most_recent_time isEqualToDate:item.viewed_by_me_time]) {
+    return DriveFilePickerItemSubtitleOpened(item);
+  }
+  return nil;
 }
 
 NSString* DriveFilePickerItemSubtitle(
