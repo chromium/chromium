@@ -48,8 +48,8 @@ public class DeviceInput implements InputDeviceListener {
         final int[] deviceIds = InputDevice.getDeviceIds();
         for (int i = 0; i < deviceIds.length; i++) {
             int deviceId = deviceIds[i];
-            var snapshot = DeviceSnapshot.from(InputDevice.getDevice(deviceId));
-            mDeviceSnapshotsById.put(deviceId, snapshot);
+            InputDevice device = InputDevice.getDevice(deviceId);
+            if (device != null) mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
         }
 
         // Register listener to perform cache updates.
@@ -122,13 +122,16 @@ public class DeviceInput implements InputDeviceListener {
     @Override
     public void onInputDeviceAdded(int deviceId) {
         ThreadUtils.assertOnUiThread();
-        mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(InputDevice.getDevice(deviceId)));
+        InputDevice device = InputDevice.getDevice(deviceId);
+        if (device != null) mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
     }
 
     @Override
     public void onInputDeviceChanged(int deviceId) {
         ThreadUtils.assertOnUiThread();
-        mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(InputDevice.getDevice(deviceId)));
+        InputDevice device = InputDevice.getDevice(deviceId);
+        if (device != null) mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+        else mDeviceSnapshotsById.remove(deviceId);
     }
 
     @Override
