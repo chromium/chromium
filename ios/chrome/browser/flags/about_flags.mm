@@ -382,30 +382,6 @@ const FeatureEntry::FeatureVariation
         {"Long-Press and One-Tap", kEnableExpKitTextClassifierEmailOneTap,
          std::size(kEnableExpKitTextClassifierEmailOneTap), nullptr}};
 
-const FeatureEntry::FeatureParam kTabInactivityThresholdOneWeek[] = {
-    {kTabInactivityThresholdParameterName,
-     kTabInactivityThresholdOneWeekParam}};
-const FeatureEntry::FeatureParam kTabInactivityThresholdTwoWeeks[] = {
-    {kTabInactivityThresholdParameterName,
-     kTabInactivityThresholdTwoWeeksParam}};
-const FeatureEntry::FeatureParam kTabInactivityThresholdThreeWeeks[] = {
-    {kTabInactivityThresholdParameterName,
-     kTabInactivityThresholdThreeWeeksParam}};
-const FeatureEntry::FeatureParam kTabInactivityThresholdOneMinuteDemo[] = {
-    {kTabInactivityThresholdParameterName,
-     kTabInactivityThresholdOneMinuteDemoParam}};
-
-const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
-    {"One week", kTabInactivityThresholdOneWeek,
-     std::size(kTabInactivityThresholdOneWeek), nullptr},
-    {"Two weeks", kTabInactivityThresholdTwoWeeks,
-     std::size(kTabInactivityThresholdTwoWeeks), nullptr},
-    {"Three weeks", kTabInactivityThresholdThreeWeeks,
-     std::size(kTabInactivityThresholdThreeWeeks), nullptr},
-    {"One minute [Demo]", kTabInactivityThresholdOneMinuteDemo,
-     std::size(kTabInactivityThresholdOneMinuteDemo), nullptr},
-};
-
 const FeatureEntry::FeatureParam kTabResumptionMostRecentTabOnly[] = {
     {kTabResumptionParameterName, kTabResumptionMostRecentTabOnlyParam}};
 const FeatureEntry::FeatureParam kTabResumptionAllTabs[] = {
@@ -1495,11 +1471,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kCommerceLocalPDPDetectionDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(commerce::kCommerceLocalPDPDetection)},
-    {"tab-inactivity-threshold", flag_descriptions::kTabInactivityThresholdName,
-     flag_descriptions::kTabInactivityThresholdDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabInactivityThreshold,
-                                    kTabInactivityThresholdVariations,
-                                    "TabInactivityThreshold")},
+    {"inactive-tabs", flag_descriptions::kInactiveTabsIPadName,
+     flag_descriptions::kInactiveTabsIPadDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kInactiveTabsIPadFeature)},
     {"notification-settings-menu-item",
      flag_descriptions::kNotificationSettingsMenuItemName,
      flag_descriptions::kNotificationSettingsMenuItemDescription,

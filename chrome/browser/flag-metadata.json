@@ -5216,6 +5216,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "inactive-tabs",
+    "owners": [ "gambard@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "incognito-screenshot",
     "owners": [ "zalmashni@google.com", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
     "expiry_milestone": 140
@@ -8515,11 +8520,6 @@
     "name": "tab-hover-card-images",
     "owners": [ "dfried@chromium.org", "estalin@chromium.org" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "tab-inactivity-threshold",
-    "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 135
   },
   {
     "name": "tab-organization",

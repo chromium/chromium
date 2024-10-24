@@ -477,6 +477,16 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>InactiveTabsDemoMode</string>
+			<key>Title</key>
+			<string>Force inactive tabs threshold (1min)</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>

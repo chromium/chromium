@@ -165,6 +165,14 @@ std::optional<int> GetForcedTipsMagicStackState();
 // image.
 bool ShouldDisplayLensShopTipWithImage();
 
+// Whether Inactive Tabs should be in Demo mode, where tabs are
+// considered inactive after a minute.
+bool ShouldUseInactiveTabsDemoThreshold();
+
+// Whether Inactive Tabs should be in Automated Testing mode, where
+// tabs are immediately considered inactive.
+bool ShouldUseInactiveTabsTestThreshold();
+
 // Returns the override for Tab Resumption decoration.
 // Returns nil is not set.
 NSString* GetTabResumptionDecorationOverride();

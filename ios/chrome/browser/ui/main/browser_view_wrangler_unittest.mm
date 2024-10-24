@@ -188,7 +188,7 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {/* Enabled features */},
-      {/* Disabled features */ kTabInactivityThreshold});
+      {/* Disabled features */ kInactiveTabsIPadFeature});
 
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithProfile:profile()
@@ -263,11 +263,7 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
   }
   // Enabled inactive tabs feature.
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithProfile:profile()

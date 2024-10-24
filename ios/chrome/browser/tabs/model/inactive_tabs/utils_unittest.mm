@@ -57,6 +57,13 @@ class InactiveTabsUtilsTest : public PlatformTest {
         std::make_unique<InactiveTabsFakeWebStateListDelegate>());
     SnapshotBrowserAgent::CreateForBrowser(browser_active_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_inactive_.get());
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kInactiveTabsTimeThreshold, 0);
+  }
+
+  ~InactiveTabsUtilsTest() override {
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kInactiveTabsTimeThreshold, 0);
   }
 
   PrefService* local_state() {
@@ -115,11 +122,7 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -151,11 +154,10 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
+
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -186,11 +188,7 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -221,11 +219,10 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
+
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -254,7 +251,7 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
   // RestoreAllInactive checks that it is called when the feature is disabled,
   // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
   local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -287,13 +284,10 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitWithFeaturesAndParameters(
-      {/* Enabled features */
-       {kTabInactivityThreshold, {parameters}}},
-      {/* Disabled features */});
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
+
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -375,7 +369,7 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   // RestoreAllInactive checks that it is called when the feature is disabled,
   // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
   local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -420,11 +414,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
   // Needed to use the NewTabPageTabHelper and ensure that the tab is an NTP.
   std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
@@ -476,70 +466,13 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
       "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
 }
 
-TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
-
-  // Test that flags are taken into account instead of pref as we set the
-  // preference default value.
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
-
-  WebStateList* active_web_state_list = browser_active_->GetWebStateList();
-  WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
-
-  EXPECT_EQ(active_web_state_list->count(), 0);
-  EXPECT_EQ(inactive_web_state_list->count(), 0);
-
-  // Add tabs in the active browser.
-  AddInactiveTab(active_web_state_list, base::Days(3));
-  AddInactiveTab(active_web_state_list, base::Days(10));
-  AddInactiveTab(active_web_state_list, base::Days(30));
-
-  EXPECT_EQ(active_web_state_list->count(), 3);
-  EXPECT_EQ(inactive_web_state_list->count(), 0);
-
-  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
-
-  EXPECT_EQ(active_web_state_list->count(), 1);
-  EXPECT_EQ(inactive_web_state_list->count(), 2);
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
-
-  std::vector<int> expected_inactive_order = {10, 30};
-  CheckOrder(inactive_web_state_list, expected_inactive_order);
-
-  // Set the preference to 14.
-  local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, 14);
-  MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 0, 1);
-
-  EXPECT_EQ(active_web_state_list->count(), 2);
-  EXPECT_EQ(inactive_web_state_list->count(), 1);
-
-  std::vector<int> expected_active_order = {10, 3};
-  CheckOrder(active_web_state_list, expected_active_order);
-}
-
 // Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
   // RestoreAllInactive checks that it is called when the feature is disabled,
   // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
   local_state()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   // Create known identifiers and last_active_time.
@@ -576,11 +509,7 @@ TEST_F(InactiveTabsUtilsTest,
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
@@ -616,11 +545,7 @@ TEST_F(InactiveTabsUtilsTest,
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
@@ -653,11 +578,10 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kTabInactivityThresholdParameterName] =
-      kTabInactivityThresholdOneWeekParam;
-  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
-                                                  parameters);
+  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
+
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();

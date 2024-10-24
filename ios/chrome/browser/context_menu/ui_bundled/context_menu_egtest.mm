@@ -283,10 +283,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdTwoWeeksParam);
+  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

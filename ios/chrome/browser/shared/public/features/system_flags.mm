@@ -64,6 +64,8 @@ NSString* const kTabResumptionDecorationOverride =
 NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";
 NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
+NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
+NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 }  // namespace
 
 namespace experimental_flags {
@@ -319,6 +321,16 @@ std::optional<int> GetForcedTipsMagicStackState() {
 bool ShouldDisplayLensShopTipWithImage() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kTipsMagicStackLensShopWithImage];
+}
+
+bool ShouldUseInactiveTabsDemoThreshold() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kInactiveTabsDemoMode];
+}
+
+bool ShouldUseInactiveTabsTestThreshold() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kInactiveTabsTestMode];
 }
 
 NSString* GetTabResumptionDecorationOverride() {

@@ -1087,12 +1087,9 @@ const char kTabGroupsIPadDescription[] =
     "When enabled, if tab-groups-in-grid is enabled, tab group can be created "
     "on iPad.";
 
-const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
-const char kTabInactivityThresholdDescription[] =
-    "When enabled, the tabs older than the threshold are considered inactive "
-    "and set aside in the Inactive Tabs section of the TabGrid."
-    "IMPORTANT: If you ever used the in-app settings for Inactive Tabs, this "
-    "flag is never read again.";
+const char kInactiveTabsIPadName[] = "Enable inactive tabs";
+const char kInactiveTabsIPadDescription[] =
+    "When turned on, the tabs will be moved to \"inactive\" after some time.";
 
 const char kTabResumptionName[] = "Enable Tab Resumption";
 const char kTabResumptionDescription[] =

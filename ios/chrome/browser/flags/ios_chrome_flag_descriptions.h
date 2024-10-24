@@ -973,10 +973,9 @@ extern const char kTabGridNewTransitionsDescription[];
 extern const char kTabGroupsIPadName[];
 extern const char kTabGroupsIPadDescription[];
 
-// Title and description for the flag to determine tab inactivity in the
-// TabGrid.
-extern const char kTabInactivityThresholdName[];
-extern const char kTabInactivityThresholdDescription[];
+// Title and description for the Inactive Tabs feature on iPad.
+extern const char kInactiveTabsIPadName[];
+extern const char kInactiveTabsIPadDescription[];
 
 // Title and description for the flag to enable tab resumption.
 extern const char kTabResumptionName[];
