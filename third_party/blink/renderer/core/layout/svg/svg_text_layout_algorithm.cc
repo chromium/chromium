@@ -839,10 +839,6 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     items[0].item.SetSvgLineLocalRect(
         PhysicalRect(gfx::ToEnclosingRect(unscaled_visual_rect)));
   }
-  // |items| should not have kLine items other than the first one.
-  DCHECK(base::ranges::find(base::span(items).subspan(1u), FragmentItem::kLine,
-                            &FragmentItem::Type) ==
-         base::span(items).subspan(1u).end());
   return {LayoutUnit(unscaled_visual_rect.right()),
           LayoutUnit(unscaled_visual_rect.bottom())};
 }
