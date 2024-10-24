@@ -45,6 +45,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -218,7 +219,7 @@ class TouchToFillControllerAutofillTest
         std::make_unique<AcknowledgeGroupedCredentialSheetController>(
             std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
                 base::PassKey<class TouchToFillControllerAutofillTest>(),
-                std::move(mock_jni_bridge)));
+                std::move(mock_jni_bridge), window_android_.get()->get()));
     return std::make_unique<TouchToFillControllerAutofillDelegate>(
         base::PassKey<TouchToFillControllerAutofillTest>(), &client_,
         web_contents(), std::move(authenticator_),
@@ -290,6 +291,8 @@ class TouchToFillControllerAutofillTest
   raw_ptr<MockPasswordCredentialFiller> weak_filler_;
   password_manager::PasswordForm form_to_fill_;
   raw_ptr<MockAckGroupedCredentialJniDelegate> grouped_credential_sheet_bridge_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android_ = ui::WindowAndroid::CreateForTesting();
 };
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {

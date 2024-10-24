@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_GROUPED_AFFILIATIONS_ACKNOWLEDGE_GROUPED_CREDENTIAL_SHEET_BRIDGE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_GROUPED_AFFILIATIONS_ACKNOWLEDGE_GROUPED_CREDENTIAL_SHEET_BRIDGE_H_
 
+#include <jni.h>
+
 #include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "ui/gfx/native_widget_types.h"
@@ -30,10 +32,12 @@ class AcknowledgeGroupedCredentialSheetBridge {
   // Test constructors
   AcknowledgeGroupedCredentialSheetBridge(
       base::PassKey<class TouchToFillControllerAutofillTest>,
-      std::unique_ptr<JniDelegate> jni_delegate);
+      std::unique_ptr<JniDelegate> jni_delegate,
+      gfx::NativeWindow window);
   AcknowledgeGroupedCredentialSheetBridge(
       base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>,
-      std::unique_ptr<JniDelegate> jni_delegate);
+      std::unique_ptr<JniDelegate> jni_delegate,
+      gfx::NativeWindow window);
 
   AcknowledgeGroupedCredentialSheetBridge(
       const AcknowledgeGroupedCredentialSheetBridge&) = delete;
@@ -43,10 +47,12 @@ class AcknowledgeGroupedCredentialSheetBridge {
   ~AcknowledgeGroupedCredentialSheetBridge();
 
   void Show(base::OnceCallback<void(bool)> closure_callback);
+  void OnDismissed(JNIEnv* env, bool accepted);
 
  private:
   base::OnceCallback<void(bool)> closure_callback_;
   std::unique_ptr<JniDelegate> jni_delegate_;
+  const gfx::NativeWindow window_android_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_GROUPED_AFFILIATIONS_ACKNOWLEDGE_GROUPED_CREDENTIAL_SHEET_BRIDGE_H_

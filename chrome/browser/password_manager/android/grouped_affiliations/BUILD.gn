@@ -27,15 +27,30 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetController.java",
+    "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetView.java",
+  ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.grouped_affiliations"
+}
+
+android_resources("java_resources") {
+  deps = [ "//ui/android:ui_java_resources" ]
+  sources =
+      [ "java/res/layout/acknowledge_grouped_credential_sheet_content.xml" ]
 }
 
 source_set("unit_tests") {
@@ -44,5 +59,29 @@ source_set("unit_tests") {
   deps = [
     ":public",
     "//base/test:test_support",
+    "//ui/android:android",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.grouped_affiliations"
+
+  sources = [ "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetModuleTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

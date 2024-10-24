@@ -4,6 +4,9 @@
 
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 
+#include <jni.h>
+
+#include <algorithm>
 #include <memory>
 
 #include "base/android/jni_android.h"
@@ -26,10 +29,6 @@ class JniDelegateImpl : public JniDelegate {
 
   void Create(const gfx::NativeWindow window_android,
               AcknowledgeGroupedCredentialSheetBridge* bridge) override {
-    if (!window_android) {
-      return;
-    }
-
     java_bridge_.Reset(Java_AcknowledgeGroupedCredentialSheetBridge_Constructor(
         base::android::AttachCurrentThread(),
         reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
@@ -56,30 +55,43 @@ AcknowledgeGroupedCredentialSheetBridge::JniDelegate::~JniDelegate() = default;
 
 AcknowledgeGroupedCredentialSheetBridge::
     AcknowledgeGroupedCredentialSheetBridge(const gfx::NativeWindow window)
-    : jni_delegate_(std::make_unique<JniDelegateImpl>()) {
-  jni_delegate_->Create(window, this);
-}
+    : jni_delegate_(std::make_unique<JniDelegateImpl>()),
+      window_android_(window) {}
 
 AcknowledgeGroupedCredentialSheetBridge::
     AcknowledgeGroupedCredentialSheetBridge(
         base::PassKey<class TouchToFillControllerAutofillTest>,
-        std::unique_ptr<JniDelegate> jni_delegate)
-    : jni_delegate_(std::move(jni_delegate)) {}
+        std::unique_ptr<JniDelegate> jni_delegate,
+        const gfx::NativeWindow window)
+    : jni_delegate_(std::move(jni_delegate)), window_android_(window) {}
 
 AcknowledgeGroupedCredentialSheetBridge::
     AcknowledgeGroupedCredentialSheetBridge(
         base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>,
-        std::unique_ptr<JniDelegate> jni_delegate)
-    : jni_delegate_(std::move(jni_delegate)) {}
+        std::unique_ptr<JniDelegate> jni_delegate,
+        const gfx::NativeWindow window)
+    : jni_delegate_(std::move(jni_delegate)), window_android_(window) {}
 
 AcknowledgeGroupedCredentialSheetBridge::
     ~AcknowledgeGroupedCredentialSheetBridge() {
+  // If `Show` was never called, just return.
+  if (!closure_callback_) {
+    return;
+  }
   jni_delegate_->Dismiss();
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::Show(
     base::OnceCallback<void(bool)> closure_callback) {
+  if (!window_android_) {
+    return;
+  }
   closure_callback_ = std::move(closure_callback);
-
+  jni_delegate_->Create(window_android_, this);
   jni_delegate_->Show();
+}
+
+void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,
+                                                          bool accepted) {
+  std::move(closure_callback_).Run(accepted);
 }
