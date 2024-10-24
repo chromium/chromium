@@ -48,8 +48,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void SetChallengeForBoundSession(const GURL& request_url,
                                    const SessionChallengeParam& param) override;
 
-  const Session* GetSessionForTesting(const SchemefulSite& site,
-                                      const std::string& session_id) const;
+  Session* GetSessionForTesting(const SchemefulSite& site,
+                                const std::string& session_id) const;
 
  private:
   // The key is the site (eTLD+1) of the session's origin.
@@ -57,6 +57,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void OnRegistrationComplete(
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
+
+  // Get all the unexpired sessions for a given site. This also removes
+  // expired sessions for the site and extends the TTL of used sessions.
+  std::pair<SessionsMap::iterator, SessionsMap::iterator> GetSessionsForSite(
+      const SchemefulSite& site);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;

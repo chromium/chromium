@@ -186,5 +186,32 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   ASSERT_FALSE(session);
 }
 
+TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  Session* session =
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id);
+  ASSERT_TRUE(session);
+  session->set_expiry_date(base::Time::Now() + base::Days(1));
+
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  service().GetAnySessionRequiringDeferral(request.get());
+
+  EXPECT_GT(session->expiry_date(), base::Time::Now() + base::Days(399));
+}
+
 }  // namespace
 }  // namespace net::device_bound_sessions

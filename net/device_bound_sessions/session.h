@@ -78,6 +78,9 @@ class NET_EXPORT Session {
 
   void set_expiry_date(base::Time expiry_date) { expiry_date_ = expiry_date; }
 
+  // On use of a session, extend the TTL.
+  void RecordAccess();
+
  private:
   Session(Id id, url::Origin origin, GURL refresh);
   Session(Id id,

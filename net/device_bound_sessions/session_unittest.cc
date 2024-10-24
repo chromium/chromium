@@ -50,6 +50,12 @@ TEST_F(SessionTest, ValidService) {
   EXPECT_TRUE(session);
 }
 
+TEST_F(SessionTest, DefaultExpiry) {
+  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  ASSERT_TRUE(session);
+  EXPECT_LT(base::Time::Now() + base::Days(399), session->expiry_date());
+}
+
 TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "";
@@ -124,6 +130,14 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
   {
     proto::Session s(sproto);
     s.set_refresh_url("blank");
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+
+  // Expired
+  {
+    proto::Session s(sproto);
+    base::Time expiry_date = base::Time::Now() - base::Days(1);
+    s.set_expiry_time(expiry_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
     EXPECT_FALSE(Session::CreateFromProto(s));
   }
 }

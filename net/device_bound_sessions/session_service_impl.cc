@@ -49,10 +49,26 @@ void SessionServiceImpl::OnRegistrationComplete(
   // one that has the same SessionId.
 }
 
+std::pair<SessionServiceImpl::SessionsMap::iterator,
+          SessionServiceImpl::SessionsMap::iterator>
+SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
+  auto range = unpartitioned_sessions_.equal_range(site);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (base::Time::Now() >= it->second->expiry_date()) {
+      unpartitioned_sessions_.erase(it);
+      // TODO(crbug.com/353774923): Clear BFCache entries for this session.
+    } else {
+      it->second->RecordAccess();
+    }
+  }
+
+  return unpartitioned_sessions_.equal_range(site);
+}
+
 std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
     URLRequest* request) {
   SchemefulSite site(request->url());
-  auto range = unpartitioned_sessions_.equal_range(site);
+  auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->ShouldDeferRequest(request)) {
       return it->second->id();
@@ -82,7 +98,7 @@ void SessionServiceImpl::SetChallengeForBoundSession(
   }
 
   SchemefulSite site(request_url);
-  auto range = unpartitioned_sessions_.equal_range(site);
+  auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->id().value() == param.session_id()) {
       it->second->set_cached_challenge(param.challenge());
@@ -91,9 +107,11 @@ void SessionServiceImpl::SetChallengeForBoundSession(
   }
 }
 
-const Session* SessionServiceImpl::GetSessionForTesting(
+Session* SessionServiceImpl::GetSessionForTesting(
     const SchemefulSite& site,
     const std::string& session_id) const {
+  // Intentionally do not use `GetSessionsForSite` here so we do not
+  // modify the session during testing.
   auto range = unpartitioned_sessions_.equal_range(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->id().value() == session_id) {
