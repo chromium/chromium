@@ -475,6 +475,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kHTMLCanvasElement, WebDXFeature::kCanvasElement},
           {WebFeature::kCanvasUseColorSpace,
            WebDXFeature::kCanvasColorManagement},
+          {WebFeature::kCSSAtRuleStartingStyle, WebDXFeature::kStartingStyle},
       }};
 
   return *kMap;
