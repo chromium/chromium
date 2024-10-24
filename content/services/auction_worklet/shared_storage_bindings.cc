@@ -14,6 +14,7 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -142,9 +143,12 @@ void SharedStorageBindings::Set(
     return;
   }
 
-  bindings->shared_storage_host_->Set(
-      arg0_key, arg1_value, ignore_if_present.value_or(false),
-      bindings->source_auction_worklet_function_);
+  auto method = blink::mojom::SharedStorageModifierMethod::NewSetMethod(
+      blink::mojom::SharedStorageSetMethod::New(
+          arg0_key, arg1_value, ignore_if_present.value_or(false)));
+
+  bindings->shared_storage_host_->SharedStorageUpdate(
+      std::move(method), bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -187,8 +191,11 @@ void SharedStorageBindings::Append(
     return;
   }
 
-  bindings->shared_storage_host_->Append(
-      arg0_key, arg1_value, bindings->source_auction_worklet_function_);
+  auto method = blink::mojom::SharedStorageModifierMethod::NewAppendMethod(
+      blink::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
+
+  bindings->shared_storage_host_->SharedStorageUpdate(
+      std::move(method), bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -223,8 +230,11 @@ void SharedStorageBindings::Delete(
     return;
   }
 
-  bindings->shared_storage_host_->Delete(
-      arg0_key, bindings->source_auction_worklet_function_);
+  auto method = blink::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+      blink::mojom::SharedStorageDeleteMethod::New(arg0_key));
+
+  bindings->shared_storage_host_->SharedStorageUpdate(
+      std::move(method), bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -241,7 +251,10 @@ void SharedStorageBindings::Clear(
     return;
   }
 
-  bindings->shared_storage_host_->Clear(
-      bindings->source_auction_worklet_function_);
+  auto method = blink::mojom::SharedStorageModifierMethod::NewClearMethod(
+      blink::mojom::SharedStorageClearMethod::New());
+
+  bindings->shared_storage_host_->SharedStorageUpdate(
+      std::move(method), bindings->source_auction_worklet_function_);
 }
 }  // namespace auction_worklet

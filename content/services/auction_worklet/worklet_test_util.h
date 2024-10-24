@@ -80,18 +80,17 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
 // Receives shared storage mojom messages.
 class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
  public:
-  enum RequestType {
-    kSet,
-    kAppend,
-    kDelete,
-    kClear,
-  };
-
   struct Request {
-    RequestType type;
-    std::u16string key;
-    std::u16string value;
-    bool ignore_if_present;
+    Request(blink::mojom::SharedStorageModifierMethodPtr method,
+            mojom::AuctionWorkletFunction source_auction_worklet_function);
+    ~Request();
+
+    Request(const Request& other);
+    Request& operator=(const Request& other);
+    Request(Request&& other);
+    Request& operator=(Request&& other);
+
+    blink::mojom::SharedStorageModifierMethodPtr method;
     mojom::AuctionWorkletFunction source_auction_worklet_function;
 
     bool operator==(const Request& rhs) const;
@@ -102,23 +101,9 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
   ~TestAuctionSharedStorageHost() override;
 
   // mojom::AuctionSharedStorageHost:
-  void Set(
-      const std::u16string& key,
-      const std::u16string& value,
-      bool ignore_if_present,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Append(
-      const std::u16string& key,
-      const std::u16string& value,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Delete(
-      const std::u16string& key,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Clear(
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
+  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
+                           auction_worklet::mojom::AuctionWorkletFunction
+                               source_auction_worklet_function) override;
 
   const std::vector<Request>& observed_requests() const {
     return observed_requests_;
