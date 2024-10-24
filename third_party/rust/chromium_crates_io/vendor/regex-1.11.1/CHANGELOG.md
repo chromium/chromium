@@ -1,3 +1,15 @@
+1.11.1 (2024-10-24)
+===================
+This is a new patch release of `regex` that fixes compilation on nightly
+Rust when the unstable `pattern` crate feature is enabled. Users on nightly
+Rust without this feature enabled are unaffected.
+
+Bug fixes:
+
+* [BUG #1231](https://github.com/rust-lang/regex/issues/1231):
+Fix the `Pattern` trait implementation as a result of nightly API breakage.
+
+
 1.11.0 (2024-09-29)
 ===================
 This is a new minor release of `regex` that brings in an update to the

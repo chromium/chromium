@@ -209,7 +209,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."regex-syntax:0.8.5"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."regex:1.11.0"]
+[policy."regex:1.11.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."relative-path:1.9.3"]

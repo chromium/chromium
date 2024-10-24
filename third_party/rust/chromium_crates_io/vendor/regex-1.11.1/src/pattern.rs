@@ -1,4 +1,4 @@
-use core::str::pattern::{Pattern, SearchStep, Searcher};
+use core::str::pattern::{Pattern, SearchStep, Searcher, Utf8Pattern};
 
 use crate::{Matches, Regex};
 
@@ -20,6 +20,10 @@ impl<'r> Pattern for &'r Regex {
             last_step_end: 0,
             next_match: None,
         }
+    }
+
+    fn as_utf8_pattern<'p>(&'p self) -> Option<Utf8Pattern<'p>> {
+        None
     }
 }
 
