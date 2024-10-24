@@ -461,4 +461,10 @@ bool CookieSettings::IsStorageAccessHeadersEnabled(
              /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 
+bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  return ShouldAlwaysAllowCookies(url, first_party_url);
+}
+
 }  // namespace network

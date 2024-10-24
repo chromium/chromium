@@ -32,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace network {
 namespace {
@@ -48,6 +49,7 @@ constexpr char kAllowedRequestsHistogram[] =
 
 constexpr char kDomainURL[] = "http://example.com";
 constexpr char kURL[] = "http://foo.com";
+constexpr char kSecureSchemedURL[] = "https://foo.com";
 constexpr char kOtherURL[] = "http://other.com";
 constexpr char kSubDomainURL[] = "http://www.corp.example.com";
 constexpr char kDomain[] = "example.com";
@@ -58,6 +60,8 @@ constexpr char kDomainWildcardPattern[] = "[*.]example.com";
 constexpr char kRwsOwnerURL[] = "https://rws-owner.test";
 constexpr char kRwsMemberURL[] = "https://rws-member.test";
 constexpr char kUnrelatedURL[] = "http://unrelated.com";
+constexpr char kChromeScheme[] = "chrome";
+constexpr char kChromeSchemedURL[] = "chrome://new-tab-page/";
 
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
     const std::string& name,
@@ -466,6 +470,42 @@ TEST_F(CookieSettingsTest, GetCookieSettingBlockThirdParty) {
                                       GURL(kOtherURL),
                                       net::CookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(CookieSettingsTest, ShouldAlwaysAllowCookies) {
+  CookieSettings settings;
+  settings.set_secure_origin_cookies_allowed_schemes({kChromeScheme});
+  settings.set_block_third_party_cookies(false);
+  ASSERT_FALSE(settings.ShouldAlwaysAllowCookiesForTesting(
+      GURL(kURL), GURL(kChromeSchemedURL)));
+  ASSERT_TRUE(settings.ShouldAlwaysAllowCookiesForTesting(
+      GURL(kSecureSchemedURL), GURL(kChromeSchemedURL)));
+
+  settings.set_block_third_party_cookies(true);
+  EXPECT_FALSE(settings.ShouldAlwaysAllowCookiesForTesting(
+      GURL(kURL), GURL(kChromeSchemedURL)));
+  EXPECT_TRUE(settings.ShouldAlwaysAllowCookiesForTesting(
+      GURL(kSecureSchemedURL), GURL(kChromeSchemedURL)));
+}
+
+TEST_F(CookieSettingsTest, IsCookieAccessible_AlwaysAllowCookieNotAffected) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kChromeScheme, url::SCHEME_WITH_HOST);
+
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(false);
+  settings.set_secure_origin_cookies_allowed_schemes({kChromeScheme});
+  net::CookieInclusionStatus status;
+
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", kSecureSchemedURL);
+
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *cookie, GURL(kSecureSchemedURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kChromeSchemedURL)),
+      net::FirstPartySetMetadata(), net::CookieSettingOverrides(), &status));
+  EXPECT_FALSE(status.HasWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 TEST_P(CookieSettingsTestP,

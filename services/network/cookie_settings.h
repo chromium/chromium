@@ -163,6 +163,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       base::optional_ref<const url::Origin> top_frame_origin) const;
 
+  bool ShouldAlwaysAllowCookiesForTesting(const GURL& url,
+                                          const GURL& first_party_url) const;
+
  private:
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,

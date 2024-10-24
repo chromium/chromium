@@ -619,9 +619,6 @@ CookieSettingsBase::GetCookieSettingInternal(
     url = websocket_mapped_url;
   }
 
-  const bool is_third_party_request =
-      IsThirdPartyRequest(url, site_for_cookies);
-
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     if (info) {
@@ -632,8 +629,11 @@ CookieSettingsBase::GetCookieSettingInternal(
                                      /*is_explicit_setting=*/false,
                                      /*third_party_cookie_allow_mechanism=*/
                                      ThirdPartyCookieAllowMechanism::kNone,
-                                     is_third_party_request};
+                                     /*is_third_party_request=*/false};
   }
+
+  const bool is_third_party_request =
+      IsThirdPartyRequest(url, site_for_cookies);
 
   SettingInfo setting_info;
   ContentSetting cookie_setting = GetContentSetting(
