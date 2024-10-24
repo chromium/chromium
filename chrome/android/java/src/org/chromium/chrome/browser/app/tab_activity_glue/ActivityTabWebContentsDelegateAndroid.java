@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
@@ -509,5 +510,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Override
     protected boolean isModalContextMenu() {
         return !ContextMenuUtils.usePopupContextMenuForContext(mActivity);
+    }
+
+    @Override
+    protected boolean isDynamicSafeAreaInsetsEnabled() {
+        return EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
     }
 }

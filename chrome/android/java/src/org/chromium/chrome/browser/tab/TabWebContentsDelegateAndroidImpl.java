@@ -393,6 +393,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.isModalContextMenu();
     }
 
+    @CalledByNative
+    @Override
+    protected boolean isDynamicSafeAreaInsetsEnabled() {
+        return mDelegate.isDynamicSafeAreaInsetsEnabled();
+    }
+
     @Override
     public int getTopControlsHeight() {
         return mDelegate.getTopControlsHeight();
