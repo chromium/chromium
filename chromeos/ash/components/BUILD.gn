@@ -57,6 +57,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/proximity_auth:unit_tests",
     "//chromeos/ash/components/quick_start:unit_tests",
     "//chromeos/ash/components/report:unit_tests",
+    "//chromeos/ash/components/scalable_iph:unit_tests",
     "//chromeos/ash/components/settings:unit_tests",
     "//chromeos/ash/components/smbfs:unit_tests",
     "//chromeos/ash/components/sparky:unit_tests",

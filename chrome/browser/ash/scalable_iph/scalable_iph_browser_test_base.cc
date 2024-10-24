@@ -29,6 +29,7 @@
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -92,11 +93,14 @@ void ScalableIphBrowserTestBase::SetUp() {
   // `SetUpOnMainThread` below is too late to set a testing factory. Note that
   // `InProcessBrowserTest::SetUp` is called at the very early stage, e.g.
   // before command lines are set, etc.
+  MockTrackerFactoryMethod mock_tracker_factory_method =
+      GetMockTrackerFactoryMethod();
+  mock_tracker_enabled_ = !mock_tracker_factory_method.is_null();
   subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
               &ScalableIphBrowserTestBase::SetTestingFactories,
-              enable_mock_tracker_));
+              mock_tracker_factory_method));
 
   CustomizableTestEnvBrowserTestBase::SetUp();
 }
@@ -179,20 +183,12 @@ void ScalableIphBrowserTestBase::SetUpMocks() {
          "at a login time. We check the behavior by confirming creation of a "
          "delegate.";
 
-  if (enable_mock_tracker_) {
+  if (mock_tracker_enabled_) {
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForBrowserContext(profile));
     CHECK(mock_tracker_)
         << "mock_tracker_ must be non-nullptr. GetForBrowserContext should "
            "create one via CreateMockTracker if it does not exist.";
-
-    ON_CALL(*mock_tracker_, AddOnInitializedCallback)
-        .WillByDefault(
-            [](feature_engagement::Tracker::OnInitializedCallback callback) {
-              std::move(callback).Run(true);
-            });
-
-    ON_CALL(*mock_tracker_, IsInitialized).WillByDefault(testing::Return(true));
   }
 
   // The static cast is necessary to access the delegate functions declared in
@@ -429,12 +425,12 @@ void ScalableIphBrowserTestBase::AddOnlineNetwork() {
 
 // static
 void ScalableIphBrowserTestBase::SetTestingFactories(
-    bool enable_mock_tracker,
+    ScalableIphBrowserTestBase::MockTrackerFactoryMethod
+        mock_tracker_factory_method,
     content::BrowserContext* browser_context) {
-  if (enable_mock_tracker) {
+  if (!mock_tracker_factory_method.is_null()) {
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-        browser_context,
-        base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockTracker));
+        browser_context, mock_tracker_factory_method);
   }
 
   // The static cast is necessary to access the delegate functions declared in
@@ -455,10 +451,29 @@ void ScalableIphBrowserTestBase::SetTestingFactories(
       base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockDelegate));
 }
 
+ScalableIphBrowserTestBase::MockTrackerFactoryMethod
+ScalableIphBrowserTestBase::GetMockTrackerFactoryMethod() {
+  return base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockTracker);
+}
+
+// static
+std::unique_ptr<feature_engagement::test::MockTracker>
+ScalableIphBrowserTestBase::SetUpFakeInitializationCalls(
+    std::unique_ptr<feature_engagement::test::MockTracker> mock_tracker) {
+  ON_CALL(*mock_tracker, AddOnInitializedCallback)
+      .WillByDefault(
+          [](feature_engagement::Tracker::OnInitializedCallback callback) {
+            std::move(callback).Run(true);
+          });
+  ON_CALL(*mock_tracker, IsInitialized).WillByDefault(testing::Return(true));
+  return mock_tracker;
+}
+
 // static
 std::unique_ptr<KeyedService> ScalableIphBrowserTestBase::CreateMockTracker(
     content::BrowserContext* browser_context) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
+  return SetUpFakeInitializationCalls(
+      std::make_unique<feature_engagement::test::MockTracker>());
 }
 
 // static

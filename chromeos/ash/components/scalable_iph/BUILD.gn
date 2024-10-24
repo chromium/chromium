@@ -98,3 +98,15 @@ buildflag_header("buildflags") {
 
   flags = [ "ENABLE_CROS_SCALABLE_IPH=$enable_cros_scalable_iph" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "scalable_iph_unittest.cc" ]
+
+  deps = [
+    ":scalable_iph",
+    ":scalable_iph_delegate",
+    "//testing/gtest",
+  ]
+}

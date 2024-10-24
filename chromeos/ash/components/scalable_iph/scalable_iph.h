@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -103,6 +104,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) ScalableIph
     kGameWindowOpened,
   };
 
+  enum SessionStateTransition {
+    // The state machine expects that it advances its state to the new state. In
+    // practice, this means that we update `session_state_` in `ScalableIph`
+    // instance.
+    kAdvanceState,
+    // Observe this session state transition as unlocked event. Note that
+    // unlocked event includes a session start in `ScalableIph`.
+    kUnlock
+  };
+
+  using TransitionSet = base::EnumSet<SessionStateTransition,
+                                      SessionStateTransition::kAdvanceState,
+                                      SessionStateTransition::kUnlock>;
+
   // Returns true if any iph feature flag is enabled. Otherwise false.
   static bool IsAnyIphFeatureEnabled();
 
@@ -174,6 +189,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) ScalableIph
 
   static const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
   GetFeatureListConstantForTesting();
+
+  static TransitionSet GetTransitionForTesting(
+      ScalableIphDelegate::SessionState from,
+      ScalableIphDelegate::SessionState to);
 
  private:
   void EnsureTimerStarted();
