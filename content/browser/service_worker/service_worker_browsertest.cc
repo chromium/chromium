@@ -212,8 +212,9 @@ class WorkerClientDestroyedObserver : public ServiceWorkerContextCoreObserver {
 
 std::unique_ptr<net::test_server::HttpResponse> VerifySaveDataHeaderInRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != "/service_worker/generated_sw.js")
+  if (request.relative_url != "/service_worker/generated_sw.js") {
     return nullptr;
+  }
   auto it = request.headers.find("Save-Data");
   EXPECT_NE(request.headers.end(), it);
   EXPECT_EQ("on", it->second);
@@ -265,22 +266,24 @@ void CountScriptResources(ServiceWorkerContextWrapper* wrapper,
 
   std::vector<ServiceWorkerRegistrationInfo> infos =
       wrapper->GetAllLiveRegistrationInfo();
-  if (infos.empty())
+  if (infos.empty()) {
     return;
+  }
 
   int version_id;
   size_t index = infos.size() - 1;
   if (infos[index].installing_version.version_id !=
-      blink::mojom::kInvalidServiceWorkerVersionId)
+      blink::mojom::kInvalidServiceWorkerVersionId) {
     version_id = infos[index].installing_version.version_id;
-  else if (infos[index].waiting_version.version_id !=
-           blink::mojom::kInvalidServiceWorkerVersionId)
+  } else if (infos[index].waiting_version.version_id !=
+             blink::mojom::kInvalidServiceWorkerVersionId) {
     version_id = infos[1].waiting_version.version_id;
-  else if (infos[index].active_version.version_id !=
-           blink::mojom::kInvalidServiceWorkerVersionId)
+  } else if (infos[index].active_version.version_id !=
+             blink::mojom::kInvalidServiceWorkerVersionId) {
     version_id = infos[index].active_version.version_id;
-  else
+  } else {
     return;
+  }
 
   ServiceWorkerVersion* version = wrapper->GetLiveVersion(version_id);
   *num_resources = static_cast<int>(version->script_cache_map()->size());
@@ -289,8 +292,9 @@ void CountScriptResources(ServiceWorkerContextWrapper* wrapper,
 void StoreString(std::string* result,
                  base::OnceClosure callback,
                  base::Value value) {
-  if (result && value.is_string())
+  if (result && value.is_string()) {
     *result = value.GetString();
+  }
   std::move(callback).Run();
 }
 
@@ -343,8 +347,9 @@ bool CheckHeader(const base::Value::Dict& dict,
       return false;
     }
 
-    if (*name == header_name && *value == header_value)
+    if (*name == header_name && *value == header_value) {
       return true;
+    }
   }
   return false;
 }
@@ -372,8 +377,9 @@ bool HasHeader(const base::Value::Dict& dict, std::string_view header_name) {
       return false;
     }
 
-    if (*name == header_name)
+    if (*name == header_name) {
       return true;
+    }
   }
   return false;
 }
@@ -459,8 +465,9 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
             [&](blink::ServiceWorkerStatusCode find_status,
                 scoped_refptr<ServiceWorkerRegistration> registration) {
               status = find_status;
-              if (!registration.get())
+              if (!registration.get()) {
                 EXPECT_NE(blink::ServiceWorkerStatusCode::kOk, status);
+              }
               loop.Quit();
             }));
     loop.Run();
@@ -511,8 +518,9 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
   int64_t version_id() { return version_id_; }
 
   void WaitUntilRunning() {
-    if (version_id_ == blink::mojom::kInvalidServiceWorkerVersionId)
+    if (version_id_ == blink::mojom::kInvalidServiceWorkerVersionId) {
       run_loop_.Run();
+    }
   }
 
   void OnVersionStartedRunning(
@@ -520,8 +528,9 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
       const ServiceWorkerRunningInfo& running_info) override {
     version_id_ = version_id;
 
-    if (run_loop_.running())
+    if (run_loop_.running()) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -578,8 +587,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, RequestOrigin) {
                     cross_origin_server.base_url());
           expected_request_urls.erase(it);
         }
-        if (expected_request_urls.empty())
+        if (expected_request_urls.empty()) {
           request_origin_expectation_waiter.Quit();
+        }
         return false;
       }));
 
@@ -844,8 +854,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
         // Note this callback runs on a background thread.
-        if (request.relative_url != kWorkerUrl)
+        if (request.relative_url != kWorkerUrl) {
           return nullptr;
+        }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
         response->set_content_type("text/javascript");
@@ -1228,8 +1239,9 @@ IN_PROC_BROWSER_TEST_F(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   URLLoaderInterceptor service_worker_loader(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         auto it = expected_request_urls.find(params->url_request.url);
-        if (it == expected_request_urls.end())
+        if (it == expected_request_urls.end()) {
           return false;
+        }
 
         std::string path = "content/test/data/service_worker";
         path.append(std::string(params->url_request.url.path_piece()));
@@ -1247,10 +1259,12 @@ IN_PROC_BROWSER_TEST_F(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
             path, params->client.get(), &headers, std::optional<net::SSLInfo>(),
             params->url_request.url);
 
-        if (--it->second == 0)
+        if (--it->second == 0) {
           expected_request_urls.erase(it);
-        if (expected_request_urls.empty())
+        }
+        if (expected_request_urls.empty()) {
           run_loop.Quit();
+        }
         return true;
       }));
 
@@ -1427,8 +1441,9 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
   int GetRequestCount(const std::string& relative_url) const {
     const auto& it = request_log_.find(relative_url);
-    if (it == request_log_.end())
+    if (it == request_log_.end()) {
       return 0;
+    }
     return it->second.size();
   }
 
@@ -1480,8 +1495,9 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
       const std::string& content_type,
       const net::test_server::HttpRequest& request) const {
     const size_t query_position = request.relative_url.find('?');
-    if (request.relative_url.substr(0, query_position) != relative_url)
+    if (request.relative_url.substr(0, query_position) != relative_url) {
       return nullptr;
+    }
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         std::make_unique<net::test_server::BasicHttpResponse>());
     http_response->set_code(net::HTTP_OK);
@@ -1498,8 +1514,9 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
       const std::string& content,
       const net::test_server::HttpRequest& request) const {
     const size_t query_position = request.relative_url.find('?');
-    if (request.relative_url.substr(0, query_position) != relative_url)
+    if (request.relative_url.substr(0, query_position) != relative_url) {
       return nullptr;
+    }
     return std::make_unique<CustomResponse>(code, reason, headers, content);
   }
 
@@ -1508,8 +1525,9 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
       const std::string& redirect_location,
       const net::test_server::HttpRequest& request) const {
     const size_t query_position = request.relative_url.find('?');
-    if (request.relative_url.substr(0, query_position) != relative_url)
+    if (request.relative_url.substr(0, query_position) != relative_url) {
       return nullptr;
+    }
     std::unique_ptr<net::test_server::BasicHttpResponse> response(
         new net::test_server::BasicHttpResponse());
     response->set_code(net::HTTP_PERMANENT_REDIRECT);
@@ -1616,8 +1634,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest, NetworkFallback) {
   int fallback_count = 0;
   const auto& requests = request_log_[kPageUrl];
   for (int i = 0; i < request_count; i++) {
-    if (!HasNavigationPreloadHeader(requests[i]))
+    if (!HasNavigationPreloadHeader(requests[i])) {
       fallback_count++;
+    }
   }
   EXPECT_GT(fallback_count, 0);
 }
@@ -2679,15 +2698,17 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
 
   void WaitUntilSideDataSizeIs(int expected_size) {
     while (true) {
-      if (GetSideDataSize() == expected_size)
+      if (GetSideDataSize() == expected_size) {
         return;
+      }
     }
   }
 
   void WaitUntilSideDataSizeIsBiggerThan(int minimum_size) {
     while (true) {
-      if (GetSideDataSize() > minimum_size)
+      if (GetSideDataSize() > minimum_size) {
         return;
+      }
     }
   }
 
@@ -3294,8 +3315,9 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
       ~Inner() override = default;
       void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
                             delegate) override {
-        if (owner_)
+        if (owner_) {
           owner_->SendResponse(delegate);
+        }
       }
 
      private:
@@ -3340,8 +3362,9 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
     void StopBlockingOnTaskRunner() {
       DCHECK(task_runner_->RunsTasksInCurrentSequence());
       should_block_ = false;
-      if (!blocking_)
+      if (!blocking_) {
         return;
+      }
       blocking_ = false;
       CompleteResponseOnTaskRunner();
     }
@@ -3515,15 +3538,19 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   bool is_in_process =
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
-  if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
+  if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated()) {
     EXPECT_TRUE(is_in_process);
-  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated())
+  }
+  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
     EXPECT_FALSE(is_in_process);
+  }
 
-  if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
+  if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated()) {
     EXPECT_FALSE(is_in_process);
-  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated())
+  }
+  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
     EXPECT_TRUE(is_in_process);
+  }
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
@@ -6661,8 +6688,6 @@ class ServiceWorkerAutoPreloadOptOutBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kServiceWorkerAutoPreload, {{"strategy", "optin"}}},
-            {blink::features::kServiceWorkerStaticRouterNotConditionEnabled,
-             {}},
         },
         {});
   }
@@ -6822,10 +6847,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
   };
 
   ServiceWorkerStaticRouterBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kServiceWorkerStaticRouter,
-         blink::features::kServiceWorkerStaticRouterNotConditionEnabled},
-        {});
+    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
   }
   ~ServiceWorkerStaticRouterBrowserTest() override = default;
 
@@ -7492,8 +7514,7 @@ class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest
  public:
   ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kServiceWorkerStaticRouter,
-         blink::features::kServiceWorkerStaticRouterNotConditionEnabled},
+        {features::kServiceWorkerStaticRouter},
         {features::kServiceWorkerStaticRouterStartServiceWorker});
   }
   ~ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() override =
@@ -7532,9 +7553,7 @@ class ServiceWorkerStaticRouterOriginTrialBrowserTest
   ServiceWorkerStaticRouterOriginTrialBrowserTest() {
     // Explicitly disable the feature to ensure the feature is enabled by the
     // Origin Trial token.
-    feature_list_.InitWithFeatures(
-        {blink::features::kServiceWorkerStaticRouterNotConditionEnabled},
-        {features::kServiceWorkerStaticRouter});
+    feature_list_.InitWithFeatures({}, {features::kServiceWorkerStaticRouter});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

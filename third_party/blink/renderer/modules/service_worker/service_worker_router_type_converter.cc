@@ -226,11 +226,6 @@ std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
   }
   std::optional<ServiceWorkerRouterNotCondition> not_condition;
   if (v8_condition->hasNotCondition()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kServiceWorkerStaticRouterNotConditionEnabled)) {
-      exception_state.ThrowTypeError("The 'not' condition is not enabled.");
-      return std::nullopt;
-    }
     // Not checking here for the `not` is actually exclusive.
     not_condition = RouterNotConditionToBlink(
         isolate, v8_condition, url_pattern_base_url, exception_state);
