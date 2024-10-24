@@ -72,7 +72,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
                 profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
@@ -109,7 +109,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
             profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }

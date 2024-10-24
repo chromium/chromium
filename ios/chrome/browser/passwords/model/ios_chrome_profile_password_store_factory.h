@@ -21,9 +21,6 @@ class PasswordStoreInterface;
 class IOSChromeProfilePasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetForBrowserState(ProfileIOS* profile, ServiceAccessType access_type);
-
   static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       ProfileIOS* profile,
       ServiceAccessType access_type);

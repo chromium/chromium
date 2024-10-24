@@ -52,14 +52,6 @@ GetWipeModelUponSyncDisabledBehaviorForProfileStore() {
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
-IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
-
-// static
-scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeProfilePasswordStoreFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {

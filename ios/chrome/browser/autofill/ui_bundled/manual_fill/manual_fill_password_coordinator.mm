@@ -68,7 +68,7 @@
     syncer::SyncService* syncService =
         SyncServiceFactory::GetForProfile(profile);
     auto profilePasswordStore =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
         IOSChromeAccountPasswordStoreFactory::GetForProfile(

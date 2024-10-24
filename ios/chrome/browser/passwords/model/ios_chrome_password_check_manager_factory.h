@@ -16,10 +16,6 @@ class ProfileIOS;
 class IOSChromePasswordCheckManagerFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static scoped_refptr<IOSChromePasswordCheckManager> GetForBrowserState(
-      ProfileIOS* profile);
-
   static scoped_refptr<IOSChromePasswordCheckManager> GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordCheckManagerFactory* GetInstance();

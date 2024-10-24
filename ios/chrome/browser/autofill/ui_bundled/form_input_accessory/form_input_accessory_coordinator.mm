@@ -196,7 +196,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
   DCHECK(self.profile);
   auto profilePasswordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForProfile(

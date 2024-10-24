@@ -20,10 +20,6 @@ namespace ios {
 // profiles.
 class TopSitesFactory : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static scoped_refptr<history::TopSites> GetForBrowserState(
-      ProfileIOS* profile);
-
   static scoped_refptr<history::TopSites> GetForProfile(ProfileIOS* profile);
   static TopSitesFactory* GetInstance();
 

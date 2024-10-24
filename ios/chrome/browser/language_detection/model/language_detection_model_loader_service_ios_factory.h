@@ -23,10 +23,6 @@ class LanguageDetectionModelLoaderServiceIOS;
 class LanguageDetectionModelLoaderServiceIOSFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static language_detection::LanguageDetectionModelLoaderServiceIOS*
-  GetForBrowserState(ProfileIOS* profile);
-
   static language_detection::LanguageDetectionModelLoaderServiceIOS*
   GetForProfile(ProfileIOS* profile);
 
