@@ -57,6 +57,9 @@ namespace exo {
 // Occluded surfaces can be detected and not emitted as a quad in the
 // corresponding compositor frame.
 BASE_DECLARE_FEATURE(kExoPerSurfaceOcclusion);
+// TODO(crbug.com/369003507): Remove this feature flag once we found the root
+// cause of crash on specific hatch platform.
+BASE_DECLARE_FEATURE(kDisableNonYUVOverlaysFromExo);
 
 class Buffer;
 class SecurityDelegate;
