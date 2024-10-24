@@ -1,0 +1,5 @@
+[
+  {
+    "reason_for_missing_test": "TODO(375240486): Add browser tests once policy handler is implemented"
+  }
+]
