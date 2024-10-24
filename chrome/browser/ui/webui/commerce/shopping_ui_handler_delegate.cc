@@ -69,7 +69,7 @@ void ShoppingUiHandlerDelegate::ShowInsightsSidePanelUI() {
 
 const bookmarks::BookmarkNode*
 ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return nullptr;
   }
@@ -98,7 +98,7 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
 }
 
 void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -112,7 +112,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   }
   auto* browser = chrome::FindBrowserWithActiveWindow();
   if (!browser) {
-    browser = chrome::FindLastActive();
+    browser = chrome::FindLastActiveWithProfile(profile_);
   }
   if (!browser) {
     return;
@@ -131,7 +131,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
 }
 
 void ShoppingUiHandlerDelegate::ShowFeedbackForPriceInsights() {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -147,7 +147,7 @@ void ShoppingUiHandlerDelegate::ShowFeedbackForPriceInsights() {
 
 void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
     const std::string& log_id) {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -169,7 +169,7 @@ void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {
   if (!current_url.has_value()) {
     return;
   }
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -220,7 +220,7 @@ void ShoppingUiHandlerDelegate::ShowProductSpecificationsSetForUuid(
   if (in_new_tab) {
     OpenUrlInNewTab(product_spec_url);
   } else {
-    auto* browser = chrome::FindLastActive();
+    auto* browser = chrome::FindLastActiveWithProfile(profile_);
     if (!browser) {
       return;
     }
