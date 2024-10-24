@@ -223,13 +223,6 @@ BASE_FEATURE(kOverviewSessionInitOptimizations,
              "OverviewSessionInitOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/345010938): Remove after migrating feature management flag.
-// Feature management flag used to gate preinstallation of the container app.
-// This flag is meant to be enabled by the feature management module.
-BASE_FEATURE(kFeatureManagementContainerAppPreinstall,
-             "FeatureManagementContainerAppPreinstall",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature management flag used to gate preinstallation of the Gemini app. This
 // flag is meant to be enabled by the feature management module.
 BASE_FEATURE(kFeatureManagementGeminiAppPreinstall,
@@ -424,9 +417,7 @@ bool IsFileSystemProviderContentCacheEnabled() {
 }
 
 bool IsGeminiAppPreinstallFeatureManagementEnabled() {
-  return base::FeatureList::IsEnabled(
-             kFeatureManagementContainerAppPreinstall) ||
-         base::FeatureList::IsEnabled(kFeatureManagementGeminiAppPreinstall);
+  return base::FeatureList::IsEnabled(kFeatureManagementGeminiAppPreinstall);
 }
 
 bool IsGeminiAppPreinstallEnabled() {
