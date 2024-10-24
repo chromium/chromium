@@ -70,7 +70,7 @@ public class MismatchNotificationControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mMismatchNotificationController.showSignedOutMessage(
-                                mActivityTestRule.getActivity()));
+                                mActivityTestRule.getActivity(), closeType -> {}));
 
         // Verify that the message is displayed
         onView(withText(R.string.custom_tabs_signed_out_message_title))
@@ -87,7 +87,7 @@ public class MismatchNotificationControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mMismatchNotificationController.showSignedOutMessage(
-                                mActivityTestRule.getActivity()));
+                                mActivityTestRule.getActivity(), closeType -> {}));
 
         // Click the primary button.
         onView(withText(R.string.custom_tabs_signed_out_message_button)).perform(click());

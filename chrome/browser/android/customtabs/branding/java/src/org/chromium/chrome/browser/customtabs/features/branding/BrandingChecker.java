@@ -74,12 +74,19 @@ class BrandingChecker extends AsyncTask<Integer> {
     private BrandingLaunchTimeStorage mStorage;
 
     /**
+     * Cached version of the storage value. Shared with account mismatch logic. This gets updated
+     * once #onTaskFinished is invoked.
+     */
+    private long mLastShowTime;
+
+    /**
      * Create a BrandingChecker used to fetch BrandingDecision.
+     *
      * @param appId ID of Embedded app.
      * @param storage Storage option that used to retrieve branding information.
      * @param brandingCheckCallback Callback that will executed when branding check is complete.
      * @param brandingCadence The minimum time required to show another branding, to avoid overflow
-     *                        clients with branding info.
+     *     clients with branding info.
      * @param defaultBrandingDecision Default branding decision when task is canceled.
      */
     BrandingChecker(
@@ -93,6 +100,7 @@ class BrandingChecker extends AsyncTask<Integer> {
         mBrandingCheckCallback = brandingCheckCallback;
         mBrandingCadence = brandingCadence;
         mDefaultBrandingDecision = defaultBrandingDecision;
+        mLastShowTime = BRANDING_TIME_NOT_FOUND;
     }
 
     @WorkerThread
@@ -101,8 +109,8 @@ class BrandingChecker extends AsyncTask<Integer> {
         @BrandingDecision Integer brandingDecision = null;
         long startTime = SystemClock.elapsedRealtime();
         if (!TextUtils.isEmpty(mAppId)) {
-            long timeLastBranding = mStorage.get(mAppId);
-            brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, timeLastBranding);
+            mLastShowTime = mStorage.get(mAppId);
+            brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, mLastShowTime);
         }
         @BrandingAppIdType int appIdType = getAppIdType(mAppId);
         RecordHistogram.recordTimesHistogram(
@@ -158,5 +166,9 @@ class BrandingChecker extends AsyncTask<Integer> {
 
         // Remove the storage from reference.
         mStorage = null;
+    }
+
+    long getLastShowTime() {
+        return mLastShowTime;
     }
 }
