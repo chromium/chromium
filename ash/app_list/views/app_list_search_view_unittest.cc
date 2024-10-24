@@ -873,8 +873,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
                 u"Websites including pages you've visited and open pages");
 }
 
-// Verify that kCheckedState is updated in cache for checkboxmenuitemview
-TEST_P(SearchResultImageViewTest, AccessibleCheckedState) {
+TEST_P(SearchResultImageViewTest, AccessibleProperties) {
   GetAppListTestHelper()->ShowAppList();
   auto* app_list_client = GetAppListTestHelper()->app_list_client();
 
@@ -893,6 +892,8 @@ TEST_P(SearchResultImageViewTest, AccessibleCheckedState) {
           AppListSearchControlCategory::kApps);
   checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            1);
 
   // Execute command to disable category.
   LeftClickOn(checkbox_menu_item_view);

@@ -302,20 +302,16 @@ class CheckBoxMenuItemView : public views::MenuItemView {
         view_delegate_(view_delegate) {
     // Set the role of the toggleable menu items to checkbox.
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemCheckBox);
+    // The title of the menu is not focusable but included in the position
+    // counting. Explicitly set the hierarchical level of the toggleable menu
+    // items to exclude the title.
+    GetViewAccessibility().SetHierarchicalLevel(1);
   }
 
   CheckBoxMenuItemView(const CheckBoxMenuItemView&) = delete;
   CheckBoxMenuItemView& operator=(const CheckBoxMenuItemView&) = delete;
 
   ~CheckBoxMenuItemView() override = default;
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::MenuItemView::GetAccessibleNodeData(node_data);
-    // The title of the menu is not focusable but included in the position
-    // counting. Explicitly set the hierarchical level of the toggleable menu
-    // items to exclude the title.
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
-  }
 
   void UpdateAccessibleCheckedState() override {
     bool category_enabled = view_delegate_->IsCategoryEnabled(
