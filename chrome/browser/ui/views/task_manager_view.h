@@ -20,6 +20,8 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/table/table_grouper.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -34,9 +36,12 @@ class View;
 
 namespace task_manager {
 
+enum class FilterCategory : uint8_t { kTabs = 0, kExtensions = 1, kSystem = 2 };
+
 // The new task manager UI container.
 class TaskManagerView : public TableViewDelegate,
                         public views::DialogDelegateView,
+                        public views::TabbedPaneListener,
                         public views::TableGrouper,
                         public views::TableViewObserver,
                         public views::ContextMenuController,
@@ -44,9 +49,17 @@ class TaskManagerView : public TableViewDelegate,
   METADATA_HEADER(TaskManagerView, views::DialogDelegateView)
 
  public:
+  struct FilterTab {
+    int title_id;
+    FilterCategory associated_category;
+  };
+
   TaskManagerView(const TaskManagerView&) = delete;
   TaskManagerView& operator=(const TaskManagerView&) = delete;
   ~TaskManagerView() override;
+
+  static constexpr size_t kTaskManagerHeaderWidth = 250;
+  static constexpr size_t kTaskManagerHeaderHeight = 32;
 
   // Shows the Task Manager window, or re-activates an existing one.
   static task_manager::TaskManagerTableModel* Show(Browser* browser);
@@ -108,7 +121,12 @@ class TaskManagerView : public TableViewDelegate,
   // Creates the header for the view.
   void CreateHeader(const ChromeLayoutProvider* provider);
 
+  // Requests that the sorted_task_ids_ returned by TaskManagerTableModel are
+  // filtered by a FilterCategory.
+  void PerformFilter(FilterCategory category);
+
   // Creates all corresponding subcomponents for the header.
+  std::unique_ptr<views::View> CreateTabbedPane();
   std::unique_ptr<views::Textfield> CreateSearchBar(const gfx::Insets& margins);
   std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
       const gfx::Insets& margins);
@@ -136,6 +154,9 @@ class TaskManagerView : public TableViewDelegate,
   void EndSelectedProcess();
   bool IsEndProcessButtonEnabled() const;
 
+  // views::TabbedPaneListener:
+  void TabSelectedAt(int index) override;
+
   std::unique_ptr<TaskManagerTableModel> table_model_;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
@@ -159,6 +180,9 @@ class TaskManagerView : public TableViewDelegate,
 
   // True when the Task Manager window should be shown on top of other windows.
   bool is_always_on_top_;
+
+  // An array of FilterTabs, populated when CreateTabbedPane() is called.
+  base::WeakPtrFactory<TaskManagerView> weak_factory_{this};
 };
 
 }  // namespace task_manager

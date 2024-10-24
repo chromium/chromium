@@ -81,6 +81,20 @@ TaskManagerView* g_task_manager_view = nullptr;
 
 }  // namespace
 
+constexpr auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
+    {{
+         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_NAME,
+         .associated_category = FilterCategory::kTabs,
+     },
+     {
+         .title_id = IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME,
+         .associated_category = FilterCategory::kExtensions,
+     },
+     {
+         .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
+         .associated_category = FilterCategory::kSystem,
+     }});
+
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
   RemoveAllChildViews();
@@ -347,11 +361,39 @@ TaskManagerView* TaskManagerView::GetInstanceForTests() {
   return g_task_manager_view;
 }
 
+void TaskManagerView::PerformFilter(FilterCategory category) {
+  // TODO(https://crbug.com/373928508):
+  // Send a request to the Table Model to update the displayed rows.
+}
+
+void TaskManagerView::TabSelectedAt(int index) {
+  PerformFilter(kTabDefinitions[index].associated_category);
+}
+
+std::unique_ptr<views::View> TaskManagerView::CreateTabbedPane() {
+  auto tabs = std::make_unique<views::TabbedPane>();
+  tabs->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  tabs->SetPreferredSize(
+      gfx::Size(kTaskManagerHeaderWidth, kTaskManagerHeaderHeight));
+  tabs->SetProperty(views::kFlexBehaviorKey,
+                    views::FlexSpecification(
+                        views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+                        views::MaximumFlexSizeRule::kPreferred));
+
+  for (const auto& tab : kTabDefinitions) {
+    tabs->AddTab(l10n_util::GetStringUTF16(tab.title_id),
+                 std::make_unique<views::View>());
+  }
+  tabs->set_listener(this);
+
+  return tabs;
+}
+
 void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
   // Header Parent
   auto header_layout = std::make_unique<views::BoxLayout>();
   header_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kStart);
+  header_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
 
   auto container = std::make_unique<views::View>();
 
@@ -361,6 +403,8 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
       DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
   const int separator_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+
+  auto tabs = CreateTabbedPane();
 
   // Empty Container, Search Bar, End Task Button, and Separator
   auto empty_view = std::make_unique<views::View>();
@@ -372,13 +416,15 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
       CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
 
   // Allow empty spacing and the search bar to flex freely.
+  header_layout->SetFlexForView(tabs.get(), 1);
   header_layout->SetFlexForView(empty_view.get(), 1);
-  header_layout->SetFlexForView(search_bar.get(), 1);
+  header_layout->SetFlexForView(search_bar.get(), 3);
 
   // Set the layout manager for the parent container to BoxLayout.
   container->SetLayoutManager(std::move(header_layout));
 
   // Compose all parts into header.
+  container->AddChildView(std::move(tabs));
   container->AddChildView(std::move(empty_view));
   container->AddChildView(std::move(search_bar));
   end_process_btn_ = container->AddChildView(std::move(end_process_btn));
