@@ -581,6 +581,10 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
       base::RecordAction(
           base::UserMetricsAction("PageInfo.History.ShowFullHistoryClicked"));
       break;
+    case page_info::PAGE_INFO_SAFE_BROWSING_HELP_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.SafeBrowsing.HelpOpened"));
+      break;
   }
 }
 
@@ -854,6 +858,15 @@ void PageInfo::OpenConnectionHelpCenterPage(const ui::Event& event) {
 #else
   RecordPageInfoAction(page_info::PAGE_INFO_CONNECTION_HELP_OPENED);
   delegate_->OpenConnectionHelpCenterPage(event);
+#endif
+}
+
+void PageInfo::OpenSafeBrowsingHelpCenterPage(const ui::Event& event) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED_IN_MIGRATION();
+#else
+  RecordPageInfoAction(page_info::PAGE_INFO_SAFE_BROWSING_HELP_OPENED);
+  delegate_->OpenSafeBrowsingHelpCenterPage(event);
 #endif
 }
 

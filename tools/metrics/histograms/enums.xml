@@ -33697,6 +33697,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="34" label="Cookies settings opened"/>
   <int value="35" label="'All sites' settings opened with a filter for FPS"/>
   <int value="36" label="Show full history clicked in Last Visited"/>
+  <int value="37" label="Safe Browsing help opened"/>
 </enum>
 
 <!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->
