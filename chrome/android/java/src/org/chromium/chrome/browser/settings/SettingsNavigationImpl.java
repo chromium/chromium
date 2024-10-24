@@ -147,4 +147,9 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             ((SettingsActivity) activity).finishCurrentSettings(fragment);
         }
     }
+
+    @Override
+    public void executePendingNavigations(Activity activity) {
+        ((SettingsActivity) activity).executePendingNavigations();
+    }
 }

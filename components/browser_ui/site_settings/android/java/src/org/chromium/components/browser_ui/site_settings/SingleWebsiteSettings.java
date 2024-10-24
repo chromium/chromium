@@ -1304,9 +1304,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             // Save the paused fragment before finishing the current fragment as it may cause the
             // paused fragment to resume.
             GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
-            getSettingsNavigation().finishCurrentSettings(this);
-            if (mFromGrouped && groupFragment != null) {
-                getSettingsNavigation().finishCurrentSettings(groupFragment);
+            Activity activity = getActivity();
+            if (activity != null) {
+                getSettingsNavigation().finishCurrentSettings(this);
+                if (mFromGrouped && groupFragment != null) {
+                    getSettingsNavigation().executePendingNavigations(activity);
+                    getSettingsNavigation().finishCurrentSettings(groupFragment);
+                }
             }
         }
     }
@@ -1392,9 +1396,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             // Save the paused fragment before finishing the current fragment as it may cause the
             // paused fragment to resume.
             GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
-            getSettingsNavigation().finishCurrentSettings(this);
-            if (mFromGrouped && groupFragment != null) {
-                getSettingsNavigation().finishCurrentSettings(groupFragment);
+            Activity activity = getActivity();
+            if (activity != null) {
+                getSettingsNavigation().finishCurrentSettings(this);
+                if (mFromGrouped && groupFragment != null) {
+                    getSettingsNavigation().executePendingNavigations(activity);
+                    getSettingsNavigation().finishCurrentSettings(groupFragment);
+                }
             }
         }
     }

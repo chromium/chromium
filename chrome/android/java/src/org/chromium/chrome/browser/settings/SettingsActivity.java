@@ -61,6 +61,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
@@ -111,6 +112,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     // pending for processing in the next onResume call. See onNewIntent for why we can not directly
     // process those intents in onNewIntent.
     private Intent mPendingNewIntent;
+
+    // Used to avoid finishing the same fragment multiple times. If the referent is identical to the
+    // result of getMainFragment(), it should be considered already finished. Otherwise it should be
+    // ignored.
+    private WeakReference<Fragment> mFinishedMainFragment;
 
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
@@ -484,7 +490,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * <p>This method asks the activity to show the previous fragment. If the back stack is empty,
      * the activity itself is finished.
      *
-     * <p>If the given fragment is not the current one, this method does nothing.
+     * <p>If the given fragment is not the current one, or the fragment is already finished, this
+     * method does nothing. In other words, this method is idempotent.
+     *
+     * <p>This method executes navigations asynchronously. It means that it is safe to call this
+     * method on the UI thread in most cases, particularly even in the middle of executing fragment
+     * transactions. On the other hand, you have to be careful when you want to go back multiple
+     * pages using this method; it may not work as you expect to call this method multiple times in
+     * a row because the subsequent method calls are ignored due to fragment mismatch. Use {@link
+     * executePendingNavigations} to synchronously execute pending navigations to work around this
+     * problem.
      *
      * <p>This method is package-private because it is used by {@link SettingsNavigationImpl}. Use
      * {@link SettingsNavigation} to call this method from fragments, instead of calling it
@@ -497,18 +512,36 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (getMainFragment() != fragment) {
             return;
         }
+        if (mFinishedMainFragment != null && mFinishedMainFragment.get() == fragment) {
+            return;
+        }
+
+        mFinishedMainFragment = new WeakReference<>(fragment);
 
         if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             if (fragmentManager.getBackStackEntryCount() == 0) {
                 finish();
             } else {
-                // Execute the pop operation immediately to avoid popping the back stack N times
-                // when the current fragment calls this method N times in a row.
-                fragmentManager.popBackStackImmediate();
+                fragmentManager.popBackStack();
             }
         } else {
             finish();
+        }
+    }
+
+    /**
+     * Executes pending navigations immediately.
+     *
+     * <p>See {@link finishCurrentSettings} for a valid use case of this method.
+     *
+     * <p>This method is package-private because it is used by {@link SettingsNavigationImpl}. Use
+     * {@link SettingsNavigation} to call this method from fragments, instead of calling it
+     * directly.
+     */
+    void executePendingNavigations() {
+        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            getSupportFragmentManager().executePendingTransactions();
         }
     }
 
