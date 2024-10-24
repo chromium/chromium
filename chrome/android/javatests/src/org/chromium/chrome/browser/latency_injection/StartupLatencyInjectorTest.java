@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_LATENCY_INJECTION)
@@ -33,11 +34,16 @@ public class StartupLatencyInjectorTest {
 
     @Test
     @LargeTest
-    public void checkLatencyInjectedForMainIntentLaunch() throws Exception {
+    public void checkLatencyInjectedForBothColdAndWarmStart() throws Exception {
         HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_TOTAL_WAIT_TIME);
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(HISTOGRAM_TOTAL_WAIT_TIME, 2)
+                        .build();
         StartupLatencyInjector.CLANK_STARTUP_LATENCY_PARAM_MS.setForTesting(100);
         mTabbedActivityTestRule.startMainActivityFromLauncher();
+        mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
+        ChromeApplicationTestUtils.fireHomeScreenIntent(mTabbedActivityTestRule.getActivity());
+        mTabbedActivityTestRule.resumeMainActivityFromLauncher();
         watcher.assertExpected();
     }
 }

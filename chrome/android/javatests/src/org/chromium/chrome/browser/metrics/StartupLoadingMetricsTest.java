@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
@@ -27,7 +28,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -75,6 +78,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstNavigationCommit3";
     private static final String MAIN_INTENT_COLD_START_HISTOGRAM =
             "Startup.Android.MainIntentIsColdStart";
+    private static final String MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM =
+            "Startup.Android.Warm.MainIntentTimeToFirstDraw";
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -232,6 +237,52 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityFromIntent(intent, null));
         assertMainIntentLaunchColdStartHistogramRecorded(1);
+    }
+
+    /**
+     * Tests warm start metric for main icon launches recorded correctly. Minimum SDK Level is P+
+     * due to how ColdStartTracker determines a cold start. The mechanism is time-based prior to P
+     * and is therefore less robust.
+     */
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testWarmStartMainIntentTimeToFirstDrawRecordedCorrectly() throws Exception {
+        // No records made for main intent cold starts.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM)
+                        .build();
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> mTabbedActivityTestRule.startMainActivityFromLauncher());
+        histogramWatcher.assertExpected();
+
+        // Expect two records for two main intent warm starts.
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM, 2)
+                        .build();
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            mTabbedActivityTestRule.getActivity());
+                    try {
+                        mTabbedActivityTestRule.resumeMainActivityFromLauncher();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            mTabbedActivityTestRule.getActivity());
+                    try {
+                        mTabbedActivityTestRule.resumeMainActivityFromLauncher();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        histogramWatcher.assertExpected();
     }
 
     /**

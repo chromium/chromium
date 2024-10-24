@@ -329,6 +329,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public static final String HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW =
             "Android.MultiWindowMode.DraggedTabOpenedNewWindow";
 
+    private static final String HISTOGRAM_MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS =
+            "Startup.Android.Warm.MainIntentTimeToFirstDraw";
+
     /**
      * A {@link CipherFactory} instance that is shared among all {@link ChromeTabbedActivity}
      * instances.
@@ -442,6 +445,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Time at which an intent was received and handled.
     private long mIntentHandlingTimeMs;
+
+    // The time it took for the first draw on a warm start.
+    private long mTimeToFirstDrawAfterStartMs;
 
     // Delegate to handle drag and drop features for tablets.
     private DragAndDropDelegate mDragDropDelegate;
@@ -1090,12 +1096,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private boolean isMainIntentLaunch() {
-        assert !mFromResumption : "Method is correct only when it's a new Activity launch.";
+        if (mFromResumption) {
+            int launchCause = getLaunchCause();
+            assert launchCause != LaunchCauseMetrics.LaunchCause.UNINITIALIZED
+                    : "Launch Cause has not been computed for this warm start yet.";
+            return (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
+                    || launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
+        }
 
         Intent launchIntent = getIntent();
         if (launchIntent == null) return false;
 
-        // Also ignore if launched from recents.
+        // Ignore if launched from recents.
         if (0 != (launchIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
             return false;
         }
@@ -1111,6 +1123,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         return false;
+    }
+
+    private boolean isColdStart() {
+        return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
     }
 
     @Override
@@ -1212,6 +1229,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         super.onResumeWithNative();
 
+        if (!isColdStart() && isMainIntentLaunch()) {
+            StartupLatencyInjector startupLatencyInjector = new StartupLatencyInjector();
+            startupLatencyInjector.maybeInjectLatency();
+        }
+
         assert getProfileProviderSupplier().hasValue();
         getProfileProviderSupplier()
                 .runSyncOrOnAvailable(
@@ -1250,6 +1272,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void onPauseWithNative() {
         mTabModelSelector.commitAllTabClosures();
 
+        if (!isColdStart() && isMainIntentLaunch()) {
+            RecordHistogram.recordTimesHistogram(
+                    HISTOGRAM_MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS, mTimeToFirstDrawAfterStartMs);
+        }
+
         if (mIncognitoCookiesFetcher != null) {
             mIncognitoCookiesFetcher.persistCookies();
         }
@@ -1281,6 +1308,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mMainIntentMetrics.logLaunchBehavior();
 
         super.onStartWithNative();
+
+        FirstDrawDetector.waitForFirstDrawStrict(
+                mContentContainer,
+                () -> {
+                    if (!isColdStart()) {
+                        mTimeToFirstDrawAfterStartMs =
+                                SystemClock.uptimeMillis() - getOnStartTimestampMs();
+                    }
+                });
 
         // Don't call setInitialOverviewState if 1) we're waiting for the tab's creation or we risk
         // showing a glimpse of the tab selector during start up. 2) on warm startup from an
@@ -2080,8 +2116,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // Enable Paint Preview only on a cold start. This way the Paint preview is most useful by
         // being much faster than the real load of the page. Also cold start detection excludes user
         // interactions changing the course of restoring the page.
-        if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
-                && !SimpleStartupForegroundSessionDetector.isSessionDiscarded()) {
+        if (isColdStart()) {
             StartupPaintPreviewHelper.enableShowOnRestore();
         }
 

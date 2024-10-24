@@ -292,6 +292,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="LaunchCause">
+  <int value="-1" label="Uninitialized"/>
   <int value="0" label="Other - External"/>
   <int value="1" label="Chrome Custom Tab"/>
   <int value="2" label="Trusted Web Activity"/>

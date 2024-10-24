@@ -646,6 +646,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
+    expires_after="2025-04-09">
+  <owner>nafisabedin@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    Records the time duration from a warm, main intent launch until the first
+    draw completes.
+  </summary>
+</histogram>
+
 <histogram name="Startup.BlockForCrashpadHandlerStartupTime" units="ms"
     expires_after="M85">
   <owner>mark@chromium.org</owner>

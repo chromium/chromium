@@ -377,6 +377,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private LaunchCauseMetrics mLaunchCauseMetrics;
 
+    private @LaunchCauseMetrics.LaunchCause int mLaunchCause;
+
     // TODO(crbug.com/40631552): Pull MenuOrKeyboardActionController out of ChromeActivity.
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
             new ArrayList<>();
@@ -1008,6 +1010,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return ActivityUtils.NO_RESOURCE_ID;
     }
 
+    /**
+     * @return The reason Chrome was launched utilizing {@link LaunchCauseMetrics}. Launch cause is
+     *     recorded onResumeWithNative. This is only valid while app in foreground.
+     */
+    protected @LaunchCauseMetrics.LaunchCause int getLaunchCause() {
+        return mLaunchCause;
+    }
+
     @Override
     public void initializeState() {
         super.initializeState();
@@ -1150,11 +1160,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         RecordUserAction.record("MobileComeToForeground");
         getLaunchCauseMetrics().setActivityId(mActivityId);
-        int launchCause = getLaunchCauseMetrics().recordLaunchCause();
+        mLaunchCause = getLaunchCauseMetrics().recordLaunchCause();
 
         boolean isMainIntentLaunch =
-                (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
-                        || launchCause
+                (mLaunchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
+                        || mLaunchCause
                                 == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
         if (isMainIntentLaunch) {
             RecordHistogram.recordBooleanHistogram(
@@ -1312,6 +1322,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void onPauseWithNative() {
         RecordUserAction.record("MobileGoToBackground");
+        mLaunchCause = LaunchCauseMetrics.LaunchCause.UNINITIALIZED;
         Tab tab = getActivityTab();
         if (tab != null) {
             getTabContentManager().cacheTabThumbnail(tab);

@@ -1559,6 +1559,7 @@ message PageLoad {
 message StartUp {
   // This enum must be kept up to date with LaunchCauseMetrics.LaunchCause.
   enum LaunchCauseType {
+    UNINITIALIZED = -1;
     OTHER = 0;
     CUSTOM_TAB = 1;
     TWA = 2;
