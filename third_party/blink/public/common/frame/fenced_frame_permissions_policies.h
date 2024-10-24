@@ -12,7 +12,7 @@ namespace blink {
 // turned off.
 static inline constexpr blink::mojom::PermissionsPolicyFeature
     kFencedFrameAllowedFeatures[] = {
-        blink::mojom::PermissionsPolicyFeature::kFencedFrameUnpartitionedData,
+        blink::mojom::PermissionsPolicyFeature::kFencedUnpartitionedStorageRead,
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         blink::mojom::PermissionsPolicyFeature::kSharedStorage,
         blink::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};

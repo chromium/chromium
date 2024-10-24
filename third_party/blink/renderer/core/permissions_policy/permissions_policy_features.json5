@@ -281,8 +281,8 @@
       depends_on: ["FreezeFramesOnVisibility"],
     },
     {
-      name: "FencedFrameUnpartitionedData",
-      permissions_policy_name: "fenced-frame-unpartitioned-data",
+      name: "FencedUnpartitionedStorageRead",
+      permissions_policy_name: "fenced-unpartitioned-storage-read",
       feature_default: "EnableForAll",
       depends_on: ["FencedFramesLocalUnpartitionedDataAccess"],
     },

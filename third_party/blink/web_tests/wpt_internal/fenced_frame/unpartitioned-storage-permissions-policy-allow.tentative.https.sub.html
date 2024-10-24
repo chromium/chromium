@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<title>Test fenced-frame-unpartitioned-data permissions policy with "allow" attribute</title>
+<title>Test fenced-unpartitioned-storage-read permissions policy with "allow" attribute</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="resources/utils.js"></script>
-<script src="resources/unpartitioned_data_permissions_policy_helper.js"></script>
+<script src="resources/unpartitioned_storage_permissions_policy_helper.js"></script>
 
 <body>
 <script>
@@ -17,20 +17,20 @@ promise_setup(async () => {
 
 
 promise_test(async (t) => {
-  let get_result = await runUnpartitionedDataPermissionsPolicyTestCase(
+  let get_result = await runUnpartitionedStoragePermissionsPolicyTestCase(
       get_host_info().HTTPS_REMOTE_ORIGIN,
      'allow', get_host_info().HTTPS_REMOTE_ORIGIN);
   assert_equals(get_result, 'banana');
-}, 'Test that a fenced-frame-unpartitioned-data allowlist set via allow ' +
+}, 'Test that a fenced-unpartitioned-storage-read allowlist set via allow ' +
    'attribute enables calling of sharedStorage.get()');
 
 
 promise_test(async (t) => {
-  let get_result = await runUnpartitionedDataPermissionsPolicyTestCase(
+  let get_result = await runUnpartitionedStoragePermissionsPolicyTestCase(
       get_host_info().HTTPS_ORIGIN,
      'allow', get_host_info().HTTPS_REMOTE_ORIGIN);
   assert_equals(get_result, 'Permission denied');
-}, 'Test that a fenced-frame-unpartitioned-data allowlist set via allow ' +
+}, 'Test that a fenced-unpartitioned-storage-read allowlist set via allow ' +
    'attribute properly restricts calling of sharedStorage.get() from a ' +
    'disallowed origin');
 

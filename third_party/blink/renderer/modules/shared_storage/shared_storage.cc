@@ -665,11 +665,11 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
 
     if (!execution_context->IsFeatureEnabled(
         mojom::blink::PermissionsPolicyFeature::
-            kFencedFrameUnpartitionedData)) {
+            kFencedUnpartitionedStorageRead)) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kOperationError,
           "Cannot call get() in a fenced frame without the "
-          "fenced-frame-unpartitioned-data Permissions Policy feature "
+          "fenced-unpartitioned-storage-read Permissions Policy feature "
           "enabled."));
       return promise;
     }

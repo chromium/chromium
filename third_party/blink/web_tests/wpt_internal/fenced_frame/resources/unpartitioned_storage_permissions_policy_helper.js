@@ -1,4 +1,4 @@
-// Runs a single test case that checks if the fenced-frame-unpartitioned-data
+// Runs a single test case that checks if the fenced-unpartitioned-storage-read
 // Permissions Policy properly gates access to sharedStorage.get() in a fenced
 // frame.
 //
@@ -13,18 +13,18 @@
 // - allowlist: A string containing a *properly-formatted* allowlist of origins
 //   as required by `type`. By default, this is `*`, which will allow all
 //   origins in all contexts.
-async function runUnpartitionedDataPermissionsPolicyTestCase(
+async function runUnpartitionedStoragePermissionsPolicyTestCase(
     frame_origin = get_host_info().HTTPS_ORIGIN, type = null, allowlist = '*') {
   response_headers = [];
   if (type === 'header') {
     response_headers.push(
-        ['Permissions-Policy', 'fenced-frame-unpartitioned-data=' + allowlist]);
+        ['Permissions-Policy', 'fenced-unpartitioned-storage-read=' + allowlist]);
   }
 
   frame_attributes = [];
   if (type === 'allow') {
     frame_attributes.push(
-        ['allow', 'fenced-frame-unpartitioned-data ' + allowlist]);
+        ['allow', 'fenced-unpartitioned-storage-read ' + allowlist]);
   }
 
   const fencedframe = await attachFencedFrameContext({
