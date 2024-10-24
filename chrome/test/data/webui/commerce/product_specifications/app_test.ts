@@ -5,7 +5,7 @@
 import 'chrome://compare/app.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction} from 'chrome://compare/app.js';
+import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction, LOADING_END_EVENT_TYPE, LOADING_START_EVENT_TYPE} from 'chrome://compare/app.js';
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {Router} from 'chrome://compare/router.js';
@@ -13,7 +13,6 @@ import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, P
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -23,7 +22,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, installMock} from './test_support.js';
 
@@ -86,7 +85,6 @@ interface AppPromiseValues {
   productInfos: ProductInfo[];
   specsSet: ProductSpecificationsSet|null;
   urlToPageTitleFromHistoryMap: Map<string, string>;
-  minLoadingAnimationMs: number;
 }
 
 function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
@@ -99,7 +97,6 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
         productInfos: [createProductInfo()],
         specsSet: null,
         urlToPageTitleFromHistoryMap: new Map<string, string>(),
-        minLoadingAnimationMs: 0,
       },
       overrides);
 }
@@ -109,6 +106,12 @@ suite('AppTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   const mockOpenWindowProxy = TestMock.fromClass(OpenWindowProxyImpl);
 
+  // Promises that resolve at the start and end of the loading animation. These
+  // are set when the app element is created. If an action that retriggers the
+  // loading animation is performed, new promises will need to be created.
+  let loadingStartPromise: Promise<void>;
+  let loadingEndPromise: Promise<void>;
+
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
   const callbackRouter = new PageCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
@@ -116,6 +119,13 @@ suite('AppTest', () => {
 
   async function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
+
+    // Disable the loading animation minimum time so tests that don't rely on
+    // loading state behavior can complete more quickly.
+    appElement.disableMinLoadingAnimationMsForTesting();
+    loadingStartPromise = createLoadingStartPromise();
+    loadingEndPromise = createLoadingEndPromise();
+
     document.body.appendChild(appElement);
     return appElement;
   }
@@ -156,11 +166,21 @@ suite('AppTest', () => {
         });
 
     const appElement = await createAppElement();
-    appElement.resetMinLoadingAnimationMsForTesting(
-        promiseValues.minLoadingAnimationMs);
     await flushTasks();
 
     return appElement;
+  }
+
+  // Creates a promise that resolves when the loading animation has started.
+  // Must be called after the app element has been created.
+  function createLoadingStartPromise(): Promise<void> {
+    return eventToPromise(LOADING_START_EVENT_TYPE, appElement);
+  }
+
+  // Creates a promise that resolves when the loading animation has ended. Must
+  // be called after the app element has been created.
+  function createLoadingEndPromise(): Promise<void> {
+    return eventToPromise(LOADING_END_EVENT_TYPE, appElement);
   }
 
   setup(async () => {
@@ -1414,44 +1434,41 @@ suite('AppTest', () => {
   });
 
   test('shows full table loading state', async () => {
-    const minLoadingAnimationMs = 40;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
-      minLoadingAnimationMs: minLoadingAnimationMs,
     });
     // Needs to await in order to load elements.
     await createAppElementWithPromiseValues(promiseValues);
-    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
 
+    // Wait for the loading animation to start.
+    await loadingStartPromise;
     assertTrue(isVisible(appElement.$.loading));
     assertFalse(isVisible(appElement.$.summaryTable));
 
     // Wait for the loading animation to finish.
-    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+    await loadingEndPromise;
     assertFalse(isVisible(appElement.$.loading));
   });
 
   test('disables menu button while loading', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
-      minLoadingAnimationMs: 500,
     });
     createAppElementWithPromiseValues(promiseValues);
-    await flushTasks();
+    await loadingStartPromise;
 
     assertTrue(appElement.$.header.$.menuButton.disabled);
   });
 
   test('show feedback loading state while loading', async () => {
-    const minLoadingAnimationMs = 80;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
-      minLoadingAnimationMs: minLoadingAnimationMs,
     });
     // Needs to await in order to load elements.
     await createAppElementWithPromiseValues(promiseValues);
-    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
 
+    // Wait for the loading animation to start.
+    await loadingStartPromise;
     const feedbackLoading =
         appElement.shadowRoot!.querySelector('#feedbackLoading');
     assertTrue(!!feedbackLoading);
@@ -1463,7 +1480,7 @@ suite('AppTest', () => {
     assertFalse(isVisible(feedbackButtons));
 
     // Wait for the loading animation to finish.
-    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+    await loadingEndPromise;
     assertFalse(isVisible(feedbackLoading));
     assertTrue(isVisible(feedbackButtons));
   });
@@ -1480,13 +1497,13 @@ suite('AppTest', () => {
             isQualityLoggingAllowed: false,
           },
         }));
-    const minLoadingAnimationMs = 10;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
-      minLoadingAnimationMs: minLoadingAnimationMs,
     });
     createAppElementWithPromiseValues(promiseValues);
-    await flushTasks();
+
+    // Wait for the loading animation to start.
+    await loadingStartPromise;
     const feedbackLoading =
         appElement.shadowRoot!.querySelector('#feedbackLoading');
     const feedbackButtons =
@@ -1496,8 +1513,7 @@ suite('AppTest', () => {
     assertFalse(isVisible(feedbackButtons));
 
     // Wait for the loading animation to finish.
-    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
-
+    await loadingEndPromise;
     assertFalse(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
   });
@@ -1725,6 +1741,7 @@ suite('AppTest', () => {
       const promiseValues = createAppPromiseValues({urlsParam: urlsParam});
       await createAppElementWithPromiseValues(promiseValues);
 
+      await loadingEndPromise;
       assertFalse(isVisible(appElement.$.empty));
       assertTrue(isVisible(appElement.$.specs));
     });
@@ -1762,6 +1779,7 @@ suite('AppTest', () => {
           crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
       dropdownItem.click();
       await waitAfterNextRender(appElement);
+      await loadingEndPromise;
 
       // The table should be updated with the selected URL.
       assertFalse(isVisible(appElement.$.empty));
@@ -1782,6 +1800,8 @@ suite('AppTest', () => {
         }),
       });
       await createAppElementWithPromiseValues(promiseValues);
+      await loadingEndPromise;
+
       const table = appElement.$.summaryTable;
       assertEquals(1, table.columns.length);
       assertFalse(isVisible(appElement.$.empty));
@@ -1795,6 +1815,8 @@ suite('AppTest', () => {
       // Simulate an update from sync (as a result of the above change).
       callbackRouterRemote.onProductSpecificationsSetUpdated(
           createSpecsSet({urls: [], uuid: {value: testId}}));
+      // There's no loading animation when transitioning to the empty state, so
+      // we don't need to wait for loading to end.
       await waitAfterNextRender(appElement);
 
       assertEquals(0, table.columns.length);
@@ -1904,14 +1926,16 @@ suite('AppTest', () => {
           assertFalse(appElement.$.offlineToast.open);
 
           // Act.
+          const nameChangePromise = eventToPromise('name-change', appElement);
           const header = appElement.$.header;
-          header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
-          await waitAfterNextRender(header);
-          const input = $$<CrInputElement>(header, '#input');
-          assertTrue(!!input);
-          input.value = 'foo';
-          input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-          await flushTasks();
+          header.dispatchEvent(new CustomEvent('name-change', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              name: 'foo',
+            },
+          }));
+          await nameChangePromise;
 
           // Assert.
           assertTrue(appElement.$.offlineToast.open);
@@ -2019,13 +2043,13 @@ suite('AppTest', () => {
               isQualityLoggingAllowed: false,
             },
           }));
-      const minLoadingAnimationMs = 10;
       const promiseValues = createAppPromiseValues({
         urlsParam: ['https://example.com/'],
-        minLoadingAnimationMs: minLoadingAnimationMs,
       });
       createAppElementWithPromiseValues(promiseValues);
-      await flushTasks();
+
+      // Wait for the loading animation to start.
+      await loadingStartPromise;
       const feedbackLoading =
           appElement.shadowRoot!.querySelector('#feedbackLoading');
       const feedbackButtons =
@@ -2035,8 +2059,7 @@ suite('AppTest', () => {
       assertFalse(isVisible(feedbackButtons));
 
       // Wait for the loading animation to finish.
-      await new Promise(res => setTimeout(res, minLoadingAnimationMs));
-
+      await loadingEndPromise;
       assertFalse(isVisible(feedbackLoading));
       assertFalse(isVisible(feedbackButtons));
     });

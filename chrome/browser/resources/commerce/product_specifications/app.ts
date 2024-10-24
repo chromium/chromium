@@ -186,6 +186,13 @@ function findProductInResults(clusterId: bigint, specs: ProductSpecifications):
   return null;
 }
 
+// Custom event types for the start and end of the loading animation.
+export const LOADING_START_EVENT_TYPE: string = 'loading-animation-start';
+export const LOADING_END_EVENT_TYPE: string = 'loading-animation-end';
+
+const LOADING_ANIMATION_SLIDE_PX = 16;
+const LOADING_ANIMATION_SLIDE_DURATION_MS = 200;
+
 export class ProductSpecificationsElement extends PolymerElement {
   static get is() {
     return 'product-specifications-app';
@@ -223,8 +230,6 @@ export class ProductSpecificationsElement extends PolymerElement {
   private eventTracker_: EventTracker = new EventTracker();
   private id_: Uuid|null = null;
   private listenerIds_: number[] = [];
-  private loadingAnimationSlidePx_: number = 16;
-  private loadingAnimationSlideDurationMs_: number = 200;
   private minLoadingAnimationMs_: number = 500;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -295,9 +300,8 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.eventTracker_.removeAll();
   }
 
-  // TODO(b/364337413): update tests to not rely on animation rendering time
-  resetMinLoadingAnimationMsForTesting(newValue = 0) {
-    this.minLoadingAnimationMs_ = newValue;
+  disableMinLoadingAnimationMsForTesting() {
+    this.minLoadingAnimationMs_ = 0;
   }
 
   private async loadTable_(state: ProductSpecificationsFeatureState) {
@@ -747,36 +751,40 @@ export class ProductSpecificationsElement extends PolymerElement {
         'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
   }
 
-  private fadeAndSlideOutSummaryContainer_(): Animation {
-    return this.$.summaryContainer.animate(
-        [
-          {opacity: 1, transform: 'translateY(0px)'},
-          {
-            opacity: 0,
-            transform: `translateY(-${this.loadingAnimationSlidePx_}px)`,
-          },
-        ],
-        {
-          duration: this.loadingAnimationSlideDurationMs_,
-          easing: 'ease-out',
-          fill: 'forwards',
-        });
+  private async fadeAndSlideOutSummaryContainer_() {
+    await this.$.summaryContainer
+        .animate(
+            [
+              {opacity: 1, transform: 'translateY(0px)'},
+              {
+                opacity: 0,
+                transform: `translateY(-${LOADING_ANIMATION_SLIDE_PX}px)`,
+              },
+            ],
+            {
+              duration: LOADING_ANIMATION_SLIDE_DURATION_MS,
+              easing: 'ease-out',
+              fill: 'forwards',
+            })
+        .finished;
   }
 
-  private fadeAndSlideInSummaryContainer_(): Animation {
-    return this.$.summaryContainer.animate(
-        [
-          {
-            opacity: 0,
-            transform: `translateY(${this.loadingAnimationSlidePx_}px)`,
-          },
-          {opacity: 1, transform: 'translateY(0px)'},
-        ],
-        {
-          duration: this.loadingAnimationSlideDurationMs_,
-          easing: 'ease-out',
-          fill: 'forwards',
-        });
+  private async fadeAndSlideInSummaryContainer_() {
+    await this.$.summaryContainer
+        .animate(
+            [
+              {
+                opacity: 0,
+                transform: `translateY(${LOADING_ANIMATION_SLIDE_PX}px)`,
+              },
+              {opacity: 1, transform: 'translateY(0px)'},
+            ],
+            {
+              duration: LOADING_ANIMATION_SLIDE_DURATION_MS,
+              easing: 'ease-out',
+              fill: 'forwards',
+            })
+        .finished;
   }
 
   // Resolves upon updating the loading state.
@@ -784,25 +792,34 @@ export class ProductSpecificationsElement extends PolymerElement {
     if ([AppState.ERROR, AppState.SYNC_SCREEN, AppState.LOADING].includes(
             this.appState_)) {
       this.loadingState_ = {loading: true, urlCount};
+      this.dispatchLoadingStartEvent_();
       return Promise.resolve();
     }
 
-    const anim = this.fadeAndSlideOutSummaryContainer_();
-    return new Promise<void>(resolve => {
-      anim.addEventListener('finish', () => {
-        this.loadingState_ = {loading: true, urlCount};
-        resolve();
-        this.fadeAndSlideInSummaryContainer_();
-      });
+    return new Promise<void>(async resolve => {
+      await this.fadeAndSlideInSummaryContainer_();
+      this.loadingState_ = {loading: true, urlCount};
+      resolve();
+      await this.fadeAndSlideInSummaryContainer_();
+      this.dispatchLoadingStartEvent_();
     });
   }
 
-  private exitLoadingState_() {
-    const anim = this.fadeAndSlideOutSummaryContainer_();
-    anim.addEventListener('finish', () => {
-      this.loadingState_ = {loading: false, urlCount: 0};
-      this.fadeAndSlideInSummaryContainer_();
-    });
+  private async exitLoadingState_() {
+    await this.fadeAndSlideOutSummaryContainer_();
+    this.loadingState_ = {loading: false, urlCount: 0};
+    await this.fadeAndSlideInSummaryContainer_();
+    this.dispatchLoadingEndEvent_();
+  }
+
+  private dispatchLoadingStartEvent_() {
+    this.dispatchEvent(new CustomEvent(
+        LOADING_START_EVENT_TYPE, {bubbles: true, composed: true}));
+  }
+
+  private dispatchLoadingEndEvent_() {
+    this.dispatchEvent(new CustomEvent(
+        LOADING_END_EVENT_TYPE, {bubbles: true, composed: true}));
   }
 }
 

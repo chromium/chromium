@@ -134,4 +134,24 @@ suite('HeaderTest', () => {
     assertEquals(subtitle, header.subtitle);
     assertEquals(subtitle, input.value);
   });
+
+  test('`name-change` event is fired on input blur', async () => {
+    const subtitle = $$(header, '#subtitle');
+    assertTrue(!!subtitle);
+    subtitle.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(header);
+
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    assertTrue(isVisible(input));
+    const nameChangePromise = eventToPromise('name-change', document.body);
+    input.value = 'foo';
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    const event = await nameChangePromise;
+
+    // Ensure the event contains the new name.
+    assertTrue(!!event);
+    assertTrue(!!event.detail);
+    assertTrue(event.detail.name === 'foo');
+  });
 });
