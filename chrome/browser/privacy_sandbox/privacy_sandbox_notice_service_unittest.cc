@@ -5,9 +5,11 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h"
 
 #include "base/json/values_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -24,6 +26,8 @@ class PrivacySandboxNoticeServiceTest : public testing::Test {
   PrivacySandboxNoticeServiceTest()
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     RegisterProfilePrefs(prefs()->registry());
+    scoped_feature_list_.InitAndEnableFeature(
+        kPrivacySandboxMigratePrefsToNoticeConsentDataModel);
   }
 
   std::string GetTopicsNoticeName() {
@@ -63,6 +67,7 @@ class PrivacySandboxNoticeServiceTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // If original prefs are set from Settings, then new prefs shouldn't be set and
