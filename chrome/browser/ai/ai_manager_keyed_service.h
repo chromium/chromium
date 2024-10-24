@@ -11,6 +11,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_create_on_device_session_task.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -40,6 +41,13 @@ class AIManagerKeyedService : public KeyedService,
       mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote);
 
   size_t GetReceiversSizeForTesting() { return receivers_.size(); }
+
+  // Return the max top k value for the Assistant API. Note that this value
+  // won't exceed the max top k defined by the underlying on-device model.
+  static int GetAssistantModelMaxTopK();
+
+  // Return the default temperature for the Assistant API.
+  static double GetAssistantModelDefaultTemperature();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
