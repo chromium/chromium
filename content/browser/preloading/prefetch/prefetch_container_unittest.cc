@@ -312,7 +312,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   PrefetchContainer prefetch_container(
       *web_contents(), GURL("https://test.com"),
       PrefetchType(PreloadingTriggerType::kEmbedder,
-                   /*use_prefetch_proxy=*/true),
+                   /*use_prefetch_proxy=*/false),
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
       /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
 
@@ -321,8 +321,8 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_EQ(prefetch_container.GetURL(), GURL("https://test.com"));
   EXPECT_EQ(prefetch_container.GetPrefetchType(),
             PrefetchType(PreloadingTriggerType::kEmbedder,
-                         /*use_prefetch_proxy=*/true));
-  EXPECT_TRUE(
+                         /*use_prefetch_proxy=*/false));
+  EXPECT_FALSE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.key(),
@@ -1064,8 +1064,8 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
   auto prefetch_container_default = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"), std::nullopt);
   prefetch_container_default->MakeResourceRequest({});
-  EXPECT_TRUE(prefetch_container_default
-                  ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_FALSE(prefetch_container_default
+                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   auto prefetch_container_same_origin = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"),

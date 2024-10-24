@@ -111,8 +111,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Ctor used for browser-initiated prefetch.
   // We can pass the referring origin of prefetches via `referring_origin` if
-  // necessary. When `std::nullopt` is passed, the referring origin will be
-  // opaque.
+  // necessary.
   PrefetchContainer(
       WebContents& referring_web_contents,
       const GURL& url,
@@ -126,8 +125,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Ctor used for browser-initiated prefetch that doesn't depend on web
   // contents. We can pass the referring origin of prefetches via
-  // `referrer_origin` if necessary. When `std::nullopt` is passed, the
-  // referring origin will be opaque.
+  // `referrer_origin` if necessary.
   PrefetchContainer(
       BrowserContext* browser_context,
       const GURL& url,
@@ -268,7 +266,9 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsRendererInitiated() const;
 
   // The origin and that initiates the prefetch request.
-  const url::Origin& GetReferringOrigin() const { return referring_origin_; }
+  const std::optional<url::Origin> GetReferringOrigin() const {
+    return referring_origin_;
+  }
 
   // Whether or not an isolated network context is required to the next
   // prefetch.
@@ -383,6 +383,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // response, and not serve any prefetched resources.
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
+
+  // Whether the prefetch request is cross-site/cross-origin for given origin.
+  bool IsCrossSiteRequest(const url::Origin& origin) const;
+  bool IsCrossOriginRequest(const url::Origin& origin) const;
 
   // Whether this prefetch is potentially contaminated by cross-site state.
   // If so, it may need special handling for privacy.
@@ -769,7 +773,7 @@ class CONTENT_EXPORT PrefetchContainer {
  private:
   PrefetchContainer(
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
-      const url::Origin& referring_origin,
+      const std::optional<url::Origin>& referring_origin,
       const std::optional<size_t>& referring_url_hash,
       const PrefetchContainer::Key& key,
       const PrefetchType& prefetch_type,
@@ -837,8 +841,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring
   // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
-  // is sometimes explicitly passed via ctor, otherwise opaque origin.
-  const url::Origin referring_origin_;
+  // is sometimes explicitly passed via ctor.
+  const std::optional<url::Origin> referring_origin_;
   // Used by metrics for equality checks, only works for renderer-initiated
   // triggers.
   const std::optional<size_t> referring_url_hash_;

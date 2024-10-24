@@ -336,7 +336,7 @@ bool CalculateIsLikelyAheadOfPrerender(PreloadingAttempt* attempt) {
 class PrefetchContainer::SinglePrefetch {
  public:
   explicit SinglePrefetch(const GURL& url,
-                          const url::Origin& referring_origin,
+                          bool is_isolated_network_context_required,
                           bool is_reusable);
   ~SinglePrefetch();
 
@@ -423,7 +423,7 @@ PrefetchContainer::PrefetchContainer(
     std::optional<PreloadingHoldbackStatus> holdback_status_override)
     : PrefetchContainer(
           GlobalRenderFrameHostId(),
-          referring_origin.value_or(url::Origin()),
+          referring_origin,
           /*referring_url_hash=*/std::nullopt,
           PrefetchContainer::Key(
               std::optional<blink::DocumentToken>(std::nullopt),
@@ -456,7 +456,7 @@ PrefetchContainer::PrefetchContainer(
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PrefetchStartCallback> prefetch_start_callback)
     : PrefetchContainer(GlobalRenderFrameHostId(),
-                        referring_origin.value_or(url::Origin()),
+                        referring_origin,
                         /*referring_url_hash=*/std::nullopt,
                         PrefetchContainer::Key(
                             std::optional<blink::DocumentToken>(std::nullopt),
@@ -479,7 +479,7 @@ PrefetchContainer::PrefetchContainer(
 
 PrefetchContainer::PrefetchContainer(
     const GlobalRenderFrameHostId& referring_render_frame_host_id,
-    const url::Origin& referring_origin,
+    const std::optional<url::Origin>& referring_origin,
     const std::optional<size_t>& referring_url_hash,
     const PrefetchContainer::Key& key,
     const PrefetchType& prefetch_type,
@@ -551,7 +551,8 @@ PrefetchContainer::PrefetchContainer(
     return false;
   }();
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
-      GetURL(), referring_origin_, is_reusable));
+      GetURL(), IsCrossSiteRequest(url::Origin::Create(GetURL())),
+      is_reusable));
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -1010,10 +1011,22 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   AddXClientDataHeader(*resource_request_.get());
 
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
-      redirect_info.new_url, referring_origin_,
+      redirect_info.new_url,
+      IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url)),
       // If `PrefetchResponseReader` of the initial navigation is reusable,
       // inherit the property.
       redirect_chain_[0]->response_reader_->is_reusable()));
+}
+
+bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
+  return referring_origin_.has_value() &&
+         net::SchemefulSite(referring_origin_.value()) !=
+             net::SchemefulSite(origin);
+}
+
+bool PrefetchContainer::IsCrossOriginRequest(const url::Origin& origin) const {
+  return referring_origin_.has_value() &&
+         !referring_origin_.value().IsSameOriginWith(origin);
 }
 
 void PrefetchContainer::MarkCrossSiteContaminated() {
@@ -1728,7 +1741,7 @@ PrefetchStatus PrefetchContainer::Reader::GetPrefetchStatus() const {
 }
 
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
-  return !referring_origin_.IsSameOriginWith(url) &&
+  return IsCrossOriginRequest(url::Origin::Create(url)) &&
          prefetch_type_.IsProxyRequiredWhenCrossOrigin();
 }
 
@@ -1856,11 +1869,10 @@ void PrefetchContainer::AddClientHintsHeaders(
   // prefetch, and potentially a cross-site only. (This logic might need to be
   // revisited if we ever supported prefetching in another site's partition,
   // such as in a subframe.)
-  const bool is_same_site =
-      net::SchemefulSite(referring_origin_) == net::SchemefulSite(origin);
+  const bool is_cross_site = IsCrossSiteRequest(origin);
   const auto cross_site_behavior =
       features::kPrefetchClientHintsCrossSiteBehavior.Get();
-  if (is_same_site ||
+  if (!is_cross_site ||
       cross_site_behavior ==
           features::PrefetchClientHintsCrossSiteBehavior::kAll) {
     request_headers->MergeFrom(client_hints_headers);
@@ -1933,11 +1945,11 @@ CONTENT_EXPORT std::ostream& operator<<(
 
 PrefetchContainer::SinglePrefetch::SinglePrefetch(
     const GURL& url,
-    const url::Origin& referring_origin,
+    bool is_isolated_network_context_required,
     bool is_reusable)
     : url_(url),
       is_isolated_network_context_required_(
-          net::SchemefulSite(referring_origin) != net::SchemefulSite(url_)),
+          is_isolated_network_context_required),
       response_reader_(
           base::MakeRefCounted<PrefetchResponseReader>(is_reusable)) {}
 
