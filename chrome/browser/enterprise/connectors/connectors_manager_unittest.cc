@@ -150,18 +150,6 @@ class ConnectorsManagerTest : public testing::Test {
     const char* pref_;
   };
 
-  std::optional<ReportingSettings> GetReportingSettings(
-      const char* settings_value) {
-    auto settings = base::JSONReader::Read(settings_value,
-                                           base::JSON_ALLOW_TRAILING_COMMAS);
-    EXPECT_TRUE(settings.has_value());
-
-    ReportingServiceSettings service_settings(settings.value(),
-                                              *GetServiceProviderConfig());
-
-    return service_settings.GetReportingSettings();
-  }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
