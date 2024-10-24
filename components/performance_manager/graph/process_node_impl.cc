@@ -178,6 +178,7 @@ void ProcessNodeImpl::OnRemoteIframeDetached(
 }
 
 void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
+    uint64_t process_track_id,
     RequestSharedPerformanceScenarioRegionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -190,8 +191,9 @@ void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
                             base::ReadOnlySharedMemoryRegion());
     return;
   }
-  std::move(callback).Run(GetGlobalSharedScenarioRegion(),
-                          GetSharedScenarioRegionForProcessNode(this));
+  std::move(callback).Run(
+      GetGlobalSharedScenarioRegion(),
+      GetSharedScenarioRegionForProcessNode(this, process_track_id));
 }
 
 content::ProcessType ProcessNodeImpl::GetProcessType() const {

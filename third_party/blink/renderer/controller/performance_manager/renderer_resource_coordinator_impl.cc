@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using performance_manager::mojom::blink::IframeAttributionData;
 using performance_manager::mojom::blink::IframeAttributionDataPtr;
@@ -260,9 +261,11 @@ RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
   CHECK(service_task_runner_->RunsTasksInCurrentSequence());
   // Unretained is safe because the renderer resource coordinator is a singleton
   // that leaks at process shutdown.
-  service_->RequestSharedPerformanceScenarioRegions(WTF::BindOnce(
-      &RendererResourceCoordinatorImpl::OnSharedPerformanceScenarioRegions,
-      WTF::Unretained(this)));
+  service_->RequestSharedPerformanceScenarioRegions(
+      perfetto::ProcessTrack::Current().uuid,
+      WTF::BindOnce(
+          &RendererResourceCoordinatorImpl::OnSharedPerformanceScenarioRegions,
+          WTF::Unretained(this)));
 }
 
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(

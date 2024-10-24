@@ -83,7 +83,7 @@ class MockProcessCoordinationUnit : public ProcessCoordinationUnit {
               (override));
   MOCK_METHOD(void,
               RequestSharedPerformanceScenarioRegions,
-              (RequestSharedPerformanceScenarioRegionsCallback),
+              (uint64_t, RequestSharedPerformanceScenarioRegionsCallback),
               (override));
 
   void VerifyExpectations() {
@@ -149,9 +149,10 @@ class RendererResourceCoordinatorImplTest : public ::testing::Test {
     // RequestSharedPerformanceScenarioRegions().
     base::OnceClosure quit_closure = task_environment_.QuitClosure();
     EXPECT_CALL(*mock_process_coordination_unit_,
-                RequestSharedPerformanceScenarioRegions(_))
+                RequestSharedPerformanceScenarioRegions(_, _))
         .WillOnce(
-            [&](ProcessCoordinationUnit::
+            [&](uint64_t,
+                ProcessCoordinationUnit::
                     RequestSharedPerformanceScenarioRegionsCallback callback) {
               std::move(callback).Run(std::move(global_region),
                                       std::move(process_region));

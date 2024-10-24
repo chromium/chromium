@@ -105,6 +105,7 @@ class ProcessNodeImpl
       const blink::LocalFrameToken& parent_frame_token,
       const blink::RemoteFrameToken& remote_frame_token) override;
   void RequestSharedPerformanceScenarioRegions(
+      uint64_t process_track_id,
       RequestSharedPerformanceScenarioRegionsCallback callback) override;
 
   // Partial ProcessNode implementation:

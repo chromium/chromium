@@ -15,18 +15,125 @@
 #include "base/memory/structured_shared_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
 namespace {
 
 using SharedScenarioState = blink::performance_scenarios::SharedScenarioState;
+
+// Generic methods that change according to the Scenario type.
+template <typename Scenario>
+struct ScenarioTraits {
+  explicit ScenarioTraits(scoped_refptr<RefCountedScenarioState> state_ptr);
+
+  // Returns a reference to the Scenario slot in shared memory.
+  std::atomic<Scenario>& ScenarioRef();
+
+  // Opens a trace event for `scenario` if a tracing track is registered.
+  void MaybeBeginTraceEvent(Scenario scenario) const;
+
+  // Closes the trace event for `scenario` if a tracing track is registered.
+  void MaybeEndTraceEvent(Scenario scenario) const;
+};
+
+template <>
+struct ScenarioTraits<LoadingScenario> {
+  explicit ScenarioTraits(scoped_refptr<RefCountedScenarioState> state_ptr)
+      : state_ptr(std::move(state_ptr)) {}
+
+  std::atomic<LoadingScenario>& ScenarioRef() {
+    return state_ptr->shared_state().WritableRef().loading;
+  }
+
+  void MaybeBeginTraceEvent(LoadingScenario scenario) const {
+    if (!state_ptr->loading_tracing_track()) {
+      return;
+    }
+    switch (scenario) {
+      case LoadingScenario::kNoPageLoading:
+        // No trace event.
+        return;
+      case LoadingScenario::kBackgroundPageLoading:
+        TRACE_EVENT_BEGIN("loading", "BackgroundPageLoading",
+                          *state_ptr->loading_tracing_track());
+        return;
+      case LoadingScenario::kVisiblePageLoading:
+        TRACE_EVENT_BEGIN("loading", "VisiblePageLoading",
+                          *state_ptr->loading_tracing_track());
+        return;
+      case LoadingScenario::kFocusedPageLoading:
+        TRACE_EVENT_BEGIN("loading", "FocusedPageLoading",
+                          *state_ptr->loading_tracing_track());
+        return;
+    }
+    NOTREACHED();
+  }
+
+  void MaybeEndTraceEvent(LoadingScenario scenario) const {
+    if (!state_ptr->loading_tracing_track()) {
+      return;
+    }
+    switch (scenario) {
+      case LoadingScenario::kNoPageLoading:
+        // No trace event.
+        return;
+      case LoadingScenario::kBackgroundPageLoading:
+      case LoadingScenario::kVisiblePageLoading:
+      case LoadingScenario::kFocusedPageLoading:
+        TRACE_EVENT_END("loading", *state_ptr->loading_tracing_track());
+        return;
+    }
+    NOTREACHED();
+  }
+
+  scoped_refptr<RefCountedScenarioState> state_ptr;
+};
+
+template <>
+struct ScenarioTraits<InputScenario> {
+  explicit ScenarioTraits(scoped_refptr<RefCountedScenarioState> state_ptr)
+      : state_ptr(std::move(state_ptr)) {}
+
+  std::atomic<InputScenario>& ScenarioRef() {
+    return state_ptr->shared_state().WritableRef().input;
+  }
+
+  void MaybeBeginTraceEvent(InputScenario scenario) const {
+    if (!state_ptr->input_tracing_track()) {
+      return;
+    }
+    switch (scenario) {
+      case InputScenario::kNoInput:
+        // No trace event.
+        return;
+    }
+    NOTREACHED();
+  }
+
+  void MaybeEndTraceEvent(InputScenario scenario) const {
+    if (!state_ptr->input_tracing_track()) {
+      return;
+    }
+    switch (scenario) {
+      case InputScenario::kNoInput:
+        // No trace event.
+        return;
+    }
+    NOTREACHED();
+  }
+
+  scoped_refptr<RefCountedScenarioState> state_ptr;
+};
 
 // Holds the browser's global scenario state handle.
 scoped_refptr<RefCountedScenarioState>& GlobalSharedStatePtr() {
@@ -47,11 +154,16 @@ PerformanceScenarioMemoryData& GetOrCreatePerformanceScenarioMemoryData(
 // failure. The region's lifetime is tied to `process_node`. Must be called from
 // the PM sequence.
 scoped_refptr<RefCountedScenarioState> GetSharedStateForProcessNode(
-    const ProcessNode* process_node) {
+    const ProcessNode* process_node,
+    uint64_t process_track_id = 0u) {
+  auto& data = GetOrCreatePerformanceScenarioMemoryData(
+      ProcessNodeImpl::FromNode(process_node));
+  if (process_track_id && data.state_ptr) {
+    data.state_ptr->RegisterTracingTracks(
+        perfetto::Track::Global(process_track_id));
+  }
   // Returns a copy of the pointer.
-  return GetOrCreatePerformanceScenarioMemoryData(
-             ProcessNodeImpl::FromNode(process_node))
-      .state_ptr;
+  return data.state_ptr;
 }
 
 // Returns a pointer to the global shared memory region that can be read by all
@@ -62,29 +174,21 @@ scoped_refptr<RefCountedScenarioState> GetGlobalSharedState() {
   return GlobalSharedStatePtr();
 }
 
-// Convenience accessors to return references to the correct member of `state`
-// for Scenario.
+// Sets the value for Scenario in the memory region held in `state_ptr` to
+// `new_scenario`.
 template <typename Scenario>
-std::atomic<Scenario>& GetScenarioRef(SharedScenarioState& state);
-
-template <>
-std::atomic<LoadingScenario>& GetScenarioRef(SharedScenarioState& state) {
-  return state.WritableRef().loading;
-}
-
-template <>
-std::atomic<InputScenario>& GetScenarioRef(SharedScenarioState& state) {
-  return state.WritableRef().input;
-}
-
-template <typename Scenario>
-void SetScenarioValue(Scenario scenario,
+void SetScenarioValue(Scenario new_scenario,
                       scoped_refptr<RefCountedScenarioState> state_ptr) {
   if (state_ptr) {
+    ScenarioTraits<Scenario> traits(std::move(state_ptr));
     // std::memory_order_relaxed is sufficient since no other memory depends on
     // the scenario value.
-    GetScenarioRef<Scenario>(state_ptr->shared_state())
-        .store(scenario, std::memory_order_relaxed);
+    Scenario old_scenario =
+        traits.ScenarioRef().exchange(new_scenario, std::memory_order_relaxed);
+    if (old_scenario != new_scenario) {
+      traits.MaybeEndTraceEvent(old_scenario);
+      traits.MaybeBeginTraceEvent(new_scenario);
+    }
   }
 }
 
@@ -120,9 +224,13 @@ void SetGlobalScenarioValue(Scenario scenario) {
 
 ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory() {
   CHECK(!GlobalSharedStatePtr());
-  GlobalSharedStatePtr() = RefCountedScenarioState::Create();
-  read_only_mapping_.emplace(blink::performance_scenarios::Scope::kGlobal,
-                             GetGlobalSharedScenarioRegion());
+  auto state_ptr = RefCountedScenarioState::Create();
+  if (state_ptr) {
+    state_ptr->RegisterTracingTracks(perfetto::ProcessTrack::Current());
+    GlobalSharedStatePtr() = std::move(state_ptr);
+    read_only_mapping_.emplace(blink::performance_scenarios::Scope::kGlobal,
+                               GetGlobalSharedScenarioRegion());
+  }
 }
 
 ScopedGlobalScenarioMemory::~ScopedGlobalScenarioMemory() {
@@ -130,8 +238,9 @@ ScopedGlobalScenarioMemory::~ScopedGlobalScenarioMemory() {
 }
 
 base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcessNode(
-    const ProcessNode* process_node) {
-  auto state_ptr = GetSharedStateForProcessNode(process_node);
+    const ProcessNode* process_node,
+    uint64_t process_track_id) {
+  auto state_ptr = GetSharedStateForProcessNode(process_node, process_track_id);
   return state_ptr ? state_ptr->shared_state().DuplicateReadOnlyRegion()
                    : base::ReadOnlySharedMemoryRegion();
 }

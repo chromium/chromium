@@ -125,6 +125,10 @@ interface ProcessCoordinationUnit {
   // renderer. If any returned region handle is invalid, the renderer will use
   // default state instead of reading from that memory region.
   //
+  // `process_track_id` is the uuid of the renderer's perfetto::ProcessTrack.
+  // If it's non-zero, the browser process will use this to record trace events
+  // when it updates state in `process_region`.
+  //
   // `global_region` should contain a list of `std::atomic` enums representing
   // global scenarios that the renderer should use when making performance
   // decisions.
@@ -132,7 +136,7 @@ interface ProcessCoordinationUnit {
   // `process_region` should contain a list of `std::atomic` enums representing
   // scenarios local to the renderer process that it should use when making
   // performance decisions.
-  RequestSharedPerformanceScenarioRegions() =>
+  RequestSharedPerformanceScenarioRegions(uint64 process_track_id) =>
       (mojo_base.mojom.ReadOnlySharedMemoryRegion? global_region,
        mojo_base.mojom.ReadOnlySharedMemoryRegion? process_region);
 };

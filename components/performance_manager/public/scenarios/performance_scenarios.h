@@ -48,10 +48,12 @@ class ScopedGlobalScenarioMemory {
 
 // Returns a copy of the shared memory handle for the scenario state of
 // `process_node`, or an invalid handle if there is none. The handle can be
-// passed to the child process to map in the scenario state. Must be called from
-// the PM sequence.
+// passed to the child process to map in the scenario state. If
+// `process_track_id` is non-zero, it will be associated with the scenario state
+// to log trace events. Must be called from the PM sequence.
 base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcessNode(
-    const ProcessNode* process_node);
+    const ProcessNode* process_node,
+    uint64_t process_track_id = 0u);
 
 // Returns a copy of the shared memory handle for the global scenario state, or
 // an invalid handle if there is none. The handle can be passed to child
