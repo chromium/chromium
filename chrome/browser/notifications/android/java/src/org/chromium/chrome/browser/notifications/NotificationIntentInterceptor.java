@@ -126,9 +126,10 @@ public class NotificationIntentInterceptor {
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
                     || hasVisibleActivities()) {
-                processIntent(getIntent());
+                handleNotificationIntent();
                 finish();
                 return;
             }
@@ -136,7 +137,7 @@ public class NotificationIntentInterceptor {
             if (!ChromeFeatureList.sForceTranslucentNotificationTrampoline.isEnabled()
                     && getApplicationContext().getApplicationInfo().targetSdkVersion
                             < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                processIntent(getIntent());
+                handleNotificationIntent();
                 finish();
                 return;
             }
@@ -144,13 +145,13 @@ public class NotificationIntentInterceptor {
             // If there is already a trampoline activity, finish this instance so that the current
             // tracked activity will continue to be shown.
             if (!TrampolineActivityTracker.getInstance().tryTrackActivity(this)) {
-                processIntent(getIntent());
+                handleNotificationIntent();
                 finish();
                 return;
             }
 
             setContentView(R.layout.notification_trampoline);
-            if (!processIntent(getIntent())) {
+            if (!handleNotificationIntent()) {
                 TrampolineActivityTracker.getInstance().finishTrackedActivity();
             }
         }
@@ -159,6 +160,14 @@ public class NotificationIntentInterceptor {
             for (Activity activity : ApplicationStatus.getRunningActivities()) {
                 @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
                 if (state == ActivityState.RESUMED || state == ActivityState.PAUSED) return true;
+            }
+            return false;
+        }
+
+        private boolean handleNotificationIntent() {
+            if (processIntent(getIntent())) {
+                TrampolineActivityTracker.getInstance().onNotificationIntentStarted();
+                return true;
             }
             return false;
         }

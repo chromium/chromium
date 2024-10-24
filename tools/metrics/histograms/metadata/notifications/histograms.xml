@@ -128,6 +128,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.IntentProcessedInParallel"
+    units="intents" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the number of notification that are processed in parallel. A sample
+    is recorded when a new intent is received by TrampolineActivity and
+    forwarded to Chrome. Measured on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.Android.IntentStartToFinishDuration.{NativeInitialized}"
+    units="ms" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records how long it takes from receiving a notification in the
+    TrampolineActivity to finish processing the notification. A sample is
+    recorded when a qualified notification is processed. Measured on Android.
+  </summary>
+  <token key="NativeInitialized">
+    <variant name="NativeInitialized"
+        summary="Native was initialized when receiving the intent."/>
+    <variant name="NativeUninitialized"
+        summary="Native was not initialized when receiving the intent."/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Android.IntentStartToNativeInitializedDuration"
+    units="ms" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records how long it takes from receiving a notification in the
+    TrampolineActivity to finish initializing the native library. A sample is
+    recorded the first time native library is initialized upon receiving a
+    notification intent. Measured on Android.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.JobIsAlreadyPending{IntentAction}"
     enum="Boolean" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>

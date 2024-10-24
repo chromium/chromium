@@ -11,6 +11,7 @@ import android.os.Looper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.Collections;
@@ -51,6 +52,13 @@ public class TrampolineActivityTracker {
     // The elapsed real time in Milliseconds to finish the tracked activity.
     private long mActivityFinishTimeInMillis;
 
+    // The latest time when notification intent is started.
+    private long mNotificationIntentStartTime;
+    // Whether native is initialized when the most recent notification intent is started.
+    private boolean mIsNativeInitializedWhenIntentStarted;
+    // Number of notifications that is currently processed in parallel.
+    private int mNotificationInProcessing;
+
     /**
      * Returns the singleton instance, lazily creating one if needed.
      *
@@ -68,6 +76,27 @@ public class TrampolineActivityTracker {
     TrampolineActivityTracker() {
         mHandler = new Handler(Looper.getMainLooper());
         mRunnable = this::finishTrackedActivity;
+    }
+
+    /**
+     * Called when TrampolineActivity is created.
+     *
+     * @param hasVisibleActivity Whether Chrome has activities visible to user.
+     */
+    public void onNotificationIntentStarted() {
+        long lastStartTime = mNotificationIntentStartTime;
+        mNotificationIntentStartTime = TimeUtils.elapsedRealtimeMillis();
+        mIsNativeInitializedWhenIntentStarted = mNativeInitialized;
+
+        // Some notification might not report their job, Reset
+        // `mNotificationInProcessing` after some time.
+        if (mNotificationIntentStartTime - lastStartTime
+                > TIMEOUT_PRIOR_NATIVE_INIT_IN_MILLISECONDS) {
+            mNotificationInProcessing = 0;
+        }
+        mNotificationInProcessing++;
+        RecordHistogram.recordCount100Histogram(
+                "Notifications.Android.IntentProcessedInParallel", mNotificationInProcessing);
     }
 
     /**
@@ -130,6 +159,18 @@ public class TrampolineActivityTracker {
      * @param jobId The ID of the job.
      */
     public void onIntentCompleted(int jobId) {
+        if (mNotificationIntentStartTime > 0) {
+            if (mNotificationInProcessing > 0) {
+                mNotificationInProcessing--;
+            }
+            String histogram =
+                    "Notifications.Android.IntentStartToFinishDuration."
+                            + (mIsNativeInitializedWhenIntentStarted
+                                    ? "NativeInitialized"
+                                    : "NativeUninitialized");
+            RecordHistogram.recordTimesHistogram(
+                    histogram, TimeUtils.elapsedRealtimeMillis() - mNotificationIntentStartTime);
+        }
         if (jobId == INVALID_JOB_HANDLE) return;
 
         mEstimatedJobCompletionTimeMap.remove(jobId);
@@ -147,6 +188,12 @@ public class TrampolineActivityTracker {
     public void onNativeInitialized() {
         mNativeInitialized = true;
 
+        if (mNotificationIntentStartTime > 0) {
+            assert !mIsNativeInitializedWhenIntentStarted;
+            RecordHistogram.recordTimesHistogram(
+                    "Android.Notification.Startup.NativeInitialized",
+                    TimeUtils.elapsedRealtimeMillis() - mNotificationIntentStartTime);
+        }
         if (mTrackedActivity == null) return;
 
         // There are no jobs yet, wait a small amount of time for jobs to be added. If there
