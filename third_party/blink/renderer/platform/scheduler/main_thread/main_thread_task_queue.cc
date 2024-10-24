@@ -82,41 +82,6 @@ QueueName MainThreadTaskQueue::NameForQueueType(
   return QueueName::UNKNOWN_TQ;
 }
 
-// static
-bool MainThreadTaskQueue::IsPerFrameTaskQueue(
-    MainThreadTaskQueue::QueueType queue_type) {
-  switch (queue_type) {
-    // TODO(altimin): Remove kDefault once there is no per-frame kDefault queue.
-    case MainThreadTaskQueue::QueueType::kDefault:
-    case MainThreadTaskQueue::QueueType::kFrameLoading:
-    case MainThreadTaskQueue::QueueType::kFrameLoadingControl:
-    case MainThreadTaskQueue::QueueType::kFrameThrottleable:
-    case MainThreadTaskQueue::QueueType::kFrameDeferrable:
-    case MainThreadTaskQueue::QueueType::kFramePausable:
-    case MainThreadTaskQueue::QueueType::kFrameUnpausable:
-    case MainThreadTaskQueue::QueueType::kIdle:
-    case MainThreadTaskQueue::QueueType::kWebScheduling:
-      return true;
-    case MainThreadTaskQueue::QueueType::kControl:
-    case MainThreadTaskQueue::QueueType::kCompositor:
-    case MainThreadTaskQueue::QueueType::kTest:
-    case MainThreadTaskQueue::QueueType::kV8:
-    case MainThreadTaskQueue::QueueType::kV8UserVisible:
-    case MainThreadTaskQueue::QueueType::kV8BestEffort:
-    case MainThreadTaskQueue::QueueType::kInput:
-    case MainThreadTaskQueue::QueueType::kDetached:
-    case MainThreadTaskQueue::QueueType::kNonWaking:
-    case MainThreadTaskQueue::QueueType::kOther:
-    case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
-      return false;
-    case MainThreadTaskQueue::QueueType::kCount:
-      NOTREACHED_IN_MIGRATION();
-      return false;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 MainThreadTaskQueue::MainThreadTaskQueue(
     base::sequence_manager::SequenceManager& sequence_manager,
     const TaskQueue::Spec& spec,
