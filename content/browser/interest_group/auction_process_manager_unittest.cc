@@ -9,9 +9,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -50,6 +52,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -177,6 +180,17 @@ class TestAuctionProcessManager
     launched_processes_.emplace_back(worklet_process.GetWeakPtrForTesting());
     if constexpr (std::is_same<AuctionManagerBaseType,
                                InRendererAuctionProcessManager>::value) {
+      // The MockRenderProcessHost drops Mojo pipes on the floor by default, so
+      // need to set a binder so `this` can intercept them and bind them to
+      // `receiver_set_`, while still exercising the production
+      // CreateProcessInternal() call.
+      static_cast<MockRenderProcessHost*>(
+          worklet_process.site_instance()->GetProcess())
+          ->OverrideBinderForTesting(
+              auction_worklet::mojom::AuctionWorkletService::Name_,
+              base::BindRepeating(&TestAuctionProcessManager<
+                                      AuctionManagerBaseType>::BindInterface,
+                                  weak_ptr_factory_.GetWeakPtr()));
       // Defer to the RendererProcessHost mocks when using the InRenderer path.
       return AuctionManagerBaseType::CreateProcessInternal(worklet_process);
     } else {
@@ -188,11 +202,22 @@ class TestAuctionProcessManager
     }
   }
 
+  // Callback when trying to bind a pipe through the MockRenderProcessHost.
+  void BindInterface(mojo::ScopedMessagePipeHandle pipe) {
+    receiver_set_.Add(
+        this,
+        mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>(
+            std::move(pipe)));
+  }
+
   std::vector<base::WeakPtr<AuctionProcessManager::WorkletProcess>>
       launched_processes_;
 
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
       receiver_set_;
+
+  base::WeakPtrFactory<TestAuctionProcessManager<AuctionManagerBaseType>>
+      weak_ptr_factory_{this};
 };
 
 // ContentBrowserClient to disable strict site isolation.
@@ -223,11 +248,12 @@ enum class ProcessMode {
 };
 
 class AuctionProcessManagerTestBase
-    : public testing::TestWithParam<AuctionProcessManager::WorkletType> {
+    : public testing::TestWithParam<
+          std::tuple<AuctionProcessManager::WorkletType, ProcessMode>> {
  protected:
-  explicit AuctionProcessManagerTestBase(ProcessMode process_mode) {
+  AuctionProcessManagerTestBase() {
     SiteIsolationPolicy::DisableFlagCachingForTesting();
-    switch (process_mode) {
+    switch (GetProcessMode()) {
       case ProcessMode::kDedicated:
         dedicated_process_manager_.emplace();
         auction_process_manager_ = &dedicated_process_manager_.value();
@@ -349,8 +375,12 @@ class AuctionProcessManagerTestBase
     }
   }
 
+  ProcessMode GetProcessMode() const {
+    return std::get<ProcessMode>(GetParam());
+  }
+
   AuctionProcessManager::WorkletType GetWorkletType() const {
-    return GetParam();
+    return std::get<AuctionProcessManager::WorkletType>(GetParam());
   }
 
   AuctionProcessManager::WorkletType GetOtherWorkletType() const {
@@ -431,8 +461,7 @@ class AuctionProcessManagerTestBase
 
 class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
  protected:
-  AuctionProcessManagerTest()
-      : AuctionProcessManagerTestBase(ProcessMode::kDedicated) {}
+  AuctionProcessManagerTest() = default;
 
   // Request a worklet service and expect the request to complete synchronously.
   // There's no async version, since async calls are only triggered by deleting
@@ -464,8 +493,7 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
 class DedicatedStyleAuctionProcessManagerTest
     : public AuctionProcessManagerTestBase {
  protected:
-  DedicatedStyleAuctionProcessManagerTest()
-      : AuctionProcessManagerTestBase(ProcessMode::kDedicated) {
+  DedicatedStyleAuctionProcessManagerTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "10s"}});
@@ -474,17 +502,24 @@ class DedicatedStyleAuctionProcessManagerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Run most tests in both kDedicated and kInRendererSitePerProcess modes, as
+// their behavior should be very similar in most cases.
 INSTANTIATE_TEST_SUITE_P(
     All,
     AuctionProcessManagerTest,
-    testing::Values(AuctionProcessManager::WorkletType::kSeller,
-                    AuctionProcessManager::WorkletType::kBidder));
+    testing::Combine(
+        testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                        AuctionProcessManager::WorkletType::kBidder),
+        testing::Values(ProcessMode::kDedicated,
+                        ProcessMode::kInRendererSitePerProcess)));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DedicatedStyleAuctionProcessManagerTest,
-    testing::Values(AuctionProcessManager::WorkletType::kSeller,
-                    AuctionProcessManager::WorkletType::kBidder));
+    testing::Combine(
+        testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                        AuctionProcessManager::WorkletType::kBidder),
+        testing::Values(ProcessMode::kDedicated)));
 
 TEST_P(AuctionProcessManagerTest, Basic) {
   auto worklet = GetServiceExpectSuccess(kOriginA);
@@ -1380,8 +1415,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
 class InRendererAuctionProcessManagerTestBase
     : public AuctionProcessManagerTestBase {
  public:
-  explicit InRendererAuctionProcessManagerTestBase(ProcessMode process_mode)
-      : AuctionProcessManagerTestBase(process_mode) {
+  InRendererAuctionProcessManagerTestBase() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "3s"}});
@@ -1413,36 +1447,28 @@ class InRendererAuctionProcessManagerTestBase
 // behavior, i.e. site-per-process is enabled, and
 // kOriginKeyedProcessesByDefault and process sharing for non-default
 // SiteInstances is allowed.
-class InRendererAuctionProcessManagerTest
-    : public InRendererAuctionProcessManagerTestBase {
- public:
-  InRendererAuctionProcessManagerTest()
-      : InRendererAuctionProcessManagerTestBase(
-            ProcessMode::kInRendererSitePerProcess) {}
-};
-
+using InRendererAuctionProcessManagerTest =
+    InRendererAuctionProcessManagerTestBase;
 INSTANTIATE_TEST_SUITE_P(
     All,
     InRendererAuctionProcessManagerTest,
-    testing::Values(AuctionProcessManager::WorkletType::kSeller,
-                    AuctionProcessManager::WorkletType::kBidder));
+    testing::Combine(
+        testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                        AuctionProcessManager::WorkletType::kBidder),
+        testing::Values(ProcessMode::kInRendererSitePerProcess)));
 
 // A test class for AuctionProcessManager tests that require Android-like
 // behavior, i.e. site-per-process is disabled, kOriginKeyedProcessesByDefault
 // is disabled, and process sharing is set for default SiteInstances only.
-class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
-    : public InRendererAuctionProcessManagerTestBase {
- public:
-  InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault()
-      : InRendererAuctionProcessManagerTestBase(
-            ProcessMode::kInRendererSharedProcess) {}
-};
-
+using InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault =
+    InRendererAuctionProcessManagerTestBase;
 INSTANTIATE_TEST_SUITE_P(
     All,
     InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
-    testing::Values(AuctionProcessManager::WorkletType::kSeller,
-                    AuctionProcessManager::WorkletType::kBidder));
+    testing::Combine(
+        testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                        AuctionProcessManager::WorkletType::kBidder),
+        testing::Values(ProcessMode::kInRendererSharedProcess)));
 
 TEST_P(InRendererAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   // Exercise the codepath where a RenderProcessHostDestroyed is received, to
@@ -1542,19 +1568,23 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
+                                    kOriginA);
   int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_, kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
+                                    kOriginA);
   int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
-      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_, kOriginB);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
+                                    kOriginB);
   int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
-      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_, kOriginB);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
+                                    kOriginB);
   int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
 
   // Non-site-isolation requiring origins can share processes, but not across
@@ -1572,12 +1602,12 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   // Site-isolation requiring origins are distinct from non-isolated ones, but
   // can share across browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
-      GetServiceOfTypeExpectSuccess(GetParam(), site_instance1_,
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
                                     kIsolatedOrigin);
   int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
-      GetServiceOfTypeExpectSuccess(GetParam(), site_instance2_,
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
                                     kIsolatedOrigin);
   int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
 
