@@ -1,0 +1,38 @@
+{
+  "mac11-arm64-updater-tester-dbg": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "updater_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-11",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "updater_tests_system",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-11",
+            "pool": "chromium.updater.mac"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests_system",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
+      }
+    ]
+  }
+}

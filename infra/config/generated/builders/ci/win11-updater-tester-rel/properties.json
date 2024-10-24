@@ -62,7 +62,8 @@
           "builder": "win11-updater-tester-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win11-updater-tester-rel/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

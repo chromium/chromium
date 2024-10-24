@@ -294,13 +294,6 @@
       'has_native_resultdb_integration': True,
     },
   },
-  'integrity_high': {
-    'swarming': {
-      'dimensions': {
-        'integrity': 'high',
-      },
-    },
-  },
   'intel_uhd_630_or_770': {
     'swarming': {
       'dimensions': {
@@ -635,27 +628,6 @@
       'io_timeout': 1800,
     },
   },
-  'updater-default-pool': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.tests',
-      },
-    },
-  },
-  'updater-mac-pool': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.updater.mac',
-      },
-    },
-  },
-  'updater-win-uac-pool': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.win.uac',
-      },
-    },
-  },
   'vaapi_unittest_args': {
     'args': [
       '--stop-ui',
@@ -756,13 +728,6 @@
         'os': 'Windows-11-22631',
       },
       'expiration': 36000,
-    },
-  },
-  'win11-any': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-11',
-      },
     },
   },
   'x86-64': {

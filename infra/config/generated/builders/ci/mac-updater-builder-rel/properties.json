@@ -111,7 +111,8 @@
           "builder": "mac-updater-try-builder-rel",
           "group": "tryserver.chromium.updater"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-updater-builder-rel/targets"
     }
   },
   "$build/reclient": {

@@ -62,7 +62,8 @@
           "builder": "win11-updater-tester-dbg-uac",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win11-updater-tester-dbg-uac/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

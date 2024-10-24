@@ -5065,6 +5065,76 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "updater_gtests_linux",
+    targets = [
+        "updater_tests",
+        # 'updater_tests_system' is not yet supported on Linux.
+    ],
+    per_test_modifications = {
+        "updater_tests": [
+            "updater-default-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "updater_gtests_mac",
+    targets = [
+        "updater_tests",
+        "updater_tests_system",
+    ],
+    per_test_modifications = {
+        "updater_tests": [
+            "updater-default-pool",
+        ],
+        "updater_tests_system": [
+            "updater-mac-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "updater_gtests_win",
+    targets = [
+        "updater_tests",
+        "updater_tests_system",
+    ],
+    per_test_modifications = {
+        "updater_tests": [
+            "integrity_high",
+            "updater-default-pool",
+        ],
+        "updater_tests_system": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                    hard_timeout_sec = 7200,
+                ),
+            ),
+            "integrity_high",
+            "updater-default-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "updater_gtests_win_uac",
+    targets = [
+        "updater_tests_system",
+        "updater_tests_win_uac",
+    ],
+    per_test_modifications = {
+        "updater_tests_system": [
+            "integrity_high",
+            "updater-win-uac-pool",
+        ],
+        "updater_tests_win_uac": [
+            "updater-win-uac-pool",
+        ],
+    },
+)
+
+targets.bundle(
     name = "upload_perfetto",
     targets = [
         "upload_trace_processor",

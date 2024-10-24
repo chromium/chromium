@@ -3036,60 +3036,6 @@
       },
     },
 
-    'updater_gtests_linux': {
-      'updater_tests': {
-        'mixins': [
-          'updater-default-pool',
-        ],
-      },
-    },
-
-    'updater_gtests_mac': {
-      'updater_tests': {
-        'mixins': [
-          'updater-default-pool',
-        ],
-      },
-      'updater_tests_system': {
-        'mixins': [
-          'updater-mac-pool',
-        ],
-      },
-    },
-
-    'updater_gtests_win': {
-      'updater_tests': {
-        'mixins': [
-          'integrity_high',
-          'updater-default-pool',
-        ],
-      },
-      'updater_tests_system': {
-        'mixins': [
-          'integrity_high',
-          'updater-default-pool',
-        ],
-        'swarming': {
-          'shards': 2,
-          'hard_timeout': 7200,
-        },
-      },
-    },
-
-    'updater_gtests_win_uac': {
-      'updater_tests_system': {
-        'mixins': [
-          'integrity_high',
-          'updater-win-uac-pool',
-        ],
-      },
-      'updater_tests_win_uac': {
-        'mixins': [
-          'updater-win-uac-pool',
-        ],
-      },
-    },
-
     'vr_platform_specific_chromium_gtests': {
       'vr_common_unittests': {},
     },

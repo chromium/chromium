@@ -78,7 +78,8 @@
           "builder": "linux-updater-try-builder-rel",
           "group": "tryserver.chromium.updater"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-updater-builder-rel/targets"
     }
   },
   "$build/reclient": {

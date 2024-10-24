@@ -863,6 +863,7 @@ targets.mixin(
 
 targets.mixin(
     name = "integrity_high",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "integrity": "high",
@@ -1802,6 +1803,7 @@ targets.mixin(
 
 targets.mixin(
     name = "updater-default-pool",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "pool": "chromium.tests",
@@ -1811,6 +1813,7 @@ targets.mixin(
 
 targets.mixin(
     name = "updater-mac-pool",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             # Bots in this pool support passwordless sudo.
@@ -1821,6 +1824,7 @@ targets.mixin(
 
 targets.mixin(
     name = "updater-win-uac-pool",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "pool": "chromium.win.uac",
@@ -2086,6 +2090,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win11-any",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Windows-11",
