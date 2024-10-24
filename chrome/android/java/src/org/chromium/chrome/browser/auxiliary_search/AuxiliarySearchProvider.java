@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
@@ -123,19 +124,14 @@ public class AuxiliarySearchProvider {
     public void getTabsSearchableDataProtoWithFaviconAsync(
             @NonNull Callback<AuxiliarySearchTabGroup> callback,
             @Nullable FaviconImageFetchedCallback faviconImageFetchedCallback) {
-        long startTimeMs = System.currentTimeMillis();
-        long minAccessTime = startTimeMs - mTabMaxAgeMillis;
+        long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
         mAuxiliarySearchBridge.getNonSensitiveTabs(
                 listTab,
                 tabs -> {
                     onNonSensitiveTabsAvailable(
-                            mFaviconHelper,
-                            callback,
-                            faviconImageFetchedCallback,
-                            tabs,
-                            startTimeMs);
+                            mFaviconHelper, callback, faviconImageFetchedCallback, tabs);
                 });
     }
 
@@ -144,8 +140,8 @@ public class AuxiliarySearchProvider {
             @NonNull FaviconHelper faviconHelper,
             @NonNull Callback<AuxiliarySearchTabGroup> callback,
             @Nullable FaviconImageFetchedCallback faviconImageFetchedCallback,
-            @NonNull List<Tab> tabs,
-            long starTimeMs) {
+            @NonNull List<Tab> tabs) {
+        long startTimeMs = TimeUtils.uptimeMillis();
         var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
 
         int count = 0;
@@ -178,7 +174,7 @@ public class AuxiliarySearchProvider {
         callback.onResult(tabGroupBuilder.build());
 
         if (mIsFaviconEnabled) {
-            scheduleBackgroundTask(0L, starTimeMs);
+            scheduleBackgroundTask(0L, startTimeMs);
         }
     }
 

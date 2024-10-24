@@ -16,8 +16,8 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.PersistableBundle;
-import android.os.SystemClock;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +31,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -59,11 +61,11 @@ import java.util.Map;
 public class AuxiliarySearchBackgroundTaskUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
+    public @Rule FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
     private static final int START_TIME = 1000;
-    private static final int CURRENT_TIME = 2000;
     private static final String TITLE_1 = "Title 1";
     private static final String TITLE_2 = "Title 2";
     private static final GURL URL_1 = JUnitTestGURLs.URL_1;
@@ -85,14 +87,14 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     public void setUp() throws Exception {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
-        SystemClock.setCurrentTimeMillis(CURRENT_TIME);
+        long now = TimeUtils.uptimeMillis();
         mEntries = new ArrayList<>();
         mEntries.add(
                 AuxiliarySearchProvider.createAuxiliarySearchEntry(
-                        TAB_ID_1, TITLE_1, URL_1.getSpec(), CURRENT_TIME));
+                        TAB_ID_1, TITLE_1, URL_1.getSpec(), now));
         mEntries.add(
                 AuxiliarySearchProvider.createAuxiliarySearchEntry(
-                        TAB_ID_2, TITLE_2, URL_2.getSpec(), CURRENT_TIME));
+                        TAB_ID_2, TITLE_2, URL_2.getSpec(), now));
 
         PersistableBundle bundle = new PersistableBundle();
         bundle.putLong(AuxiliarySearchProvider.TASK_CREATED_TIME, START_TIME);
@@ -101,6 +103,11 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
                         .addExtras(bundle)
                         .build();
         mTask = new AuxiliarySearchBackgroundTask();
+    }
+
+    @After
+    public void tearDown() {
+        mFakeTime.resetTimes();
     }
 
     @Test
@@ -118,7 +125,9 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         String histogramName = "Search.AuxiliarySearch.Schedule.DelayTime";
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(histogramName, (int) (CURRENT_TIME - expectedStartTimeMs))
+                        .expectIntRecord(
+                                histogramName,
+                                (int) (TimeUtils.uptimeMillis() - expectedStartTimeMs))
                         .build();
 
         mTask.onStartTaskWithNative(mContext, mParams, mTaskFinishedCallback);
@@ -141,12 +150,11 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
 
     @Test
     public void testOnTabDonateMetadataRead() {
-        int timeDelta = 5;
         int faviconSize = 50;
         mTask.onTabDonateMetadataRead(
                 mProfile,
                 faviconSize,
-                CURRENT_TIME + timeDelta,
+                TimeUtils.uptimeMillis(),
                 mTaskFinishedCallback,
                 mFaviconHelper,
                 mAuxiliarySearchController,
@@ -194,12 +202,11 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
 
     @Test
     public void testOnTabDonateMetadataRead_NoFaviconsAvailable() {
-        int timeDelta = 5;
         int faviconSize = 50;
         mTask.onTabDonateMetadataRead(
                 mProfile,
                 faviconSize,
-                CURRENT_TIME + timeDelta,
+                TimeUtils.uptimeMillis(),
                 mTaskFinishedCallback,
                 mFaviconHelper,
                 mAuxiliarySearchController,

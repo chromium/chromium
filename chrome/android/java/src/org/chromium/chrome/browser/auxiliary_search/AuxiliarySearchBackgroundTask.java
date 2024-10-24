@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -15,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
@@ -84,7 +84,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                 AuxiliarySearchControllerFactory.createAuxiliarySearchController(
                         mContext, profile, /* TabModelSelector= */ null);
 
-        long startTimeMs = SystemClock.currentThreadTimeMillis();
+        long startTimeMs = TimeUtils.uptimeMillis();
         // Record the delay from soonest expected wakeup time.
         long delayFromExpectedMs =
                 startTimeMs

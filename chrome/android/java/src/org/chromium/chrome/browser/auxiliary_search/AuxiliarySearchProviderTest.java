@@ -341,7 +341,7 @@ public class AuxiliarySearchProviderTest {
         }
 
         mAuxiliarySearchProvider.onNonSensitiveTabsAvailable(
-                mFaviconHelper, mCallback, mFaviconImageFetchedCallback, tabList, now);
+                mFaviconHelper, mCallback, mFaviconImageFetchedCallback, tabList);
 
         // Verifies that the tabs are sorted with timestamp descending, i.e., the most recent tab as
         // as the first.
