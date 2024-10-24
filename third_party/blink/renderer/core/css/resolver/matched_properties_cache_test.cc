@@ -271,8 +271,6 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
 
   auto style_builder_a = CreateStyleBuilder();
   auto style_builder_b = CreateStyleBuilder();
-  style_builder_a.SetHasVariableReferenceFromNonInheritedProperty();
-  style_builder_b.SetHasVariableReferenceFromNonInheritedProperty();
   const auto* style_a = style_builder_a.TakeStyle();
   const auto* style_b = style_builder_b.TakeStyle();
 
@@ -291,8 +289,6 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
 
   auto style_builder_a = CreateStyleBuilder();
   auto style_builder_b = CreateStyleBuilder();
-  style_builder_a.SetHasVariableReferenceFromNonInheritedProperty();
-  style_builder_b.SetHasVariableReferenceFromNonInheritedProperty();
   const auto* style_a = style_builder_a.TakeStyle();
   const auto* style_b = style_builder_b.TakeStyle();
 

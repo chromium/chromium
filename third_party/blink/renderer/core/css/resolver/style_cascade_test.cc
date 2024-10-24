@@ -3199,7 +3199,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghand) {
   cascade.Add("width", "var(--x)");
   cascade.Apply();
   const auto* style = cascade.TakeStyle();
-  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_TRUE(style->HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthand) {
@@ -3208,7 +3208,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthand) {
   cascade.Add("margin", "var(--x)");
   cascade.Apply();
   const auto* style = cascade.TakeStyle();
-  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_TRUE(style->HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghandMissingVar) {
@@ -3216,7 +3216,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghandMissingVar) {
   cascade.Add("width", "var(--x)");
   cascade.Apply();
   const auto* style = cascade.TakeStyle();
-  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_TRUE(style->HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthandMissingVar) {
@@ -3224,15 +3224,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthandMissingVar) {
   cascade.Add("margin", "var(--x)");
   cascade.Apply();
   const auto* style = cascade.TakeStyle();
-  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
-}
-
-TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceInherited) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color", "var(--x)");
-  cascade.Apply();
-  const auto* style = cascade.TakeStyle();
-  EXPECT_FALSE(style->HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_TRUE(style->HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceWithoutVar) {
@@ -3240,7 +3232,7 @@ TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceWithoutVar) {
   cascade.Add("width", "1px");
   cascade.Apply();
   const auto* style = cascade.TakeStyle();
-  EXPECT_FALSE(style->HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_FALSE(style->HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
@@ -3512,9 +3504,7 @@ TEST_F(StyleCascadeTest, MarkHasReferenceLonghand) {
   cascade.Add("background-color:var(--x)");
   cascade.Apply();
 
-  EXPECT_TRUE(cascade.State()
-                  .StyleBuilder()
-                  .HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_TRUE(cascade.State().StyleBuilder().HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, MarkHasReferenceShorthand) {
@@ -3524,23 +3514,7 @@ TEST_F(StyleCascadeTest, MarkHasReferenceShorthand) {
   cascade.Add("background:var(--x)");
   cascade.Apply();
 
-  EXPECT_TRUE(cascade.State()
-                  .StyleBuilder()
-                  .HasVariableReferenceFromNonInheritedProperty());
-}
-
-TEST_F(StyleCascadeTest, NoMarkHasReferenceForInherited) {
-  TestCascade cascade(GetDocument());
-
-  cascade.Add("--x:red");
-  cascade.Add("--y:caption");
-  cascade.Add("color:var(--x)");
-  cascade.Add("font:var(--y)");
-  cascade.Apply();
-
-  EXPECT_FALSE(cascade.State()
-                   .StyleBuilder()
-                   .HasVariableReferenceFromNonInheritedProperty());
+  EXPECT_TRUE(cascade.State().StyleBuilder().HasVariableReference());
 }
 
 TEST_F(StyleCascadeTest, Reset) {

@@ -1845,9 +1845,6 @@ void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,
 }
 
 void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
-  if (!property.IsInherited()) {
-    state_.StyleBuilder().SetHasVariableReferenceFromNonInheritedProperty();
-  }
   state_.StyleBuilder().SetHasVariableReference();
 }
 

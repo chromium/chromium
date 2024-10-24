@@ -69,8 +69,6 @@ class CORE_EXPORT CachedMatchedProperties final
     Member<const ComputedStyle> parent_computed_style;
     unsigned last_used;
 
-    bool DependenciesEqual(const StyleResolverState&) const;
-
     void Trace(Visitor* visitor) const {
       visitor->Trace(computed_style);
       visitor->Trace(parent_computed_style);

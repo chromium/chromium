@@ -81,44 +81,6 @@ void CachedMatchedProperties::Clear() {
   entries.clear();
 }
 
-bool CachedMatchedProperties::Entry::DependenciesEqual(
-    const StyleResolverState& state) const {
-  if (!state.ParentStyle()) {
-    return false;
-  }
-  if ((parent_computed_style->IsEnsuredInDisplayNone() ||
-       computed_style->IsEnsuredOutsideFlatTree()) &&
-      !state.ParentStyle()->IsEnsuredInDisplayNone() &&
-      !state.IsOutsideFlatTree()) {
-    // If we cached a ComputedStyle in a display:none subtree, or outside the
-    // flat tree,  we would not have triggered fetches for external resources
-    // and have StylePendingImages in the ComputedStyle. Instead of having to
-    // inspect the cached ComputedStyle for such resources, don't use a cached
-    // ComputedStyle when it was cached in display:none but is now rendered.
-    return false;
-  }
-
-  if (parent_computed_style->GetWritingMode() !=
-      state.ParentStyle()->GetWritingMode()) {
-    return false;
-  }
-  if (parent_computed_style->Direction() != state.ParentStyle()->Direction()) {
-    return false;
-  }
-  if (parent_computed_style->UsedColorScheme() !=
-      state.ParentStyle()->UsedColorScheme()) {
-    return false;
-  }
-  if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
-    if (!base::ValuesEquivalent(parent_computed_style->InheritedVariables(),
-                                state.ParentStyle()->InheritedVariables())) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 MatchedPropertiesCache::MatchedPropertiesCache() = default;
 
 MatchedPropertiesCache::Key::Key(const MatchResult& result)
@@ -161,8 +123,18 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
       // UserModify() is the initial value.
       continue;
     }
-    if (entry.DependenciesEqual(style_resolver_state) &&
-        style_resolver_state.ParentStyle()->InheritedDataShared(
+    if ((entry.parent_computed_style->IsEnsuredInDisplayNone() ||
+         entry.computed_style->IsEnsuredOutsideFlatTree()) &&
+        !style_resolver_state.ParentStyle()->IsEnsuredInDisplayNone() &&
+        !style_resolver_state.IsOutsideFlatTree()) {
+      // If we cached a ComputedStyle in a display:none subtree, or outside the
+      // flat tree,  we would not have triggered fetches for external resources
+      // and have StylePendingImages in the ComputedStyle. Instead of having to
+      // inspect the cached ComputedStyle for such resources, don't use a cached
+      // ComputedStyle when it was cached in display:none but is now rendered.
+      continue;
+    }
+    if (style_resolver_state.ParentStyle()->InheritedDataShared(
             *entry.parent_computed_style)) {
       entry.last_used = clock_++;
 

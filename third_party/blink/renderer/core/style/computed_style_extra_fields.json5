@@ -134,14 +134,6 @@
       reset_on_new_style: true,
       custom_compare: true,
     },
-    // A non-inherited property references a variable or @apply is used
-    {
-      name: "HasVariableReferenceFromNonInheritedProperty",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      reset_on_new_style: true,
-      custom_compare: true,
-    },
     // A property references a variable that needs to be resolved
     {
       name: "HasVariableReference",
