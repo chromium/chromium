@@ -16,8 +16,33 @@ namespace performance_manager {
 // The memory will be unmapped when the final reference is dropped. Functions
 // that write to the shared memory must hold a reference to it so that it's not
 // unmapped while writing.
-using RefCountedScenarioMemory =
-    base::RefCountedData<blink::performance_scenarios::SharedScenarioState>;
+class RefCountedScenarioState
+    : public base::RefCountedThreadSafe<RefCountedScenarioState> {
+ public:
+  // Creates a new SharedScenarioState memory region and returns a ref-counted
+  // pointer to it, or nullptr if mapping fails.
+  static scoped_refptr<RefCountedScenarioState> Create();
+
+  // Returns a reference to the mapped shared memory region.
+  blink::performance_scenarios::SharedScenarioState& shared_state() {
+    return shared_state_;
+  }
+  const blink::performance_scenarios::SharedScenarioState& shared_state()
+      const {
+    return shared_state_;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<RefCountedScenarioState>;
+
+  explicit RefCountedScenarioState(
+      blink::performance_scenarios::SharedScenarioState shared_state);
+
+  ~RefCountedScenarioState();
+
+  // Shared scenario memory region.
+  blink::performance_scenarios::SharedScenarioState shared_state_;
+};
 
 // Holds the browser's scenario state handle for a child's scenario state.
 class PerformanceScenarioMemoryData final
@@ -33,7 +58,8 @@ class PerformanceScenarioMemoryData final
   PerformanceScenarioMemoryData(PerformanceScenarioMemoryData&&);
   PerformanceScenarioMemoryData& operator=(PerformanceScenarioMemoryData&&);
 
-  scoped_refptr<RefCountedScenarioMemory> shared_mem;
+  scoped_refptr<RefCountedScenarioState> state_ptr =
+      RefCountedScenarioState::Create();
 };
 
 }  // namespace performance_manager

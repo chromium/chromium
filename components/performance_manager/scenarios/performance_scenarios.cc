@@ -29,42 +29,37 @@ namespace {
 using SharedScenarioState = blink::performance_scenarios::SharedScenarioState;
 
 // Holds the browser's global scenario state handle.
-scoped_refptr<RefCountedScenarioMemory>& GlobalSharedMemPtr() {
-  static base::NoDestructor<scoped_refptr<RefCountedScenarioMemory>> shared_mem;
-  return *shared_mem;
+scoped_refptr<RefCountedScenarioState>& GlobalSharedStatePtr() {
+  static base::NoDestructor<scoped_refptr<RefCountedScenarioState>> state_ptr;
+  return *state_ptr;
+}
+
+PerformanceScenarioMemoryData& GetOrCreatePerformanceScenarioMemoryData(
+    ProcessNodeImpl* process_node_impl) {
+  if (PerformanceScenarioMemoryData::Exists(process_node_impl)) {
+    return PerformanceScenarioMemoryData::Get(process_node_impl);
+  }
+  return PerformanceScenarioMemoryData::Create(process_node_impl);
 }
 
 // Returns a pointer to the shared memory region for communicating private state
 // for `process_node`. Creates a region if none exists yet, returning nullptr on
 // failure. The region's lifetime is tied to `process_node`. Must be called from
 // the PM sequence.
-scoped_refptr<RefCountedScenarioMemory> GetScenarioMemoryForProcessNode(
+scoped_refptr<RefCountedScenarioState> GetSharedStateForProcessNode(
     const ProcessNode* process_node) {
-  auto* process_node_impl = ProcessNodeImpl::FromNode(process_node);
-  if (PerformanceScenarioMemoryData::Exists(process_node_impl)) {
-    // Returns a copy of the pointer.
-    return PerformanceScenarioMemoryData::Get(process_node_impl).shared_mem;
-  }
-  // Create a new shared memory region to communicate private state for the
-  // child process. The region will be destroyed when `process_node` is
-  // deleted.
-  auto& data = PerformanceScenarioMemoryData::Create(process_node_impl);
-  std::optional<SharedScenarioState> shared_state =
-      SharedScenarioState::Create();
-  if (shared_state.has_value()) {
-    data.shared_mem = base::MakeRefCounted<RefCountedScenarioMemory>(
-        std::move(shared_state.value()));
-  }
   // Returns a copy of the pointer.
-  return data.shared_mem;
+  return GetOrCreatePerformanceScenarioMemoryData(
+             ProcessNodeImpl::FromNode(process_node))
+      .state_ptr;
 }
 
 // Returns a pointer to the global shared memory region that can be read by all
 // processes, or nullptr if none exists. GlobalPerformanceScenarioMemory
 // manages the lifetime of the region.
-scoped_refptr<RefCountedScenarioMemory> GetGlobalScenarioMemory() {
+scoped_refptr<RefCountedScenarioState> GetGlobalSharedState() {
   // Returns a copy of the pointer.
-  return GlobalSharedMemPtr();
+  return GlobalSharedStatePtr();
 }
 
 // Convenience accessors to return references to the correct member of `state`
@@ -84,11 +79,11 @@ std::atomic<InputScenario>& GetScenarioRef(SharedScenarioState& state) {
 
 template <typename Scenario>
 void SetScenarioValue(Scenario scenario,
-                      scoped_refptr<RefCountedScenarioMemory> shared_mem) {
-  if (shared_mem) {
+                      scoped_refptr<RefCountedScenarioState> state_ptr) {
+  if (state_ptr) {
     // std::memory_order_relaxed is sufficient since no other memory depends on
     // the scenario value.
-    GetScenarioRef<Scenario>(shared_mem->data)
+    GetScenarioRef<Scenario>(state_ptr->shared_state())
         .store(scenario, std::memory_order_relaxed);
   }
 }
@@ -96,7 +91,7 @@ void SetScenarioValue(Scenario scenario,
 template <typename Scenario>
 void SetScenarioValueForProcessNode(Scenario scenario,
                                     const ProcessNode* process_node) {
-  SetScenarioValue(scenario, GetScenarioMemoryForProcessNode(process_node));
+  SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node));
 }
 
 template <typename Scenario>
@@ -108,8 +103,8 @@ void SetScenarioValueForRenderProcessHost(Scenario scenario,
       base::BindOnce(
           [](Scenario scenario, base::WeakPtr<ProcessNode> process_node) {
             if (process_node) {
-              SetScenarioValue(scenario, GetScenarioMemoryForProcessNode(
-                                             process_node.get()));
+              SetScenarioValue(
+                  scenario, GetSharedStateForProcessNode(process_node.get()));
             }
           },
           scenario,
@@ -118,39 +113,33 @@ void SetScenarioValueForRenderProcessHost(Scenario scenario,
 
 template <typename Scenario>
 void SetGlobalScenarioValue(Scenario scenario) {
-  SetScenarioValue(scenario, GetGlobalScenarioMemory());
+  SetScenarioValue(scenario, GetGlobalSharedState());
 }
 
 }  // namespace
 
 ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory() {
-  std::optional<SharedScenarioState> shared_state =
-      SharedScenarioState::Create();
-  if (shared_state.has_value()) {
-    base::ReadOnlySharedMemoryRegion region =
-        shared_state->DuplicateReadOnlyRegion();
-    GlobalSharedMemPtr() = base::MakeRefCounted<RefCountedScenarioMemory>(
-        std::move(shared_state.value()));
-    read_only_mapping_.emplace(blink::performance_scenarios::Scope::kGlobal,
-                               std::move(region));
-  }
+  CHECK(!GlobalSharedStatePtr());
+  GlobalSharedStatePtr() = RefCountedScenarioState::Create();
+  read_only_mapping_.emplace(blink::performance_scenarios::Scope::kGlobal,
+                             GetGlobalSharedScenarioRegion());
 }
 
 ScopedGlobalScenarioMemory::~ScopedGlobalScenarioMemory() {
-  GlobalSharedMemPtr().reset();
+  GlobalSharedStatePtr().reset();
 }
 
 base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcessNode(
     const ProcessNode* process_node) {
-  auto shared_mem = GetScenarioMemoryForProcessNode(process_node);
-  return shared_mem ? shared_mem->data.DuplicateReadOnlyRegion()
-                    : base::ReadOnlySharedMemoryRegion();
+  auto state_ptr = GetSharedStateForProcessNode(process_node);
+  return state_ptr ? state_ptr->shared_state().DuplicateReadOnlyRegion()
+                   : base::ReadOnlySharedMemoryRegion();
 }
 
 base::ReadOnlySharedMemoryRegion GetGlobalSharedScenarioRegion() {
-  auto shared_mem = GetGlobalScenarioMemory();
-  return shared_mem ? shared_mem->data.DuplicateReadOnlyRegion()
-                    : base::ReadOnlySharedMemoryRegion();
+  auto state_ptr = GetGlobalSharedState();
+  return state_ptr ? state_ptr->shared_state().DuplicateReadOnlyRegion()
+                   : base::ReadOnlySharedMemoryRegion();
 }
 
 void SetLoadingScenarioForProcess(LoadingScenario scenario,
