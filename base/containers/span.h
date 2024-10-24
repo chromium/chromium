@@ -73,26 +73,20 @@ concept LegacyCompatibleRange = LegacyRange<R> && requires(R& r) {
   { *std::ranges::data(r) } -> LegalDataConversion<T>;
 };
 
-template <size_t I>
-using size_constant = std::integral_constant<size_t, I>;
-
+// Computes a fixed extent if possible from a source container type `T`.
 template <typename T>
-struct ExtentImpl : size_constant<dynamic_extent> {};
-
+inline constexpr size_t kComputedExtentImpl = dynamic_extent;
 template <typename T, size_t N>
-struct ExtentImpl<T[N]> : size_constant<N> {};
-
+inline constexpr size_t kComputedExtentImpl<T[N]> = N;
 template <typename T, size_t N>
-struct ExtentImpl<std::array<T, N>> : size_constant<N> {};
-
+inline constexpr size_t kComputedExtentImpl<std::array<T, N>> = N;
 template <typename T, size_t N>
-struct ExtentImpl<base::span<T, N>> : size_constant<N> {};
-
+inline constexpr size_t kComputedExtentImpl<std::span<T, N>> = N;
+template <typename T, size_t N, typename InternalPtrType>
+inline constexpr size_t kComputedExtentImpl<span<T, N, InternalPtrType>> = N;
 template <typename T>
-using Extent = ExtentImpl<std::remove_cvref_t<T>>;
-
-template <typename T>
-inline constexpr size_t ExtentV = Extent<T>::value;
+inline constexpr size_t kComputedExtent =
+    kComputedExtentImpl<std::remove_cvref_t<T>>;
 
 // must_not_be_dynamic_extent prevents |dynamic_extent| from being returned in a
 // constexpr context.
@@ -363,7 +357,7 @@ class GSL_POINTER span {
       // requirement of span.
       : UNSAFE_BUFFERS(span(std::ranges::data(arr), std::ranges::size(arr))) {}
 
-  template <typename R, size_t X = internal::ExtentV<R>>
+  template <typename R, size_t X = internal::kComputedExtent<R>>
     requires(internal::CompatibleRange<T, R> && (X == N || X == dynamic_extent))
   // NOLINTNEXTLINE(google-explicit-constructor)
   explicit(X == dynamic_extent) constexpr span(R&& range) noexcept
@@ -372,7 +366,7 @@ class GSL_POINTER span {
       : UNSAFE_BUFFERS(
             span(std::ranges::begin(range), std::ranges::end(range))) {}
 
-  template <typename R, size_t X = internal::ExtentV<R>>
+  template <typename R, size_t X = internal::kComputedExtent<R>>
     requires(internal::LegacyCompatibleRange<T, R> &&
              (X == N || X == dynamic_extent) &&
              !internal::CompatibleRange<T, R>)
@@ -636,7 +630,7 @@ class GSL_POINTER span {
   // span<T, N> can also be constructed from it. If the input is a fixed-length
   // span then we want to use the other overload and reject sizes that don't
   // match at compile time.
-  template <class R, size_t X = internal::ExtentV<R>>
+  template <class R, size_t X = internal::kComputedExtent<R>>
     requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
   constexpr void copy_from(const R& other)
     requires(!std::is_const_v<T>)
@@ -714,7 +708,7 @@ class GSL_POINTER span {
   // span<T, N> can also be constructed from it. If the input is a fixed-length
   // span then we want to use the other overload and reject sizes that don't
   // match at compile time.
-  template <class R, size_t X = internal::ExtentV<R>>
+  template <class R, size_t X = internal::kComputedExtent<R>>
     requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
   UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(const R& other)
     requires(!std::is_const_v<T>)
@@ -739,7 +733,7 @@ class GSL_POINTER span {
   // If `other` is dynamic-sized, then this function CHECKs if `other` is larger
   // than this span. If `other` is fixed-size, then the same verification is
   // done at compile time.
-  template <class R, size_t X = internal::ExtentV<R>>
+  template <class R, size_t X = internal::kComputedExtent<R>>
     requires((X <= N || X == dynamic_extent) &&
              std::convertible_to<R, span<const T, X>>)
   constexpr void copy_prefix_from(const R& other)
@@ -1365,7 +1359,7 @@ template <
   requires(std::ranges::contiguous_range<R>)
 span(R&&)
     -> span<std::conditional_t<std::ranges::borrowed_range<R>, T, const T>,
-            internal::ExtentV<R>>;
+            internal::kComputedExtent<R>>;
 
 // This guide prefers to let the contiguous_range guide match, since it can
 // produce a fixed-size span. Whereas, LegacyRange only produces a dynamic-sized
@@ -1485,6 +1479,8 @@ UNSAFE_BUFFER_USAGE constexpr auto make_span(
 }
 
 // Type-deducing helper for constructing a span.
+// Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
+// TODO(crbug.com/341907909): Remove.
 //
 // # Checks
 // The function CHECKs that `it <= end` and will terminate otherwise.
@@ -1508,12 +1504,11 @@ UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, End end) noexcept {
 // from the passed in argument.
 //
 // Usage: auto span = base::make_span(...);
+// Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
+// TODO(crbug.com/341907909): Remove.
 template <int&... ExplicitArgumentBarrier, typename Container>
 constexpr auto make_span(Container&& container) noexcept {
-  using T =
-      std::remove_pointer_t<decltype(std::data(std::declval<Container>()))>;
-  using Extent = internal::Extent<Container>;
-  return span<T, Extent::value>(std::forward<Container>(container));
+  return span(std::forward<Container>(container));
 }
 
 // `span_from_ref` converts a reference to T into a span of length 1.  This is a
