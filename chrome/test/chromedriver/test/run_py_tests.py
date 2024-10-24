@@ -8912,6 +8912,30 @@ class NavTrackingMitigationSpecificTest(ChromeDriverBaseTestWithWebServer):
         lambda: "tracker.test" in
                 self._driver.RunBounceTrackingMitigations(), 30, 0.5))
 
+
+class IncognitoTest(ChromeDriverBaseTestWithWebServer):
+
+  def setUp(self):
+    super().setUp()
+    self._driver = self.CreateDriver(chrome_switches=[
+        '--incognito',
+    ])
+
+  def tearDown(self):
+    super().tearDown()
+
+  def testCreateWindow(self):
+    old_handles = self._driver.GetWindowHandles()
+    self._driver.NewWindow(window_type='window')
+    new_window = self.WaitForNewWindow(self._driver, old_handles)
+    self.assertIsNotNone(new_window)
+
+  def testCreateTab(self):
+    old_handles = self._driver.GetWindowHandles()
+    self._driver.NewWindow(window_type='tab')
+    new_window = self.WaitForNewWindow(self._driver, old_handles)
+    self.assertIsNotNone(new_window)
+
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):
 
