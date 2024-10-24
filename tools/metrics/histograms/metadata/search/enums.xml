@@ -199,6 +199,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Succeed"/>
 </enum>
 
+<!-- LINT.IfChange(LaunchOsChoiceScreenTapHandlingStatus) -->
+
+<enum name="LaunchOsChoiceScreenTapHandlingStatus">
+  <int value="0" label="Initial tap"/>
+  <int value="1" label="Suppressed tap"/>
+  <int value="2" label="Repeated tap"/>
+</enum>
+
+<!-- LINT.ThenChange() -->
+
 <enum name="LensRegionSearchAspectRatio">
   <summary>
     Enum describing the aspect ratio of the captured region. The aspect ratios

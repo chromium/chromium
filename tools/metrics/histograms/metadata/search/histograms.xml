@@ -983,6 +983,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.OsDefaultsChoice.LaunchChoiceScreenTapHandlingStatus"
+    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Indicates how a user tap on the blocking dialog's action button was
+    processed. This dialog blocks Chrome usage to require the Android OS default
+    apps choice to be completed. [Android only]
+
+    The status is recorded at the moment of the button tap. We use some
+    heuristic to estimate whether the choice screen has actually been launched
+    since the last button tap. This status indicates whether we identified the
+    current tap as the initial one, or whether for a repeated tap we decided to
+    avoid requesting the choice screen to be launched again.
+  </summary>
+</histogram>
+
 <histogram name="Search.PartnershipSearchPerformed" enum="SearchEntryPoint"
     expires_after="M85">
   <owner>yusufo@chromium.org</owner>
