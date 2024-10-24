@@ -1,9 +1,9 @@
 Name: bytes
 URL: https://crates.io/crates/bytes
-Version: 1.7.2
-Revision: d7c1d658d90c922eeee1dbc29bc6f6fd9a1a1a66
+Version: 1.8.0
+Revision: c45697ce4230777aa8467db7ef91e89f282a539f
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/LICENSE
+License File: //third_party/rust/chromium_crates_io/vendor/bytes-1.8.0/LICENSE
 Shipped: no
 Security Critical: no
 

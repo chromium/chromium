@@ -1399,3 +1399,83 @@ fn try_reclaim_arc() {
     buf.advance(2);
     assert_eq!(true, buf.try_reclaim(6));
 }
+
+#[test]
+fn split_off_empty_addr() {
+    let mut buf = Bytes::from(vec![0; 1024]);
+
+    let ptr_start = buf.as_ptr();
+    let ptr_end = ptr_start.wrapping_add(1024);
+
+    let empty_end = buf.split_off(1024);
+    assert_eq!(empty_end.len(), 0);
+    assert_eq!(empty_end.as_ptr(), ptr_end);
+
+    let _ = buf.split_off(0);
+    assert_eq!(buf.len(), 0);
+    assert_eq!(buf.as_ptr(), ptr_start);
+
+    // Is miri happy about the provenance?
+    let _ = &empty_end[..];
+    let _ = &buf[..];
+}
+
+#[test]
+fn split_to_empty_addr() {
+    let mut buf = Bytes::from(vec![0; 1024]);
+
+    let ptr_start = buf.as_ptr();
+    let ptr_end = ptr_start.wrapping_add(1024);
+
+    let empty_start = buf.split_to(0);
+    assert_eq!(empty_start.len(), 0);
+    assert_eq!(empty_start.as_ptr(), ptr_start);
+
+    let _ = buf.split_to(1024);
+    assert_eq!(buf.len(), 0);
+    assert_eq!(buf.as_ptr(), ptr_end);
+
+    // Is miri happy about the provenance?
+    let _ = &empty_start[..];
+    let _ = &buf[..];
+}
+
+#[test]
+fn split_off_empty_addr_mut() {
+    let mut buf = BytesMut::from([0; 1024].as_slice());
+
+    let ptr_start = buf.as_ptr();
+    let ptr_end = ptr_start.wrapping_add(1024);
+
+    let empty_end = buf.split_off(1024);
+    assert_eq!(empty_end.len(), 0);
+    assert_eq!(empty_end.as_ptr(), ptr_end);
+
+    let _ = buf.split_off(0);
+    assert_eq!(buf.len(), 0);
+    assert_eq!(buf.as_ptr(), ptr_start);
+
+    // Is miri happy about the provenance?
+    let _ = &empty_end[..];
+    let _ = &buf[..];
+}
+
+#[test]
+fn split_to_empty_addr_mut() {
+    let mut buf = BytesMut::from([0; 1024].as_slice());
+
+    let ptr_start = buf.as_ptr();
+    let ptr_end = ptr_start.wrapping_add(1024);
+
+    let empty_start = buf.split_to(0);
+    assert_eq!(empty_start.len(), 0);
+    assert_eq!(empty_start.as_ptr(), ptr_start);
+
+    let _ = buf.split_to(1024);
+    assert_eq!(buf.len(), 0);
+    assert_eq!(buf.as_ptr(), ptr_end);
+
+    // Is miri happy about the provenance?
+    let _ = &empty_start[..];
+    let _ = &buf[..];
+}

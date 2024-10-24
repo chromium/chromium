@@ -1,3 +1,7 @@
+# 1.8.0 (October 21, 2024)
+
+- Guarantee address in `split_off`/`split_to` for empty slices (#740)
+
 # 1.7.2 (September 17, 2024)
 
 ### Fixed

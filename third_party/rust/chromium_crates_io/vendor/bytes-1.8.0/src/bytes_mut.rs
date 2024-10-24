@@ -291,7 +291,9 @@ impl BytesMut {
     /// Splits the bytes into two at the given index.
     ///
     /// Afterwards `self` contains elements `[0, at)`, and the returned
-    /// `BytesMut` contains elements `[at, capacity)`.
+    /// `BytesMut` contains elements `[at, capacity)`. It's guaranteed that the
+    /// memory does not move, that is, the address of `self` does not change,
+    /// and the address of the returned slice is `at` bytes after that.
     ///
     /// This is an `O(1)` operation that just increases the reference count
     /// and sets a few indices.

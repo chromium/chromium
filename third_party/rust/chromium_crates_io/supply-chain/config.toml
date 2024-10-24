@@ -71,7 +71,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."byteorder:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytes:1.7.2"]
+[policy."bytes:1.8.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."cc:1.1.30"]
