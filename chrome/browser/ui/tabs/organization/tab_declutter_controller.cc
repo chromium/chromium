@@ -113,7 +113,9 @@ std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
       continue;
     }
 
-    if (tab_model->pinned() || tab_model->group().has_value()) {
+    if (tab_model->pinned() || tab_model->group().has_value() ||
+        tab_model->contents()->GetVisibility() ==
+            content::Visibility::VISIBLE) {
       continue;
     }
 
@@ -197,7 +199,6 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
     return false;
   }
 
-  // TODO(b/366078827): Handle hide case for the nudge.
   if (stale_tabs.empty()) {
     return false;
   }
