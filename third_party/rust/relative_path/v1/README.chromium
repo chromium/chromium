@@ -1,9 +1,10 @@
 Name: relative-path
 URL: https://crates.io/crates/relative-path
-Description: Portable, relative paths for Rust.
 Version: 1.9.3
-Security Critical: no
-Shipped: no
+Revision: 6d267fbd85b257e4416c9f020131c6da168e1d3d
 License: Apache 2.0
 License File:
-Revision: 6d267fbd85b257e4416c9f020131c6da168e1d3d
+Shipped: no
+Security Critical: no
+
+Description: Portable, relative paths for Rust.

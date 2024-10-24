@@ -1,9 +1,10 @@
 Name: anyhow
 URL: https://crates.io/crates/anyhow
-Description: Flexible concrete Error type built on std::error::Error
-Version: 1.0.89
-Security Critical: no
-Shipped: no
+Version: 1.0.91
+Revision: 6c52daaa79eb22279248d80bebedc6c14bbb84ec
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/anyhow-1.0.89/LICENSE-APACHE
-Revision: 9d3fb6d0968bd9f95a0d8bbc5269eb2496880510
+License File: //third_party/rust/chromium_crates_io/vendor/anyhow-1.0.91/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Flexible concrete Error type built on std::error::Error

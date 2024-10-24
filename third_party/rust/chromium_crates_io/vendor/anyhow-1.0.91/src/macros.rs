@@ -1,9 +1,10 @@
 /// Return early with an error.
 ///
-/// This macro is equivalent to `return Err(`[`anyhow!($args...)`][anyhow!]`)`.
+/// This macro is equivalent to
+/// <code>return Err([anyhow!($args\...)][anyhow!])</code>.
 ///
 /// The surrounding function's or closure's return value is required to be
-/// `Result<_,`[`anyhow::Error`][crate::Error]`>`.
+/// <code>Result&lt;_, [anyhow::Error][crate::Error]&gt;</code>.
 ///
 /// [anyhow!]: crate::anyhow
 ///
@@ -69,11 +70,11 @@ macro_rules! __ensure {
     ($ensure:item) => {
         /// Return early with an error if a condition is not satisfied.
         ///
-        /// This macro is equivalent to `if !$cond { return
-        /// Err(`[`anyhow!($args...)`][anyhow!]`); }`.
+        /// This macro is equivalent to
+        /// <code>if !$cond { return Err([anyhow!($args\...)][anyhow!]); }</code>.
         ///
         /// The surrounding function's or closure's return value is required to be
-        /// `Result<_,`[`anyhow::Error`][crate::Error]`>`.
+        /// <code>Result&lt;_, [anyhow::Error][crate::Error]&gt;</code>.
         ///
         /// Analogously to `assert!`, `ensure!` takes a condition and exits the function
         /// if the condition fails. Unlike `assert!`, `ensure!` returns an `Error`

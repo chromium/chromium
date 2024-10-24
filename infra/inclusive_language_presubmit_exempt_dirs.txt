@@ -31,7 +31,6 @@ build/config/fuchsia 1 1
 build/fuchsia/test 1 1
 build/skia_gold_common 1 1
 build/toolchain/win/rc 1 1
-build/util/lib/common 1 1
 cc/input 2 2
 chrome/android/java/src/org/chromium/chrome/browser/omaha 2 2
 chrome/android/java/src/org/chromium/chrome/browser/tab 1 1
@@ -371,7 +370,7 @@ third_party/blink/public/mojom/fenced_frame 1 1
 third_party/blink/public/mojom/frame 1 1
 third_party/blink/public/mojom/input 1 1
 third_party/blink/public/mojom/manifest 1 1
-third_party/blink/public/mojom/permissions_policy 1 1
+third_party/blink/public/mojom/permissions_policy 2 1
 third_party/blink/public/mojom/printing 1 1
 third_party/blink/public/mojom/service_worker 4 3
 third_party/blink/public/mojom/storage_key 1 1
@@ -648,8 +647,8 @@ third_party/rapidhash 5 2
 third_party/rust/chromium_crates_io/vendor/adler2-2.0.0/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.3/.github/workflows 5 1
 third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8 1 1
-third_party/rust/chromium_crates_io/vendor/anyhow-1.0.89 2 1
-third_party/rust/chromium_crates_io/vendor/anyhow-1.0.89/.github/workflows 3 1
+third_party/rust/chromium_crates_io/vendor/anyhow-1.0.91 2 1
+third_party/rust/chromium_crates_io/vendor/anyhow-1.0.91/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/base64-0.13.1 1 1
 third_party/rust/chromium_crates_io/vendor/byteorder-1.5.0/.github/workflows 5 1
 third_party/rust/chromium_crates_io/vendor/bytes-1.7.2/.github/workflows 3 1
@@ -692,7 +691,6 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.22.3/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/read-fonts-0.23.0/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0/src 1 1

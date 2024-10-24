@@ -406,6 +406,6 @@ mod capture {
 }
 
 fn _assert_send_sync() {
-    fn _assert<T: Send + Sync>() {}
-    _assert::<Backtrace>();
+    fn assert<T: Send + Sync>() {}
+    assert::<Backtrace>();
 }

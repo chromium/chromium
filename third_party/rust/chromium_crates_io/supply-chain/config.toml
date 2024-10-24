@@ -50,7 +50,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."anstyle:1.0.8"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."anyhow:1.0.89"]
+[policy."anyhow:1.0.91"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."base64:0.13.1"]
