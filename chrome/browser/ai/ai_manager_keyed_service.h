@@ -74,11 +74,20 @@ class AIManagerKeyedService : public KeyedService,
 
   // Creates an `AIAssistant`, either as a new session, or as a clone of
   // an existing session with its context copied.
+  // - When this method is called during the session cloning, the optional
+  // `context` variable should be set to the existing `AIAssistant`'s session.
+  // - When this method is called during new session creation, the optional
+  // `receiver_context` should be set to the corresponding `ReceiverContext`
+  // since the `CreateAssistantOnDeviceSessionTask` might be waiting for the
+  // on-device model availability changes, and it needs to be kept-alive in the
+  // `ReceiverContext`.
   void CreateAssistantInternal(
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       AIContextBoundObjectSet* context_bound_object_set,
       base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
-      const std::optional<const AIAssistant::Context>& context = std::nullopt);
+      const std::optional<const AIAssistant::Context>& context = std::nullopt,
+      const std::optional<AIContextBoundObjectSet::ReceiverContext>
+          receiver_context = std::nullopt);
 
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
