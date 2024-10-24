@@ -80,17 +80,16 @@ bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
   return facilitated_payments_controller_->IsInLandscapeMode();
 }
 
-bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
+void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
-  return facilitated_payments_controller_->Show(
-      std::move(bank_account_suggestions),
-      std::move(on_user_decision_callback));
+  facilitated_payments_controller_->Show(std::move(bank_account_suggestions),
+                                         std::move(on_user_decision_callback));
 }
 
-bool ChromeFacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
+void ChromeFacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions) {
-  return facilitated_payments_controller_->ShowForEwallet(ewallet_suggestions);
+  facilitated_payments_controller_->ShowForEwallet(ewallet_suggestions);
 }
 
 void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {

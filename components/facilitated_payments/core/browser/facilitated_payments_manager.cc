@@ -163,14 +163,11 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       autofill::payments::GetBillingCustomerId(
           client_->GetPaymentsDataManager());
 
-  bool promptShown = client_->ShowPixPaymentPrompt(
+  client_->ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
-  LogFopSelectorShown(promptShown);
-  if (promptShown) {
-    fop_selector_shown_time_ = base::TimeTicks::Now();
-  }
+  fop_selector_shown_time_ = base::TimeTicks::Now();
 }
 
 void FacilitatedPaymentsManager::OnPixPaymentPromptResult(

@@ -64,11 +64,11 @@ class ChromeFacilitatedPaymentsClient
   // This returns std::nullopt if the `Profile` associated is null.
   std::optional<CoreAccountInfo> GetCoreAccountInfo() override;
   bool IsInLandscapeMode() override;
-  bool ShowPixPaymentPrompt(
+  void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
       override;
-  bool ShowEwalletPaymentPrompt(
+  void ShowEwalletPaymentPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions) override;
   void ShowProgressScreen() override;
   void ShowErrorScreen() override;

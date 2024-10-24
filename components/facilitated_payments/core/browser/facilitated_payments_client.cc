@@ -13,16 +13,12 @@ namespace payments::facilitated {
 
 FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
 
-bool FacilitatedPaymentsClient::ShowPixPaymentPrompt(
+void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
-  return false;
-}
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {}
 
-bool FacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
-    base::span<const autofill::Ewallet> ewallet_suggestions) {
-  return false;
-}
+void FacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
+    base::span<const autofill::Ewallet> ewallet_suggestions) {}
 
 void FacilitatedPaymentsClient::ShowProgressScreen() {}
 

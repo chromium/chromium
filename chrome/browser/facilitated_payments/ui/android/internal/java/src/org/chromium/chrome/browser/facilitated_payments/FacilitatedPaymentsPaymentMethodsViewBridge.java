@@ -86,26 +86,20 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      * BottomSheetController#requestShowContent}
      *
      * @param bankAccounts User's bank accounts which passed from facilitated payments client.
-     * @return True if shown. False if it was suppressed. Content is suppressed if higher priority
-     *     content is in the sheet, the sheet is expanded beyond the peeking state, or the browser
-     *     is in a mode that does not support showing the sheet.
      */
     @CalledByNative
-    public boolean requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
-        return mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+    public void requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
+        mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
     }
 
     /**
      * Requests to show an eWallet FOP selector in a bottom sheet.
      *
      * @param ewallets User's eWallet accounts which passed from facilitated payments client.
-     * @return True if shown. False if it was suppressed. Content is suppressed if higher priority
-     *     content is in the sheet, the sheet is expanded beyond the peeking state, or the browser
-     *     is in a mode that does not support showing the sheet.
      */
     @CalledByNative
-    public boolean requestShowContentForEwallet(@JniType("std::vector") Object[] eWallets) {
-        return mComponent.showSheetForEwallet((List<Ewallet>) (List<?>) Arrays.asList(eWallets));
+    public void requestShowContentForEwallet(@JniType("std::vector") Object[] eWallets) {
+        mComponent.showSheetForEwallet((List<Ewallet>) (List<?>) Arrays.asList(eWallets));
     }
 
     /**

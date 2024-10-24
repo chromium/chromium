@@ -49,10 +49,10 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     boolean isInLandscapeMode();
 
     /** Displays a Pix FOP selector in a bottom sheet. */
-    boolean showSheet(List<BankAccount> bankAccounts);
+    void showSheet(List<BankAccount> bankAccounts);
 
     /** Displays an eWallet FOP selector in a bottom sheet. */
-    boolean showSheetForEwallet(List<Ewallet> eWallets);
+    void showSheetForEwallet(List<Ewallet> eWallets);
 
     /** Displays a progress screen in a bottom sheet. */
     void showProgressScreen();

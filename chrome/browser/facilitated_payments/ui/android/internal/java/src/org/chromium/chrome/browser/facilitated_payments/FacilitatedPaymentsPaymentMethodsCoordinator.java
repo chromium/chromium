@@ -52,13 +52,13 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public boolean showSheet(List<BankAccount> bankAccounts) {
-        return mMediator.showSheet(bankAccounts);
+    public void showSheet(List<BankAccount> bankAccounts) {
+        mMediator.showSheet(bankAccounts);
     }
 
     @Override
-    public boolean showSheetForEwallet(List<Ewallet> eWallets) {
-        return mMediator.showSheetForEwallet(eWallets);
+    public void showSheetForEwallet(List<Ewallet> eWallets) {
+        mMediator.showSheetForEwallet(eWallets);
     }
 
     @Override

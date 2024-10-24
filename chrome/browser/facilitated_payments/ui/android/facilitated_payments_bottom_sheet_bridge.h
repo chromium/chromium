@@ -42,15 +42,11 @@ class FacilitatedPaymentsBottomSheetBridge {
   virtual bool IsInLandscapeMode();
 
   // Show the payment prompt containing user's `bank_account_suggestions`.
-  // Return true if a new bottom sheet is created and shown. Otherwise, return
-  // false.
-  virtual bool RequestShowContent(
+  virtual void RequestShowContent(
       base::span<const autofill::BankAccount> bank_account_suggestions);
 
   // Show the payment prompt containing user's `ewallet_suggestions`.
-  // Return true if a new bottom sheet is created and shown. Otherwise, return
-  // false.
-  virtual bool RequestShowContentForEwallet(
+  virtual void RequestShowContentForEwallet(
       base::span<const autofill::Ewallet> ewallet_suggestions);
 
   // Triggers showing the progress screen. Virtual for overriding in tests.

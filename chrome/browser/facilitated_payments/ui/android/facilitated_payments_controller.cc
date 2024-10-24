@@ -33,35 +33,25 @@ bool FacilitatedPaymentsController::IsInLandscapeMode() {
   return view_->IsInLandscapeMode();
 }
 
-bool FacilitatedPaymentsController::Show(
+void FacilitatedPaymentsController::Show(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   // Abort if there are no bank accounts.
   if (bank_account_suggestions.empty()) {
-    return false;
+    return;
   }
 
-  if (!view_->RequestShowContent(std::move(bank_account_suggestions))) {
-    ClearJavaViewComponents();
-    return false;
-  }
-
+  view_->RequestShowContent(std::move(bank_account_suggestions));
   on_user_decision_callback_ = std::move(on_user_decision_callback);
-  return true;
 }
 
-bool FacilitatedPaymentsController::ShowForEwallet(
+void FacilitatedPaymentsController::ShowForEwallet(
     base::span<const autofill::Ewallet> ewallet_suggestions) {
   if (ewallet_suggestions.empty()) {
-    return false;
+    return;
   }
 
-  if (!view_->RequestShowContentForEwallet(ewallet_suggestions)) {
-    ClearJavaViewComponents();
-    return false;
-  }
-
-  return true;
+  view_->RequestShowContentForEwallet(ewallet_suggestions);
 }
 
 void FacilitatedPaymentsController::ShowProgressScreen() {

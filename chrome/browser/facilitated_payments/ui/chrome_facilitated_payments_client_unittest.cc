@@ -53,7 +53,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
 
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(
-      bool,
+      void,
       Show,
       (base::span<const autofill::BankAccount> bank_account_suggestions,
        base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
@@ -104,27 +104,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
   EXPECT_NE(nullptr, base_client().GetFacilitatedPaymentsNetworkInterface());
 }
 
-// Test ShowPixPaymentPrompt method returns true when
-// FacilitatedPaymentsController returns true.
+// Test the client forwards call to show Pix FOP selector to the controller.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowPixPaymentPrompt_ControllerDefaultTrue) {
-  EXPECT_CALL(controller(), Show).WillOnce(Return(true));
-  EXPECT_TRUE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
-}
-
-// Test ShowPixPaymentPrompt method returns false when
-// FacilitatedPaymentsController returns false.
-TEST_F(ChromeFacilitatedPaymentsClientTest,
-       ShowPixPaymentPrompt_ControllerDefaultFalse) {
-  EXPECT_CALL(controller(), Show).WillOnce(Return(false));
-  EXPECT_FALSE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
-}
-
-// Test ShowPixPaymentPrompt method returns false when there's no bank account.
-TEST_F(ChromeFacilitatedPaymentsClientTest,
-       ShowPixPaymentPrompt_NoBankAccounts) {
   EXPECT_CALL(controller(), Show);
-  EXPECT_FALSE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
+
+  base_client().ShowPixPaymentPrompt({}, base::DoNothing());
 }
 
 // Test the client forwards call for showing the progress screen to the

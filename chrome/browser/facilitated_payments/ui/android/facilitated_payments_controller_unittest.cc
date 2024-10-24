@@ -33,11 +33,11 @@ class MockFacilitatedPaymentsBottomSheetBridge
 
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(
-      bool,
+      void,
       RequestShowContent,
       (base::span<const autofill::BankAccount> bank_account_suggestions),
       (override));
-  MOCK_METHOD(bool,
+  MOCK_METHOD(void,
               RequestShowContentForEwallet,
               (base::span<const autofill::Ewallet> ewallet_suggestions),
               (override));
@@ -77,41 +77,20 @@ class FacilitatedPaymentsControllerTest
       autofill::test::CreateEwalletAccount(200L)};
 };
 
-// Test Show method returns true when FacilitatedPaymentsBottomSheetBridge
-// is able to show.
-TEST_F(FacilitatedPaymentsControllerTest, Show_BridgeWasAbleToShow) {
-  ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(true));
-
+// Test controller forwards call for showing the Pix FOP selector to the view.
+TEST_F(FacilitatedPaymentsControllerTest, Show_UserHasPixAccounts) {
   EXPECT_CALL(*mock_view_,
               RequestShowContent(testing::ElementsAreArray(bank_accounts_)));
 
-  // Verify that the `Show` returns true when the bridge is able to show the
-  // bottom sheet.
-  EXPECT_TRUE(controller_->Show(bank_accounts_, base::DoNothing()));
+  controller_->Show(bank_accounts_, base::DoNothing());
 }
 
-// Test Show method returns false when FacilitatedPaymentsBottomSheetBridge
-// returns false.
-TEST_F(FacilitatedPaymentsControllerTest, Show_BridgeWasNotAbleToShow) {
-  ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(false));
-
-  // The bottom sheet could not be shown, verify that the view is informed about
-  // this failure. The second OnDismissed call is triggered when the test
-  // fixture destroys the `controller`.
-  EXPECT_CALL(*mock_view_,
-              RequestShowContent(testing::ElementsAreArray(bank_accounts_)));
-  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
-
-  // The call should return false when bridge fails to show a bottom sheet.
-  EXPECT_FALSE(controller_->Show(bank_accounts_, base::DoNothing()));
-}
-
-// Test Show method returns false when there's no bank account.
-TEST_F(FacilitatedPaymentsControllerTest, Show_NoBankAccounts) {
+// Test controller does not forward call for showing the Pix FOP selector to the
+// view when there are no Pix accounts.
+TEST_F(FacilitatedPaymentsControllerTest, Show_UserHasNoPixAccounts) {
   EXPECT_CALL(*mock_view_, RequestShowContent).Times(0);
 
-  // The call should return false when there's no bank account.
-  EXPECT_FALSE(controller_->Show({}, base::DoNothing()));
+  controller_->Show({}, base::DoNothing());
 }
 
 // Test OnDismissed method.
@@ -119,7 +98,6 @@ TEST_F(FacilitatedPaymentsControllerTest, OnDismissed) {
   // Show the bottom sheet and set the user decision callback.
   base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
       mock_on_user_decision_callback;
-  ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(true));
   controller_->Show(bank_accounts_, mock_on_user_decision_callback.Get());
 
   // Verify that dismissal event is forwarded to the view. Also verify that the
@@ -137,7 +115,6 @@ TEST_F(FacilitatedPaymentsControllerTest, OnDismissed) {
 TEST_F(FacilitatedPaymentsControllerTest, onBankAccountSelected) {
   base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
       mock_on_user_decision_callback;
-  ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(true));
 
   // view_ is assigned when the bottom sheet is shown.
   controller_->Show(bank_accounts_, mock_on_user_decision_callback.Get());
@@ -190,43 +167,21 @@ TEST_F(FacilitatedPaymentsControllerTest, IsInLandscapeMode) {
   controller_->IsInLandscapeMode();
 }
 
-// Test ShowForEwallet method returns true when
-// FacilitatedPaymentsBottomSheetBridge is able to show.
-TEST_F(FacilitatedPaymentsControllerTest, ShowForEwallet_BridgeWasAbleToShow) {
-  ON_CALL(*mock_view_, RequestShowContentForEwallet)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(*mock_view_, RequestShowContentForEwallet(
-                               testing::ElementsAreArray(ewallets_)));
-
-  // Verify that the `ShowForEwallet` returns true when the bridge is able to
-  // show the bottom sheet.
-  EXPECT_TRUE(controller_->ShowForEwallet(ewallets_));
-}
-
-// Test ShowForEwallet method returns false when
-// FacilitatedPaymentsBottomSheetBridge returns false.
+// Test controller forwards call for showing the eWallet FOP selector to the
+// view.
 TEST_F(FacilitatedPaymentsControllerTest,
-       ShowForEwallet_BridgeWasNotAbleToShow) {
-  ON_CALL(*mock_view_, RequestShowContentForEwallet)
-      .WillByDefault(Return(false));
-
-  // The bottom sheet could not be shown, verify that the view is informed about
-  // this failure. The second OnDismissed call is triggered when the test
-  // fixture destroys the `controller`.
+       ShowForEwallet_UserHasEwalletAccounts) {
   EXPECT_CALL(*mock_view_, RequestShowContentForEwallet(
                                testing::ElementsAreArray(ewallets_)));
-  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
 
-  // The call should return false when bridge fails to show a bottom sheet.
-  EXPECT_FALSE(controller_->ShowForEwallet(ewallets_));
+  controller_->ShowForEwallet(ewallets_);
 }
 
-// Test ShowForEwallet method returns false when there are no eWallet
-// suggestions to show.
-TEST_F(FacilitatedPaymentsControllerTest, Show_NoEwalletAccounts) {
+// Test controller does not forward call for showing the eWallet FOP selector to
+// the view when there are no eWallet accounts.
+TEST_F(FacilitatedPaymentsControllerTest,
+       ShowForEwallet_UserHasNoEwalletAccounts) {
   EXPECT_CALL(*mock_view_, RequestShowContentForEwallet).Times(0);
 
-  // The call should return false when there's no bank account.
-  EXPECT_FALSE(controller_->ShowForEwallet({}));
+  controller_->ShowForEwallet({});
 }

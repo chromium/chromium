@@ -153,7 +153,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (),
               (override));
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
-  MOCK_METHOD(bool,
+  MOCK_METHOD(void,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,
                base::OnceCallback<void(bool, int64_t)>),
@@ -281,24 +281,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                              testing::_));
 
   manager_->OnApiAvailabilityReceived(true);
-}
-
-// Test that a histogram is logged with the result of the ShowPixPaymentPrompt.
-TEST_F(FacilitatedPaymentsManagerTest, ShowsPixPaymentPrompt_HistogramLogged) {
-  base::HistogramTester histogram_tester;
-  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
-                            testing::UnorderedElementsAreArray({pix_account}),
-                            testing::_))
-      .WillOnce(testing::Return(true));
-
-  manager_->OnApiAvailabilityReceived(true);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.FopSelector.Shown",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
 }
 
 // If the user does not select a payment account in the payment prompt, request
@@ -892,10 +874,6 @@ TEST_F(FacilitatedPaymentsManagerTest, TransactionSuccess_HistogramLogged) {
   base::HistogramTester histogram_tester;
   autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
   payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
-                            testing::UnorderedElementsAreArray({pix_account}),
-                            testing::_))
-      .WillOnce(testing::Return(true));
   manager_->OnApiAvailabilityReceived(true);
 
   FastForwardBy(base::Seconds(2));
@@ -919,10 +897,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   base::HistogramTester histogram_tester;
   autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
   payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
-                            testing::UnorderedElementsAreArray({pix_account}),
-                            testing::_))
-      .WillOnce(testing::Return(true));
   manager_->OnApiAvailabilityReceived(true);
 
   FastForwardBy(base::Seconds(2));
@@ -946,10 +920,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   base::HistogramTester histogram_tester;
   autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
   payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
-                            testing::UnorderedElementsAreArray({pix_account}),
-                            testing::_))
-      .WillOnce(testing::Return(true));
   manager_->OnApiAvailabilityReceived(true);
 
   FastForwardBy(base::Seconds(2));
@@ -971,10 +941,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
   base::HistogramTester histogram_tester;
   autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
   payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
-                            testing::UnorderedElementsAreArray({pix_account}),
-                            testing::_))
-      .WillOnce(testing::Return(false));
   manager_->OnApiAvailabilityReceived(true);
 
   histogram_tester.ExpectUniqueSample(

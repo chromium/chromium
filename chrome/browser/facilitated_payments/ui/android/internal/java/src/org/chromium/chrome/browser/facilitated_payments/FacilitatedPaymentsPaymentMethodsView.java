@@ -76,9 +76,8 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
      *
      * @param isVisible A boolean describing whether to show or hide the sheet.
-     * @return True if the request was successful, false otherwise
      */
-    boolean setVisible(boolean isVisible) {
+    void setVisible(boolean isVisible) {
         if (isVisible) {
             // If the bottom sheet is already showing a screen, replace it with {@link
             // #mNextScreen}. Else, open the bottom sheet and show the {@link mNextScreen}.
@@ -93,7 +92,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                 if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                     mNextScreen = null;
-                    return false;
+                    return;
                 }
             }
             // Update the reference for {@link mCurrentScreen} to the current screen being shown.
@@ -103,7 +102,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
             mBottomSheetController.hideContent(this, true);
             mCurrentScreen = null;
         }
-        return true;
     }
 
     /**

@@ -82,10 +82,10 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    boolean showSheet(List<BankAccount> bankAccounts) {
+    void showSheet(List<BankAccount> bankAccounts) {
         mInputProtector.markShowTime();
         if (bankAccounts == null || bankAccounts.isEmpty()) {
-            return false;
+            return;
         }
 
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
@@ -107,21 +107,17 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
-
-        return true;
     }
 
-    boolean showSheetForEwallet(List<Ewallet> eWallets) {
+    void showSheetForEwallet(List<Ewallet> eWallets) {
         if (eWallets == null || eWallets.isEmpty()) {
-            return false;
+            return;
         }
 
         // TODO(crbug.com/40280186): Implement the content of eWallet FOP selector.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, FOP_SELECTOR);
         mModel.set(VISIBLE_STATE, SHOWN);
-
-        return true;
     }
 
     void showProgressScreen() {
