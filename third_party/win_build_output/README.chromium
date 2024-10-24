@@ -1,9 +1,9 @@
 Name: Checked in build outputs generated on Windows.
 URL: https://source.chromium.org/chromium/chromium/src/+/main:third_party/win_build_output/
-Version: -
-Revision: -
-License: BSD 3-clause
-License File: ../../LICENSE
+Version: N/A
+Date: 2024-10-23
+License: BSD 3-Clause
+License File: //LICENSE
 Security Critical: yes
 Shipped: yes
 
@@ -24,6 +24,10 @@ For mc.exe:
   third_party\win_build_output\mc\path\to. Then open foo.rc and copy all the
   .bin files referenced from the .rc file (and delete all checked-in files not
   in this list).
+* This process can be automated by running `remc.bat` from the source directory,
+  e.g. `third_party\win_build_output\remc.bat`
+* The outputs are verified during windows builds using
+  build/win/message_compiler.py.
 
 For midl.exe:
 * midl.exe generates foo.h, foo.dlldata.c, foo_i.c, foo_p.i, foo_p.c, and
@@ -35,3 +39,5 @@ For midl.exe:
   different outputs for each target cpu, do one each and put the x86 outputs in
   subfolder 'x86', x64 outputs in subfolder 'x64' and arm64 outputs in subfolder
   'arm64'.
+* The generation process can be automated for all three targets using
+  tools/win/update_idl.py, e.g. `python3 tools\win\update_idl.py`
