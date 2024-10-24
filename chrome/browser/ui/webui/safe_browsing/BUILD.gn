@@ -11,7 +11,9 @@ source_set("safe_browsing") {
   ]
   public_deps = [
     "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/core/common",
     "//content/public/browser",
+    "//content/public/common",
   ]
   deps = [ "//chrome/browser/safe_browsing" ]
 }
