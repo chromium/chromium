@@ -888,6 +888,7 @@ int main(int argc, char** argv) {
   base::FilePath output_folder =
       base::FilePath(base::FilePath::kCurrentDirectory);
   std::vector<base::test::FeatureRef> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
 
   // Parse command line arguments.
   media::test::g_enable_bitstream_validator = true;
@@ -978,6 +979,9 @@ int main(int argc, char** argv) {
     }
   }
 
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  enabled_features.push_back(media::kVaapiH264SWBitrateController);
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
   disabled_features.push_back(media::kGlobalVaapiLock);
 
   testing::InitGoogleTest(&argc, argv);
@@ -989,7 +993,7 @@ int main(int argc, char** argv) {
           video_path, video_metadata_path, output_folder, codec, svc_mode,
           media::VideoEncodeAccelerator::Config::ContentType::kCamera,
           output_bitstream, output_bitrate, bitrate_mode, reverse,
-          frame_output_config, /*enabled_features=*/{}, disabled_features);
+          frame_output_config, enabled_features, disabled_features);
 
   if (!test_environment)
     return EXIT_FAILURE;

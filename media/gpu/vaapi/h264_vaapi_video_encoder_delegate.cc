@@ -485,6 +485,11 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
 
 bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
     const VideoEncodeAccelerator::Config& config) {
+  // Software bitrate controller is not supported on AMD backend,
+  // crbug.com/365106092.
+  const bool is_sw_bitrate_controller_supported =
+      VaapiWrapper::GetImplementationType() != VAImplementation::kMesaGallium;
+
   uint8_t num_temporal_layers = 1;
   if (config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
@@ -496,9 +501,12 @@ bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
 #else
       false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return VaapiWrapper::IsSWBitrateControllerSupported() &&
+  const bool is_constant_bitrate_mode =
+      config.bitrate.mode() == Bitrate::Mode::kConstant;
+
+  return is_sw_bitrate_controller_supported &&
          num_temporal_layers <= kMaxSupportedH264TemporalLayersBySWBRC &&
-         is_sw_bitrate_controller_enabled;
+         is_sw_bitrate_controller_enabled && is_constant_bitrate_mode;
 }
 
 BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
