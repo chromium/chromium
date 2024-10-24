@@ -85,6 +85,12 @@ using ::chromeos::network_config::ManagedDictionary;
 using ::chromeos::network_config::OncApnTypesToMojo;
 using ::user_manager::UserManager;
 
+// Since the TrafficCounterResetTime property in Shill is a uint64, when
+// Chrome receives this property via D-Bus, the last reset time is stored as 0.
+// Setting the value to 1 allows us to avoid comparing doubles using equals,
+// which might encounter precision issues.
+constexpr double kMinThreshold = 1;
+
 // Error strings from networking_private_api.cc. TODO(1004434): Enumerate
 // these in mojo.
 const char kErrorAccessToSharedConfig[] = "Error.CannotChangeSharedConfig";
@@ -1524,7 +1530,8 @@ mojom::TrafficCounterPropertiesPtr CreateTrafficCounterProperties(
   auto traffic_counter_properties = mojom::TrafficCounterProperties::New();
   const std::optional<double> last_reset_time =
       properties->FindDouble(::onc::network_config::kTrafficCounterResetTime);
-  if (last_reset_time) {
+
+  if (last_reset_time && (last_reset_time.value() >= kMinThreshold)) {
     traffic_counter_properties->last_reset_time =
         base::Time::FromDeltaSinceWindowsEpoch(
             base::Milliseconds(last_reset_time.value()));
