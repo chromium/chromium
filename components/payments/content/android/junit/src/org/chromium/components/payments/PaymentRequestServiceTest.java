@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -53,7 +52,7 @@ import java.util.Set;
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
-    private final BrowserPaymentRequest mBrowserPaymentRequest;
+    private BrowserPaymentRequest mBrowserPaymentRequest;
     private List<PaymentApp> mNotifiedPendingApps;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
@@ -86,8 +85,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private JourneyLogger mJourneyLogger;
     private PaymentRequestWebContentsData mPaymentRequestWebContentsData;
 
-    public PaymentRequestServiceTest() {
-        MockitoAnnotations.initMocks(this);
+    @Before
+    public void setUp() {
         mJniMocker.mock(WebContentsImplJni.TEST_HOOKS, mWebContentsJniMock);
         WebContentsImpl webContentsImpl =
                 Mockito.spy(
@@ -154,10 +153,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Mockito.doReturn(apps).when(mBrowserPaymentRequest).getPaymentApps();
 
         mJourneyLogger = Mockito.mock(JourneyLogger.class);
-    }
 
-    @Before
-    public void setUp() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
         DefaultPaymentFeatureConfig.setDefaultFlagConfigurationForTesting();
     }

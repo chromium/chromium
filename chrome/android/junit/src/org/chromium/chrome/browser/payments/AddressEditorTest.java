@@ -51,7 +51,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -147,6 +148,7 @@ public class AddressEditorTest {
                     .setLanguageCode("en-US")
                     .build();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
@@ -173,7 +175,6 @@ public class AddressEditorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Locale.setDefault(Locale.US);
 
         // PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);

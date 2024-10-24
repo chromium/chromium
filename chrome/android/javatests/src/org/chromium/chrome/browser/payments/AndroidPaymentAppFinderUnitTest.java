@@ -25,7 +25,8 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -72,6 +73,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
     private static final IntentArgumentMatcher sPayIntentArgumentMatcher =
             new IntentArgumentMatcher(new Intent("org.chromium.intent.action.PAY"));
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
     @Mock private PaymentManifestWebDataService mPaymentManifestWebDataService;
@@ -83,8 +85,6 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mWindowAndroid =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
