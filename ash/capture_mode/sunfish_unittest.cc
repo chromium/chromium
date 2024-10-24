@@ -34,11 +34,15 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/auto_reset.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "components/manta/scanner_provider.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +54,8 @@
 
 namespace ash {
 
+using ::base::test::InvokeFuture;
+using ::base::test::RunOnceCallback;
 using ::testing::SizeIs;
 
 void WaitForImageCapturedForSearch() {
@@ -701,20 +707,26 @@ TEST_F(ScannerTest, CreatesScannerSession) {
 // Tests that action buttons are created when a Scanner response includes
 // suggested actions.
 TEST_F(ScannerTest, CreatesScannerActionButtons) {
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>,
+                         manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(InvokeFuture(fetch_actions_future));
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->StartSunfishSession();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
 
-  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
-  ASSERT_TRUE(scanner_controller);
+  auto [_, callback] = fetch_actions_future.Take();
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   manta::proto::ScannerObject& objects = *output->add_objects();
   objects.add_actions()->mutable_new_event()->set_title("Event 1");
   objects.add_actions()->mutable_new_event()->set_title("Event 2");
-  GetFakeScannerProfileScopedDelegate(*scanner_controller)
-      ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
+  std::move(callback).Run(std::move(output), manta::MantaStatus());
 
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());
@@ -724,27 +736,22 @@ TEST_F(ScannerTest, CreatesScannerActionButtons) {
 // Tests that action buttons are created when the Scanner response returns as
 // fast as possible.
 TEST_F(ScannerTest, FetchActionsImmediately) {
-  auto* capture_mode_controller = CaptureModeController::Get();
-  capture_mode_controller->StartSunfishSession();
-  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
-                          /*release_mouse=*/true, /*verify_region=*/true);
-
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   manta::proto::ScannerObject& objects = *output->add_objects();
   objects.add_actions()->mutable_new_event()->set_title("Event 1");
   objects.add_actions()->mutable_new_event()->set_title("Event 2");
-
   // Synchronously send the fake actions response after the image is captured.
-  base::test::TestFuture<void> future;
-  ash::CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
-      base::BindLambdaForTesting([&]() {
-        GetFakeScannerProfileScopedDelegate(*scanner_controller)
-            ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
-        future.SetValue();
-      }));
-  ASSERT_TRUE(future.Wait());
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch();
 
   // We should have successfully created two action buttons.
   const CaptureModeSessionTestApi session_test_api(

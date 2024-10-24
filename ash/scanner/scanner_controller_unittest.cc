@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/auto_reset.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
@@ -30,6 +31,7 @@ namespace ash {
 
 namespace {
 
+using ::base::test::RunOnceCallback;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
 
@@ -57,14 +59,15 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
-
-  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
-                                           actions_future.GetCallback());
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   output->add_objects()->add_actions()->mutable_new_event()->set_title(
       "Event title");
-  GetFakeScannerProfileScopedDelegate(*scanner_controller)
-      ->SendFakeActionsResponse(std::move(output), manta::MantaStatus());
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
 
   EXPECT_THAT(actions_future.Take(), SizeIs(1));
 }

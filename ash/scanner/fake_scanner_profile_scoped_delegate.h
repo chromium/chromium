@@ -5,18 +5,12 @@
 #ifndef ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 #define ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 
-#include <memory>
-
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/drive/service/fake_drive_service.h"
-#include "components/manta/manta_status.h"
 #include "components/manta/scanner_provider.h"
-
-namespace manta::proto {
-class ScannerOutput;
-}
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 
@@ -32,27 +26,26 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
 
   // ScannerProfileScopedDelegate:
   ScannerSystemState GetSystemState() const override;
-  void FetchActionsForImage(
-      scoped_refptr<base::RefCountedMemory> jpeg_bytes,
-      manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
+  // Use the following as a gMock action to run `callback` synchronously when
+  // this method is called:
+  //     base::test::RunOnceCallback<1>(scanner_output, manta_status)
+  //
+  // Use the following as a gMock action to get the `jpeg_bytes` and `callback`
+  // values asynchronously.
+  //     base::test::TestFuture<
+  //         scoped_refptr<base::RefCountedMemory>,
+  //         manta::ScannerProvider::ScannerProtoResponseCallback> future;
+  //     // ...
+  //     base::test::InvokeFuture(future)
+  MOCK_METHOD(void,
+              FetchActionsForImage,
+              (scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+               manta::ScannerProvider::ScannerProtoResponseCallback callback),
+              (override));
   drive::DriveServiceInterface* GetDriveService() override;
-
-  // Simulates sending `actions_response` in response to a prior request to
-  // `FetchActionsForImage`. `FetchActionsForImage` must be called before
-  // sending a response via this method.
-  void SendFakeActionsResponse(
-      std::unique_ptr<manta::proto::ScannerOutput> output,
-      manta::MantaStatus status);
-
-  scoped_refptr<base::RefCountedMemory> fetch_actions_jpeg_bytes() {
-    return fetch_actions_jpeg_bytes_;
-  }
 
  private:
   drive::FakeDriveService drive_service_;
-
-  scoped_refptr<base::RefCountedMemory> fetch_actions_jpeg_bytes_;
-  manta::ScannerProvider::ScannerProtoResponseCallback fetch_actions_callback_;
 };
 
 }  // namespace ash

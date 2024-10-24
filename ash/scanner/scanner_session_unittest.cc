@@ -13,9 +13,11 @@
 #include "ash/scanner/scanner_action_view_model.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "components/manta/scanner_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,10 +29,16 @@
 namespace ash {
 namespace {
 
+using ::base::test::InvokeFuture;
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::SizeIs;
+
+using FetchActionsForImageFuture = base::test::TestFuture<
+    scoped_refptr<base::RefCountedMemory>,
+    manta::ScannerProvider::ScannerProtoResponseCallback>;
 
 scoped_refptr<base::RefCountedMemory> MakeJpegBytes(int width = 100,
                                                     int height = 100) {
@@ -51,13 +59,14 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
 
 TEST(ScannerSessionTest, FetchActionsForImageReturnsEmptyWhenDelegateErrors) {
   FakeScannerProfileScopedDelegate delegate;
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          nullptr, manta::MantaStatus{
+                       .status_code = manta::MantaStatusCode::kInvalidInput}));
   ScannerSession session(&delegate);
 
   base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
-  delegate.SendFakeActionsResponse(
-      nullptr,
-      manta::MantaStatus{.status_code = manta::MantaStatusCode::kInvalidInput});
 
   EXPECT_THAT(future.Take(), IsEmpty());
 }
@@ -65,13 +74,14 @@ TEST(ScannerSessionTest, FetchActionsForImageReturnsEmptyWhenDelegateErrors) {
 TEST(ScannerSessionTest,
      FetchActionsForImageReturnsEmptyWhenDelegateHasNoObjects) {
   FakeScannerProfileScopedDelegate delegate;
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
   ScannerSession session(&delegate);
 
   base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
-  delegate.SendFakeActionsResponse(
-      std::make_unique<manta::proto::ScannerOutput>(),
-      manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk});
 
   EXPECT_THAT(future.Take(), IsEmpty());
 }
@@ -79,20 +89,21 @@ TEST(ScannerSessionTest,
 TEST(ScannerSessionTest,
      FetchActionsForImageReturnsEqualNumberOfActionsAsProtoResponse) {
   FakeScannerProfileScopedDelegate delegate;
-  ScannerSession session(&delegate);
   manta::proto::NewEventAction event_action;
   event_action.set_title("Event");
-
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
-  session.FetchActionsForImage(nullptr, future.GetCallback());
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   manta::proto::ScannerObject& object = *output->add_objects();
   *object.add_actions()->mutable_new_event() = event_action;
   *object.add_actions()->mutable_new_event() = event_action;
   *object.add_actions()->mutable_new_event() = event_action;
-  delegate.SendFakeActionsResponse(
-      std::move(output),
-      manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk});
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
 
   EXPECT_THAT(future.Take(), SizeIs(3));
 }
@@ -110,21 +121,22 @@ TEST(ScannerSessionTest, RunningNewEventActionOpensUrl) {
                       _, _))
       .Times(1);
   FakeScannerProfileScopedDelegate delegate;
-  ScannerSession session(&delegate);
   manta::proto::NewEventAction event_action;
   event_action.set_title("🌏");
   event_action.set_description("formerly \"Geo Sync\"");
   event_action.set_dates("20241014T160000/20241014T161500");
   event_action.set_location("Wonderland");
-
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
-  session.FetchActionsForImage(nullptr, future.GetCallback());
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   *output->add_objects()->add_actions()->mutable_new_event() =
       std::move(event_action);
-  delegate.SendFakeActionsResponse(
-      std::move(output),
-      manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk});
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
@@ -147,21 +159,22 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
                       _, _))
       .Times(1);
   FakeScannerProfileScopedDelegate delegate;
-  ScannerSession session(&delegate);
   manta::proto::NewContactAction contact_action;
   contact_action.set_given_name("André");
   contact_action.set_family_name("François");
   contact_action.set_email("afrancois@example.com");
   contact_action.set_phone("+61400000000");
-
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
-  session.FetchActionsForImage(nullptr, future.GetCallback());
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   *output->add_objects()->add_actions()->mutable_new_contact() =
       std::move(contact_action);
-  delegate.SendFakeActionsResponse(
-      std::move(output),
-      manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk});
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
@@ -174,14 +187,15 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
 
 TEST(ScannerSessionTest, ResizesImageHeightToMaxEdge) {
   FakeScannerProfileScopedDelegate delegate;
+  FetchActionsForImageFuture future;
+  EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
   ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/2300, /*height=*/23000);
   session.FetchActionsForImage(bytes, base::DoNothing());
 
-  scoped_refptr<base::RefCountedMemory> processed_bytes =
-      delegate.fetch_actions_jpeg_bytes();
+  auto processed_bytes = future.Get<scoped_refptr<base::RefCountedMemory>>();
 
   SkBitmap processed_bitmap = gfx::JPEGCodec::Decode(*processed_bytes);
 
@@ -191,14 +205,15 @@ TEST(ScannerSessionTest, ResizesImageHeightToMaxEdge) {
 
 TEST(ScannerSessionTest, ResizesImageWidthToMaxEdge) {
   FakeScannerProfileScopedDelegate delegate;
+  FetchActionsForImageFuture future;
+  EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
   ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/23000, /*height=*/2300);
   session.FetchActionsForImage(bytes, base::DoNothing());
 
-  scoped_refptr<base::RefCountedMemory> processed_bytes =
-      delegate.fetch_actions_jpeg_bytes();
+  auto processed_bytes = future.Get<scoped_refptr<base::RefCountedMemory>>();
 
   SkBitmap processed_bitmap = gfx::JPEGCodec::Decode(*processed_bytes);
 
@@ -208,28 +223,30 @@ TEST(ScannerSessionTest, ResizesImageWidthToMaxEdge) {
 
 TEST(ScannerSessionTest, NoResizeIfWithinLimit) {
   FakeScannerProfileScopedDelegate delegate;
+  FetchActionsForImageFuture future;
+  EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
   ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/1000, /*height=*/1000);
   session.FetchActionsForImage(bytes, base::DoNothing());
 
-  scoped_refptr<base::RefCountedMemory> processed_bytes =
-      delegate.fetch_actions_jpeg_bytes();
+  auto processed_bytes = future.Get<scoped_refptr<base::RefCountedMemory>>();
 
   EXPECT_EQ(bytes, processed_bytes);
 }
 
 TEST(ScannerSessionTest, DoesNotResizeIfTotalPixelSizeLowerThanMax) {
   FakeScannerProfileScopedDelegate delegate;
+  FetchActionsForImageFuture future;
+  EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
   ScannerSession session(&delegate);
 
   scoped_refptr<base::RefCountedMemory> bytes =
       MakeJpegBytes(/*width=*/4600, /*height=*/1100);
   session.FetchActionsForImage(bytes, base::DoNothing());
 
-  scoped_refptr<base::RefCountedMemory> processed_bytes =
-      delegate.fetch_actions_jpeg_bytes();
+  auto processed_bytes = future.Get<scoped_refptr<base::RefCountedMemory>>();
 
   EXPECT_EQ(bytes, processed_bytes);
 }
