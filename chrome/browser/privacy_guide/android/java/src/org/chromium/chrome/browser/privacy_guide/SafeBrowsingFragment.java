@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -40,6 +41,12 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
         mEnhancedProtection =
                 (RadioButtonWithDescriptionAndAuxButton) view.findViewById(R.id.enhanced_option);
         mStandardProtection = (RadioButtonWithDescription) view.findViewById(R.id.standard_option);
+
+        if (ChromeFeatureList.sEsbAiStringUpdate.isEnabled()) {
+            mEnhancedProtection.setDescriptionText(
+                    getContext()
+                            .getString(R.string.safe_browsing_enhanced_protection_summary_updated));
+        }
 
         if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
             mStandardProtection.setDescriptionText(
