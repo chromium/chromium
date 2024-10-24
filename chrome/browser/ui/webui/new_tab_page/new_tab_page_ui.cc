@@ -427,6 +427,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},
       {"mobilePromoDescription", IDS_NTP_MOBILE_PROMO_DESCRIPTION},
       {"mobilePromoHeader", IDS_NTP_MOBILE_PROMO_HEADER},
+      {"mobilePromoQrCode", IDS_NTP_MOBILE_PROMO_QR_CODE_LABEL},
 
       // Webstore toast.
       {"webstoreThemesToastMessage", IDS_NTP_WEBSTORE_TOAST_MESSAGE},
