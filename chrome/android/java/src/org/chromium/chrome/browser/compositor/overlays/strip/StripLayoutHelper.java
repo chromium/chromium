@@ -277,6 +277,8 @@ public class StripLayoutHelper
 
                 @Override
                 public void didChangeGroupRootId(int oldRootId, int newRootId) {
+                    // TODO(crbug.com/375271955): Migrate to keying groups on stableId so we don't
+                    //  have to update dependencies here.
                     releaseResourcesForGroupTitle(oldRootId);
 
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
@@ -292,6 +294,12 @@ public class StripLayoutHelper
                     // synced rootId changes.
                     if (oldRootId == mLastSyncedGroupId) {
                         mLastSyncedGroupId = newRootId;
+                    }
+
+                    // Update sourceRootId for moving tabs out of a group. This handles the tab
+                    // removal causing the rootId to change.
+                    if (oldRootId == mSourceRootId) {
+                        mSourceRootId = newRootId;
                     }
                 }
 
