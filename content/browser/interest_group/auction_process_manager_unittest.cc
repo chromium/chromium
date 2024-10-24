@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -151,7 +152,16 @@ class TestAuctionProcessManager
   // This function will return fail if there is no ith process.
   // Do not call this function after any process in the test has been
   // destroyed.
+  //
+  // Only works for the dedicated process case. In the non-dedicated case, these
+  // should go through the MockRenderProcessHost.
   void SimulateReadyProcess(size_t creation_index) {
+    if constexpr (std::is_same<AuctionManagerBaseType,
+                               InRendererAuctionProcessManager>::value) {
+      // This should not be used in the  InRendererAuctionProcessManager case.
+      NOTREACHED();
+      return;
+    }
     if (launched_processes_.size() <= creation_index) {
       ADD_FAILURE() << "Process unexpectedly doesn't exist: " << creation_index;
       return;
@@ -219,10 +229,14 @@ class AuctionProcessManagerTestBase
     SiteIsolationPolicy::DisableFlagCachingForTesting();
     switch (process_mode) {
       case ProcessMode::kDedicated:
+        dedicated_process_manager_.emplace();
+        auction_process_manager_ = &dedicated_process_manager_.value();
         break;
       case ProcessMode::kInRendererSitePerProcess:
         scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
             switches::kSitePerProcess);
+        in_renderer_process_manager_.emplace();
+        auction_process_manager_ = &in_renderer_process_manager_.value();
         break;
       case ProcessMode::kInRendererSharedProcess:
         // Note: if we're going to disable kOriginKeyedProcessesByDefault, it's
@@ -240,6 +254,8 @@ class AuctionProcessManagerTestBase
             switches::kSitePerProcess);
         original_browser_client_ =
             content::SetBrowserClientForTesting(&browser_client_);
+        in_renderer_process_manager_.emplace();
+        auction_process_manager_ = &in_renderer_process_manager_.value();
         break;
     }
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
@@ -262,11 +278,37 @@ class AuctionProcessManagerTestBase
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
   }
 
+  // Closes all worklet pipes, much like a crash.
+  void ClosePipes() {
+    if (dedicated_process_manager_) {
+      dedicated_process_manager_->ClosePipes();
+    } else {
+      in_renderer_process_manager_->ClosePipes();
+    }
+  }
+
+  // Wraps calling ProcessCreationOrder() on the correct
+  // TestAuctionProcessManager.
+  size_t ProcessCreationOrder(
+      const AuctionProcessManager::ProcessHandle& handle) {
+    if (dedicated_process_manager_) {
+      return dedicated_process_manager_->ProcessCreationOrder(handle);
+    } else {
+      return in_renderer_process_manager_->ProcessCreationOrder(handle);
+    }
+  }
+
+  // Currently only works when testing the dedicated path.
+  void SimulateReadyProcess(size_t creation_index) {
+    CHECK(dedicated_process_manager_);
+    dedicated_process_manager_->SimulateReadyProcess(creation_index);
+  }
+
   void MaybeStartAnticipatoryProcess(
       const url::Origin& origin,
       std::optional<AuctionProcessManager::WorkletType> worklet_type =
           std::nullopt) {
-    GetAuctionProcessManager().MaybeStartAnticipatoryProcess(
+    auction_process_manager_->MaybeStartAnticipatoryProcess(
         origin, site_instance1_.get(), worklet_type.value_or(GetWorkletType()));
   }
 
@@ -288,7 +330,7 @@ class AuctionProcessManagerTestBase
       bool expect_success,
       RequestWorkletServiceOutcome expected_outcome) {
     base::HistogramTester histogram_tester;
-    bool success = GetAuctionProcessManager().RequestWorkletService(
+    bool success = auction_process_manager_->RequestWorkletService(
         worklet_type, origin, site_instance1_.get(), process_handle,
         base::DoNothing());
     EXPECT_EQ(expect_success, success);
@@ -324,9 +366,9 @@ class AuctionProcessManagerTestBase
   size_t GetPendingRequestsOfWorkletType() {
     switch (GetWorkletType()) {
       case AuctionProcessManager::WorkletType::kSeller:
-        return GetAuctionProcessManager().GetPendingSellerRequestsForTesting();
+        return auction_process_manager_->GetPendingSellerRequestsForTesting();
       case AuctionProcessManager::WorkletType::kBidder:
-        return GetAuctionProcessManager().GetPendingBidderRequestsForTesting();
+        return auction_process_manager_->GetPendingBidderRequestsForTesting();
     }
   }
 
@@ -335,20 +377,18 @@ class AuctionProcessManagerTestBase
       std::optional<AuctionProcessManager::WorkletType> type = std::nullopt) {
     switch (type.value_or(GetWorkletType())) {
       case AuctionProcessManager::WorkletType::kSeller:
-        return GetAuctionProcessManager().GetSellerProcessCountForTesting();
+        return auction_process_manager_->GetSellerProcessCountForTesting();
       case AuctionProcessManager::WorkletType::kBidder:
-        return GetAuctionProcessManager().GetBidderProcessCountForTesting();
+        return auction_process_manager_->GetBidderProcessCountForTesting();
     }
   }
 
   void CheckOnlyIdleProcessesWithCount(size_t expected_idle_process_count) {
-    EXPECT_EQ(GetAuctionProcessManager().GetIdleProcessCountForTesting(),
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
               expected_idle_process_count);
-    EXPECT_EQ(GetAuctionProcessManager().GetBidderProcessCountForTesting(), 0u);
-    EXPECT_EQ(GetAuctionProcessManager().GetSellerProcessCountForTesting(), 0u);
+    EXPECT_EQ(auction_process_manager_->GetBidderProcessCountForTesting(), 0u);
+    EXPECT_EQ(auction_process_manager_->GetSellerProcessCountForTesting(), 0u);
   }
-
-  virtual AuctionProcessManager& GetAuctionProcessManager() = 0;
 
   // Isolated by StartIsolatingSite() call in the constructor.
   const url::Origin kIsolatedOrigin =
@@ -378,16 +418,21 @@ class AuctionProcessManagerTestBase
   // instances.
   scoped_refptr<SiteInstance> site_instance1_;
   scoped_refptr<SiteInstance> site_instance2_;
+
+  // Only one of these two is populated, based on the ProcessMode.
+  std::optional<TestAuctionProcessManager<DedicatedAuctionProcessManager>>
+      dedicated_process_manager_;
+  std::optional<TestAuctionProcessManager<InRendererAuctionProcessManager>>
+      in_renderer_process_manager_;
+
+  // Points to whichever of the above is non-null.
+  raw_ptr<AuctionProcessManager> auction_process_manager_;
 };
 
 class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
  protected:
   AuctionProcessManagerTest()
       : AuctionProcessManagerTestBase(ProcessMode::kDedicated) {}
-
-  AuctionProcessManager& GetAuctionProcessManager() override {
-    return auction_process_manager_;
-  }
 
   // Request a worklet service and expect the request to complete synchronously.
   // There's no async version, since async calls are only triggered by deleting
@@ -397,7 +442,7 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
                                 const url::Origin& origin) {
     auto process_handle =
         std::make_unique<AuctionProcessManager::ProcessHandle>();
-    EXPECT_TRUE(auction_process_manager_.RequestWorkletService(
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
         worklet_type, origin, site_instance1_, process_handle.get(),
         NeverInvokedClosure()));
     EXPECT_TRUE(process_handle->GetService());
@@ -414,9 +459,6 @@ class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
     return base::BindOnce(
         []() { ADD_FAILURE() << "This should not be called"; });
   }
-
-  TestAuctionProcessManager<DedicatedAuctionProcessManager>
-      auction_process_manager_;
 };
 
 class DedicatedStyleAuctionProcessManagerTest
@@ -429,12 +471,6 @@ class DedicatedStyleAuctionProcessManagerTest
         {{"AnticipatoryProcessHoldTime", "10s"}});
   }
 
-  AuctionProcessManager& GetAuctionProcessManager() override {
-    return auction_process_manager_;
-  }
-
-  TestAuctionProcessManager<DedicatedAuctionProcessManager>
-      auction_process_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -455,7 +491,7 @@ TEST_P(AuctionProcessManagerTest, Basic) {
   EXPECT_TRUE(worklet->GetService());
   EXPECT_EQ(1u, GetActiveProcessesOfWorkletType());
   EXPECT_EQ(0u, GetActiveProcessesOfWorkletType(GetOtherWorkletType()));
-  EXPECT_EQ(0u, auction_process_manager_.GetIdleProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetIdleProcessCountForTesting());
 }
 
 // Make sure requests for different origins don't share processes, nor do
@@ -472,7 +508,7 @@ TEST_P(AuctionProcessManagerTest, MultipleRequestsForDifferentProcesses) {
                     AuctionProcessManager::WorkletType::kBidder));
   EXPECT_EQ(2u, GetActiveProcessesOfWorkletType(
                     AuctionProcessManager::WorkletType::kSeller));
-  EXPECT_EQ(0u, auction_process_manager_.GetIdleProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetIdleProcessCountForTesting());
   EXPECT_NE(worlket_a->GetService(), worklet_b->GetService());
   EXPECT_NE(worlket_a->GetService(), worklet_of_other_type_a->GetService());
   EXPECT_NE(worlket_a->GetService(), worklet_of_other_type_b->GetService());
@@ -649,7 +685,7 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
               GURL(base::StringPrintf("https://%i.test", ++num_origins)));
           base::HistogramTester histogram_tester;
           ASSERT_EQ(original_size < GetMaxProcesses(),
-                    auction_process_manager_.RequestWorkletService(
+                    auction_process_manager_->RequestWorkletService(
                         GetWorkletType(), distinct_origin, site_instance1_,
                         data.back().process_handle.get(),
                         data.back().run_loop->QuitClosure()));
@@ -759,7 +795,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   base::RunLoop run_loop_delayed_a1;
   auto process_delayed_a1 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
+  ASSERT_FALSE(auction_process_manager_->RequestWorkletService(
       GetWorkletType(), kOriginA, site_instance1_, process_delayed_a1.get(),
       run_loop_delayed_a1.QuitClosure()));
   base::RunLoop().RunUntilIdle();
@@ -770,7 +806,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   base::RunLoop run_loop_delayed_a2;
   auto process_delayed_a2 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
+  ASSERT_FALSE(auction_process_manager_->RequestWorkletService(
       GetWorkletType(), kOriginA, site_instance1_, process_delayed_a2.get(),
       run_loop_delayed_a2.QuitClosure()));
   base::RunLoop().RunUntilIdle();
@@ -781,7 +817,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   base::RunLoop run_loop_delayed_b;
   auto process_delayed_b =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
+  ASSERT_FALSE(auction_process_manager_->RequestWorkletService(
       GetWorkletType(), kOriginB, site_instance1_, process_delayed_b.get(),
       run_loop_delayed_b.QuitClosure()));
   base::RunLoop().RunUntilIdle();
@@ -855,7 +891,7 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
   // Make a pending request.
   auto pending_process1 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
+  ASSERT_FALSE(auction_process_manager_->RequestWorkletService(
       GetWorkletType(), kOriginA, site_instance1_, pending_process1.get(),
       NeverInvokedClosure()));
   EXPECT_EQ(1u, GetPendingRequestsOfWorkletType());
@@ -868,13 +904,13 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
   // Make two more pending process requests.
   auto pending_process2 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
+  ASSERT_FALSE(auction_process_manager_->RequestWorkletService(
       GetWorkletType(), kOriginA, site_instance1_, pending_process2.get(),
       NeverInvokedClosure()));
   auto pending_process3 =
       std::make_unique<AuctionProcessManager::ProcessHandle>();
   base::RunLoop pending_process3_run_loop;
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
+  ASSERT_FALSE(auction_process_manager_->RequestWorkletService(
       GetWorkletType(), kOriginB, site_instance1_, pending_process3.get(),
       pending_process3_run_loop.QuitClosure()));
   EXPECT_EQ(2u, GetPendingRequestsOfWorkletType());
@@ -890,7 +926,7 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
   // `pending_process3` should get a process instead.
   pending_process3_run_loop.Run();
   EXPECT_TRUE(pending_process3->GetService());
-  EXPECT_EQ(0u, auction_process_manager_.GetPendingSellerRequestsForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetPendingSellerRequestsForTesting());
 }
 
 // Check that process crash is handled properly, by creating a new process.
@@ -902,7 +938,7 @@ TEST_P(AuctionProcessManagerTest, ProcessCrash) {
   EXPECT_EQ(1u, GetActiveProcessesOfWorkletType());
 
   // Close pipes. No new pipe should be created.
-  auction_process_manager_.ClosePipes();
+  ClosePipes();
   EXPECT_EQ(0u, GetActiveProcessesOfWorkletType());
 
   // Requesting a new process will create a new pipe.
@@ -921,7 +957,7 @@ TEST_P(AuctionProcessManagerTest, DisconnectBeforeDelete) {
   // correctly (rather than hitting a DCHECK on incorrect refcounting).
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceExpectSuccess(kOriginA);
-  auction_process_manager_.ClosePipes();
+  ClosePipes();
   task_environment_.RunUntilIdle();
   handle_a1.reset();
   task_environment_.RunUntilIdle();
@@ -970,23 +1006,23 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
     RequestWorkletService(handles.back().get(), origin, GetWorkletType(),
                           /*expect_success=*/true,
                           RequestWorkletServiceOutcome::kUsedIdleProcess);
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), handles.size());
     origin = url::Origin::Create(
         GURL(base::StringPrintf("https://%i_anticipatory.test", i)));
     MaybeStartAnticipatoryProcess(origin, GetWorkletType());
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), handles.size());
   }
 
   // Can't make more anticipatory processes of this type.
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses() - 1);
 
   // Can make an anticipatory process of the other type.
   MaybeStartAnticipatoryProcess(kOriginB, GetOtherWorkletType());
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 2u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses() - 1);
 
   // We should still be able to create another worklet with the
@@ -996,7 +1032,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
   RequestWorkletService(handles.back().get(), kOriginA, GetWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses());
 
   // Can't make more processes of this type.
@@ -1005,7 +1041,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
   RequestWorkletService(handles.back().get(), kOriginB, GetWorkletType(),
                         /*expect_success=*/false,
                         RequestWorkletServiceOutcome::kHitProcessLimit);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses());
 
   // Can make a process of the other type.
@@ -1014,7 +1050,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
   RequestWorkletService(handles.back().get(), kOriginC, GetOtherWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses());
 
   handles.clear();
@@ -1028,11 +1064,11 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
       GetWorkletType(),
       /*expect_success=*/true,
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
   MaybeStartAnticipatoryProcess(
       url::Origin::Create(GURL("https://worklet3.test")), GetWorkletType());
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
 }
 
@@ -1060,7 +1096,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
 }
 
@@ -1073,7 +1109,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
       SCOPED_TRACE(static_cast<int>(worklet_type_to_assign));
       MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
       CheckOnlyIdleProcessesWithCount(1);
-      EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+      EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
 
       AuctionProcessManager::ProcessHandle handle;
       RequestWorkletService(&handle, origin_to_assign, worklet_type_to_assign,
@@ -1082,7 +1118,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
 
       // The `process_handle` gets deleted between iterations of the for loop
       // so we'll only have 1 active process at this point.
-      EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+      EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
       EXPECT_EQ(GetActiveProcessesOfWorkletType(worklet_type_to_assign), 1u);
     }
   }
@@ -1115,11 +1151,10 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
     // process than to use the older process & have to remove one of our
     // anticipatory processes. All anticipatory processes were of type
     // GetWorkletType() except the first one.
-    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(*handles.back()),
-              i + 1u);
+    EXPECT_EQ(ProcessCreationOrder(*handles.back()), i + 1u);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), i + 1u);
   }
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
 }
 
 TEST_P(DedicatedStyleAuctionProcessManagerTest,
@@ -1139,9 +1174,9 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                           /*expect_success=*/true,
                           RequestWorkletServiceOutcome::kUsedIdleProcess);
     // We assigned the oldest available idle process.
-    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(*handle), i);
+    EXPECT_EQ(ProcessCreationOrder(*handle), i);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), i + 1u);
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2 - i);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 2 - i);
     handles.push_back(std::move(handle));
   }
 }
@@ -1158,27 +1193,27 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
       MaybeStartAnticipatoryProcess(origin_for_anticipatory_process,
                                     GetWorkletType());
     }
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 3u);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 3u);
 
     AuctionProcessManager::ProcessHandle handle;
     RequestWorkletService(&handle, origin_to_request_service, GetWorkletType(),
                           /*expect_success=*/true,
                           RequestWorkletServiceOutcome::kUsedIdleProcess);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2u);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 2u);
 
     for (const url::Origin& origin_for_anticipatory_process : origins) {
       MaybeStartAnticipatoryProcess(origin_for_anticipatory_process,
                                     GetWorkletType());
     }
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2u);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 2u);
 
     // Reset the number of processes for the next loop by letting the idle
     // processes expire. The active process will go out of scope.
     task_environment_.FastForwardBy(
         features::kFledgeStartAnticipatoryProcessExpirationTime.Get());
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   }
 }
 
@@ -1231,12 +1266,12 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
 
   task_environment_.FastForwardBy(
       features::kFledgeStartAnticipatoryProcessExpirationTime.Get());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
 }
 
 TEST_P(DedicatedStyleAuctionProcessManagerTest, PrioritizesReadyIdleProcess) {
@@ -1246,24 +1281,23 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest, PrioritizesReadyIdleProcess) {
   CheckOnlyIdleProcessesWithCount(3);
 
   const size_t kLastCreatedProcessIndex = 2;
-  auction_process_manager_.SimulateReadyProcess(kLastCreatedProcessIndex);
+  SimulateReadyProcess(kLastCreatedProcessIndex);
   AuctionProcessManager::ProcessHandle handle1, handle2;
   RequestWorkletService(&handle1, kOriginA, GetWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             kLastCreatedProcessIndex);
-  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle1),
-            kLastCreatedProcessIndex);
+  EXPECT_EQ(ProcessCreationOrder(handle1), kLastCreatedProcessIndex);
 
   // The next best process is the first created one.
   RequestWorkletService(&handle2, kOriginB, GetWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
-  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle2), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(ProcessCreationOrder(handle2), 0u);
 }
 
 TEST_P(DedicatedStyleAuctionProcessManagerTest,
@@ -1275,7 +1309,7 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
   CheckOnlyIdleProcessesWithCount(3);
 
   for (size_t i = 0; i < origins.size(); ++i) {
-    auction_process_manager_.SimulateReadyProcess(i);
+    SimulateReadyProcess(i);
   }
 
   // Because the processes are all ready, they should be allocated in order.
@@ -1287,9 +1321,8 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                           /*expect_success=*/true,
                           RequestWorkletServiceOutcome::kUsedIdleProcess);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), i + 1);
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2 - i);
-    EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(*handles.back()),
-              i);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 2 - i);
+    EXPECT_EQ(ProcessCreationOrder(*handles.back()), i);
   }
 }
 
@@ -1305,8 +1338,8 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
   }
   // Both the process of the other type and the last process
   // of the same type are ready.
-  auction_process_manager_.SimulateReadyProcess(GetMaxProcesses());
-  auction_process_manager_.SimulateReadyProcess(0);
+  SimulateReadyProcess(GetMaxProcesses());
+  SimulateReadyProcess(0);
 
   // We are at the limit so we should use that last process.
   AuctionProcessManager::ProcessHandle handle1, handle2, handle3;
@@ -1314,10 +1347,9 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses());
-  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle1),
-            GetMaxProcesses());
+  EXPECT_EQ(ProcessCreationOrder(handle1), GetMaxProcesses());
 
   // Even though the first process is ready we have to use the same type because
   // we're at the limit.
@@ -1325,9 +1357,9 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses() - 1);
-  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle2), 1u);
+  EXPECT_EQ(ProcessCreationOrder(handle2), 1u);
 
   // We can use the first process when we request a process for
   // GetOtherWorkletType().
@@ -1336,9 +1368,9 @@ TEST_P(DedicatedStyleAuctionProcessManagerTest,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(GetOtherWorkletType()), 1u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses() - 2);
-  EXPECT_EQ(auction_process_manager_.ProcessCreationOrder(handle3), 0u);
+  EXPECT_EQ(ProcessCreationOrder(handle3), 0u);
 }
 
 // A base class for AuctionProcessManager tests that sets up the basic test
@@ -1355,17 +1387,13 @@ class InRendererAuctionProcessManagerTestBase
         {{"AnticipatoryProcessHoldTime", "3s"}});
   }
 
-  AuctionProcessManager& GetAuctionProcessManager() override {
-    return auction_process_manager_;
-  }
-
   std::unique_ptr<AuctionProcessManager::ProcessHandle>
   GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
                                 scoped_refptr<SiteInstance> site_instance,
                                 const url::Origin& origin) {
     auto process_handle =
         std::make_unique<AuctionProcessManager::ProcessHandle>();
-    EXPECT_TRUE(auction_process_manager_.RequestWorkletService(
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
         worklet_type, origin, site_instance, process_handle.get(),
         NeverInvokedClosure()));
     EXPECT_TRUE(process_handle->GetService());
@@ -1376,9 +1404,6 @@ class InRendererAuctionProcessManagerTestBase
     return base::BindOnce(
         []() { ADD_FAILURE() << "This should not be called"; });
   }
-
-  TestAuctionProcessManager<InRendererAuctionProcessManager>
-      auction_process_manager_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1594,7 +1619,7 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   RequestWorkletService(&handle2, kIsolatedOrigin, GetWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(GetWorkletType()), 1u);
 }
 
@@ -1686,13 +1711,13 @@ TEST_P(
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(GetOtherWorkletType()), 2u);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
 
   // We do consume the process when we request the same type and origin.
   RequestWorkletService(&handle4, kOriginA, GetWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
 }
 
@@ -1720,7 +1745,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
       RequestWorkletService(&handle, origin_to_assign, type_to_assign,
                             /*expect_success=*/true,
                             RequestWorkletServiceOutcome::kUsedIdleProcess);
-      EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+      EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
                 origins_and_types.size() - 1);
       EXPECT_EQ(GetActiveProcessesOfWorkletType(type_to_assign), 1u);
     }
@@ -1768,7 +1793,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
       &handle0, kOriginB, GetOtherWorkletType(),
       /*expect_success=*/true,
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses() + 1);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(GetOtherWorkletType()), 1u);
 
@@ -1778,7 +1803,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
   RequestWorkletService(
       &handle1, kOriginA, GetWorkletType(), /*expect_success=*/true,
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
 
@@ -1790,7 +1815,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
       url::Origin::Create(GURL(base::StringPrintf("https://%i.test", 1))),
       GetWorkletType(), /*expect_success=*/true,
       RequestWorkletServiceOutcome::kUsedIdleProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses() - 1);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 2u);
 
@@ -1808,7 +1833,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
         RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
   }
   // An idle process of the other type should still exist.
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 1u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses());
 
   // Now we will hit the process limit when we request a new process.
@@ -1823,7 +1848,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
   RequestWorkletService(&other_type_handle, kOriginA, GetOtherWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 0u);
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), GetMaxProcesses());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(GetOtherWorkletType()), 2u);
 }
@@ -1845,14 +1870,14 @@ TEST_P(InRendererAuctionProcessManagerTest,
           /*expect_success=*/true,
           RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
     }
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
               i + 1 - handles.size());
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), handles.size());
   }
 
   // Can't make another anticipatory process.
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses() - handles.size());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), handles.size());
 
@@ -1863,7 +1888,7 @@ TEST_P(InRendererAuctionProcessManagerTest,
   RequestWorkletService(
       handles.back().get(), kOriginA, GetWorkletType(), /*expect_success=*/true,
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess);
-  EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(),
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(),
             GetMaxProcesses() - handles.size());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), handles.size());
 }
@@ -1886,7 +1911,7 @@ TEST_P(
                           /*expect_success=*/true,
                           RequestWorkletServiceOutcome::kUsedIdleProcess);
     EXPECT_EQ(GetActiveProcessesOfWorkletType(), i + 1u);
-    EXPECT_EQ(auction_process_manager_.GetIdleProcessCountForTesting(), 2 - i);
+    EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 2 - i);
     handles.push_back(std::move(handle));
   }
 }
