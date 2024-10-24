@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/session_api/session_parser.h"
 
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/common/base_requests.h"
 
@@ -69,6 +70,21 @@ namespace ash::boca {
   return ::boca::LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN;
 }
 
+::boca::StudentGroup::GroupSource GroupSourceJsonToProto(
+    const std::string& type) {
+  if (type == "GROUP_SOURCE_UNKNOWN") {
+    return ::boca::StudentGroup::GROUP_SOURCE_UNKNOWN;
+  }
+  if (type == "CLASSROOM") {
+    return ::boca::StudentGroup::CLASSROOM;
+  }
+  if (type == "JOIN_CODE") {
+    return ::boca::StudentGroup::JOIN_CODE;
+  }
+  // By default return roster source for backward compatibility.
+  return ::boca::StudentGroup::CLASSROOM;
+}
+
 void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
                                ::boca::Session* session) {
   if (session_dict->FindDict(kTeacher)) {
@@ -120,6 +136,12 @@ void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
         if (auto* ptr =
                 students_dict.GetIfDict()->FindString(kStudentGroupTitle)) {
           student_groups->set_title(*ptr);
+        }
+        if (auto* ptr = students_dict.GetIfDict()->FindString(kGroupSource)) {
+          student_groups->set_group_source(GroupSourceJsonToProto(*ptr));
+        } else {
+          // By default set to classroom for backward compatibility.
+          student_groups->set_group_source(::boca::StudentGroup::CLASSROOM);
         }
         if (auto* items = students_dict.GetIfDict()->FindList(kStudents)) {
           for (auto& item : *items) {

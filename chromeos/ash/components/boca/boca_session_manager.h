@@ -103,9 +103,7 @@ class BocaSessionManager
     // Notifies when session roster updated. Will emit when only elements order
     // changed in the vector too. Deferred to events consumer to decide on
     // the actual action.
-    virtual void OnSessionRosterUpdated(
-        const std::string& group_name,
-        const std::vector<::boca::UserIdentity>& consumers);
+    virtual void OnSessionRosterUpdated(const ::boca::Roster& roster);
 
     // Notifies when boca app reloaded.
     virtual void OnAppReloaded();

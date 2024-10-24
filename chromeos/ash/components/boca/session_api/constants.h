@@ -85,6 +85,7 @@ inline constexpr char kCode[] = "code";
 inline constexpr char kSessionJoinCode[] = "sessionJoinCode";
 inline constexpr char kDeviceInfo[] = "deviceInfo";
 inline constexpr char kStudent[] = "student";
+inline constexpr char kGroupSource[] = "groupSource";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(

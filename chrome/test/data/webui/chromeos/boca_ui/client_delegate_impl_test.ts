@@ -64,6 +64,10 @@ class MockRemoteHandler extends PageHandlerRemote {
               photoUrl: {url: 'cdn2'},
             },
           ],
+          studentsJoinViaCode: [],
+          teacher: null,
+          accessCode: null,
+          sessionStartTime: null,
           onTaskConfig: {
             isLocked: true,
             tabs: [
@@ -126,6 +130,12 @@ class MockRemoteHandler extends PageHandlerRemote {
               photoUrl: {url: 'cdn2'},
             },
           ],
+          studentsJoinViaCode: [{
+            id: '3',
+            name: 'cat1',
+            email: 'cat1@gmail.com',
+            photoUrl: {url: 'cdn3'},
+          }],
           onTaskConfig: {
             isLocked: true,
             tabs: [
@@ -288,6 +298,10 @@ suite('ClientDelegateTest', function() {
             {id: '1', name: 'cat', email: 'cat@gmail.com', photoUrl: 'cdn1'},
             {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
           ],
+          studentsJoinViaCode: [],
+          teacher: undefined,
+          accessCode: undefined,
+          sessionStartTime: undefined,
           onTaskConfig: {
             isLocked: true,
             tabs: [
@@ -335,6 +349,9 @@ suite('ClientDelegateTest', function() {
               {id: '1', name: 'cat', email: 'cat@gmail.com', photoUrl: 'cdn1'},
               {id: '2', name: 'dog', email: 'dog@gmail.com', photoUrl: 'cdn2'},
             ],
+            studentsJoinViaCode: [
+              {id: '3', name: 'cat1', email: 'cat1@gmail.com', photoUrl: 'cdn3'}
+            ],
             accessCode: 'testCode',
             onTaskConfig: {
               isLocked: true,
@@ -379,6 +396,7 @@ suite('ClientDelegateTest', function() {
             msec: 1000000,
           },
           students: [],
+          studentsJoinViaCode: [],
           onTaskConfig: {isLocked: false, tabs: []},
           teacher: {
             id: '0',
@@ -405,6 +423,7 @@ suite('ClientDelegateTest', function() {
                 photoUrl: 'cdn0',
               },
               students: [],
+              studentsJoinViaCode: [],
               onTaskConfig: {
                 isLocked: false,
                 tabs: [],

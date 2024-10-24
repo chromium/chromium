@@ -79,8 +79,7 @@ class MockObserver : public BocaSessionManager::Observer {
               (override));
   MOCK_METHOD(void,
               OnSessionRosterUpdated,
-              (const std::string& group_name,
-               const std::vector<::boca::UserIdentity>& consumers),
+              (const ::boca::Roster& roster),
               (override));
   MOCK_METHOD(
       void,
@@ -576,7 +575,7 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionRosterUpdated) {
         boca_session_manager()->ParseSessionResponse(std::move(session_2));
       }));
 
-  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_, _)).Times(2);
+  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(2);
 
   // Have updated two sessions.
   task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
@@ -612,7 +611,7 @@ TEST_F(BocaSessionManagerTest,
         boca_session_manager()->ParseSessionResponse(std::move(session_2));
       }));
 
-  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_, _)).Times(2);
+  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(2);
 
   // Have updated two sessions.
   task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
@@ -629,7 +628,7 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
         boca_session_manager()->ParseSessionResponse(std::move(session_1));
       }));
 
-  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_, _)).Times(0);
+  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(0);
 
   // Have updated one sessions.
   task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
@@ -882,7 +881,7 @@ TEST_F(BocaSessionManagerTest,
               OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
       .Times(1);
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(1);
-  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_, _)).Times(1);
+  EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(1);
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(1);
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
 

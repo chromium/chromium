@@ -52,6 +52,15 @@ export function getSessionConfigMojomToUI(session: Config|
             photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
           };
         }),
+        studentsJoinViaCode:
+            session.studentsJoinViaCode.map((item: IdentityMojom) => {
+              return {
+                id: item.id,
+                name: item.name,
+                email: item.email,
+                photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
+              };
+            }),
         onTaskConfig: {
           isLocked: session.onTaskConfig.isLocked,
           tabs: session.onTaskConfig.tabs.map((item: ControlledTabMojom) => {
@@ -120,6 +129,10 @@ export class ClientDelegateFactory {
             microseconds: BigInt(sessionConfig.sessionDurationInMinutes) *
                 MICRO_SECS_IN_MINUTES,
           },
+          studentsJoinViaCode: [],
+          teacher: null,
+          accessCode: null,
+          sessionStartTime: null,
           students: sessionConfig.students?.map((item: Identity) => {
             return {
               id: item.id,

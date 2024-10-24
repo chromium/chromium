@@ -56,8 +56,7 @@ void BocaSessionManager::Observer::OnLocalCaptionConfigUpdated(
     const ::boca::CaptionsConfig& config) {}
 
 void BocaSessionManager::Observer::OnSessionRosterUpdated(
-    const std::string& group_name,
-    const std::vector<::boca::UserIdentity>& consumers) {}
+    const ::boca::Roster& roster) {}
 
 void BocaSessionManager::Observer::OnAppReloaded() {}
 
@@ -288,10 +287,7 @@ void BocaSessionManager::NotifyRosterUpdate() {
   if (previous_session_roster.SerializeAsString() !=
       current_session_roster.SerializeAsString()) {
     for (auto& observer : observers_) {
-      auto student_list = GetStudentGroupsSafe(current_session_.get());
-      observer.OnSessionRosterUpdated(
-          kMainStudentGroupName, std::vector<::boca::UserIdentity>(
-                                     student_list.begin(), student_list.end()));
+      observer.OnSessionRosterUpdated(current_session_roster);
     }
   }
 }

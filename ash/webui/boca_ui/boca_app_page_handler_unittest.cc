@@ -262,7 +262,8 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
 
   const auto config = mojom::Config::New(
       session_duration, std::nullopt, nullptr, std::move(students),
-      GetCommonTestLockOnTaskConfig(), GetCommonCaptionConfig(), "");
+      std::vector<mojom::IdentityPtr>{}, GetCommonTestLockOnTaskConfig(),
+      GetCommonCaptionConfig(), "");
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
                                         google_apis::ApiErrorCode>>
@@ -395,8 +396,8 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
   const auto config = mojom::Config::New(
       session_duration, std::nullopt, nullptr,
-      std::vector<mojom::IdentityPtr>{}, mojom::OnTaskConfigPtr(nullptr),
-      mojom::CaptionConfigPtr(nullptr), "");
+      std::vector<mojom::IdentityPtr>{}, std::vector<mojom::IdentityPtr>{},
+      mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr), "");
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId);
@@ -461,11 +462,22 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
         auto* student_groups_1 =
             session->mutable_roster()->mutable_student_groups()->Add();
         student_groups_1->set_title(kMainStudentGroupName);
+        student_groups_1->set_group_source(::boca::StudentGroup::CLASSROOM);
         auto* student = student_groups_1->mutable_students()->Add();
         student->set_email("dog@email.com");
         student->set_full_name("dog");
-        student->set_gaia_id("123");
+        student->set_gaia_id("111");
         student->set_photo_url("cdn://s1");
+
+        auto* student_groups_2 =
+            session->mutable_roster()->mutable_student_groups()->Add();
+        student_groups_2->set_title("accessCode");
+        student_groups_2->set_group_source(::boca::StudentGroup::JOIN_CODE);
+        auto* student_2 = student_groups_2->mutable_students()->Add();
+        student_2->set_email("dog1@email.com");
+        student_2->set_full_name("dog1");
+        student_2->set_gaia_id("222");
+        student_2->set_photo_url("cdn://s2");
 
         ::boca::SessionConfig session_config;
         auto* caption_config_1 = session_config.mutable_captions_config();
@@ -510,9 +522,16 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   ASSERT_EQ(1u, result->students.size());
 
   EXPECT_EQ("dog", result->students[0]->name);
-  EXPECT_EQ("123", result->students[0]->id);
+  EXPECT_EQ("111", result->students[0]->id);
   EXPECT_EQ("dog@email.com", result->students[0]->email);
   EXPECT_EQ("cdn://s1", result->students[0]->photo_url->spec());
+
+  ASSERT_EQ(1u, result->students_join_via_code.size());
+
+  EXPECT_EQ("dog1", result->students_join_via_code[0]->name);
+  EXPECT_EQ("222", result->students_join_via_code[0]->id);
+  EXPECT_EQ("dog1@email.com", result->students_join_via_code[0]->email);
+  EXPECT_EQ("cdn://s2", result->students_join_via_code[0]->photo_url->spec());
 
   ASSERT_EQ(1u, result->on_task_config->tabs.size());
   ASSERT_TRUE(result->on_task_config->is_locked);
@@ -1391,7 +1410,7 @@ TEST_F(BocaAppPageHandlerTest, OnSessionRosterUpdatedSucceed) {
   base::test::TestFuture<mojom::SessionResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
       future.GetCallback());
-  boca_app_handler()->OnSessionRosterUpdated("any", {});
+  boca_app_handler()->OnSessionRosterUpdated({});
   auto result = future.Take();
   ASSERT_TRUE(result->is_config());
 }

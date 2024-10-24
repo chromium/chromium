@@ -98,6 +98,7 @@ export declare interface SessionConfig {
   sessionStartTime?: Date;
   sessionDurationInMinutes: number;
   students: Identity[];
+  studentsJoinViaCode?: Identity[];
   teacher?: Identity;
   onTaskConfig: OnTaskConfig;
   captionConfig: CaptionConfig;

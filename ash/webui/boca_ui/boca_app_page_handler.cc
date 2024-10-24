@@ -73,11 +73,24 @@ std::unique_ptr<::boca::CaptionsConfig> CaptionConfigMojomToProto(
 }
 
 mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
+  CHECK(session);
   std::vector<mojom::IdentityPtr> students;
-  for (auto student : GetStudentGroupsSafe(session)) {
-    students.push_back(
-        mojom::Identity::New(student.gaia_id(), student.full_name(),
-                             student.email(), GURL(student.photo_url())));
+  std::vector<mojom::IdentityPtr> students_join_via_code;
+  for (auto group : session->roster().student_groups()) {
+    if (group.group_source() == ::boca::StudentGroup::CLASSROOM) {
+      for (auto student : group.students()) {
+        students.push_back(
+            mojom::Identity::New(student.gaia_id(), student.full_name(),
+                                 student.email(), GURL(student.photo_url())));
+      }
+    }
+    if (group.group_source() == ::boca::StudentGroup::JOIN_CODE) {
+      for (auto student : group.students()) {
+        students_join_via_code.push_back(
+            mojom::Identity::New(student.gaia_id(), student.full_name(),
+                                 student.email(), GURL(student.photo_url())));
+      }
+    }
   }
 
   auto caption_config = mojom::CaptionConfig::New();
@@ -129,7 +142,8 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
       // Nanos are not used throughout session lifecycle so it's
       // safe to only parse seconds.
       base::Seconds(session->duration().seconds()), start_time,
-      std::move(teacher), std::move(students), std::move(on_task_config),
+      std::move(teacher), std::move(students),
+      std::move(students_join_via_code), std::move(on_task_config),
       std::move(caption_config), access_code);
 }
 }  // namespace
@@ -451,9 +465,7 @@ void BocaAppHandler::OnSessionCaptionConfigUpdated(
   UpdateSessionConfig();
 }
 
-void BocaAppHandler::OnSessionRosterUpdated(
-    const std::string& group_name,
-    const std::vector<::boca::UserIdentity>& consumers) {
+void BocaAppHandler::OnSessionRosterUpdated(const ::boca::Roster& roster) {
   UpdateSessionConfig();
 }
 

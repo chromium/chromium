@@ -56,8 +56,10 @@ struct Config{
   mojo_base.mojom.TimeDelta session_duration;
   mojo_base.mojom.JSTime? session_start_time;
   Identity? teacher;
-  // Selected students to be joined for session.
+  // Students joined via Classroom roster selection.
   array<Identity> students;
+  // Students joined via access code.
+  array<Identity> students_join_via_code;
   OnTaskConfig on_task_config;
   CaptionConfig caption_config;
   // Strings allow consumer to type and join a session. Will be alphabetic

@@ -68,6 +68,24 @@ constexpr char kFullSessionResponse[] = R"(
         }
       ],
       "title": "main"
+    },
+    {
+      "students": [
+        {
+          "email": "cat1@gmail.com",
+          "fullName": "cat1",
+          "gaiaId": "22",
+          "photoUrl": "data:image/123"
+        },
+        {
+          "email": "dog1@gmail.com",
+          "fullName": "dog1",
+          "gaiaId": "33",
+          "photoUrl": "data:image/123"
+        }
+      ],
+      "groupSource":"JOIN_CODE",
+      "title": "accessCode"
     }]
   },
   "sessionState": "ACTIVE",
@@ -175,10 +193,13 @@ TEST_F(SessionParserTest, TestParseJoinCodeProtoFromJson) {
 
 TEST_F(SessionParserTest, TestParseRosterProtoFromJson) {
   ParseRosterProtoFromJson(session_dict_full->GetIfDict(), session_full.get());
+  ASSERT_EQ(2, session_full->roster().student_groups().size());
+
   ASSERT_EQ(2, session_full->roster().student_groups()[0].students().size());
   EXPECT_EQ(kMainStudentGroupName,
             session_full->roster().student_groups()[0].title());
-
+  EXPECT_EQ(::boca::StudentGroup::CLASSROOM,
+            session_full->roster().student_groups()[0].group_source());
   EXPECT_EQ("cat@gmail.com",
             session_full->roster().student_groups()[0].students()[0].email());
   EXPECT_EQ(
@@ -200,6 +221,32 @@ TEST_F(SessionParserTest, TestParseRosterProtoFromJson) {
   EXPECT_EQ(
       "data:image/123",
       session_full->roster().student_groups()[0].students()[1].photo_url());
+
+  ASSERT_EQ(2, session_full->roster().student_groups()[1].students().size());
+  EXPECT_EQ("accessCode", session_full->roster().student_groups()[1].title());
+  EXPECT_EQ(::boca::StudentGroup::JOIN_CODE,
+            session_full->roster().student_groups()[1].group_source());
+  EXPECT_EQ("cat1@gmail.com",
+            session_full->roster().student_groups()[1].students()[0].email());
+  EXPECT_EQ(
+      "cat1",
+      session_full->roster().student_groups()[1].students()[0].full_name());
+  EXPECT_EQ("22",
+            session_full->roster().student_groups()[1].students()[0].gaia_id());
+  EXPECT_EQ(
+      "data:image/123",
+      session_full->roster().student_groups()[1].students()[0].photo_url());
+
+  EXPECT_EQ("dog1@gmail.com",
+            session_full->roster().student_groups()[1].students()[1].email());
+  EXPECT_EQ(
+      "dog1",
+      session_full->roster().student_groups()[1].students()[1].full_name());
+  EXPECT_EQ("33",
+            session_full->roster().student_groups()[1].students()[1].gaia_id());
+  EXPECT_EQ(
+      "data:image/123",
+      session_full->roster().student_groups()[1].students()[1].photo_url());
 
   ParseRosterProtoFromJson(session_dict_partial->GetIfDict(),
                            session_partial.get());
