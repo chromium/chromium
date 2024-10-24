@@ -148,7 +148,7 @@ class MockSessionSyncService : public SessionSyncService {
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
-using URLType = visited_url_ranking::FetchOptions::URLType;
+using URLType = visited_url_ranking::URLVisitAggregate::URLType;
 using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 
 class SessionURLVisitDataFetcherTest

@@ -64,9 +64,9 @@ static constexpr int kInvalidTabId = -1;
 // FetchOptions instance.
 FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time,
                                                 bool fetch_history) {
-  FetchOptions::URLTypeSet expected_types;
+  URLVisitAggregate::URLTypeSet expected_types;
   if (!fetch_history) {
-    expected_types = {FetchOptions::URLType::kActiveRemoteTab};
+    expected_types = {URLVisitAggregate::URLType::kActiveRemoteTab};
   } else {
     expected_types = FetchOptions::GetFetchResultURLTypes();
   }

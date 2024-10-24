@@ -125,6 +125,10 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
       URLVisitAggregatesTransformer::Status status,
       std::vector<URLVisitAggregate> aggregates);
 
+  // Returns true if the visit should be discarded from candidates based on
+  // threshold.
+  bool ShouldDiscardVisit(const URLVisitAggregate& visit);
+
   // Invoked to get the score (i.e. numeric result) for a given URL visit
   // aggregate.
   void GetNextResult(const std::string& segmentation_key,
@@ -162,6 +166,9 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   // Threshold for when the "You just visited" communication should be
   // displayed instead of relative time.
   const base::TimeDelta recently_visited_minutes_threshold_;
+
+  // Score thresholds for varying URL types.
+  std::map<URLVisitAggregate::URLType, double> score_thresholds_;
 
   // The helper used by the fetchers to deduplicate URLs.
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>

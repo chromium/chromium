@@ -106,7 +106,7 @@ class RecencyFilterTransformerTest : public URLVisitAggregatesTransformerTest {
 TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
   auto candidates = GetSampleCandidates();
   FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
-      FetchOptions::kAllResultTypes);
+      URLVisitAggregate::kAllResultTypes);
   URLVisitAggregatesTransformerTest::Result result =
       TransformAndGetResult(std::move(candidates), fetch_options);
 
@@ -125,7 +125,7 @@ TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
 TEST_F(RecencyFilterTransformerTest, FilteringTabs) {
   auto candidates = GetSampleCandidates();
   FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
-      {FetchOptions::URLType::kActiveLocalTab});
+      {URLVisitAggregate::URLType::kActiveLocalTab});
   URLVisitAggregatesTransformerTest::Result result =
       TransformAndGetResult(std::move(candidates), fetch_options);
   ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
@@ -142,7 +142,7 @@ TEST_F(RecencyFilterTransformerTest, FilteringTabs) {
 TEST_F(RecencyFilterTransformerTest, FilteringHistory) {
   auto candidates = GetSampleCandidates();
   FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
-      {FetchOptions::URLType::kRemoteVisit});
+      {URLVisitAggregate::URLType::kRemoteVisit});
   URLVisitAggregatesTransformerTest::Result result =
       TransformAndGetResult(std::move(candidates), fetch_options);
   ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
@@ -155,7 +155,7 @@ TEST_F(RecencyFilterTransformerTest, FilteringHistory) {
 TEST_F(RecencyFilterTransformerTest, FilteringRemoteTab) {
   auto candidates = GetSampleCandidates();
   FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
-      {FetchOptions::URLType::kActiveRemoteTab});
+      {URLVisitAggregate::URLType::kActiveRemoteTab});
   URLVisitAggregatesTransformerTest::Result result =
       TransformAndGetResult(std::move(candidates), fetch_options);
   ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);

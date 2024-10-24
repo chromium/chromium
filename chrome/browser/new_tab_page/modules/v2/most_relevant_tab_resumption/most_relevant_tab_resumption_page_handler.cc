@@ -113,13 +113,13 @@ URLVisitAggregate::Tab CreateSampleURLVisitAggregateTab(
       "Sample Session Tag", "Test Session");
 }
 
-FetchOptions::URLTypeSet AsURLTypeSet(
+URLVisitAggregate::URLTypeSet AsURLTypeSet(
     const std::vector<std::string>& url_type_entries) {
-  FetchOptions::URLTypeSet result_url_types = {};
+  URLVisitAggregate::URLTypeSet result_url_types = {};
   for (const auto& url_type_entry : url_type_entries) {
     int url_type;
     if (base::StringToInt(url_type_entry, &url_type)) {
-      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
+      result_url_types.Put(static_cast<URLVisitAggregate::URLType>(url_type));
     }
   }
 
@@ -128,7 +128,7 @@ FetchOptions::URLTypeSet AsURLTypeSet(
 
 // Return the desired fetch result types as specified via feature params or the
 // defaults if not specified.
-FetchOptions::URLTypeSet GetFetchResultURLTypes() {
+URLVisitAggregate::URLTypeSet GetFetchResultURLTypes() {
   const std::string module_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpMostRelevantTabResumptionModule,
       ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
@@ -137,7 +137,7 @@ FetchOptions::URLTypeSet GetFetchResultURLTypes() {
         base::SplitString(module_data_param, ",:;", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
 
-    FetchOptions::URLTypeSet result_url_types =
+    URLVisitAggregate::URLTypeSet result_url_types =
         AsURLTypeSet(data_param_url_types);
     if (!result_url_types.empty()) {
       return result_url_types;
@@ -151,8 +151,8 @@ FetchOptions::URLTypeSet GetFetchResultURLTypes() {
       ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (url_type_entries.empty()) {
-    return {FetchOptions::URLType::kActiveRemoteTab,
-            FetchOptions::URLType::kRemoteVisit};
+    return {URLVisitAggregate::URLType::kActiveRemoteTab,
+            URLVisitAggregate::URLType::kRemoteVisit};
   }
 
   return AsURLTypeSet(url_type_entries);

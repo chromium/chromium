@@ -95,6 +95,29 @@ extern const base::FeatureParam<int>
 // visit aggregate data.
 extern const base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam;
 
+// Feature flag for enabling use of score threshold for filtering visits.
+BASE_DECLARE_FEATURE(kVisitedURLRankingScoreThreshold);
+
+// Parameter determining the threshold for active local tabs.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveLocalTab;
+
+// Parameter determining the threshold for active remote tabs.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveRemoteTab;
+
+// Parameter determining the threshold for local visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdLocalVisit;
+
+// Parameter determining the threshold for local visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdRemoteVisit;
+
+// Parameter determining the threshold for CCT Visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdCCTVisit;
+
 }  // namespace visited_url_ranking::features
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_

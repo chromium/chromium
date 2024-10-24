@@ -106,4 +106,36 @@ constexpr base::FeatureParam<int>
         /*name=*/"decorations_recently_visited_minutes_threshold",
         /*default_value=*/1};
 
+BASE_FEATURE(kVisitedURLRankingScoreThreshold,
+             "VisitedURLRankingScoreThreshold",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveLocalTab{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"active_local_tab_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveRemoteTab{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"active_remote_tab_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdLocalVisit{
+    &kVisitedURLRankingScoreThreshold,
+    /*name=*/"local_visit_score_threshold",
+    /*default_value=*/0};
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdRemoteVisit{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"remote_visit_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdCCTVisit{
+    &kVisitedURLRankingScoreThreshold,
+    /*name=*/"cct_visit_score_threshold",
+    /*default_value=*/0};
+
 }  // namespace visited_url_ranking::features

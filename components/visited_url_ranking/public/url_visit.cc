@@ -118,6 +118,34 @@ base::Time URLVisitAggregate::GetLastVisitTime() const {
   return *last_visit_time;
 }
 
+URLVisitAggregate::URLTypeSet URLVisitAggregate::GetURLTypes() const {
+  URLVisitAggregate::URLTypeSet types;
+  for (const auto& fetcher_entry : fetcher_data_map) {
+    std::visit(
+        URLVisitVariantHelper{
+            [&types](const URLVisitAggregate::TabData& tab_data) {
+              if (tab_data.last_active_tab.session_name) {
+                types.Put(URLVisitAggregate::URLType::kActiveRemoteTab);
+              } else {
+                types.Put(URLVisitAggregate::URLType::kActiveLocalTab);
+              }
+            },
+            [&types](const URLVisitAggregate::HistoryData& history_data) {
+              if (history_data.last_app_id) {
+                types.Put(URLVisitAggregate::URLType::kCCTVisit);
+              }
+              if (history_data.last_visited.visit_row.originator_cache_guid
+                      .empty()) {
+                types.Put(URLVisitAggregate::URLType::kLocalVisit);
+              } else {
+                types.Put(URLVisitAggregate::URLType::kRemoteVisit);
+              }
+            }},
+        fetcher_entry.second);
+  }
+  return types;
+}
+
 URLVisitAggregate::Tab::Tab(const int32_t id_arg,
                             URLVisit visit_arg,
                             std::optional<std::string> session_tag_arg,

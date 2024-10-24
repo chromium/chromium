@@ -108,7 +108,7 @@ class MostRelevantTabResumptionPageHandler
   raw_ptr<content::WebContents> web_contents_;
 
   // The result types to request for when fetching URL visit aggregate data.
-  visited_url_ranking::FetchOptions::URLTypeSet result_url_types_;
+  visited_url_ranking::URLVisitAggregate::URLTypeSet result_url_types_;
 
   // The number of days after which URL visit suggestions based on dismissed
   // URLs are again eligigle for display and thus should be removed from the

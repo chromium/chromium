@@ -24,32 +24,32 @@ namespace visited_url_ranking {
 namespace {
 
 // Get the default age limit for the `url_type`.
-base::TimeDelta GetDefaultAgeLimit(FetchOptions::URLType url_type) {
+base::TimeDelta GetDefaultAgeLimit(URLVisitAggregate::URLType url_type) {
   switch (url_type) {
-    case FetchOptions::URLType::kActiveLocalTab:
-    case FetchOptions::URLType::kActiveRemoteTab:
+    case URLVisitAggregate::URLType::kActiveLocalTab:
+    case URLVisitAggregate::URLType::kActiveRemoteTab:
       return base::Hours(base::GetFieldTrialParamByFeatureAsInt(
           features::kVisitedURLRankingService, features::kTabAgeThresholdHours,
           features::kTabAgeThresholdHoursDefaultValue));
-    case FetchOptions::URLType::kLocalVisit:
-    case FetchOptions::URLType::kRemoteVisit:
-    case FetchOptions::URLType::kCCTVisit:
+    case URLVisitAggregate::URLType::kLocalVisit:
+    case URLVisitAggregate::URLType::kRemoteVisit:
+    case URLVisitAggregate::URLType::kCCTVisit:
       return base::Hours(base::GetFieldTrialParamByFeatureAsInt(
           features::kVisitedURLRankingService,
           features::kHistoryAgeThresholdHours,
           features::kHistoryAgeThresholdHoursDefaultValue));
-    case FetchOptions::URLType::kUnknown:
+    case URLVisitAggregate::URLType::kUnknown:
       return base::TimeDelta();
   }
 }
 
-FetchOptions::URLTypeSet AsURLTypeSet(
+URLVisitAggregate::URLTypeSet AsURLTypeSet(
     const std::vector<std::string>& url_type_entries) {
-  FetchOptions::URLTypeSet result_url_types = {};
+  URLVisitAggregate::URLTypeSet result_url_types = {};
   for (const auto& url_type_entry : url_type_entries) {
     int url_type;
     if (base::StringToInt(url_type_entry, &url_type)) {
-      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
+      result_url_types.Put(static_cast<URLVisitAggregate::URLType>(url_type));
     }
   }
 
@@ -59,7 +59,7 @@ FetchOptions::URLTypeSet AsURLTypeSet(
 }  // namespace
 
 FetchOptions::FetchOptions(
-    std::map<URLType, ResultOption> result_sources_arg,
+    std::map<URLVisitAggregate::URLType, ResultOption> result_sources_arg,
     std::map<Fetcher, FetchSources> fetcher_sources_arg,
     base::Time begin_time_arg,
     std::vector<URLVisitAggregatesTransformType> transforms_arg)
@@ -80,7 +80,7 @@ FetchOptions::FetchOptions(FetchOptions&& other) = default;
 FetchOptions& FetchOptions::operator=(FetchOptions&& other) = default;
 
 // static
-FetchOptions::URLTypeSet FetchOptions::GetFetchResultURLTypes() {
+URLVisitAggregate::URLTypeSet FetchOptions::GetFetchResultURLTypes() {
   auto url_type_entries =
       base::SplitString(features::kVisitedURLRankingResultTypesParam.Get(),
                         ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -88,14 +88,14 @@ FetchOptions::URLTypeSet FetchOptions::GetFetchResultURLTypes() {
   if (url_type_entries.empty()) {
     return {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-        FetchOptions::URLType::kActiveLocalTab,
+        URLVisitAggregate::URLType::kActiveLocalTab,
 #endif
-        FetchOptions::URLType::kActiveRemoteTab,
-        FetchOptions::URLType::kLocalVisit,
-        FetchOptions::URLType::kRemoteVisit,
+        URLVisitAggregate::URLType::kActiveRemoteTab,
+        URLVisitAggregate::URLType::kLocalVisit,
+        URLVisitAggregate::URLType::kRemoteVisit,
 #if BUILDFLAG(IS_ANDROID)
         // Available in Android only.
-        FetchOptions::URLType::kCCTVisit,
+        URLVisitAggregate::URLType::kCCTVisit,
 #endif
     };
   }
@@ -110,7 +110,7 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
 
 // static
 FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
-    const URLTypeSet& result_sources) {
+    const URLVisitAggregate::URLTypeSet& result_sources) {
   std::vector<URLVisitAggregatesTransformType> transforms{
       URLVisitAggregatesTransformType::kRecencyFilter,
       URLVisitAggregatesTransformType::kBookmarkData,
@@ -136,7 +136,7 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
   std::map<Fetcher, FetchSources> fetcher_sources;
   // Always useful for signals.
   fetcher_sources.emplace(Fetcher::kHistory, kOriginSources);
-  if (result_sources.Has(FetchOptions::URLType::kActiveRemoteTab)) {
+  if (result_sources.Has(URLVisitAggregate::URLType::kActiveRemoteTab)) {
     // TODO(ssid): the recency filter and signal aggregation should detect the
     // local tabs from sync correctly. Fix that and enable fetching local tabs
     // from sync.
@@ -148,7 +148,7 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
       base::GetFieldTrialParamByFeatureAsInt(
           features::kVisitedURLRankingService, "disable_local_tab_model",
           false) &&
-      result_sources.Has(FetchOptions::URLType::kActiveLocalTab) == 0;
+      result_sources.Has(URLVisitAggregate::URLType::kActiveLocalTab) == 0;
   if (!disable_local_fetcher) {
     fetcher_sources.emplace(Fetcher::kTabModel, FetchSources({Source::kLocal}));
   }
@@ -156,8 +156,8 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
   int query_duration = base::GetFieldTrialParamByFeatureAsInt(
       features::kVisitedURLRankingService,
       features::kVisitedURLRankingFetchDurationInHoursParam, 168);
-  std::map<URLType, ResultOption> result_map;
-  for (FetchOptions::URLType type : result_sources) {
+  std::map<URLVisitAggregate::URLType, ResultOption> result_map;
+  for (URLVisitAggregate::URLType type : result_sources) {
     result_map[type] = ResultOption{.age_limit = GetDefaultAgeLimit(type)};
   }
   return FetchOptions(std::move(result_map), std::move(fetcher_sources),
