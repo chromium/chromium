@@ -189,6 +189,7 @@ GeneratedThirdPartyCookieBlockingSettingPref::GetPrefObject() const {
   const PrefService::Preference* cookie_controls_mode_pref =
       profile_->GetPrefs()->FindPreference(prefs::kCookieControlsMode);
 
+  pref_object.type = settings_api::PrefType::kNumber;
   pref_object.value = base::Value(static_cast<int>(GetValue()));
   pref_object.enforcement = GetEnforcement(cookie_controls_mode_pref);
   if (!cookie_controls_mode_pref->IsUserModifiable()) {
