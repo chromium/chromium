@@ -1704,10 +1704,11 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   const MatchResult& result = cascade.GetMatchResult();
   CacheSuccess cache_success = ApplyMatchedCache(state, style_request, result);
+  ComputedStyleBuilder& builder = state.StyleBuilder();
 
   if (style_recalc_context.is_ensuring_style &&
       style_recalc_context.is_outside_flat_tree) {
-    state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
+    builder.SetIsEnsuredOutsideFlatTree();
   }
 
   if (!cache_success.IsHit()) {
@@ -1717,67 +1718,65 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
   // can remove the cache-busting for ::highlight() in IsStyleCacheable
-  state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(
+  builder.SetHasNonUniversalHighlightPseudoStyles(
       match_result.HasNonUniversalHighlightPseudoStyles());
-  state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(
+  builder.SetHasNonUaHighlightPseudoStyles(
       match_result.HasNonUaHighlightPseudoStyles());
-  state.StyleBuilder().SetHighlightsDependOnSizeContainerQueries(
+  builder.SetHighlightsDependOnSizeContainerQueries(
       match_result.HighlightsDependOnSizeContainerQueries());
 
   if (match_result.HasFlag(MatchFlag::kAffectedByDrag)) {
-    state.StyleBuilder().SetAffectedByDrag();
+    builder.SetAffectedByDrag();
   }
   if (match_result.HasFlag(MatchFlag::kAffectedByFocusWithin)) {
-    state.StyleBuilder().SetAffectedByFocusWithin();
+    builder.SetAffectedByFocusWithin();
   }
   if (match_result.HasFlag(MatchFlag::kAffectedByHover)) {
-    state.StyleBuilder().SetAffectedByHover();
+    builder.SetAffectedByHover();
   }
   if (match_result.HasFlag(MatchFlag::kAffectedByActive)) {
-    state.StyleBuilder().SetAffectedByActive();
+    builder.SetAffectedByActive();
   }
   if (match_result.HasFlag(MatchFlag::kAffectedByStartingStyle)) {
-    state.StyleBuilder().SetIsStartingStyle();
+    builder.SetIsStartingStyle();
   }
   if (match_result.DependsOnSizeContainerQueries()) {
-    state.StyleBuilder().SetDependsOnSizeContainerQueries(true);
+    builder.SetDependsOnSizeContainerQueries(true);
   }
   if (match_result.DependsOnStyleContainerQueries()) {
-    state.StyleBuilder().SetDependsOnStyleContainerQueries(true);
+    builder.SetDependsOnStyleContainerQueries(true);
   }
   if (match_result.DependsOnStateContainerQueries()) {
-    state.StyleBuilder().SetDependsOnStateContainerQueries(true);
+    builder.SetDependsOnStateContainerQueries(true);
   }
   if (match_result.FirstLineDependsOnSizeContainerQueries()) {
-    state.StyleBuilder().SetFirstLineDependsOnSizeContainerQueries(true);
+    builder.SetFirstLineDependsOnSizeContainerQueries(true);
   }
   if (match_result.DependsOnStaticViewportUnits()) {
-    state.StyleBuilder().SetHasStaticViewportUnits();
+    builder.SetHasStaticViewportUnits();
   }
   if (match_result.DependsOnDynamicViewportUnits()) {
-    state.StyleBuilder().SetHasDynamicViewportUnits();
+    builder.SetHasDynamicViewportUnits();
   }
   if (match_result.DependsOnRootFontContainerQueries()) {
-    state.StyleBuilder().SetHasRootFontRelativeUnits();
+    builder.SetHasRootFontRelativeUnits();
   }
   if (match_result.ConditionallyAffectsAnimations()) {
     state.SetConditionallyAffectsAnimations();
   }
   if (!match_result.CustomHighlightNames().empty()) {
-    state.StyleBuilder().SetCustomHighlightNames(
-        match_result.CustomHighlightNames());
+    builder.SetCustomHighlightNames(match_result.CustomHighlightNames());
   }
-  state.StyleBuilder().SetPseudoElementStyles(
-      match_result.PseudoElementStyles());
+  builder.SetPseudoElementStyles(match_result.PseudoElementStyles());
 
   if (RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled() &&
       state.HasAttrFunction()) {
-    state.StyleBuilder().SetHasAttrFunction();
+    builder.SetHasAttrFunction();
   }
 
   // Now we're done with all operations that may overwrite InsideLink,
   // so we can set it once and for all.
-  state.StyleBuilder().SetInsideLink(state.InsideLink());
+  builder.SetInsideLink(state.InsideLink());
 
   ApplyCallbackSelectors(state);
   if (element->IsLink() && (element->HasTagName(html_names::kATag) ||
@@ -1786,8 +1785,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   }
 
   // Cache our if our original display is inline.
-  state.StyleBuilder().SetIsOriginalDisplayInlineType(
-      ComputedStyle::IsDisplayInlineType(state.StyleBuilder().Display()));
+  builder.SetIsOriginalDisplayInlineType(
+      ComputedStyle::IsDisplayInlineType(builder.Display()));
 
   StyleAdjuster::AdjustComputedStyle(
       state, style_request.IsPseudoStyleRequest() ? nullptr : element);
