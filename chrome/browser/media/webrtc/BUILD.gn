@@ -168,12 +168,7 @@ source_set("webrtc") {
     "//ui/snapshot",
   ]
 
-  if (is_android) {
-    sources += [
-      "screen_capture_permission_handler_android.cc",
-      "screen_capture_permission_handler_android.h",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "current_tab_desktop_media_list.cc",
       "current_tab_desktop_media_list.h",

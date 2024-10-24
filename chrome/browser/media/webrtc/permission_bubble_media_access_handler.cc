@@ -32,14 +32,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <vector>
-
-#include "chrome/browser/media/webrtc/screen_capture_permission_handler_android.h"
-#include "components/permissions/permission_uma_util.h"
-#include "content/public/common/content_features.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_MAC)
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
@@ -142,16 +134,8 @@ bool PermissionBubbleMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-#if BUILDFLAG(IS_ANDROID)
-  return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
-#else
   return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
-#endif
 }
 
 bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
@@ -187,17 +171,6 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (blink::IsScreenCaptureMediaType(request.video_type) &&
-      !base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing)) {
-    // If screen capturing isn't enabled on Android, we'll use "invalid state"
-    // as result, same as on desktop.
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE, nullptr);
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Ensure we are observing the deletion of |web_contents|.
   web_contents_collection_.StartObserving(web_contents);
@@ -231,18 +204,6 @@ void PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest(
   const int64_t request_id = it->second.begin()->first;
   const content::MediaStreamRequest& request =
       it->second.begin()->second.request;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40160723): This should be split into
-  // DisplayMediaAccessHandler and DesktopCaptureAccessHandler.
-  if (blink::IsScreenCaptureMediaType(request.video_type)) {
-    screen_capture::GetScreenCapturePermissionAndroid(
-        web_contents, request,
-        base::BindOnce(
-            &PermissionBubbleMediaAccessHandler::OnAccessRequestResponse,
-            base::Unretained(this), web_contents, request_id));
-    return;
-  }
-#endif
 
   webrtc::MediaStreamDevicesController::RequestPermissions(
       request, MediaCaptureDevicesDispatcher::GetInstance(),
