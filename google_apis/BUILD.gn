@@ -316,6 +316,7 @@ test("google_apis_unittests") {
   if (is_chromeos) {
     deps += [
       "//google_apis/classroom:classroom_unittests",
+      "//google_apis/people:people_unittest_sources",
       "//google_apis/tasks:tasks_unittests",
       "//google_apis/youtube_music:youtube_music_unittests",
     ]
