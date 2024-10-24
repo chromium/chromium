@@ -526,7 +526,7 @@ BytesConsumer* FormDataBytesConsumer::GetImpl(
       return MakeGarbageCollected<DataAndDataPipeBytesConsumer>(
           execution_context, form_data.get());
     case EncodedFormData::FormDataType::kInvalid:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED();
   }
   return nullptr;
 }
