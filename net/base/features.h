@@ -229,12 +229,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-// Turns off streaming media caching to disk when on battery power.
-NET_EXPORT BASE_DECLARE_FEATURE(kTurnOffStreamingMediaCachingOnBattery);
-
-// Turns off streaming media caching to disk always.
-NET_EXPORT BASE_DECLARE_FEATURE(kTurnOffStreamingMediaCachingAlways);
-
 // When enabled this feature will cause same-site calculations to take into
 // account the scheme of the site-for-cookies and the request/response url.
 NET_EXPORT BASE_DECLARE_FEATURE(kSchemefulSameSite);
