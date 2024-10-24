@@ -852,6 +852,12 @@ ci.builder(
                     shards = 1,
                 ),
             ),
+            "chrome_wpt_tests": targets.remove(
+                reason = "Wptrunner does not work on Fuchsia",
+            ),
+            "headless_shell_wpt_tests": targets.remove(
+                reason = "Wptrunner does not work on Fuchsia",
+            ),
         },
     ),
     targets_settings = targets.settings(

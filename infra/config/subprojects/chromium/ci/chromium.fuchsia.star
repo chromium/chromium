@@ -282,6 +282,9 @@ ci.builder(
             "x64",
         ],
     ),
+    # Do not forget to update
+    # infra/config/subprojects/chromium/ci/chromium.clang.star when adding or
+    # removing targets.
     targets = targets.bundle(
         targets = [
             "fuchsia_standard_tests",
