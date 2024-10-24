@@ -102,18 +102,18 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
       continue;
     }
 
-    if (wait_delta.is_max()) {
-      // Failures are likely due to ERROR_INVALID_HANDLE. This unrecoverable
-      // error likely means that the waited-on object has been closed elsewhere,
-      // possibly due to a double-close on an unrelated HANDLE. Crash
-      // immediately since it is not possible to reason about the state of the
-      // process in this case.
-      if (result == WAIT_FAILED) {
-        const auto error = ::GetLastError();
-        SCOPED_CRASH_KEY_NUMBER("win", "WaitError", error);
-        CHECK(false);
-      }
+    // Failures are likely due to ERROR_INVALID_HANDLE. This unrecoverable
+    // error likely means that the waited-on object has been closed elsewhere,
+    // possibly due to a double-close on an unrelated HANDLE. Crash
+    // immediately since it is not possible to reason about the state of the
+    // process in this case.
+    if (result == WAIT_FAILED) {
+      const auto error = ::GetLastError();
+      SCOPED_CRASH_KEY_NUMBER("win", "WaitError", error);
+      CHECK(false);
+    }
 
+    if (wait_delta.is_max()) {
       // The only other documented result value is `WAIT_ABANDONED`. This nor
       // any other result should ever be emitted.
       ReportInvalidWaitableEventResult(result);
