@@ -85,11 +85,6 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudRecoveryKey);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRecoverFromICloudRecoveryKey);
 
-// Cache responses from the security domain. To be used if we're overloading the
-// security domain service.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnCacheSecurityDomain);
-
 // Send enclave requests with 5 seconds delay. For development purposes only.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);

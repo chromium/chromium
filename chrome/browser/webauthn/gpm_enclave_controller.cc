@@ -34,7 +34,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/buildflag.h"
@@ -227,56 +226,6 @@ using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 //   +---------------------> |   StartTransaction   | <+
 //                           +----------------------+
 
-// ICloudMember holds a copyable subset of trusted_vault::VaultMember that we
-// need for recovery.
-struct GPMEnclaveController::ICloudMember {
-  explicit ICloudMember(const trusted_vault::VaultMember& member)
-      : public_key(member.public_key->ExportToBytes()) {
-    for (const auto& member_key : member.member_keys) {
-      if (member_key.version > version) {
-        version = member_key.version;
-        wrapped_key = member_key.wrapped_key;
-      }
-    }
-  }
-
-  // The result of exporting the SecureBoxPublicKey.
-  std::vector<uint8_t> public_key;
-
-  // The newest wrapped key for the member.
-  std::vector<uint8_t> wrapped_key;
-
-  // The key epoch.
-  int version = 0;
-};
-
-// DownloadedAccountState holds the subset of information from
-// `trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult` that is
-// required for `GPMEnclaveController` to work. It exists because it's copyable,
-// which the `trusted_vault` structure is not, and thus can be put in a cache.
-struct GPMEnclaveController::DownloadedAccountState {
-  explicit DownloadedAccountState(
-      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-          result,
-      std::string gaia_id)
-      : state(result.state),
-        gpm_pin_metadata(std::move(result.gpm_pin_metadata)),
-        lskf_expiries(std::move(result.lskf_expiries)),
-        gaia_id(std::move(gaia_id)) {
-    std::ranges::transform(result.icloud_keys, std::back_inserter(icloud_keys),
-                           [](const trusted_vault::VaultMember& member) {
-                             return ICloudMember(member);
-                           });
-  }
-
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::State
-      state;
-  std::optional<trusted_vault::GpmPinMetadata> gpm_pin_metadata;
-  std::vector<ICloudMember> icloud_keys;
-  std::vector<base::Time> lskf_expiries;
-  std::string gaia_id;
-};
-
 // EnclaveUserVerificationMethod enumerates the possible ways that user
 // verification will be performed for an enclave transaction.
 enum class GPMEnclaveController::EnclaveUserVerificationMethod {
@@ -381,42 +330,6 @@ const char* ToString(
   }
 }
 
-// AccountStateCache caches the account state between requests to reduce the
-// load on the security domain service.
-class AccountStateCache {
- public:
-  std::optional<GPMEnclaveController::DownloadedAccountState> Get(
-      base::Clock* clock) {
-    if (!cache_time_) {
-      return std::nullopt;
-    }
-    const base::Time now = clock->Now();
-    if (now < *cache_time_ || (now - *cache_time_) > base::Minutes(30)) {
-      cache_time_.reset();
-      value_.reset();
-      return std::nullopt;
-    }
-    return value_;
-  }
-
-  void Put(base::Clock* clock,
-           const GPMEnclaveController::DownloadedAccountState& state) {
-    if (base::FeatureList::IsEnabled(device::kWebAuthnCacheSecurityDomain)) {
-      cache_time_ = clock->Now();
-      value_ = state;
-    }
-  }
-
- private:
-  std::optional<base::Time> cache_time_;
-  std::optional<GPMEnclaveController::DownloadedAccountState> value_;
-};
-
-AccountStateCache* GetAccountStateCache() {
-  static base::NoDestructor<AccountStateCache> cache;
-  return cache.get();
-}
-
 bool ExpiryTooSoon(base::Time expiry) {
   const base::Time now = base::Time::Now();
   // LSKFs must have at least 18 weeks of validity on them because we don't want
@@ -452,7 +365,6 @@ GPMEnclaveController::GPMEnclaveController(
     const std::string& rp_id,
     device::FidoRequestType request_type,
     device::UserVerificationRequirement user_verification_requirement,
-    base::Clock* clock,
     std::unique_ptr<trusted_vault::TrustedVaultConnection> optional_connection)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       rp_id_(rp_id),
@@ -461,8 +373,7 @@ GPMEnclaveController::GPMEnclaveController(
       enclave_manager_(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
       model_(model),
-      vault_connection_override_(std::move(optional_connection)),
-      clock_(clock) {
+      vault_connection_override_(std::move(optional_connection)) {
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
 
@@ -610,21 +521,6 @@ void GPMEnclaveController::OnUVCapabilityKnown(bool can_make_uv_keys) {
 }
 
 void GPMEnclaveController::DownloadAccountState() {
-  std::optional<DownloadedAccountState> maybe_cached;
-  // If the enclave_manager isn't ready then a cached account state can be used
-  // to reduce load on the security domain service. If it is ready then this
-  // must be a create() request, and we want to check that the security domain
-  // epoch hasn't changed and so don't use a cached state.
-  if (!enclave_manager_->is_ready()) {
-    // TODO(enclave): discard cache if gaia id no longer matches.
-    maybe_cached = GetAccountStateCache()->Get(clock_);
-  }
-  if (maybe_cached) {
-    FIDO_LOG(EVENT) << "Using cached account state";
-    OnHaveAccountState(std::move(*maybe_cached));
-    return;
-  }
-
   FIDO_LOG(EVENT) << "Fetching account state";
   account_state_ = AccountState::kChecking;
 
@@ -679,6 +575,8 @@ void GPMEnclaveController::OnAccountStateDownloaded(
     std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
         result) {
+  using Result =
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
   if (account_state_ != AccountState::kChecking) {
     // This request timed out.
     return;
@@ -704,15 +602,6 @@ void GPMEnclaveController::OnAccountStateDownloaded(
     return;
   }
 
-  DownloadedAccountState downloaded(std::move(result), std::move(gaia_id));
-  GetAccountStateCache()->Put(clock_, downloaded);
-
-  OnHaveAccountState(DownloadedAccountState(std::move(downloaded)));
-}
-
-void GPMEnclaveController::OnHaveAccountState(DownloadedAccountState result) {
-  using Result =
-      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
   FIDO_LOG(EVENT) << "Account state: " << ToString(result.state)
                   << ", has PIN: " << result.gpm_pin_metadata.has_value()
                   << ", iCloud Keychain keys: " << result.icloud_keys.size();
@@ -753,7 +642,7 @@ void GPMEnclaveController::OnHaveAccountState(DownloadedAccountState result) {
     pin_metadata_ = std::move(result.gpm_pin_metadata);
   }
   security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);
-  user_gaia_id_ = std::move(result.gaia_id);
+  user_gaia_id_ = std::move(gaia_id);
 
   if (device::kWebAuthnGpmPin.Get()) {
     SetActive(account_state_ != AccountState::kNone);
@@ -856,12 +745,13 @@ void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
 void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
     std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
         local_icloud_keys) {
-  for (const GPMEnclaveController::ICloudMember& recovery_icloud_key :
+  for (const trusted_vault::VaultMember& recovery_icloud_key :
        security_domain_icloud_recovery_keys_) {
+    std::vector<uint8_t> public_key =
+        recovery_icloud_key.public_key->ExportToBytes();
     const auto local_icloud_key_it = std::ranges::find_if(
-        local_icloud_keys, [&recovery_icloud_key](const auto& key) {
-          return key->id() == recovery_icloud_key.public_key;
-        });
+        local_icloud_keys,
+        [&public_key](const auto& key) { return key->id() == public_key; });
     if (local_icloud_key_it != local_icloud_keys.end()) {
       // This device already has an iCloud keychain recovery factor configured
       // for the passkey security domain. Nothing else to do here.
@@ -906,10 +796,11 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
       security_domain_icloud_recovery_keys_,
       [&local_icloud_key_it,
        &local_icloud_keys](const auto& recovery_icloud_key) {
+        std::vector<uint8_t> public_key =
+            recovery_icloud_key.public_key->ExportToBytes();
         local_icloud_key_it = std::ranges::find_if(
-            local_icloud_keys, [&recovery_icloud_key](const auto& key) {
-              return key->id() == recovery_icloud_key.public_key;
-            });
+            local_icloud_keys,
+            [&public_key](const auto& key) { return key->id() == public_key; });
         return local_icloud_key_it != local_icloud_keys.end();
       });
   if (local_icloud_key_it == local_icloud_keys.end()) {
@@ -917,10 +808,13 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
     model_->SetStep(Step::kRecoverSecurityDomain);
     return;
   }
+  const auto member_key_it = std::ranges::max_element(
+      recovery_icloud_key_it->member_keys,
+      [](const auto& k1, const auto& k2) { return k1.version < k2.version; });
   std::optional<std::vector<uint8_t>> security_domain_secret =
       trusted_vault::DecryptTrustedVaultWrappedKey(
           (*local_icloud_key_it)->key()->private_key(),
-          recovery_icloud_key_it->wrapped_key);
+          member_key_it->wrapped_key);
   if (!security_domain_secret) {
     FIDO_LOG(ERROR)
         << "Could not decrypt security domain secret with iCloud key";
@@ -931,7 +825,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
   recovered_with_icloud_keychain_ = true;
   enclave_manager_->StoreKeys(user_gaia_id_,
                               {std::move(*security_domain_secret)},
-                              recovery_icloud_key_it->version);
+                              member_key_it->version);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

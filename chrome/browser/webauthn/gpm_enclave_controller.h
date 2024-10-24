@@ -23,10 +23,6 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 
-namespace base {
-class Clock;
-}
-
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -56,8 +52,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
  public:
   static constexpr base::TimeDelta kDownloadAccountStateTimeout =
       base::Seconds(1);
-  struct ICloudMember;
-  struct DownloadedAccountState;
   enum class EnclaveUserVerificationMethod;
 
   enum class AccountState {
@@ -83,7 +77,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
       const std::string& rp_id,
       device::FidoRequestType request_type,
       device::UserVerificationRequirement user_verification_requirement,
-      base::Clock* clock,
       // `optional_connection` can be set to override the connection to the
       // security domain service for testing.
       std::unique_ptr<trusted_vault::TrustedVaultConnection>
@@ -134,8 +127,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
       std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
-
-  void OnHaveAccountState(DownloadedAccountState result);
 
   // Called when enough state has been loaded that the initial UI can be shown.
   // If `active` then the enclave will be a valid mechanism.
@@ -279,7 +270,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // The list of iCloud recovery key members known to the security domain
   // service.
-  std::vector<ICloudMember> security_domain_icloud_recovery_keys_;
+  std::vector<trusted_vault::VaultMember> security_domain_icloud_recovery_keys_;
 
   // |recovered_with_icloud_keychain_| is true if this controller performed a
   // successful recovery from iCloud keychain. This is reset on OnKeysStored().
@@ -328,8 +319,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // The gaia id of the user at the time the account state was downloaded.
   std::string user_gaia_id_;
-
-  const raw_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };

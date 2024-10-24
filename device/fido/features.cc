@@ -113,11 +113,6 @@ BASE_FEATURE(kWebAuthnRecoverFromICloudRecoveryKey,
              "WebAuthenticationRecoverFromICloudRecoveryKey",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Not yet default enabled and not intended to be. Remove after M128 is Stable.
-BASE_FEATURE(kWebAuthnCacheSecurityDomain,
-             "WebAuthenticationCacheSecurityDomain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Development flag. Must not be enabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay,
              "WebAuthnEnclaveAuthenticatorDelay",

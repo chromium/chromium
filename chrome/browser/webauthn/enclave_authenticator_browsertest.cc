@@ -546,7 +546,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         delegate->SetTrustedVaultConnectionForTesting(
             std::move(pending_connection_));
       }
-      delegate->SetClockForTesting(&test_instance_->clock_);
     }
 
     void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
@@ -715,7 +714,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     }
     scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
-    clock_.SetNow(base::Time::FromTimeT(1000));
     OSCryptMocker::SetUp();
     // Log call `FIDO_LOG` messages.
     scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
@@ -973,7 +971,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   }
 
  protected:
-  base::SimpleTestClock clock_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   const TempDir temp_dir_;
   base::CallbackListSubscription subscription_;
@@ -2094,7 +2091,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             AuthenticatorRequestDialogModel::Step::kConditionalMediation);
 
   // Wait for the request to time out.
-  clock_.Advance(GPMEnclaveController::kDownloadAccountStateTimeout);
+  // TODO: advance a clock.
   model_observer()->WaitForLoadingEnclaveTimeout();
 
   // Tap the passkey and expect an error.
@@ -2129,7 +2126,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // Wait for the request to time out.
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMError);
-  clock_.Advance(GPMEnclaveController::kDownloadAccountStateTimeout);
+  // TODO: advance a clock.
   model_observer()->WaitForStep();
 }
 
@@ -3071,8 +3068,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
       ->ClearRegistrationForTesting();
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->ResetForTesting();
-  // Expire any cache.
-  clock_.Advance(base::Hours(10));
 
   // Do a make credential request and recover with the iCloud key.
   {
@@ -3162,76 +3157,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
 }
 
 #endif  // BUILDFLAG(IS_MAC)
-
-class EnclaveAuthenticatorCachingTest
-    : public EnclaveAuthenticatorWithoutPinBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnCacheSecurityDomain};
-};
-
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorCachingTest, Caching) {
-  EnableUVKeySupport();
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-      registration_state_result;
-
-  registration_state_result.state = trusted_vault::
-      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  // The enclave is not active because the account is empty.
-  EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
-      }));
-
-  dialog_model()->CancelAuthenticatorRequest();
-  std::string script_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
-  delegate_observer()->WaitForDelegateDestruction();
-
-  // The enclave will _still_ not be active for a second request because the
-  // previous result is cached, thus no call to
-  // `SetMockVaultconnectionOnRequestDelegate` is needed.
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  EXPECT_TRUE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
-      }));
-
-  dialog_model()->CancelAuthenticatorRequest();
-  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
-  delegate_observer()->WaitForDelegateDestruction();
-
-  clock_.Advance(base::Hours(10));
-  request_delegate_ = nullptr;
-  registration_state_result.state = trusted_vault::
-      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  // Now that the clock has advanced, the cache is stale and the updated account
-  // state will be noticed.
-  EXPECT_FALSE(
-      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
-      }));
-
-  dialog_model()->CancelAuthenticatorRequest();
-  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
-  delegate_observer()->WaitForDelegateDestruction();
-}
 
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MakeCredentialDeclineGPM DISABLED_MakeCredentialDeclineGPM
