@@ -1960,6 +1960,15 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "chromium_win_scripts",
+    targets = [
+        "check_network_annotations",
+        "metrics_python_tests",
+        "webkit_lint",
+    ],
+)
+
 # Compilable unit tests of cronet dependencies in:
 # //components/cronet/android/dependencies.txt
 # TODO(crbug.com/333888734): Add component_unittests or a subset of it.

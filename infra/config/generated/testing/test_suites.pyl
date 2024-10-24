@@ -784,18 +784,6 @@
       },
     },
 
-    'chromium_win_scripts': {
-      'check_network_annotations': {
-        'script': 'check_network_annotations.py',
-      },
-      'metrics_python_tests': {
-        'script': 'metrics_python_tests.py',
-      },
-      'webkit_lint': {
-        'script': 'blink_lint_expectations.py',
-      },
-    },
-
     'clang_tot_gtests': {
       'base_unittests': {},
     },

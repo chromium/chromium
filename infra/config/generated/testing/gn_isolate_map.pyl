@@ -1429,6 +1429,7 @@
   "pdf_fuzzers": {
     "label": "//pdf/pdfium/fuzzers:pdf_fuzzers",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "pdf_unittests": {
     "label": "//pdf:pdf_unittests",

@@ -573,15 +573,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_win_scripts",
-    tests = {
-        "check_network_annotations": targets.legacy_test_config(),
-        "metrics_python_tests": targets.legacy_test_config(),
-        "webkit_lint": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "clang_tot_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
