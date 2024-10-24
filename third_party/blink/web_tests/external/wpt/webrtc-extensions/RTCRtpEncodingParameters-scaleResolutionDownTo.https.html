@@ -105,7 +105,24 @@ promise_test(async t => {
           }]
         });
   });
-}, `addTransceiver: Specifying scaling on some but not all encodings throws`);
+}, `addTransceiver: Specifying scaling on a subset of active encodings throws`);
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
+  const track = createResizableTrack(120, 60);
+  t.add_cleanup(() => track.stop());
+  pc.addTransceiver(track, {
+        sendEncodings:[{
+            active: true,
+            scaleResolutionDownTo: { maxWidth: 120, maxHeight: 60 },
+        }, {
+            active: false,
+            scaleResolutionDownTo: undefined
+        }]
+      });
+}, `addTransceiver: Specifying scaling on inactive encodings is optional`);
 
 promise_test(async t => {
   const pc = new RTCPeerConnection();
@@ -121,7 +138,23 @@ promise_test(async t => {
   const p = sender.setParameters(params);
 
   promise_rejects_dom(t, 'InvalidModificationError', p);
-}, `setParameters: Specifying scaling on some but not all encodings throws`);
+}, `setParameters: Specifying scaling on a subset of active encodings throws`);
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
+  const track = createResizableTrack(120, 60);
+  t.add_cleanup(() => track.stop());
+  const {sender} = pc.addTransceiver(track, {sendEncodings:[{},{}]});
+
+  const params = sender.getParameters();
+  params.encodings[0].active = true;
+  params.encodings[0].scaleResolutionDownTo = { maxWidth: 120, maxHeight: 60 };
+  params.encodings[1].active = false;
+  params.encodings[1].scaleResolutionDownTo = undefined;
+  await sender.setParameters(params);
+}, `setParameters: Specifying scaling on inactive encodings is optional`);
 
 promise_test(async t => {
   const pc1 = new RTCPeerConnection();
