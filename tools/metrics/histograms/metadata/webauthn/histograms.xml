@@ -81,6 +81,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Android.NonDiscoverableCredentialsFound"
+    enum="Boolean" expires_after="2025-03-30">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records whether non-discoverable credentials are found before dispatching
+    the request to Android Credential Manager APIs. Recorded only on Android 14
+    and above.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
     enum="WebAuthenticationAOADiscoveryEvent" expires_after="2025-03-01">
   <owner>agl@chromium.org</owner>

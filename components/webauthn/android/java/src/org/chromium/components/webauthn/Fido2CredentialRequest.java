@@ -883,6 +883,8 @@ public class Fido2CredentialRequest
                 if (Arrays.equals(allowedId.id, credential.mCredentialId)) {
                     // This get() request can be satisfied by Play Services with
                     // a non-discoverable credential so route it there.
+                    RecordHistogram.recordBooleanHistogram(
+                            "WebAuthentication.Android.NonDiscoverableCredentialsFound", true);
                     maybeDispatchGetAssertionRequest(
                             options,
                             convertOriginToString(callerOrigin),
@@ -892,6 +894,8 @@ public class Fido2CredentialRequest
                 }
             }
         }
+        RecordHistogram.recordBooleanHistogram(
+                "WebAuthentication.Android.NonDiscoverableCredentialsFound", false);
 
         mCredManHelper.setNoCredentialsFallback(
                 () ->
