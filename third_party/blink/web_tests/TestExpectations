@@ -4464,9 +4464,6 @@ crbug.com/1053861 http/tests/devtools/network/network-initiator-chain.js [ Failu
 
 crbug.com/1057822 http/tests/misc/synthetic-gesture-initiated-in-cross-origin-frame.html [ Crash Failure Pass ]
 
-# Ecosystem-Infra Sheriff 2020-03-04
-crbug.com/1394256 external/wpt/webaudio/the-audio-api/the-audioworklet-interface/suspended-context-messageport.https.html [ Crash Failure ]
-
 # Ecosystem-Infra Sheriff 2020-04-15
 crbug.com/1070995 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/blob-data.https.html [ Failure Pass Timeout ]
 
