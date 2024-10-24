@@ -5,6 +5,7 @@
 #include "ui/base/models/list_selection_model.h"
 
 #include <algorithm>
+#include <optional>
 #include <valarray>
 
 #include "base/check_op.h"
@@ -16,51 +17,86 @@ namespace ui {
 
 namespace {
 
-void IncrementFromImpl(size_t index, size_t* value) {
-  if (*value >= index)
-    (*value)++;
+// Determines the new index for `original_index` after inserting an item at
+// `insert_position`. This is called for the selected indices.
+size_t GetIndexAfterInsertion(size_t insert_position, size_t original_index) {
+  return (original_index >= insert_position) ? original_index + 1
+                                             : original_index;
 }
 
-void IncrementFromImpl(size_t index, std::optional<size_t>* value) {
-  if (value->has_value())
-    IncrementFromImpl(index, &value->value());
+// Determines the new index for `original_index` after inserting an item at
+// `insert_position`. This is called for the active and anchor indexes.
+std::optional<size_t> GetIndexAfterInsertion(
+    size_t insert_position,
+    std::optional<size_t> original_index) {
+  return original_index.has_value()
+             ? std::optional<size_t>(GetIndexAfterInsertion(
+                   insert_position, original_index.value()))
+             : std::nullopt;
 }
 
-// Returns true if |value| should be erased from its container.
-bool DecrementFromImpl(size_t index, size_t* value) {
-  if (*value == index)
-    return true;
-  if (*value > index)
-    (*value)--;
-  return false;
+// Determines the new index for `original_index` after removing an item at
+// `remove_position`. This is called for the selected indices. Returns
+// std::nullopt if `original_index` should be erased from its container.
+std::optional<size_t> GetIndexAfterRemoval(size_t remove_position,
+                                           size_t original_index) {
+  if (original_index == remove_position) {
+    return std::nullopt;
+  }
+
+  if (original_index > remove_position) {
+    return original_index - 1;
+  }
+
+  return original_index;
 }
 
-void DecrementFromImpl(size_t index, std::optional<size_t>* value) {
-  if (value->has_value() && DecrementFromImpl(index, &value->value()))
-    *value = std::nullopt;
+// Determines the new index for `original_index` after removing an item at
+// `remove_position`. This is called for active and anchor indexes. Returns
+// std::nullopt if `original_index` should be erased from its container.
+std::optional<size_t> GetIndexAfterRemoval(
+    size_t remove_position,
+    std::optional<size_t> original_index) {
+  return original_index.has_value()
+             ? std::optional<size_t>(GetIndexAfterRemoval(
+                   remove_position, original_index.value()))
+             : std::nullopt;
 }
 
-void MoveToLowerIndexImpl(size_t old_start,
-                          size_t new_start,
-                          size_t length,
-                          size_t* value) {
-  DCHECK_LE(new_start, old_start);
+// Returns the new index for `original_index` when a range of items are moved
+// from `source_position` to `destination_position`. This assumes that the items
+// are moved to a lower index. This is called for active and anchor indexes.
+std::optional<size_t> GetIndexAfterMove(size_t source_position,
+                                        size_t destination_position,
+                                        size_t range_size,
+                                        std::optional<size_t> original_index) {
+  DCHECK_LE(destination_position, source_position);
+
+  if (!original_index.has_value()) {
+    return std::nullopt;
+  }
+
   // When a range of items moves to a lower index, the only affected indices
-  // are those in the interval [new_start, old_start + length).
-  if (new_start <= *value && *value < old_start + length) {
-    if (*value < old_start) {
-      // The items originally in the interval [new_start, old_start) see
-      // |length| many items inserted before them, so their indices increase.
-      *value += length;
+  // are those in the interval [destination_position, source_position +
+  // range_size).
+  size_t original_index_val = original_index.value();
+  if (destination_position <= original_index_val &&
+      original_index_val < source_position + range_size) {
+    if (original_index_val < source_position) {
+      // The items originally in the interval [destination_position,
+      // source_position) see `range_size` many items inserted before them, so
+      // their indices increase.
+      return original_index_val + range_size;
     } else {
-      // The items originally in the interval [old_start, old_start + length)
-      // are shifted downward by (old_start - new_start) many spots, so
-      // their indices decrease.
-      *value -= (old_start - new_start);
+      // The items originally in the interval [source_position, source_position
+      // + range_size) are shifted downward by (source_position -
+      // destination_position) many spots, so their indices decrease.
+      return original_index_val - (source_position - destination_position);
     }
   }
-}
 
+  return original_index;
+}
 }  // namespace
 
 ListSelectionModel::ListSelectionModel() = default;
@@ -85,26 +121,33 @@ bool ListSelectionModel::operator!=(const ListSelectionModel& other) const {
 
 void ListSelectionModel::IncrementFrom(size_t index) {
   // Shift the selection to account for a newly inserted item at |index|.
-  for (size_t& selected_index : selected_indices_)
-    IncrementFromImpl(index, &selected_index);
-  IncrementFromImpl(index, &anchor_);
-  IncrementFromImpl(index, &active_);
+  for (size_t& selected_index : selected_indices_) {
+    selected_index = GetIndexAfterInsertion(index, selected_index);
+  }
+
+  anchor_ = GetIndexAfterInsertion(index, anchor_);
+  set_active(GetIndexAfterInsertion(index, active_));
 }
 
 void ListSelectionModel::DecrementFrom(size_t index) {
-  for (auto i = selected_indices_.begin(); i != selected_indices_.end();) {
-    if (DecrementFromImpl(index, &(*i))) {
-      i = selected_indices_.erase(i);
+  for (auto it = selected_indices_.begin(); it != selected_indices_.end();) {
+    std::optional<size_t> new_value = GetIndexAfterRemoval(index, *it);
+    if (new_value == std::nullopt) {
+      it = selected_indices_.erase(it);
     } else {
-      ++i;
+      *it = new_value.value();
+      ++it;
     }
   }
-  DecrementFromImpl(index, &anchor_);
-  DecrementFromImpl(index, &active_);
+
+  anchor_ = GetIndexAfterRemoval(index, anchor_);
+  set_active(GetIndexAfterRemoval(index, active_));
 }
 
 void ListSelectionModel::SetSelectedIndex(std::optional<size_t> index) {
-  anchor_ = active_ = index;
+  anchor_ = index;
+  set_active(index);
+
   selected_indices_.clear();
   if (index.has_value()) {
     selected_indices_.insert(index.value());
@@ -146,7 +189,7 @@ void ListSelectionModel::SetSelectionFromAnchorTo(size_t index) {
       new_selection.insert(i);
     }
     selected_indices_.swap(new_selection);
-    active_ = index;
+    set_active(index);
   }
 }
 
@@ -159,7 +202,7 @@ void ListSelectionModel::AddSelectionFromAnchorTo(size_t index) {
          i <= end; ++i) {
       selected_indices_.insert(i);
     }
-    active_ = index;
+    set_active(index);
   }
 }
 
@@ -181,10 +224,8 @@ void ListSelectionModel::Move(size_t old_index,
 
   // We know that |old_index| > |new_index|, so this is a move to a lower index.
   // Start by transforming |anchor_| and |active_|.
-  if (anchor_.has_value())
-    MoveToLowerIndexImpl(old_index, new_index, length, &anchor_.value());
-  if (active_.has_value())
-    MoveToLowerIndexImpl(old_index, new_index, length, &active_.value());
+  anchor_ = GetIndexAfterMove(old_index, new_index, length, anchor_);
+  set_active(GetIndexAfterMove(old_index, new_index, length, active_));
 
   // When a range of items moves to a lower index, the affected items are those
   // in the interval [new_index, old_index + length). Search within
