@@ -555,6 +555,11 @@ extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];
 
+// Title and description for the flag to enable the Lens unary APIs with HTTP
+// transport.
+extern const char kLensUnaryApisWithHttpTransportEnabledName[];
+extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
+
 // Title and description for the flag to enable the Lens web page load
 // optimization.
 extern const char kLensWebPageLoadOptimizationEnabledName[];

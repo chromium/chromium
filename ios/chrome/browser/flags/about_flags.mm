@@ -1999,6 +1999,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPostProfileSwitchActionsName,
      flag_descriptions::kPostProfileSwitchActionsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPostProfileSwitchActions)},
+    {"lens-unary-apis-with-http-transport-enabled",
+     flag_descriptions::kLensUnaryApisWithHttpTransportEnabledName,
+     flag_descriptions::kLensUnaryApisWithHttpTransportEnabledDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensUnaryApisWithHttpTransportEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

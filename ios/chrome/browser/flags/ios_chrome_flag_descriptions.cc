@@ -642,6 +642,11 @@ const char kLensTranslateToggleModeEnabledName[] =
 const char kLensTranslateToggleModeEnabledDescription[] =
     "Enables the translate toggle mode.";
 
+const char kLensUnaryApisWithHttpTransportEnabledName[] =
+    "Lens unary APIs with HTTP transport enabled";
+const char kLensUnaryApisWithHttpTransportEnabledDescription[] =
+    "Enables the unary APIs with HTTP transport.";
+
 const char kLensWebPageLoadOptimizationEnabledName[] =
     "Lens web page load optimization";
 const char kLensWebPageLoadOptimizationEnabledDescription[] =
