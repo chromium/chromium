@@ -64,14 +64,12 @@ struct ScenarioState {
 };
 #pragma clang diagnostic pop
 
-using SharedScenarioState = base::StructuredSharedMemory<ScenarioState>;
-
 // Pointers to the mapped shared memory are held in thread-safe scoped_refptr's.
 // The memory will be unmapped when the final reference is dropped. Functions
 // that copy values out of the shared memory must hold a reference to it so that
 // it's not unmapped while reading.
-using RefCountedScenarioMapping =
-    base::RefCountedData<SharedScenarioState::ReadOnlyMapping>;
+using RefCountedScenarioMapping = base::RefCountedData<
+    base::StructuredSharedMemory<ScenarioState>::ReadOnlyMapping>;
 
 // A wrapper around a std::atomic<T> that's stored in shared memory. The wrapper
 // prevents the shared memory from being unmapped while a caller has a reference

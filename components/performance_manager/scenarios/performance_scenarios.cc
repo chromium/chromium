@@ -29,8 +29,6 @@ namespace performance_manager {
 
 namespace {
 
-using SharedScenarioState = blink::performance_scenarios::SharedScenarioState;
-
 // Generic methods that change according to the Scenario type.
 template <typename Scenario>
 struct ScenarioTraits {

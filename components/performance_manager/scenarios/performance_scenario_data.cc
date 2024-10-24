@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/structured_shared_memory.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -14,8 +15,7 @@ namespace performance_manager {
 
 // static
 scoped_refptr<RefCountedScenarioState> RefCountedScenarioState::Create() {
-  auto shared_state =
-      blink::performance_scenarios::SharedScenarioState::Create();
+  auto shared_state = base::StructuredSharedMemory<ScenarioState>::Create();
   if (shared_state.has_value()) {
     return base::WrapRefCounted(
         new RefCountedScenarioState(std::move(shared_state.value())));
@@ -24,7 +24,7 @@ scoped_refptr<RefCountedScenarioState> RefCountedScenarioState::Create() {
 }
 
 RefCountedScenarioState::RefCountedScenarioState(
-    blink::performance_scenarios::SharedScenarioState shared_state)
+    base::StructuredSharedMemory<ScenarioState> shared_state)
     : shared_state_(std::move(shared_state)) {}
 
 RefCountedScenarioState::~RefCountedScenarioState() = default;

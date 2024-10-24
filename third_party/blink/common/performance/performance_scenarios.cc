@@ -53,6 +53,7 @@ ScopedReadOnlyScenarioMemory::ScopedReadOnlyScenarioMemory(
     Scope scope,
     base::ReadOnlySharedMemoryRegion region)
     : scope_(scope) {
+  using SharedScenarioState = base::StructuredSharedMemory<ScenarioState>;
   std::optional<SharedScenarioState::ReadOnlyMapping> mapping =
       SharedScenarioState::MapReadOnlyRegion(std::move(region));
   if (mapping.has_value()) {

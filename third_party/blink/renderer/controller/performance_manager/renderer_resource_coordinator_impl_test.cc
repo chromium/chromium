@@ -33,9 +33,9 @@ namespace blink {
 
 namespace {
 
+using blink::performance_scenarios::ScenarioState;
 using blink::performance_scenarios::Scope;
 using blink::performance_scenarios::ScopedReadOnlyScenarioMemory;
-using blink::performance_scenarios::SharedScenarioState;
 using performance_manager::mojom::blink::IframeAttributionData;
 using performance_manager::mojom::blink::IframeAttributionDataPtr;
 using performance_manager::mojom::blink::ProcessCoordinationUnit;
@@ -324,7 +324,7 @@ TEST_F(RendererResourceCoordinatorImplTest, NoScenarioRegion) {
 }
 
 TEST_F(RendererResourceCoordinatorImplTest, GlobalScenarioRegion) {
-  auto shared_memory = SharedScenarioState::Create();
+  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
   ASSERT_TRUE(shared_memory.has_value());
 
   InitializeMockProcessCoordinationUnit<StrictMockProcessCoordinationUnit>(
@@ -339,7 +339,7 @@ TEST_F(RendererResourceCoordinatorImplTest, GlobalScenarioRegion) {
 }
 
 TEST_F(RendererResourceCoordinatorImplTest, ProcessScenarioRegion) {
-  auto shared_memory = SharedScenarioState::Create();
+  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
   ASSERT_TRUE(shared_memory.has_value());
 
   InitializeMockProcessCoordinationUnit<StrictMockProcessCoordinationUnit>(

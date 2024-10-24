@@ -22,9 +22,9 @@ class ProcessNode;
 using LoadingScenario = blink::performance_scenarios::LoadingScenario;
 using InputScenario = blink::performance_scenarios::InputScenario;
 
-// Functions to manage the browser side of SharedScenarioState memory regions
-// that communicate state to child processes. The state can be read from any
-// process using functions in
+// Functions to manage the browser side of ScenarioState memory regions that
+// communicate state to child processes. The state can be read from any process
+// using functions in
 // //third_party/blink/public/common/performance/performance_scenarios.h.
 
 // A scoped object that maps in writable shared memory for the global scenario

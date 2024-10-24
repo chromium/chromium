@@ -18,7 +18,7 @@ namespace blink::performance_scenarios {
 namespace {
 
 TEST(PerformanceScenariosTest, MappedScenarioState) {
-  auto shared_memory = SharedScenarioState::Create();
+  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
   ASSERT_TRUE(shared_memory.has_value());
 
   // Before the shared memory is mapped in, GetLoadingScenario should return
@@ -76,10 +76,11 @@ TEST(PerformanceScenariosTest, MappedScenarioState) {
 
 TEST(PerformanceScenariosTest, SharedAtomicRef) {
   // Create and map shared memory.
-  auto shared_memory = SharedScenarioState::Create();
+  auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
   ASSERT_TRUE(shared_memory.has_value());
-  auto read_only_mapping = SharedScenarioState::MapReadOnlyRegion(
-      shared_memory->DuplicateReadOnlyRegion());
+  auto read_only_mapping =
+      base::StructuredSharedMemory<ScenarioState>::MapReadOnlyRegion(
+          shared_memory->DuplicateReadOnlyRegion());
   ASSERT_TRUE(read_only_mapping.has_value());
 
   // Store pointers to the atomics in the shared memory for later comparison.

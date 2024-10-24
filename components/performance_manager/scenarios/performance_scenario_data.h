@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/structured_shared_memory.h"
 #include "base/types/optional_util.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
@@ -23,16 +24,16 @@ namespace performance_manager {
 class RefCountedScenarioState
     : public base::RefCountedThreadSafe<RefCountedScenarioState> {
  public:
-  // Creates a new SharedScenarioState memory region and returns a ref-counted
-  // pointer to it, or nullptr if mapping fails.
+  using ScenarioState = blink::performance_scenarios::ScenarioState;
+
+  // Creates a new ScenarioState memory region and returns a ref-counted pointer
+  // to it, or nullptr if mapping fails.
   static scoped_refptr<RefCountedScenarioState> Create();
 
-  // Returns a reference to the mapped shared memory region.
-  blink::performance_scenarios::SharedScenarioState& shared_state() {
+  base::StructuredSharedMemory<ScenarioState>& shared_state() {
     return shared_state_;
   }
-  const blink::performance_scenarios::SharedScenarioState& shared_state()
-      const {
+  const base::StructuredSharedMemory<ScenarioState>& shared_state() const {
     return shared_state_;
   }
 
@@ -53,12 +54,11 @@ class RefCountedScenarioState
   friend class base::RefCountedThreadSafe<RefCountedScenarioState>;
 
   explicit RefCountedScenarioState(
-      blink::performance_scenarios::SharedScenarioState shared_state);
-
+      base::StructuredSharedMemory<ScenarioState> shared_state);
   ~RefCountedScenarioState();
 
   // Shared scenario memory region.
-  blink::performance_scenarios::SharedScenarioState shared_state_;
+  base::StructuredSharedMemory<ScenarioState> shared_state_;
 
   // Additional data associated with the region.
   std::optional<perfetto::Track> parent_tracing_track_;
