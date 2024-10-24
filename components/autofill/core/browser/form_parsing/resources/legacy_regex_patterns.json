@@ -1127,6 +1127,54 @@
       }
     ]
   },
+  "ALTERNATIVE_FAMILY_NAME": {
+    "en": [
+      {
+        "__comment__": "TODO(crbug.com/359768803): It's just a placeholder to prevent tests from crashing.",
+        "positive_pattern": "family-phonetic-name",
+        "positive_score": 0.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
+  "ALTERNATIVE_FULL_NAME": {
+    "en": [
+      {
+        "__comment__": "TODO(crbug.com/359768803): It's just a placeholder to prevent tests from crashing.",
+        "positive_pattern": "full-phonetic-name",
+        "positive_score": 0.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
+  "ALTERNATIVE_GIVEN_NAME": {
+    "en": [
+      {
+        "__comment__": "TODO(crbug.com/359768803): It's just a placeholder to prevent tests from crashing.",
+        "positive_pattern": "given-phonetic-name",
+        "positive_score": 0.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
   "ATTENTION_IGNORED": {
     "en": [
       {
