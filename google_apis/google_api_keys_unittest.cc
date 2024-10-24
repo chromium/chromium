@@ -523,25 +523,10 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
       google_apis::SetScopedApiKeyCacheForTesting(&api_key_cache);
 
   std::string api_key("setter-API_KEY");
-  google_apis::SetAPIKey(api_key);
-
-  std::string id_main("setter-ID_MAIN");
-  std::string secret_main("setter-SECRET_MAIN");
-  google_apis::SetOAuth2ClientID(google_apis::CLIENT_MAIN, id_main);
-  google_apis::SetOAuth2ClientSecret(google_apis::CLIENT_MAIN, secret_main);
-
-  std::string id_remoting("setter-ID_REMOTING");
-  std::string secret_remoting("setter-SECRET_REMOTING");
-  google_apis::SetOAuth2ClientID(google_apis::CLIENT_REMOTING, id_remoting);
-  google_apis::SetOAuth2ClientSecret(google_apis::CLIENT_REMOTING,
-                                     secret_remoting);
-
-  std::string id_remoting_host("setter-ID_REMOTING_HOST");
-  std::string secret_remoting_host("setter-SECRET_REMOTING_HOST");
-  google_apis::SetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST,
-                                 id_remoting_host);
-  google_apis::SetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST,
-                                     secret_remoting_host);
+  std::string client_id("setter-CLIENT_ID");
+  std::string client_secret("setter-CLIENT_SECRET");
+  google_apis::InitializeAndOverrideAPIKeyAndOAuthClient(api_key, client_id,
+                                                         client_secret);
 
   EXPECT_TRUE(google_apis::HasAPIKeyConfigured());
   EXPECT_TRUE(google_apis::HasOAuthClientConfigured());
@@ -549,19 +534,20 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
   EXPECT_EQ(api_key, google_apis::GetAPIKey(::version_info::Channel::STABLE));
   EXPECT_EQ(api_key, google_apis::GetAPIKey());
 
-  EXPECT_EQ(id_main, google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN));
-  EXPECT_EQ(secret_main,
+  EXPECT_EQ(client_id,
+            google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN));
+  EXPECT_EQ(client_secret,
             google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN));
 
-  EXPECT_EQ(id_remoting,
+  EXPECT_EQ(client_id,
             google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING));
-  EXPECT_EQ(secret_remoting,
+  EXPECT_EQ(client_secret,
             google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING));
 
-  EXPECT_EQ(id_remoting_host,
+  EXPECT_EQ(client_id,
             google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST));
-  EXPECT_EQ(secret_remoting_host, google_apis::GetOAuth2ClientSecret(
-                                      google_apis::CLIENT_REMOTING_HOST));
+  EXPECT_EQ(client_secret, google_apis::GetOAuth2ClientSecret(
+                               google_apis::CLIENT_REMOTING_HOST));
 }
 #endif  // BUILDFLAG(IS_IOS)
 
