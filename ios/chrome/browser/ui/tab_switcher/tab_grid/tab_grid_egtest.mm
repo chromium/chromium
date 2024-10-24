@@ -2874,6 +2874,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle2)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Make sure that we can change the search text and so update the query.
+  PerformTabGridSearch(kTitle1);
+
+  // Make sure that search mode is still active and searching the new query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that tapping on search history action in the Recent Tabs search mode
@@ -2919,6 +2928,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Make sure that we can change the search text and so update the query.
+  PerformTabGridSearch(kTitle1);
+
+  // Make sure that search mode is still active and searching the new query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
