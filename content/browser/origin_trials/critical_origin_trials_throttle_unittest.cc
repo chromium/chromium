@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/origin_trials/critical_origin_trials_throttle.h"
+
 #include <string>
 #include <string_view>
 #include <utility>
@@ -10,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -19,7 +20,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

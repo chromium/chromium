@@ -7179,7 +7179,7 @@ def generate_class_like(class_like,
         # Blink implementation class' header (e.g. node.h for Node)
         (class_like.code_generator_info.blink_headers
          and class_like.code_generator_info.blink_headers[0]),
-        "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
         "third_party/blink/renderer/bindings/core/v8/is_return_type_compatible.h",
     ])
     if interface and interface.inherited:
@@ -7203,7 +7203,7 @@ def generate_class_like(class_like,
         "third_party/blink/renderer/platform/bindings/idl_member_installer.h",
         "third_party/blink/renderer/platform/bindings/runtime_call_stats.h",
         "third_party/blink/renderer/platform/bindings/v8_binding.h",
-        "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
     ])
     impl_source_node.accumulator.add_include_headers(
         _collect_include_headers(class_like))
@@ -7420,7 +7420,7 @@ def generate_install_properties_per_feature(function_name,
         "base/containers/span.h",
         "third_party/blink/renderer/platform/bindings/script_state.h",
         "third_party/blink/renderer/platform/bindings/v8_per_context_data.h",
-        "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
     ])
     source_node.extend([
         make_copyright_header(),

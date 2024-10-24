@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-forward.h"
 
 namespace blink {
 

@@ -34,7 +34,7 @@
 #include <tuple>
 
 #include "base/debug/crash_logging.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"

@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
-import "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom";
+import "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
