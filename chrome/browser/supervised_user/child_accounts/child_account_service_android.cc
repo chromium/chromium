@@ -30,11 +30,9 @@ void ReauthenticateChildAccount(
     const base::RepeatingCallback<void()>& on_failure_callback) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
-  if (!window_android) {
-    // The native view may not be available on shutdown (crbug.com/1468955).
-    on_failure_callback.Run();
-    return;
-  }
+  CHECK(window_android)
+      << "See SupervisedUserGoogleAuthNavigationThrottle to confirm that this "
+         "call is never called with empty `window_android`";
 
   // Make a copy of the callback which can be passed as a pointer through
   // to Java.
