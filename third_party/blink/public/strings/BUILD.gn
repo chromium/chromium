@@ -36,6 +36,8 @@ action("generate_permission_element_strings_mono_grd") {
     rebase_path(outfile_grd, root_build_dir),
     "--output_map",
     rebase_path(outfile_map, root_build_dir),
+    "--input_base_dir",
+    rebase_path("//third_party/blink/public/strings/", root_build_dir),
   ]
   deps = [ ":permission_element_strings" ]
 }

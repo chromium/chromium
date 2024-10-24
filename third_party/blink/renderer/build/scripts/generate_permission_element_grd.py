@@ -58,10 +58,8 @@ kStringMapHeaderSuffix = '''
 '''
 
 
-def get_message_id_map():
-    dom = parse(
-        "../../third_party/blink/public/strings/permission_element_strings.grd"
-    )
+def get_message_id_map(input_base_dir):
+    dom = parse(input_base_dir + "permission_element_strings.grd")
     dic = {}
     messages = dom.getElementsByTagName("message")
     for message in messages:
@@ -127,13 +125,14 @@ def generate_cpp_mapping(input_file_path, output_file_path):
 
 
 def main(argv):
-    translated_files = list(
-        glob.glob(
-            "../../third_party/blink/public/strings/translations/permission_element_strings_*"
-        ))
-    id_map = get_message_id_map()
     output_grd_file_position = argv.index('--output_grd')
     output_map_file_position = argv.index('--output_map')
+    input_base_dir_position = argv.index('--input_base_dir')
+    input_base_dir = argv[input_base_dir_position + 1]
+    id_map = get_message_id_map(input_base_dir)
+    translated_files = list(
+        glob.glob(input_base_dir +
+                  "translations/permission_element_strings_*"))
     generate_grd_file(id_map, translated_files,
                       argv[output_grd_file_position + 1])
     generate_cpp_mapping(argv[output_grd_file_position + 1],
