@@ -405,7 +405,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest,
       "this example passage matches the test query term 'query'");
   test_case->mutable_passages()->add_passages(
       "all of this test data is for test, test, testing!");
-  test_case->set_expected_score_boost(0.070000052f);
+  test_case->set_expected_score_boost(0.080000043);
   EXPECT_TRUE(base::WriteFile(GetWordMatchBoostTestDataPath(),
                               test.SerializeAsString()));
 }

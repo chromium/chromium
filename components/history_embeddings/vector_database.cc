@@ -21,7 +21,17 @@ constexpr float kUnitLength = 1.0f;
 // Close enough to be considered near zero.
 constexpr float kEpsilon = 0.01f;
 
+// These delimiters separate queries and passages into tokens.
+constexpr char kTokenDelimiters[] = " .,;";
+
 namespace {
+
+// Reduces and returns `term_view` with common characters trimmed from
+// start and end.
+inline std::string_view TrimTermView(std::string_view term_view) {
+  return base::TrimString(term_view, ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=",
+                          base::TrimPositions::TRIM_ALL);
+}
 
 // Increases occurrence counts for each element of `query_terms` as they are
 // found in `passage`, ranging from zero up to `max_count` inclusive. The
@@ -45,9 +55,9 @@ void CountTermsInPassage(std::vector<size_t>& term_counts,
     return base::ToLowerASCII(term) == term;
   }));
 
-  base::StringViewTokenizer tokenizer(passage, ",;. ");
+  base::StringViewTokenizer tokenizer(passage, kTokenDelimiters);
   while (tokenizer.GetNext()) {
-    const std::string_view token = tokenizer.token();
+    const std::string_view token = TrimTermView(tokenizer.token());
     for (size_t term_index = 0; term_index < query_terms.size(); term_index++) {
       if (term_counts[term_index] >= max_count) {
         continue;
@@ -447,18 +457,18 @@ std::vector<std::string> SplitQueryToTerms(
     size_t min_term_length) {
   extern uint32_t HashString(std::string_view str);
   std::string query = base::ToLowerASCII(raw_query);
-  std::vector<std::string_view> term_views = base::SplitStringPiece(
-      query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::string_view query_view(query);
   std::vector<std::string> query_terms;
-  for (std::string_view& term_view : term_views) {
-    term_view = base::TrimString(term_view, ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=",
-                                 base::TrimPositions::TRIM_ALL);
+
+  base::StringViewTokenizer tokenizer(query_view, kTokenDelimiters);
+  while (tokenizer.GetNext()) {
+    const std::string_view term_view = TrimTermView(tokenizer.token());
     if (term_view.size() >= min_term_length &&
         !stop_words_hashes.contains(HashString(term_view))) {
       query_terms.emplace_back(term_view);
     }
   }
+
   return query_terms;
 }
 
