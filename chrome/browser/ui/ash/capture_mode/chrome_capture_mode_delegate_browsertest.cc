@@ -4,15 +4,70 @@
 
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
+#include <string>
+
+#include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
-using ChromeCaptureModeDelegateBrowserTest = InProcessBrowserTest;
+class ChromeCaptureModeDelegateBrowserTest
+    : public InProcessBrowserTest,
+      public screen_ai::ScreenAIInstallState::Observer {
+ public:
+  ChromeCaptureModeDelegateBrowserTest() = default;
+  ChromeCaptureModeDelegateBrowserTest(
+      const ChromeCaptureModeDelegateBrowserTest&) = delete;
+  ChromeCaptureModeDelegateBrowserTest& operator=(
+      const ChromeCaptureModeDelegateBrowserTest&) = delete;
+  ~ChromeCaptureModeDelegateBrowserTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    screen_ai_install_state_observer_.Observe(
+        screen_ai::ScreenAIInstallState::GetInstance());
+  }
+
+  void TearDownOnMainThread() override {
+    // Reset the screen ai install state observer before browser shut down and
+    // destruction of the screen_ai::ScreenAIInstallState.
+    screen_ai_install_state_observer_.Reset();
+  }
+
+  // screen_ai::ScreenAIInstallState::Observer:
+  void StateChanged(screen_ai::ScreenAIInstallState::State state) override {
+    if (state == screen_ai::ScreenAIInstallState::State::kDownloading) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce([]() {
+            screen_ai::ScreenAIInstallState::GetInstance()->SetState(
+                screen_ai::ScreenAIInstallState::State::kDownloadFailed);
+          }));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kScannerUpdate};
+
+  // The OCR service is not supported on ChromeOS browser tests, so use an
+  // observer to fail the download when requested. Otherwise, the download
+  // request will time out.
+  base::ScopedObservation<screen_ai::ScreenAIInstallState,
+                          screen_ai::ScreenAIInstallState::Observer>
+      screen_ai_install_state_observer_{this};
+};
 
 IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
                        FileNotRedirected) {
@@ -84,4 +139,16 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
 
   // Original file was moved.
   EXPECT_FALSE(base::PathExists(redirected_path));
+}
+
+// The OCR service is not supported on ChromeOS browser tests, so we can't check
+// the real detected text.
+IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
+                       EmptyDetectedTextWhenOCRNotSupported) {
+  base::test::TestFuture<std::string> detected_text_future;
+
+  ChromeCaptureModeDelegate::Get()->DetectTextInImage(
+      SkBitmap(), detected_text_future.GetCallback());
+
+  EXPECT_EQ(detected_text_future.Get(), "");
 }

@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -18,6 +21,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -264,7 +270,7 @@ void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
 
   if (!is_session_active_) {
     // Release the OCR handle to save memory.
-    optical_character_recognizer_ = nullptr;
+    ResetOcr();
   }
 }
 
@@ -447,15 +453,36 @@ ChromeCaptureModeDelegate::CreateSearchResultsView() const {
 void ChromeCaptureModeDelegate::DetectTextInImage(
     const SkBitmap& image,
     ash::OnTextDetectionComplete callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ash::features::IsScannerEnabled());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
+    std::move(callback).Run("");
     return;
   }
 
-  // TODO(crbug.com/374186111): Handle the case where the OCR service is already
-  // initialized.
+  if (optical_character_recognizer_ &&
+      optical_character_recognizer_->is_ready()) {
+    // Request `PerformOcr` asynchronously, so that it can be handled similarly
+    // to the case where the OCR is not ready yet.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ChromeCaptureModeDelegate::PerformOcr,
+                                  weak_ptr_factory_.GetWeakPtr(), image,
+                                  std::move(callback)));
+    return;
+  }
+
+  // Set a pending request to be fulfilled after the OCR service is ready. We
+  // only need to fulfill the latest request when the OCR service becomes ready,
+  // so if there is a previous request then respond to it with an empty string
+  // and create a new request with the new `image` and `callback`.
+  if (!pending_ocr_request_callback_.is_null()) {
+    std::move(pending_ocr_request_callback_).Run("");
+  }
+  pending_ocr_request_image_ = image;
+  pending_ocr_request_callback_ = std::move(callback);
+
   if (!optical_character_recognizer_) {
     optical_character_recognizer_ =
         screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
@@ -483,5 +510,52 @@ void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
 }
 
 void ChromeCaptureModeDelegate::OnOcrServiceInitialized(bool is_successful) {
-  // TODO(crbug.com/374186111): Perform OCR when the service is ready.
+  if (is_successful) {
+    PerformOcrOnPendingRequest();
+  } else {
+    ResetOcr();
+  }
+}
+
+void ChromeCaptureModeDelegate::PerformOcrOnPendingRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!pending_ocr_request_callback_.is_null());
+  PerformOcr(pending_ocr_request_image_,
+             std::move(pending_ocr_request_callback_));
+}
+
+void ChromeCaptureModeDelegate::PerformOcr(
+    const SkBitmap& image,
+    ash::OnTextDetectionComplete callback) {
+  CHECK(optical_character_recognizer_);
+  CHECK(optical_character_recognizer_->is_ready());
+  optical_character_recognizer_->PerformOCR(
+      image,
+      base::BindOnce(&ChromeCaptureModeDelegate::OnOcrPerformed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeCaptureModeDelegate::OnOcrPerformed(
+    ash::OnTextDetectionComplete callback,
+    screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Reset the pending request image to save memory.
+  pending_ocr_request_image_.reset();
+
+  std::vector<std::string> text_lines;
+  text_lines.reserve(visual_annotation->lines.size());
+  for (screen_ai::mojom::LineBoxPtr& line : visual_annotation->lines) {
+    text_lines.push_back(std::move(line->text_line));
+  }
+  std::move(callback).Run(base::JoinString(text_lines, "\n"));
+}
+
+void ChromeCaptureModeDelegate::ResetOcr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  optical_character_recognizer_ = nullptr;
+  pending_ocr_request_image_.reset();
+  if (!pending_ocr_request_callback_.is_null()) {
+    std::move(pending_ocr_request_callback_).Run("");
+  }
+  pending_ocr_request_callback_.Reset();
 }

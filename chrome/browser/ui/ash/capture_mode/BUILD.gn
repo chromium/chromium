@@ -81,6 +81,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/policy:test_support",
+    "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common",

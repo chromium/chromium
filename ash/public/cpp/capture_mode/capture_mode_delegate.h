@@ -235,7 +235,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Performs OCR to detect text in `image` and invokes `callback` with the full
   // detected text contents. `callback` will be invoked with an empty string if
-  // no text is detected.
+  // no text is detected. If this is called while the OCR service is still being
+  // initialized, then the previous request will be cancelled and its callback
+  // involved with an empty string.
   virtual void DetectTextInImage(const SkBitmap& image,
                                  OnTextDetectionComplete callback) = 0;
 };

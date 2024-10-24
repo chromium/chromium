@@ -11,8 +11,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace screen_ai {
 class OpticalCharacterRecognizer;
@@ -110,6 +113,20 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Called back by the OCR service after it is initialized.
   void OnOcrServiceInitialized(bool is_successful);
 
+  // Performs OCR on `pending_ocr_request_image_`. This is used to fulfill the
+  // latest OCR request that occurs while the OCR service is being initialized.
+  void PerformOcrOnPendingRequest();
+
+  // Performs OCR to detect text in `image`.
+  void PerformOcr(const SkBitmap& image, ash::OnTextDetectionComplete callback);
+
+  // Called back by the OCR service once OCR has been performed.
+  void OnOcrPerformed(ash::OnTextDetectionComplete callback,
+                      screen_ai::mojom::VisualAnnotationPtr visual_annotation);
+
+  // Releases the OCR handle and resets pending OCR requests.
+  void ResetOcr();
+
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension
   // APIs can request that a tab operate in a locked fullscreen mode, and in
@@ -132,6 +149,15 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // OCR used to detect text in a selected capture region.
   scoped_refptr<screen_ai::OpticalCharacterRecognizer>
       optical_character_recognizer_;
+
+  // Stores the image and callback for the latest OCR request in the case that
+  // the OCR service is not ready yet. These will be used to perform OCR after
+  // the service indicates that it is ready.
+  SkBitmap pending_ocr_request_image_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ash::OnTextDetectionComplete pending_ocr_request_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };
