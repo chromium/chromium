@@ -761,6 +761,13 @@ def main():
     GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
                   '802b816836f1dcf9544f250ee5c6977b4cb2bb41')
 
+    # Apply https://github.com/zmodem/llvm-project/commit/89a723c438a5 which
+    # should fix the issue of win/asan failing to allocate memory for
+    # trampoline functions.
+    # TODO(crbug.com/341936875): Land this upstream and remove after debugging.
+    GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                  '89a723c438a50a34507a71159ba37f6e60afcea9')
+
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
     PACKAGE_VERSION = '%s-0' % CLANG_REVISION
