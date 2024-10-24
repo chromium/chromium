@@ -60,7 +60,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -118,6 +119,8 @@ public class KeyboardAccessoryViewTest {
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
     private PropertyModel mModel;
     private BlockingQueue<KeyboardAccessoryView> mKeyboardAccessoryView;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -210,7 +213,6 @@ public class KeyboardAccessoryViewTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         ThreadUtils.runOnUiThreadBlocking(

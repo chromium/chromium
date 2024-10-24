@@ -39,7 +39,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -98,6 +99,11 @@ public class AllPasswordsBottomSheetViewTest {
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     @Mock private Callback<Integer> mDismissHandler;
     @Mock private Callback<CredentialFillRequest> mCredentialFillRequestCallback;
     @Mock private Callback<String> mSearchQueryCallback;
@@ -107,12 +113,8 @@ public class AllPasswordsBottomSheetViewTest {
     private AllPasswordsBottomSheetView mAllPasswordsBottomSheetView;
     private BottomSheetController mBottomSheetController;
 
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
