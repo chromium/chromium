@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -404,6 +405,21 @@ public class SearchActivityUnitTest {
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
         verify(statusCoordinator).setShowStatusView(false);
+    }
+
+    @Test
+    public void handleNewIntent_forJumpStartOmnibox() {
+        // Jump-start Omnibox relies on cached data above anything else.
+        // Save some data to confirm it's properly picked.
+        String jumpStartUrl = "https://asdf.com/ghjkl";
+        CachedZeroSuggestionsManager.saveJumpStartContext(
+                new CachedZeroSuggestionsManager.JumpStartContext(new GURL(jumpStartUrl), 123));
+
+        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.LAUNCHER), false);
+
+        assertEquals(123, mDataProvider.getPageClassification(true));
+        assertEquals(123, mDataProvider.getPageClassification(false));
+        assertEquals(jumpStartUrl, mDataProvider.getCurrentGurl().getSpec());
     }
 
     @Test

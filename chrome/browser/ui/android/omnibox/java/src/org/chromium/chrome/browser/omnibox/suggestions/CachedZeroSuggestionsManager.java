@@ -20,20 +20,48 @@ import android.content.SharedPreferences;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteProto.AutocompleteResultProto;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.url.GURL;
 
 import java.util.Locale;
+import java.util.Set;
 
 /** CachedZeroSuggestionsManager manages caching and restoring zero suggestions. */
 public class CachedZeroSuggestionsManager {
+    /** Jump-Start Omnibox: the context of the most recently visited page. */
+    public static class JumpStartContext {
+        /** The GURL representing the most recently visited page. */
+        public final GURL url;
+
+        /** {@link PageClassification} value associated with the most recently visited page. */
+        public final int pageClass;
+
+        public JumpStartContext(GURL url, int pageClass) {
+            this.url = url;
+            this.pageClass = pageClass;
+        }
+    }
+
+    @VisibleForTesting
+    /* package */ static final String KEY_JUMP_START_URL = "omnibox:jump_start:url";
+
+    @VisibleForTesting
+    /* package */ static final String KEY_JUMP_START_PAGE_CLASS = "omnibox:jump_start:page_class";
+
+    @VisibleForTesting
+    /* package */ static final Set<String> ADDITIONAL_KEYS_TO_ERASE =
+            Set.of(KEY_JUMP_START_URL, KEY_JUMP_START_PAGE_CLASS);
+
     /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
     public static void saveToCache(int pageClass, @NonNull AutocompleteResult resultToCache) {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
@@ -75,12 +103,44 @@ public class CachedZeroSuggestionsManager {
         return AutocompleteResult.fromCache(null, null);
     }
 
+    /** Save the context of the most recently visited page. */
+    public static void saveJumpStartContext(@Nullable JumpStartContext jsContext) {
+        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
+        if (jsContext == null || GURL.isEmptyOrInvalid(jsContext.url)) {
+            editor.remove(KEY_JUMP_START_URL);
+            editor.remove(KEY_JUMP_START_PAGE_CLASS);
+        } else {
+            editor.putString(KEY_JUMP_START_URL, jsContext.url.getSpec());
+            editor.putInt(KEY_JUMP_START_PAGE_CLASS, jsContext.pageClass);
+        }
+        editor.apply();
+    }
+
+    /**
+     * Read previously stored context of the most recently visited page.
+     *
+     * <p>This function always returns a valid object, even if there's no data to read, falling back
+     * to the context of a NTP.
+     */
+    public static @NonNull JumpStartContext readJumpStartContext() {
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        String url = prefs.getString(KEY_JUMP_START_URL, UrlConstants.NTP_URL);
+        int pageClass =
+                prefs.getInt(
+                        KEY_JUMP_START_PAGE_CLASS,
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+        return new JumpStartContext(new GURL(url), pageClass);
+    }
+
     /** Clean up data persisted by current Chrome versions. */
     public static void eraseCachedData() {
         SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
 
         for (var pageClass : PageClassification.values()) {
             editor.remove(getCacheKey(pageClass.getNumber()));
+        }
+        for (String key : ADDITIONAL_KEYS_TO_ERASE) {
+            editor.remove(key);
         }
         editor.apply();
 

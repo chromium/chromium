@@ -603,7 +603,9 @@ if (is_android) {
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/styles/android:java_resources",
       "//components/browser_ui/widget/android:java",
+      "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
+      "//components/omnibox/common:features_java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -629,7 +631,10 @@ if (is_android) {
 
   robolectric_library("junit") {
     resources_package = "org.chromium.components.omnibox"
-    sources = [ "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteInputUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
+    ]
     deps = [
       ":browser_java",
       ":java_resources",
@@ -639,9 +644,11 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/styles/android:java_resources",
+      "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/junit:junit",
+      "//third_party/metrics_proto:metrics_proto_java",
       "//third_party/mockito:mockito_java",
     ]
   }

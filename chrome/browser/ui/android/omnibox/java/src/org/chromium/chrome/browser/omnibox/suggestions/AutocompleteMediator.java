@@ -29,6 +29,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -84,6 +85,7 @@ class AutocompleteMediator
                 OmniboxSuggestionsDropdown.GestureObserver,
                 OmniboxSuggestionsDropdownScrollListener,
                 TopResumedActivityChangedObserver,
+                WindowFocusChangedObserver,
                 SuggestionHost {
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
 
@@ -364,6 +366,14 @@ class AutocompleteMediator
     private void maybeCacheResult(@NonNull AutocompleteResult result) {
         if (!mAutocompleteInput.isInCacheableContext() || result.isFromCachedResult()) {
             return;
+        }
+
+        // Preserve current page context for Jump-start Omnibox feature.
+        if (OmniboxFeatures.sJumpStartOmniboxCoverRecentlyVisitedPage.getValue()) {
+            CachedZeroSuggestionsManager.saveJumpStartContext(
+                    new CachedZeroSuggestionsManager.JumpStartContext(
+                            mDataProvider.getCurrentGurl(),
+                            mDataProvider.getPageClassification(false)));
         }
         CachedZeroSuggestionsManager.saveToCache(
                 mAutocompleteInput.getPageClassification().getAsInt(), result);
@@ -898,10 +908,14 @@ class AutocompleteMediator
     @Override
     public void onSuggestionsReceived(
             @NonNull AutocompleteResult autocompleteResult, boolean isFinal) {
+        // Persist AutocompleteResult in cache even if the interaction has just finished.
+        // This allows us to cache most up-to-date information even after navigation was initiated.
+        if (isFinal && !autocompleteResult.getSuggestionsList().isEmpty()) {
+            maybeCacheResult(autocompleteResult);
+        }
+
         // Reject results if the current session is inactive.
         if (!mIsActive) return;
-
-        maybeCacheResult(autocompleteResult);
 
         @Nullable AutocompleteMatch defaultMatch = autocompleteResult.getDefaultMatch();
         String inlineAutocompleteText =
@@ -1417,5 +1431,26 @@ class AutocompleteMediator
             // cleared before session state becomes inactive, we will cache empty result.
             mDelegate.clearOmniboxFocus();
         }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean focused) {
+        // Detect the window focus has changed. This may be due to the user entering app switcher,
+        // pressing the home screen, or, in windowed/split screen mode, user interacting with a
+        // different app. This gives us enough head room to retrieve and cache relevant information.
+        // Note: onPause and onUserLeaveHint happen much too late.
+        if (focused || !OmniboxFeatures.isJumpStartOmniboxEnabled()) return;
+
+        // Retrieve suggestions related to the most recently visited page.
+        // This is a best-effort action and may not always work (e.g. if Chrome gets killed or
+        // swiped away before we manage to retrieve and persist the information).
+        mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
+        mAutocomplete.ifPresent(
+                a ->
+                        a.startZeroSuggest(
+                                "",
+                                mDataProvider.getCurrentGurl(),
+                                mDataProvider.getPageClassification(false),
+                                mDataProvider.getTitle()));
     }
 }

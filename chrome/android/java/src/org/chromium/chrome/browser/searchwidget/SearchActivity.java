@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -405,6 +406,8 @@ public class SearchActivity extends AsyncInitializationActivity
 
         recordUsage(mIntentOrigin, mSearchType);
 
+        mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
+
         switch (mIntentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
                 // Note: this may be refined by refinePageClassWithProfile().
@@ -435,8 +438,9 @@ public class SearchActivity extends AsyncInitializationActivity
                 mLocationBarUiOverrides
                         .setLensEntrypointAllowed(true)
                         .setVoiceEntrypointAllowed(true);
-                mSearchBoxDataProvider.setPageClassification(
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+                var jumpStartContext = CachedZeroSuggestionsManager.readJumpStartContext();
+                mSearchBoxDataProvider.setCurrentUrl(jumpStartContext.url);
+                mSearchBoxDataProvider.setPageClassification(jumpStartContext.pageClass);
                 break;
 
             case IntentOrigin.SEARCH_WIDGET:
@@ -454,7 +458,6 @@ public class SearchActivity extends AsyncInitializationActivity
         var profile = mProfileSupplier.get();
         if (profile != null) refinePageClassWithProfile(profile);
 
-        mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
         beginQuery();
     }
 

@@ -8,17 +8,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.KEY_JUMP_START_PAGE_CLASS;
+import static org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.KEY_JUMP_START_URL;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -80,7 +81,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void saveToCache_basicSaveRestoreTest() {
         var dataToCache = AutocompleteResult.fromCache(buildSimpleSuggestionsList("test", 2), null);
         CachedZeroSuggestionsManager.saveToCache(PAGE_CLASS, dataToCache);
@@ -89,7 +89,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void saveToCache_dataIsAssociatedWithPageClass() {
         var dataToCache1 =
                 AutocompleteResult.fromCache(buildSimpleSuggestionsList("test1", 2), null);
@@ -106,7 +105,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void saveToCache_DoNotCacheClipboardSuggestions() {
         var mix_list =
                 Arrays.asList(
@@ -134,7 +132,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void eraseCachedData_removesAllCachedEntries() {
         var dataToCache = AutocompleteResult.fromCache(buildSimpleSuggestionsList("test", 3), null);
 
@@ -155,7 +152,30 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
+    public void eraseCachedData_removesOldCachedEntries() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+        // Pick some of the keys at random to verify all of them have been deleted.
+        // We preserved up to 15 suggestions in the past, so index 14 is the last key that
+        // realistically makes sense to be deleted.
+        var keyToTest = ChromePreferenceKeys.KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(14);
+
+        // Put some irrelevant information in the cache using old keys.
+        var editor = prefs.edit();
+        editor.putInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE, 0);
+        editor.putInt(keyToTest, 0);
+        editor.apply();
+
+        // Confirmation check: keys are there.
+        assertTrue(prefs.contains(ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE));
+        assertTrue(prefs.contains(keyToTest));
+
+        // Erase data and confirm keys are absent.
+        CachedZeroSuggestionsManager.eraseCachedData();
+        assertFalse(prefs.contains(ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE));
+        assertFalse(prefs.contains(keyToTest));
+    }
+
+    @Test
     public void readFromCache_restoreDetailsFromEmptyCache() {
         CachedZeroSuggestionsManager.eraseCachedData();
 
@@ -164,7 +184,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void readFromCache_restoreDetailsFromEmptyResult() {
         var dataToCache = AutocompleteResult.fromCache(null, null);
         CachedZeroSuggestionsManager.saveToCache(PAGE_CLASS, dataToCache);
@@ -174,7 +193,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void saveToCache_preservesGroupsInfo() {
         var groupsDetails =
                 GroupsInfo.newBuilder()
@@ -188,5 +206,80 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
         var dataFromCache = CachedZeroSuggestionsManager.readFromCache(PAGE_CLASS);
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
+    }
+
+    private void saveJumpStartContext(String url, int pageClass) {
+        CachedZeroSuggestionsManager.saveJumpStartContext(
+                new CachedZeroSuggestionsManager.JumpStartContext(new GURL(url), pageClass));
+    }
+
+    @Test
+    public void jumpStartContext_saveRestoreValidContext() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        saveJumpStartContext("https://abc.xyz", 123);
+
+        assertEquals("https://abc.xyz/", prefs.getString(KEY_JUMP_START_URL, null));
+        assertEquals(123, prefs.getInt(KEY_JUMP_START_PAGE_CLASS, 0));
+
+        var jsContext = CachedZeroSuggestionsManager.readJumpStartContext();
+        assertEquals("https://abc.xyz/", jsContext.url.getSpec());
+        assertEquals(123, jsContext.pageClass);
+    }
+
+    @Test
+    public void jumpStartContext_saveRestoreEmptyUrl() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        // Initialize with valid context to verify data being erased.
+        saveJumpStartContext("https://abc.xyz", 123);
+        assertTrue(prefs.contains(KEY_JUMP_START_URL));
+
+        // Preserve empty URL
+        saveJumpStartContext("", 456);
+        assertFalse(prefs.contains(KEY_JUMP_START_URL));
+        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
+    }
+
+    @Test
+    public void jumpStartContext_saveRestoreInvalidUrl() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        // Initialize with valid context to verify data being erased.
+        saveJumpStartContext("https://abc.xyz", 123);
+        assertTrue(prefs.contains(KEY_JUMP_START_URL));
+
+        // Preserve invalid URL
+        saveJumpStartContext("asdf", 456);
+        assertFalse(prefs.contains(KEY_JUMP_START_URL));
+        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
+    }
+
+    @Test
+    public void jumpStartContext_saveRestoreNullContext() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        // Initialize with valid context to verify data being erased.
+        saveJumpStartContext("https://abc.xyz", 123);
+        assertTrue(prefs.contains(KEY_JUMP_START_URL));
+
+        // Preserve invalid URL
+        CachedZeroSuggestionsManager.saveJumpStartContext(null);
+        assertFalse(prefs.contains(KEY_JUMP_START_URL));
+        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
+    }
+
+    @Test
+    public void jumpStartContext_eraseCachedData() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        // Initialize with valid context to verify data being erased.
+        saveJumpStartContext("https://abc.xyz", 123);
+        assertTrue(prefs.contains(KEY_JUMP_START_URL));
+
+        // Preserve invalid URL
+        CachedZeroSuggestionsManager.eraseCachedData();
+        assertFalse(prefs.contains(KEY_JUMP_START_URL));
+        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
     }
 }

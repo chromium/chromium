@@ -2211,12 +2211,16 @@ const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
     {"jump_start_min_away_time_minutes", "1"}};
 const FeatureEntry::FeatureParam kJumpStartOmnibox120Minutes[] = {
     {"jump_start_min_away_time_minutes", "120"}};
+const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited[] = {
+    {"jump_start_cover_recently_visited_page", "true"}};
 
 const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
     {"(after 1min)", kJumpStartOmnibox1Minute,
      std::size(kJumpStartOmnibox1Minute)},
     {"(after 120min)", kJumpStartOmnibox120Minutes,
      std::size(kJumpStartOmnibox120Minutes)},
+    {"(recent page)", kJumpStartOmniboxRecentlyVisited,
+     std::size(kJumpStartOmniboxRecentlyVisited)},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)

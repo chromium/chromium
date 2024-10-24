@@ -128,6 +128,11 @@ public class OmniboxFeatures {
     public static final IntCachedFieldTrialParameter sJumpStartOmniboxMaxAwayTimeMinutes =
             newIntParam(sJumpStartOmnibox, "jump_start_max_away_time_minutes", 8 * 60);
 
+    // This parameter permits JSO to include additional page classifications when caching/serving
+    // suggestions on SearchActivity.
+    public static final BooleanCachedFieldTrialParameter sJumpStartOmniboxCoverRecentlyVisitedPage =
+            newBooleanParam(sJumpStartOmnibox, "jump_start_cover_recently_visited_page", false);
+
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
     private static Boolean sShouldRetainOmniboxOnFocusForTesting;
 

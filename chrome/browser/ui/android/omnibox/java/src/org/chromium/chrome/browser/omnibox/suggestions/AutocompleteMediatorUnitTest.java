@@ -1382,8 +1382,7 @@ public class AutocompleteMediatorUnitTest {
         Set<Integer> eligibleClasses =
                 Set.of(
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
 
         doReturn(mAutocompleteResult)
                 .when(ShadowCachedSuggestionsManager.mock)
@@ -1447,8 +1446,7 @@ public class AutocompleteMediatorUnitTest {
         Set<Integer> eligibleClasses =
                 Set.of(
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
 
         mMediator.onOmniboxSessionStateChange(true);
         doReturn(mAutocompleteResult)

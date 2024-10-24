@@ -46,14 +46,21 @@ public class AutocompleteInput {
         if (!isInZeroPrefixContext()) return false;
 
         int pageClass = getPageClassification().getAsInt();
-        if (pageClass != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
-                && pageClass != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE
-                && pageClass
-                        != PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE) {
-            return false;
-        }
+        switch (pageClass) {
+            case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
+            case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
+                return true;
 
-        return true;
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
+                return OmniboxFeatures.isJumpStartOmniboxEnabled();
+
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
+            case PageClassification.OTHER_VALUE:
+                return OmniboxFeatures.sJumpStartOmniboxCoverRecentlyVisitedPage.getValue();
+
+            default:
+                return false;
+        }
     }
 
     public void reset() {
