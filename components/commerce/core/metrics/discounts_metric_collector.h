@@ -39,6 +39,10 @@ class DiscountsMetricCollector {
       bool is_auto_shown,
       ukm::SourceId ukm_source_id,
       const std::vector<DiscountInfo>& discounts);
+
+  static void RecordDiscountAutoPopupEligibleButSuppressed(
+      ukm::SourceId ukm_source_id,
+      bool is_suppressed);
 };
 }  // namespace commerce::metrics
 

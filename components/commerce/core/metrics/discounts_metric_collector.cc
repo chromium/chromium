@@ -10,6 +10,8 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace commerce::metrics {
 
@@ -90,6 +92,14 @@ void DiscountsMetricCollector::RecordDiscountBubbleShown(
   } else {
     RecordShoppingActionUKM(ukm_source_id, ShoppingAction::kDiscountOpened);
   }
+}
+
+void DiscountsMetricCollector::RecordDiscountAutoPopupEligibleButSuppressed(
+    ukm::SourceId ukm_source_id,
+    bool is_suppressed) {
+  auto ukm_builder = ukm::builders::Shopping_Discounts(ukm_source_id);
+  ukm_builder.SetAutoPopupEligibleButSuppressed(is_suppressed);
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace commerce::metrics

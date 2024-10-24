@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -40,6 +41,21 @@ DiscountsIconView::~DiscountsIconView() = default;
 
 views::BubbleDialogDelegate* DiscountsIconView::GetBubble() const {
   return bubble_coordinator_.GetBubble();
+}
+
+void DiscountsIconView::SetIsLabelExpanded(bool is_expanded) {
+  is_label_expanded_ = is_expanded;
+  OnPropertyChanged(&is_label_expanded_, views::kPropertyEffectsNone);
+}
+
+bool DiscountsIconView::GetIsLabelExpanded() const {
+  return is_label_expanded_;
+}
+
+base::CallbackListSubscription
+DiscountsIconView::AddIsLabelExpandedChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&is_label_expanded_, std::move(callback));
 }
 
 void DiscountsIconView::OnExecuting(
@@ -121,8 +137,17 @@ void DiscountsIconView::AnimationProgressed(const gfx::Animation* animation) {
         FROM_HERE, kLabelPersistDuration,
         base::BindRepeating(&DiscountsIconView::UnpauseAnimation,
                             base::Unretained(this)));
+    SetIsLabelExpanded(true);
     MaybeShowBubble(false);
   }
+}
+
+void DiscountsIconView::UnpauseAnimation() {
+  IconLabelBubbleView::UnpauseAnimation();
+  // The label is collapsed during UnpauseAnimation, so sets the label is
+  // expanded to false here. See the comment in AnimationProgressed for more
+  // details.
+  SetIsLabelExpanded(false);
 }
 
 commerce::CommerceUiTabHelper* DiscountsIconView::GetTabHelper() {
@@ -153,6 +178,22 @@ void DiscountsIconView::MaybeShowBubble(bool from_user) {
       discount_infos[0].id, discount_infos[0].is_merchant_wide);
   if (!from_user && !should_auto_show) {
     return;
+  }
+
+  if (!from_user && should_auto_show) {
+    // If commerce::kDiscountDialogAutoPopupCounterfactual is enabled, we
+    // purposely not show the bubble.
+    bool should_suppress = base::FeatureList::IsEnabled(
+        commerce::kDiscountDialogAutoPopupCounterfactual);
+
+    commerce::metrics::DiscountsMetricCollector::
+        RecordDiscountAutoPopupEligibleButSuppressed(
+            GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+            should_suppress);
+
+    if (should_suppress) {
+      return;
+    }
   }
 
   if (animate_out_timer_.IsRunning()) {
