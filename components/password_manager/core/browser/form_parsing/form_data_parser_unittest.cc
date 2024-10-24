@@ -3286,13 +3286,13 @@ TEST_F(FormParserTest, SingleFieldAcceptsWebAuthnCredentials) {
   });
 }
 
-// Tests that if a field is marked as autofill="username webauthn" then the
+// Tests that if a field is marked as autocomplete="username webauthn" then the
 // `accepts_webauthn_credentials` flag is set.
 TEST_F(FormParserTest, AcceptsUsernameWebAuthnCredentials) {
   CheckTestData({
       {
           .description_for_logging =
-              "Field tagged with autofill=\"username webauthn\"",
+              "Field tagged with autocomplete=\"username webauthn\"",
           .fields =
               {
                   {.role = ElementRole::USERNAME,
@@ -3304,6 +3304,32 @@ TEST_F(FormParserTest, AcceptsUsernameWebAuthnCredentials) {
                    .value = u"luma",
                    .name = u"password",
                    .form_control_type = FormControlType::kInputPassword},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
+}
+
+// Tests that no field is classified as new password for filling scenario if a
+// field is marked as autocomplete="username webauthn".
+TEST_F(FormParserTest, NoNewPasswordOnWebauthnForm) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Field tagged with autocomplete=\"webauthn\"",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .autocomplete_attribute = "username webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = FormControlType::kInputText},
+                  {.role_filling = ElementRole::CURRENT_PASSWORD,
+                   .role_saving = ElementRole::NEW_PASSWORD,
+                   .value = u"luma",
+                   .name = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
               },
           .accepts_webauthn_credentials = true,
       },

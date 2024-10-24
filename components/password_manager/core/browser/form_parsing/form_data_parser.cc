@@ -1252,6 +1252,26 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     significant_fields.is_single_username = true;
   }
 
+  if (mode == Mode::kFilling) {
+    for (const auto& field : processed_fields) {
+      if (field.accepts_webauthn_credentials) {
+        significant_fields.accepts_webauthn_credentials = true;
+        break;
+      }
+    }
+  }
+
+  // No automatic password generation suggestion on forms with autocomplete
+  // attribute set to "webauthn". Decision from crbug.com/373648911.
+  if (significant_fields.accepts_webauthn_credentials) {
+    significant_fields.password =
+        (significant_fields.new_password && !significant_fields.password)
+            ? significant_fields.new_password
+            : significant_fields.password;
+    significant_fields.new_password = nullptr;
+    significant_fields.confirmation_password = nullptr;
+  }
+
   // Pass the "reliability" information to mark the new-password fields as
   // eligible for automatic password generation. This only makes sense when
   // forms are analysed for filling, because no passwords are generated when the
@@ -1262,14 +1282,6 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
                                       *significant_fields.new_password) &&
                                   new_password_found_before_heuristic;
 
-  if (mode == Mode::kFilling) {
-    for (const auto& field : processed_fields) {
-      if (field.accepts_webauthn_credentials) {
-        significant_fields.accepts_webauthn_credentials = true;
-        break;
-      }
-    }
-  }
 
   base::UmaHistogramEnumeration("PasswordManager.UsernameDetectionMethod",
                                 method);
