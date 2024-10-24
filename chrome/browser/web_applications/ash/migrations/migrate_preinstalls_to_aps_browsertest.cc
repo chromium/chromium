@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_TurnOn) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
               testing::UnorderedElementsAre(
-                  ash::kContainerAppId, ash::kGmailAppId, ash::kGoogleDocsAppId,
+                  ash::kGeminiAppId, ash::kGmailAppId, ash::kGoogleDocsAppId,
                   ash::kGoogleDriveAppId, ash::kGoogleSheetsAppId,
                   ash::kGoogleSlidesAppId, ash::kYoutubeAppId,
                   ash::kGoogleCalendarAppId));
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, TurnOn) {
   EXPECT_THAT(
       GetAppIdsWithSources(
           WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
-      testing::ElementsAre(ash::kContainerAppId, ash::kGoogleCalendarAppId));
+      testing::ElementsAre(ash::kGeminiAppId, ash::kGoogleCalendarAppId));
   ValidateHistograms(/*install=*/6, /*source_removed=*/2, /*app_removed=*/0);
 }
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, Rollback) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
               testing::UnorderedElementsAre(
-                  ash::kContainerAppId, ash::kGmailAppId, ash::kGoogleDocsAppId,
+                  ash::kGeminiAppId, ash::kGmailAppId, ash::kGoogleDocsAppId,
                   ash::kGoogleDriveAppId, ash::kGoogleSheetsAppId,
                   ash::kGoogleSlidesAppId, ash::kYoutubeAppId));
   EXPECT_THAT(GetAppIdsWithSources(

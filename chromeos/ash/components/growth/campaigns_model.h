@@ -50,7 +50,7 @@ enum class BuiltInVectorIcon { kRedeem = 0, kMaxValue = kRedeem };
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
 enum class BuiltInImage {
-  kContainerApp = 0,
+  kGeminiApp = 0,
   kG1 = 1,
   kSparkRebuy = 2,
   kSpark1PApp = 3,

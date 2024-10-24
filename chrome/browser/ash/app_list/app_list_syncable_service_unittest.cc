@@ -3553,8 +3553,8 @@ TEST_F(AppListSyncableServiceTest, PageBreaksAfterSortWithTwoFullPagesInSync) {
                   "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9"}}));
 }
 
-TEST_F(AppListSyncableServiceTest, DefaultPositionOfContainerApp) {
-  // Use youtube as a stand-in for container app - a default app that takes
+TEST_F(AppListSyncableServiceTest, DefaultPositionOfGeminiApp) {
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
@@ -3587,8 +3587,8 @@ TEST_F(AppListSyncableServiceTest, DefaultPositionOfContainerApp) {
 }
 
 TEST_F(AppListSyncableServiceTest,
-       DefaultPositionOfContainerAppWithDelayedInitialSync) {
-  // Use youtube as a stand-in for container app - a default app that takes
+       DefaultPositionOfGeminiAppWithDelayedInitialSync) {
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
@@ -3630,8 +3630,7 @@ TEST_F(AppListSyncableServiceTest,
             youtube_item->CalculateDefaultPositionIfApplicable());
 }
 
-TEST_F(AppListSyncableServiceTest,
-       PositionOfContainerAppWithNonEmptyLocalState) {
+TEST_F(AppListSyncableServiceTest, PositionOfGeminiAppWithNonEmptyLocalState) {
   // Make sure the local app list state is non-empty, and restart app list
   // syncable service.
   scoped_refptr<extensions::Extension> webstore =
@@ -3641,7 +3640,7 @@ TEST_F(AppListSyncableServiceTest,
 
   RestartSyncableService();
 
-  // Use youtube as a stand-in for container app - a default app that takes
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
@@ -3684,8 +3683,8 @@ TEST_F(AppListSyncableServiceTest,
             youtube_item->CalculateDefaultPositionIfApplicable());
 }
 
-TEST_F(AppListSyncableServiceTest, PositionOfContainerAppWithNonEmptySyncData) {
-  // Use youtube as a stand-in for container app - a default app that takes
+TEST_F(AppListSyncableServiceTest, PositionOfGeminiAppWithNonEmptySyncData) {
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
@@ -3721,8 +3720,8 @@ TEST_F(AppListSyncableServiceTest, PositionOfContainerAppWithNonEmptySyncData) {
             youtube_item->CalculateDefaultPositionIfApplicable());
 }
 
-TEST_F(AppListSyncableServiceTest, RespectContainerAppPositionInSync) {
-  // Use youtube as a stand-in for container app - a default app that takes
+TEST_F(AppListSyncableServiceTest, RespectGeminiAppPositionInSync) {
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
@@ -3771,8 +3770,8 @@ TEST_F(AppListSyncableServiceTest, RespectContainerAppPositionInSync) {
 }
 
 TEST_F(AppListSyncableServiceTest,
-       RespectContainerAppPositionInSyncWithDelayedSync) {
-  // Use youtube as a stand-in for container app - a default app that takes
+       RespectGeminiAppPositionInSyncWithDelayedSync) {
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
@@ -3811,8 +3810,8 @@ TEST_F(AppListSyncableServiceTest,
 }
 
 TEST_F(AppListSyncableServiceTest,
-       PositionOfContainerAppUpdatedAferNonEmptySyncData) {
-  // Use youtube as a stand-in for container app - a default app that takes
+       PositionOfGeminiAppUpdatedAferNonEmptySyncData) {
+  // Use youtube as a stand-in for the Gemini app - a default app that takes
   // default app position for new users only.
   scoped_refptr<extensions::Extension> youtube =
       MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,

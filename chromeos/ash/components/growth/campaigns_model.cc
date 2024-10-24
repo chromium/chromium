@@ -209,8 +209,8 @@ std::optional<int> GetBuiltInImageResourceId(
   }
 
   switch (image_model_type.value()) {
-    case BuiltInImage::kContainerApp:
-      return IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG;
+    case BuiltInImage::kGeminiApp:
+      return IDR_GROWTH_FRAMEWORK_GEMINI_APP_PNG;
     case BuiltInImage::kG1:
       return IDR_GROWTH_FRAMEWORK_G1_PNG;
     case BuiltInImage::kSparkRebuy:

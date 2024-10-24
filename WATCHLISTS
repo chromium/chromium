@@ -908,9 +908,6 @@
     'compute_pressure': {
       'filepath': 'compute_pressure',
     },
-    'container_app': {
-      'filepath': 'chrome/browser/ui/ash/container_app',
-    },
     'content_bluetooth': {
       'filepath': 'content/.*bluetooth'
     },
@@ -1218,6 +1215,11 @@
       'filepath': 'chrome/browser/gcm/|'\
                   'components/gcm_driver/|'\
                   'google_apis/gcm/',
+    },
+    'gemini_app': {
+      'filepath': 'chrome/browser/chromeos/gemini_app/|'\
+                  'chrome/browser/ui/ash/gemini_app/|'\
+                  'chrome/browser/web_applications/preinstalled_web_apps/gemini',
     },
     'generic_sensor': {
       'filepath': 'content/browser/generic_sensor/|'\
@@ -2814,8 +2816,6 @@
                          'arnaud.mandy@intel.com',
                          'wei4.wang@intel.com',
                          'kenneth.r.christiansen@intel.com'],
-    'container_app': ['dmblack+watch@google.com',
-                      'xiaohuic+watch@chromium.org'],
     'content_bluetooth': ['mattreynolds+watch@chromium.org'],
     'content_index': ['rayankans+watch@chromium.org'],
     'content_loader': ['loading-reviews@chromium.org'],
@@ -2933,6 +2933,8 @@
     'fuzzing': ['fuzzing+watch@chromium.org'],
     'gamepad': ['mattreynolds+watch@chromium.org'],
     'gcm': ['peter@chromium.org'],
+    'gemini_app': ['dmblack+watch@google.com',
+                   'xiaohuic+watch@chromium.org'],
     'generic_sensor': ['mattreynolds+watch@chromium.org',
                        'raphael.kubo.da.costa@intel.com',
                        'rijubrata.bhaumik@intel.com',
