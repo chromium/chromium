@@ -204,11 +204,9 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   }
   if (switches.HasSwitch("user-data-dir")) {
     if (capabilities.browser_name == kHeadlessShellCapabilityName ||
-        switches.HasSwitch("headless") || capabilities.web_socket_url) {
-      // The old headless mode fails to start without a starting page provided
-      // See: https://crbug.com/40256248
-      // TODO(https://crbug.com/42323387): Remove this workaround
-      // after the migration to the New Headless
+        capabilities.web_socket_url) {
+      // Chrome-headless-shell fails to start without a starting page provided
+      // See: https://crbug.com/40096990
       // Also the first page has to be empty in BiDi mode. Neither the user
       // supplied url nor the url specified in the profile must affect this.
       // See: crbug.com/366886096.
