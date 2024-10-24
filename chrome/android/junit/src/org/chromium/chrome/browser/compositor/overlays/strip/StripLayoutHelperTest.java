@@ -1477,7 +1477,7 @@ public class StripLayoutHelperTest {
         // Assert: StripStartMargin is about 1/4 tab width to create space for dragging first tab
         // out of group on strip.
         float expectedMargin =
-                (mStripLayoutHelper.getCachedTabWidthForTesting() / 2)
+                ((mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH) / 2)
                         * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "StripStartMargin is incorrect",
@@ -1515,7 +1515,7 @@ public class StripLayoutHelperTest {
         // Assert: Last tab's trailingMargin should be about 1/4 tab width to create space for
         // dragging last tab out of group on strip.
         float expectedMargin =
-                (mStripLayoutHelper.getCachedTabWidthForTesting() / 2)
+                ((mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH) / 2)
                         * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "Strip end margin is incorrect", expectedMargin, tabs[4].getTrailingMargin(), 0.1f);
@@ -2599,7 +2599,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateStripForExternalTabDrop(150.f);
 
         float expectedEndWidth =
-                expectedStartWidth + mStripLayoutHelper.getCachedTabWidthForTesting() / 2;
+                expectedStartWidth
+                        + (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH)
+                                / 2;
         assertEquals(
                 "Unexpected bottom indicator width after tab hover.",
                 expectedEndWidth,
@@ -2674,10 +2676,9 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[1]);
 
         // Start reorder mode on first tab. Drag between tabs in group.
-        // 38 = ((80(halfTabWidth) - 28(tabOverlapWidth)) * 0.53(ReorderOverlapSwitchPercentage)) *
-        // 0.53.
+        // 35 > ((tabWidth(160) - tabOverlapWidth(28)) / 2) * ReorderOverlapSwitchPercentage(0.53)
         mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
-        float dragDistance = -38f - groupTitle.getWidth();
+        float dragDistance = -35f - groupTitle.getWidth();
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
@@ -2928,8 +2929,7 @@ public class StripLayoutHelperTest {
             mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
         } else {
             float dragDistance =
-                    (tabs[0].getWidth() - TAB_OVERLAP_WIDTH)
-                            * REORDER_OVERLAP_SWITCH_PERCENTAGE
+                    ((tabs[0].getWidth() - TAB_OVERLAP_WIDTH) / 2)
                             * REORDER_OVERLAP_SWITCH_PERCENTAGE;
             startDragTabOutOfTabGroup(tabIndexToDrag, dragDistance + 1);
         }

@@ -4,20 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.animation.Animator;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-
-import java.util.List;
 
 public class StripLayoutUtils {
     // The bottom indicator should align with the contents of the last tab in group. This value is
@@ -30,7 +23,9 @@ public class StripLayoutUtils {
     static final int ANIM_TAB_SLIDE_OUT_MS = 250;
     static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
 
-    // Tab group methods.
+    // ============================================================================================
+    // Tab group helpers
+    // ============================================================================================
 
     /**
      * @param modelFilter The {@link TabGroupModelFilter} that holds the given tabs.
@@ -88,49 +83,6 @@ public class StripLayoutUtils {
     }
 
     /**
-     * Set the new bottom indicator width after a tab has been merged to or moved out of a tab
-     * group. Animate iff a list of animators is provided.
-     *
-     * @param animationHandler The {@link CompositorAnimationHandler}.
-     * @param modelFilter The {@link TabGroupModelFilter}.
-     * @param groupTitle The {@link StripLayoutGroupTitle} of the interacting group.
-     * @param effectiveTabWidth The width of a tab, account for overlap.
-     * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
-     * @param throughGroupTitle True if the tab is passing the {@link StripLayoutGroupTitle}.
-     * @param animators The list of animators to add to. If {@code null}, then immediately set the
-     *     new width instead of animating to it.
-     */
-    static void updateBottomIndicatorWidthForTabReorder(
-            CompositorAnimationHandler animationHandler,
-            TabGroupModelFilter modelFilter,
-            StripLayoutGroupTitle groupTitle,
-            float effectiveTabWidth,
-            boolean isMovingOutOfGroup,
-            boolean throughGroupTitle,
-            List<Animator> animators) {
-        // TODO(crbug.com/372546700): Move to ReorderDelegate.
-        float endWidth =
-                calculateBottomIndicatorWidth(
-                        groupTitle,
-                        getNumOfTabsInGroup(modelFilter, groupTitle),
-                        effectiveTabWidth);
-        float startWidth = endWidth + MathUtils.flipSignIf(effectiveTabWidth, !isMovingOutOfGroup);
-
-        if (animators != null) {
-            animators.add(
-                    CompositorAnimator.ofFloatProperty(
-                            animationHandler,
-                            groupTitle,
-                            StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
-                            startWidth,
-                            endWidth,
-                            throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
-        } else {
-            groupTitle.setBottomIndicatorWidth(endWidth);
-        }
-    }
-
-    /**
      * @param groupTitle The tab group title indicator {@link StripLayoutGroupTitle}.
      * @param numTabsInGroup Number of tabs in the tab group.
      * @param effectiveTabWidth The width of a tab, accounting for overlap.
@@ -146,7 +98,9 @@ public class StripLayoutUtils {
         return groupTitle.getWidth() + totalTabWidth;
     }
 
-    // StripLayoutView/Tab array util methods.
+    // ============================================================================================
+    // StripLayoutView/Tab array util methods
+    // ============================================================================================
 
     /**
      * @param stripViews The list of all of the tab strip's views.
@@ -195,7 +149,9 @@ public class StripLayoutUtils {
         return null;
     }
 
-    // Array util methods.
+    // ============================================================================================
+    // Array helpers
+    // ============================================================================================
 
     /**
      * Moves an element in the given array.

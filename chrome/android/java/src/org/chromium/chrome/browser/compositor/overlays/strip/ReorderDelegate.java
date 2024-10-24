@@ -12,6 +12,7 @@ import android.animation.Animator;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -38,7 +39,12 @@ public class ReorderDelegate {
 
     // Reorder State
     private boolean mInReorderMode;
+    private boolean mReorderingForTabDrop;
     private StripLayoutTab mInteractingTab;
+
+    // ============================================================================================
+    // Getters and setters
+    // ============================================================================================
 
     boolean getInReorderMode() {
         return mInReorderMode;
@@ -48,6 +54,14 @@ public class ReorderDelegate {
         mInReorderMode = inReorderMode;
     }
 
+    boolean getReorderingForTabDrop() {
+        return mReorderingForTabDrop;
+    }
+
+    void setReorderingForTabDrop(boolean reorderingForTabDrop) {
+        mReorderingForTabDrop = reorderingForTabDrop;
+    }
+
     StripLayoutTab getInteractingTab() {
         return mInteractingTab;
     }
@@ -55,6 +69,10 @@ public class ReorderDelegate {
     void setInteractingTab(StripLayoutTab interactingTab) {
         mInteractingTab = interactingTab;
     }
+
+    // ============================================================================================
+    // Initialization
+    // ============================================================================================
 
     /**
      * Passes the dependencies needed in this delegate. Passed here as they aren't ready on
@@ -70,6 +88,10 @@ public class ReorderDelegate {
         mModel = mTabGroupModelFilter.getTabModel();
         mInitialized = true;
     }
+
+    // ============================================================================================
+    // Margin helpers
+    // ============================================================================================
 
     /**
      * Calculates the start and end margins needed to allow for reordering tabs into/out of groups
@@ -163,6 +185,10 @@ public class ReorderDelegate {
         return true;
     }
 
+    // ============================================================================================
+    // Tab reorder helpers
+    // ============================================================================================
+
     /**
      * Wrapper for {@link TabGroupModelFilter#moveTabOutOfGroupInDirection} that also records the
      * tab-strip specific User Action.
@@ -171,6 +197,30 @@ public class ReorderDelegate {
         mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
         RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
     }
+
+    /**
+     * @param halfTabWidth Half of the effective width of a tab.
+     * @param groupTitle The group title for the desired group. Must not be null.
+     * @param towardEnd True if dragging towards the end of the strip.
+     * @return The threshold to drag out of a group.
+     */
+    float getDragOutThreshold(
+            float halfTabWidth, StripLayoutGroupTitle groupTitle, boolean towardEnd) {
+        float dragOutThreshold = halfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        return dragOutThreshold + (towardEnd ? 0 : groupTitle.getWidth());
+    }
+
+    /**
+     * @param halfTabWidth Half of the effective width of a tab.
+     * @return The threshold to drag into a group.
+     */
+    float getDragInThreshold(float halfTabWidth) {
+        return halfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+    }
+
+    // ============================================================================================
+    // Animation helpers
+    // ============================================================================================
 
     /**
      * Animates a group indicator after a tab has been dragged out of or into its group and the
@@ -209,7 +259,7 @@ public class ReorderDelegate {
         }
 
         // Update bottom indicator width.
-        StripLayoutUtils.updateBottomIndicatorWidthForTabReorder(
+        updateBottomIndicatorWidthForTabReorder(
                 animationHost.getAnimationHandler(),
                 mTabGroupModelFilter,
                 groupTitle,
@@ -220,6 +270,52 @@ public class ReorderDelegate {
 
         animationHost.startAnimations(animators, /* listener= */ null);
     }
+
+    /**
+     * Set the new bottom indicator width after a tab has been merged to or moved out of a tab
+     * group. Animate iff a list of animators is provided.
+     *
+     * @param animationHandler The {@link CompositorAnimationHandler}.
+     * @param modelFilter The {@link TabGroupModelFilter}.
+     * @param groupTitle The {@link StripLayoutGroupTitle} of the interacting group.
+     * @param effectiveTabWidth The width of a tab, account for overlap.
+     * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
+     * @param throughGroupTitle True if the tab is passing the {@link StripLayoutGroupTitle}.
+     * @param animators The list of animators to add to. If {@code null}, then immediately set the
+     *     new width instead of animating to it.
+     */
+    void updateBottomIndicatorWidthForTabReorder(
+            CompositorAnimationHandler animationHandler,
+            TabGroupModelFilter modelFilter,
+            StripLayoutGroupTitle groupTitle,
+            float effectiveTabWidth,
+            boolean isMovingOutOfGroup,
+            boolean throughGroupTitle,
+            List<Animator> animators) {
+        float endWidth =
+                StripLayoutUtils.calculateBottomIndicatorWidth(
+                        groupTitle,
+                        StripLayoutUtils.getNumOfTabsInGroup(modelFilter, groupTitle),
+                        effectiveTabWidth);
+        float startWidth = endWidth + MathUtils.flipSignIf(effectiveTabWidth, !isMovingOutOfGroup);
+
+        if (animators != null) {
+            animators.add(
+                    CompositorAnimator.ofFloatProperty(
+                            animationHandler,
+                            groupTitle,
+                            StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                            startWidth,
+                            endWidth,
+                            throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
+        } else {
+            groupTitle.setBottomIndicatorWidth(endWidth);
+        }
+    }
+
+    // ============================================================================================
+    // Test support
+    // ============================================================================================
 
     /** Disables animations for testing purposes. */
     void disableAnimationsForTesting() {
