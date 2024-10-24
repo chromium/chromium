@@ -49,6 +49,8 @@ import("//build/config/win/visual_studio_version.gni")
 #   defines (optional)
 #       Build time defines to be passed to midl.exe as /D parameter.
 #
+#   testonly (optional)
+#
 #   visibility (optional)
 
 template("midl") {
@@ -185,11 +187,19 @@ template("midl") {
       }
     }
 
-    forward_variables_from(invoker, [ "deps" ])
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "testonly",
+                           ])
   }
 
   source_set(target_name) {
-    forward_variables_from(invoker, [ "visibility" ])
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
 
     # We only compile the IID files from the IDL tool rather than all outputs.
     sources = process_file_template(invoker.sources,
