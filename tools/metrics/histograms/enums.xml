@@ -32568,21 +32568,21 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Privacy Settings"/>
   <int value="2" label="Trusted Surface"/>
   <int value="3" label="Transactions"/>
-  <int value="4" label="Privacy Sandbox 3 Consent Accept"/>
-  <int value="5" label="Privacy Sandbox 3 Consent Decline"/>
-  <int value="6" label="Privacy Sandbox 3 Notice Dismiss"/>
-  <int value="7" label="Privacy Sandbox 3 Notice Ok"/>
-  <int value="8" label="Privacy Sandbox 3 Notice Settings"/>
-  <int value="9" label="Privacy Sandbox 3 Learn More"/>
+  <int value="4" label="(Obsolete) Privacy Sandbox 3 Consent Accept"/>
+  <int value="5" label="(Obsolete) Privacy Sandbox 3 Consent Decline"/>
+  <int value="6" label="(Obsolete) Privacy Sandbox 3 Notice Dismiss"/>
+  <int value="7" label="(Obsolete) Privacy Sandbox 3 Notice Ok"/>
+  <int value="8" label="(Obsolete) Privacy Sandbox 3 Notice Settings"/>
+  <int value="9" label="(Obsolete) Privacy Sandbox 3 Learn More"/>
   <int value="10" label="Safety Check"/>
   <int value="11" label="Password Check"/>
   <int value="12" label="Browsing Data"/>
   <int value="13" label="Privacy Guide"/>
   <int value="14" label="Control Group"/>
-  <int value="15" label="Privacy Sandbox 4 Consent Accept"/>
-  <int value="16" label="Privacy Sandbox 4 Consent Decline"/>
-  <int value="17" label="Privacy Sandbox 4 Notice Ok"/>
-  <int value="18" label="Privacy Sandbox 4 Notice Settings"/>
+  <int value="15" label="(Obsolete) Privacy Sandbox 4 Consent Accept"/>
+  <int value="16" label="(Obsolete) Privacy Sandbox 4 Consent Decline"/>
+  <int value="17" label="(Obsolete) Privacy Sandbox 4 Notice Ok"/>
+  <int value="18" label="(Obsolete) Privacy Sandbox 4 Notice Settings"/>
   <int value="19" label="Safe Browsing Interstitial"/>
   <int value="20" label="Download Warning UI"/>
   <int value="21" label="Password Protection UI"/>

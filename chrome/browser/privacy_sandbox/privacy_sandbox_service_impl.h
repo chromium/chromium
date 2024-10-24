@@ -29,9 +29,6 @@
 
 class Browser;
 class PrefService;
-#if !BUILDFLAG(IS_ANDROID)
-class TrustSafetySentimentService;
-#endif
 
 namespace content {
 class BrowsingDataRemover;
@@ -60,9 +57,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       profile_metrics::BrowserProfileType profile_type,
       content::BrowsingDataRemover* browsing_data_remover,
       HostContentSettingsMap* host_content_settings_map,
-#if !BUILDFLAG(IS_ANDROID)
-      TrustSafetySentimentService* sentiment_service,
-#endif
       browsing_topics::BrowsingTopicsService* browsing_topics_service,
       first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
       PrivacySandboxCountries* privacy_sandbox_countries);
@@ -349,9 +343,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-#if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<TrustSafetySentimentService> sentiment_service_;
-#endif
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
@@ -374,11 +365,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_ = {
       {browsing_topics::Topic(3), kFakeTaxonomyVersion},
       {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
-
-  // Informs the TrustSafetySentimentService, if it exists, that a
-  // Privacy Sandbox interaction for an area has occurred The area is
-  // determined by |action|. Only a subset of actions has a corresponding area.
-  void InformSentimentService(PrivacySandboxService::PromptAction action);
 
   // Record user action metrics based on the |action|.
   void RecordPromptActionMetrics(PrivacySandboxService::PromptAction action);

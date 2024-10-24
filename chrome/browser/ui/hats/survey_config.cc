@@ -84,14 +84,6 @@ constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[] =
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[] =
-    "ts-ps4-consent-accept";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[] =
-    "ts-ps4-consent-decline";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk[] =
-    "ts-ps4-notice-ok";
-constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings[] =
-    "ts-ps4-notice-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
     "ts-privacy-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
@@ -118,14 +110,6 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[] =
     "ts-v2-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[] =
     "ts-v2-privacy-guide";
-constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept[] =
-    "ts-v2-ps4-consent-accept";
-constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline[] =
-    "ts-v2-ps4-consent-decline";
-constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk[] =
-    "ts-v2-ps4-notice-ok";
-constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[] =
-    "ts-v2-ps4-notice-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
     "ts-v2-safe-browsing-interstitial";
 constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
@@ -301,28 +285,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerTrustSafetyTransactions,
       features::kTrustSafetySentimentSurveyTransactionsTriggerId.Get(),
       std::vector<std::string>{"Saved password"});
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept,
-      features::kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptTriggerId
-          .Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline,
-      features::
-          kTrustSafetySentimentSurveyPrivacySandbox4ConsentDeclineTriggerId
-              .Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk,
-      features::kTrustSafetySentimentSurveyPrivacySandbox4NoticeOkTriggerId
-          .Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurvey,
-      kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings,
-      features::
-          kTrustSafetySentimentSurveyPrivacySandbox4NoticeSettingsTriggerId
-              .Get());
 
   // Trust & Safety Sentiment surveys - Version 2.
   survey_configs.emplace_back(
@@ -395,29 +357,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2PrivacyGuide,
       features::kTrustSafetySentimentSurveyV2PrivacyGuideTriggerId.Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurveyV2,
-      kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept,
-      features::
-          kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentAcceptTriggerId
-              .Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurveyV2,
-      kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline,
-      features::
-          kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentDeclineTriggerId
-              .Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurveyV2,
-      kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk,
-      features::kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeOkTriggerId
-          .Get());
-  survey_configs.emplace_back(
-      &features::kTrustSafetySentimentSurveyV2,
-      kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings,
-      features::
-          kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsTriggerId
-              .Get());
   survey_configs.emplace_back(
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial,

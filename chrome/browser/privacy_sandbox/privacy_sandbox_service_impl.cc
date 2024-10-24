@@ -55,7 +55,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -352,9 +351,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     profile_metrics::BrowserProfileType profile_type,
     content::BrowsingDataRemover* browsing_data_remover,
     HostContentSettingsMap* host_content_settings_map,
-#if !BUILDFLAG(IS_ANDROID)
-    TrustSafetySentimentService* sentiment_service,
-#endif
     browsing_topics::BrowsingTopicsService* browsing_topics_service,
     first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
     PrivacySandboxCountries* privacy_sandbox_countries)
@@ -366,9 +362,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       profile_type_(profile_type),
       browsing_data_remover_(browsing_data_remover),
       host_content_settings_map_(host_content_settings_map),
-#if !BUILDFLAG(IS_ANDROID)
-      sentiment_service_(sentiment_service),
-#endif
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
@@ -532,7 +525,6 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
   UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get(),
                       surface_type);
 
-  InformSentimentService(action);
   if (PromptAction::kNoticeAcknowledge == action ||
       PromptAction::kNoticeOpenSettings == action) {
     if (privacy_sandbox::IsConsentRequired()) {
@@ -1439,37 +1431,6 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
   }
 }
 #endif
-
-void PrivacySandboxServiceImpl::InformSentimentService(PromptAction action) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!sentiment_service_) {
-    return;
-  }
-
-  TrustSafetySentimentService::FeatureArea area;
-  switch (action) {
-    case PromptAction::kNoticeOpenSettings:
-      area = TrustSafetySentimentService::FeatureArea::
-          kPrivacySandbox4NoticeSettings;
-      break;
-    case PromptAction::kNoticeAcknowledge:
-      area = TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeOk;
-      break;
-    case PromptAction::kConsentAccepted:
-      area = TrustSafetySentimentService::FeatureArea::
-          kPrivacySandbox4ConsentAccept;
-      break;
-    case PromptAction::kConsentDeclined:
-      area = TrustSafetySentimentService::FeatureArea::
-          kPrivacySandbox4ConsentDecline;
-      break;
-    default:
-      return;
-  }
-
-  sentiment_service_->InteractedWithPrivacySandbox4(area);
-#endif
-}
 
 void PrivacySandboxServiceImpl::RecordPromptActionMetrics(PromptAction action) {
   switch (action) {

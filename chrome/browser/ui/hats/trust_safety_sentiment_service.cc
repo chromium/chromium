@@ -430,11 +430,6 @@ void TrustSafetySentimentService::FinishedPrivacyGuide() {
   TriggerOccurred(FeatureArea::kPrivacyGuide, {});
 }
 
-void TrustSafetySentimentService::InteractedWithPrivacySandbox4(
-    FeatureArea feature_area) {
-  TriggerOccurred(feature_area, {});
-}
-
 void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
     bool did_proceed,
     safe_browsing::SBThreatType threat_type) {
@@ -721,10 +716,6 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
       return isV2 == true;
     // Both Versions
     case (FeatureArea::kTrustedSurface):
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
       return true;
     // None
     case (FeatureArea::kIneligible):
@@ -756,14 +747,6 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2PrivacyGuide;
       case (FeatureArea::kControlGroup):
         return kHatsSurveyTriggerTrustSafetyV2ControlGroup;
-      case (FeatureArea::kPrivacySandbox4ConsentAccept):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept;
-      case (FeatureArea::kPrivacySandbox4ConsentDecline):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline;
-      case (FeatureArea::kPrivacySandbox4NoticeOk):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk;
-      case (FeatureArea::kPrivacySandbox4NoticeSettings):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings;
       case (FeatureArea::kSafeBrowsingInterstitial):
         return kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial;
       case (FeatureArea::kDownloadWarningUI):
@@ -782,14 +765,6 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept;
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline;
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk;
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings;
     default:
       NOTREACHED_IN_MIGRATION();
       return "";
@@ -838,26 +813,6 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2ControlGroupProbability
                    .Get();
-      case (FeatureArea::kPrivacySandbox4ConsentAccept):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentAcceptProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4ConsentDecline):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentDeclineProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4NoticeOk):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeOkProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4NoticeSettings):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsProbability
-                       .Get();
       case (FeatureArea::kSafeBrowsingInterstitial):
         return base::RandDouble() <
                features::
@@ -891,26 +846,6 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
     case (FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4ConsentDeclineProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4NoticeOkProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4NoticeSettingsProbability
-                     .Get();
     default:
       NOTREACHED_IN_MIGRATION();
       return false;

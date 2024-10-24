@@ -22,10 +22,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/storage_partition.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
@@ -80,9 +76,6 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
-#if !BUILDFLAG(IS_ANDROID)
-  DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
-#endif
   DependsOn(
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 
@@ -108,9 +101,6 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
           ? profile->GetBrowsingDataRemover()
           : nullptr,
       HostContentSettingsMapFactory::GetForProfile(profile),
-#if !BUILDFLAG(IS_ANDROID)
-      TrustSafetySentimentServiceFactory::GetForProfile(profile),
-#endif
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile),
       first_party_sets::FirstPartySetsPolicyServiceFactory::
           GetForBrowserContext(context),

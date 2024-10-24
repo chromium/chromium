@@ -126,10 +126,10 @@ class TrustSafetySentimentService
     kBrowsingData = 12,
     kPrivacyGuide = 13,
     kControlGroup = 14,
-    kPrivacySandbox4ConsentAccept = 15,
-    kPrivacySandbox4ConsentDecline = 16,
-    kPrivacySandbox4NoticeOk = 17,
-    kPrivacySandbox4NoticeSettings = 18,
+    // kPrivacySandbox4ConsentAccept = 15, // DEPRECATED.
+    // kPrivacySandbox4ConsentDecline = 16, // DEPRECATED.
+    // kPrivacySandbox4NoticeOk = 17, // DEPRECATED.
+    // kPrivacySandbox4NoticeSettings = 18, // DEPRECATED.
     kSafeBrowsingInterstitial = 19,
     kDownloadWarningUI = 20,
     kPasswordProtectionUI = 21,
@@ -137,10 +137,6 @@ class TrustSafetySentimentService
     kSafetyHubInteracted = 23,
     kMaxValue = kSafetyHubInteracted,
   };
-
-  // Called when the user interacts with Privacy Sandbox 4, `feature_area`
-  // specifies what type of interaction occurred.
-  virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
 
   // Called when the user interacts with a safe browsing blocking page.
   virtual void InteractedWithSafeBrowsingInterstitial(

@@ -46,10 +46,6 @@ extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
 extern const char kHatsSurveyTriggerSettingsSecurity[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
 extern const char kHatsSurveyTriggerTrustSafetyTrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyTransactions[];
@@ -63,12 +59,6 @@ extern const char kHatsSurveyTriggerTrustSafetyV2SafetyHubNotification[];
 extern const char kHatsSurveyTriggerTrustSafetyV2SafetyHubInteraction[];
 extern const char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[];
-extern const char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept[];
-extern const char
-    kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline[];
-extern const char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk[];
-extern const char
-    kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[];
 extern const char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[];
 extern const char kHatsSurveyTriggerWallpaperSearch[];
 #if BUILDFLAG(ENABLE_COMPOSE)
