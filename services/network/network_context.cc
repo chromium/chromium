@@ -2564,14 +2564,14 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::make_unique<ip_protection::IpProtectionCoreImpl>(
             std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
                 std::move(params_->ip_protection_core_host)),
-            params_->enable_ip_protection);
+            mdl_manager, params_->enable_ip_protection);
     ip_protection_control_mojo =
         std::make_unique<ip_protection::IpProtectionControlMojo>(
             std::move(params_->ip_protection_control),
             ip_protection_core_impl.get());
     builder.set_proxy_delegate(
         std::make_unique<ip_protection::IpProtectionProxyDelegate>(
-            mdl_manager, ip_protection_core_impl.get()));
+            ip_protection_core_impl.get()));
     ip_protection_core_ = std::move(ip_protection_core_impl);
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {

@@ -131,6 +131,12 @@ class MockIpProtectionCore : public IpProtectionCore {
   MOCK_METHOD(void, GeoObserved, (const std::string& geo_id), (override));
 
   // Dummy implementations for functions not tested in this file.
+  bool IsMdlPopulated() override { return false; }
+  bool RequestShouldBeProxied(
+      const GURL& request_url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
+    return false;
+  }
   bool IsIpProtectionEnabled() override { return true; }
   bool AreAuthTokensAvailable() override { return false; }
   bool WereTokenCachesEverFilled() override { return false; }

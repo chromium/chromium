@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -21,7 +22,9 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 
@@ -36,10 +39,15 @@ class IpProtectionCoreImpl : public IpProtectionCore,
   // If `config_getter` is unbound, no tokens will be provided.
   explicit IpProtectionCoreImpl(
       std::unique_ptr<IpProtectionConfigGetter> config_getter,
+      MaskedDomainListManager* masked_domain_list_manager,
       bool is_ip_protection_enabled);
   ~IpProtectionCoreImpl() override;
 
   // IpProtectionCore implementation.
+  bool IsMdlPopulated() override;
+  bool RequestShouldBeProxied(
+      const GURL& request_url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
   bool IsIpProtectionEnabled() override;
   bool AreAuthTokensAvailable() override;
   bool WereTokenCachesEverFilled() override;
@@ -76,6 +84,9 @@ class IpProtectionCoreImpl : public IpProtectionCore,
 
   // Source of auth tokens and proxy list, when needed.
   std::unique_ptr<IpProtectionConfigGetter> config_getter_;
+
+  // The MDL manager, owned by the NetworkService.
+  raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 
   // A manager for the list of currently cached proxy hostnames.
   std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager_;

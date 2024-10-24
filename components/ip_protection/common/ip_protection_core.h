@@ -14,6 +14,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "net/base/network_anonymization_key.h"
 
 namespace ip_protection {
 
@@ -23,6 +24,14 @@ class IpProtectionCore {
   virtual ~IpProtectionCore() = default;
 
   virtual bool IsIpProtectionEnabled() = 0;
+
+  // Check whether the masked domain list is populated.
+  virtual bool IsMdlPopulated() = 0;
+
+  // Check whether the given request URL and NAK should be proxied.
+  virtual bool RequestShouldBeProxied(
+      const GURL& request_url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
 
   // Check whether tokens are available in all token caches.
   //

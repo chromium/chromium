@@ -17,7 +17,6 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
-#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -32,14 +31,9 @@
 namespace ip_protection {
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
-    MaskedDomainListManager* masked_domain_list_manager,
     IpProtectionCore* ip_protection_core)
-    : masked_domain_list_manager_(raw_ref<MaskedDomainListManager>::from_ptr(
-          masked_domain_list_manager)),
-      ip_protection_core_(
-          raw_ref<IpProtectionCore>::from_ptr(ip_protection_core)) {
-  CHECK(masked_domain_list_manager_->IsEnabled());
-}
+    : ip_protection_core_(
+          raw_ref<IpProtectionCore>::from_ptr(ip_protection_core)) {}
 
 IpProtectionProxyDelegate::~IpProtectionProxyDelegate() = default;
 
@@ -65,11 +59,11 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   }
 
   // Check eligibility of this request.
-  if (!masked_domain_list_manager_->IsPopulated()) {
+  if (!ip_protection_core_->IsMdlPopulated()) {
     vlog("proxy allow list not populated");
     return ProxyResolutionResult::kMdlNotPopulated;
-  } else if (!masked_domain_list_manager_->Matches(url,
-                                                   network_anonymization_key)) {
+  } else if (!ip_protection_core_->RequestShouldBeProxied(
+                 url, network_anonymization_key)) {
     vlog("proxy allow list did not match");
     return ProxyResolutionResult::kNoMdlMatch;
   } else {

@@ -67,8 +67,10 @@ std::vector<net::ProxyChain> MakeQuicProxyList(
 
 IpProtectionCoreImpl::IpProtectionCoreImpl(
     std::unique_ptr<IpProtectionConfigGetter> config_getter,
+    MaskedDomainListManager* masked_domain_list_manager,
     bool is_ip_protection_enabled)
-    : is_ip_protection_enabled_(is_ip_protection_enabled),
+    : masked_domain_list_manager_(masked_domain_list_manager),
+      is_ip_protection_enabled_(is_ip_protection_enabled),
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       enable_token_caching_by_geo_(
           net::features::kIpPrivacyCacheTokensByGeo.Get()) {
@@ -98,6 +100,17 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
 
 IpProtectionCoreImpl::~IpProtectionCoreImpl() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+}
+
+bool IpProtectionCoreImpl::IsMdlPopulated() {
+  return masked_domain_list_manager_->IsPopulated();
+}
+
+bool IpProtectionCoreImpl::RequestShouldBeProxied(
+    const GURL& request_url,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  return masked_domain_list_manager_->Matches(request_url,
+                                              network_anonymization_key);
 }
 
 bool IpProtectionCoreImpl::IsIpProtectionEnabled() {

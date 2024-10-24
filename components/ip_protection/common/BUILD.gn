@@ -112,6 +112,7 @@ source_set("ip_protection_core_impl") {
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_token_manager",
+    ":masked_domain_list_manager",
     "//base",
     "//net",
   ]
@@ -246,7 +247,6 @@ source_set("ip_protection_proxy_delegate") {
   public_deps = [
     ":ip_protection_core",
     ":ip_protection_telemetry",
-    ":masked_domain_list_manager",
     "//base",
     "//net",
   ]

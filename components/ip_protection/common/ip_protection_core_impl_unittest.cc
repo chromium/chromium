@@ -141,6 +141,7 @@ class IpProtectionCoreImplTest : public testing::Test {
     SetTokenCachingByGeoParam(kEnableTokenCacheByGeo);
     ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
         /*config_getter=*/nullptr,
+        /*masked_domain_list_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true);
   }
 
@@ -356,6 +357,7 @@ TEST_F(IpProtectionCoreImplTest, GetProxyListFromManagerWithQuic) {
 
   ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
       /*config_getter=*/nullptr,
+      /*masked_domain_list_manager=*/nullptr,
       /*is_ip_protection_enabled=*/true);
 
   auto ipp_proxy_config_manager =
@@ -425,6 +427,7 @@ TEST_F(IpProtectionCoreImplTest, RefreshProxyListOnNetworkChange) {
 
   ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
       /*config_getter=*/nullptr,
+      /*masked_domain_list_manager=*/nullptr,
       /*is_ip_protection_enabled=*/true);
 
   auto ipp_proxy_config_manager =
@@ -457,6 +460,7 @@ TEST_F(IpProtectionCoreImplTest,
 
   ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
       /*config_getter=*/nullptr,
+      /*masked_domain_list_manager=*/nullptr,
       /*is_ip_protection_enabled=*/true);
 
   auto ipp_proxy_config_manager =
@@ -557,6 +561,7 @@ TEST_F(IpProtectionCoreImplTest, GeoObservedTokenCachingByGeoDisabledNoImpact) {
   // false.
   ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
       /*config_getter=*/nullptr,
+      /*masked_domain_list_manager=*/nullptr,
       /*is_ip_protection_enabled=*/true);
 
   // Old geo used to set current geo in both the proxy list manager and token
