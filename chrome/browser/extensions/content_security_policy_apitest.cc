@@ -187,4 +187,68 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
   EXPECT_EQ(2u, console_observer.messages().size());
 }
 
+// A simple subclass that also sets up page navigation with the host resolver.
+class ExtensionCspApiTestWithPageNavigation : public ExtensionCspApiTest {
+ public:
+  ExtensionCspApiTestWithPageNavigation() = default;
+  ~ExtensionCspApiTestWithPageNavigation() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionCspApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+};
+
+// Exercises importing resources exposed in web-accessible resources with
+// dynamic URLs in content scripts.
+// Regression test for https://crbug.com/363027634.
+IN_PROC_BROWSER_TEST_F(ExtensionCspApiTestWithPageNavigation,
+                       ContentScriptsCanImportDynamicUrlResources) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "web_accessible_resources": [{
+             "resources": ["accessible_resource.js"],
+             "matches": ["http://example.com/*"],
+             "use_dynamic_url": true
+           }],
+           "content_scripts": [{
+             "matches": ["http://example.com/*"],
+             "js": ["content_script.js"]
+           }]
+         })";
+  // The content script attempts to import() a resource that's exposed in
+  // web-accessible resources using the extension's dynamic URL. This resource
+  // then exposes a `passTest()` function, which will pass the test.
+  static constexpr char kContentScriptJs[] =
+      R"((async () => {
+           try {
+             const url = chrome.runtime.getURL('./accessible_resource.js');
+             const mod = await import(url);
+             mod.passTest();
+           } catch(e) {
+             chrome.test.notifyFail('Failed to import: ' + e.toString());
+           }
+         })();)";
+  static constexpr char kAccessibleResourceJs[] =
+      R"(export function passTest() {
+           chrome.test.notifyPass();
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScriptJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("accessible_resource.js"),
+                     kAccessibleResourceJs);
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(),
+                               {.page_url = url.spec().c_str()}, {}))
+      << message_;
+}
+
 }  // namespace extensions

@@ -40,7 +40,11 @@ std::unique_ptr<const InjectionHost> ExtensionInjectionHost::Create(
 }
 
 const std::string* ExtensionInjectionHost::GetContentSecurityPolicy() const {
-  return CSPInfo::GetIsolatedWorldCSP(*extension_);
+  if (!isolated_world_csp_) {
+    isolated_world_csp_ = CSPInfo::GetIsolatedWorldCSP(*extension_);
+  }
+
+  return &(isolated_world_csp_.value());
 }
 
 const GURL& ExtensionInjectionHost::url() const {
