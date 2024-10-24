@@ -1991,15 +1991,6 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         // Currently the challenge-response authentication can't be combined
         // with the password or PIN based one.
         to_update_auth = LoginAuthUserView::AUTH_CHALLENGE_RESPONSE;
-      } else if (!state->show_password && !state->show_pin) {
-        CHECK(IsTimeInFuture(state->pin_available_at))
-            << "Password or pin factor must be present, if pin is not locked";
-        to_update_auth = LoginAuthUserView::AUTH_RECOVERY;
-        auth_metadata.pin_available_at = state->pin_available_at;
-        // The auth error message might be shown at the moment due to previous
-        // wrong attempts. We will hide it as it shows similar content as the
-        // recover button and the pin delay message.
-        HideAuthErrorMessage();
       } else {
         to_update_auth = LoginAuthUserView::AUTH_NONE;
         if (state->show_password) {
@@ -2016,6 +2007,18 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         auth_metadata.pin_available_at = state->pin_available_at;
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
+        }
+        if (!state->show_password && !state->show_pin) {
+          CHECK(IsTimeInFuture(state->pin_available_at))
+              << "Password or pin factor must be present, if pin is not locked";
+          to_update_auth =
+              screen_type_ == LockScreen::ScreenType::kLogin
+                  ? LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY
+                  : LoginAuthUserView::AUTH_PIN_LOCKED;
+          // The auth error message might be shown at the moment due to previous
+          // wrong attempts. We will hide it as it shows similar content as the
+          // recover button and the pin delay message.
+          HideAuthErrorMessage();
         }
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE) {
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;

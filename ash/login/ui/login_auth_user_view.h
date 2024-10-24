@@ -76,8 +76,11 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
                  // the user to click a button as a final step. Note that if
                  // this bit is set, the password/pin will be hidden even if
                  // AUTH_PASSWORD and/or AUTH_PIN are set.
-    AUTH_RECOVERY = 1 << 9,  // Shows the recovery user button when PIN is
-                             // locked and it is the only auth factor.
+    AUTH_PIN_LOCKED_SHOW_RECOVERY =
+        1 << 9,  //  Shows PIN locked message and recover user button when
+                 //  the PIN is locked and is the only auth factor.
+    AUTH_PIN_LOCKED = 1 << 10,  //  Shows PIN locked message when the PIN is
+                                //  locked and is the only auth factor.
   };
 
   // Extra control parameters to be passed when setting the auth methods.

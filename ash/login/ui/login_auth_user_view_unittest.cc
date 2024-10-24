@@ -323,8 +323,11 @@ TEST_F(LoginAuthUserViewUnittest, ModesWithoutInputFields) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginAuthUserView::AuthMethods methods_without_input[] = {
       LoginAuthUserView::AUTH_CHALLENGE_RESPONSE,
-      LoginAuthUserView::AUTH_DISABLED, LoginAuthUserView::AUTH_NONE,
-      LoginAuthUserView::AUTH_ONLINE_SIGN_IN};
+      LoginAuthUserView::AUTH_DISABLED,
+      LoginAuthUserView::AUTH_NONE,
+      LoginAuthUserView::AUTH_ONLINE_SIGN_IN,
+      LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY,
+      LoginAuthUserView::AUTH_PIN_LOCKED};
 
   for (auto method : methods_without_input) {
     SetAuthMethods(method);

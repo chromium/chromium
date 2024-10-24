@@ -391,7 +391,8 @@ struct LoginAuthUserView::UiState {
     auth_factor_is_hiding_password = view->HasAuthMethod(
         LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
     pin_is_locked = view->ShouldShowPinStatusMessage();
-    show_recover_button = view->HasAuthMethod(LoginAuthUserView::AUTH_RECOVERY);
+    show_recover_button =
+        view->HasAuthMethod(LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY);
 
     non_pin_y_start_in_screen = view->GetBoundsInScreen().y();
     pin_start_in_screen = view->pin_view_->GetBoundsInScreen().origin();
@@ -1332,7 +1333,7 @@ void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
 
 void LoginAuthUserView::OnRecoverButtonPressed() {
   DCHECK(recover_button_);
-  DCHECK(HasAuthMethod(AUTH_RECOVERY));
+  DCHECK(HasAuthMethod(AUTH_PIN_LOCKED_SHOW_RECOVERY));
   on_recover_button_pressed_.Run();
 }
 
@@ -1526,7 +1527,8 @@ bool LoginAuthUserView::ShouldShowPinStatusMessage() const {
   // When `pin_available_at` is present, pin status message should be shown when
   // in `kPasswordOnly` mode or when the recover button is present.
   return input_field_mode_ == InputFieldMode::kPasswordOnly ||
-         HasAuthMethod(AUTH_RECOVERY);
+         HasAuthMethod(AUTH_PIN_LOCKED) ||
+         HasAuthMethod(AUTH_PIN_LOCKED_SHOW_RECOVERY);
 }
 
 gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
