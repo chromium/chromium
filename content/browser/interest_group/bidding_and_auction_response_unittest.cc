@@ -175,8 +175,14 @@ std::string ToString(const BiddingAndAuctionResponse& response) {
          "interest_group_owner: " + response.interest_group_owner.Serialize() +
          ", " +
          "bidding_groups: " + testing::PrintToString(response.bidding_groups) +
-         ", " + "score:" + testing::PrintToString(response.score) + ", " +
-         "bid:" + testing::PrintToString(response.bid) + ", " +
+         ", " + "score: " + testing::PrintToString(response.score) + ", " +
+         "bid: " + testing::PrintToString(response.bid) + ", " +
+         "bid_currency: " + testing::PrintToString(response.bid_currency) +
+         ", " + "top_level_seller: " +
+         testing::PrintToString(response.top_level_seller) + ", " +
+         "ad_metadata: " + testing::PrintToString(response.ad_metadata) + ", " +
+         "buyer_reporting_id: " +
+         testing::PrintToString(response.buyer_reporting_id) + ", " +
          "error:" + testing::PrintToString(response.error) + ", " +
          "buyer_reporting: " +
          (response.buyer_reporting.has_value()
@@ -190,7 +196,23 @@ std::string ToString(const BiddingAndAuctionResponse& response) {
          (response.component_seller_reporting.has_value()
               ? ToString(*response.component_seller_reporting)
               : "nullopt") +
-         ")";
+         ", " + "component_win_pagg_requests: " +
+         testing::PrintToString(response.component_win_pagg_requests) + ", " +
+         "server_filtered_pagg_requests_reserved: " +
+         testing::PrintToString(
+             response.server_filtered_pagg_requests_reserved) +
+         ", " + "server_filtered_pagg_requests_non_reserved: " +
+         testing::PrintToString(
+             response.server_filtered_pagg_requests_non_reserved) +
+         ", " + "component_win_debugging_only_reports: " +
+         testing::PrintToString(response.component_win_debugging_only_reports) +
+         ", " + "server_filtered_debugging_only_reports: " +
+         testing::PrintToString(
+             response.server_filtered_debugging_only_reports) +
+         ", " + "debugging_only_report_origins: " +
+         testing::PrintToString(response.debugging_only_report_origins) + ", " +
+         "triggered_updates: " +
+         testing::PrintToString(response.triggered_updates) + ")";
 }
 
 auction_worklet::mojom::EventTypePtr CreateReservedEventType(
@@ -277,6 +299,13 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
       testing::Field("interest_group_name",
                      &BiddingAndAuctionResponse::interest_group_name,
                      testing::Eq(other.get().interest_group_name)),
+      testing::Field(
+          "interest_group_owner",
+          &BiddingAndAuctionResponse::interest_group_owner,
+          testing::Conditional(other.get().interest_group_owner.opaque(),
+                               testing::Property("opaque", &url::Origin::opaque,
+                                                 testing::Eq(true)),
+                               testing::Eq(other.get().interest_group_owner))),
       testing::Field("bidding_groups",
                      &BiddingAndAuctionResponse::bidding_groups,
                      testing::ElementsAreArray(other.get().bidding_groups)),
@@ -284,6 +313,8 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
                      testing::Eq(other.get().score)),
       testing::Field("bid", &BiddingAndAuctionResponse::bid,
                      testing::Eq(other.get().bid)),
+      // bid_currency handled below
+      // top_level_seller handled below
       testing::Field("ad_metadata", &BiddingAndAuctionResponse::ad_metadata,
                      testing::Eq(other.get().ad_metadata)),
       testing::Field("buyer_reporting_id",
@@ -294,19 +325,42 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
                      testing::Eq(other.get().buyer_and_seller_reporting_id)),
       testing::Field("error", &BiddingAndAuctionResponse::error,
                      testing::Eq(other.get().error)),
-  };
-  if (other.get().interest_group_owner.opaque()) {
-    // Treat opaque as equal
-    matchers.push_back(testing::Field(
-        "interest_group_owner",
-        &BiddingAndAuctionResponse::interest_group_owner,
-        testing::Property("opaque", &url::Origin::opaque, testing::Eq(true))));
+      // buyer_reporting handled below
+      // top_level_seller_reporting handled below
+      // component_seller_reporting handled below
+      // TODO: component_win_pagg_requests not handled
+      // TODO: server_filtered_pagg_requests_reserved not handled
+      // TODO: server_filtered_pagg_requests_non_reserved not handled
+      // TODO: component_win_debugging_only_reports not handled
+      testing::Field(
+          "server_filtered_debugging_only_reports",
+          &BiddingAndAuctionResponse::server_filtered_debugging_only_reports,
+          testing::Eq(other.get().server_filtered_debugging_only_reports)),
+      testing::Field("debugging_only_report_origins",
+                     &BiddingAndAuctionResponse::debugging_only_report_origins,
+                     testing::Eq(other.get().debugging_only_report_origins)),
+      testing::Field("triggered_updates",
+                     &BiddingAndAuctionResponse::triggered_updates,
+                     testing::Eq(other.get().triggered_updates)),
 
-  } else {
+  };
+  if (other.get().bid_currency) {
     matchers.push_back(
-        testing::Field("interest_group_owner",
-                       &BiddingAndAuctionResponse::interest_group_owner,
-                       testing::Eq(other.get().interest_group_owner)));
+        testing::Field("bid_currency", &BiddingAndAuctionResponse::bid_currency,
+                       testing::Optional(*other.get().bid_currency)));
+  } else {
+    matchers.push_back(testing::Field("bid_currency",
+                                      &BiddingAndAuctionResponse::bid_currency,
+                                      testing::Eq(std::nullopt)));
+  }
+  if (other.get().top_level_seller) {
+    matchers.push_back(testing::Field(
+        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
+        testing::Optional(*other.get().top_level_seller)));
+  } else {
+    matchers.push_back(testing::Field(
+        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
+        testing::Eq(std::nullopt)));
   }
   if (other.get().buyer_reporting) {
     matchers.push_back(testing::Field(
@@ -341,15 +395,6 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
         testing::Field("component_seller_reporting",
                        &BiddingAndAuctionResponse::component_seller_reporting,
                        testing::Eq(std::nullopt)));
-  }
-  if (other.get().top_level_seller) {
-    matchers.push_back(testing::Field(
-        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
-        testing::Optional(testing::Eq(other.get().top_level_seller))));
-  } else {
-    matchers.push_back(testing::Field(
-        "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
-        testing::Eq(std::nullopt)));
   }
   return testing::ExplainMatchResult(testing::AllOfArray(matchers),
                                      std::move(arg), result_listener);
@@ -1415,6 +1460,18 @@ class BiddingAndAuctionSampleDebugReportsTest : public testing::Test {
 
 TEST_F(BiddingAndAuctionSampleDebugReportsTest, ForDebuggingOnlyReports) {
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  output.component_win_debugging_only_reports
+      [BiddingAndAuctionResponse::DebugReportKey(false, true)] =
+      GURL("https://component-win.win-debug-report.com");
+  output.component_win_debugging_only_reports
+      [BiddingAndAuctionResponse::DebugReportKey(false, false)] =
+      GURL("https://component-win.loss-debug-report.com");
+  output
+      .server_filtered_debugging_only_reports[url::Origin::Create(
+          GURL(kOwnerOrigin))]
+      .emplace_back(kDebugReportingURL);
+  output.debugging_only_report_origins.emplace(
+      url::Origin::Create(GURL(kOwnerOrigin)));
   base::Value::List reports;
   reports.Append(base::Value::Dict()
                      .Set("isWinReport", true)
@@ -1438,82 +1495,94 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest, ForDebuggingOnlyReports) {
                                           /*group_pagg_coordinators=*/{});
   ASSERT_TRUE(result);
   EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-
-  EXPECT_EQ(2u, result->component_win_debugging_only_reports.size());
-  EXPECT_THAT(result->component_win_debugging_only_reports
-                  [BiddingAndAuctionResponse::DebugReportKey(false, true)],
-              GURL("https://component-win.win-debug-report.com"));
-  EXPECT_THAT(result->component_win_debugging_only_reports
-                  [BiddingAndAuctionResponse::DebugReportKey(false, false)],
-              GURL("https://component-win.loss-debug-report.com"));
-
-  EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
-  EXPECT_THAT(
-      result->server_filtered_debugging_only_reports[url::Origin::Create(
-          GURL(kOwnerOrigin))],
-      testing::UnorderedElementsAre(kDebugReportingURL));
 }
 
 TEST_F(BiddingAndAuctionSampleDebugReportsTest,
        ForDebuggingOnlyReportsIgnoreErrors) {
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
-  static const base::Value kTestCases[] = {
+  static const struct {
+    base::Value input;
+    BiddingAndAuctionResponse output;
+  } kTestCases[] = {
       {
           base::Value(
               CreateValidResponseDict().Set("debugReports", "not a list")),
+          CreateExpectedValidResponse(),
       },
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports", base::Value::List().Append("not a dict")))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports", base::Value::List().Append("not a dict"))),
+          CreateExpectedValidResponse(),
+      },
       // Miss required ad tech origin.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(base::Value::Dict().Set(
-              "reports", base::Value::List().Append(base::Value::Dict().Set(
-                             "url", "https://fdo.com"))))))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(base::Value::Dict().Set(
+                  "reports", base::Value::List().Append(base::Value::Dict().Set(
+                                 "url", "https://fdo.com")))))),
+          CreateExpectedValidResponse(),
+      },
       // Http ad tech origin.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(
-              base::Value::Dict()
-                  .Set("adTechOrigin", "http://adtech.com")
-                  .Set("reports",
-                       base::Value::List().Append(base::Value::Dict().Set(
-                           "url", "https://fdo.com"))))))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("adTechOrigin", "http://adtech.com")
+                      .Set("reports",
+                           base::Value::List().Append(base::Value::Dict().Set(
+                               "url", "https://fdo.com")))))),
+          CreateExpectedValidResponse(),
+      },
       // Http url.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(
-              base::Value::Dict()
-                  .Set("adTechOrigin", "https://adtech.com")
-                  .Set("reports",
-                       base::Value::List().Append(base::Value::Dict().Set(
-                           "url", "http://fdo.com"))))))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("adTechOrigin", "https://adtech.com")
+                      .Set("reports",
+                           base::Value::List().Append(base::Value::Dict().Set(
+                               "url", "http://fdo.com")))))),
+          []() {
+            auto response = CreateExpectedValidResponse();
+            response.debugging_only_report_origins.emplace(
+                url::Origin::Create(GURL("https://adtech.com")));
+            return response;
+          }(),
+      },
       // Invalid url.
-      {base::Value(CreateValidResponseDict().Set(
-          "debugReports",
-          base::Value::List().Append(
-              base::Value::Dict()
-                  .Set("adTechOrigin", "https://adtech.com")
-                  .Set("reports",
-                       base::Value::List().Append(
-                           base::Value::Dict().Set("url", "not a url"))))))},
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "debugReports",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("adTechOrigin", "https://adtech.com")
+                      .Set("reports",
+                           base::Value::List().Append(
+                               base::Value::Dict().Set("url", "not a url")))))),
+          []() {
+            auto response = CreateExpectedValidResponse();
+            response.debugging_only_report_origins.emplace(
+                url::Origin::Create(GURL("https://adtech.com")));
+            return response;
+          }(),
+      },
   };
-  for (const auto& response : kTestCases) {
-    SCOPED_TRACE(response.DebugString());
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.input.DebugString());
     std::optional<BiddingAndAuctionResponse> result =
-        BiddingAndAuctionResponse::TryParse(response.Clone(), GroupNames(),
+        BiddingAndAuctionResponse::TryParse(test_case.input.Clone(),
+                                            GroupNames(),
                                             /*group_pagg_coordinators=*/{});
     ASSERT_TRUE(result);
-    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-
-    EXPECT_TRUE(result->component_win_debugging_only_reports.empty());
-    EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
+    EXPECT_THAT(*result,
+                EqualsBiddingAndAuctionResponse(std::ref(test_case.output)));
   }
 }
 
 TEST_F(BiddingAndAuctionSampleDebugReportsTest,
        ForDebuggingOnlyReportsComponentWinner) {
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
   static const struct {
     std::optional<bool> is_seller_report;
     std::optional<bool> is_win_report;
@@ -1524,6 +1593,17 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+    bool is_seller_report =
+        test_case.is_seller_report.has_value() && *test_case.is_seller_report;
+    bool is_win_report =
+        test_case.is_win_report.has_value() && *test_case.is_win_report;
+    output.component_win_debugging_only_reports
+        [BiddingAndAuctionResponse::DebugReportKey(
+            is_seller_report, is_win_report)] = GURL(kDebugReportingURL);
+    output.debugging_only_report_origins.emplace(
+        url::Origin::Create(GURL(kOwnerOrigin)));
+
     base::Value::Dict response = CreateResponseDictWithDebugReports(
         /*maybe_component_win=*/true, test_case.is_seller_report,
         test_case.is_win_report);
@@ -1534,28 +1614,24 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
                                             /*group_pagg_coordinators=*/{});
     ASSERT_TRUE(result);
     EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-    EXPECT_EQ(1u, result->component_win_debugging_only_reports.size());
-    bool is_seller_report =
-        test_case.is_seller_report.has_value() && *test_case.is_seller_report;
-    bool is_win_report =
-        test_case.is_win_report.has_value() && *test_case.is_win_report;
-    EXPECT_THAT(result->component_win_debugging_only_reports
-                    [BiddingAndAuctionResponse::DebugReportKey(is_seller_report,
-                                                               is_win_report)],
-                kDebugReportingURL);
-    EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
   }
 }
 
 TEST_F(BiddingAndAuctionSampleDebugReportsTest,
        ForDebuggingOnlyReportsServerFiltered) {
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
   static const std::optional<bool> kTestCases[] = {
       true,
       false,
       std::nullopt,
   };
   for (const auto& test_case : kTestCases) {
+    BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+    output
+        .server_filtered_debugging_only_reports[url::Origin::Create(
+            GURL(kOwnerOrigin))]
+        .emplace_back(kDebugReportingURL);
+    output.debugging_only_report_origins.emplace(
+        url::Origin::Create(GURL(kOwnerOrigin)));
     base::Value::Dict response = CreateResponseDictWithDebugReports(
         /*maybe_component_win=*/false, /*maybe_is_seller_report=*/std::nullopt,
         /*maybe_is_win_report=*/test_case);
@@ -1566,12 +1642,6 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
                                             /*group_pagg_coordinators=*/{});
     ASSERT_TRUE(result);
     EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-    EXPECT_TRUE(result->component_win_debugging_only_reports.empty());
-    EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
-    EXPECT_THAT(
-        result->server_filtered_debugging_only_reports[url::Origin::Create(
-            GURL(kOwnerOrigin))],
-        testing::UnorderedElementsAre(kDebugReportingURL));
   }
 }
 
