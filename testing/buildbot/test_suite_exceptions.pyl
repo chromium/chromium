@@ -203,18 +203,6 @@
     'remove_from': [
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
-    'modifications': {
-      'WebRTC Chromium FYI Android Tests (dbg)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
-        ],
-      },
-      'WebRTC Chromium FYI Android Tests ARM64 (dbg)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
-        ],
-      },
-    },
   },
   'expected_color_pixel_gl_passthrough_ganesh_test': {
     'replacements': {

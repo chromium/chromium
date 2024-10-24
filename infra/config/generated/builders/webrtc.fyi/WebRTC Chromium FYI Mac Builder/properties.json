@@ -79,7 +79,8 @@
           "builder": "WebRTC Chromium FYI Mac Tester",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Mac Builder/targets"
     }
   },
   "$build/reclient": {

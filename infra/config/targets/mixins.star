@@ -1859,6 +1859,7 @@ targets.mixin(
 # Pixel 2
 targets.mixin(
     name = "walleye",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_type": "walleye",

@@ -623,14 +623,6 @@
       '--gtest_filter="VaapiTest.*"',
     ],
   },
-  'walleye': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'walleye',
-        'os': 'Android',
-      },
-    },
-  },
   'webgpu_telemetry_cts': {
     'args': [
       '--extra-browser-args=--force_high_performance_gpu',

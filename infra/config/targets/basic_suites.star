@@ -2328,61 +2328,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webrtc_chromium_gtests",
-    tests = {
-        "browser_tests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
-                "--ui-test-action-max-timeout=300000",
-                "--test-launcher-timeout=350000",
-                "--test-launcher-jobs=1",
-                "--test-launcher-bot-mode",
-                "--test-launcher-print-test-stdio=always",
-            ],
-        ),
-        # TODO(b/246519185) - Py3 incompatible, decide if to keep test.:
-        # "browser_tests_apprtc": targets.legacy_test_config(
-        #     args = [
-        #         "--gtest_filter=WebRtcApprtcBrowserTest.*",
-        #         "--test-launcher-jobs=1",
-        #     ],
-        # ),
-        "browser_tests_functional": targets.legacy_test_config(),
-        # Run all normal WebRTC content_browsertests. This is mostly so
-        # the FYI bots can detect breakages.
-        "content_browsertests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=WebRtc*",
-            ],
-        ),
-        "content_browsertests_sequential": targets.legacy_test_config(),
-        "content_browsertests_stress": targets.legacy_test_config(),
-        "content_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc.content_unittests.filter",
-            ],
-        ),
-        "remoting_unittests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=Webrtc*",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "webrtc_chromium_simple_gtests",
-    tests = {
-        "content_browsertests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=WebRtc*",
-            ],
-        ),
-        "content_browsertests_sequential": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "webrtc_chromium_wpt_tests",
     tests = {
         "blink_wpt_tests": targets.legacy_test_config(

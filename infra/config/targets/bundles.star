@@ -5163,6 +5163,72 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "webrtc_chromium_gtests",
+    targets = [
+        "browser_tests",
+        # TODO(crbug.com/246519185) - Py3 incompatible, decide if to keep test.:
+        # Uncomment per-test modification if enabling
+        # "browser_tests_apprtc",
+        "browser_tests_functional",
+        "content_browsertests",
+        "content_browsertests_sequential",
+        "content_browsertests_stress",
+        "content_unittests",
+        "remoting_unittests",
+    ],
+    per_test_modifications = {
+        "browser_tests": targets.mixin(
+            args = [
+                "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+                "--ui-test-action-max-timeout=300000",
+                "--test-launcher-timeout=350000",
+                "--test-launcher-jobs=1",
+                "--test-launcher-bot-mode",
+                "--test-launcher-print-test-stdio=always",
+            ],
+        ),
+        # "browser_tests_apprtc": targets.mixin(
+        #     args = [
+        #         "--gtest_filter=WebRtcApprtcBrowserTest.*",
+        #         "--test-launcher-jobs=1",
+        #     ],
+        # ),
+        # Run all normal WebRTC content_browsertests. This is mostly so
+        # the FYI bots can detect breakages.
+        "content_browsertests": targets.mixin(
+            args = [
+                "--gtest_filter=WebRtc*",
+            ],
+        ),
+        "content_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc.content_unittests.filter",
+            ],
+        ),
+        "remoting_unittests": targets.mixin(
+            args = [
+                "--gtest_filter=Webrtc*",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webrtc_chromium_simple_gtests",
+    targets = [
+        "content_browsertests",
+        "content_browsertests_sequential",
+    ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            args = [
+                "--gtest_filter=WebRtc*",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_64_cts_tests_suite",
     targets = [
         "webview_64_cts_tests",

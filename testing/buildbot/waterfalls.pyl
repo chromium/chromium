@@ -40,6 +40,10 @@
   #   chromium.webrtc
   #
   # The following builder group has been migrated to set their targets in the
+  # builders' declarations in //infra/config/subprojects/webrtc/webrtc.fyi.star
+  #   chromium.webrtc.fyi
+  #
+  # The following builder group has been migrated to set their targets in the
   # builders' declarations in //infra/config/dev/subprojects/chromium/ci.star
   #   chromium.dev
   {
@@ -1085,106 +1089,6 @@
         'test_suites': {
           'gtest_tests': 'swangle_gtests',
         },
-      },
-    },
-  },
-  {
-    'name': 'chromium.webrtc.fyi',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      # For builders, specify targets if the builder has no associated
-      # tester (if it does, it will build what the tester needs).
-      'WebRTC Chromium FYI Android Builder': {
-        'additional_compile_targets': [
-          'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium FYI Android Builder (dbg)': {},
-      'WebRTC Chromium FYI Android Builder ARM64 (dbg)': {},
-      'WebRTC Chromium FYI Android Tests (dbg)': {
-        'os_type': 'android',
-        'mixins': [
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_simple_gtests',
-        },
-      },
-      'WebRTC Chromium FYI Android Tests ARM64 (dbg)': {
-        'os_type': 'android',
-        'mixins': [
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_simple_gtests',
-        },
-      },
-      'WebRTC Chromium FYI Linux Builder (dbg)': {
-        'additional_compile_targets': [
-          'browser_tests',
-          'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium FYI Linux Tester': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium FYI Mac Builder (dbg)': {
-        'additional_compile_targets': [
-          'browser_tests',
-          'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium FYI Mac Tester': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium FYI Win Builder (dbg)': {
-        'additional_compile_targets': [
-          'browser_tests',
-          'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'remoting_unittests',
-        ],
-      },
-      'WebRTC Chromium FYI Win10 Tester': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium FYI ios-device': {},
-      'WebRTC Chromium FYI ios-simulator': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ]
       },
     },
   },

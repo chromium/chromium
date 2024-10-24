@@ -47,7 +47,8 @@
           "builder": "WebRTC Chromium FYI Android Builder",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Android Builder/targets"
     }
   },
   "$build/reclient": {
