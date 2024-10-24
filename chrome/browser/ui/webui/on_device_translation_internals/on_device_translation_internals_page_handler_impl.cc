@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 
@@ -51,8 +52,9 @@ void OnDeviceTranslationInternalsPageHandlerImpl::InstallLanguagePackage(
   if (package_index > static_cast<uint32_t>(LanguagePackKey::kMaxValue)) {
     return;
   }
-  OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
-      static_cast<LanguagePackKey>(package_index));
+  on_device_translation::ComponentManager::GetInstance()
+      .RegisterTranslateKitLanguagePackComponent(
+          static_cast<LanguagePackKey>(package_index));
 }
 
 void OnDeviceTranslationInternalsPageHandlerImpl::UninstallLanguagePackage(
@@ -60,8 +62,9 @@ void OnDeviceTranslationInternalsPageHandlerImpl::UninstallLanguagePackage(
   if (package_index > static_cast<uint32_t>(LanguagePackKey::kMaxValue)) {
     return;
   }
-  OnDeviceTranslationServiceController::UninstallLanguagePackage(
-      static_cast<LanguagePackKey>(package_index));
+  on_device_translation::ComponentManager::GetInstance()
+      .UninstallTranslateKitLanguagePackComponent(
+          static_cast<LanguagePackKey>(package_index));
 }
 
 void OnDeviceTranslationInternalsPageHandlerImpl::SendLanguagePackInfo() {

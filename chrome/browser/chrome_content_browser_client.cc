@@ -805,7 +805,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "chrome/browser/on_device_translation/service_controller.h"
+#include "chrome/browser/on_device_translation/component_manager.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 using blink::mojom::EffectiveConnectionType;
@@ -8124,8 +8124,9 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     return compiler->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
                                   screen_ai_binary_path.value());
   } else if (sandbox_type == sandbox::mojom::Sandbox::kOnDeviceTranslation) {
-    auto translatekit_binary_path = on_device_translation::
-        OnDeviceTranslationServiceController::GetTranslateKitComponentPath();
+    auto translatekit_binary_path =
+        on_device_translation::ComponentManager::GetInstance()
+            .GetTranslateKitComponentPath();
     if (translatekit_binary_path.empty()) {
       VLOG(1) << "TranslationKit component not found.";
       return false;

@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
@@ -170,23 +171,6 @@ class OnDeviceTranslationServiceController::FileOperationProxyImpl
   std::vector<base::FilePath> package_pathes_;
 };
 
-// static
-base::FilePath
-OnDeviceTranslationServiceController::GetTranslateKitComponentPath() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kTranslateKitBinaryPath)) {
-    return command_line->GetSwitchValuePath(kTranslateKitBinaryPath);
-  }
-  base::FilePath components_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &components_dir);
-  return components_dir.empty()
-             ? base::FilePath()
-             : components_dir.Append(
-
-                   kTranslateKitBinaryInstallationRelativeDir);
-}
-
 std::optional<
     std::vector<OnDeviceTranslationServiceController::LanguagePackInfo>>
 OnDeviceTranslationServiceController::GetLanguagePackInfoFromCommandLine() {
@@ -244,14 +228,8 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
                                 OnTranslateKitBinaryPathChanged,
                             base::Unretained(this)));
     // Registers the TranslateKit component.
-    component_updater::RegisterTranslateKitComponent(
-        g_browser_process->component_updater(),
-        g_browser_process->local_state(),
-        /*force_install=*/true,
-        /*registered_callback=*/
-        base::BindOnce(
-            &component_updater::TranslateKitComponentInstallerPolicy::
-                UpdateComponentOnDemand));
+    on_device_translation::ComponentManager::GetInstance()
+        .RegisterTranslateKitComponent();
   }
   if (!language_packs_from_command_line_) {
     // Start listening to pref changes for language pack keys.
@@ -303,7 +281,8 @@ void OnDeviceTranslationServiceController::CreateTranslator(
             GetSourceLanguageCode(language_pack),
             GetTargetLanguageCode(language_pack));
         // Register the language pack component.
-        RegisterLanguagePackComponent(language_pack);
+        on_device_translation::ComponentManager::GetInstance()
+            .RegisterTranslateKitLanguagePackComponent(language_pack);
       }
     }
   }
@@ -463,27 +442,6 @@ OnDeviceTranslationServiceController::GetLanguagePackInfo() {
     }
   }
   return packages;
-}
-
-// static
-// Register the language pack component.
-void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
-    LanguagePackKey language_pack) {
-  component_updater::RegisterTranslateKitLanguagePackComponent(
-      g_browser_process->component_updater(), g_browser_process->local_state(),
-      language_pack,
-      base::BindOnce(
-          &component_updater::TranslateKitLanguagePackComponentInstallerPolicy::
-              UpdateComponentOnDemand,
-          language_pack));
-}
-
-// static
-void OnDeviceTranslationServiceController::UninstallLanguagePackage(
-    LanguagePackKey language_pack_key) {
-  component_updater::UninstallTranslateKitLanguagePackComponent(
-      g_browser_process->component_updater(), g_browser_process->local_state(),
-      language_pack_key);
 }
 
 // Called when the TranslateKitBinaryPath pref is changed.

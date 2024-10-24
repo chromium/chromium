@@ -3450,6 +3450,19 @@ if (!is_android) {
       deps += [ "//components/sharing_message" ]
     }
 
+    if (enable_on_device_translation) {
+      sources += [
+        "//chrome/browser/on_device_translation/component_manager_browsertest.cc",
+        "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc",
+      ]
+      deps += [
+        "//chrome/browser/on_device_translation:constants",
+        "//chrome/browser/on_device_translation:language_pack_util",
+        "//chrome/browser/on_device_translation:prefs",
+        "//components/services/on_device_translation:test_support",
+      ]
+    }
+
     if (enable_pdf) {
       sources += [
         "../browser/accessibility/pdf_ocr_controller_browsertest.cc",

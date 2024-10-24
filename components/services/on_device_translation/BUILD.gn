@@ -38,17 +38,31 @@ source_set("unit_tests") {
 
   sources = [
     "on_device_translation_service_unittest.cc",
-    "test/test_util.cc",
-    "test/test_util.h",
     "translate_kit_client_unittest.cc",
   ]
   deps = [
+    ":test_support",
     "//base/test:test_support",
     "//components/services/on_device_translation:on_device_translation_service",
     "//components/services/on_device_translation/public/cpp",
     "//components/services/on_device_translation/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/test_util.cc",
+    "test/test_util.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/services/on_device_translation/public/mojom",
+    "//mojo/public/cpp/bindings",
   ]
   data_deps = [
     ":mock_failing_translate_kit_lib",
