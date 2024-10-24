@@ -159,14 +159,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 // Tests that the Account Settings screen is correctly reloaded when one of
 // the non-primary account is removed.
 - (void)testSignInReloadOnRemoveAccount {
-  // TODO(crbug.com/375023885): Re-enable this test when tab group sync is
-  // disabled.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kTabGroupSync);
-  config.features_enabled.push_back(kTabGroupIndicator);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
