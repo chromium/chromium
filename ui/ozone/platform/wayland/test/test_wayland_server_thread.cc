@@ -165,6 +165,9 @@ bool TestWaylandServerThread::Start() {
           config_.use_explicit_synchronization)) {
     return false;
   }
+  if (!SetupLinuxDrmSyncobjProtocol(config_.use_linux_drm_syncobj)) {
+    return false;
+  }
   if (!zwp_linux_dmabuf_v1_.Initialize(display_.get()))
     return false;
   if (!overlay_prioritizer_.Initialize(display_.get()))
@@ -315,6 +318,18 @@ bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
       return true;
     case ShouldUseExplicitSynchronizationProtocol::kUse:
       return zwp_linux_explicit_synchronization_v1_.Initialize(display_.get());
+  }
+  NOTREACHED_IN_MIGRATION();
+  return false;
+}
+
+bool TestWaylandServerThread::SetupLinuxDrmSyncobjProtocol(
+    ShouldUseLinuxDrmSyncobjProtocol usage) {
+  switch (usage) {
+    case wl::ShouldUseLinuxDrmSyncobjProtocol::kNone:
+      return true;
+    case wl::ShouldUseLinuxDrmSyncobjProtocol::kUse:
+      return wp_linux_drm_syncobj_manager_v1_.Initialize(display_.get());
   }
   NOTREACHED_IN_MIGRATION();
   return false;
