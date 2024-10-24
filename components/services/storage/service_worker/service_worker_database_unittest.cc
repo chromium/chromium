@@ -3246,11 +3246,12 @@ const network::mojom::WebSandboxFlags kWebSandboxFlags[] = {
     network::mojom::WebSandboxFlags::kDownloads,
     network::mojom::WebSandboxFlags::kStorageAccessByUserActivation,
     network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols,
+    network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies,
     network::mojom::WebSandboxFlags::kAll,
 };
 
 static_assert(
-    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols ==
+    network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies ==
         network::mojom::WebSandboxFlags::kMaxValue,
     "The array should contain all the flags");
 
