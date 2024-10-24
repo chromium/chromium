@@ -253,10 +253,10 @@ suite('<facegaze-actions-add-dialog>', () => {
     return previousButton;
   }
 
-  function getConflictingGestureText(): HTMLElement|null {
+  function getConflictingGestureContainer(): HTMLElement|null {
     const text: HTMLElement|null =
         faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLElement>(
-            '#conflictingGestureText');
+            '#conflictingGestureContainer');
     return text;
   }
 
@@ -980,10 +980,10 @@ suite('<facegaze-actions-add-dialog>', () => {
       setGesturesListSelection(gesture as FacialGesture);
       await flushTasks();
 
-      const text = getConflictingGestureText();
-      assertTrue(!!text);
-      assertFalse(text.hidden);
-      assertTrue(Boolean(text.innerText));
+      const container = getConflictingGestureContainer();
+      assertTrue(!!container);
+      assertFalse(container.hidden);
+      assertTrue(Boolean(container.innerText));
     }
   });
 
@@ -1005,7 +1005,7 @@ suite('<facegaze-actions-add-dialog>', () => {
       // Ensure text is hidden for gestures that don't have conflicts.
       setGesturesListSelection(gesture as FacialGesture);
       await flushTasks();
-      assertFalse(!!getConflictingGestureText());
+      assertFalse(!!getConflictingGestureContainer());
     }
   });
 });
