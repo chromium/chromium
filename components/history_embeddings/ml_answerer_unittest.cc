@@ -44,7 +44,22 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
  public:
   void SetUp() override {
     ml_answerer_ = std::make_unique<MlAnswerer>(&model_executor_);
+    token_limits_ = {
+        .min_context_tokens = 1024,
+    };
+
+
+    ON_CALL(session_1_, GetTokenLimits())
+        .WillByDefault([&]() -> optimization_guide::TokenLimits& {
+          return GetTokenLimits();
+        });
+    ON_CALL(session_2_, GetTokenLimits())
+        .WillByDefault([&]() -> optimization_guide::TokenLimits& {
+          return GetTokenLimits();
+        });
   }
+
+  optimization_guide::TokenLimits& GetTokenLimits() { return token_limits_; }
 
  protected:
   optimization_guide::StreamingResponse MakeResponse(
@@ -65,6 +80,7 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
   testing::NiceMock<MockModelExecutor> model_executor_;
   std::unique_ptr<MlAnswerer> ml_answerer_;
   testing::NiceMock<optimization_guide::MockSession> session_1_, session_2_;
+  optimization_guide::TokenLimits token_limits_;
 };
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
