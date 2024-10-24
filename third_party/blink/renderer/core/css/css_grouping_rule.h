@@ -83,6 +83,42 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
   mutable Member<CSSRuleList> rule_list_cssom_wrapper_;
 };
 
+template <>
+struct DowncastTraits<CSSGroupingRule> {
+  static bool AllowFrom(const CSSRule& rule) {
+    switch (rule.GetType()) {
+      // CSSConditionRule (inherits CSSGroupingRule):
+      case CSSRule::kMediaRule:
+      case CSSRule::kSupportsRule:
+      case CSSRule::kContainerRule:
+      // CSSGroupingRule:
+      case CSSRule::kLayerBlockRule:
+      case CSSRule::kPageRule:
+      case CSSRule::kScopeRule:
+      case CSSRule::kStartingStyleRule:
+        return true;
+      case CSSRule::kCharsetRule:
+      case CSSRule::kCounterStyleRule:
+      case CSSRule::kFontFaceRule:
+      case CSSRule::kFontFeatureRule:
+      case CSSRule::kFontFeatureValuesRule:
+      case CSSRule::kFontPaletteValuesRule:
+      case CSSRule::kImportRule:
+      case CSSRule::kKeyframeRule:
+      case CSSRule::kKeyframesRule:
+      case CSSRule::kLayerStatementRule:
+      case CSSRule::kMarginRule:
+      case CSSRule::kNamespaceRule:
+      case CSSRule::kNestedDeclarationsRule:
+      case CSSRule::kPositionTryRule:
+      case CSSRule::kPropertyRule:
+      case CSSRule::kStyleRule:
+      case CSSRule::kViewTransitionRule:
+        return false;
+    }
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GROUPING_RULE_H_

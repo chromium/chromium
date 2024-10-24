@@ -66,6 +66,7 @@ class Element;
 class FontCustomPlatformData;
 class FontFace;
 class InspectedFrames;
+class InspectorGhostRules;
 class InspectorNetworkAgent;
 class InspectorResourceContainer;
 class InspectorResourceContentLoader;
@@ -399,6 +400,7 @@ class CORE_EXPORT InspectorCSSAgent final
   BuildArrayForMatchedRuleList(
       RuleIndexList*,
       Element*,
+      const InspectorGhostRules&,
       PseudoId pseudo_id = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
@@ -496,6 +498,10 @@ class CORE_EXPORT InspectorCSSAgent final
   std::unique_ptr<TakeComputedStyleUpdatesCallback>
       computed_style_updated_callback_;
   HashSet<int> computed_style_updated_node_ids_;
+
+  // True while InspectorGhostRules is modifying a stylesheet. We don't
+  // need to respond to such mutations, because we're guaranteed to undo them.
+  bool ignore_stylesheet_mutation_ = false;
 
   friend class InspectorResourceContentLoaderCallback;
   friend class StyleSheetBinder;
