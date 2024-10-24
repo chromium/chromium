@@ -135,9 +135,6 @@ _OS_SPECIFIC_FILTER['mac'] = [
 
 _BROWSER_SPECIFIC_FILTER = {}
 _BROWSER_SPECIFIC_FILTER['chrome'] = [
-    # The following two tests are intended solely for chrome-headless-shell
-    'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
-    'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
     # This test is a chrome-headless-shell version of testWindowFullScreen
     'ChromeDriverTest.testWindowFullScreenHeadless',
 ]
@@ -283,9 +280,6 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         'ChromeDriverTest.testCanClickAlertInIframes',
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2081
         'ChromeDriverTest.testCloseWindowUsingJavascript',
-        # Android doesn't support headless mode
-        'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
-        'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
         # Tests of the desktop Chrome launch process.
         'LaunchDesktopTest.*',
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2737
@@ -773,6 +767,57 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
       self.assertEqual('windows', driver.capabilities['platformName'])
     else:
       pass
+
+  def testBrowserWithCustomUserDataDirStarts(self):
+    """Tests that ChromeDriver can launch the browser
+       with user-data-dir provided as a command line argument.
+       See crbug.com/40096990.
+    """
+    temp_dir = self.CreateTempDir()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+    self.assertEqual(len(driver.GetWindowHandles()), 1)
+
+  def testBrowserWithExistingUserDataDirStarts(self):
+    """Tests that ChromeDriver can launch the browser
+       with user-data-dir, that already contains user data,
+       provided as a command line argument
+       See crbug.com/40096990.
+    """
+    temp_dir = self.CreateTempDir()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+    self.assertEqual(len(driver.GetWindowHandles()), 1)
+    driver.Quit()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+    self.assertEqual(len(driver.GetWindowHandles()), 1)
+
+  def testBrowserWithUsedUserDataDir(self):
+    """Verify that it is impossible to create a parallel Chrome session using
+    the same user data directory.
+    Verify that it is possible to create a parallel chrome-headless-shell
+    session using the same user data directory.
+    See go/headless:user-data-directory
+    """
+    temp_dir = self.CreateTempDir()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+    self.assertEqual(len(driver.GetWindowHandles()), 1)
+
+    if (_BROWSER_NAME == 'chrome-headless-shell'):
+      driver2 = self.CreateDriver(
+          chrome_switches=['--user-data-dir=%s' % temp_dir,])
+      self.assertEqual(len(driver2.GetWindowHandles()), 1)
+    else:
+      with self.assertRaises(chromedriver.SessionNotCreated):
+        self.CreateDriver(chrome_switches=['--user-data-dir=%s' % temp_dir,])
+
+    self.assertEqual(len(driver.GetWindowHandles()), 1)
 
 class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
   @staticmethod
@@ -4025,33 +4070,6 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(_BROWSER_NAME, driver.capabilities['browserName'])
     driver.Quit()
 
-  def testHeadlessWithUserDataDirStarts(self):
-    """Tests that ChromeDriver can launch chrome-headless-shell
-       with user-data-dir provided as a command line argument.
-       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=4357
-    """
-    temp_dir = self.CreateTempDir()
-    driver = self.CreateDriver(chrome_switches=[
-                                   '--user-data-dir=%s' % temp_dir,
-                               ])
-    self.assertEqual(driver.GetTitle(), '')
-
-  def testHeadlessWithExistingUserDataDirStarts(self):
-    """Tests that ChromeDriver can launch chrome-headless-shell
-       with user-data-dir, that already contains user data,
-       provided as a command line argument
-       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=4357
-    """
-    temp_dir = self.CreateTempDir()
-    driver = self.CreateDriver(chrome_switches=[
-                                   '--user-data-dir=%s' % temp_dir,
-                               ])
-    self.assertEqual(driver.GetTitle(), '')
-    driver.Quit()
-    driver = self.CreateDriver(chrome_switches=[
-                                   '--user-data-dir=%s' % temp_dir,
-                               ])
-
   def testFindElementWhileNavigating(self):
     """A regression test for chromedriver:4459.
        The error manifests itself in flakiness rate >= 75%.
@@ -7058,9 +7076,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
     # the http client in the CommandExecutor has a relatively small timeout for
     # HTTP requests.
     # S/A: //chrome/teest/chromedriver/client/command_executor.py
-    self.assertIn('Chrome failed to start', str(exception))
-    self.assertIn('exited normally', str(exception))
-    self.assertIn('ChromeDriver is assuming that Chrome has crashed',
+    self.assertIn('probably user data directory is already in use',
                   str(exception))
 
   def testHelpfulErrorMessage_NormalExitIfTimedOut(self):
