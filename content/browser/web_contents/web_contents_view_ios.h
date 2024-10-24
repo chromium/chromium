@@ -73,6 +73,7 @@ class WebContentsViewIOS : public WebContentsView,
   bool OnlyExpandTopControlsAtPageTop() const override;
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
+  void DestroyBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
