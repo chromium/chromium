@@ -165,7 +165,20 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
                                    const Embedding& query_embedding,
                                    const proto::PassagesValue& passages,
                                    size_t min_passage_word_count) const {
-  std::vector<size_t> term_counts(search_params.query_terms.size(), 0);
+  float word_match_required_score =
+      search_params.word_match_minimum_embedding_score;
+  std::vector<size_t> term_counts;
+  if (search_params.query_terms.size() >
+      search_params.word_match_max_term_count) {
+    // Disable word match boosting for this long query.
+    word_match_required_score = std::numeric_limits<float>::max();
+  } else {
+    // Prepare to count terms by initializing all term counts to zero.
+    // These will continue to increase for each passage until we have
+    // the total for this URL's full passage set.
+    term_counts.assign(search_params.query_terms.size(), 0);
+  }
+
   float best = 0.0f;
   for (size_t i = 0; i < embeddings.size(); i++) {
     const Embedding& embedding = embeddings[i];
@@ -181,7 +194,7 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
                       ? 0.0f
                       : query_embedding.ScoreWith(embedding);
 
-    if (score >= search_params.word_match_minimum_embedding_score) {
+    if (score >= word_match_required_score) {
       // Since the ASCII check above processed the whole passage string, it is
       // likely ready in CPU cache. Scan text again to count terms in passage.
       base::ElapsedTimer timer;

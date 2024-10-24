@@ -62,6 +62,10 @@ struct SearchParams {
   // Used as a term in final score boost divide to normalize for long queries.
   size_t word_match_smoothing_factor = 1;
 
+  // Maximum number of terms a query may have. When term count exceeds this
+  // limit, no text search for the terms occurs.
+  size_t word_match_max_term_count = 3;
+
   // Makes the total word match boost zero when the ratio of terms matched to
   // total query terms is less than this required value. A term is considered
   // matched if there's at least one instance found in all passages.

@@ -37,6 +37,8 @@ message WordMatchSearchParams {
   float word_match_limit = 3;
   float smoothing_factor = 4;
   float minimum_term_length = 5;
+  uint32 max_term_count = 6;
+  float required_term_ratio = 7;
 }
 
 // A single test case for word match boosting.

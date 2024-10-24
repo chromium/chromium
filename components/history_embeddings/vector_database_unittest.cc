@@ -104,6 +104,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
       url_data.url_passages.passages, 0);
   EXPECT_LT(score, boosted_score);
 
+  search_params.word_match_max_term_count = 5;
   search_params.query_terms = {
       "some", "passage", "more", "another", "absent",
   };
@@ -173,6 +174,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   search_params.word_match_minimum_embedding_score = 0.0f;
   search_params.word_match_limit = 4;
   search_params.word_match_score_boost_factor = 0.1;
+  search_params.word_match_max_term_count = 8;
   search_params.word_match_required_term_ratio = 0.0f;
 
   // Basic embedding search with no query terms produces flat embedding score.
@@ -203,6 +205,19 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   EXPECT_EQ(scored_urls[1].url_id, 2);
   EXPECT_EQ(scored_urls[2].url_id, 3);
   EXPECT_FLOAT_EQ(scored_urls[0].score, 1.008333333f);
+  EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
+  EXPECT_FLOAT_EQ(scored_urls[2].score, 0.0f);
+
+  // Here we have one too many terms, so there's no boost at all.
+  search_params.query_terms = {"some",  "deterministic", "passage",
+                               "and",   "other",         "nonboosting",
+                               "query", "terms",         "extra"};
+  scored_urls = database.FindNearest({}, 3, search_params, query_embedding, no)
+                    .scored_urls;
+  EXPECT_EQ(scored_urls[0].url_id, 1);
+  EXPECT_EQ(scored_urls[1].url_id, 2);
+  EXPECT_EQ(scored_urls[2].url_id, 3);
+  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[2].score, 0.0f);
 
@@ -375,10 +390,15 @@ TEST(HistoryEmbeddingsVectorDatabaseTest,
      DISABLED_GenerateWordMatchBoostProtoDataTest) {
   proto::WordMatchBoostTest test;
   proto::WordMatchBoostTestCase* test_case = test.add_cases();
-  test_case->mutable_params()->set_minimum_embedding_score(0.0f);
-  test_case->mutable_params()->set_score_boost_factor(0.2f);
-  test_case->mutable_params()->set_word_match_limit(5);
-  test_case->mutable_params()->set_smoothing_factor(1);
+
+  auto* params = test_case->mutable_params();
+  params->set_minimum_embedding_score(0.0f);
+  params->set_score_boost_factor(0.2f);
+  params->set_word_match_limit(5);
+  params->set_smoothing_factor(1);
+  params->set_max_term_count(3);
+  params->set_required_term_ratio(1.0f);
+
   test_case->set_query("example test query");
   test_case->mutable_passages()->add_passages("this is an example passage");
   test_case->mutable_passages()->add_passages(
@@ -415,6 +435,10 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, WordMatchBoostProtoDataTest) {
         test_case.params().score_boost_factor();
     search_params.word_match_smoothing_factor =
         test_case.params().smoothing_factor();
+    search_params.word_match_max_term_count =
+        test_case.params().max_term_count();
+    search_params.word_match_required_term_ratio =
+        test_case.params().required_term_ratio();
     UrlPassagesEmbeddings url_data(1, 1, base::Time::Now());
     for (const std::string& passage : test_case.passages().passages()) {
       url_data.url_passages.passages.add_passages(passage);
