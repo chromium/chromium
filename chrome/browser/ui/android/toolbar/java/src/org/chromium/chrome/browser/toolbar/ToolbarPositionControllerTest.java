@@ -51,8 +51,10 @@ import java.util.Observer;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ToolbarPositionControllerTest {
+
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     private static final int TOOLBAR_HEIGHT = 56;
+    private static final int CONTROL_CONTAINER_ID = 12356;
 
     private BrowserControlsSizer mBrowserControlsSizer =
             new BrowserControlsSizer() {
@@ -198,8 +200,11 @@ public class ToolbarPositionControllerTest {
 
     private CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
             new CoordinatorLayout.LayoutParams(400, TOOLBAR_HEIGHT);
+    private CoordinatorLayout.LayoutParams mProgressBarLayoutParams =
+            new CoordinatorLayout.LayoutParams(400, 5);
     @Mock private ControlContainer mControlContainer;
     @Mock private View mControlContainerView;
+    @Mock private View mProgressBarContainer;
 
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>();
@@ -216,10 +221,16 @@ public class ToolbarPositionControllerTest {
         doReturn(TOOLBAR_HEIGHT).when(mControlContainer).getToolbarHeight();
         doReturn(mControlContainerLayoutParams).when(mControlContainer).mutateLayoutParams();
         doReturn(mControlContainerView).when(mControlContainer).getView();
+        doReturn(CONTROL_CONTAINER_ID).when(mControlContainerView).getId();
+        doReturn(mProgressBarLayoutParams).when(mProgressBarContainer).getLayoutParams();
         mContext = ContextUtils.getApplicationContext();
+        doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
         mBrowserControlsSizer.setControlsPosition(ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0);
         mControlContainerLayoutParams.gravity = Gravity.START | Gravity.TOP;
+        mProgressBarLayoutParams.gravity = Gravity.TOP;
+        mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
+        mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
         mIsNtpShowing.set(false);
         mIsOmniboxFocused.set(false);
         mController =
@@ -231,7 +242,8 @@ public class ToolbarPositionControllerTest {
                         mIsFormFieldFocused,
                         mControlContainer,
                         mBottomControlsStacker,
-                        mBottomToolbarOffsetSupplier);
+                        mBottomToolbarOffsetSupplier,
+                        mProgressBarContainer);
     }
 
     @Test
@@ -367,10 +379,21 @@ public class ToolbarPositionControllerTest {
         verify(mControlContainerView).setTranslationY(12);
         assertEquals(mBottomToolbarOffsetSupplier.get().intValue(), 12);
 
+        BottomControlsLayer progressBarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.PROGRESS_BAR);
+        assertEquals(progressBarLayer.getHeight(), 0);
+        assertEquals(progressBarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
+        assertEquals(progressBarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
+
+        progressBarLayer.onBrowserControlsOffsetUpdate(-12);
+        verify(mProgressBarContainer).setTranslationY(-12);
+
         mIsOmniboxFocused.set(true);
         assertControlsAtTop();
         assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.HIDDEN);
         verify(mControlContainerView).setTranslationY(0);
+        assertEquals(progressBarLayer.getLayerVisibility(), LayerVisibility.HIDDEN);
+        verify(mProgressBarContainer).setTranslationY(0);
     }
 
     @Test
@@ -398,6 +421,9 @@ public class ToolbarPositionControllerTest {
         assertEquals(mBrowserControlsSizer.getTopControlsHeight(), 0);
         assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), TOOLBAR_HEIGHT);
         assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.BOTTOM);
+        assertEquals(mProgressBarLayoutParams.gravity, Gravity.BOTTOM);
+        assertEquals(mProgressBarLayoutParams.anchorGravity, Gravity.NO_GRAVITY);
+        assertEquals(mProgressBarLayoutParams.getAnchorId(), View.NO_ID);
     }
 
     private void assertControlsAtTop() {
@@ -405,5 +431,8 @@ public class ToolbarPositionControllerTest {
         assertEquals(mBrowserControlsSizer.getTopControlsHeight(), TOOLBAR_HEIGHT);
         assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), 0);
         assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.TOP);
+        assertEquals(mProgressBarLayoutParams.gravity, Gravity.TOP);
+        assertEquals(mProgressBarLayoutParams.anchorGravity, Gravity.BOTTOM);
+        assertEquals(mProgressBarLayoutParams.getAnchorId(), CONTROL_CONTAINER_ID);
     }
 }

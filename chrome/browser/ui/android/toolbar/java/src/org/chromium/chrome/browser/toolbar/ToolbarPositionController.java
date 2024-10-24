@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.Gravity;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -38,8 +40,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final ControlContainer mControlContainer;
     private final BottomControlsStacker mBottomControlsStacker;
     private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
+    @NonNull private final View mToolbarProgressBarContainer;
     @LayerVisibility private int mLayerVisibility;
     private final BottomControlsLayer mBottomToolbarLayer;
+    private final BottomControlsLayer mProgressBarLayer;
 
     @ControlsPosition private int mCurrentPosition;
 
@@ -65,7 +69,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @NonNull ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
             @NonNull ControlContainer controlContainer,
             @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull ObservableSupplierImpl<Integer> browserControlsOffsetSupplier) {
+            @NonNull ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
+            @NonNull View toolbarProgressBarContainer) {
         mBrowserControlsSizer = browserControlsSizer;
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
@@ -74,6 +79,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainer = controlContainer;
         mBottomControlsStacker = bottomControlsStacker;
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
+        mToolbarProgressBarContainer = toolbarProgressBarContainer;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
@@ -112,7 +118,36 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         }
                     }
                 };
+        mProgressBarLayer =
+                new BottomControlsLayer() {
+                    @Override
+                    public int getType() {
+                        return LayerType.PROGRESS_BAR;
+                    }
+
+                    @Override
+                    public int getScrollBehavior() {
+                        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+                    }
+
+                    @Override
+                    public int getHeight() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getLayerVisibility() {
+                        return mLayerVisibility;
+                    }
+
+                    @Override
+                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+                        mToolbarProgressBarContainer.setTranslationY(layerYOffset);
+                    }
+                };
+
         mBottomControlsStacker.addLayer(mBottomToolbarLayer);
+        mBottomControlsStacker.addLayer(mProgressBarLayer);
         updateCurrentPosition();
     }
 
@@ -178,9 +213,20 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + controlContainerHeight;
             mLayerVisibility = LayerVisibility.HIDDEN;
             mControlContainer.getView().setTranslationY(0);
+            mToolbarProgressBarContainer.setTranslationY(0);
+            CoordinatorLayout.LayoutParams progressBarLayoutParams =
+                    (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
+            progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
+            progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
+            progressBarLayoutParams.gravity = Gravity.TOP;
         } else {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
             mLayerVisibility = LayerVisibility.VISIBLE;
+            CoordinatorLayout.LayoutParams progressBarLayoutParams =
+                    (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
+            progressBarLayoutParams.setAnchorId(View.NO_ID);
+            progressBarLayoutParams.anchorGravity = Gravity.NO_GRAVITY;
+            progressBarLayoutParams.gravity = Gravity.BOTTOM;
         }
 
         mBottomControlsStacker.requestLayerUpdate(false);

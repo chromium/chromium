@@ -333,6 +333,7 @@ public class ToolbarManager
     private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
     private FormFieldFocusedSupplier mFormFieldFocusedSupplier = new FormFieldFocusedSupplier();
+    private final View mProgressBarContainer;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -796,11 +797,11 @@ public class ToolbarManager
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 
         ViewStub progressBarStub = mActivity.findViewById(R.id.progress_bar_stub);
-        FrameLayout progressBarContainer = (FrameLayout) progressBarStub.inflate();
+        mProgressBarContainer = progressBarStub.inflate();
         ToolbarProgressBar progressBar =
-                progressBarContainer.findViewById(R.id.toolbar_progress_bar);
+                mProgressBarContainer.findViewById(R.id.toolbar_progress_bar);
         progressBar.setAnimatingView(
-                progressBarContainer.findViewById(R.id.progress_bar_animating_view));
+                mProgressBarContainer.findViewById(R.id.progress_bar_animating_view));
         mBrowserControlsSizer.addObserver(progressBar);
         mToolbar =
                 createTopToolbarCoordinator(
@@ -1349,7 +1350,8 @@ public class ToolbarManager
                 mFormFieldFocusedSupplier,
                 mControlContainer,
                 mBottomControlsStacker,
-                mBottomToolbarControlsOffsetSupplier);
+                mBottomToolbarControlsOffsetSupplier,
+                mProgressBarContainer);
     }
 
     // TODO(b/315204103): add tests
