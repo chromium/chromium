@@ -92,13 +92,21 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
         ->LayerTreeHostForTesting();
   }
 
+  Document& GetDocument() {
+    return *GetLocalFrameView()->GetFrame().GetDocument();
+  }
+
   Element* GetElementById(const char* id) {
-    WebLocalFrameImpl* frame = web_view_helper_->LocalMainFrame();
-    return frame->GetFrame()->GetDocument()->getElementById(AtomicString(id));
+    return GetDocument().getElementById(AtomicString(id));
   }
 
   LayoutObject* GetLayoutObjectById(const char* id) {
     return GetElementById(id)->GetLayoutObject();
+  }
+
+  void UpdateAllLifecyclePhasesExceptPaint() {
+    GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kTest);
   }
 
   void UpdateAllLifecyclePhases() {
@@ -616,8 +624,7 @@ TEST_P(CompositingTest,
 
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
   GetElementById("scroll")->scrollTo(0, 2);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
   UpdateAllLifecyclePhases();
 }
@@ -637,8 +644,7 @@ TEST_P(CompositingTest,
 
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
   GetElementById("scroll")->scrollTo(0, 2);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
   UpdateAllLifecyclePhases();
 }
@@ -821,8 +827,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 
   target->SetInlineStyleProperty(CSSPropertyID::kPointerEvents, "none");
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   // Change of PointerEvents should not invalidate the painting layer, but not
   // the display item client.
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
@@ -834,8 +839,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
@@ -845,8 +849,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 
   parent->setAttribute(html_names::kInertAttr, AtomicString(""));
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
   // Change of parent inert attribute (affecting target's used pointer events)
   // should invalidate the painting layer but not the display item client.
@@ -858,8 +861,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
 
   parent->removeAttribute(html_names::kInertAttr);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
@@ -958,13 +960,26 @@ TEST_P(CompositingTest, ScrollingContentsCullRect) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <style>
-      .scroller { width: 200px; height: 200px; overflow: scroll; }
+      .scroller {
+         width: 200px;
+         height: 200px;
+         overflow: scroll;
+         font-size: 20px;
+         /* Force stacking contexts to avoid interlacing among scrollers. */
+         position: relative;
+         z-index: 1;
+       }
     </style>
     <div id="short-composited-scroller" class="scroller">
       <div style="height: 2000px; background: yellow">Content</div>
     </div>
     <div id="long-composited-scroller" class="scroller">
       <div style="height: 10000px; background: yellow">Content</div>
+    </div>
+    <div id="long-composited-contentful-scroller" class="scroller">
+      <div id="contentful" style="background: yellow">
+        <div style="height: 100px">Content</div>
+      </div>
     </div>
     <div id="narrow-non-composited-scroller" class="scroller">
       <div style="width: 200px; height: 2000px">Content</div>
@@ -973,10 +988,17 @@ TEST_P(CompositingTest, ScrollingContentsCullRect) {
       <div style="width: 10000px; height: 200px">Content</div>
     </div>
   )HTML");
+
+  Element* contentful = GetElementById("contentful");
+  for (int i = 0; i < 100; i++) {
+    contentful->appendChild(contentful->firstElementChild()->cloneNode(true));
+  }
   UpdateAllLifecyclePhases();
+  auto sequence_number = GetPropertyTrees()->sequence_number();
 
   EXPECT_TRUE(CcLayerByDOMElementId("short-composited-scroller"));
   EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
+  EXPECT_TRUE(CcLayerByDOMElementId("long-composited-contentful-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
 
@@ -999,25 +1021,51 @@ TEST_P(CompositingTest, ScrollingContentsCullRect) {
 
   check_cull_rect("short-composited-scroller", std::nullopt);
   check_cull_rect("long-composited-scroller", gfx::Rect(0, 0, 200, 4200));
+  check_cull_rect("long-composited-contentful-scroller",
+                  gfx::Rect(0, 0, 200, 4200));
   check_cull_rect("narrow-non-composited-scroller", std::nullopt);
   check_cull_rect("wide-non-composited-scroller", gfx::Rect(0, 0, 4200, 200));
 
   GetElementById("short-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("long-composited-scroller")->scrollTo(5000, 5000);
+  GetElementById("long-composited-contentful-scroller")->scrollTo(5000, 5000);
   GetElementById("narrow-non-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("wide-non-composited-scroller")->scrollTo(5000, 5000);
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    // All scroll offset changes were directly updated.
+    EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  } else {
+    // Non-composited scrolls need PaintArtifactCompositor update.
+    EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+  }
   UpdateAllLifecyclePhases();
+  // Some scrollers no longer have the foreground paint chunk, which caused a
+  // full PaintArtifactCompositor update.
+  EXPECT_EQ(sequence_number + 1, GetPropertyTrees()->sequence_number());
 
   EXPECT_TRUE(CcLayerByDOMElementId("short-composited-scroller"));
   EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
+  EXPECT_TRUE(CcLayerByDOMElementId("long-composited-contentful-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
 
   check_cull_rect("short-composited-scroller", std::nullopt);
   check_cull_rect("long-composited-scroller", gfx::Rect(0, 1000, 200, 8200));
+  check_cull_rect("long-composited-contentful-scroller",
+                  gfx::Rect(0, 1000, 200, 8200));
   check_cull_rect("narrow-non-composited-scroller", std::nullopt);
   check_cull_rect("wide-non-composited-scroller",
                   gfx::Rect(1000, 0, 8200, 200));
+
+  GetElementById("long-composited-contentful-scroller")->scrollTo(0, 10000);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(sequence_number + 1, GetPropertyTrees()->sequence_number());
+  check_cull_rect("long-composited-contentful-scroller",
+                  gfx::Rect(0, 5900, 200, 4200));
 }
 
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
