@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -52,9 +51,10 @@ using testing::ElementsAre;
 using testing::Pointee;
 using testing::UnorderedElementsAre;
 
-const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
-const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
-const base::Time kMuchLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
+constexpr auto kArbitraryTime =
+    base::Time::FromSecondsSinceUnixEpoch(86400 * 365 * 2);
+constexpr auto kSomeLaterTime = kArbitraryTime + base::Seconds(1000);
+constexpr auto kMuchLaterTime = kSomeLaterTime + base::Seconds(4000);
 
 constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 
@@ -138,6 +138,10 @@ class AddressDataManagerTest : public testing::Test {
     run_loop.Run();
   }
 
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PrefService> prefs_;
@@ -189,8 +193,7 @@ TEST_F(AddressDataManagerTest, AddProfile) {
 }
 
 TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
+  AdvanceClock(kArbitraryTime - base::Time::Now());
   AutofillProfile profile = test::GetFullProfile();
   AddProfileToAddressDataManager(profile);
   ASSERT_THAT(address_data_manager().GetProfiles(),
@@ -199,7 +202,7 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
   // Update the profile arbitrarily. Expect that the modification date changes.
   // Note that `AutofillProfile::operator==()` doesn't check the
   // `modification_date()`.
-  test_clock.SetNow(kSomeLaterTime);
+  AdvanceClock(kSomeLaterTime - base::Time::Now());
   profile.SetRawInfo(EMAIL_ADDRESS, u"new" + profile.GetRawInfo(EMAIL_ADDRESS));
   UpdateProfileOnAddressDataManager(profile);
   std::vector<const AutofillProfile*> profiles =
@@ -208,7 +211,7 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
   EXPECT_EQ(profiles[0]->modification_date(), kSomeLaterTime);
 
   // If the profile hasn't change, expect that updating is a no-op.
-  test_clock.SetNow(kMuchLaterTime);
+  AdvanceClock(kMuchLaterTime - base::Time::Now());
   UpdateProfileOnAddressDataManager(profile);
   profiles = address_data_manager().GetProfiles();
   ASSERT_THAT(profiles, UnorderedElementsAre(Pointee(profile)));
@@ -245,7 +248,7 @@ TEST_F(AddressDataManagerTest, GetProfiles) {
 
 // Tests the different orderings in which profiles can be retrieved.
 TEST_F(AddressDataManagerTest, GetProfiles_Order) {
-  base::Time now = AutofillClock::Now();
+  base::Time now = base::Time::Now();
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.set_use_date(now - base::Hours(2));
   profile1.set_use_count(1);
@@ -444,9 +447,7 @@ TEST_F(AddressDataManagerTest, AddRemoveUpdateProfileSequence) {
 
 // Test that a new profile has its basic information set.
 TEST_F(AddressDataManagerTest, AddProfile_BasicInformation) {
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
+  AdvanceClock(kArbitraryTime - base::Time::Now());
 
   // Add a profile to the database.
   AutofillProfile profile(test::GetFullProfile());
@@ -670,11 +671,10 @@ TEST_F(AddressDataManagerTest, RemoveLocalProfilesModifiedBetween) {
 // observations into considerations.
 TEST_F(AddressDataManagerTest, UpdateProfile_NewObservations) {
   // Add a profile without observations at `kArbitraryTime`.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
+  AdvanceClock(kArbitraryTime - base::Time::Now());
   AutofillProfile profile = test::GetFullProfile();
   AddProfileToAddressDataManager(profile);
-  test_clock.SetNow(kSomeLaterTime);
+  AdvanceClock(kSomeLaterTime - base::Time::Now());
 
   // Add an observation, as might happen during a form submit.
   test_api(profile.token_quality())
@@ -887,19 +887,18 @@ TEST_F(AddressDataManagerTest, UpdateLanguageCodeInProfile) {
 // other, already existing profile. Here, the less recently used profile is
 // edited to become a duplicate of the more recently used profile.
 TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate) {
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
+  AdvanceClock(kArbitraryTime - base::Time::Now());
 
   AutofillProfile more_recently_used_profile(test::GetFullProfile());
   AutofillProfile less_recently_used_profile(test::GetFullProfile2());
 
-  base::Time older_use_date = AutofillClock::Now();
+  base::Time older_use_date = base::Time::Now();
   less_recently_used_profile.set_use_date(older_use_date);
-  test_clock.Advance(base::Days(1));
+  AdvanceClock(base::Days(1));
 
   // Set more recently used profile to have a use date that is newer than
   // `older_use_date`.
-  base::Time newer_use_data = AutofillClock::Now();
+  base::Time newer_use_data = base::Time::Now();
   more_recently_used_profile.set_use_date(newer_use_data);
 
   AddProfileToAddressDataManager(more_recently_used_profile);
@@ -931,14 +930,13 @@ TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate) {
 // edited to become a duplicate of the less recently used profile.
 TEST_F(AddressDataManagerTest,
        CreateDuplicateWithAnUpdate_UpdatedProfileWasMoreRecentlyUsed) {
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
+  AdvanceClock(kArbitraryTime - base::Time::Now());
 
   AutofillProfile less_recently_used_profile(test::GetFullProfile());
   AutofillProfile more_recently_used_profile(test::GetFullProfile2());
 
-  less_recently_used_profile.set_use_date(AutofillClock::Now());
-  more_recently_used_profile.set_use_date(AutofillClock::Now());
+  less_recently_used_profile.set_use_date(base::Time::Now());
+  more_recently_used_profile.set_use_date(base::Time::Now());
 
   AddProfileToAddressDataManager(less_recently_used_profile);
   AddProfileToAddressDataManager(more_recently_used_profile);
@@ -952,8 +950,8 @@ TEST_F(AddressDataManagerTest,
   updated_more_recently_used_profile.set_guid(
       more_recently_used_profile.guid());
   // Set the updated profile to have a newer use date than it's duplicate.
-  test_clock.Advance(base::Days(1));
-  base::Time newer_use_data = AutofillClock::Now();
+  AdvanceClock(base::Days(1));
+  base::Time newer_use_data = base::Time::Now();
   updated_more_recently_used_profile.set_use_date(newer_use_data);
   // Expect an update and a deletion. This only triggers a single notification
   // once both operations have finished.
@@ -972,15 +970,14 @@ TEST_F(AddressDataManagerTest,
 TEST_F(AddressDataManagerTest, RecordUseOf) {
   base::test::ScopedFeatureList feature{
       features::kAutofillTrackMultipleUseDates};
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
+  AdvanceClock(kArbitraryTime - base::Time::Now());
   AutofillProfile profile = test::GetFullProfile();
   ASSERT_EQ(profile.use_count(), 1u);
   ASSERT_EQ(profile.use_date(), kArbitraryTime);
   ASSERT_EQ(profile.modification_date(), kArbitraryTime);
   AddProfileToAddressDataManager(profile);
 
-  test_clock.SetNow(kSomeLaterTime);
+  AdvanceClock(kSomeLaterTime - base::Time::Now());
   base::HistogramTester histogram_tester;
   address_data_manager().RecordUseOf(profile);
   histogram_tester.ExpectUniqueSample(
@@ -1110,8 +1107,6 @@ TEST_F(AddressDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   GURL first_url("https://www.block.me/index.html");
   GURL second_url("https://www.block.too/index.html");
 
-  TestAutofillClock test_clock;
-
   // Add strikes to block both domains.
   address_data_manager().AddStrikeToBlockNewProfileImportForDomain(first_url);
   address_data_manager().AddStrikeToBlockNewProfileImportForDomain(first_url);
@@ -1121,9 +1116,9 @@ TEST_F(AddressDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   EXPECT_TRUE(
       address_data_manager().IsNewProfileImportBlockedForDomain(first_url));
 
-  test_clock.Advance(base::Hours(1));
-  base::Time end_of_deletion = AutofillClock::Now();
-  test_clock.Advance(base::Hours(1));
+  AdvanceClock(base::Hours(1));
+  base::Time end_of_deletion = base::Time::Now();
+  AdvanceClock(base::Hours(1));
 
   address_data_manager().AddStrikeToBlockNewProfileImportForDomain(second_url);
   EXPECT_TRUE(
