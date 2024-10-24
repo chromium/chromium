@@ -4282,6 +4282,10 @@ class DevToolsRenderDocumentTest : public DevToolsTest {
 IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   bool called = false;
+  auto* inspected_web_contents = GetInspectedTab();
+  auto agent_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents);
+  EXPECT_EQ(window_, DevToolsWindow::FindDevToolsWindow(agent_host.get()));
   DevToolsWindowTesting::Get(window_)->SetCloseCallback(
       base::BindOnce([](bool& called) { called = true; }, std::ref(called)));
   WebContents* main_web_contents =
@@ -4289,5 +4293,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
   main_web_contents->ReloadFocusedFrame();
   EXPECT_TRUE(WaitForLoadStop(main_web_contents));
   EXPECT_FALSE(called);
+  EXPECT_EQ(window_, DevToolsWindow::FindDevToolsWindow(agent_host.get()));
   DevToolsWindowTesting::Get(window_)->CloseDevToolsWindowSync(window_);
 }

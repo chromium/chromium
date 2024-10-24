@@ -2042,7 +2042,7 @@ void DevToolsWindow::MainWebContentRenderFrameHostChanged(
     content::RenderFrameHost* new_frame) {
   DevToolsUIBindings* new_bindings =
       DevToolsUIBindings::ForWebContents(main_web_contents_);
-  if (!new_bindings) {
+  if (!new_bindings || new_bindings == bindings_) {
     return;
   }
   bindings_->TransferDelegate(*new_bindings);
