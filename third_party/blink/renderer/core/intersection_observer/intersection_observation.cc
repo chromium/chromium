@@ -179,11 +179,14 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) const {
       Observer()->trackVisibility()) {
     mojom::blink::FrameOcclusionState occlusion_state =
         target_->GetDocument().GetFrame()->GetOcclusionState();
-    // If we're tracking visibility, and we don't have occlusion information
-    // from our parent frame, then postpone computing intersections until a
-    // later lifecycle when the occlusion information is known.
-    if (occlusion_state == mojom::blink::FrameOcclusionState::kUnknown)
+    // If we're tracking visibility, and we aren't currently reporting the
+    // target visible, and we don't have occlusion information from our parent
+    // frame, then postpone computing intersections until a later lifecycle when
+    // the occlusion information is known.
+    if (!last_is_visible_ &&
+        occlusion_state == mojom::blink::FrameOcclusionState::kUnknown) {
       return false;
+    }
   }
   return true;
 }
