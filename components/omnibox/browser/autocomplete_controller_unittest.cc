@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -2318,7 +2319,7 @@ TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
 
 // Anroid and iOS have different handling for pedals.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(AutocompleteControllerTest, NoPedalsAttachedToLensSearchboxMatches) {
+TEST_F(AutocompleteControllerTest, NoActionsAttachedToLensSearchboxMatches) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedal* pedal) {
     pedals.insert(
@@ -2334,35 +2335,44 @@ TEST_F(AutocompleteControllerTest, NoPedalsAttachedToLensSearchboxMatches) {
       u"Clear History", metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
       TestSchemeClassifier());
 
-  SetAutocompleteMatches({
-      CreateSearchMatch(u"Clear History"),
-      CreateSearchMatch(u"search 1"),
-      CreateSearchMatch(u"search 2"),
-  });
+  SetAutocompleteMatches(
+      {CreateSearchMatch(u"Clear History"), CreateSearchMatch(u"search 1"),
+       CreateSearchMatch(u"search 2"),
+       CreateHistoryURLMatch(
+           /*destination_url=*/"http://this-site-matches.com")});
+
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(provider_client()->GetTabMatcher()))
+      .set_url_substring_match("matches");
 
   controller_.AttachActions();
 
   // For a Lens Searchbox, AttachActions should not attach a pedal to the
   // first match, and therefore it won't get split out into a separate pedal
+  // match. It also shouldn't attach a switch to this tab action to the last
   // match.
   EXPECT_EQ(nullptr, controller_.internal_result_.match_at(1)->takeover_action);
+  EXPECT_FALSE(
+      controller_.internal_result_.match_at(3)->has_tab_match.value_or(false));
 
   controller_.input_ =
       AutocompleteInput(u"Clear History", metrics::OmniboxEventProto::OTHER,
                         TestSchemeClassifier());
 
-  SetAutocompleteMatches({
-      CreateSearchMatch(u"Clear History"),
-      CreateSearchMatch(u"search 1"),
-      CreateSearchMatch(u"search 2"),
-  });
+  SetAutocompleteMatches(
+      {CreateSearchMatch(u"Clear History"),
+       CreateHistoryURLMatch(
+           /*destination_url=*/"http://this-site-matches.com"),
+       CreateSearchMatch(u"search 1"), CreateSearchMatch(u"search 2")});
 
   controller_.AttachActions();
 
-  // For any other page classification, AttachActions should attach a pedal to
-  // the first match and split it out into a separate action.
+  // For any other page classification, AttachActions should attach a pedal
+  // and a switch to this tab action to the relevant matches.
   EXPECT_EQ(
       OmniboxActionId::PEDAL,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
+  EXPECT_TRUE(
+      controller_.internal_result_.match_at(2)->has_tab_match.value_or(false));
 }
 #endif

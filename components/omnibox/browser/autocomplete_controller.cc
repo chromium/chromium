@@ -1537,6 +1537,10 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
 }
 
 void AutocompleteController::AttachActions() {
+  // No actions should be attached for lens searchboxes.
+  if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
+    return;
+  }
   // TabMatcher should run for ZPS for the Hub since open tab suggestions are
   // shown there.
   if (!input_.IsZeroSuggest() ||
@@ -1549,10 +1553,7 @@ void AutocompleteController::AttachActions() {
       internal_result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
     }
 
-    // Do not attach pedals to matches in the Lens Searchbox.
-    if (!omnibox::IsLensSearchbox(input_.current_page_classification())) {
-      internal_result_.AttachPedalsToMatches(input_, *provider_client_);
-    }
+    internal_result_.AttachPedalsToMatches(input_, *provider_client_);
 
 #if !BUILDFLAG(IS_IOS)
     // HistoryClusters is not enabled on iOS.

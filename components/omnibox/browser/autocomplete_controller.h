@@ -321,7 +321,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            FilterMatchesForInstantKeywordWithBareAt);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
-                           NoPedalsAttachedToLensSearchboxMatches);
+                           NoActionsAttachedToLensSearchboxMatches);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateSearchboxStats);
