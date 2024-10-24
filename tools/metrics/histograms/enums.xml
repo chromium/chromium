@@ -33617,6 +33617,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="132" label="ContainInlineSize"/>
   <int value="133" label="CheckVisibility"/>
   <int value="134" label="Overlay"/>
+  <int value="135" label="CanvasElement"/>
+  <int value="136" label="CanvasFillText"/>
+  <int value="137" label="CanvasMeasureText"/>
+  <int value="138" label="Canvas2D"/>
+  <int value="139" label="CanvasAlpha"/>
+  <int value="140" label="CanvasColorManagement"/>
+  <int value="141" label="CanvasDesynchronized"/>
+  <int value="142" label="WillReadFrequently"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

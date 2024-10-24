@@ -190,6 +190,14 @@ enum WebDXFeature {
   kContainInlineSize = 132,
   kCheckVisibility = 133,
   kOverlay = 134,
+  kCanvasElement = 135,
+  kCanvasFillText = 136,
+  kCanvasMeasureText = 137,
+  kCanvas2D = 138,
+  kCanvasAlpha = 139,
+  kCanvasColorManagement = 140,
+  kCanvasDesynchronized = 141,
+  kWillReadFrequently = 142,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

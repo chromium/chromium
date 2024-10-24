@@ -472,6 +472,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kSegmenter, WebDXFeature::kIntlSegmenter},
           {WebFeature::kEyeDropperOpen, WebDXFeature::kEyedropper},
           {WebFeature::kElementCheckVisibility, WebDXFeature::kCheckVisibility},
+          {WebFeature::kHTMLCanvasElement, WebDXFeature::kCanvasElement},
+          {WebFeature::kCanvasUseColorSpace,
+           WebDXFeature::kCanvasColorManagement},
       }};
 
   return *kMap;
