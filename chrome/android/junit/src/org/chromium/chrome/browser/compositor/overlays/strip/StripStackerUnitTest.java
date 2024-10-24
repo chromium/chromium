@@ -10,10 +10,12 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -24,6 +26,8 @@ import org.chromium.ui.base.LocalizationUtils;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripStackerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final float TAB_WIDTH = 25;
     private static final float TAB_WEIGHT = 1;
     private static final float TAB_OVERLAP = 5;
@@ -43,7 +47,6 @@ public class StripStackerUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mInput = new StripLayoutTab[] {mTab1, mTab2, mTab3, mTab4, mTab5};
         float x = 0;
         for (StripLayoutTab tab : mInput) {
@@ -79,7 +82,7 @@ public class StripStackerUnitTest {
     }
 
     @Test
-    public void testComputeNewTabButtonOffsetRTL() {
+    public void testComputeNewTabButtonOffsetRtl() {
         LocalizationUtils.setRtlForTesting(true);
         float expected_res = 3f;
         // Update drawX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + BUTTON_WIDTH +
