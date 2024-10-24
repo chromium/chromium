@@ -33,9 +33,6 @@ class ChunkedByteBuffer {
 
   ~ChunkedByteBuffer();
 
-  // Appends |length| bytes starting from |start| to the buffer.
-  void Append(const uint8_t* start, size_t length);
-
   // Appends bytes contained in the |string| to the buffer.
   void Append(std::string_view string);
 
