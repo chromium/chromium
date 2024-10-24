@@ -9,6 +9,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
@@ -73,10 +75,12 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     }
 
     private boolean mIsAnimating;
+    private boolean mShowOverflowButton;
     private @TabActionState int mTabActionState = TabActionState.UNSET;
     private @Nullable ObjectAnimator mQuickDeleteAnimation;
     private @Nullable QuickDeleteAnimationGradientDrawable mQuickDeleteAnimationDrawable;
     private ImageView mActionButton;
+    private ColorStateList mActionButtonTint;
 
     public TabGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -178,13 +182,19 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
 
         if (mTabActionState != TabActionState.CLOSABLE) return;
 
-        if (showOverflowButton) {
-            mActionButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                            getResources(), R.drawable.ic_more_vert_24dp, getContext().getTheme()));
+        mShowOverflowButton = showOverflowButton;
+        if (mShowOverflowButton) {
+            setTabActionButtonOverflowDrawable();
         } else {
             setTabActionButtonCloseDrawable();
         }
+
+        applyActionButtonTint();
+    }
+
+    void setTabActionButtonTint(ColorStateList actionButtonTint) {
+        mActionButtonTint = actionButtonTint;
+        setTabActionButtonDrawable(mShowOverflowButton);
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -193,7 +203,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
         mTabActionState = tabActionState;
         int accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_YES;
         if (mTabActionState == TabActionState.CLOSABLE) {
-            setTabActionButtonCloseDrawable();
+            setTabActionButtonDrawable(mShowOverflowButton);
         } else if (mTabActionState == TabActionState.SELECTABLE) {
             accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_NO;
             setTabActionButtonSelectionDrawable();
@@ -217,6 +227,16 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
         }
         mActionButton.setBackground(null);
         mActionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
+    }
+
+    private void setTabActionButtonOverflowDrawable() {
+        mActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(), R.drawable.ic_more_vert_24dp, getContext().getTheme()));
+    }
+
+    private void applyActionButtonTint() {
+        ImageViewCompat.setImageTintList(mActionButton, mActionButtonTint);
     }
 
     private void setTabActionButtonSelectionDrawable() {

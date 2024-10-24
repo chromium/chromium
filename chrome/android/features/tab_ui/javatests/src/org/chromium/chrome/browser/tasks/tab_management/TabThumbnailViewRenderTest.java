@@ -71,7 +71,7 @@ public class TabThumbnailViewRenderTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private FrameLayout mContentView;
-    private ViewGroup mTabCard;
+    private TabGridView mTabCard;
     private TabThumbnailView mTabThumbnailView;
     private Bitmap mBitmap;
 
@@ -91,7 +91,7 @@ public class TabThumbnailViewRenderTest {
                     mContentView.setBackgroundColor(Color.WHITE);
 
                     mTabCard =
-                            (ViewGroup)
+                            (TabGridView)
                                     mActivityTestRule
                                             .getActivity()
                                             .getLayoutInflater()
@@ -99,7 +99,7 @@ public class TabThumbnailViewRenderTest {
                                                     R.layout.tab_grid_card_item,
                                                     mContentView,
                                                     false);
-                    ((TabGridView) mTabCard).setTabActionState(TabActionState.CLOSABLE);
+                    mTabCard.setTabActionState(TabActionState.CLOSABLE);
                     mTabCard.setVisibility(View.VISIBLE);
                     mContentView.addView(mTabCard);
 
@@ -226,5 +226,9 @@ public class TabThumbnailViewRenderTest {
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
         mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected);
+
+        mTabCard.setTabActionButtonTint(
+                TabUiThemeProvider.getActionButtonTintList(
+                        mTabCard.getContext(), isIncognito, isSelected));
     }
 }
