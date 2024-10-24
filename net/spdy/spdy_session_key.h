@@ -99,13 +99,13 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   HostPortProxyPair host_port_proxy_pair_;
   // If enabled, then session cannot be tracked by the server.
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
-  SessionUsage session_usage_;
+  SessionUsage session_usage_ = SessionUsage::kDestination;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts. If network state
   // partitioning is disabled this will be set to an empty key.
   NetworkAnonymizationKey network_anonymization_key_;
-  SecureDnsPolicy secure_dns_policy_;
-  bool disable_cert_verification_network_fetches_;
+  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
+  bool disable_cert_verification_network_fetches_ = false;
 };
 
 }  // namespace net

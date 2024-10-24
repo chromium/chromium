@@ -87,11 +87,11 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
   quic::QuicServerId server_id_;
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
   ProxyChain proxy_chain_;
-  SessionUsage session_usage_;
+  SessionUsage session_usage_ = SessionUsage::kDestination;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts.
   NetworkAnonymizationKey network_anonymization_key_;
-  SecureDnsPolicy secure_dns_policy_;
+  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool require_dns_https_alpn_ = false;
 };
 
