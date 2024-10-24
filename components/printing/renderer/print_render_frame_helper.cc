@@ -2523,11 +2523,12 @@ void PrintRenderFrameHelper::PrintPageInternal(
     gfx::Size page_size_in_points =
         gfx::ToRoundedSize(gfx::SizeF(page_width, page_height));
 
-    const double scale_factor_for_points = static_cast<double>(kPointsPerInch) /
-                                           static_cast<double>(kPixelsPerInch);
+    constexpr double kScaleFactorInPoints =
+        static_cast<double>(kPointsPerInch) /
+        static_cast<double>(kPixelsPerInch);
     canvas = metafile->GetVectorCanvasForNewPage(
         page_size_in_points, gfx::Rect(page_size_in_points),
-        scale_factor_for_points, layout.page_orientation);
+        kScaleFactorInPoints, layout.page_orientation);
   }
   if (!canvas)
     return;
@@ -2548,7 +2549,9 @@ void PrintRenderFrameHelper::PrintPageInternal(
 
   // Done printing. Close the canvas to retrieve the compiled metafile.
   bool ret = metafile->FinishPage();
-  DCHECK(ret);
+  // Since `metafile` is known to have a non-null `canvas` at this point,
+  // FinishPage() cannot fail.
+  CHECK(ret);
 }
 
 void PrintRenderFrameHelper::SetupOnStopLoadingTimeout() {
