@@ -305,9 +305,7 @@ void HTMLCanvasElement::Dispose() {
     context_ = nullptr;
   }
 
-  if (canvas2d_bridge_) {
-    canvas2d_bridge_ = nullptr;
-  }
+  canvas2d_bridge_ = nullptr;
 
   if (surface_layer_bridge_) {
     // Observer has to be cleared out at this point. Otherwise the
