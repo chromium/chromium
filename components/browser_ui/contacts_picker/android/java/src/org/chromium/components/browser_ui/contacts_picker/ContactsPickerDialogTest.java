@@ -49,6 +49,7 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -74,6 +75,7 @@ public class ContactsPickerDialogTest
     private WindowAndroid mWindowAndroid;
 
     @Mock private WebContents mWebContents;
+    @Mock private InsetObserver mInsetObserver;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -142,7 +144,8 @@ public class ContactsPickerDialogTest
                             return new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(mActivity));
+                                    IntentRequestTracker.createFromActivity(mActivity),
+                                    mInsetObserver);
                         });
         mWebContents = Mockito.mock(WebContents.class);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);

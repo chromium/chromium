@@ -2132,7 +2132,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* statusBarColorProvider= */ this,
                 new OneshotSupplierImpl<>(),
                 getIntentRequestTracker(),
-                getWindowAndroid().getInsetObserver(),
+                getInsetObserver(),
                 this::backShouldCloseTab,
                 this::sendToBackground,
                 // TODO(sinansahin): This currently only checks for incognito extras in the intent.

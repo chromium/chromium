@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageWrapper;
 import org.chromium.components.messages.MessagesFactory;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -56,6 +57,7 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Mock private SurveyUiDelegateBridge.Natives mMockSurveyUiDelegateBridge;
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private InsetObserver mInsetObserver;
 
     private Activity mActivity;
     private WindowAndroid mWindow;
@@ -67,7 +69,10 @@ public class SurveyUiDelegateBridgeUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
                 new ActivityWindowAndroid(
-                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+                        mActivity,
+                        false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        mInsetObserver);
         MessagesFactory.attachMessageDispatcher(mWindow, mMockMessageDispatcher);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
     }

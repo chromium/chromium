@@ -452,7 +452,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mCompositorViewHolderSupplier,
                 getModalDialogManagerSupplier(),
                 mManualFillingComponentSupplier,
-                getIntentRequestTracker());
+                getIntentRequestTracker(),
+                getInsetObserver());
     }
 
     @Override
@@ -685,11 +686,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mBottomContainer = findViewById(R.id.bottom_container);
 
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
-            getWindowAndroid().getInsetObserver().addObserver(mSnackbarManager);
+            getInsetObserver().addObserver(mSnackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
             // TODO (crbug.com/365110749): Remove wiring the InsetObserver when the dialog window
             // returns expected system insets.
-            getModalDialogManager().setInsetObserver(getWindowAndroid().getInsetObserver());
+            getModalDialogManager().setInsetObserver(getInsetObserver());
 
             // Make the activity listen to policy change events
             CombinedPolicyProvider.get().addPolicyChangeListener(this);
@@ -1670,7 +1671,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mDisplayAndroidObserver = null;
             }
 
-            InsetObserver insetObserver = windowAndroid.getInsetObserver();
+            InsetObserver insetObserver = getInsetObserver();
             if (insetObserver != null) {
                 insetObserver.removeObserver(mSnackbarManager);
             }
@@ -2120,8 +2121,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         ApplicationViewportInsetSupplier insetSupplier =
                 getWindowAndroid().getApplicationBottomInsetSupplier();
-        insetSupplier.setKeyboardInsetSupplier(
-                getWindowAndroid().getInsetObserver().getSupplierForKeyboardInset());
+        insetSupplier.setKeyboardInsetSupplier(getInsetObserver().getSupplierForKeyboardInset());
         insetSupplier.setKeyboardAccessoryInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(insetSupplier);

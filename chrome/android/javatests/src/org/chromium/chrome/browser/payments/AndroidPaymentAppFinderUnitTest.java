@@ -52,6 +52,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -80,6 +81,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
     @Mock private PaymentManifestDownloader mPaymentManifestDownloader;
     @Mock private PaymentManifestParser mPaymentManifestParser;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
+    @Mock private InsetObserver mInsetObserver;
 
     private WindowAndroid mWindowAndroid;
 
@@ -91,7 +93,8 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                             return new ActivityWindowAndroid(
                                     getActivity(),
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(getActivity()));
+                                    IntentRequestTracker.createFromActivity(getActivity()),
+                                    mInsetObserver);
                         });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();

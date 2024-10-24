@@ -21,6 +21,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -36,6 +39,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
@@ -48,6 +52,10 @@ import java.io.File;
 public class SelectFileDialogTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Mock InsetObserver mInsetObserver;
 
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -65,11 +73,12 @@ public class SelectFileDialogTest {
         public Intent lastIntent;
         public IntentCallback lastCallback;
 
-        public ActivityWindowAndroidForTest(Activity activity) {
+        public ActivityWindowAndroidForTest(Activity activity, InsetObserver insetObserver) {
             super(
                     activity,
                     /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(activity));
+                    IntentRequestTracker.createFromActivity(activity),
+                    insetObserver);
         }
 
         @Override
@@ -105,7 +114,8 @@ public class SelectFileDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityWindowAndroidForTest =
-                            new ActivityWindowAndroidForTest(mActivityTestRule.getActivity());
+                            new ActivityWindowAndroidForTest(
+                                    mActivityTestRule.getActivity(), mInsetObserver);
                     SelectFileDialog.setWindowAndroidForTests(mActivityWindowAndroidForTest);
 
                     mWebContents = mActivityTestRule.getActivity().getCurrentWebContents();

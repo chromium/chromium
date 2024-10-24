@@ -98,6 +98,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -138,6 +139,7 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     @Mock Profile mProfile;
     @Mock Tracker mTracker;
+    @Mock InsetObserver mInsetObserver;
 
     private TestActivity mActivity;
     private WindowAndroid mWindow;
@@ -184,7 +186,10 @@ public class AndroidShareSheetControllerUnitTest {
         mActivityScenario.getScenario().moveToState(State.RESUMED);
         mWindow =
                 new ActivityWindowAndroid(
-                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+                        mActivity,
+                        false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        mInsetObserver);
         mPrintCallback = new PayloadCallbackHelper<>();
         // Set up mock tab
         doReturn(mWindow).when(mTab).getWindowAndroid();

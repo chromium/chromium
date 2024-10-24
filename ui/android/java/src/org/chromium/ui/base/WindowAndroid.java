@@ -77,7 +77,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             KeyboardVisibilityDelegate.getInstance();
 
-    private InsetObserver mInsetObserver;
+    private @Nullable InsetObserver mInsetObserver;
 
     // Native pointer to the c++ WindowAndroid object.
     private long mNativeWindowAndroid;
@@ -192,9 +192,11 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         this(context, DisplayAndroid.getNonMultiDisplay(context));
     }
 
-    protected WindowAndroid(Context context, IntentRequestTracker tracker) {
+    protected WindowAndroid(
+            Context context, IntentRequestTracker tracker, InsetObserver insetObserver) {
         this(context, DisplayAndroid.getNonMultiDisplay(context));
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
+        mInsetObserver = insetObserver;
     }
 
     /**
@@ -788,14 +790,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     /** Returns the {@link InsetObserver} for the root view of the activity or null. */
     public InsetObserver getInsetObserver() {
-        if (mInsetObserver == null) {
-            Window window = getWindow();
-            if (window == null) return null;
-
-            mInsetObserver =
-                    new InsetObserver(
-                            new ImmutableWeakReference<>(window.getDecorView().getRootView()));
-        }
         return mInsetObserver;
     }
 

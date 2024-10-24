@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
@@ -40,7 +42,8 @@ public class ActivityWindowAndroid extends WindowAndroid
     public ActivityWindowAndroid(
             Context context,
             boolean listenToActivityState,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            @Nullable InsetObserver insetObserver) {
         this(
                 context,
                 listenToActivityState,
@@ -48,7 +51,8 @@ public class ActivityWindowAndroid extends WindowAndroid
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 new ActivityKeyboardVisibilityDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
-                intentRequestTracker);
+                intentRequestTracker,
+                insetObserver);
     }
 
     /**
@@ -63,14 +67,16 @@ public class ActivityWindowAndroid extends WindowAndroid
             Context context,
             boolean listenToActivityState,
             @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            InsetObserver insetObserver) {
         this(
                 context,
                 listenToActivityState,
                 new ActivityAndroidPermissionDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 keyboardVisibilityDelegate,
-                intentRequestTracker);
+                intentRequestTracker,
+                insetObserver);
     }
 
     /**
@@ -86,8 +92,9 @@ public class ActivityWindowAndroid extends WindowAndroid
             boolean listenToActivityState,
             ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
             ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
-            IntentRequestTracker intentRequestTracker) {
-        super(context, intentRequestTracker);
+            IntentRequestTracker intentRequestTracker,
+            InsetObserver insetObserver) {
+        super(context, intentRequestTracker, insetObserver);
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             throw new IllegalArgumentException("Context is not and does not wrap an Activity");
@@ -101,10 +108,7 @@ public class ActivityWindowAndroid extends WindowAndroid
         activityKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
-                            // `getInsetObserver()` implicitly checks for a window and for the
-                            // activity to not be finishing.
-                            var insetObserver = getInsetObserver();
-                            if (insetObserver == null) {
+                            if (getInsetObserver() == null) {
                                 // An InsetObserver can no longer be created. Stub this out so
                                 // calls continue to succeed.
                                 return new ObservableSupplierImpl<Integer>();

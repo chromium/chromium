@@ -61,6 +61,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -1388,9 +1389,11 @@ class AutocompleteMediator
                 mContext.getResources()
                         .getDimensionPixelOffset(
                                 R.dimen.omnibox_suggestion_list_animation_added_vertical_offset);
+        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        assert insetObserver != null;
         mAnimationDriver =
                 new SuggestionsListAnimationDriver(
-                        mWindowAndroid.getInsetObserver(),
+                        insetObserver,
                         mListPropertyModel,
                         mEmbedder::getVerticalTranslationForAnimation,
                         () -> propagateOmniboxSessionStateChange(true),

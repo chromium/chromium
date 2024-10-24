@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.ui.InsetObserver;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -102,6 +104,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    private InsetObserver mInsetObserver;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -162,6 +165,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
 
         setDefaultTaskDescription();
+        mInsetObserver = createInsetObserver();
     }
 
     @Override
@@ -471,6 +475,18 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     protected EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
         return mEdgeToEdgeStateProvider;
+    }
+
+    /** Returns the {@link InsetObserver} for observing changes to the system insets. */
+    protected InsetObserver getInsetObserver() {
+        assert mInsetObserver != null
+                : "The inset observer should not be accessed before being initialized.";
+        return mInsetObserver;
+    }
+
+    private InsetObserver createInsetObserver() {
+        return new InsetObserver(
+                new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()));
     }
 
     private void setAutomotiveToolbarBackButtonAction() {

@@ -74,7 +74,10 @@ public class ShareHelperUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
                 new ActivityWindowAndroid(
-                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+                        mActivity,
+                        /* listenToActivityState= */ false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        /* insetObserver= */ null);
         mImageUri = Uri.parse(IMAGE_URI);
     }
 

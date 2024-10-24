@@ -166,7 +166,6 @@ public class EdgeToEdgeControllerImpl
                         updateWebContentsObserver(tab);
                     }
                 };
-        mInsetObserver = mWindowAndroid.getInsetObserver();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
 
@@ -180,6 +179,10 @@ public class EdgeToEdgeControllerImpl
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
 
+        mInsetObserver = mWindowAndroid.getInsetObserver();
+        assert mInsetObserver != null
+                : "The EdgeToEdgeControllerImpl needs access to a valid InsetObserver to listen to"
+                        + " the system insets!";
         mWindowInsetsConsumer = this::handleWindowInsets;
         mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
 

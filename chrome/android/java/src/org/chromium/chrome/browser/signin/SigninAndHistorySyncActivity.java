@@ -200,7 +200,10 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
         return new ActivityWindowAndroid(
-                this, /* listenToActivityState= */ true, getIntentRequestTracker());
+                this,
+                /* listenToActivityState= */ true,
+                getIntentRequestTracker(),
+                getInsetObserver());
     }
 
     @Override
