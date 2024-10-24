@@ -71,7 +71,6 @@
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "third_party/webrtc/modules/video_coding/svc/create_scalability_structure.h"
 #include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
-#include "third_party/webrtc/modules/video_coding/utility/simulcast_utility.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 
@@ -2437,8 +2436,7 @@ int32_t RTCVideoEncoder::InitEncode(
     if (codec_settings->codecType != webrtc::kVideoCodecVP9 ||
         !base::FeatureList::IsEnabled(
             features::kRtcVideoEncoderConvertSimulcastToSvc) ||
-        !webrtc::SimulcastUtility::ValidSimulcastParameters(
-            *codec_settings, codec_settings->numberOfSimulcastStreams)) {
+        !webrtc::SimulcastToSvcConverter::IsConfigSupported(*codec_settings)) {
       return WEBRTC_VIDEO_CODEC_ERR_SIMULCAST_PARAMETERS_NOT_SUPPORTED;
     }
     simulcast_to_svc_converter.emplace(*codec_settings);
