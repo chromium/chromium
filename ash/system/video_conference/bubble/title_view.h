@@ -40,6 +40,9 @@ class MicTestButtonContainer : public views::Button {
   MicTestButtonContainer& operator=(const MicTestButtonContainer&) = delete;
   ~MicTestButtonContainer() override;
 
+  // views::View
+  void OnThemeChanged() override;
+
  private:
   raw_ptr<views::ImageView> sidetone_icon_;
   raw_ptr<MicIndicator> mic_indicator_;
