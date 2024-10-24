@@ -37,8 +37,9 @@ uint32_t SecTaskGetCodeSignStatus(SecTaskRef task) API_AVAILABLE(macos(10.12));
 
 #endif  // PA_BUILDFLAG(IS_MAC)
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) || \
-    (defined(__ARM_FEATURE_BTI_DEFAULT) && (__ARM_FEATURE_BTI_DEFAULT == 1))
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) ||                                        \
+    (defined(__ARM_FEATURE_BTI_DEFAULT) && (__ARM_FEATURE_BTI_DEFAULT == 1) && \
+     __has_include(<sys/ifunc.h>))
 struct __ifunc_arg_t;
 
 #include "partition_alloc/aarch64_support.h"
