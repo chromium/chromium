@@ -59,6 +59,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/is_google_email.h"
 #include "remoting/base/local_session_policies_provider.h"
@@ -386,16 +387,17 @@ class HostProcess : public ConfigWatcher::Delegate,
   void OnPolicyError();
   void ReportPolicyErrorAndRestartHost();
   void ApplyHostDomainListPolicy();
-  void ApplyUsernamePolicy();
   void ApplyAllowRemoteAccessConnections();
   bool OnClientDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnHostDomainListPolicyUpdate(const base::Value::Dict& policies);
-  bool OnUsernamePolicyUpdate(const base::Value::Dict& policies);
   bool OnPairingPolicyUpdate(const base::Value::Dict& policies);
   bool OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies);
   bool OnEnableUserInterfacePolicyUpdate(const base::Value::Dict& policies);
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
   bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
+
+  std::optional<ErrorCode> OnSessionPoliciesReceived(
+      const SessionPolicies& session_policies) const;
 
   void InitializeSignaling();
 
@@ -473,7 +475,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   PolicyState policy_state_ = POLICY_INITIALIZING;
   std::vector<std::string> client_domain_list_;
   std::vector<std::string> host_domain_list_;
-  bool host_username_match_required_ = false;
   bool allow_pairing_ = true;
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
@@ -725,7 +726,6 @@ void HostProcess::OnConfigParsed(base::Value::Dict config) {
     // Reapply policies that could be affected by a new config.
     DCHECK_EQ(policy_state_, POLICY_LOADED);
     ApplyHostDomainListPolicy();
-    ApplyUsernamePolicy();
     ApplyAllowRemoteAccessConnections();
 
     // TODO(sergeyu): Here we assume that PIN is the only part of the config
@@ -1159,9 +1159,10 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 }
 
 void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK(!owner_email.empty());
 
-  // Use a canonical email form here for martching against FTL signaling IDs.
+  // Use a canonical email form here for matching against FTL signaling IDs.
   auto new_owner_email = GetCanonicalEmail(owner_email);
   if (host_owner_emails_.contains(new_owner_email)) {
     return;
@@ -1171,7 +1172,6 @@ void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
   host_owner_emails_.emplace(std::move(new_owner_email));
 
   ApplyHostDomainListPolicy();
-  ApplyUsernamePolicy();
 }
 
 void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
@@ -1397,6 +1397,10 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
     return;
   }
 
+  // Update the local policies held by `local_session_policies_provider_`. This
+  // will notify any active client sessions of the updated local session
+  // policies. Those sessions will terminate themselves if their effective
+  // session policies come from `local_session_policies_provider_`.
   // Use the platform policies instead of `policies`, since the latter only has
   // incremental changes.
   std::optional<SessionPolicies> local_session_policies =
@@ -1410,7 +1414,6 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   bool restart_required = false;
   restart_required |= OnClientDomainListPolicyUpdate(policies);
   restart_required |= OnHostDomainListPolicyUpdate(policies);
-  restart_required |= OnUsernamePolicyUpdate(policies);
   restart_required |= OnPairingPolicyUpdate(policies);
   restart_required |= OnGnubbyAuthPolicyUpdate(policies);
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies);
@@ -1535,70 +1538,6 @@ bool HostProcess::OnClientDomainListPolicyUpdate(
   return true;
 }
 
-void HostProcess::ApplyUsernamePolicy() {
-  if (state_ != HOST_STARTED) {
-    return;
-  }
-
-  if (!host_username_match_required_) {
-    HOST_LOG << "Policy does not require host username match.";
-    return;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  // The RemoteAccessHostMatchUsername policy does not exist on Windows, so this
-  // should be unreached code.
-  NOTREACHED();
-#endif
-
-  HOST_LOG << "Policy requires host username match.";
-
-#if BUILDFLAG(IS_APPLE)
-  // On Mac, we run as root at the login screen, so the username won't match.
-  // However, there's no need to enforce the policy at the login screen, as
-  // the client will have to reconnect if a login occurs.
-  if (getuid() == 0) {
-    return;
-  }
-#endif
-
-  std::string username = GetUsername();
-  LOG(INFO) << "Current local username is '" << username << "'";
-  std::set<std::string> allowed_emails;
-  for (const std::string& owner_email : host_owner_emails_) {
-    auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
-    if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
-      LOG(INFO) << owner_email << " matches the local username";
-      allowed_emails.emplace(owner_email);
-    } else {
-      LOG(WARNING) << owner_email << " does not match the local username";
-    }
-  }
-
-  host_owner_emails_.swap(allowed_emails);
-  if (host_owner_emails_.empty()) {
-    LOG(ERROR) << "No owner emails are allowed based on match username policy.";
-    ShutdownHost(kUsernameMismatchExitCode);
-  }
-}
-
-bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
-  // Returns false: never restart the host after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  std::optional<bool> host_username_match_required =
-      policies.FindBool(policy::key::kRemoteAccessHostMatchUsername);
-  if (!host_username_match_required.has_value()) {
-    return false;
-  }
-
-  host_username_match_required_ = *host_username_match_required;
-  ApplyUsernamePolicy();
-#endif
-  return false;
-}
-
 bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
@@ -1703,6 +1642,56 @@ bool HostProcess::OnAllowRemoteAccessConnections(
   allow_remote_access_connections_ = *allow_remote_access_connections;
   ApplyAllowRemoteAccessConnections();
   return false;
+}
+
+std::optional<ErrorCode> HostProcess::OnSessionPoliciesReceived(
+    const SessionPolicies& session_policies) const {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+
+  // We currently only validate the host_username_match_required policy here.
+  // Other policies are validated by ClientSession.
+
+  if (!session_policies.host_username_match_required.value_or(false)) {
+    return std::nullopt;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  VLOG(1) << "Policy host_username_match_required ignored since it is not "
+          << "supported on Windows.";
+  return std::nullopt;
+#else  // BUILDFLAG(IS_WIN) #else
+
+#if BUILDFLAG(IS_APPLE)
+  // On Mac, we run as root at the login screen, so the username won't match.
+  // However, there's no need to enforce the policy at the login screen, as
+  // the client will have to reconnect if a login occurs.
+  if (getuid() == 0) {
+    return std::nullopt;
+  }
+#endif
+
+  std::string username = GetUsername();
+  LOG(INFO) << "Current local username is '" << username << "'";
+  std::set<std::string> allowed_emails;
+  for (const std::string& owner_email : host_owner_emails_) {
+    auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
+    if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
+      LOG(INFO) << owner_email << " matches the local username";
+      allowed_emails.emplace(owner_email);
+    } else {
+      LOG(WARNING) << owner_email << " does not match the local username";
+    }
+  }
+
+  if (allowed_emails.empty()) {
+    LOG(ERROR) << "No owner emails are allowed based on match username policy.";
+    // TODO: crbug.com/359977809 - Add a new error code for mismatched username.
+    return ErrorCode::DISALLOWED_BY_POLICY;
+  }
+
+  return std::nullopt;
+
+#endif  // BUILDFLAG(IS_WIN) #else
 }
 
 void HostProcess::InitializeSignaling() {
@@ -1863,6 +1852,8 @@ void HostProcess::StartHost() {
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, context_->audio_task_runner(),
       context_->video_encode_task_runner(), desktop_environment_options_,
+      base::BindRepeating(&HostProcess::OnSessionPoliciesReceived,
+                          base::Unretained(this)),
       &local_session_policies_provider_);
 
   if (security_key_auth_policy_enabled_ && security_key_extension_supported_) {
@@ -1917,7 +1908,6 @@ void HostProcess::StartHost() {
   CreateAuthenticatorFactory();
 
   ApplyHostDomainListPolicy();
-  ApplyUsernamePolicy();
   ApplyAllowRemoteAccessConnections();
 }
 

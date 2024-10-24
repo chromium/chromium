@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,6 +29,7 @@
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/codec/video_encoder_verbatim.h"
@@ -67,6 +69,7 @@ using testing::_;
 using testing::AtLeast;
 using testing::Eq;
 using testing::Not;
+using testing::Return;
 using testing::ReturnRef;
 using testing::StrictMock;
 
@@ -298,6 +301,8 @@ void ClientSessionTest::CreateClientSession() {
 
 void ClientSessionTest::ConnectClientSession(
     const SessionPolicies* session_policies) {
+  EXPECT_CALL(session_event_handler_, OnSessionPoliciesReceived(_))
+      .WillOnce(Return(std::nullopt));
   EXPECT_CALL(session_event_handler_, OnSessionAuthenticated(_));
   EXPECT_CALL(session_event_handler_, OnSessionChannelsConnected(_));
 
@@ -528,6 +533,18 @@ TEST_F(ClientSessionTest, DisconnectsAfterMaxSessionDurationIsReached) {
       *kInitialLocalPolicies.maximum_session_duration + base::Minutes(1));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(connection_->is_connected());
+}
+
+TEST_F(ClientSessionTest, DisconnectsIfOnSessionPoliciesReceivedReturnsError) {
+  EXPECT_CALL(session_event_handler_,
+              OnSessionPoliciesReceived(kInitialLocalPolicies))
+      .WillOnce(Return(ErrorCode::DISALLOWED_BY_POLICY));
+
+  CreateClientSession();
+  client_session_->OnConnectionAuthenticated(nullptr);
+
+  EXPECT_FALSE(connection_->is_connected());
+  EXPECT_EQ(connection_->disconnect_error(), ErrorCode::DISALLOWED_BY_POLICY);
 }
 
 TEST_F(ClientSessionTest,

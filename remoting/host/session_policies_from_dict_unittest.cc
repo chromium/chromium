@@ -32,6 +32,9 @@ const SessionPolicies kFullSessionPolicies = {
     .maximum_session_duration = base::Hours(20),
     .curtain_required = false,
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+    .host_username_match_required = true,
+#endif
 };
 
 const base::Value::Dict& GetFullSessionPolicyDict() {
@@ -47,6 +50,9 @@ const base::Value::Dict& GetFullSessionPolicyDict() {
           .Set(policy::key::kRemoteAccessHostMaximumSessionDurationMinutes,
                1200)
           .Set(policy::key::kRemoteAccessHostRequireCurtain, false)
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+          .Set(policy::key::kRemoteAccessHostMatchUsername, true)
 #endif
   );
   return *dict;

@@ -526,6 +526,16 @@ void ClientSession::OnConnectionAuthenticated(
              << effective_policies_;
   }
 
+  std::optional<ErrorCode> validation_result =
+      event_handler_->OnSessionPoliciesReceived(effective_policies_);
+
+  if (validation_result.has_value()) {
+    LOG(ERROR) << "Session policies disallowed by validator. Error code: "
+               << static_cast<int>(*validation_result);
+    DisconnectSession(*validation_result);
+    return;
+  }
+
   base::TimeDelta max_duration =
       effective_policies_.maximum_session_duration.value_or(base::TimeDelta());
   if (max_duration.is_positive()) {

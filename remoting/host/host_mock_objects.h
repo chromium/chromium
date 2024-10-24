@@ -177,6 +177,10 @@ class MockClientSessionEventHandler : public ClientSession::EventHandler {
                const std::string&,
                const protocol::TransportRoute&),
               (override));
+  MOCK_METHOD(std::optional<ErrorCode>,
+              OnSessionPoliciesReceived,
+              (const SessionPolicies& policies),
+              (override));
 };
 
 class MockDesktopEnvironmentFactory : public DesktopEnvironmentFactory {

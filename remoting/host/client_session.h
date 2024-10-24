@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -115,6 +117,12 @@ class ClientSession : public protocol::HostStub,
         ClientSession* client,
         const std::string& channel_name,
         const protocol::TransportRoute& route) = 0;
+
+    // Called when session policies are received. Returns nullopt if the session
+    // policies are valid; otherwise returns an error code, which will be used
+    // to close the session with.
+    virtual std::optional<ErrorCode> OnSessionPoliciesReceived(
+        const SessionPolicies& policies) = 0;
 
    protected:
     virtual ~EventHandler() {}

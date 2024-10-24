@@ -76,6 +76,10 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
       .curtain_required =
           dict.FindBool(policy::key::kRemoteAccessHostRequireCurtain),
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+      .host_username_match_required =
+          dict.FindBool(policy::key::kRemoteAccessHostMatchUsername),
+#endif
   };
 }
 
