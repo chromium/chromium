@@ -367,9 +367,19 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE) {
-    std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
+    std::move(callback).Run(std::nullopt);
     return;
   }
+
+  // If no session config update, skip network request.
+  if (GetSessionConfigSafe(session).captions_config().captions_enabled() ==
+          config->session_caption_enabled &&
+      GetSessionConfigSafe(session).captions_config().translations_enabled() ==
+          config->session_translation_enabled) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
           session_client_impl_->sender(), user_identity_, session->session_id(),

@@ -871,7 +871,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithEmptySession) {
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
-  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+  EXPECT_FALSE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithNonActiveSession) {
@@ -885,7 +885,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithNonActiveSession) {
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
-  EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
+  EXPECT_FALSE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
@@ -927,6 +927,34 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
 
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest,
+       UpdateCaptionConfigWithLocalConfigOnlyShouldNotSendServerRequest) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  UpdateSessionRequest request(nullptr, session.teacher(), session.session_id(),
+                               future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_)).Times(0);
+
+  boca_app_handler()->UpdateCaptionConfig(
+      mojom::CaptionConfig::New(/*=session_caption_enabled*/ false,
+                                /*local_caption_enabled*/ true,
+                                /*=session_translation_enabled*/ false),
+      future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
 }
