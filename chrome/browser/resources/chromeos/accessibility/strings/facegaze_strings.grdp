@@ -7,7 +7,7 @@
     Face control gives you cursor control with face pointing and ability to perform actions, such as left clicking with facial gestures like smile
   </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_CUSTOM_KEY_COMBO" desc="This text describes an action to perform a custom key combination.">
-    Perform a custom key combination
+    Custom key combination: <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
   </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_DOWN" desc="This text describes an action to press the down arrow key.">
     Press the down arrow key
@@ -59,6 +59,30 @@
   </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_VIRTUAL_KEYBOARD" desc="This text describes an action to show or hide the on-screen keyboard.">
     Show or hide on-screen keyboard
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_ONE_MODIFIER" desc="The text for a custom key combination containing a key and one modifier key. For example, ctrl + c.">
+    <ph name="MODIFIER">$1<ex>ctrl</ex></ph> + <ph name="KEY">$2<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_TWO_MODIFIERS" desc="The text for a custom key combination containing a key and two modifier keys. For example, ctrl + alt + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="KEY">$3<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_THREE_MODIFIERS" desc="The text for a custom key combination containing a key and three modifier keys. For example, ctrl + alt + shift + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="MODIFIER_THREE">$3<ex>shift</ex></ph> + <ph name="KEY">$4<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_FOUR_MODIFIERS" desc="The text for a custom key combination containing a key and four modifier keys. For example, ctrl + alt + shift + search + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="MODIFIER_THREE">$3<ex>shift</ex></ph> + <ph name="MODIFIER_FOUR">$4<ex>shift</ex></ph> + <ph name="KEY">$5<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_CTRL" desc="The text for the ctrl key in a custom key combination.">
+    ctrl
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_ALT" desc="The text for the alt key in a custom key combination.">
+    alt
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_SHIFT" desc="The text for the shift key in a custom key combination.">
+    shift
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_SEARCH" desc="The text for the search key in a custom key combination.">
+    search
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_BROW_INNER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should raise their eyebrows.">
     Raise eyebrows

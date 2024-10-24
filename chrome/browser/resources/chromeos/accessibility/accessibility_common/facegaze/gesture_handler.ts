@@ -207,15 +207,14 @@ export class GestureHandler {
     }
 
     // Construct display text.
-    const displayStrings = [];
+    const displayStrings: string[] = [];
     // Construct macros from all the macro names.
     const result: Macro[] = [];
     for (const [macroName, gesture] of macroNames) {
       const macro = this.macroFromName_(macroName, gesture);
       if (macro) {
         result.push(macro);
-        displayStrings.push(
-            BubbleController.getDisplayText(gesture, macro.getName()));
+        displayStrings.push(BubbleController.getDisplayText(gesture, macro));
         if (macro.triggersAtActionStartAndEnd()) {
           // Cache this macro to be run a second time later,
           // e.g. for key release.

@@ -10,6 +10,7 @@ import {MacroName} from './macro_names.js';
 
 export interface KeyCombination {
   key: KeyCode;
+  keyDisplay?: string;
   modifiers?: chrome.accessibilityPrivate.SyntheticKeyboardModifiers;
 }
 
@@ -21,6 +22,10 @@ export class KeyPressMacro extends Macro {
   constructor(macroName: MacroName, keyCombination: KeyCombination) {
     super(macroName);
     this.keyCombination_ = keyCombination;
+  }
+
+  getKeyCombination(): KeyCombination {
+    return this.keyCombination_;
   }
 
   /**

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
+import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -58,17 +60,20 @@ export class BubbleController {
     chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));
   }
 
-  static getDisplayText(gesture: FacialGesture, macroName: MacroName): string {
+  static getDisplayText(gesture: FacialGesture, macro: Macro): string {
     return chrome.i18n.getMessage('facegaze_display_text', [
-      BubbleController.getDisplayTextForMacro_(macroName),
+      BubbleController.getDisplayTextForMacro_(macro),
       BubbleController.getDisplayTextForGesture_(gesture)
     ]);
   }
 
-  private static getDisplayTextForMacro_(macroName: MacroName): string {
+  private static getDisplayTextForMacro_(macro: Macro): string {
+    const macroName = macro.getName();
     switch (macroName) {
       case MacroName.CUSTOM_KEY_COMBINATION:
-        return chrome.i18n.getMessage('facegaze_macro_text_custom_key_combo');
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_custom_key_combo',
+            this.getDisplayTextForKeyCombo_(macro as KeyPressMacro));
       case MacroName.KEY_PRESS_DOWN:
         return chrome.i18n.getMessage('facegaze_macro_text_key_press_down');
       case MacroName.KEY_PRESS_LEFT:
@@ -108,8 +113,57 @@ export class BubbleController {
             'facegaze_macro_text_toggle_virtual_keyboard');
       default:
         console.error(
-            'Display text requested for unsupported macro ' + macroName);
+            `Display text requested for unsupported macro ${macroName}`);
         return '';
+    }
+  }
+
+  private static getDisplayTextForKeyCombo_(macro: KeyPressMacro): string {
+    const keyCombo = macro.getKeyCombination();
+
+    // Pre-defined key press macros, like for MEDIA_PLAY_PAUSE and SNAPSHOT,
+    // should not request display text for their key combinations.
+    if (!keyCombo || !keyCombo.keyDisplay) {
+      console.error(
+          `Key combo text requested for unsupported macro ${macro.getName()}`);
+      return '';
+    }
+
+    const keys: string[] = [];
+
+    if (keyCombo.modifiers?.ctrl) {
+      keys.push(chrome.i18n.getMessage('facegaze_macro_text_key_ctrl'));
+    }
+    if (keyCombo.modifiers?.alt) {
+      keys.push(chrome.i18n.getMessage('facegaze_macro_text_key_alt'));
+    }
+    if (keyCombo.modifiers?.shift) {
+      keys.push(chrome.i18n.getMessage('facegaze_macro_text_key_shift'));
+    }
+    if (keyCombo.modifiers?.search) {
+      keys.push(chrome.i18n.getMessage('facegaze_macro_text_key_search'));
+    }
+
+    keys.push(keyCombo.keyDisplay);
+
+    switch (keys.length) {
+      case 2:
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_keyboard_combo_one_modifier', keys);
+      case 3:
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_keyboard_combo_two_modifiers', keys);
+      case 4:
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_keyboard_combo_three_modifiers', keys);
+      case 5:
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_keyboard_combo_four_modifiers', keys);
+      default:
+        // keyDisplay comes directly from the original KeyEvent and should be
+        // preserved as-is since keys may appear differently on keyboards
+        // depending on locale and layout.
+        return keyCombo.keyDisplay;
     }
   }
 

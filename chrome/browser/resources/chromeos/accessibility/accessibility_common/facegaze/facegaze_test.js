@@ -1580,6 +1580,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
   // Set the gestures to key combinations preference.
   const keyCombination = {
     key: KeyCode.C,
+    keyDisplay: 'c',
     modifiers: {ctrl: true},
   };
   await this.setPref(
@@ -1696,6 +1697,49 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
       'Right-click the mouse (Raise eyebrows), ' +
           'Left-click the mouse (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Set the gestures to key combinations preference.
+  const keyCombination = {
+    key: KeyCode.C,
+    keyDisplay: 'c',
+    modifiers: {ctrl: true},
+  };
+  await this.setPref(
+      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
+
+  // Verify that the preference propagated to FaceGaze.
+  assertEquals(this.getFaceGaze().gestureHandler_.gesturesToKeyCombos_.size, 1);
+
+  // Jaw open for custom key press.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+
+  assertEquals(
+      'Custom key combination: ctrl + c (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Release jaw open for custom key release.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.1);
+  this.processFaceLandmarkerResult(result);
 
   this.triggerBubbleControllerTimeout();
   assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
@@ -2064,7 +2108,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
     FacialGesture.MOUTH_UPPER_UP,
   ];
 
-  const macros = [
+  const macroNames = [
     MacroName.CUSTOM_KEY_COMBINATION,
     MacroName.KEY_PRESS_DOWN,
     MacroName.KEY_PRESS_LEFT,
@@ -2085,9 +2129,23 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
     MacroName.TOGGLE_VIRTUAL_KEYBOARD,
   ];
 
+  // Set the gestures to key combinations preference.
+  const keyCombination = {
+    key: KeyCode.C,
+    keyDisplay: 'c',
+    modifiers: {ctrl: true},
+  };
+  await this.setPref(
+      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      {[FacialGesture.BROW_INNER_UP]: JSON.stringify(keyCombination)});
+
+  const gestureHandler = this.getFaceGaze().gestureHandler_;
+
   let lastText = '';
-  for (const macro of macros) {
-    const currentText = BubbleController.getDisplayTextForMacro_(macro);
+  for (const macroName of macroNames) {
+    // Create mock macro using a placeholder gesture.
+    const currentText = BubbleController.getDisplayTextForMacro_(
+        gestureHandler.macroFromName_(macroName, FacialGesture.BROW_INNER_UP));
     assertNotEquals(currentText, '');
     assertNotEquals(currentText, lastText);
     lastText = currentText;
