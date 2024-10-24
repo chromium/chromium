@@ -1895,11 +1895,17 @@
   <message name="IDS_OFFLINE_LOGIN_PASSWORD" desc="Password field text on the offline login screen. Note: should be the same as the one used on the Gaia sign-in page.">
     Enter your password
   </message>
+  <message name="IDS_OFFLINE_LOGIN_PIN" desc="PIN field placeholder text on the offline login screen.">
+    Enter your PIN
+  </message>
   <message name="IDS_OFFLINE_LOGIN_INVALID_EMAIL" desc="Alert message about invalid email on the offline login screen. Note: should be the same as the one used on the Gaia sign-in page.">
     Please enter a valid email address
   </message>
   <message name="IDS_OFFLINE_LOGIN_INVALID_PASSWORD" desc="Alert message about mismatching email and password on the device">
     The email and password you entered don't match
+  </message>
+  <message name="IDS_OFFLINE_LOGIN_INVALID_PIN" desc="Alert message about mismatching email and PIN on the device">
+    The email and PIN you entered don't match
   </message>
   <message name="IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT" desc="Text shown on next button during offline signin flow dialog. Note: should be the same as the one used on the Gaia sign-in page.">
     Next

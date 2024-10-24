@@ -21,9 +21,11 @@ void OfflineLoginScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("offlineLoginEmail", IDS_OFFLINE_LOGIN_EMAIL);
   builder->Add("offlineLoginPassword", IDS_OFFLINE_LOGIN_PASSWORD);
+  builder->Add("offlineLoginPin", IDS_OFFLINE_LOGIN_PIN);
   builder->Add("offlineLoginInvalidEmail", IDS_OFFLINE_LOGIN_INVALID_EMAIL);
   builder->Add("offlineLoginInvalidPassword",
                IDS_OFFLINE_LOGIN_INVALID_PASSWORD);
+  builder->Add("offlineLoginInvalidPin", IDS_OFFLINE_LOGIN_INVALID_PIN);
   builder->Add("offlineLoginNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("offlineLoginForgotPasswordBtn",
                IDS_OFFLINE_LOGIN_FORGOT_PASSWORD_BUTTON_TEXT);
@@ -47,8 +49,8 @@ void OfflineLoginScreenHandler::Reset() {
   CallExternalAPI("reset");
 }
 
-void OfflineLoginScreenHandler::ShowPasswordPage() {
-  CallExternalAPI("proceedToPasswordPage");
+void OfflineLoginScreenHandler::ShowPasswordPage(bool authenticate_by_pin) {
+  CallExternalAPI("proceedToPasswordPage", authenticate_by_pin);
 }
 
 void OfflineLoginScreenHandler::ShowOnlineRequiredDialog() {

@@ -102,6 +102,14 @@ export class OfflineLogin extends OfflineLoginBase {
       },
 
       /**
+       * Whether the user should be authenticated by pin or password.
+       */
+      authenticateByPin: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Proper e-mail with domain, displayed on password page.
        */
       fullEmail: {
@@ -127,6 +135,7 @@ export class OfflineLogin extends OfflineLoginBase {
   private displayDomain: string;
   private email: string;
   private password: string;
+  private authenticateByPin: boolean;
   private fullEmail: string;
   private activeSection: string;
   private animationInProgress: boolean;
@@ -197,6 +206,7 @@ export class OfflineLogin extends OfflineLoginBase {
     this.manager = '';
     this.email = '';
     this.fullEmail = '';
+    this.authenticateByPin = false;
     this.shadowRoot!.querySelector<CrInputElement>('#emailInput')!.invalid =
         false;
     this.shadowRoot!.querySelector<CrInputElement>('#passwordInput')!.invalid =
@@ -204,7 +214,8 @@ export class OfflineLogin extends OfflineLoginBase {
     this.activeSection = LoginSection.EMAIL;
   }
 
-  proceedToPasswordPage(): void {
+  proceedToPasswordPage(authenticateByPin: boolean): void {
+    this.authenticateByPin = authenticateByPin;
     this.switchToPasswordCard(true /* animated */);
   }
 
@@ -342,6 +353,19 @@ export class OfflineLogin extends OfflineLoginBase {
       return;
     }
     this.onNextButtonClicked();
+  }
+
+  private passwordPlaceholderText(locale: string, authenticateByPin: boolean):
+      string {
+    const key = authenticateByPin ? 'offlineLoginPin' : 'offlineLoginPassword';
+    return this.i18nDynamic(locale, key);
+  }
+
+  private passwordErrorText(locale: string, authenticateByPin: boolean):
+      string {
+    const key = authenticateByPin ? 'offlineLoginInvalidPin' :
+                                    'offlineLoginInvalidPassword';
+    return this.i18nDynamic(locale, key);
   }
 }
 
