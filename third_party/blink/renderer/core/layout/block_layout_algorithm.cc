@@ -409,6 +409,15 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
     override_text_box_trim_end_break_token_ =
         previous.override_text_box_trim_end_break_token_;
     should_text_box_trim_node_end_ = previous.should_text_box_trim_node_end_;
+
+    if (relayout_mode_ & kRelayoutForTextBoxTrim) {
+      // Text box end trimming was done in a previous relayout pass. Make sure
+      // that it's re-applied.
+      override_text_box_trim_end_child_ =
+          previous.override_text_box_trim_end_child_;
+      override_text_box_trim_end_break_token_ =
+          previous.override_text_box_trim_end_break_token_;
+    }
   }
 }
 
@@ -3022,7 +3031,14 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
           // (if at all possible), which means that lines that could fit in the
           // current fragment (that we have already laid out) may have to be
           // saved for the next fragment.
-          return BreakStatus::kContinue;
+          //
+          // However, any text box block-end trimming must take place before
+          // calculating widows, since we might fit an additional line by
+          // trimming.
+          if (!should_text_box_trim_fragmentainer_end_ ||
+              override_text_box_trim_end_child_) {
+            return BreakStatus::kContinue;
+          }
         }
 
         // We have determined that there are plenty of lines for the next
