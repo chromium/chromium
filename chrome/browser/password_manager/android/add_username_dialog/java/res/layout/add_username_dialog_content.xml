@@ -39,7 +39,7 @@ found in the LICENSE file. -->
           app:errorTextAppearance="@style/TextAppearance.ErrorCaption"
           app:errorEnabled="true">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <org.chromium.chrome.browser.password_manager.shared_ui.TextInputEditTextNoAutofill
             tools:ignore="LabelFor"
             android:id="@+id/username"
             android:layout_width="match_parent"
@@ -62,7 +62,7 @@ found in the LICENSE file. -->
           app:endIconMode="password_toggle"
           app:endIconTint="@color/default_icon_color_tint_list">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <org.chromium.chrome.browser.password_manager.shared_ui.TextInputEditTextNoAutofill
             tools:ignore="LabelFor"
             android:id="@+id/password"
             android:layout_width="match_parent"
