@@ -74,6 +74,8 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               PrepareSystemWebAppWindowForOnTask,
               (SessionID window_id),
               (override));
+  MOCK_METHOD(SessionID, GetActiveTabID, (), (override));
+  MOCK_METHOD(void, SwitchToTab, (SessionID tab_id), (override));
 };
 
 // Mock implementation of the `OnTaskExtensionsManager`.
@@ -494,6 +496,9 @@ TEST_F(OnTaskSessionManagerTest, ShouldUpdateRestrictionsToTabOnBundleUpdated) {
                   kWindowId, GURL(kTestUrl1),
                   ::boca::LockedNavigationOptions::OPEN_NAVIGATION))
       .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveTabID())
+      .InSequence(s)
+      .WillRepeatedly(Return(kTabId_1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               RemoveTabsWithTabIds(kWindowId, std::set<SessionID>{kTabId_1}))
       .Times(1)
@@ -622,6 +627,72 @@ TEST_F(OnTaskSessionManagerTest,
   const SessionID tab_id = kTabId_1;
   session_manager_->OnTabRemoved(tab_id);
   EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl1)], IsEmpty());
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       FocusBackToPreviousActiveTabOnUpdateRestrictionsForBundleUpdated) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
+  Sequence s1, s2;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl1),
+                  ::boca::LockedNavigationOptions::OPEN_NAVIGATION))
+      .InSequence(s1)
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl2),
+                  ::boca::LockedNavigationOptions::OPEN_NAVIGATION))
+      .InSequence(s1)
+      .WillOnce(Return(kTabId_2));
+
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveTabID())
+      .InSequence(s2)
+      .WillRepeatedly(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              RemoveTabsWithTabIds(kWindowId, std::set<SessionID>{kTabId_1}))
+      .Times(1)
+      .InSequence(s2);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(
+                  kWindowId, GURL(kTestUrl1),
+                  ::boca::LockedNavigationOptions::BLOCK_NAVIGATION))
+      .InSequence(s2)
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_, SwitchToTab(kTabId_1))
+      .Times(1)
+      .InSequence(s2);
+
+  ::boca::Bundle bundle;
+  ::boca::ContentConfig* const content_config_1 =
+      bundle.mutable_content_configs()->Add();
+  content_config_1->set_url(kTestUrl1);
+  content_config_1->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ::boca::ContentConfig* const content_config_2 =
+      bundle.mutable_content_configs()->Add();
+  content_config_2->set_url(kTestUrl2);
+  content_config_2->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  session_manager_->OnBundleUpdated(bundle);
+
+  // Update restrictions.
+  ::boca::Bundle bundle_2;
+  ::boca::ContentConfig* const content_config_3 =
+      bundle_2.mutable_content_configs()->Add();
+  content_config_3->set_url(kTestUrl1);
+  content_config_3->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions::BLOCK_NAVIGATION);
+  ::boca::ContentConfig* const content_config_4 =
+      bundle_2.mutable_content_configs()->Add();
+  content_config_4->set_url(kTestUrl2);
+  content_config_4->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  session_manager_->OnBundleUpdated(bundle_2);
 }
 
 }  // namespace ash::boca

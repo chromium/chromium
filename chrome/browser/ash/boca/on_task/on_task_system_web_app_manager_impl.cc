@@ -220,6 +220,34 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
 }
 
+SessionID OnTaskSystemWebAppManagerImpl::GetActiveTabID() {
+  const Browser* const browser =
+      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
+  if (!browser) {
+    return SessionID::InvalidValue();
+  }
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(
+      browser->tab_strip_model()->GetActiveWebContents());
+  return tab_id;
+}
+
+void OnTaskSystemWebAppManagerImpl::SwitchToTab(SessionID tab_id) {
+  Browser* const browser =
+      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
+  if (!browser || !tab_id.is_valid()) {
+    return;
+  }
+  for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+    const SessionID id = sessions::SessionTabHelper::IdForTab(tab);
+    if (tab_id == id) {
+      browser->tab_strip_model()->ActivateTabAt(idx);
+      return;
+    }
+  }
+}
+
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(
     LockedSessionWindowTracker* window_tracker) {
   window_tracker_for_testing_ = window_tracker;

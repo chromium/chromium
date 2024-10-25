@@ -47,6 +47,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) override;
   void PrepareSystemWebAppWindowForOnTask(SessionID window_id) override;
+  SessionID GetActiveTabID() override;
+  void SwitchToTab(SessionID tab_id) override;
 
   void SetWindowTrackerForTesting(LockedSessionWindowTracker* window_tracker);
 

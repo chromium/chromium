@@ -97,6 +97,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
 
   // Process bundle content.
   base::flat_set<GURL> current_urls_set;
+  active_tab_url_ = GURL();
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
     CHECK(content_config.has_url());
     const GURL url(content_config.url());
@@ -118,6 +119,10 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
         continue;
       }
 
+      if (active_tab_url_.is_empty()) {
+        const SessionID tab_id = system_web_app_manager_->GetActiveTabID();
+        TrackActiveTabURLFromTab(tab_id);
+      }
       // Close the tab and any child tabs associated with the given url.
       // TODO(crbug.com/373961026): Remove tabs for restriction updates that
       // went to a stricter setting.
@@ -338,6 +343,12 @@ void OnTaskSessionManager::OnBundleTabAdded(
     }
     provider_url_tab_ids_map_[url].insert(tab_id);
     provider_url_restriction_level_map_[url] = restriction_level;
+
+    // TODO(b/375538635): Revisit this logic when we open foreground tabs.
+    if (active_tab_url_.is_valid() && url == active_tab_url_) {
+      system_web_app_manager_->SwitchToTab(tab_id);
+      active_tab_url_ = GURL();
+    }
   }
 }
 
@@ -358,6 +369,19 @@ void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow() {
       window_id.is_valid()) {
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
         window_id, {&active_tab_tracker_, this});
+  }
+}
+
+void OnTaskSessionManager::TrackActiveTabURLFromTab(SessionID tab_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!tab_id.is_valid()) {
+    active_tab_url_ = GURL();
+  }
+  for (const auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+    if (tab_ids.contains(tab_id)) {
+      active_tab_url_ = provider_sent_url;
+      break;
+    }
   }
 }
 

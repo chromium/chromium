@@ -106,11 +106,16 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   // Callback triggered when the Boca SWA window pin state is set.
   void OnSetPinStateOnBocaSWAWindow();
 
+  // Set the `active_tab_url_` to be the url associated with `tab_id`.
+  void TrackActiveTabURLFromTab(SessionID tab_id);
+
   ActiveTabTracker active_tab_tracker_;
 
   const std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  GURL active_tab_url_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maps the url that providers send to the tab ids spawned from the url. This
   // map allows to remove all the related tabs to the url.

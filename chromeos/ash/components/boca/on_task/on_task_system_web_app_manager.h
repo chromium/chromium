@@ -61,6 +61,13 @@ class OnTaskSystemWebAppManager {
   // when the app instance was restored manually.
   virtual void PrepareSystemWebAppWindowForOnTask(SessionID window_id) = 0;
 
+  // Returns a valid tab id associated with the active tab. If
+  // there is no valid active tab, it returns `SessionID::InvalidValue()`.
+  virtual SessionID GetActiveTabID() = 0;
+
+  // Switch to the tab with associated with `tab_id`.
+  virtual void SwitchToTab(SessionID tab_id) = 0;
+
  protected:
   OnTaskSystemWebAppManager() = default;
 };
