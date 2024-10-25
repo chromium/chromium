@@ -4141,6 +4141,30 @@ targets.bundle(
                 "SIM_IPHONE_15_18_0",
             ],
         ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
     ],
 )
 
