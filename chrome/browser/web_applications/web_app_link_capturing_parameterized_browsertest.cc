@@ -761,7 +761,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // Listens for a DomMessage that starts with FinishedNavigating.
   //
   // @param message_queue The message queue expected to see the message.
-  void WaitForNavigationFinishedMessages(
+  void WaitForNavigationFinishedMessage(
       content::DOMMessageQueue* message_queue) {
     std::string message;
     EXPECT_TRUE(message_queue->WaitForMessage(&message));
@@ -771,6 +771,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         << unquoted_message;
     DLOG(INFO) << message;
   }
+
   // The expectations file can depend on whether link capturing is enabled or
   // not (and likely more things in the future).
   base::FilePath GetExpectationsFile(ExpectationsFileConfig file_config) const {
@@ -867,6 +868,38 @@ class WebAppLinkCapturingParameterizedBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(contents);
     return contents;
+  }
+
+  void ClickIntentPickerChip(Browser* browser) {
+    ui_test_utils::BrowserChangeObserver app_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    // Clicking the Intent Picker will trigger a re-parenting (not a new
+    // navigation, so the DomMessage has already been sent).
+    ASSERT_TRUE(web_app::ClickIntentPickerChip(browser));
+    app_browser_observer.Wait();
+
+    // After re-parenting, the old browser gets a new tab contents and we
+    // need to wait for that to finish loading before capturing the end
+    // state.
+    WaitForLoadStop(browser->tab_strip_model()->GetActiveWebContents());
+  }
+
+  void WaitForNewContentsAndPropagationOfLaunchParams(
+      WebContentsCreationMonitor& monitor) {
+    content::WebContents* handled_contents =
+        monitor.GetLastSeenWebContentsAndStopMonitoring();
+
+    // Some navigations might cause the handled_contents to be closed (for
+    // e.g, capturable redirections ending in an app with focus-existing).
+    if (handled_contents) {
+      content::WaitForLoadStop(handled_contents);
+      ASSERT_NE(nullptr, handled_contents);
+      ASSERT_TRUE(handled_contents->GetURL().is_valid());
+    }
+
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    // Attempt to ensure that all launchParams have propagated.
+    content::RunAllTasksUntilIdle();
   }
 
   // Prevent the creation of obviously invalid test expectation during
@@ -1388,21 +1421,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
       bool expect_navigation = true;
 
       if (GetNavigationElement() == NavigationElement::kElementIntentPicker) {
-        ui_test_utils::BrowserChangeObserver app_browser_observer(
-            nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-        // Clicking the Intent Picker will trigger a re-parenting (not a new
-        // navigation, so the DomMessage has already been sent).
-        ASSERT_TRUE(web_app::ClickIntentPickerChip(browser_a));
-        app_browser_observer.Wait();
+        ASSERT_NO_FATAL_FAILURE(ClickIntentPickerChip(browser_a));
 
-        // After re-parenting, the old browser gets a new tab contents and we
-        // need to wait for that to finish loading before capturing the end
-        // state.
-        WaitForLoadStop(browser_a->tab_strip_model()->GetActiveWebContents());
-
-        // TODO(https://crbug.com/371513459): Not sure if this assumption holds
-        // if we add kNavigateExisting to the test params (for the Intent
-        // Picker).
+        // This assumption holds because the Intent Picker w/kNavigateExisting
+        // (and kFocusExisting) is tested in a separate test suite.
         expect_navigation = false;
       } else if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
         test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
@@ -1411,31 +1433,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
       }
 
       if (expect_navigation) {
-        std::string message;
-        EXPECT_TRUE(message_queue.WaitForMessage(&message));
-        DLOG(INFO) << message;
-        std::string unquoted_message;
-        ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message))
-            << message;
-        EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
-            << unquoted_message;
+        WaitForNavigationFinishedMessage(&message_queue);
       }
     }
 
-    content::WebContents* handled_contents =
-        monitor.GetLastSeenWebContentsAndStopMonitoring();
-
-    // Some navigations might cause the handled_contents to be closed (for
-    // e.g, capturable redirections ending in an app with focus-existing).
-    if (handled_contents) {
-      content::WaitForLoadStop(handled_contents);
-      ASSERT_NE(nullptr, handled_contents);
-      ASSERT_TRUE(handled_contents->GetURL().is_valid());
-    }
-
-    provider().command_manager().AwaitAllCommandsCompleteForTesting();
-    // Attempt to ensure that all launchParams have propagated.
-    content::RunAllTasksUntilIdle();
+    WaitForNewContentsAndPropagationOfLaunchParams(monitor);
 
     if (ShouldRebaseline()) {
       RecordActualResults(GetExpectationsFileConfigFromTestConfig(GetParam()));
@@ -1979,7 +1981,7 @@ class NavigationCapturingTestWithAppBLaunched
     ASSERT_TRUE(launch_future.Wait());
     url_observer.Wait();
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessages(&message_queue);
+    WaitForNavigationFinishedMessage(&message_queue);
   }
 
   std::string GetTestClassName() const override {
@@ -2116,7 +2118,7 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     LaunchPageInTab(url_b_dest);
 
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessages(&message_queue);
+    WaitForNavigationFinishedMessage(&message_queue);
   }
 
   std::string GetTestClassName() const override {
