@@ -5,6 +5,7 @@
 module ash.recorder_app.mojom;
 
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 import "services/on_device_model/public/mojom/on_device_model_service.mojom";
@@ -66,6 +67,16 @@ interface QuietModeMonitor {
   Update(bool in_quiet_mode);
 };
 
+// Information for a SODA language pack.
+struct LangPackInfo {
+  // Localized language in BCP-47 format e.g. "en-US".
+  string language_code;
+  // Language name in the application locale.
+  mojo_base.mojom.String16 display_name;
+  // Whether the language is supported by summarization and title suggestion.
+  bool is_gen_ai_supported;
+};
+
 // Primary interface for the chrome://recorder-app WebUI.
 interface PageHandler {
   // Binds a new OnDeviceModel interface if possible using model from DLC
@@ -103,6 +114,10 @@ interface PageHandler {
   AddModelMonitor(mojo_base.mojom.Uuid model_id,
                   pending_remote<ModelStateMonitor> monitor)
       => (ModelState state);
+
+  // Returns available language information.
+  // Returns empty array if SODA is unavailable.
+  GetAvailableLangPacks() => (array<LangPackInfo> lang_packs);
 
   // Adds a new monitor for SODA state change. `language` is a localized
   // language in BCP-47 format e.g. "en-US".

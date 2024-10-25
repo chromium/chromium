@@ -32,7 +32,7 @@ import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
-import {LanguageCode} from '../../core/soda/language_info.js';
+import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {
   HypothesisPart,
   SodaEvent,
@@ -339,6 +339,8 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   private readonly sodaStates = new Map<LanguageCode, Signal<ModelState>>();
 
+  private readonly langPacks = new Map<LanguageCode, LangPackInfo>();
+
   override readonly canUseSpeakerLabel = computed(
     () => devSettings.value.canUseSpeakerLabel,
   );
@@ -368,6 +370,19 @@ export class PlatformHandler extends PlatformHandlerBase {
       // TODO(pihsun): Remember the whole state in devSettings instead?
       sodaState.value = {kind: 'installed'};
     }
+    this.langPacks.set(LanguageCode.EN_US, {
+      languageCode: LanguageCode.EN_US,
+      displayName: 'English',
+      isGenAiSupported: true,
+    });
+  }
+
+  override getLangPackList(): readonly LangPackInfo[] {
+    return Array.from(this.langPacks.values());
+  }
+
+  override getLangPackInfo(language: LanguageCode): LangPackInfo {
+    return assertExists(this.langPacks.get(language));
   }
 
   override summaryModelLoader = new ModelLoaderDev(new SummaryModelDev());

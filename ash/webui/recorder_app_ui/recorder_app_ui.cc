@@ -9,6 +9,9 @@
 
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 
+#include <utility>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/metrics/structured_metrics_service_wrapper.h"
@@ -43,8 +46,6 @@ namespace ash {
 
 namespace {
 
-// TODO: b/357526521 - Get default language with
-// `GetDefaultLiveCaptionLanguage`.
 constexpr speech::LanguageCode kDefaultLanguageCode =
     speech::LanguageCode::kEnUs;
 
@@ -149,6 +150,10 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
 
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
+    // TODO(hsuanling): Use `GetAvailableLanguages`.
+    available_languages_.insert(kDefaultLanguageCode);
+    // TODO(hsuanling): Set up feature flag to add ja-JP;
+    gen_ai_supported_languages_.insert(kDefaultLanguageCode);
   }
 
   // Add salt translator
@@ -425,10 +430,23 @@ bool RecorderAppUI::IsSodaAvailable(const speech::LanguageCode& language_code) {
   if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
     return false;
   }
+  return available_languages_.contains(language_code);
+}
 
-  // TODO: b/357526521 - Get available language with
-  // `GetLiveCaptionEnabledLanguages` API after UI is ready.
-  return language_code == kDefaultLanguageCode;
+void RecorderAppUI::GetAvailableLangPacks(
+    GetAvailableLangPacksCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<recorder_app::mojom::LangPackInfoPtr> lang_packs;
+  for (auto language_code : available_languages_) {
+    recorder_app::mojom::LangPackInfoPtr lang_pack =
+        recorder_app::mojom::LangPackInfo::New();
+    lang_pack->language_code = speech::GetLanguageName(language_code);
+    lang_pack->display_name = delegate_->GetLanguageDisplayName(language_code);
+    lang_pack->is_gen_ai_supported =
+        gen_ai_supported_languages_.contains(language_code);
+    lang_packs.push_back(std::move(lang_pack));
+  }
+  std::move(callback).Run(std::move(lang_packs));
 }
 
 recorder_app::mojom::ModelState RecorderAppUI::GetSodaState(

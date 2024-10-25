@@ -12,3 +12,17 @@
 export enum LanguageCode {
   EN_US = 'en-US',
 }
+
+export interface LangPackInfo {
+  languageCode: LanguageCode;
+
+  /**
+   * Language name displayed in the application locale.
+   */
+  displayName: string;
+
+  /**
+   * Whether summarization and title suggestion support this language.
+   */
+  isGenAiSupported: boolean;
+}

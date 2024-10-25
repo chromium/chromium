@@ -14,6 +14,7 @@ import {
 } from
   'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {NoArgStringName} from '../../core/i18n.js';
@@ -24,14 +25,16 @@ import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
-import {LanguageCode} from '../../core/soda/language_info.js';
+import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {SodaSession} from '../../core/soda/types.js';
 import {settings} from '../../core/state/settings.js';
 import {
   assertExists,
   assertInstanceof,
+  checkEnumVariant,
 } from '../../core/utils/assert.js';
 import {parseTopFrameInfo} from '../../core/utils/errors.js';
+import {lazyInit} from '../../core/utils/utils.js';
 
 import {EventsSender} from './metrics.js';
 import {
@@ -41,6 +44,7 @@ import {
 } from './on_device_model.js';
 import {MojoSodaSession} from './soda_session.js';
 import {
+  LangPackInfo as MojoLangPackInfo,
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
   PageHandler as MojoPageHandler,
@@ -50,13 +54,13 @@ import {
 } from './types.js';
 
 const CRASH_SERVER_PRODUCT_NAME = 'ChromeOS_RecorderApp';
-// TODO(hsuanling): Get available languages through mojom
-const DEFAULT_LANGUAGE = LanguageCode.EN_US;
 
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
   private readonly sodaStates = new Map<LanguageCode, Signal<ModelState>>();
+
+  private readonly langPacks = new Map<LanguageCode, LangPackInfo>();
 
   override summaryModelLoader: SummaryModelLoader;
 
@@ -96,6 +100,20 @@ export class PlatformHandler extends PlatformHandlerBase {
     });
   }
 
+  private mojoLangPackInfoToLangPackInfo(
+    langPack: MojoLangPackInfo,
+  ): LangPackInfo|null {
+    const languageCode = checkEnumVariant(LanguageCode, langPack.languageCode);
+    if (languageCode === null) {
+      return null;
+    }
+    return {
+      languageCode: languageCode,
+      displayName: mojoString16ToString(langPack.displayName),
+      isGenAiSupported: langPack.isGenAiSupported,
+    };
+  }
+
   override async init(): Promise<void> {
     ColorChangeUpdater.forDocument().start();
 
@@ -105,8 +123,16 @@ export class PlatformHandler extends PlatformHandlerBase {
     this.canCaptureSystemAudioWithLoopback.value =
       (await this.remote.canCaptureSystemAudioWithLoopback()).supported;
 
-    // TODO(hsuanling): Get available languages through mojom
-    for (const language of [DEFAULT_LANGUAGE]) {
+    const mojoLangPacks = (await this.remote.getAvailableLangPacks()).langPacks;
+    for (const mojoLangPack of mojoLangPacks) {
+      const langPack = this.mojoLangPackInfoToLangPackInfo(mojoLangPack);
+      if (langPack === null) {
+        continue;
+      }
+      this.langPacks.set(langPack.languageCode, langPack);
+    }
+
+    for (const language of this.langPacks.keys()) {
       const sodaState = signal<ModelState>({kind: 'unavailable'});
       this.sodaStates.set(language, sodaState);
       function update(state: MojoModelState) {
@@ -135,6 +161,14 @@ export class PlatformHandler extends PlatformHandlerBase {
 
     await this.summaryModelLoader.init();
     await this.titleSuggestionModelLoader.init();
+  }
+
+  override getLangPackList = lazyInit((): readonly LangPackInfo[] => {
+    return Array.from(this.langPacks.values());
+  });
+
+  override getLangPackInfo(language: LanguageCode): LangPackInfo {
+    return assertExists(this.langPacks.get(language));
   }
 
   override installSoda(language: LanguageCode): void {

@@ -12,6 +12,7 @@
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -143,6 +144,8 @@ class RecorderAppUI
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
       AddSodaMonitorCallback callback) override;
 
+  void GetAvailableLangPacks(GetAvailableLangPacksCallback callback) override;
+
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
   void GetMicrophoneInfo(const std::string& source_id,
@@ -190,6 +193,10 @@ class RecorderAppUI
       soda_monitors_;
 
   base::flat_map<speech::LanguageCode, ModelState> soda_states_;
+
+  base::flat_set<speech::LanguageCode> available_languages_;
+
+  base::flat_set<speech::LanguageCode> gen_ai_supported_languages_;
 
   std::map<base::Uuid, mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor>>
       model_monitors_;

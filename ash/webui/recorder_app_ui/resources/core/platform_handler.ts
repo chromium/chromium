@@ -8,7 +8,7 @@ import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {PerfLogger} from './perf.js';
 import {ReadonlySignal, Signal} from './reactive/signal.js';
-import {LanguageCode} from './soda/language_info.js';
+import {LangPackInfo, LanguageCode} from './soda/language_info.js';
 import {SodaSession} from './soda/types.js';
 
 export abstract class PlatformHandler {
@@ -43,6 +43,16 @@ export abstract class PlatformHandler {
    * The model loader for title suggestion.
    */
   abstract titleSuggestionModelLoader: ModelLoader<string[]>;
+
+  /**
+   * Returns a readonly list of language pack info.
+   */
+  abstract getLangPackList(): readonly LangPackInfo[];
+
+  /**
+   * Returns information of the given language.
+   */
+  abstract getLangPackInfo(language: LanguageCode): LangPackInfo;
 
   /**
    * Requests installation of SODA library and language pack of given language.

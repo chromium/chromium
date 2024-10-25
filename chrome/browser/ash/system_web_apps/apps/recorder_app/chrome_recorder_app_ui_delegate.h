@@ -24,6 +24,9 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
   // ash::RecorderAppUIDelegate
   void InstallSoda(speech::LanguageCode language_code) override;
 
+  std::u16string GetLanguageDisplayName(
+      speech::LanguageCode language_code) override;
+
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
   bool CanUseGenerativeAiForCurrentProfile() override;

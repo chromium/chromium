@@ -17,6 +17,7 @@
 #include "components/feedback/feedback_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "url/gurl.h"
@@ -41,6 +42,13 @@ void ChromeRecorderAppUIDelegate::InstallSoda(
   soda_installer->InstallSoda(global_prefs);
   soda_installer->InstallLanguage(speech::GetLanguageName(language_code),
                                   g_browser_process->local_state());
+}
+
+std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
+    speech::LanguageCode language_code) {
+  return speech::GetLanguageDisplayName(
+      speech::GetLanguageName(language_code),
+      g_browser_process->GetApplicationLocale());
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
