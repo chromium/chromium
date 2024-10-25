@@ -1986,10 +1986,14 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithAppBLaunched,
       {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothBrowser, LinkCapturing::kDisabled});
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothStandalone, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kDisabled});
 }
 
 // TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
@@ -2051,6 +2055,114 @@ INSTANTIATE_TEST_SUITE_P(
             RedirectType::kServerSideViaA,
             RedirectType::kServerSideViaB,
             RedirectType::kServerSideViaX),  // Final navigation is A->A->B
+        testing::Values(
+            NavigationElement::kElementLink),  // Navigate via element.
+        testing::Values(
+            test::ClickMethod::kLeftClick),  // Simulate left-mouse click.
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// This is a derived test fixture that allows us to test Navigation Capturing
+// on focus-existing or navigate-existing launch handlers that open in app
+// even if both an app and tab browser are loaded. This additional step is
+// performed by overriding MaybeCustomSetup to navigate to a browser tab after
+// launch app B.
+//
+// For expectations, see
+// navigation_capturing_with_launched_b_and_browser_tab.json.
+class NavigationCapturingTestWithBLaunchedAndBrowserTab
+    : public WebAppLinkCapturingParameterizedBrowserTest {
+ public:
+  std::string GetExpectationsFileBaseName() const override {
+    return "navigation_capturing_with_b_lauched_and_browser_tab";
+  }
+
+  void MaybeCustomSetup(const webapps::AppId& app_a,
+                        const webapps::AppId& app_b) override {
+    DLOG(INFO) << "Launching App B.";
+    content::DOMMessageQueue message_queue;
+    ui_test_utils::UrlLoadObserver url_observer(
+        WebAppProvider::GetForTest(profile())
+            ->registrar_unsafe()
+            .GetAppLaunchUrl(app_b));
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        launch_future;
+    // Note: this respects the user display mode for this app, so this can open
+    // in a browser tab or in an app window.
+    provider().scheduler().LaunchApp(app_b, /*url=*/std::nullopt,
+                                     launch_future.GetCallback());
+    ASSERT_TRUE(launch_future.Wait());
+    url_observer.Wait();
+
+    DLOG(INFO) << "Navigating to browser tab b.";
+    // Ensure that if a fixture ended up loading a different page in the
+    // starting tab, create a new tab for the navigation.
+    GURL last_committed_url = browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetLastCommittedURL();
+    bool is_at_new_tab_page =
+        IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
+    if (!is_at_new_tab_page) {
+      LOG(ERROR) << "opening new tab due to "
+                 << last_committed_url.possibly_invalid_spec();
+      chrome::NewTab(browser());
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(kDestinationPageScopeB)));
+    content::WebContents* contents_b =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WaitForLoadStop(contents_b);
+
+    // Launching a web app should listen to a single navigation message.
+    WaitForNavigationFinishedMessages(&message_queue);
+  }
+
+  std::string GetTestClassName() const override {
+    return "NavigationCapturingTestWithBLaunchedAndBrowserTab";
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithBLaunchedAndBrowserTab,
+                       CheckLinkCaptureCombinations) {
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithBLaunchedAndBrowserTab,
+                       MAYBE_CleanupExpectations) {
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kDisabled});
+}
+
+// TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
+// them in navigation_capturing_with_b_lauched_and_browser_tab.json when fixed.
+INSTANTIATE_TEST_SUITE_P(
+    LeftClickToLaunchedAppOverBrowserTab,
+    NavigationCapturingTestWithBLaunchedAndBrowserTab,
+    testing::Combine(
+        testing::Values(ClientModeCombination::kBothFocusExisting,
+                        ClientModeCombination::kBothNavigateExisting),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
+        testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
+        testing::Values(
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab         // Starting point is a tab.
+            ),
+        testing::Values(Destination::kScopeA2B),  // Navigate A -> B
+        testing::Values(RedirectType::kNone),
         testing::Values(
             NavigationElement::kElementLink),  // Navigate via element.
         testing::Values(
