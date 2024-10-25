@@ -835,6 +835,14 @@ ScalableIph::TransitionSet ScalableIph::GetTransitionForTesting(
   CHECK_IS_TEST();
   return GetTransition(from, to);
 }
+
+bool ScalableIph::CheckTriggerEventForTesting(
+    const base::Feature& feature,
+    const std::optional<ScalableIph::Event>& trigger_event) {
+  CHECK_IS_TEST();
+  return CheckTriggerEvent(feature, trigger_event);
+}
+
 bool ScalableIph::ShouldPinHelpAppToShelf() {
   return ash::features::AreHelpAppWelcomeTipsEnabled();
 }
@@ -1078,13 +1086,6 @@ bool ScalableIph::CheckCustomConditions(
 bool ScalableIph::CheckTriggerEvent(
     const base::Feature& feature,
     const std::optional<ScalableIph::Event>& trigger_event) {
-  if (!trigger_event.has_value()) {
-    SCALABLE_IPH_LOG(GetLogger())
-        << "This condition check is NOT triggered by an event. Skipping this "
-           "trigger event condition check.";
-    return true;
-  }
-
   SCALABLE_IPH_LOG(GetLogger())
       << "Checking trigger event condition for " << feature.name;
 
@@ -1093,6 +1094,13 @@ bool ScalableIph::CheckTriggerEvent(
   if (trigger_event_condition.empty()) {
     SCALABLE_IPH_LOG(GetLogger()) << "No trigger event condition specified.";
     return true;
+  }
+
+  if (!trigger_event.has_value()) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "This condition check is NOT triggered by an event. But trigger "
+           "event condition is specified. Condition unsatisfied.";
+    return false;
   }
 
   std::string trigger_event_name = GetEventName(trigger_event.value());
