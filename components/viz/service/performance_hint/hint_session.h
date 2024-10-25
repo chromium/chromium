@@ -42,6 +42,9 @@ class VIZ_SERVICE_EXPORT HintSession {
   virtual void ReportCpuCompletionTime(base::TimeDelta actual_duration,
                                        base::TimeTicks draw_start,
                                        BoostType preferable_boost_type) = 0;
+
+  virtual void SetThreads(
+      const base::flat_set<base::PlatformThreadId>& thread_ids) = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {
@@ -55,7 +58,7 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
   virtual ~HintSessionFactory() = default;
 
   // For animation (SessionType::kAnimation) sessions, `transient_thread_ids`
-  // are added to `permanent_thread_ids` to create this session. Chanting
+  // are added to `permanent_thread_ids` to create this session. Changing
   // `transient_thread_ids` still requires deleting and recreating the session.
   // `target_duration` is compared to `actual_duration` in
   // `ReportCpuCompletionTime` to determine the performance of a frame.
@@ -70,6 +73,15 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
 
   // Issue an early hint to wake up some session.
   virtual void WakeUp() = 0;
+
+  // Returns the full list of threads for the given session type.
+  // For animation (SessionType::kAnimation) sessions, this is a union of
+  // `transient_thread_ids` and `permanent_thread_ids_`.
+  // For renderer main (SessionType::kRendererMain) sessions, this is just
+  // `transient_thread_ids`.
+  virtual base::flat_set<base::PlatformThreadId> GetSessionThreadIds(
+      base::flat_set<base::PlatformThreadId> transient_thread_ids,
+      HintSession::SessionType type) = 0;
 };
 
 }  // namespace viz

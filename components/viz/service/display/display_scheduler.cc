@@ -34,6 +34,15 @@ bool DrawImmediatelyWhenInteractive() {
   return features::ShouldDrawImmediatelyWhenInteractive();
 }
 
+bool AdpfCanUseSetThreads() {
+#if BUILDFLAG(IS_ANDROID)
+  return android_get_device_api_level() >= __ANDROID_API_U__ &&
+         base::FeatureList::IsEnabled(features::kEnableADPFSetThreads);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
@@ -200,6 +209,17 @@ void DisplayScheduler::MaybeCreateHintSessions(
                           ? animation_thread_ids
                           : renderer_main_thread_ids;
 
+    // Use SetThreads whenever possible - it's cheaper than recreating the
+    // session.
+    if (state.hint_session && state.thread_ids != thread_ids &&
+        AdpfCanUseSetThreads()) {
+      state.thread_ids = std::move(thread_ids);
+      state.hint_session->SetThreads(hint_session_factory_->GetSessionThreadIds(
+          state.thread_ids, state.type));
+      continue;
+    }
+    // If SetThreads cannot be used, (re)create the ADPF session - this is a
+    // more a expensive operation.
     if ((!state.create_session_for_current_thread_ids_failed &&
          !state.hint_session) ||
         state.thread_ids != thread_ids) {
