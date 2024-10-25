@@ -54,6 +54,8 @@ bundle_data("unit_tests_resources") {
 # Please do not modify this list. The content is updated by script.
 # For more info, please see `tools/whats_new`.
 screenshots_lists = [
+  "tips/DockingBling.json",
+  "tips/DockingBling_darkmode.json",
   "m125/PWMWidget.json",
   "m125/PWMWidget_darkmode.json",
   "m125/PinnedTabs.json",
