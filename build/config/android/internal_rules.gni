@@ -2274,6 +2274,11 @@ if (enable_java_templates) {
       "--webp-cache-dir=obj/android-webp-cache",
     ]
 
+    # TODO(b/355432192): Remove this flag once not needed by Compose.
+    if (defined(enable_hilt_internal) && enable_hilt_internal) {
+      _args += [ "--xml-namespaces" ]
+    }
+
     _inputs += [ invoker.android_manifest ]
     _outputs = [ _final_srcjar_path ]
     _args += [
