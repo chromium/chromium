@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -29,6 +30,7 @@ class SessionServiceImplTest : public TestWithTaskEnvironment {
   std::unique_ptr<URLRequestContext> context_;
 
  private:
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   SessionServiceImpl service_;
 };
 

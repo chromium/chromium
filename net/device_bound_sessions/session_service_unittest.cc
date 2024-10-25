@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/session_service.h"
 
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -42,6 +43,7 @@ class SessionServiceTest : public TestWithTaskEnvironment {
 };
 
 TEST_F(SessionServiceTest, HasService) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   auto service = SessionService::Create(context_.get());
   EXPECT_TRUE(service);
 }
