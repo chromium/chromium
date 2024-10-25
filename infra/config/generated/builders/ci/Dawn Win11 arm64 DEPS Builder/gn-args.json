@@ -1,0 +1,16 @@
+{
+  "gn_args": {
+    "dawn_enable_opengles": true,
+    "dawn_use_built_dxc": true,
+    "dcheck_always_on": true,
+    "ffmpeg_branding": "Chrome",
+    "is_component_build": false,
+    "is_debug": false,
+    "proprietary_codecs": true,
+    "symbol_level": 1,
+    "target_cpu": "arm64",
+    "target_os": "win",
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

@@ -15,6 +15,7 @@ ci/Dawn Win10 x64 DEPS Release (NVIDIA)
 ci/Dawn Win10 x86 DEPS Builder
 ci/Dawn Win10 x86 DEPS Release (Intel)
 ci/Dawn Win10 x86 DEPS Release (NVIDIA)
+ci/Dawn Win11 arm64 DEPS Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU Linux Builder
 ci/GPU Mac Builder
@@ -29,3 +30,4 @@ try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
+try/dawn-win11-arm64-deps-rel
