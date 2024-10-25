@@ -133,24 +133,6 @@ enum class BucketDistributionMode : uint8_t {
   kDenser,
 };
 
-// Parameter for 'kPartitionAllocMakeFreeNoOpOnShutdown' feature which
-// controls when free() becomes a no-op during Shutdown()
-enum class WhenFreeBecomesNoOp {
-  kBeforePreShutdown,
-  kBeforeHaltingStartupTracingController,
-  kBeforeShutDownThreads,
-  kInShutDownThreads,
-  kAfterShutDownThreads,
-};
-
-// Inserts a no-op on 'free()' allocator shim at the front of the
-// dispatch chain if called from the appropriate callsite.
-BASE_EXPORT void MakeFreeNoOp(WhenFreeBecomesNoOp callsite);
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown);
-extern const BASE_EXPORT base::FeatureParam<WhenFreeBecomesNoOp>
-    kPartitionAllocMakeFreeNoOpOnShutdownParam;
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtr);
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;

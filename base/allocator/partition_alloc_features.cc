@@ -56,6 +56,10 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
         &kUnretainedDanglingPtrModeOption,
 };
 
+// Note: DPD conflicts with no-op `free()` (see
+// `base::allocator::MakeFreeNoOp()`). No-op `free()` stands down in the
+// presence of DPD, but hypothetically fully launching DPD should prompt
+// a rethink of no-op `free()`.
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG)
@@ -433,60 +437,6 @@ BASE_FEATURE(kUsePoolOffsetFreelists,
              "PartitionAllocUsePoolOffsetFreelists",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown,
-             "PartitionAllocMakeFreeNoOpOnShutdown",
-#if PA_BUILDFLAG(IS_CHROMEOS)
-             FEATURE_ENABLED_BY_DEFAULT
-#else
-             FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-constexpr FeatureParam<WhenFreeBecomesNoOp>::Option
-    kPartitionAllocMakeFreeNoOpOnShutdownOptions[] = {
-        {WhenFreeBecomesNoOp::kBeforePreShutdown, "before-preshutdown"},
-        {WhenFreeBecomesNoOp::kBeforeHaltingStartupTracingController,
-         "before-halting-startup-tracing-controller"},
-        {
-            WhenFreeBecomesNoOp::kBeforeShutDownThreads,
-            "before-shutdown-threads",
-        },
-        {
-            WhenFreeBecomesNoOp::kInShutDownThreads,
-            "in-shutdown-threads",
-        },
-        {
-            WhenFreeBecomesNoOp::kAfterShutDownThreads,
-            "after-shutdown-threads",
-        },
-};
-
-const base::FeatureParam<WhenFreeBecomesNoOp>
-    kPartitionAllocMakeFreeNoOpOnShutdownParam{
-        &kPartitionAllocMakeFreeNoOpOnShutdown, "callsite",
-        WhenFreeBecomesNoOp::kBeforePreShutdown,
-        &kPartitionAllocMakeFreeNoOpOnShutdownOptions};
-
-void MakeFreeNoOp(WhenFreeBecomesNoOp callsite) {
-  CHECK(base::FeatureList::GetInstance());
-  // Ignoring `free()` during Shutdown would allow developers to introduce new
-  // dangling pointers. So we want to avoid ignoring free when it is enabled.
-  // Note: For now, the DanglingPointerDetector is only enabled on 5 bots, and
-  // on linux non-official configuration.
-  // TODO(b/40802063): Reconsider this decision after the experiment.
-#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  if (base::FeatureList::IsEnabled(features::kPartitionAllocDanglingPtr)) {
-    return;
-  }
-#endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-  if (base::FeatureList::IsEnabled(kPartitionAllocMakeFreeNoOpOnShutdown) &&
-      kPartitionAllocMakeFreeNoOpOnShutdownParam.Get() == callsite) {
-    allocator_shim::InsertNoOpOnFreeAllocatorShimOnShutDown();
-  }
-#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-}
 
 BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
              "PartitionAllocAdjustSizeWhenInForeground",
