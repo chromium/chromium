@@ -307,7 +307,7 @@ class WPTResult(Result):
         url = wpt_fyi_url(self.name)
         if url:
             summary += f'<p><a href="{url}">Latest wpt.fyi results</a></p>'
-        for name in ['stderr', 'crash_log']:
+        for name in ['leak_log', 'stderr', 'crash_log']:
             if name in self.artifacts:
                 summary += f'<h3>{name}</h3>'
                 summary += f'<p><text-artifact artifact-id="{name}"/></p>'
@@ -1041,9 +1041,15 @@ class WPTResultsProcessor:
                             test_failures.FILENAME_SUFFIX_CRASH_LOG, message)
 
         if leak_counters := extra.get('leak_counters'):
-            leak_log = json.dumps(leak_counters, separators=(',', ':'))
+            leak_log = [
+                'Some DOM objects associated with the test page '
+                'are still alive after navigating to about:blank:'
+            ]
+            for name, (expected, actual) in sorted(leak_counters.items()):
+                leak_log.append(f'  {name}: Expected {expected}, got {actual}')
             self._write_log(result.name, artifacts, 'leak_log',
-                            test_failures.FILENAME_SUFFIX_LEAK_LOG, leak_log)
+                            test_failures.FILENAME_SUFFIX_LEAK_LOG,
+                            '\n'.join(leak_log) + '\n')
 
         # If the browser process isn't restarted, it's possible for that process
         # to continue producing stdio that will be dumped into the log for the
