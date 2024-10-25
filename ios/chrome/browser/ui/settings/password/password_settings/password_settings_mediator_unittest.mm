@@ -97,7 +97,7 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
               GetPublicKeyForIdentity,
               (id<SystemIdentity> identity, GetPublicKeyCallback callback),
               (override));
-  MOCK_METHOD(CancelDialogCallback,
+  MOCK_METHOD(void,
               UpdateGPMPinForAccount,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,

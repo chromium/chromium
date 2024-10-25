@@ -43,7 +43,7 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
                       base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                GetPublicKeyCallback completion) final;
-  CancelDialogCallback UpdateGPMPinForAccount(
+  void UpdateGPMPinForAccount(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
       UINavigationController* navigationController,

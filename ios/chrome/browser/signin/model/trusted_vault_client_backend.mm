@@ -46,8 +46,7 @@ void TrustedVaultClientBackend::NotifyRecoverabilityChanged(
   }
 }
 
-TrustedVaultClientBackend::CancelDialogCallback
-TrustedVaultClientBackend::UpdateGPMPinForAccount(
+void TrustedVaultClientBackend::UpdateGPMPinForAccount(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
     UINavigationController* navigationController,
