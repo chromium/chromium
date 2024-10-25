@@ -1,15 +1,15 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom.h"
+#include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals.mojom.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -67,4 +67,4 @@ class DlpInternalsPageHandler
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_

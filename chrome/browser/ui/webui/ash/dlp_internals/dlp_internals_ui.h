@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_UI_H_
 
-#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_page_handler.h"
+#include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -46,4 +46,4 @@ class DlpInternalsUI : public ui::MojoWebUIController {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_UI_H_

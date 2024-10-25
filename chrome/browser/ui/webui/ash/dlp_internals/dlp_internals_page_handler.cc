@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_page_handler.h"
+#include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals_page_handler.h"
 
 #include <sys/stat.h>
 
@@ -14,7 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom.h"
+#include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals.mojom.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals_ui.h"
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"

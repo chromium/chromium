@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(is_chromeos)
+
 mojom("mojo_bindings") {
   sources = [ "dlp_internals.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]

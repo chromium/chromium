@@ -8746,7 +8746,8 @@ static_library("browser_generated_files") {
     ]
   }
   if (is_chromeos) {
-    public_deps += [ "//chrome/browser/ui/webui/dlp_internals:mojo_bindings" ]
+    public_deps +=
+        [ "//chrome/browser/ui/webui/ash/dlp_internals:mojo_bindings" ]
   }
   if (is_win) {
     arflags = [ "/llvmlibempty" ]
