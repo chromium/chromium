@@ -89,10 +89,7 @@ ci.builder(
             "chromium_linux_cast_receiver",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "arm32rel",
@@ -137,10 +134,7 @@ ci.builder(
             "chromium_linux_cast_receiver",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "arm64rel",
@@ -184,10 +178,7 @@ ci.builder(
             "chromium_linux_cast_receiver_gtests",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "x64dbg",
@@ -231,10 +222,7 @@ ci.builder(
             "chromium_linux_cast_receiver_gtests",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "x64rel",

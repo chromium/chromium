@@ -690,10 +690,7 @@ ci.builder(
             "has_native_resultdb_integration",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True as configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "and32dbg",
@@ -748,10 +745,7 @@ ci.builder(
             "has_native_resultdb_integration",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True as configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "and32rel",
@@ -806,10 +800,7 @@ ci.builder(
             "has_native_resultdb_integration",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True as configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "and64dbg",
@@ -864,10 +855,7 @@ ci.builder(
             "has_native_resultdb_integration",
         ],
     ),
-    # TODO(vigeni): Remove as configuration has been stablized.
-    gardener_rotations = args.ignore_default(None),
-    # TODO(vigeni): Set to True as configuration has been stablized.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "and64rel",

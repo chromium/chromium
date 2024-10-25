@@ -91,6 +91,10 @@ ci/ios-simulator-noncq
 ci/linux-archive-rel
 ci/linux-bfcache-rel
 ci/linux-blink-web-tests-force-accessibility-rel
+ci/linux-cast-arm-rel
+ci/linux-cast-arm64-rel
+ci/linux-cast-x64-dbg
+ci/linux-cast-x64-rel
 ci/linux-cfm-rel
 ci/linux-chromeos-archive-rel
 ci/linux-chromeos-dbg

@@ -10,6 +10,10 @@ chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
 chromium/try/android-bfcache-rel
+chromium/try/android-cast-arm-dbg
+chromium/try/android-cast-arm-rel
+chromium/try/android-cast-arm64-dbg
+chromium/try/android-cast-arm64-rel
 chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel
 chromium/try/android-dawn-arm64-rel
@@ -89,6 +93,10 @@ chromium/try/linux-asan-v8-arm-dbg
 chromium/try/linux-asan-v8-arm-rel
 chromium/try/linux-bfcache-rel
 chromium/try/linux-blink-web-tests-force-accessibility-rel
+chromium/try/linux-cast-arm-rel
+chromium/try/linux-cast-arm64-rel
+chromium/try/linux-cast-x64-dbg
+chromium/try/linux-cast-x64-rel
 chromium/try/linux-centipede-asan-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
