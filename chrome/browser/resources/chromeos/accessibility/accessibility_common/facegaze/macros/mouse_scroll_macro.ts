@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro, RunMacroResult} from '/common/action_fulfillment/macros/macro.js';
+import {Macro, RunMacroResult, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 
 import {MouseController} from '../mouse_controller.js';
@@ -14,6 +14,15 @@ export class MouseScrollMacro extends Macro {
   constructor(mouseController: MouseController) {
     super(MacroName.TOGGLE_SCROLL_MODE);
     this.mouseController_ = mouseController;
+  }
+
+  override isToggle(): boolean {
+    return true;
+  }
+
+  override getToggleDirection(): ToggleDirection {
+    return this.mouseController_.isScrollModeActive() ? ToggleDirection.OFF :
+                                                        ToggleDirection.ON;
   }
 
   override run(): RunMacroResult {

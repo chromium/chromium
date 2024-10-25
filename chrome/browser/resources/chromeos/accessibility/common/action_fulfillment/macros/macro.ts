@@ -28,6 +28,18 @@ export enum MacroError {
 }
 
 /**
+ * Which direction this macro will move its associated behavior toward,
+ * i.e. ON when turning on Dictation or entering scroll mode,
+ * OFF when pausing FaceGaze or ending a drag and drop action, or
+ * NONE if this macro does not toggle behavior at all.
+ */
+export enum ToggleDirection {
+  NONE = 'none',
+  ON = 'on',
+  OFF = 'off',
+}
+
+/**
  * Results of checking whether the macro is able to execute in the current
  * context or the MacroError if not.
  * |canTryAction| is true if the macro could be executed in the current context.
@@ -84,6 +96,26 @@ export class Macro {
    */
   triggersAtActionStartAndEnd(): boolean {
     return false;
+  }
+
+  /**
+   * Whether this macro performs a toggle behavior. For example, toggling on
+   * Dictation.
+   */
+  isToggle(): boolean {
+    return false;
+  }
+
+  /**
+   * Get the toggle direction if this macro has toggle behavior.
+   * @return ToggleDirection representing the direction this macro will move its
+   *     associated behavior toward when run.
+   *    ToggleDirection.NONE if this macro is not a toggle,
+   *    ToggleDirection.ON if this macro will turn on its associated behavior,
+   *    ToggleDirection.OFF if this macro will turn off its associated behavior.
+   */
+  getToggleDirection(): ToggleDirection {
+    return ToggleDirection.NONE;
   }
 
   /**

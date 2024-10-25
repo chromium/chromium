@@ -1814,8 +1814,8 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
   this.processFaceLandmarkerResult(result);
 
   assertEquals(
-      'Enter or exit scroll mode (Raise eyebrows), ' +
-          'Pause or resume face control (Open your mouth wide)',
+      'Enter scroll mode (Raise eyebrows), ' +
+          'Pause face control (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // FaceGaze should display important messages about the state after the
@@ -1845,7 +1845,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
   this.processFaceLandmarkerResult(result, false);
 
   assertEquals(
-      'Drag and drop (Open your mouth wide)',
+      'Start drag and drop (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // FaceGaze should display important messages about the state after the
@@ -1858,6 +1858,10 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
 
   // Finish drag and drop action.
   this.processFaceLandmarkerResult(result);
+  assertEquals(
+      'End drag and drop (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
   this.triggerBubbleControllerTimeout();
   assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
@@ -1880,8 +1884,11 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
       MediapipeFacialGesture.JAW_OPEN, 0.9);
   this.processFaceLandmarkerResult(result, false);
 
+  // Make FaceGaze think dictation is active.
+  this.getFaceGaze().gestureHandler_.isDictationActive_ = () => true;
+
   assertEquals(
-      'Start or stop dictation (Open your mouth wide)',
+      'Start dictation (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // Make bubble controller think that Dictation is active.
@@ -1911,6 +1918,12 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
       dictationActive: false,
     };
   };
+
+  // Make FaceGaze think dictation is off.
+  this.getFaceGaze().gestureHandler_.isDictationActive_ = () => false;
+  assertEquals(
+      'Stop dictation (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
   this.triggerBubbleControllerTimeout();
   assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
@@ -1927,7 +1940,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withGestureToMacroName(gestureToMacroName)
                      .withGestureToConfidence(gestureToConfidence)
-                     .withRepeatDelayMs(1);
+                     .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
   assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
@@ -1939,7 +1952,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   this.processFaceLandmarkerResult(result);
 
   assertEquals(
-      'Pause or resume face control (Raise eyebrows), ' +
+      'Pause face control (Raise eyebrows), ' +
           'Left-click the mouse (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
@@ -1958,6 +1971,14 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
 
   assertEquals(
       'Face control paused',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  assertEquals(
+      'Resume face control (Raise eyebrows)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
 

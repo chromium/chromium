@@ -4,7 +4,7 @@
 
 import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_callback_macro.js';
 import {KeyCombination, KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {Macro, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickLeftDoubleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
@@ -270,7 +270,8 @@ export class GestureHandler {
 
     switch (name) {
       case MacroName.TOGGLE_DICTATION:
-        return new ToggleDictationMacro();
+        return new ToggleDictationMacro(
+            /*dictationActive=*/ this.isDictationActive_());
       case MacroName.MOUSE_CLICK_LEFT:
         return new MouseClickMacro(this.mouseController_.mouseLocation());
       case MacroName.MOUSE_CLICK_RIGHT:
@@ -307,10 +308,14 @@ export class GestureHandler {
               GestureHandler.SETTINGS_PATH);
         });
       case MacroName.TOGGLE_FACEGAZE:
-        return new CustomCallbackMacro(MacroName.TOGGLE_FACEGAZE, () => {
-          this.mouseController_.togglePaused();
-          this.togglePaused(gesture);
-        });
+        return new CustomCallbackMacro(
+            MacroName.TOGGLE_FACEGAZE,
+            () => {
+              this.mouseController_.togglePaused();
+              this.togglePaused(gesture);
+            },
+            /*toggleDirection=*/ this.paused_ ? ToggleDirection.ON :
+                                                ToggleDirection.OFF);
       case MacroName.TOGGLE_SCROLL_MODE:
         return new MouseScrollMacro(this.mouseController_);
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:

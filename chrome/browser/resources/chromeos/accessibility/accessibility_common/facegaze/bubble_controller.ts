@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {Macro, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -98,16 +98,27 @@ export class BubbleController {
       case MacroName.MOUSE_CLICK_RIGHT:
         return chrome.i18n.getMessage('facegaze_macro_text_mouse_click_right');
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        return chrome.i18n.getMessage(
-            'facegaze_macro_text_mouse_long_click_left');
+        return macro.getToggleDirection() === ToggleDirection.ON ?
+            chrome.i18n.getMessage(
+                'facegaze_macro_text_mouse_long_click_left_on') :
+            chrome.i18n.getMessage(
+                'facegaze_macro_text_mouse_long_click_left_off');
       case MacroName.RESET_CURSOR:
         return chrome.i18n.getMessage('facegaze_macro_text_reset_cursor');
       case MacroName.TOGGLE_DICTATION:
-        return chrome.i18n.getMessage('facegaze_macro_text_toggle_dictation');
+        return macro.getToggleDirection() === ToggleDirection.ON ?
+            chrome.i18n.getMessage('facegaze_macro_text_toggle_dictation_on') :
+            chrome.i18n.getMessage('facegaze_macro_text_toggle_dictation_off');
       case MacroName.TOGGLE_FACEGAZE:
-        return chrome.i18n.getMessage('facegaze_macro_text_toggle_facegaze');
+        return macro.getToggleDirection() === ToggleDirection.ON ?
+            chrome.i18n.getMessage('facegaze_macro_text_toggle_facegaze_on') :
+            chrome.i18n.getMessage('facegaze_macro_text_toggle_facegaze_off');
       case MacroName.TOGGLE_SCROLL_MODE:
-        return chrome.i18n.getMessage('facegaze_macro_text_toggle_scroll_mode');
+        return macro.getToggleDirection() === ToggleDirection.ON ?
+            chrome.i18n.getMessage(
+                'facegaze_macro_text_toggle_scroll_mode_on') :
+            chrome.i18n.getMessage(
+                'facegaze_macro_text_toggle_scroll_mode_off');
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
         return chrome.i18n.getMessage(
             'facegaze_macro_text_toggle_virtual_keyboard');

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CheckContextResult, Macro, MacroError, RunMacroResult} from '/common/action_fulfillment/macros/macro.js';
+import {CheckContextResult, Macro, MacroError, RunMacroResult, ToggleDirection} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 
 import {MouseController} from '../mouse_controller.js';
@@ -14,6 +14,15 @@ export class MouseLongClickMacro extends Macro {
   constructor(mouseController: MouseController) {
     super(MacroName.MOUSE_LONG_CLICK_LEFT);
     this.mouseController_ = mouseController;
+  }
+
+  override isToggle(): boolean {
+    return true;
+  }
+
+  override getToggleDirection(): ToggleDirection {
+    return this.mouseController_.isLongClickActive() ? ToggleDirection.OFF :
+                                                       ToggleDirection.ON;
   }
 
   override checkContext(): CheckContextResult {

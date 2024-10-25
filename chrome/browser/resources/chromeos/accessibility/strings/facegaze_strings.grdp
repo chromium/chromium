@@ -42,20 +42,32 @@
   <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_RIGHT" desc="This text describes an action to right-click the mouse.">
     Right-click the mouse
   </message>
-  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_LONG_CLICK_LEFT" desc="This text describes an action to drag and drop.">
-    Drag and drop
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_LONG_CLICK_LEFT_ON" desc="This text describes an action to start a drag and drop action.">
+    Start drag and drop
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_LONG_CLICK_LEFT_OFF" desc="This text describes an action to end a drag and drop action.">
+    End drag and drop
   </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_RESET_CURSOR" desc="This text describes an action to reset the cursor to the center of the screen.">
     Reset cursor to center
   </message>
-  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_DICTATION" desc="This text describes an action to start or stop the Dictation feature.">
-    Start or stop dictation
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_DICTATION_ON" desc="This text describes an action to start the Dictation feature.">
+    Start dictation
   </message>
-  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_FACEGAZE" desc="This text describes an action to pause or resume FaceGaze.">
-    Pause or resume face control
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_DICTATION_OFF" desc="This text describes an action to stop the Dictation feature.">
+    Stop dictation
   </message>
-  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_SCROLL_MODE" desc="This text describes an action to pause or resume FaceGaze scroll mode.">
-    Enter or exit scroll mode
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_FACEGAZE_ON" desc="This text describes an action to resume FaceGaze.">
+    Resume face control
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_FACEGAZE_OFF" desc="This text describes an action to pause FaceGaze.">
+    Pause face control
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_SCROLL_MODE_ON" desc="This text describes an action to enter FaceGaze scroll mode.">
+    Enter scroll mode
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_SCROLL_MODE_OFF" desc="This text describes an action to exit FaceGaze scroll mode.">
+    Exit scroll mode
   </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_VIRTUAL_KEYBOARD" desc="This text describes an action to show or hide the on-screen keyboard.">
     Show or hide on-screen keyboard
