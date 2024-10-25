@@ -1690,7 +1690,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReports(
 
 void AttributionManagerImpl::ReportRegistrationHeaderError(
     attribution_reporting::SuitableOrigin reporting_origin,
-    const attribution_reporting::RegistrationHeaderError& error,
+    attribution_reporting::RegistrationHeaderError error,
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
@@ -1704,9 +1704,9 @@ void AttributionManagerImpl::ReportRegistrationHeaderError(
   };
 
   if (std::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(std::move(reporting_origin), error,
-                                         context_origin, is_within_fenced_frame,
-                                         is_operation_allowed)) {
+          AttributionDebugReport::Create(
+              std::move(reporting_origin), std::move(error), context_origin,
+              is_within_fenced_frame, is_operation_allowed)) {
     report_sender_->SendReport(
         *std::move(debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,

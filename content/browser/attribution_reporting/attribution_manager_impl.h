@@ -140,7 +140,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                     base::OnceClosure done) override;
   void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError&,
+      attribution_reporting::RegistrationHeaderError,
       const attribution_reporting::SuitableOrigin& context_origin,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) override;

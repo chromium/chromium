@@ -52,7 +52,7 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   static std::optional<AttributionDebugReport> Create(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError&,
+      attribution_reporting::RegistrationHeaderError,
       const attribution_reporting::SuitableOrigin& context_origin,
       bool is_within_fenced_frame,
       base::FunctionRef<bool(const url::Origin& reporting_origin)>

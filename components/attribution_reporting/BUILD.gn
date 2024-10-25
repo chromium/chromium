@@ -474,6 +474,10 @@ mojom("registration_header_error_mojom") {
           mojom = "attribution_reporting.mojom.RegistrationHeaderError"
           cpp = "::attribution_reporting::RegistrationHeaderError"
           forward_declaration = "namespace attribution_reporting { struct RegistrationHeaderError; }"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
         },
         {
           mojom = "attribution_reporting.mojom.RegistrationHeaderErrorDetails"

@@ -184,7 +184,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       bool was_fetched_via_service_worker) override;
   void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError&) override;
+      attribution_reporting::RegistrationHeaderError) override;
 
   const RegistrationContext* GetReceiverRegistrationContextForSource();
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();
@@ -241,7 +241,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   void MaybeLogAuditIssueAndReportHeaderError(
       const Registrations&,
-      const HeaderPendingDecode&,
+      HeaderPendingDecode,
       attribution_reporting::RegistrationHeaderErrorDetails);
 
   using OsParseResult =

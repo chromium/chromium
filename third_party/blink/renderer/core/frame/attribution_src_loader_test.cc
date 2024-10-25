@@ -181,8 +181,8 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
 
   void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError& error) override {
-    header_errors_.push_back(error);
+      attribution_reporting::RegistrationHeaderError error) override {
+    header_errors_.emplace_back(std::move(error));
   }
 
   Vector<attribution_reporting::SourceRegistration> source_data_;

@@ -2058,8 +2058,8 @@ void AttributionDataHostManagerImpl::OnWebHeaderParsed(
     RecordRegistrationMethod(registrations->context().GetRegistrationMethod(
         /*was_fetched_via_service_worker=*/false));
   } else {
-    MaybeLogAuditIssueAndReportHeaderError(*registrations, pending_decode,
-                                           handle_result.error());
+    MaybeLogAuditIssueAndReportHeaderError(
+        *registrations, std::move(pending_decode), handle_result.error());
   }
 
   registrations->pending_web_decodes().pop_front();
@@ -2107,45 +2107,44 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(RegistrationsId id,
   CHECK(registrations != registrations_.end());
 
   CHECK(!registrations->pending_os_decodes().empty());
-  {
-    const auto& pending_decode = registrations->pending_os_decodes().front();
 
-    base::expected<std::vector<attribution_reporting::OsRegistrationItem>,
-                   OsRegistrationError>
-        registration_items(base::unexpect, OsRegistrationError::kInvalidList);
-    if (result.has_value()) {
-      registration_items =
-          attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
-    }
+  auto& pending_decode = registrations->pending_os_decodes().front();
 
-    if (registration_items.has_value()) {
-      RecordRegistrationMethod(registrations->context().GetRegistrationMethod(
-          /*was_fetched_via_service_worker=*/false));
+  base::expected<std::vector<attribution_reporting::OsRegistrationItem>,
+                 OsRegistrationError>
+      registration_items(base::unexpect, OsRegistrationError::kInvalidList);
+  if (result.has_value()) {
+    registration_items =
+        attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
+  }
 
-      if (registrations->navigation_id().has_value()) {
-        MaybeBufferOsRegistrations(*registrations->navigation_id(),
-                                   *std::move(registration_items),
-                                   registrations->context());
-      } else {
-        SubmitOsRegistrations(*std::move(registration_items),
-                              registrations->context(),
-                              pending_decode.registration_type);
-      }
+  if (registration_items.has_value()) {
+    RecordRegistrationMethod(registrations->context().GetRegistrationMethod(
+        /*was_fetched_via_service_worker=*/false));
+
+    if (registrations->navigation_id().has_value()) {
+      MaybeBufferOsRegistrations(*registrations->navigation_id(),
+                                 *std::move(registration_items),
+                                 registrations->context());
     } else {
-      RegistrationHeaderErrorDetails error_details;
-      switch (pending_decode.registration_type) {
-        case RegistrationType::kSource:
-          error_details = attribution_reporting::OsSourceRegistrationError(
-              registration_items.error());
-          break;
-        case RegistrationType::kTrigger:
-          error_details = attribution_reporting::OsTriggerRegistrationError(
-              registration_items.error());
-          break;
-      }
-      MaybeLogAuditIssueAndReportHeaderError(*registrations, pending_decode,
-                                             error_details);
+      SubmitOsRegistrations(*std::move(registration_items),
+                            registrations->context(),
+                            pending_decode.registration_type);
     }
+  } else {
+    RegistrationHeaderErrorDetails error_details;
+    switch (pending_decode.registration_type) {
+      case RegistrationType::kSource:
+        error_details = attribution_reporting::OsSourceRegistrationError(
+            registration_items.error());
+        break;
+      case RegistrationType::kTrigger:
+        error_details = attribution_reporting::OsTriggerRegistrationError(
+            registration_items.error());
+        break;
+    }
+    MaybeLogAuditIssueAndReportHeaderError(
+        *registrations, std::move(pending_decode), error_details);
   }
 
   registrations->pending_os_decodes().pop_front();
@@ -2391,8 +2390,11 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
 
 void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
     const Registrations& registrations,
-    const HeaderPendingDecode& pending_decode,
+    HeaderPendingDecode pending_decode,
     RegistrationHeaderErrorDetails error_details) {
+  auto&& [header, reporting_origin, reporting_url, report_header_errors,
+          registration_type] = std::move(pending_decode);
+
   AttributionReportingIssueType issue_type = absl::visit(
       base::Overloaded{
           [](SourceRegistrationError error) {
@@ -2418,13 +2420,14 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
       error_details);
 
   MaybeLogAuditIssue(registrations.render_frame_id(),
-                     /*request_url=*/pending_decode.reporting_url,
+                     /*request_url=*/reporting_url,
                      registrations.devtools_request_id(),
-                     /*invalid_parameter=*/pending_decode.header, issue_type);
-  if (pending_decode.report_header_errors) {
+                     /*invalid_parameter=*/header, issue_type);
+
+  if (report_header_errors) {
     attribution_manager_->ReportRegistrationHeaderError(
-        pending_decode.reporting_origin,
-        attribution_reporting::RegistrationHeaderError(pending_decode.header,
+        std::move(reporting_origin),
+        attribution_reporting::RegistrationHeaderError(std::move(header),
                                                        error_details),
         registrations.context_origin(), registrations.is_within_fenced_frame(),
         registrations.render_frame_id());
@@ -2433,10 +2436,10 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
 
 void AttributionDataHostManagerImpl::ReportRegistrationHeaderError(
     SuitableOrigin reporting_origin,
-    const attribution_reporting::RegistrationHeaderError& error) {
+    attribution_reporting::RegistrationHeaderError error) {
   const RegistrationContext& context = receivers_.current_context();
   attribution_manager_->ReportRegistrationHeaderError(
-      std::move(reporting_origin), error, context.context_origin(),
+      std::move(reporting_origin), std::move(error), context.context_origin(),
       context.is_within_fenced_frame(), context.render_frame_id());
 }
 

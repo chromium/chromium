@@ -7,6 +7,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/types/strong_alias.h"
@@ -37,7 +38,15 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationHeaderError {
 
   RegistrationHeaderError() = default;
 
+  RegistrationHeaderError(std::string header_value,
+                          RegistrationHeaderErrorDetails error_details)
+      : header_value(std::move(header_value)), error_details(error_details) {}
+
   RegistrationHeaderError(std::string_view header_value,
+                          RegistrationHeaderErrorDetails error_details)
+      : header_value(header_value), error_details(error_details) {}
+
+  RegistrationHeaderError(const char* header_value,
                           RegistrationHeaderErrorDetails error_details)
       : header_value(header_value), error_details(error_details) {}
 

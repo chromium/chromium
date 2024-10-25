@@ -496,7 +496,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     attribution_reporting::SuitableOrigin reporting_origin,
-    const attribution_reporting::RegistrationHeaderError& error,
+    attribution_reporting::RegistrationHeaderError error,
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     base::FunctionRef<bool(const url::Origin&)> is_operation_allowed) {
@@ -507,7 +507,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   base::Value::Dict data_body;
   data_body.Set("context_site", net::SchemefulSite(context_origin).Serialize());
   data_body.Set("header", error.HeaderName());
-  data_body.Set("value", error.header_value);
+  data_body.Set("value", std::move(error.header_value));
 
   const DebugDataType data_type = DebugDataType::kHeaderParsingError;
 
