@@ -94,8 +94,8 @@ OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
 
   Browser* const content_browser =
       LockedSessionWindowTracker::GetBrowserWithTab(handle->GetWebContents());
-  if (content_browser && content_browser != window_tracker->browser() &&
-      !content_browser->is_type_app_popup()) {
+  if (!content_browser || (content_browser != window_tracker->browser() &&
+                           !content_browser->is_type_app_popup())) {
     return nullptr;
   }
   window_tracker->ObserveWebContents(handle->GetWebContents());
@@ -151,7 +151,8 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   // Handle the case where the creation of the tab is in the OnTask app
   // context, but is moved to a different browser right after (such as open link
   // in chrome window context menu).
-  if (content_browser && content_browser != window_tracker->browser()) {
+  if (!content_browser || (content_browser != window_tracker->browser() &&
+                           !content_browser->is_type_app_popup())) {
     return PROCEED;
   }
 

@@ -1180,6 +1180,7 @@ TEST_F(OnTaskNavigationThrottleTest,
       tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             simulator->GetLastThrottleCheckResult());
+  simulator->Commit();
   EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
 
@@ -1243,10 +1244,10 @@ TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
   std::unique_ptr<content::NavigationSimulator> simulator = StartNavigation(
       url_a_front_subdomain,
       popup_tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  simulator->Commit();
   ASSERT_TRUE(base::test::RunUntil([&popup_browser]() {
     return static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed();
   }));
-  simulator->Commit();
   EXPECT_TRUE(
       static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
 
