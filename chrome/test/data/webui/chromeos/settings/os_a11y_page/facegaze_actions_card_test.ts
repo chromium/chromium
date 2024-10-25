@@ -265,6 +265,38 @@ suite('<facegaze-actions-card>', () => {
         assertEquals(1, commandPairs.length);
       });
 
+  test(
+      'actions list initializes when prefs missing key combinations',
+      async () => {
+        prefElement = document.createElement('settings-prefs');
+        document.body.appendChild(prefElement);
+
+        await CrSettingsPrefs.initialized;
+        faceGazeActionsCard = document.createElement('facegaze-actions-card');
+        faceGazeActionsCard.prefs = prefElement.prefs;
+
+        faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+            .value[FacialGesture.BROW_INNER_UP] =
+            MacroName.CUSTOM_KEY_COMBINATION;
+        faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_key_combos
+            .value = {};
+        const keyComboCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.BROW_INNER_UP);
+        assertTrue(isGestureToMacroPrefSet(keyComboCommandPair));
+
+        document.body.appendChild(faceGazeActionsCard);
+        flush();
+
+        assertFalse(isGestureToMacroPrefSet(keyComboCommandPair));
+
+        // If the settings somehow get into a bad state and a key combination is
+        // missing from the prefs, we should fix the malformed pref and make
+        // sure the user can still load the settings.
+        const commandPairs = faceGazeActionsCard.get(
+            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME);
+        assertEquals(0, commandPairs.length);
+      });
+
   test('actions update prefs with added command pair', async () => {
     await initPage();
 

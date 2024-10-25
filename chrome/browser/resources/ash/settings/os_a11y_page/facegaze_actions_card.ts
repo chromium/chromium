@@ -199,7 +199,8 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
 
     if (!commandPair.assignedKeyCombo) {
-      throw new Error('FaceGaze expected key combination to be assigned');
+      console.error(this.getKeyComboErrorMessage_(commandPair.gesture));
+      return null;
     }
 
     const keyCombo = commandPair.assignedKeyCombo.keyCombo;
@@ -418,6 +419,14 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     const assignedGestures = this.getCurrentAssignedGestures_();
     const currentKeyCombos = this.getCurrentKeyCombos_();
 
+    // Since the 'gesture to macro' pref and 'gesture to key combo' pref are
+    // saved separately, there is a chance for the prefs to become malformed
+    // if a 'gesture to key combo macro' mapping is saved to the 'gesture to
+    // macro' pref without the corresponding 'gesture to key combo' pref. This
+    // should only occur if a user was previously on a non-release build. If
+    // this occurs, then remove the 'gesture to key combo macro' mapping
+    // altogether from the pref to restore the user prefs to a valid state.
+    let shouldFixPref = false;
     for (const [currentGesture, assignedMacro] of Object.entries(
              assignedGestures)) {
       if (assignedMacro !== MacroName.UNSPECIFIED) {
@@ -427,14 +436,26 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
         if (assignedMacro === MacroName.CUSTOM_KEY_COMBINATION) {
           const keyCombo = currentKeyCombos[newGesture];
+
+          // Log error instead of throwing to ensure the user can access the
+          // settings, then correct the malformed pref.
           if (!keyCombo) {
-            throw new Error(this.getKeyComboErrorMessage_(newGesture));
+            shouldFixPref = true;
+            console.error(`${this.getKeyComboErrorMessage_(newGesture)}
+                Deleting assignment to custom key combination action.`);
+            delete assignedGestures[newGesture];
+            continue;
           }
+
           newCommandPair.assignedKeyCombo = new AssignedKeyCombo(keyCombo);
         }
 
         this.addNewCommandPair_(newCommandPair);
       }
+    }
+
+    if (shouldFixPref) {
+      this.set(FACE_GAZE_GESTURE_TO_MACROS_PREF, assignedGestures);
     }
   }
 
@@ -486,7 +507,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     return gestures;
   }
 
-  private getKeyComboErrorMessage_(gesture: FacialGesture): string {
+  private getKeyComboErrorMessage_(gesture: FacialGesture|null): string {
     return `FaceGaze expected key combination to be assigned to ${gesture}.`;
   }
 }
