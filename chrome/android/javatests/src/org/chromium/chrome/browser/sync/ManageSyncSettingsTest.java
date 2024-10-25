@@ -105,6 +105,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -556,6 +557,37 @@ public class ManageSyncSettingsTest {
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
         Assert.assertTrue(passwords_toggle.isChecked());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testHistoryOptInCarriesOverThroughSignoutSignin() {
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ChromeSwitchPreference history_and_tabs_toggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
+        mSyncTestRule.togglePreference(history_and_tabs_toggle);
+        Assert.assertTrue(history_and_tabs_toggle.isChecked());
+
+        mSyncTestRule.signOut();
+
+        // Sign-in again with the same account, and open the sync settings to check that history
+        // opt-in did carry over through sign-out & sign-in.
+        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
+
+        fragment = startManageSyncPreferences();
+
+        history_and_tabs_toggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
+        Assert.assertTrue(history_and_tabs_toggle.isChecked());
     }
 
     @Test
