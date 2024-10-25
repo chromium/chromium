@@ -24,6 +24,8 @@
 #include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -224,12 +226,16 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void OnWebHeaderParsed(
       RegistrationsId,
       data_decoder::DataDecoder::ValueOrError result);
-  void HandleParsedWebSource(const Registrations&,
-                             HeaderPendingDecode&,
-                             data_decoder::DataDecoder::ValueOrError result);
-  void HandleParsedWebTrigger(const Registrations&,
-                              HeaderPendingDecode&,
-                              data_decoder::DataDecoder::ValueOrError result);
+
+  base::expected<void, attribution_reporting::mojom::SourceRegistrationError>
+  HandleParsedWebSource(const Registrations&,
+                        HeaderPendingDecode&,
+                        data_decoder::DataDecoder::ValueOrError);
+
+  base::expected<void, attribution_reporting::mojom::TriggerRegistrationError>
+  HandleParsedWebTrigger(const Registrations&,
+                         HeaderPendingDecode&,
+                         data_decoder::DataDecoder::ValueOrError);
 
   void HandleNextOsDecode(const Registrations&);
 

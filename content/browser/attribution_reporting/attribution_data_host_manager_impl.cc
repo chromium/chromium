@@ -87,6 +87,7 @@ namespace {
 
 using ::attribution_reporting::IssueType;
 using ::attribution_reporting::Registrar;
+using ::attribution_reporting::RegistrationHeaderErrorDetails;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::OsRegistrationError;
 using ::attribution_reporting::mojom::RegistrationEligibility;
@@ -1973,80 +1974,62 @@ void AttributionDataHostManagerImpl::BackgroundRegistrationsTied(
   }
 }
 
-void AttributionDataHostManagerImpl::HandleParsedWebSource(
+base::expected<void, SourceRegistrationError>
+AttributionDataHostManagerImpl::HandleParsedWebSource(
     const Registrations& registrations,
     HeaderPendingDecode& pending_decode,
     data_decoder::DataDecoder::ValueOrError result) {
-  auto source =
-      [&]() -> base::expected<StorableSource, SourceRegistrationError> {
-    if (!result.has_value()) {
-      return base::unexpected(SourceRegistrationError::kInvalidJson);
-    }
-
-    auto source_type = registrations.navigation_id().has_value()
-                           ? SourceType::kNavigation
-                           : SourceType::kEvent;
-
-    ASSIGN_OR_RETURN(auto registration,
-                     attribution_reporting::SourceRegistration::Parse(
-                         *std::move(result), source_type));
-
-    return StorableSource(std::move(pending_decode.reporting_origin),
-                          std::move(registration),
-                          registrations.context_origin(), source_type,
-                          registrations.is_within_fenced_frame());
-  }();
-  if (source.has_value()) {
-    if (auto navigation_id = registrations.navigation_id();
-        navigation_id.has_value() &&
-        !AddNavigationSourceRegistrationToBatchMap(
-            *navigation_id, source->common_info().reporting_origin(),
-            source->registration(), registrations.render_frame_id(),
-            registrations.devtools_request_id())) {
-      return;
-    }
-
-    RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
-        /*was_fetched_via_service_worker=*/false));
-    attribution_manager_->HandleSource(*std::move(source),
-                                       registrations.render_frame_id());
-  } else {
-    MaybeLogAuditIssueAndReportHeaderError(registrations, pending_decode,
-                                           source.error());
-    attribution_reporting::RecordSourceRegistrationError(source.error());
+  if (!result.has_value()) {
+    return base::unexpected(SourceRegistrationError::kInvalidJson);
   }
+
+  auto source_type = registrations.navigation_id().has_value()
+                         ? SourceType::kNavigation
+                         : SourceType::kEvent;
+
+  ASSIGN_OR_RETURN(auto registration,
+                   attribution_reporting::SourceRegistration::Parse(
+                       *std::move(result), source_type));
+
+  if (auto navigation_id = registrations.navigation_id();
+      navigation_id.has_value() &&
+      !AddNavigationSourceRegistrationToBatchMap(
+          *navigation_id, pending_decode.reporting_origin, registration,
+          registrations.render_frame_id(),
+          registrations.devtools_request_id())) {
+    return base::ok();
+  }
+
+  attribution_manager_->HandleSource(
+      StorableSource(std::move(pending_decode.reporting_origin),
+                     std::move(registration), registrations.context_origin(),
+                     source_type, registrations.is_within_fenced_frame()),
+      registrations.render_frame_id());
+
+  return base::ok();
 }
 
-void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
+base::expected<void, TriggerRegistrationError>
+AttributionDataHostManagerImpl::HandleParsedWebTrigger(
     const Registrations& registrations,
     HeaderPendingDecode& pending_decode,
     data_decoder::DataDecoder::ValueOrError result) {
-  auto trigger =
-      [&]() -> base::expected<AttributionTrigger, TriggerRegistrationError> {
-    if (!result.has_value()) {
-      return base::unexpected(TriggerRegistrationError::kInvalidJson);
-    }
-
-    ASSIGN_OR_RETURN(
-        auto registration,
-        attribution_reporting::TriggerRegistration::Parse(*std::move(result)));
-
-    return AttributionTrigger(
-        std::move(pending_decode.reporting_origin), std::move(registration),
-        /*destination_origin=*/registrations.context_origin(),
-        registrations.is_within_fenced_frame());
-  }();
-
-  if (trigger.has_value()) {
-    RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
-        /*was_fetched_via_service_worker=*/false));
-    attribution_manager_->HandleTrigger(*std::move(trigger),
-                                        registrations.render_frame_id());
-  } else {
-    MaybeLogAuditIssueAndReportHeaderError(registrations, pending_decode,
-                                           trigger.error());
-    attribution_reporting::RecordTriggerRegistrationError(trigger.error());
+  if (!result.has_value()) {
+    return base::unexpected(TriggerRegistrationError::kInvalidJson);
   }
+
+  ASSIGN_OR_RETURN(
+      auto registration,
+      attribution_reporting::TriggerRegistration::Parse(*std::move(result)));
+
+  attribution_manager_->HandleTrigger(
+      AttributionTrigger(std::move(pending_decode.reporting_origin),
+                         std::move(registration),
+                         /*destination_origin=*/registrations.context_origin(),
+                         registrations.is_within_fenced_frame()),
+      registrations.render_frame_id());
+
+  return base::ok();
 }
 
 void AttributionDataHostManagerImpl::OnWebHeaderParsed(
@@ -2056,20 +2039,27 @@ void AttributionDataHostManagerImpl::OnWebHeaderParsed(
   CHECK(registrations != registrations_.end());
 
   CHECK(!registrations->pending_web_decodes().empty());
-  {
-    auto& pending_decode = registrations->pending_web_decodes().front();
-    switch (pending_decode.registration_type) {
-      case RegistrationType::kSource: {
-        HandleParsedWebSource(*registrations, pending_decode,
-                              std::move(result));
-        break;
-      }
-      case RegistrationType::kTrigger: {
-        HandleParsedWebTrigger(*registrations, pending_decode,
-                               std::move(result));
-        break;
-      }
-    }
+
+  base::expected<void, RegistrationHeaderErrorDetails> handle_result;
+
+  auto& pending_decode = registrations->pending_web_decodes().front();
+  switch (pending_decode.registration_type) {
+    case RegistrationType::kSource:
+      handle_result = HandleParsedWebSource(*registrations, pending_decode,
+                                            std::move(result));
+      break;
+    case RegistrationType::kTrigger:
+      handle_result = HandleParsedWebTrigger(*registrations, pending_decode,
+                                             std::move(result));
+      break;
+  }
+
+  if (handle_result.has_value()) {
+    RecordRegistrationMethod(registrations->context().GetRegistrationMethod(
+        /*was_fetched_via_service_worker=*/false));
+  } else {
+    MaybeLogAuditIssueAndReportHeaderError(*registrations, pending_decode,
+                                           handle_result.error());
   }
 
   registrations->pending_web_decodes().pop_front();
@@ -2142,7 +2132,7 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(RegistrationsId id,
                               pending_decode.registration_type);
       }
     } else {
-      attribution_reporting::RegistrationHeaderErrorDetails error_details;
+      RegistrationHeaderErrorDetails error_details;
       switch (pending_decode.registration_type) {
         case RegistrationType::kSource:
           error_details = attribution_reporting::OsSourceRegistrationError(
@@ -2402,14 +2392,16 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
 void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
     const Registrations& registrations,
     const HeaderPendingDecode& pending_decode,
-    attribution_reporting::RegistrationHeaderErrorDetails error_details) {
+    RegistrationHeaderErrorDetails error_details) {
   AttributionReportingIssueType issue_type = absl::visit(
       base::Overloaded{
-          [](SourceRegistrationError) {
+          [](SourceRegistrationError error) {
+            attribution_reporting::RecordSourceRegistrationError(error);
             return AttributionReportingIssueType::kInvalidRegisterSourceHeader;
           },
 
-          [](TriggerRegistrationError) {
+          [](TriggerRegistrationError error) {
+            attribution_reporting::RecordTriggerRegistrationError(error);
             return AttributionReportingIssueType::kInvalidRegisterTriggerHeader;
           },
 
