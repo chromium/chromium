@@ -91,6 +91,13 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
     return;
   }
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/375143253): To investigate flaky failures.
+  if (layout_object_->is_destroyed_) [[unlikely]] {
+    DCHECK(false) << layout_object_;
+  }
+#endif  // DCHECK_IS_ON()
+
   if (layout_object_->IsDescendantOf(&layout_object)) {
     // `<span contenteditable>...</span>` reaches here.
     return Clear();

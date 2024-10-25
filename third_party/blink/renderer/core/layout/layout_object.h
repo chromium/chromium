@@ -4140,6 +4140,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   static bool affects_parent_block_;
 
 #if DCHECK_IS_ON()
+  friend class CachedTextInputInfo;
   bool is_destroyed_ = false;
 #endif
 };
