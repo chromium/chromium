@@ -56,7 +56,7 @@ void UserManager::UserSessionStateObserver::UserAddedToSession(
 void UserManager::UserSessionStateObserver::OnLoginStateUpdated(
     const User* active_user) {}
 
-UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
+UserManager::UserSessionStateObserver::~UserSessionStateObserver() = default;
 
 UserManager::UserAccountData::UserAccountData(
     const std::u16string& display_name,
@@ -64,7 +64,7 @@ UserManager::UserAccountData::UserAccountData(
     const std::string& locale)
     : display_name_(display_name), given_name_(given_name), locale_(locale) {}
 
-UserManager::UserAccountData::~UserAccountData() {}
+UserManager::UserAccountData::~UserAccountData() = default;
 
 UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(std::string user_id,
                                                             UserType type)
