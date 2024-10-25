@@ -255,6 +255,10 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
+      wallpaperSearchButtonEnabled_: {
+        type: Boolean,
+      },
+
       showWallpaperSearchButton_: {
         type: Boolean,
         reflect: true,
@@ -411,13 +415,13 @@ export class AppElement extends AppElementBase {
     this.setWallpaperSearchButtonVisibilityListener_ =
         this.callbackRouter_.setWallpaperSearchButtonVisibility.addListener(
             (visible: boolean) => {
-              // We only show the button if wallpaper search is enabled when the
-              // NTP loads. This prevents the button from showing if Customize
-              // Chrome doesn't have the wallpaper search element yet.
+              // Hides the wallpaper search button if the browser indicates that
+              // it should be hidden.
+              // Note: We don't resurface the button later even if the browser
+              // says we should, to avoid issues if Customize Chrome doesn't
+              // have the wallpaper search element yet.
               if (!visible) {
                 this.wallpaperSearchButtonEnabled_ = visible;
-                this.showWallpaperSearchButton_ =
-                    this.computeShowWallpaperSearchButton_();
               }
             });
 
