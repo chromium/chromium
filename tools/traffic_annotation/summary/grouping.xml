@@ -359,6 +359,7 @@ after discussions on the right group.
       <annotation id="ash_babelorca_tachyon_registrar"/>
       <annotation id="ash_babelorca_transcript_receiver"/>
       <annotation id="ash_babelorca_transcript_sender_impl"/>
+      <annotation id="ash_babelorca_babel_orca_consumer"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

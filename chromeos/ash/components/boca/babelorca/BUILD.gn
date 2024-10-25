@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 static_library("babelorca") {
   sources = [
+    "babel_orca_consumer.cc",
+    "babel_orca_consumer.h",
     "babel_orca_controller.h",
     "babel_orca_manager.cc",
     "babel_orca_manager.h",
@@ -60,11 +62,13 @@ static_library("babelorca") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/services/boca/babelorca/mojom",
     "//components/live_caption",
     "//components/live_caption:live_translate",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//content/public/browser",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
     "//mojo/public/cpp/bindings",
@@ -101,6 +105,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "babel_orca_consumer_unittest.cc",
     "babel_orca_manager_unittest.cc",
     "babel_orca_producer_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
@@ -124,6 +129,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/babelorca/proto:test_support",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/services/boca/babelorca/mojom",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",

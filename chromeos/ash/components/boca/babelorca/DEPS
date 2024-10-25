@@ -2,5 +2,6 @@ include_rules = [
   "+components/live_caption",
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
+  "+content/public/browser/service_process_host.h",
   "+media/mojo/mojom/speech_recognition_result.h",
 ]
