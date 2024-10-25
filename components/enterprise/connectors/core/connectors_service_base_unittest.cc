@@ -192,8 +192,8 @@ class ConnectorsServiceBaseReportingSettingsTest
 
 TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
   TestConnectorsService service;
-  // TODO(b/344593927): Re-enable this test for Android and iOS
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // TODO(b/344593927): Re-enable this test for Android
+#if BUILDFLAG(IS_ANDROID)
   ASSERT_FALSE(service.GetPrefs()->FindPreference(
       "enterprise_connectors.on_security_event"));
 #else

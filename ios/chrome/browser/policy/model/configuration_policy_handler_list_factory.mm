@@ -243,5 +243,12 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
           chrome_schema));
 
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kOnSecurityEventEnterpriseConnector,
+          enterprise_connectors::kOnSecurityEventPref,
+          enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
+
   return handlers;
 }
