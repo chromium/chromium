@@ -151,6 +151,7 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     @Test
     public void testOnTabDonateMetadataRead() {
         int faviconSize = 50;
+        int timeDelta = 1000;
         mTask.onTabDonateMetadataRead(
                 mProfile,
                 faviconSize,
@@ -174,6 +175,14 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
                         eq(faviconSize),
                         mFaviconImageCallbackCaptor.capture());
 
+        mFakeTime.advanceMillis(timeDelta);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Search.AuxiliarySearch.Schedule.Favicon.DonateCount", 1)
+                        .expectIntRecords(
+                                "Search.AuxiliarySearch.Schedule.Favicon.FetchTime", timeDelta)
+                        .build();
+
         Bitmap bitmap1 = Bitmap.createBitmap(50, 50, Bitmap.Config.RGB_565);
         mFaviconImageCallbackCaptor.getAllValues().get(0).onFaviconAvailable(bitmap1, URL_1);
         verify(mAuxiliarySearchController, never())
@@ -187,9 +196,10 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         verify(mAuxiliarySearchController)
                 .onBackgroundTaskStart(
                         eq(mEntries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
+        histogramWatcher.assertExpected();
 
         String histogramName = "Search.AuxiliarySearch.Schedule.FaviconDonateResult";
-        var histogramWatcher =
+        histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(histogramName, DonateResult.SUCCEED)
                         .build();

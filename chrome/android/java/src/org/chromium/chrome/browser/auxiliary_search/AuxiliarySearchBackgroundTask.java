@@ -58,6 +58,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
             "Search.AuxiliarySearch.Schedule.DelayTime";
     private static final String SCHEDULE_DONATE_RESULT_UMA =
             "Search.AuxiliarySearch.Schedule.FaviconDonateResult";
+    private static final String SCHEDULE_FAVICON_DONATE_COUNT_UMA =
+            "Search.AuxiliarySearch.Schedule.Favicon.DonateCount";
+    private static final String SCHEDULE_FAVICON_FETCH_TIME_UMA =
+            "Search.AuxiliarySearch.Schedule.Favicon.FetchTime";
     private final Map<Integer, Bitmap> mTabIdToFaviconMap = new HashMap<>();
 
     @NonNull private Context mContext;
@@ -196,7 +200,12 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                         // Notifies the taskFinishedCallback after all favicon fetching are
                         // responded.
                         if (mTaskFinishedCount == tabs.size()) {
+                            long currentTimeMs = TimeUtils.uptimeMillis();
+                            RecordHistogram.recordMediumTimesHistogram(
+                                    SCHEDULE_FAVICON_FETCH_TIME_UMA, currentTimeMs - startTimeMs);
+
                             if (!mTabIdToFaviconMap.isEmpty()) {
+                                int size = mTabIdToFaviconMap.size();
                                 auxiliarySearchController.onBackgroundTaskStart(
                                         tabs,
                                         mTabIdToFaviconMap,
@@ -210,7 +219,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                                             : DonateResult.FAILED,
                                                     DonateResult.MAX_COUNT);
                                         },
-                                        startTimeMs);
+                                        currentTimeMs);
+
+                                RecordHistogram.recordCount1000Histogram(
+                                        SCHEDULE_FAVICON_DONATE_COUNT_UMA, size);
                             } else {
                                 // There isn't any favicons to donate, stops here.
                                 taskFinishedCallback.taskFinished(/* needsReschedule= */ false);

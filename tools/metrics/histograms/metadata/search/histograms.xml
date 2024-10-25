@@ -158,9 +158,33 @@ chromium-metrics-reviews@google.com.
   <owner>gangwu@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <summary>
-    Time taken for donating contents to the auxiliary search from a scheduled
-    background task. The histogram is logged when the donation is completed.
+    Records the time taken between all of the favicons are fetched and the
+    donation to the auxiliary search is completed. The histogram is logged when
+    the donation is completed from a scheduled background task. Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.Schedule.Favicon.DonateCount"
+    units="count" expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the number of favicons that a background task donated for auxiliary
+    search. The histogram is logged when all of the favicons are fetched.
     Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.Schedule.Favicon.FetchTime" units="ms"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Time taken for fetching up to 100 favicons for the auxiliary search from a
+    scheduled background task. The histogram is logged when all of the favicons
+    are fetched. Android-only.
   </summary>
 </histogram>
 
@@ -170,7 +194,7 @@ chromium-metrics-reviews@google.com.
   <owner>gangwu@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <summary>
-    Records the result of a background task for tab donation. The history is
+    Records the result of a background task for tab donation. The histogram is
     logged when a donation is completed, or when all of the favicon fetches are
     completed but there isn't any favicon available. Android-only.
   </summary>
