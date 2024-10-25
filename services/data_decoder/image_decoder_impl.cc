@@ -81,9 +81,8 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   if (codec == mojom::ImageCodec::kPng) {
     // Our PNG decoding is using libpng.
     if (encoded_data.size()) {
-      SkBitmap decoded_png;
-      if (gfx::PNGCodec::Decode(encoded_data.data(), encoded_data.size(),
-                                &decoded_png)) {
+      SkBitmap decoded_png = gfx::PNGCodec::Decode(encoded_data);
+      if (!decoded_png.isNull()) {
         decoded_image = decoded_png;
       }
     }
