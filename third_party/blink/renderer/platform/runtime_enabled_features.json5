@@ -3434,6 +3434,12 @@
       status: "experimental",
     },
     {
+      name: "PushMessageDataBytes",
+      depends_on: ["PushMessaging"],
+      status: "stable",
+      base_feature: "none",
+    },
+    {
       name: "PushMessaging",
       public: true,
       status: "stable",

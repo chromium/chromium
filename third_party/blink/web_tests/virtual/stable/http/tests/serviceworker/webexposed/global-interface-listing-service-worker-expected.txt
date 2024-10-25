@@ -1443,6 +1443,7 @@ interface PushMessageData
     attribute @@toStringTag
     method arrayBuffer
     method blob
+    method bytes
     method constructor
     method json
     method text
