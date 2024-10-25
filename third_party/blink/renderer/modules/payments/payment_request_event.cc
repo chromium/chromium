@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_response.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_options.h"
@@ -22,8 +23,8 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_location.h"
 #include "third_party/blink/renderer/modules/payments/address_init_type_converter.h"
+#include "third_party/blink/renderer/modules/payments/payment_request_respond_with_observer.h"
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
-#include "third_party/blink/renderer/modules/service_worker/respond_with_observer.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -33,11 +34,34 @@
 
 namespace blink {
 
+class PaymentRequestRespondWithFulfill final
+    : public ThenCallable<PaymentHandlerResponse,
+                          PaymentRequestRespondWithFulfill> {
+ public:
+  explicit PaymentRequestRespondWithFulfill(
+      PaymentRequestRespondWithObserver* observer)
+      : observer_(observer) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    ThenCallable<PaymentHandlerResponse,
+                 PaymentRequestRespondWithFulfill>::Trace(visitor);
+  }
+
+  void React(ScriptState* script_state, PaymentHandlerResponse* response) {
+    DCHECK(observer_);
+    observer_->OnResponseFulfilled(script_state, response);
+  }
+
+ private:
+  Member<PaymentRequestRespondWithObserver> observer_;
+};
+
 PaymentRequestEvent* PaymentRequestEvent::Create(
     const AtomicString& type,
     const PaymentRequestEventInit* initializer,
     mojo::PendingRemote<payments::mojom::blink::PaymentHandlerHost> host,
-    RespondWithObserver* respond_with_observer,
+    PaymentRequestRespondWithObserver* respond_with_observer,
     WaitUntilObserver* wait_until_observer,
     ExecutionContext* execution_context) {
   return MakeGarbageCollected<PaymentRequestEvent>(
@@ -50,7 +74,7 @@ PaymentRequestEvent::PaymentRequestEvent(
     const AtomicString& type,
     const PaymentRequestEventInit* initializer,
     mojo::PendingRemote<payments::mojom::blink::PaymentHandlerHost> host,
-    RespondWithObserver* respond_with_observer,
+    PaymentRequestRespondWithObserver* respond_with_observer,
     WaitUntilObserver* wait_until_observer,
     ExecutionContext* execution_context)
     : ExtendableEvent(type, initializer, wait_until_observer),
@@ -313,9 +337,10 @@ PaymentRequestEvent::changeShippingOption(ScriptState* script_state,
   return change_payment_request_details_resolver_->Promise();
 }
 
-void PaymentRequestEvent::respondWith(ScriptState* script_state,
-                                      ScriptPromiseUntyped script_promise,
-                                      ExceptionState& exception_state) {
+void PaymentRequestEvent::respondWith(
+    ScriptState* script_state,
+    ScriptPromise<PaymentHandlerResponse> script_promise,
+    ExceptionState& exception_state) {
   if (!isTrusted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -325,7 +350,10 @@ void PaymentRequestEvent::respondWith(ScriptState* script_state,
 
   stopImmediatePropagation();
   if (observer_) {
-    observer_->RespondWith(script_state, script_promise, exception_state);
+    observer_->RespondWith(
+        script_state, script_promise,
+        MakeGarbageCollected<PaymentRequestRespondWithFulfill>(observer_),
+        exception_state);
   }
 }
 

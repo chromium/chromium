@@ -20,7 +20,7 @@ class CrossOriginResourcePolicyChecker;
 class ExecutionContext;
 class FetchEvent;
 class ReadableStream;
-class ScriptValue;
+class Response;
 class WaitUntilObserver;
 
 namespace mojom {
@@ -41,8 +41,8 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
       WaitUntilObserver*);
   ~FetchRespondWithObserver() override = default;
 
+  void OnResponseFulfilled(ScriptState*, Response*);
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
-  void OnResponseFulfilled(ScriptState*, const ScriptValue&) override;
   void OnNoResponse(ScriptState*) override;
 
   void SetEvent(FetchEvent* event);

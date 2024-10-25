@@ -48,18 +48,8 @@ void PaymentRequestRespondWithObserver::OnResponseRejected(
 
 void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
-    const ScriptValue& value) {
+    PaymentHandlerResponse* response) {
   DCHECK(GetExecutionContext());
-  v8::TryCatch try_catch(script_state->GetIsolate());
-  PaymentHandlerResponse* response =
-      NativeValueTraits<PaymentHandlerResponse>::NativeValue(
-          script_state->GetIsolate(), value.V8Value(),
-          PassThroughException(script_state->GetIsolate()));
-  if (try_catch.HasCaught()) {
-    OnResponseRejected(mojom::ServiceWorkerResponseError::kNoV8Instance);
-    return;
-  }
-
   // Check payment response validity.
   if (!response->hasMethodName() || response->methodName().empty() ||
       !response->hasDetails() || response->details().IsNull() ||
