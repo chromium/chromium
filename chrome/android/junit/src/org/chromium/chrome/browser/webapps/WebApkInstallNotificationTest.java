@@ -11,7 +11,6 @@ import android.app.Notification.Action;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -83,11 +82,8 @@ public class WebApkInstallNotificationTest {
         Bitmap largeIcon =
                 ((BitmapDrawable) notification.getLargeIcon().loadDrawable(mContext)).getBitmap();
         Assert.assertTrue(mIcon.sameAs(largeIcon));
-        Bitmap expectedSmallIcon =
-                BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_chrome);
-        Bitmap smallIcon =
-                ((BitmapDrawable) notification.getSmallIcon().loadDrawable(mContext)).getBitmap();
-        Assert.assertTrue(expectedSmallIcon.sameAs(smallIcon));
+
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
     }
 
     @Test
@@ -108,11 +104,8 @@ public class WebApkInstallNotificationTest {
         Bitmap largeIcon =
                 ((BitmapDrawable) notification.getLargeIcon().loadDrawable(mContext)).getBitmap();
         Assert.assertTrue(mIcon.sameAs(largeIcon));
-        Bitmap expectedSmallIcon =
-                BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_chrome);
-        Bitmap smallIcon =
-                ((BitmapDrawable) notification.getSmallIcon().loadDrawable(mContext)).getBitmap();
-        Assert.assertTrue(expectedSmallIcon.sameAs(smallIcon));
+
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
 
         Assert.assertNotNull(notification.contentIntent);
     }
@@ -144,11 +137,8 @@ public class WebApkInstallNotificationTest {
         Bitmap largeIcon =
                 ((BitmapDrawable) notification.getLargeIcon().loadDrawable(mContext)).getBitmap();
         Assert.assertTrue(mIcon.sameAs(largeIcon));
-        Bitmap expectedSmallIcon =
-                BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_chrome);
-        Bitmap smallIcon =
-                ((BitmapDrawable) notification.getSmallIcon().loadDrawable(mContext)).getBitmap();
-        Assert.assertTrue(expectedSmallIcon.sameAs(smallIcon));
+
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
 
         Assert.assertNotNull(notification.contentIntent);
 
