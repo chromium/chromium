@@ -1287,6 +1287,36 @@ void QuotaManagerImpl::GetUsageAndQuotaWithBreakdown(
       base::BindOnce(&DidGetUsageAndQuotaStripOverride, std::move(callback)));
 }
 
+void QuotaManagerImpl::GetUsageAndReportedQuotaWithBreakdown(
+    const StorageKey& storage_key,
+    StorageType type,
+    UsageAndQuotaWithBreakdownCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
+  if (base::FeatureList::IsEnabled(storage::features::kStaticStorageQuota) &&
+      !IsStorageUnlimited(storage_key, type)) {
+    GetUsageAndQuotaForDevtools(
+        storage_key, type,
+        base::BindOnce(
+            [](UsageAndQuotaWithBreakdownCallback callback,
+               blink::mojom::QuotaStatusCode status, int64_t usage,
+               int64_t quota, bool is_override_enabled,
+               blink::mojom::UsageBreakdownPtr usage_breakdown) {
+              DCHECK(callback);
+              int64_t reported_quota = usage + 10 * QuotaManagerImpl::kGBytes;
+              std::move(callback).Run(status, usage, reported_quota,
+                                      std::move(usage_breakdown));
+            },
+            std::move(callback)));
+    return;
+  }
+
+  GetUsageAndQuotaForDevtools(
+      storage_key, type,
+      base::BindOnce(&DidGetUsageAndQuotaStripOverride, std::move(callback)));
+}
+
 void QuotaManagerImpl::GetUsageAndQuotaForDevtools(
     const StorageKey& storage_key,
     StorageType type,
@@ -1335,6 +1365,55 @@ void QuotaManagerImpl::GetBucketUsageAndQuota(BucketId id,
   GetBucketById(
       id, base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsageAndQuota,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::GetBucketUsageAndReportedQuota(
+    BucketId id,
+    UsageAndQuotaCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(storage::features::kStaticStorageQuota)) {
+    GetBucketById(
+        id,
+        base::BindOnce(
+            [](base::WeakPtr<QuotaManagerImpl> weak_this,
+               UsageAndQuotaCallback callback,
+               QuotaErrorOr<BucketInfo> result) {
+              if (!weak_this || !result.has_value()) {
+                std::move(callback).Run(blink::mojom::QuotaStatusCode::kUnknown,
+                                        0, 0);
+                return;
+              }
+
+              const BucketInfo& bucket = result.value();
+              bool is_storage_unlimited = weak_this->IsStorageUnlimited(
+                  bucket.storage_key, StorageType::kTemporary);
+
+              UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
+                  weak_this.get(), bucket, weak_this->is_incognito_,
+                  base::BindOnce(
+                      [](UsageAndQuotaCallback callback,
+                         const BucketInfo& bucket, bool is_storage_unlimited,
+                         blink::mojom::QuotaStatusCode status, int64_t usage,
+                         int64_t quota, bool is_override_enabled,
+                         blink::mojom::UsageBreakdownPtr usage_breakdown) {
+                        DCHECK(callback);
+
+                        int64_t reported_quota = quota;
+                        if (!is_storage_unlimited && bucket.quota <= 0) {
+                          reported_quota = usage + 10 * kGBytes;
+                        }
+
+                        std::move(callback).Run(status, usage, reported_quota);
+                      },
+                      std::move(callback), bucket, is_storage_unlimited));
+              helper->Start();
+            },
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  GetBucketUsageAndQuota(id, std::move(callback));
 }
 
 void QuotaManagerImpl::GetBucketSpaceRemaining(

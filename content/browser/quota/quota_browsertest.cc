@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/public/browser/browser_context.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,7 +23,10 @@ namespace content {
 
 class QuotaBrowserTest : public ContentBrowserTest {
  public:
-  QuotaBrowserTest() = default;
+  QuotaBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        storage::features::kStaticStorageQuota);
+  }
 
   base::FilePath profile_path() {
     return shell()
@@ -30,6 +35,9 @@ class QuotaBrowserTest : public ContentBrowserTest {
         ->GetDefaultStoragePartition()
         ->GetPath();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/40488499): Android does not support PRE_ tests.
@@ -218,6 +226,19 @@ IN_PROC_BROWSER_TEST_F(QuotaBrowserTest,
   // of the Javascript execution.
   EXPECT_TRUE(base::PathExists(web_storage_dir_path.AppendASCII(
       storage::QuotaManagerImpl::kDatabaseName)));
+}
+
+IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, StorageEstimateWithStaticQuota) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL empty_url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), empty_url));
+
+  EXPECT_EQ(true, EvalJs(shell(), R"(
+        navigator.storage.estimate().then(
+          (result)=>{ return result.quota == 10 * 1024 * 1024 * 1024; },
+          ()=>{ return false; });)"));
 }
 
 }  // namespace content

@@ -44,5 +44,10 @@ BASE_FEATURE(kEvictStaleQuotaStorage,
              "EvictStaleQuotaStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A kill switch for the new reported quota being a static value.
+BASE_FEATURE(kStaticStorageQuota,
+             "StaticStorageQuota",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace storage

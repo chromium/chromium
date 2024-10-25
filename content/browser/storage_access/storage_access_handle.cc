@@ -160,7 +160,7 @@ void StorageAccessHandle::EstimateImpl(
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .GetStoragePartition()
       ->GetQuotaManagerProxy()
-      ->GetBucketUsageAndQuota(
+      ->GetBucketUsageAndReportedQuota(
           bucket_info.id, base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&EstimateImplAfterGetBucketUsageAndQuota,
                          std::move(callback)));

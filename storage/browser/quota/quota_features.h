@@ -32,6 +32,8 @@ BASE_DECLARE_FEATURE(kEvictOrphanQuotaStorage);
 COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kEvictStaleQuotaStorage);
 
+COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStaticStorageQuota);
+
 }  // namespace features
 
 }  // namespace storage
