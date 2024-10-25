@@ -3642,7 +3642,20 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the pdf document load results. True means success and false means
-    failure. Recorded when the pdf load is complete.
+    failure. Recorded when the pdf load is complete. May be recorded when there
+    is no paired Android.Pdf.DocumentLoad, e.g. the pdf document is restored by
+    OS.
+  </summary>
+</histogram>
+
+<histogram name="Android.Pdf.DocumentLoadResult.Paired" enum="Boolean"
+    expires_after="2025-03-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf document load results. True means success and false means
+    failure. Recorded when the pdf load is complete. Only record when there is a
+    paired Android.Pdf.DocumentLoad.
   </summary>
 </histogram>
 
@@ -3652,7 +3665,19 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the pdf document load time. Recorded when the pdf load is complete.
-    Records successful pdf loads only.
+    Records successful pdf loads only. May be recorded when there is no paired
+    Android.Pdf.DocumentLoad, e.g. the pdf document is restored by OS.
+  </summary>
+</histogram>
+
+<histogram name="Android.Pdf.DocumentLoadTime.Paired" units="ms"
+    expires_after="2025-03-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf document load time. Recorded when the pdf load is complete.
+    Records successful pdf loads only. Only record when there is a paired
+    Android.Pdf.DocumentLoad.
   </summary>
 </histogram>
 
