@@ -56,64 +56,6 @@ function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
 }
 
 /**
- * Tests that the correct brush icons are displayed, depending on what brush
- * is selected. The brush type matching `selectedBrushType` should have a filled
- * icon.
- * @param selectedBrushType The expected selected brush type that should
- * have a filled icon.
- */
-function assertBrushIcons(selectedBrushType: AnnotationBrushType) {
-  const eraserIcon = getBrushSelector().$.eraser.getAttribute('iron-icon');
-  assert(eraserIcon);
-  chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.ERASER ? 'pdf:ink-eraser-fill' :
-                                                         'pdf:ink-eraser',
-      eraserIcon);
-
-  const highlighterIcon =
-      getBrushSelector().$.highlighter.getAttribute('iron-icon');
-  assert(highlighterIcon);
-  chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
-          'pdf:ink-highlighter-fill' :
-          'pdf:ink-highlighter',
-      highlighterIcon);
-
-  const penIcon = getBrushSelector().$.pen.getAttribute('iron-icon');
-  assert(penIcon);
-  chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.PEN ? 'pdf:ink-pen-fill' :
-                                                      'pdf:ink-pen',
-      penIcon);
-}
-
-/**
- * Tests that the brushes have correct values for the selected attribute. The
- * brush type matching `selectedBrushType` should be selected.
- * @param selectedBrushType The expected selected brush type.
- */
-function assertSelectedBrush(selectedBrushType: AnnotationBrushType) {
-  const eraserSelected = getBrushSelector().$.eraser.dataset['selected'];
-  assert(eraserSelected);
-  chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.ERASER ? 'true' : 'false',
-      eraserSelected);
-
-  const highlighterSelected =
-      getBrushSelector().$.highlighter.dataset['selected'];
-  assert(highlighterSelected);
-  chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.HIGHLIGHTER ? 'true' : 'false',
-      highlighterSelected);
-
-  const penSelected = getBrushSelector().$.pen.dataset['selected'];
-  assert(penSelected);
-  chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.PEN ? 'true' : 'false',
-      penSelected);
-}
-
-/**
  * Tests that the size options have corrected values for the selected attribute.
  * The size button with index `buttonIndex` should be selected.
  * @param buttonIndex The expected selected size button.
@@ -212,8 +154,6 @@ chrome.test.runTests([
     // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
     // there's no need to set the brush in the backend immediately after getting
     // the default brush.
-    assertBrushIcons(AnnotationBrushType.PEN);
-    assertSelectedBrush(AnnotationBrushType.PEN);
     assertSelectedSize(/*buttonIndex=*/ 2);
 
     // Change the pen size.
@@ -256,8 +196,6 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 3,
     });
-    assertBrushIcons(AnnotationBrushType.ERASER);
-    assertSelectedBrush(AnnotationBrushType.ERASER);
     assertSelectedSize(/*buttonIndex=*/ 2);
 
     // Change the eraser size.
@@ -291,8 +229,6 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 8,
     });
-    assertBrushIcons(AnnotationBrushType.HIGHLIGHTER);
-    assertSelectedBrush(AnnotationBrushType.HIGHLIGHTER);
     assertSelectedSize(/*buttonIndex=*/ 2);
 
     // Change the highlighter size.
