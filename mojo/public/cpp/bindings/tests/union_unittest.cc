@@ -1178,6 +1178,19 @@ TEST(UnionTest, InlineUnionAllocationWithNonPODFirstField) {
   u = UnionWithStringForFirstField::NewS("hey");
 }
 
+TEST(UnionTest, UnionObjectHash) {
+  constexpr size_t kTestSeed = 31;
+  UnionWithStringForFirstFieldPtr union1(
+      UnionWithStringForFirstField::NewS("hello world"));
+  UnionWithStringForFirstFieldPtr union2(
+      UnionWithStringForFirstField::NewS("hello world"));
+
+  EXPECT_EQ(union1->Hash(kTestSeed), union2->Hash(kTestSeed));
+
+  union2->set_s("hello universe");
+  EXPECT_NE(union1->Hash(kTestSeed), union2->Hash(kTestSeed));
+}
+
 class ExtensibleTestUnionExchange
     : public mojom::ExtensibleTestUnionExchangeV1 {
  public:
