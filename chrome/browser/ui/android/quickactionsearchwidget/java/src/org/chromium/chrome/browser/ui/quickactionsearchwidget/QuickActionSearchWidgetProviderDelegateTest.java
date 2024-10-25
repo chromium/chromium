@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -54,6 +55,7 @@ import java.util.Locale;
 /** Tests for the QuickActionSearchWidgetProviderDelegate. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Batch(Batch.PER_CLASS)
 public class QuickActionSearchWidgetProviderDelegateTest {
     @Rule
     public BaseActivityTestRule<Activity> mActivityTestRule =
