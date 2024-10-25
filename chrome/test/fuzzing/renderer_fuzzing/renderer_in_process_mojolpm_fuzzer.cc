@@ -19,6 +19,7 @@ class RendererFuzzingAdapter : public RendererFuzzerBase {
       const blink::BrowserInterfaceBrokerProxy* context_interface_broker_proxy,
       blink::ThreadSafeBrowserInterfaceBrokerProxy*
           process_interface_broker_proxy,
+      blink::AssociatedInterfaceProvider* associated_interface_provider,
       std::vector<uint8_t>&& input,
       base::OnceClosure done_closure) override {
     auto proto_testcase_ptr =
@@ -26,7 +27,7 @@ class RendererFuzzingAdapter : public RendererFuzzerBase {
     if (proto_testcase_ptr->ParseFromArray(input.data(), input.size())) {
       auto ptr = std::make_unique<RendererTestcase>(
           std::move(proto_testcase_ptr), context_interface_broker_proxy,
-          process_interface_broker_proxy);
+          process_interface_broker_proxy, associated_interface_provider);
 
       ptr->GetFuzzerTaskRunner()->PostTask(
           FROM_HERE,

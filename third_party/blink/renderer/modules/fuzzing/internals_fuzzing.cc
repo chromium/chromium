@@ -13,7 +13,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/testing/renderer_fuzzing_support.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -52,10 +54,17 @@ ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
+  AssociatedInterfaceProvider* associated_provider = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (auto* frame = window->GetFrame()) {
+      associated_provider = frame->GetRemoteNavigationAssociatedInterfaces();
+    }
+  }
+
   RendererFuzzingSupport::Run(
       &context->GetBrowserInterfaceBroker(),
-      Platform::Current()->GetBrowserInterfaceBroker(), fuzzer_id.Utf8(),
-      std::move(data),
+      Platform::Current()->GetBrowserInterfaceBroker(), associated_provider,
+      fuzzer_id.Utf8(), std::move(data),
       WTF::BindOnce(&ResolvePromise, WrapPersistent(resolver)));
 
   return promise;
