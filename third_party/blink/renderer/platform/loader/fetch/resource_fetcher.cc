@@ -222,8 +222,9 @@ bool ShouldResourceBeKeptStrongReference(
          !resource->GetResponse().CacheControlContainsNoStore();
 }
 
-base::TimeDelta GetResourceStrongReferenceTimeout(Resource* resource) {
-  base::TimeDelta lifetime = resource->FreshnessLifetime();
+base::TimeDelta GetResourceStrongReferenceTimeout(Resource* resource,
+                                                  UseCounter& use_counter) {
+  base::TimeDelta lifetime = resource->FreshnessLifetime(use_counter);
   if (resource->GetResponse().ResponseTime() + lifetime < base::Time::Now()) {
     return base::TimeDelta();
   }
@@ -1450,7 +1451,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       break;
     case RevalidationPolicy::kUse:
       if (resource_request.AllowsStaleResponse() &&
-          resource->ShouldRevalidateStaleResponse()) {
+          resource->ShouldRevalidateStaleResponse(*use_counter_)) {
         ScheduleStaleRevalidate(resource);
       }
       break;
@@ -2119,7 +2120,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
 
   // If any of the redirects in the chain to loading the resource were not
   // cacheable, we cannot reuse our cached resource.
-  if (!existing_resource.CanReuseRedirectChain()) {
+  if (!existing_resource.CanReuseRedirectChain(*use_counter_)) {
     return {RevalidationPolicy::kReload,
             "Reload due to an uncacheable redirect."};
   }
@@ -2128,7 +2129,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
   // example).
   if (request.GetCacheMode() == mojom::blink::FetchCacheMode::kValidateCache ||
       existing_resource.MustRevalidateDueToCacheHeaders(
-          request.AllowsStaleResponse()) ||
+          request.AllowsStaleResponse(), *use_counter_) ||
       request.CacheControlContainsNoCache()) {
     // Revalidation is harmful for non-matched preloads because it may lead to
     // sharing one preloaded resource among multiple ResourceFetchers.
@@ -3111,7 +3112,7 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
         FROM_HERE,
         WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
                       WrapWeakPersistent(this), WrapWeakPersistent(resource)),
-        GetResourceStrongReferenceTimeout(resource));
+        GetResourceStrongReferenceTimeout(resource, *use_counter_));
   } else {
     MemoryCache::Get()->SaveStrongReference(resource);
   }

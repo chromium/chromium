@@ -10773,6 +10773,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5125" label="V8PaymentManager_UserHint_AttributeGetter"/>
   <int value="5126" label="V8PaymentManager_UserHint_AttributeSetter"/>
   <int value="5127" label="PerformanceNavigationTimingConfidence"/>
+  <int value="5128" label="HttpParsersParseDateFromUTCStringDifferent"/>
+  <int value="5129" label="HttpParsersParseDateFromStringDifferent"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

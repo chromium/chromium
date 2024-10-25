@@ -56,8 +56,9 @@
 namespace blink {
 
 class HTTPHeaderMap;
-class ResourceResponse;
 class KURL;
+class ResourceResponse;
+class UseCounter;
 
 enum ContentTypeOptionsDisposition {
   kContentTypeOptionsNone,
@@ -99,7 +100,7 @@ PLATFORM_EXPORT bool ParseHTTPRefresh(const String& refresh,
                                       WTF::CharacterMatchFunctionPtr matcher,
                                       base::TimeDelta& delay,
                                       String& url);
-PLATFORM_EXPORT std::optional<base::Time> ParseDate(const String&);
+PLATFORM_EXPORT std::optional<base::Time> ParseDate(const String&, UseCounter&);
 
 // Given a Media Type (like "foo/bar; baz=gazonk" - usually from the
 // 'Content-Type' HTTP header), extract and return the "type/subtype" portion
