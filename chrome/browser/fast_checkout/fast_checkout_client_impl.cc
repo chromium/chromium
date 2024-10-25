@@ -56,7 +56,7 @@ bool IsVisibleTextField(const autofill::AutofillField& field) {
   return field.IsFocusable() && field.IsTextInputElement();
 }
 
-autofill::AutofillField* GetFieldToFill(
+const autofill::AutofillField* GetFieldToFill(
     const std::vector<std::unique_ptr<autofill::AutofillField>>& fields,
     bool is_credit_card_form) {
   for (const std::unique_ptr<autofill::AutofillField>& field : fields) {
@@ -410,7 +410,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
   for (const auto& [form_global_id, form] :
        autofill_manager_->form_structures()) {
     if (ShouldFillForm(*form, autofill::FormType::kAddressForm)) {
-      autofill::AutofillField* field =
+      const autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/false);
       const autofill::AutofillProfile* autofill_profile =
           GetSelectedAutofillProfile();
@@ -423,14 +423,14 @@ void FastCheckoutClientImpl::TryToFillForms() {
         bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
         bam->FillOrPreviewProfileForm(
             autofill::mojom::ActionPersistence::kFill, form->ToFormData(),
-            *field, *autofill_profile,
+            field->global_id(), *autofill_profile,
             autofill::AutofillTriggerDetails(
                 autofill::AutofillTriggerSource::kFastCheckout));
       }
     }
 
     if (ShouldFillForm(*form, autofill::FormType::kCreditCardForm)) {
-      autofill::AutofillField* field =
+      const autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true);
       const autofill::CreditCard* credit_card = GetSelectedCreditCard();
       if (field && !credit_card_form_global_id_ && credit_card) {
@@ -536,7 +536,7 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
   const std::unique_ptr<autofill::FormStructure>& form =
       autofill_manager_->form_structures().at(
           credit_card_form_global_id_.value());
-  if (autofill::AutofillField* field =
+  if (const autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true)) {
     FillCreditCardForm(*form, *field, card, cvc);
   }

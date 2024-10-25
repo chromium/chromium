@@ -1966,7 +1966,7 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
   if (!ShouldFetchCreditCard(form, field, *form_structure, *autofill_field,
                              credit_card)) {
     form_filler_->FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, field, &credit_card,
+        mojom::ActionPersistence::kFill, form, &credit_card,
         /*optional_cvc=*/std::nullopt, form_structure, autofill_field,
         trigger_details);
     return;
@@ -1983,16 +1983,16 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
 void BrowserAutofillManager::FillOrPreviewProfileForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const AutofillProfile& profile,
     const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewForm(action_persistence, form, field, &profile,
+  form_filler_->FillOrPreviewForm(action_persistence, form, &profile,
                                   /*cvc=*/std::nullopt, form_structure,
                                   autofill_field, trigger_details);
 }
@@ -2124,8 +2124,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
                              &form_structure, &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewForm(action_persistence, form, field, &credit_card,
-                                  &cvc, form_structure, autofill_field,
+  form_filler_->FillOrPreviewForm(action_persistence, form, &credit_card, &cvc,
+                                  form_structure, autofill_field,
                                   trigger_details,
                                   /*is_refill=*/false);
 }

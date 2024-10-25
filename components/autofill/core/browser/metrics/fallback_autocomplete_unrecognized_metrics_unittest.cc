@@ -68,7 +68,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   ShowSuggestions(form);
   // Fill the suggestion.
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       *personal_data().address_data_manager().GetProfileByGUID(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -98,7 +98,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       *personal_data().address_data_manager().GetProfileByGUID(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 

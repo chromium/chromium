@@ -199,8 +199,8 @@ class FormFillerTest : public testing::Test {
     if (const AutofillProfile** profile =
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       browser_autofill_manager_->FillOrPreviewProfileForm(
-          mojom::ActionPersistence::kFill, form, trigger_field, **profile,
-          trigger_details);
+          mojom::ActionPersistence::kFill, form, trigger_field.global_id(),
+          **profile, trigger_details);
     } else {
       browser_autofill_manager_->FillOrPreviewCreditCardForm(
           mojom::ActionPersistence::kFill, form, trigger_field,
@@ -372,7 +372,7 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
 
   EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(0);
   browser_autofill_manager_->FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front(),
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
       test::GetFullProfile(), /*trigger_details=*/{});
 }
 
@@ -499,7 +499,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
       .WillRepeatedly(Return(safe_fields));
 
   browser_autofill_manager_->FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front(),
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
       test::GetFullProfile(), /*trigger_details=*/{});
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
@@ -590,8 +590,8 @@ TEST_F(FormFillerTest,
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(base::flat_set<FieldGlobalId>{})));
   browser_autofill_manager_->FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0], profile,
-      {.trigger_source = AutofillTriggerSource::kManualFallback});
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
+      profile, {.trigger_source = AutofillTriggerSource::kManualFallback});
 
   EXPECT_THAT(filled_fields[0],
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));

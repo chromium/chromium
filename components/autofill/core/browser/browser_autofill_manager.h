@@ -175,7 +175,7 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void FillOrPreviewProfileForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const AutofillProfile& profile,
       const AutofillTriggerDetails& trigger_details);
 

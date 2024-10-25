@@ -1397,7 +1397,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
             : GetProfileFromPayload(*pdm, payload);
     if (profile) {
       manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
-                                         query_field_, *profile,
+                                         query_field_.global_id(), *profile,
                                          trigger_details);
       // Only show the email override notification when the suggestion is
       // accepted, not previewed.

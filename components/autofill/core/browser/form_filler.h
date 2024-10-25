@@ -151,12 +151,11 @@ class FormFiller {
       const AutofillField& autofill_trigger_field,
       const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
 
-  // Fills or previews |data_model| in the |form|.
+  // Fills or previews `profile_or_credit_card` in the `form`.
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
-      const FormFieldData& trigger_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       base::optional_ref<const std::u16string> optional_cvc,

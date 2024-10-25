@@ -88,6 +88,7 @@ using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Matcher;
@@ -349,7 +350,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               FillOrPreviewProfileForm,
               (mojom::ActionPersistence,
                const FormData&,
-               const FormFieldData&,
+               const FieldGlobalId&,
                const AutofillProfile&,
                const AutofillTriggerDetails&),
               (override));
@@ -453,6 +454,10 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
 
   Matcher<const FormFieldData&> HasQueriedFieldId() {
     return Property(&FormFieldData::global_id, queried_field().global_id());
+  }
+
+  Matcher<const FieldGlobalId&> IsQueriedFieldId() {
+    return Eq(queried_field().global_id());
   }
 
   void DestroyAutofillDriver() { autofill_driver_.reset(); }
@@ -963,7 +968,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kFill,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
 
@@ -1304,7 +1309,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
   external_delegate().DidSelectSuggestion(test::CreateAutofillSuggestion(
@@ -1567,7 +1572,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   EXPECT_CALL(manager(),
               FillOrPreviewProfileForm(
                   mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                  HasQueriedFieldId(), _,
+                  IsQueriedFieldId(), _,
                   EqualsAutofillTriggerDetails(
                       {.trigger_source = expected_source,
                        .field_types_to_fill = params.field_types_to_fill})));
@@ -1577,7 +1582,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   EXPECT_CALL(manager(),
               FillOrPreviewProfileForm(
                   mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                  HasQueriedFieldId(), _,
+                  IsQueriedFieldId(), _,
                   EqualsAutofillTriggerDetails(
                       {.trigger_source = expected_source,
                        .field_types_to_fill = params.field_types_to_fill})));
@@ -1600,7 +1605,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
                             SuggestionHidingReason::kAcceptSuggestion));
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kFill,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
 
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
@@ -1640,13 +1645,13 @@ TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
   // Test preview.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
   external_delegate().DidSelectSuggestion(suggestion);
 
   // Test fill.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kFill,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -1689,13 +1694,13 @@ TEST_F(AutofillExternalDelegateUnitTest,
   // Test preview.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
   external_delegate().DidSelectSuggestion(suggestion);
 
   // Test fill.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kFill,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -1724,7 +1729,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
       manager(),
       FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, HasQueriedFormId(),
-          HasQueriedFieldId(), _,
+          IsQueriedFieldId(), _,
           EqualsAutofillTriggerDetails({.trigger_source = expected_source})));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
@@ -1737,7 +1742,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
       manager(),
       FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, HasQueriedFormId(),
-          HasQueriedFieldId(), _,
+          IsQueriedFieldId(), _,
           EqualsAutofillTriggerDetails({.trigger_source = expected_source})));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
@@ -2714,9 +2719,9 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   {
     InSequence s;
     EXPECT_CALL(manager(),
-                FillOrPreviewProfileForm(
-                    mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                    HasQueriedFieldId(), updated_profile, _));
+                FillOrPreviewProfileForm(mojom::ActionPersistence::kFill,
+                                         HasQueriedFormId(), IsQueriedFieldId(),
+                                         updated_profile, _));
     EXPECT_CALL(client(), ShowPlusAddressEmailOverrideNotification(
                               base::UTF16ToUTF8(original_email), _))
         .WillOnce(MoveArg<1>(&undo_callback));

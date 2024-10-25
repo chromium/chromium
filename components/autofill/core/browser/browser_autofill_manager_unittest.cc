@@ -958,7 +958,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     if (const AutofillProfile* profile =
             personal_data().address_data_manager().GetProfileByGUID(guid)) {
       browser_autofill_manager_->FillOrPreviewProfileForm(
-          mojom::ActionPersistence::kFill, form, field, *profile,
+          mojom::ActionPersistence::kFill, form, field.global_id(), *profile,
           trigger_details);
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(

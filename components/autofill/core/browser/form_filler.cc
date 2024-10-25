@@ -599,7 +599,6 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
 void FormFiller::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
-    const FormFieldData& trigger_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     base::optional_ref<const std::u16string> cvc,
@@ -866,9 +865,9 @@ void FormFiller::FillOrPreviewForm(
     return !skip_reasons[field.global_id()].empty();
   });
   base::flat_set<FieldGlobalId> safe_fields =
-      manager_->driver().ApplyFormAction(mojom::FormActionType::kFill,
-                                         action_persistence, result_fields,
-                                         trigger_field.origin(), field_types);
+      manager_->driver().ApplyFormAction(
+          mojom::FormActionType::kFill, action_persistence, result_fields,
+          autofill_trigger_field->origin(), field_types);
 
   // This will hold the fields (and autofill_fields) in the intersection of
   // safe_fields and newly_filled_fields_id.
@@ -1063,19 +1062,17 @@ void FormFiller::TriggerRefill(const FormData& form,
   if (!found_matching_element) {
     return;
   }
-  FormFieldData field = *autofill_field;
   if (absl::holds_alternative<std::pair<CreditCard, std::u16string>>(
           filling_context->profile_or_credit_card_with_cvc)) {
     const auto& [credit_card, cvc] =
         absl::get<std::pair<CreditCard, std::u16string>>(
             filling_context->profile_or_credit_card_with_cvc);
-    FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
-                      &credit_card, &cvc, form_structure, autofill_field,
-                      trigger_details,
+    FillOrPreviewForm(mojom::ActionPersistence::kFill, form, &credit_card, &cvc,
+                      form_structure, autofill_field, trigger_details,
                       /*is_refill=*/true);
   } else if (absl::holds_alternative<AutofillProfile>(
                  filling_context->profile_or_credit_card_with_cvc)) {
-    FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
+    FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                       &absl::get<AutofillProfile>(
                           filling_context->profile_or_credit_card_with_cvc),
                       /*optional_cvc=*/std::nullopt, form_structure,

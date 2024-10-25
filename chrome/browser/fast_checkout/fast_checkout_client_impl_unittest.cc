@@ -179,7 +179,7 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
               FillOrPreviewProfileForm,
               (autofill::mojom::ActionPersistence,
                const FormData&,
-               const FormFieldData&,
+               const FieldGlobalId&,
                const autofill::AutofillProfile&,
                const autofill::AutofillTriggerDetails&),
               (override));
@@ -812,15 +812,14 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
     filling_state = FastCheckoutClientImpl::FillingState::kNotFilled;
   }
 
-  EXPECT_CALL(
-      *autofill_manager(),
-      FillOrPreviewProfileForm(
-          autofill::mojom::ActionPersistence::kFill,
-          FormDataEqualTo(address_form_data),
-          FormFieldDataEqualTo(address_form_field_data), Eq(*autofill_profile),
-          EqualsAutofilltriggerDetails(
-              {.trigger_source =
-                   autofill::AutofillTriggerSource::kFastCheckout})));
+  EXPECT_CALL(*autofill_manager(),
+              FillOrPreviewProfileForm(
+                  autofill::mojom::ActionPersistence::kFill,
+                  FormDataEqualTo(address_form_data),
+                  address_form_field_data.global_id(), Eq(*autofill_profile),
+                  EqualsAutofilltriggerDetails(
+                      {.trigger_source =
+                           autofill::AutofillTriggerSource::kFastCheckout})));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress,
                                    fast_checkout_client()->run_id_));

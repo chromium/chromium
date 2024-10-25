@@ -259,7 +259,7 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
                    .autocomplete_attribute = "cc-number"}}});
   autofill_manager().OnFormsSeen({form}, {});
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       test::GetFullProfile(),
       {.trigger_source = AutofillTriggerSource::kPopup});
   autofill_manager().FillOrPreviewField(
@@ -294,7 +294,7 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
   autofill_manager().DidShowSuggestions(
       {SuggestionType::kCreditCardFieldByFieldFilling}, form, form.fields()[0]);
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       test::GetFullProfile(),
       {.trigger_source = AutofillTriggerSource::kManualFallback});
   autofill_manager().FillOrPreviewField(

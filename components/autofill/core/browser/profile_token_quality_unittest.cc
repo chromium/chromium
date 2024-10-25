@@ -64,7 +64,7 @@ class ProfileTokenQualityTest : public testing::Test {
                 size_t triggering_field_index = 0) {
     bam_.FillOrPreviewProfileForm(
         mojom::ActionPersistence::kFill, form,
-        form.fields()[triggering_field_index], profile,
+        form.fields()[triggering_field_index].global_id(), profile,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
