@@ -3568,17 +3568,6 @@ const FeatureEntry::FeatureVariation kAndroidHubV2Variations[] = {
     {"Phase 3", kHubPhase3, std::size(kHubPhase3), nullptr},
     {"Phase 4", kHubPhase4, std::size(kHubPhase4), nullptr}};
 
-const FeatureEntry::FeatureParam
-    kAndroidHubFloatingActionButtonAlternativeColors[] = {
-        {"hub_alternative_fab_color", "true"},
-};
-
-const FeatureEntry::FeatureVariation
-    kAndroidHubFloatingActionButtonVariations[] = {
-        {"Alternative colors", kAndroidHubFloatingActionButtonAlternativeColors,
-         std::size(kAndroidHubFloatingActionButtonAlternativeColors), nullptr},
-};
-
 const FeatureEntry::FeatureParam kTabGroupCreationDialogAndroidShowSetting[] = {
     {"show_tab_group_creation_dialog_setting", "true"}};
 
@@ -10573,14 +10562,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAtomicMoveAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-hub-floating-action-button",
-     flag_descriptions::kAndroidHubFloatingActionButtonName,
-     flag_descriptions::kAndroidHubFloatingActionButtonDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAndroidHubFloatingActionButton,
-         kAndroidHubFloatingActionButtonVariations,
-         "AndroidHubFloatingActionButton")},
-
     {"android-hub-search", flag_descriptions::kAndroidHubSearchName,
      flag_descriptions::kAndroidHubSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidHubSearch)},

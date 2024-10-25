@@ -4216,11 +4216,6 @@ const char kAndroidElegantTextHeightName[] = "Android Elegant Text Height";
 const char kAndroidElegantTextHeightDescription[] =
     "Enables elegant text height in core BrowserUI theme.";
 
-const char kAndroidHubFloatingActionButtonName[] =
-    "Android Hub Floating Action Button";
-const char kAndroidHubFloatingActionButtonDescription[] =
-    "Makes the main action button of a pane a floating action button.";
-
 const char kAndroidHubSearchName[] = "Android Hub Search";
 const char kAndroidHubSearchDescription[] =
     "Enables searching through the hub.";

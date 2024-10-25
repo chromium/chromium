@@ -2434,9 +2434,6 @@ extern const char kAnimateSuggestionsListAppearanceDescription[];
 extern const char kAndroidElegantTextHeightName[];
 extern const char kAndroidElegantTextHeightDescription[];
 
-extern const char kAndroidHubFloatingActionButtonName[];
-extern const char kAndroidHubFloatingActionButtonDescription[];
-
 extern const char kAndroidHubSearchName[];
 extern const char kAndroidHubSearchDescription[];
 
