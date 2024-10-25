@@ -156,7 +156,7 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
   raw_ptr<NoStatePrefetchContents> no_state_prefetch_contents_;
 };
 
-NoStatePrefetchContents::Observer::~Observer() {}
+NoStatePrefetchContents::Observer::~Observer() = default;
 
 NoStatePrefetchContents::NoStatePrefetchContents(
     std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
