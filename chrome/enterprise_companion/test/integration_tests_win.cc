@@ -100,4 +100,34 @@ TEST_F(InstallerTest, Overinstall) {
   ExpectUpdaterRegistration();
 }
 
+// Uses `DIR_PROGRAM_FILES6432` as the fake installation directory. Fake because
+// the production install always goes into `DIR_PROGRAM_FILESX86`.
+TEST_F(InstallerTest, OverinstallFakeLocationDifferentArch) {
+  base::FilePath program_files_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_PROGRAM_FILES6432, &program_files_dir));
+  base::FilePath program_files_x86_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_PROGRAM_FILESX86,
+                                     &program_files_x86_dir));
+  if (program_files_dir == program_files_x86_dir) {
+    GTEST_SKIP() << "Test not applicable on x86 hosts.";
+  }
+  const base::FilePath incorrect_install_dir =
+      program_files_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+          .AppendASCII(PRODUCT_FULLNAME_STRING);
+  SetUpdaterRegistration(L"0.0.0.1", L"Fake Enterprise Companion");
+  ASSERT_TRUE(base::CreateDirectory(incorrect_install_dir));
+  ASSERT_TRUE(
+      base::WriteFile(incorrect_install_dir.AppendASCII(kExecutableName), ""));
+
+  RunInstaller(true);
+
+  ASSERT_TRUE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
+  ASSERT_TRUE(base::PathExists(incorrect_install_dir));
+
+  ASSERT_TRUE(base::DeletePathRecursively(incorrect_install_dir));
+
+  ExpectUpdaterRegistration();
+}
+
 }  // namespace enterprise_companion
