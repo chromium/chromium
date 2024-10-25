@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -200,6 +201,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private FirstRunPageTransformer mPageTransformer;
     private ViewPager2 mPager;
+
+    private ValueAnimator mAnimator;
 
     /** The pager adapter, which provides the pages to the view pager widget. */
     private FirstRunPagerAdapter mPagerAdapter;
@@ -474,8 +477,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     /**
      * @param {boolean} smoothScroll Whether to animate transition. This should be true for user
      *     triggered transition, and false for quick skips by software.
+     * @return Whether advancing to the next page succeeded.
      */
     private boolean advanceToNextPageInternal(boolean smoothScroll) {
+        // Debounce page changes while animation is in flight.
+        if (mAnimator != null) return false;
+
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
 
         int position = mPager.getCurrentItem() + 1;
@@ -559,6 +566,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (position < 0) {
             abortFirstRunExperience();
         } else {
+            // Might be debounced if animation is in flight, but consider this SUCCESS anyway.
             setCurrentItemForPager(position, true);
         }
         return BackPressResult.SUCCESS;
@@ -682,7 +690,22 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         return LocalizationUtils.isLayoutRtl();
     }
 
+    /**
+     * Returns the current window width, which is affected by orientation changes or resizing. For
+     * some usage (e.g., fake drag updates) we'd need to call this function frequently and avoid
+     * using a stale value.
+     */
+    private int getWindowWidth() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics.widthPixels;
+    }
+
+    /** Returns whether the set attempt will lead to transition to an existing Fragment. */
     private boolean setCurrentItemForPager(int position, boolean smoothScroll) {
+        // Debounce page changes while animation is in flight.
+        if (mAnimator != null) return false;
+
         if (sObserver != null) sObserver.onJumpToPage(this, position);
 
         if (position >= mPagerAdapter.getItemCount()) {
@@ -705,15 +728,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         if (!sIsAnimationDisabled && smoothScroll) {
             // Use fake drags to control transition time and interpolation in ViewPager2.
-            int width = getWindow().getDecorView().getWidth();
+
             // Direction of content shift: Forward -> negative; backward -> positive (assuming LTR).
             int direction = (position > oldPosition) ? -1 : 1;
             mPageTransformer.setDirection(direction);
             // Direction of drag, which is flipped if RTL.
             float dragSign = direction * (isRtl() ? -1f : 1f);
             // Use linear interpolation to enable custom interpolators usage of various properties.
-            ValueAnimator animator = ValueAnimator.ofInt(0, width);
-            animator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+            mAnimator = ValueAnimator.ofFloat(0f, 1f);
+            mAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
             class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
                 /** Previous animated value to calculate fake drag delta for transitions. */
@@ -721,16 +744,17 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    int animatedValue = ((Integer) animation.getAnimatedValue()).intValue();
+                    float frac = ((Float) animation.getAnimatedValue()).floatValue();
+                    int animatedValue = Math.round(frac * getWindowWidth());
                     float deltaPx = dragSign * (animatedValue - mPrevAnimatedValue);
                     mPager.fakeDragBy(deltaPx);
                     mPrevAnimatedValue = animatedValue;
                 }
             }
 
-            animator.addUpdateListener(new UpdateListener());
+            mAnimator.addUpdateListener(new UpdateListener());
 
-            animator.addListener(
+            mAnimator.addListener(
                     new ValueAnimator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
@@ -740,12 +764,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             mPager.endFakeDrag();
+                            mAnimator = null;
                             // No need to call `mPager.setCurrentItem(position, false)`.
                         }
 
                         @Override
                         public void onAnimationCancel(Animator animation) {
-                            /* Ignored */
+                            mAnimator = null;
                         }
 
                         @Override
@@ -754,8 +779,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         }
                     });
 
-            animator.setDuration(TRANSITION_DELAY_MS);
-            animator.start();
+            mAnimator.setDuration(TRANSITION_DELAY_MS);
+            mAnimator.start();
 
         } else {
             mPager.setCurrentItem(position, false);
