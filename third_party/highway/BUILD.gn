@@ -37,15 +37,6 @@ source_set("libhwy") {
   public_configs = [ ":libhwy_external_config" ]
 }
 
-# TODO: remove once upstream has fixed these warnings
-config("test_config") {
-  cflags = [
-    "-Wno-unreachable-code-return",
-    "-Wno-shadow",
-    "-Wno-unused-function",
-  ]
-}
-
 test("highway_tests") {
   defines = [ "HWY_IS_TEST" ]
   sources = [
@@ -110,5 +101,4 @@ test("highway_tests") {
     "//testing/gtest",
     "//testing/gtest:gtest_main",
   ]
-  configs += [ ":test_config" ]
 }
