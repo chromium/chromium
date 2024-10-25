@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
@@ -38,7 +39,7 @@ class BASE_EXPORT ExplicitAccessEntry {
   ExplicitAccessEntry& operator=(ExplicitAccessEntry&&);
   ~ExplicitAccessEntry();
 
-  const Sid& sid() const { return sid_; }
+  const Sid& sid() const LIFETIME_BOUND { return sid_; }
   SecurityAccessMode mode() const { return mode_; }
   DWORD access_mask() const { return access_mask_; }
   DWORD inheritance() const { return inheritance_; }

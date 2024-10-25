@@ -68,6 +68,7 @@
 // should be able to tell the difference.
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -297,7 +298,9 @@ class BASE_EXPORT RepeatingTimer : public internal::DelayTimerBase {
     Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
   }
 
-  const RepeatingClosure& user_task() const { return user_task_; }
+  const RepeatingClosure& user_task() const LIFETIME_BOUND {
+    return user_task_;
+  }
 
  private:
   // Mark this final, so that the destructor can call this safely.
@@ -346,7 +349,9 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::DelayTimerBase {
     Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
   }
 
-  const RepeatingClosure& user_task() const { return user_task_; }
+  const RepeatingClosure& user_task() const LIFETIME_BOUND {
+    return user_task_;
+  }
 
  private:
   // Mark this final, so that the destructor can call this safely.

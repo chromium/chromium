@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -251,7 +252,9 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
     return priority_queue_.PopTaskSource();
   }
 
-  const TrackedRef<TaskTracker>& task_tracker() { return task_tracker_; }
+  const TrackedRef<TaskTracker>& task_tracker() const LIFETIME_BOUND {
+    return task_tracker_;
+  }
 
   CheckedLock lock_;
   bool worker_awake_ GUARDED_BY(lock_) = false;

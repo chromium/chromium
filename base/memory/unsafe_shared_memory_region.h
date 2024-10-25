@@ -5,12 +5,13 @@
 #ifndef BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 
+#include <stdint.h>
+
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-
-#include <stdint.h>
 
 namespace base {
 
@@ -104,7 +105,7 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   }
 
   // Returns 128-bit GUID of the region.
-  const UnguessableToken& GetGUID() const {
+  const UnguessableToken& GetGUID() const LIFETIME_BOUND {
     DCHECK(IsValid());
     return handle_.GetGUID();
   }

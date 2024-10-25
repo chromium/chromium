@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/values.h"
 
 namespace base::trace_event {
@@ -56,9 +57,15 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   // Returns true if category name is a valid string.
   static bool IsCategoryNameAllowed(std::string_view str);
 
-  const StringList& included_categories() const { return included_categories_; }
-  const StringList& excluded_categories() const { return excluded_categories_; }
-  const StringList& disabled_categories() const { return disabled_categories_; }
+  const StringList& included_categories() const LIFETIME_BOUND {
+    return included_categories_;
+  }
+  const StringList& excluded_categories() const LIFETIME_BOUND {
+    return excluded_categories_;
+  }
+  const StringList& disabled_categories() const LIFETIME_BOUND {
+    return disabled_categories_;
+  }
 
  private:
   void SetCategoriesFromIncludedList(const Value::List& included_list);

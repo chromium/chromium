@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <sys/utsname.h>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -101,7 +102,9 @@ class ChromeOSVersionInfo {
     *bugfix_version = bugfix_version_;
   }
 
-  const Time& lsb_release_time() const { return lsb_release_time_; }
+  const Time& lsb_release_time() const LIFETIME_BOUND {
+    return lsb_release_time_;
+  }
   void set_lsb_release_time(const Time& time) { lsb_release_time_ = time; }
 
   bool is_running_on_chromeos() const { return is_running_on_chromeos_; }

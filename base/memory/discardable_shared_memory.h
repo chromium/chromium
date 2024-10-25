@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -91,7 +92,7 @@ class BASE_EXPORT DiscardableSharedMemory {
   // Returns an ID for the shared memory region. This is ID of the mapped region
   // consistent across all processes and is valid as long as the region is not
   // unmapped.
-  const UnguessableToken& mapped_id() const {
+  const UnguessableToken& mapped_id() const LIFETIME_BOUND {
     return shared_memory_mapping_.guid();
   }
 

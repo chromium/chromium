@@ -16,6 +16,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
@@ -122,7 +123,7 @@ class BASE_EXPORT TraceEvent {
   unsigned long long bind_id() const { return bind_id_; }
   // Exposed for unittesting:
 
-  const StringStorage& parameter_copy_storage() const {
+  const StringStorage& parameter_copy_storage() const LIFETIME_BOUND {
     return parameter_copy_storage_;
   }
 

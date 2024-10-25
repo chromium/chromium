@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -428,13 +429,13 @@ class BASE_EXPORT ThreadGroup {
     int max_num_workers_created = 2;
   } initialized_in_start_;
 
-  InitializedInStart& in_start() {
+  InitializedInStart& in_start() LIFETIME_BOUND {
 #if DCHECK_IS_ON()
     DCHECK(!initialized_in_start_.initialized);
 #endif
     return initialized_in_start_;
   }
-  const InitializedInStart& after_start() const {
+  const InitializedInStart& after_start() const LIFETIME_BOUND {
 #if DCHECK_IS_ON()
     DCHECK(initialized_in_start_.initialized);
 #endif

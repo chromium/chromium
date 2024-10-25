@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 
 namespace base {
@@ -249,8 +250,8 @@ class ScopedGeneric {
     return data_.generic != value;
   }
 
-  Traits& get_traits() { return data_; }
-  const Traits& get_traits() const { return data_; }
+  Traits& get_traits() LIFETIME_BOUND { return data_; }
+  const Traits& get_traits() const LIFETIME_BOUND { return data_; }
 
  private:
   void FreeIfNecessary() {

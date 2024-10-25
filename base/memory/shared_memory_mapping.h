@@ -66,7 +66,7 @@ class BASE_EXPORT SharedMemoryMapping {
   }
 
   // Returns 128-bit GUID of the region this mapping belongs to.
-  const UnguessableToken& guid() const {
+  const UnguessableToken& guid() const LIFETIME_BOUND {
     DCHECK(IsValid());
     return guid_;
   }

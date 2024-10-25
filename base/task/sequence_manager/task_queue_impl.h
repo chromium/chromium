@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/dcheck_is_on.h"
@@ -392,7 +393,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     Task take_top();
     bool empty() const { return queue_.empty(); }
     size_t size() const { return queue_.size(); }
-    const Task& top() const { return queue_.top(); }
+    const Task& top() const LIFETIME_BOUND { return queue_.top(); }
     void swap(DelayedIncomingQueue* other);
 
     bool has_pending_high_resolution_tasks() const {
@@ -603,7 +604,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     associated_thread_->AssertInSequenceWithCurrentThread();
     return main_thread_only_;
   }
-  const MainThreadOnly& main_thread_only() const {
+  const MainThreadOnly& main_thread_only() const LIFETIME_BOUND {
     associated_thread_->AssertInSequenceWithCurrentThread();
     return main_thread_only_;
   }

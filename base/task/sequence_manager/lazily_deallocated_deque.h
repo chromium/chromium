@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/gtest_prod_util.h"
@@ -133,22 +134,22 @@ class LazilyDeallocatedDeque {
     max_size_ = std::max(max_size_, ++size_);
   }
 
-  T& front() {
+  T& front() LIFETIME_BOUND {
     DCHECK(head_);
     return head_->front();
   }
 
-  const T& front() const {
+  const T& front() const LIFETIME_BOUND {
     DCHECK(head_);
     return head_->front();
   }
 
-  T& back() {
+  T& back() LIFETIME_BOUND {
     DCHECK(tail_);
     return tail_->back();
   }
 
-  const T& back() const {
+  const T& back() const LIFETIME_BOUND {
     DCHECK(tail_);
     return tail_->back();
   }
@@ -278,22 +279,22 @@ class LazilyDeallocatedDeque {
       data_[front_index_].~T();
     }
 
-    T& front() {
+    T& front() LIFETIME_BOUND {
       DCHECK(!empty());
       return data_[CircularIncrement(front_index_)];
     }
 
-    const T& front() const {
+    const T& front() const LIFETIME_BOUND {
       DCHECK(!empty());
       return data_[CircularIncrement(front_index_)];
     }
 
-    T& back() {
+    T& back() LIFETIME_BOUND {
       DCHECK(!empty());
       return data_[back_index_];
     }
 
-    const T& back() const {
+    const T& back() const LIFETIME_BOUND {
       DCHECK(!empty());
       return data_[back_index_];
     }

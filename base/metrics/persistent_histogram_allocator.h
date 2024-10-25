@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -478,7 +479,7 @@ class BASE_EXPORT GlobalHistogramAllocator
 
   // Retrieves a previously set pathname to which the contents of this allocator
   // are to be saved.
-  const FilePath& GetPersistentLocation() const;
+  const FilePath& GetPersistentLocation() const LIFETIME_BOUND;
 
   // Returns whether the contents of this allocator are being saved to a
   // persistent file on disk.

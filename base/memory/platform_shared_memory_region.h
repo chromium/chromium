@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/platform_shared_memory_handle.h"
@@ -203,7 +204,7 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   // created by calling |MapAt()| above.
   static void Unmap(span<uint8_t> mapping, SharedMemoryMapper* mapper);
 
-  const UnguessableToken& GetGUID() const { return guid_; }
+  const UnguessableToken& GetGUID() const LIFETIME_BOUND { return guid_; }
 
   size_t GetSize() const { return size_; }
 

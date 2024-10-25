@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -103,7 +104,7 @@ class BASE_EXPORT ImportantFileWriter {
   // of destruction.
   ~ImportantFileWriter();
 
-  const FilePath& path() const { return path_; }
+  const FilePath& path() const LIFETIME_BOUND { return path_; }
 
   // Returns true if there is a scheduled write pending which has not yet
   // been started.
@@ -155,10 +156,12 @@ class BASE_EXPORT ImportantFileWriter {
   }
 
  private:
-  const OneShotTimer& timer() const {
+  const OneShotTimer& timer() const LIFETIME_BOUND {
     return timer_override_ ? *timer_override_ : timer_;
   }
-  OneShotTimer& timer() { return timer_override_ ? *timer_override_ : timer_; }
+  OneShotTimer& timer() LIFETIME_BOUND {
+    return timer_override_ ? *timer_override_ : timer_;
+  }
 
   // Same as WriteNow() but it uses a promise-like signature that allows running
   // custom logic in the background sequence.

@@ -155,8 +155,8 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
   RefCountedString16(const RefCountedString16&) = delete;
   RefCountedString16& operator=(const RefCountedString16&) = delete;
 
-  const std::u16string& as_string() const { return string_; }
-  std::u16string& as_string() { return string_; }
+  const std::u16string& as_string() const LIFETIME_BOUND { return string_; }
+  std::u16string& as_string() LIFETIME_BOUND { return string_; }
 
  private:
   ~RefCountedString16() override;

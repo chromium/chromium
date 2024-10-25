@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/cxx23_to_underlying.h"
 
@@ -72,10 +73,12 @@ class PriorityQueue::TaskSourceAndSortKey {
     return HeapHandle::Invalid();
   }
 
-  const RegisteredTaskSource& task_source() const { return task_source_; }
-  RegisteredTaskSource& task_source() { return task_source_; }
+  const RegisteredTaskSource& task_source() const LIFETIME_BOUND {
+    return task_source_;
+  }
+  RegisteredTaskSource& task_source() LIFETIME_BOUND { return task_source_; }
 
-  const TaskSourceSortKey& sort_key() const { return sort_key_; }
+  const TaskSourceSortKey& sort_key() const LIFETIME_BOUND { return sort_key_; }
 
  private:
   RegisteredTaskSource task_source_;

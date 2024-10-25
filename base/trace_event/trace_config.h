@@ -293,20 +293,22 @@ class BASE_EXPORT TraceConfig {
   // Clears and resets the memory dump config.
   void ResetMemoryDumpConfig(const MemoryDumpConfig& memory_dump_config);
 
-  const TraceConfigCategoryFilter& category_filter() const {
+  const TraceConfigCategoryFilter& category_filter() const LIFETIME_BOUND {
     return category_filter_;
   }
 
-  const MemoryDumpConfig& memory_dump_config() const {
+  const MemoryDumpConfig& memory_dump_config() const LIFETIME_BOUND {
     return memory_dump_config_;
   }
 
-  const ProcessFilterConfig& process_filter_config() const {
+  const ProcessFilterConfig& process_filter_config() const LIFETIME_BOUND {
     return process_filter_config_;
   }
   void SetProcessFilterConfig(const ProcessFilterConfig&);
 
-  const EventFilters& event_filters() const { return event_filters_; }
+  const EventFilters& event_filters() const LIFETIME_BOUND {
+    return event_filters_;
+  }
   void SetEventFilters(const EventFilters& filter_configs) {
     event_filters_ = filter_configs;
   }

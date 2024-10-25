@@ -729,8 +729,8 @@ class WithHeapHandle : public InternalHeapHandleStorage {
   WithHeapHandle& operator=(const WithHeapHandle&) = delete;
   WithHeapHandle& operator=(WithHeapHandle&& other) = default;
 
-  T& value() { return value_; }
-  const T& value() const { return value_; }
+  T& value() LIFETIME_BOUND { return value_; }
+  const T& value() const LIFETIME_BOUND { return value_; }
 
   // Utility functions.
   void swap(WithHeapHandle& other) noexcept;

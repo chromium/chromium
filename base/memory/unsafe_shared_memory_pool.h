@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"
@@ -40,9 +41,8 @@ class BASE_EXPORT UnsafeSharedMemoryPool
     Handle(const Handle&) = delete;
     Handle& operator=(const Handle&) = delete;
 
-    const UnsafeSharedMemoryRegion& GetRegion() const;
-
-    const WritableSharedMemoryMapping& GetMapping() const;
+    const UnsafeSharedMemoryRegion& GetRegion() const LIFETIME_BOUND;
+    const WritableSharedMemoryMapping& GetMapping() const LIFETIME_BOUND;
 
    private:
     UnsafeSharedMemoryRegion region_;

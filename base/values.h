@@ -677,13 +677,13 @@ class BASE_EXPORT GSL_OWNER Value {
 
     // Returns a reference to the first value in the container. Fails with
     // `CHECK()` if the list is empty.
-    const Value& front() const;
-    Value& front();
+    const Value& front() const LIFETIME_BOUND;
+    Value& front() LIFETIME_BOUND;
 
     // Returns a reference to the last value in the container. Fails with
     // `CHECK()` if the list is empty.
-    const Value& back() const;
-    Value& back();
+    const Value& back() const LIFETIME_BOUND;
+    Value& back() LIFETIME_BOUND;
 
     // Increase the capacity of the backing container, but does not change
     // the size. Assume all existing iterators will be invalidated.

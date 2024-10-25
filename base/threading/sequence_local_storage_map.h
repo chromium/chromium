@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/abseil-cpp/absl/meta/type_traits.h"
@@ -61,12 +62,12 @@ class BASE_EXPORT SequenceLocalStorageMap {
     }
 
     template <typename T>
-    T& value_as() {
+    T& value_as() LIFETIME_BOUND {
       return *static_cast<T*>(value);
     }
 
     template <typename T>
-    const T& value_as() const {
+    const T& value_as() const LIFETIME_BOUND {
       return *static_cast<const T*>(value);
     }
   };

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/containers/queue.h"
 #include "base/sequence_token.h"
@@ -101,7 +102,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   TimeTicks GetDelayedSortKey() const override;
 
   // Returns a token that uniquely identifies this Sequence.
-  const SequenceToken& token() const { return token_; }
+  const SequenceToken& token() const LIFETIME_BOUND { return token_; }
 
   SequenceLocalStorageMap* sequence_local_storage() {
     return &sequence_local_storage_;
