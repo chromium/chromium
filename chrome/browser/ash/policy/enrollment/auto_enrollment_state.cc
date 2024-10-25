@@ -35,6 +35,9 @@ std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
           [](AutoEnrollmentSystemClockSyncError) {
             return std::string("System clock sync error");
           },
+          [](AutoEnrollmentMachineInfoRetrievalError) {
+            return std::string("Machine info retrieval error");
+          },
           [](AutoEnrollmentStateKeysRetrievalError) {
             return std::string("State keys retrieval error");
           },

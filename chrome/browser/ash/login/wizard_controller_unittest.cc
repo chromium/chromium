@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -386,6 +389,14 @@ class WizardControllerTest : public WizardControllerTestBase {
     fake_login_display_host_->GetWizardContext()->is_branded_build = is_branded;
   }
 
+  void SetupUnfiedStateDeterminationDisabled() {
+    // TODO(crbug.com/375564225) Remove `kUnifiedStateDeterminationNever` to
+    // make tests more realistic.
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
+
   raw_ptr<WizardController> wizard_controller_ = nullptr;
 
  private:
@@ -396,6 +407,7 @@ class WizardControllerTest : public WizardControllerTestBase {
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   SigninProfileHandler signing_profile_handler_;
+  base::test::ScopedCommandLine command_line_;
 };
 
 // Chromebox For Meetings (CFM) has forced enrollment. Tests that want to do
@@ -403,6 +415,7 @@ class WizardControllerTest : public WizardControllerTestBase {
 #if !BUILDFLAG(PLATFORM_CFM)
 TEST_F(WizardControllerTest,
        ConsumerOobeFlowShouldContinueToUserCreationOnNonCriticalUpdate) {
+  SetupUnfiedStateDeterminationDisabled();
   wizard_controller_->Init(/*first_screen=*/ash::OOBE_SCREEN_UNKNOWN);
   ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
 
@@ -417,6 +430,7 @@ TEST_F(WizardControllerTest,
 }
 
 TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
+  SetupUnfiedStateDeterminationDisabled();
   wizard_controller_->Init(kWelcomeScreen);
   ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -530,7 +544,9 @@ class WizardControllerAfterRollbackTest : public WizardControllerTest {
 };
 
 TEST_F(WizardControllerAfterRollbackTest, AdvanceToEnrollmentAfterRollback) {
+  SetupUnfiedStateDeterminationDisabled();
   wizard_controller_->Init(kAutoEnrollmentCheckScreen);
+  // Advance to enrollment despite FRE not being enabled.
   ASSERT_TRUE(AwaitScreen(kEnrollmentScreen));
 }
 
