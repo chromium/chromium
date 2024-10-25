@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 
 // The app interface for supervised user settings tests.
@@ -53,12 +54,22 @@
 // Creates a TestUrlLoaderFactoryHelper singleton.
 + (void)setUpTestUrlLoaderFactoryHelper;
 
-// Tear down the TestUrlLoaderFactoryHelper singleton.
+// Tears down the TestUrlLoaderFactoryHelper singleton.
 + (void)tearDownTestUrlLoaderFactoryHelper;
+
+// Sets up the TestFamilyLinkBrowserStateHelper singleton.
++ (void)setUpTestFamilyLinkBrowserStateHelperWithResetIntent;
+
+// Tears down the TestFamilyLinkBrowserStateHelper singleton.
++ (void)tearDownTestFamilyLinkBrowserStateHelper;
 
 // Returns the number of Supervised User interstitials attached to the existing
 // web states.
 + (NSInteger)countSupervisedUserIntersitialsForExistingWebStates;
+
+// Seeds the Family Link BrowserState managed by the
+// TestFamilyLinkBrowserStateHelper singleton.
++ (void)seedFamilyLinkBrowserStateWithCompletion:(ProceduralBlock)completion;
 
 @end
 

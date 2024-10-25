@@ -23,6 +23,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/safe_search_api",

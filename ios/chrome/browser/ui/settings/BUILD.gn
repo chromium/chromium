@@ -402,6 +402,7 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
     "//components/metrics",
@@ -410,10 +411,12 @@ source_set("eg_app_support+eg2") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:mocked",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
