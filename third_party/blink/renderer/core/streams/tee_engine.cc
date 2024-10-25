@@ -323,8 +323,7 @@ void TeeEngine::Start(ScriptState* script_state,
 
   // 12. Let cancelPromise be a new promise.
   cancel_promise_ =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLPromise<IDLUndefined>>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // 13. Let pullAlgorithm be the following steps:
   // (steps are defined in PullAlgorithm::Run()).
