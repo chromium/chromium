@@ -144,7 +144,7 @@ TaskGraph::Sequence::Sequence(
       sequence_id_(order_data_->sequence_id()),
       front_task_unblocked_callback_(std::move(front_task_unblocked_callback)),
       release_delegate_(task_graph->sync_point_manager()) {
-  if (task_graph_->graph_validation_enabled()) {
+  if (task_graph_->graph_validation_enabled() && validation_runner) {
     validation_timer_ = base::MakeRefCounted<RetainingOneShotTimerHolder>(
         kMaxValidationDelay, kMinValidationDelay, std::move(validation_runner),
         base::BindRepeating(&TaskGraph::ValidateSequenceTaskFenceDeps,
@@ -350,11 +350,7 @@ TaskGraph::Sequence::TakeSyncPointClientState(
 }
 
 void TaskGraph::Sequence::UpdateValidationTimer() {
-  if (!task_graph_->graph_validation_enabled()) {
-    return;
-  }
-
-  if (!HasTasks()) {
+  if (!validation_timer_ || !HasTasks()) {
     return;
   }
 

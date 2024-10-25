@@ -40,11 +40,13 @@ class TaskGraphTest : public testing::Test {
     }
   }
 
-  void CreateSequence(int sequence_key) {
+  void CreateSequence(int sequence_key, bool manual_validation = false) {
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
     SequenceId sequence_id = task_graph_->CreateSequence(
-        base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::DoNothing(),
+        manual_validation ? scoped_refptr<base::SingleThreadTaskRunner>()
+                          : base::SingleThreadTaskRunner::GetCurrentDefault(),
         kNamespaceId, command_buffer_id);
 
     sequence_info_.emplace(sequence_key,
@@ -133,6 +135,19 @@ class TaskGraphTest : public testing::Test {
     } while (previous_tasks_executed != tasks_executed_.size());
   }
 
+  void RunValidation(int sequence_key) {
+    auto info_it = sequence_info_.find(sequence_key);
+    ASSERT_TRUE(info_it != sequence_info_.end());
+
+    TaskGraph::Sequence* sequence = nullptr;
+    {
+      base::AutoLock auto_lock(task_graph_->lock());
+      sequence = task_graph_->GetSequence(info_it->second.sequence_id);
+    }
+
+    task_graph_->ValidateSequenceTaskFenceDeps(sequence);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::vector<int> tasks_executed_;
@@ -193,6 +208,53 @@ TEST_F(TaskGraphTest, ValidationWaitWithoutRelease) {
   // of task 1.
   task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay +
                                   base::Seconds(1));
+  RunAllPendingTasks();
+
+  expected_task_order = {0, 1};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+}
+
+TEST_F(TaskGraphTest, ManuallyCallValidationWaitWithoutRelease) {
+  // Two tasks on the same sequence wait for unreleased fences.
+  CreateSequence(0, /*manual_validation=*/true);
+  CreateSequence(1);
+  CreateSequence(2);
+
+  CreateSyncToken(1, 0);  // declare sync_token 0 on seq 1
+  CreateSyncToken(1, 1);  // declare sync_token 1 on seq 1
+
+  CreateSyncToken(2, 2);  // declare sync_token 2 on seq 2
+  CreateSyncToken(2, 3);  // declare sync_token 3 on seq 2
+
+  AddTask(0, {0, 3}, -1);  // task 0: seq 0, wait {0,3}, no release
+
+  // Submit a task close to the time when the validation timer would fired if
+  // it were configured to run.
+  task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay -
+                                  TaskGraph::kMinValidationDelay +
+                                  base::Seconds(1));
+  AddTask(0, {1, 2}, -1);  // task 1: seq 0, wait {1,2}, no release
+
+  // Validation is configured to be triggered manually. Moving time forward
+  // shouldn't trigger validation.
+  task_environment_.FastForwardBy(TaskGraph::kMinValidationDelay);
+  RunAllPendingTasks();
+  EXPECT_TRUE(tasks_executed_.empty());
+
+  RunValidation(0);
+  RunAllPendingTasks();
+
+  // Only task 0 is supposed to be executed.
+  // Task 1 has unsatisfied waits, but it is too new to be validated.
+  std::vector<int> expected_task_order = {0};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+
+  task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay +
+                                  base::Seconds(1));
+  RunAllPendingTasks();
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+
+  RunValidation(0);
   RunAllPendingTasks();
 
   expected_task_order = {0, 1};

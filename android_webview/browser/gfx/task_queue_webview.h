@@ -5,9 +5,27 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
+#include "gpu/command_buffer/common/command_buffer_id.h"
+#include "gpu/command_buffer/common/constants.h"
+#include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
+#include "gpu/command_buffer/service/task_graph.h"
+
+namespace gpu {
+class Scheduler;
+class ScopedSyncPointClientState;
+struct SyncToken;
+}  // namespace gpu
 
 namespace android_webview {
 
@@ -15,39 +33,108 @@ namespace android_webview {
 // thread task runners. This is the class actually scheduling and running tasks
 // for WebView. This is used by both CommandBuffer and SkiaDDL.
 //
+// The client is the single viz thread and the gpu service runs on the render
+// thread. Render thread is allowed to block on the viz thread, but not the
+// other way around. This achieves viz scheduling tasks to gpu by first blocking
+// render thread on the viz thread so render thread is ready to receive and run
+// tasks.
+//
 // Lifetime: Singleton
 class TaskQueueWebView {
  public:
   // Static method that makes sure this is only one copy of this class.
   static TaskQueueWebView* GetInstance();
 
-  // Methods only used when kVizForWebView is enabled, ie client is the viz
-  // thread.
-  virtual void InitializeVizThread(
-      const scoped_refptr<base::SingleThreadTaskRunner>& viz_task_runner) = 0;
+  TaskQueueWebView(const TaskQueueWebView&) = delete;
+  TaskQueueWebView& operator=(const TaskQueueWebView&) = delete;
+
+  ~TaskQueueWebView();
+
+  void InitializeVizThread(
+      const scoped_refptr<base::SingleThreadTaskRunner>& viz_task_runner);
+
   // The calling OnceClosure unblocks the render thread, and disallows further
   // calls to ScheduleTask.
   using VizTask = base::OnceCallback<void(base::OnceClosure)>;
-  virtual void ScheduleOnVizAndBlock(VizTask viz_task) = 0;
-
-  // Called by TaskForwardingSequence. |out_of_order| indicates if task should
-  // be run ahead of already enqueued tasks.
-  virtual void ScheduleTask(base::OnceClosure task, bool out_of_order) = 0;
-
-  // Called by TaskForwardingSequence.
-  virtual void ScheduleOrRetainTask(base::OnceClosure task) = 0;
-
-  // Called to schedule delayed tasks.
-  virtual void ScheduleIdleTask(base::OnceClosure task) = 0;
+  void ScheduleOnVizAndBlock(VizTask viz_task);
 
   // Used to post task to client thread.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner() = 0;
+  scoped_refptr<base::SingleThreadTaskRunner> GetClientTaskRunner();
 
-  // Uniti tests can switch render thread.
-  virtual void ResetRenderThreadForTesting() = 0;
+  // Unit tests can switch render thread.
+  void ResetRenderThreadForTesting() {
+    DETACH_FROM_THREAD(render_thread_checker_);
+  }
 
- protected:
-  virtual ~TaskQueueWebView() = default;
+  // Lazily initializes internal sequence state if hasn't been done yet.
+  // The following public methods can only be called after this method is
+  // called.
+  //
+  // Calls after the first one are no-ops.
+  void EnsureSequenceInitialized();
+
+  gpu::SequenceId GetSequenceId();
+
+  using ReportingCallback = gpu::SingleTaskSequence::ReportingCallback;
+  void ScheduleTask(base::OnceClosure task,
+                    std::vector<gpu::SyncToken> sync_token_fences,
+                    const gpu::SyncToken& release,
+                    ReportingCallback report_callback);
+  void ScheduleOrRetainTask(base::OnceClosure task,
+                            std::vector<gpu::SyncToken> sync_token_fences,
+                            const gpu::SyncToken& release,
+                            ReportingCallback report_callback);
+
+  // Called to schedule delayed tasks.
+  void ScheduleIdleTask(base::OnceClosure task);
+
+  [[nodiscard]] gpu::ScopedSyncPointClientState CreateSyncPointClientState(
+      gpu::CommandBufferNamespace namespace_id,
+      gpu::CommandBufferId command_buffer_id);
+
+ private:
+  class Sequence : public gpu::TaskGraph::Sequence {
+   public:
+    explicit Sequence(gpu::Scheduler* scheduler);
+
+    void RunAllTasks() LOCKS_EXCLUDED(lock());
+
+    // The following methods acquire the TaskGraph lock before calling the
+    // corresponding methods in gpu::TaskGraph::Sequence.
+    bool HasTasksAcquiringLock() const LOCKS_EXCLUDED(lock());
+    uint32_t AddTaskAcquiringLock(base::OnceClosure task_closure,
+                                  std::vector<gpu::SyncToken> wait_fences,
+                                  const gpu::SyncToken& release,
+                                  ReportingCallback report_callback)
+        LOCKS_EXCLUDED(lock());
+    [[nodiscard]] gpu::ScopedSyncPointClientState
+    CreateSyncPointClientStateAcquiringLock(
+        gpu::CommandBufferNamespace namespace_id,
+        gpu::CommandBufferId command_buffer_id) LOCKS_EXCLUDED(lock());
+
+   private:
+    const raw_ptr<gpu::Scheduler> scheduler_ = nullptr;
+  };
+
+  TaskQueueWebView();
+
+  void RunOnViz(VizTask viz_task);
+  void SignalDone();
+
+  scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
+  THREAD_CHECKER(render_thread_checker_);
+
+  // Only accessed on viz thread.
+  bool allow_schedule_task_ = false;
+
+  // Only accessed on render thread.
+  bool inside_schedule_on_viz_and_block_ = false;
+
+  base::Lock lock_;
+  base::ConditionVariable condvar_{&lock_};
+  bool done_ GUARDED_BY(lock_) = true;
+
+  raw_ptr<Sequence> sequence_ GUARDED_BY(lock_) = nullptr;
 };
 
 }  // namespace android_webview
