@@ -3881,7 +3881,7 @@ void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
   SendUpdateState();
 }
 
-void RenderFrameImpl::FrameDetached() {
+void RenderFrameImpl::FrameDetached(blink::DetachReason detach_reason) {
   TRACE_EVENT0("navigation", "RenderFrameImpl::FrameDetached");
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.RenderFrameImpl.FrameDetached");
@@ -3902,7 +3902,7 @@ void RenderFrameImpl::FrameDetached() {
   // |frame_| may not be referenced after this, so clear the pointer since
   // the actual WebLocalFrame may not be deleted immediately and other methods
   // may try to access it.
-  frame_->Close();
+  frame_->Close(detach_reason);
   frame_ = nullptr;
 
   if (mhtml_body_loader_client_) {
@@ -4449,7 +4449,7 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     // The swap can fail when the frame is detached during swap (this can
     // happen while running the unload handlers). When that happens, delete
     // the proxy.
-    remote_frame->Close();
+    remote_frame->Close(blink::DetachReason::kFrameDeletion);
     return false;
   }
 

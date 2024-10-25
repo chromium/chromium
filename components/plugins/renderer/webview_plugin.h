@@ -181,7 +181,7 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     // WebLocalFrameClient methods:
     void BindToFrame(blink::WebNavigationControl* frame) override;
     void DidClearWindowObject() override;
-    void FrameDetached() override;
+    void FrameDetached(blink::DetachReason) override;
     scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
         override;
 

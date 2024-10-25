@@ -376,6 +376,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kDelayLayerTreeViewDeletionOnLocalSwap);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam);
+
 // Enables the use of CrabbyAvif for decoding AVIF images.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCrabbyAvif);
 

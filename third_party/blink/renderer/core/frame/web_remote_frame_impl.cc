@@ -201,8 +201,8 @@ const WebRemoteFrame* WebRemoteFrameImpl::ToWebRemoteFrame() const {
   return this;
 }
 
-void WebRemoteFrameImpl::Close() {
-  WebRemoteFrame::Close();
+void WebRemoteFrameImpl::Close(DetachReason detach_reason) {
+  WebRemoteFrame::Close(detach_reason);
 
   self_keep_alive_.Clear();
 }

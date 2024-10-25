@@ -201,7 +201,7 @@ void WidgetBase::InitializeCompositing(
     AssertAreCompatible(*this, *previous_widget);
 
     // `screen_infos` is applied to this LayerTreeView below.
-    previous_widget->DisconnectLayerTreeView(this);
+    previous_widget->DisconnectLayerTreeView(this, /*delay_release=*/false);
     CHECK(layer_tree_view_);
   } else {
     layer_tree_view_ = std::make_unique<LayerTreeView>(this, widget_scheduler_);
@@ -285,14 +285,14 @@ void WidgetBase::DidFirstVisuallyNonEmptyPaint(
   }
 }
 
-void WidgetBase::Shutdown() {
+void WidgetBase::Shutdown(bool delay_release) {
   // The |input_event_queue_| is refcounted and will live while an event is
   // being handled. This drops the connection back to this WidgetBase which
   // is being destroyed.
   if (widget_input_handler_manager_)
     widget_input_handler_manager_->ClearClient();
 
-  DisconnectLayerTreeView(nullptr);
+  DisconnectLayerTreeView(nullptr, delay_release);
 
   // The `widget_scheduler_` must be deleted last because the
   // `widget_input_handler_manager_` may request to post a task on the
@@ -304,18 +304,27 @@ void WidgetBase::Shutdown() {
   if (widget_scheduler_) {
     scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
-    cleanup_runner->PostNonNestableTask(
-        FROM_HERE, base::BindOnce(
-                       [](scoped_refptr<scheduler::WidgetScheduler> scheduler,
-                          scoped_refptr<WidgetInputHandlerManager> manager,
-                          std::unique_ptr<LayerTreeView> view) {
-                         view.reset();
-                         manager.reset();
-                         scheduler->Shutdown();
-                       },
-                       std::move(widget_scheduler_),
-                       std::move(widget_input_handler_manager_),
-                       std::move(layer_tree_view_)));
+    base::TimeDelta task_delay(base::Seconds(0));
+    if (delay_release) {
+      CHECK(base::FeatureList::IsEnabled(
+          blink::features::kDelayLayerTreeViewDeletionOnLocalSwap));
+      task_delay =
+          features::kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam.Get();
+    }
+    cleanup_runner->PostNonNestableDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<scheduler::WidgetScheduler> scheduler,
+               scoped_refptr<WidgetInputHandlerManager> manager,
+               std::unique_ptr<LayerTreeView> view) {
+              view.reset();
+              manager.reset();
+              scheduler->Shutdown();
+            },
+            std::move(widget_scheduler_),
+            std::move(widget_input_handler_manager_),
+            std::move(layer_tree_view_)),
+        task_delay);
   }
 
   if (widget_compositor_) {
@@ -324,7 +333,8 @@ void WidgetBase::Shutdown() {
   }
 }
 
-void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget) {
+void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget,
+                                         bool delay_release) {
   will_be_destroyed_ = true;
 
   if (!layer_tree_view_) {
@@ -345,10 +355,21 @@ void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget) {
   }
 
   if (new_widget) {
-    layer_tree_view_->ReattachTo(new_widget, widget_scheduler_);
+    // Reattach to `new_widget`.
+    layer_tree_view_->ClearPreviousDelegateAndReattachIfNeeded(
+        new_widget, widget_scheduler_);
     new_widget->layer_tree_view_ = std::move(layer_tree_view_);
     layer_tree_view_ = nullptr;
+  } else if (delay_release) {
+    CHECK(base::FeatureList::IsEnabled(
+        blink::features::kDelayLayerTreeViewDeletionOnLocalSwap));
+    // Detach the LayerTreeView now without attaching it to anything else. The
+    // actual release of the LayerTreeView and its resources will happen later,
+    // see also the task posted in `Shutdown()`.
+    layer_tree_view_->ClearPreviousDelegateAndReattachIfNeeded(nullptr,
+                                                               nullptr);
   } else {
+    // Disconnect and release now.
     layer_tree_view_->Disconnect();
   }
 }

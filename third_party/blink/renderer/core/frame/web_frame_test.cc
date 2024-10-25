@@ -13330,9 +13330,9 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
     ~LoadingObserverFrameClient() override = default;
 
     // frame_test_helpers::TestWebFrameClient:
-    void FrameDetached() override {
+    void FrameDetached(DetachReason detach_reason) override {
       did_call_frame_detached_ = true;
-      TestWebFrameClient::FrameDetached();
+      TestWebFrameClient::FrameDetached(detach_reason);
     }
 
     void DidStopLoading() override {

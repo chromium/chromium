@@ -307,7 +307,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // This frame has been detached. Embedders should release any resources
   // associated with this frame.
-  virtual void FrameDetached() {}
+  virtual void FrameDetached(DetachReason detach_reason) {}
 
   // This frame's name has changed.
   virtual void DidChangeName(const WebString& name) {}

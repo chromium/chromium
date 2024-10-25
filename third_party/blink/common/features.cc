@@ -675,6 +675,16 @@ BASE_FEATURE_PARAM(bool,
                    "delay_async_exec_opt_out_high_fetch_priority_hint",
                    false);
 
+BASE_FEATURE(kDelayLayerTreeViewDeletionOnLocalSwap,
+             "DelayLayerTreeViewDeletionOnLocalSwap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam,
+                   &kDelayLayerTreeViewDeletionOnLocalSwap,
+                   "deletion_task_delay",
+                   base::Milliseconds(1000));
+
 BASE_FEATURE(kDirectCompositorThreadIpc,
              "DirectCompositorThreadIpc",
              base::FEATURE_DISABLED_BY_DEFAULT);
