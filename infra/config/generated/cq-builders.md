@@ -29,8 +29,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-cronet-arm-rel](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-arm-rel""))
 
-* [android-x64-cast](https://ci.chromium.org/p/chromium/builders/try/android-x64-cast) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x64-cast""))
-
 * [android-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x64-rel""))
 
 * [android-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x86-rel""))

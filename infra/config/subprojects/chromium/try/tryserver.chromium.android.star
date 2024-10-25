@@ -1325,7 +1325,6 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.builder(
