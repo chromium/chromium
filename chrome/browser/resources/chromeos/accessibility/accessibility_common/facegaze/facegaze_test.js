@@ -2221,3 +2221,92 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledDuringDictation', async function() {
           .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9));
   assertEquals(result.macros.length, 2);
 });
+
+AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT)
+          .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.TOGGLE_SCROLL_MODE)
+          .set(FacialGesture.EYE_SQUINT_RIGHT, MacroName.TOGGLE_FACEGAZE);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.EYES_BLINK, 0.6)
+                                  .set(FacialGesture.EYE_SQUINT_LEFT, 0.6)
+                                  .set(FacialGesture.EYE_SQUINT_RIGHT, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(0);
+  await this.configureFaceGaze(config);
+
+  const gestureHandler = this.getFaceGaze().gestureHandler_;
+
+  // If eye squint on one side occurs at same time as a blink or squint on the
+  // wrong side, then the gesture should not register as an eye squint on the
+  // intended side.
+  let result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6));
+  assertEquals(result.macros.length, 1);
+
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.6));
+  assertEquals(result.macros.length, 0);
+
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6));
+  assertEquals(result.macros.length, 1);
+
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.6));
+  assertEquals(result.macros.length, 0);
+
+  // Low confidence levels of blink or squint on the wrong side should register
+  // as a squint on the intended side.
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.3)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.3));
+  assertEquals(result.macros.length, 1);
+
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.3));
+  assertEquals(result.macros.length, 1);
+
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.3)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.3));
+  assertEquals(result.macros.length, 1);
+
+  result = gestureHandler.detectMacros(
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.3));
+  assertEquals(result.macros.length, 1);
+});
