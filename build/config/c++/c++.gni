@@ -10,10 +10,10 @@ declare_args() {
   # Use in-tree libc++ (buildtools/third_party/libc++ and
   # buildtools/third_party/libc++abi) instead of the system C++ library for C++
   # standard library support.
-  # Don't check in changes that set this to false for more platforms; doing so
-  # is not supported.
-  use_custom_libcxx = is_fuchsia || is_android || is_apple || is_linux ||
-                      is_chromeos || (is_win && is_clang)
+  #
+  # WARNING: Bringing your own C++ standard library is deprecated and will not
+  # be supported in the future. This flag will be removed.
+  use_custom_libcxx = true
 
   # Use libc++ instead of stdlibc++ when using the host_cpu toolchain, even if
   # use_custom_libcxx is false. This is useful for cross-compiles where a custom
@@ -21,7 +21,10 @@ declare_args() {
   # use_custom_libcxx should still be true when building for the host.  The
   # expected usage is to set use_custom_libcxx=false and
   # use_custom_libcxx_for_host=true in the passed in buildargs.
-  use_custom_libcxx_for_host = false
+  #
+  # WARNING: Bringing your own C++ standard library is deprecated and will not
+  # be supported in the future. This flag will be removed.
+  use_custom_libcxx_for_host = true
 
   # Builds libcxx Natvis into the symbols for type visualization.
   # Set to false to workaround http://crbug.com/966676 and
@@ -65,6 +68,9 @@ declare_args() {
   # In case the C++ standard library implementation used is libstdc++, then
   # enable its own hardening checks. As we cannot determine in GN if libstdc++
   # is used or not, by default enable it for Linux without the custom libc++.
+  #
+  # WARNING: Bringing your own C++ standard library is deprecated and will not
+  # be supported in the future. This flag will be removed.
   use_safe_libstdcxx = is_linux && !use_custom_libcxx
 }
 
@@ -101,3 +107,19 @@ libcxx_module_prefix = "$root_gen_dir/libcxx"
 
 assert(!(is_ios && libcxx_is_shared),
        "Can't build libc++ as a shared library on iOS.")
+
+# Chromium will require using its libc++ library implementation. Warn if the
+# current configuration is not using it.
+if ((!use_custom_libcxx || !use_custom_libcxx_for_host) &&
+    # Standalone use of //build outside of Chromium can disable libc++.
+    build_with_chromium &&
+    # Try to avoid spamming the console lots. It's not actually
+    # toolchain-specific.
+    current_toolchain == default_toolchain) {
+  print("*********************************************************************")
+  print("WARNING: Support for linking against a C++ standard library other ")
+  print("  than the one in-tree (buildtools/third_party/libc++) is deprecated")
+  print("  and support for this will end. We plan to remove this option in ")
+  print("  M138.")
+  print("*********************************************************************")
+}
