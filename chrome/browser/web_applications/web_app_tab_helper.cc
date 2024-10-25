@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_app_ui_state_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,11 +33,9 @@ namespace web_app {
 void WebAppTabHelper::Create(tabs::TabInterface* tab,
                              content::WebContents* contents) {
   // In the event when a tab is moved from a normal browser window to an app
-  // window, or vise versa, we want to keep the state on WebAppTabHelper but
-  // reset tab subscriptions.
+  // window, or vise versa, we want to keep the state on WebAppTabHelper.
   auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
   if (tab->GetContents() == contents && tab_helper) {
-    tab_helper->ResetTabSubscriptions(tab);
     return;
   }
 
@@ -192,7 +189,6 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
   observation_.Observe(&provider_->install_manager());
   SetState(FindAppWithUrlInScope(contents->GetLastCommittedURL()),
            /*is_in_app_window=*/false);
-  ResetTabSubscriptions(tab);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
@@ -215,43 +211,6 @@ void WebAppTabHelper::OnWebAppWillBeUninstalled(
 void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
   SetAppId(std::nullopt);
-}
-
-void WebAppTabHelper::TabDidEnterForeground(tabs::TabInterface* tab) {
-  if (app_id_.has_value()) {
-    provider_->ui_state_manager().NotifyWebAppWindowDidEnterForeground(
-        app_id_.value());
-  }
-}
-
-void WebAppTabHelper::TabWillEnterBackground(tabs::TabInterface* tab) {
-  if (app_id_.has_value()) {
-    provider_->ui_state_manager().NotifyWebAppWindowWillEnterBackground(
-        app_id_.value());
-  }
-}
-
-void WebAppTabHelper::WillDetach(tabs::TabInterface* tab,
-                                 tabs::TabInterface::DetachReason reason) {
-  switch (reason) {
-    case tabs::TabInterface::DetachReason::kDelete:
-      tab_subscriptions_.clear();
-      break;
-    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
-      break;
-  }
-}
-
-void WebAppTabHelper::ResetTabSubscriptions(tabs::TabInterface* tab) {
-  tab_subscriptions_.clear();
-  tab_subscriptions_.push_back(tab->RegisterDidEnterForeground(
-      base::BindRepeating(&WebAppTabHelper::TabDidEnterForeground,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab->RegisterWillEnterBackground(
-      base::BindRepeating(&WebAppTabHelper::TabWillEnterBackground,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
-      &WebAppTabHelper::WillDetach, weak_factory_.GetWeakPtr())));
 }
 
 void WebAppTabHelper::OnAssociatedAppChanged(

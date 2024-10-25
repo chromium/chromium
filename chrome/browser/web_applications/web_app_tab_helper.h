@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -109,12 +108,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
       const webapps::AppId& uninstalled_app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  // Bounded callbacks from TabInterface
-  void TabDidEnterForeground(tabs::TabInterface* tab);
-  void TabWillEnterBackground(tabs::TabInterface* tab);
-  void WillDetach(tabs::TabInterface* tab,
-                  tabs::TabInterface::DetachReason reason);
-
   void ResetTabSubscriptions(tabs::TabInterface* tab);
 
   // Sets the state of this tab helper. This will call
@@ -154,9 +147,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};
   raw_ptr<WebAppProvider> provider_ = nullptr;
-
-  // Holds subscriptions for TabInterface callbacks.
-  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   base::WeakPtrFactory<WebAppTabHelper> weak_factory_{this};
 

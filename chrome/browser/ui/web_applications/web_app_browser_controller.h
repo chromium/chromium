@@ -35,7 +35,6 @@
 #endif
 
 class Browser;
-class BrowserWindowInterface;
 class SkBitmap;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -134,14 +133,6 @@ class WebAppBrowserController : public AppBrowserController,
   static void SetManifestUpdateAppliedCallbackForTesting(
       base::OnceClosure callback);
 
-  // This is done separately from the ctor since WebAppBrowserController is
-  // created before the BrowserWindowFeatures infrastructure.
-  void InitForBrowserWindowFeatures(BrowserWindowInterface*);
-
-  // Bind-ed callbacks for BrowserWindowFeatures
-  void DidBecomeActive(BrowserWindowInterface*);
-  void DidBecomeInactive(BrowserWindowInterface*);
-
  protected:
   // AppBrowserController:
   void OnTabInserted(content::WebContents* contents) override;
@@ -196,9 +187,6 @@ class WebAppBrowserController : public AppBrowserController,
   // nothing matches), whereas an uninitialized list means it has not yet been
   // needed.
   mutable std::unique_ptr<std::vector<TabbedModeScopeMatcher>> home_tab_scope_;
-
-  // Holds subscriptions for BrowserWindowInterface callbacks.
-  std::vector<base::CallbackListSubscription> browser_subscriptions_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.

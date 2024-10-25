@@ -350,8 +350,6 @@ source_set("web_applications") {
     "web_app_translation_manager.h",
     "web_app_ui_manager.cc",
     "web_app_ui_manager.h",
-    "web_app_ui_state_manager.cc",
-    "web_app_ui_state_manager.h",
     "web_app_uninstall_dialog_user_options.h",
     "web_app_utils.cc",
     "web_app_utils.h",
@@ -1055,7 +1053,6 @@ source_set("web_applications_browser_tests") {
     "web_app_navigation_capturing_intent_picker_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
     "web_app_scope_extensions_browsertest.cc",
-    "web_app_ui_state_manager_browsertest.cc",
   ]
 
   if (is_chromeos) {
@@ -1178,7 +1175,6 @@ source_set("interactive_ui_tests") {
     "isolated_web_apps/isolated_web_app_interactive_uitest.cc",
     "sampling_metrics_provider_interactive_uitest.cc",
     "web_app_notifications_interactive_uitest.cc",
-    "web_app_ui_state_manager_interactive_uitest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

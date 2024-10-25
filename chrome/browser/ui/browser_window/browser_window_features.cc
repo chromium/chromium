@@ -36,8 +36,6 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -122,13 +120,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // logic for code shared by both normal and non-normal windows.
   lens_overlay_entry_point_controller_ =
       std::make_unique<lens::LensOverlayEntryPointController>();
-
-  if (browser->GetAppBrowserController() &&
-      browser->GetAppBrowserController()->AsWebAppBrowserController()) {
-    auto* web_app_browser_controller =
-        browser->GetAppBrowserController()->AsWebAppBrowserController();
-    web_app_browser_controller->InitForBrowserWindowFeatures(browser);
-  }
 
   tab_strip_model_ = browser->GetTabStripModel();
 }

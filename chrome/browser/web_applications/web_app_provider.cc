@@ -52,7 +52,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_app_ui_state_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -244,11 +243,6 @@ WebAppUiManager& WebAppProvider::ui_manager() {
   return *ui_manager_;
 }
 
-WebAppUiStateManager& WebAppProvider::ui_state_manager() {
-  CheckIsConnected();
-  return *ui_state_manager_;
-}
-
 WebAppAudioFocusIdMap& WebAppProvider::audio_focus_id_map() {
   CheckIsConnected();
   return *audio_focus_id_map_;
@@ -390,7 +384,6 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 #endif
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
-  ui_state_manager_ = std::make_unique<WebAppUiStateManager>();
   visited_manifest_manager_ = std::make_unique<VisitedManifestManager>();
   navigation_capturing_log_ = std::make_unique<NavigationCapturingLog>();
 }
