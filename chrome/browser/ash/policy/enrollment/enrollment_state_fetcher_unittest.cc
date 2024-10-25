@@ -458,6 +458,7 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
     return;
   }
 
+  base::HistogramTester histograms;
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -467,13 +468,13 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
   EXPECT_CALL(state_key_broker_, error_type)
       .WillRepeatedly(
           Return(ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers));
-  EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithStateRequest(
-                                         /*state_key=*/std::string(),
-                                         kTestSerialNumber, kTestBrandCode)))
-      .WillOnce(
-          fake_dm_service_->SendJobOKAsync(em::DeviceManagementResponse()));
 
-  std::ignore = FetchEnrollmentState();
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationStateKeysRetrievalErrorType,
+      ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers, 1);
+  EXPECT_EQ(state, ToState(AutoEnrollmentStateKeysRetrievalError{}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysRetrievalSucceedOnRetry) {

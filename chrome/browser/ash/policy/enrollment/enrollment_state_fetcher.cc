@@ -989,26 +989,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     if (state_key.has_value()) {
       context_.state_key = state_key.value();
     } else {
-      switch (state_key.error()) {
-        case ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers:
-          // Missing identifiers is typically a permanent error, hence we
-          // proceed to attempt state retrieval with just serial number
-          // and brand code.
-          LOG(WARNING)
-              << "Failed to obtain state keys due to missing identifiers";
-          context_.state_key.reset();
-          break;
-        case ServerBackedStateKeysBroker::ErrorType::kCommunicationError:
-        case ServerBackedStateKeysBroker::ErrorType::kInvalidResponse:
-          LOG(ERROR) << "Failed to obtain state keys. Error: "
-                     << static_cast<int>(state_key.error());
-          // These errors are typically transient, hence we block here to
-          // enforce a retry and avoid potential FRE escapes.
-          return ReportResult(
-              base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
-        case ServerBackedStateKeysBroker::ErrorType::kNoError:
-          NOTREACHED_IN_MIGRATION();
-      }
+      CHECK(state_key.error() !=
+            ServerBackedStateKeysBroker::ErrorType::kNoError);
+      LOG(ERROR) << "Failed to obtain state keys. Error: "
+                 << static_cast<int>(state_key.error());
+      return ReportResult(
+          base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
     }
     state_.Request(context_, base::BindOnce(&Sequence::OnStateRequestDone,
                                             weak_factory_.GetWeakPtr()));
