@@ -279,7 +279,7 @@ bool WaitForUpdaterExit() {
       [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
-base::FilePath GetRealUpdaterLowerVersionPath() {
+std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths() {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
@@ -297,10 +297,10 @@ base::FilePath GetRealUpdaterLowerVersionPath() {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
-  return old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-      .Append("Contents")
-      .Append("MacOS")
-      .Append(PRODUCT_FULLNAME_STRING "_test");
+  return {old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
+              .Append("Contents")
+              .Append("MacOS")
+              .Append(PRODUCT_FULLNAME_STRING "_test")};
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

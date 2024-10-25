@@ -1635,26 +1635,48 @@ void InvokeTestServiceFunction(const std::string& function_name,
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
-base::FilePath GetRealUpdaterLowerVersionPath() {
+std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths() {
+  std::vector<std::wstring> supported_archs;
+
+// TODO(crbug.com/374217027): Test with newer x64 chrome-branded executables
+// that install to %ProgramFiles(x86)%.
+#if BUILDFLAG(CHROMIUM_BRANDING)
+#if defined(ARCH_CPU_ARM64)
+  supported_archs = {
+      L"chromium_win_arm64",
+      L"chromium_win_x86_64",
+      L"chromium_win_x86",
+  };
+#elif defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
+  supported_archs = {
+      L"chromium_win_x86_64",
+      L"chromium_win_x86",
+  };
+#endif
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  supported_archs = {
+      L"chrome_win_x86",
+  };
+#endif
+
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
 
-// TODO(crbug.com/374217027): Test with newer x64 executables that install to
-// %ProgramFiles(x86)%.
-#if BUILDFLAG(CHROMIUM_BRANDING)
-  old_updater_path =
-      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86"));
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path =
-      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86"));
-#endif
-
+  base::FilePath path_suffix;
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.Append(FILE_PATH_LITERAL("cipd"));
+  path_suffix = path_suffix.Append(FILE_PATH_LITERAL("cipd"));
 #endif
-  return old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe"));
+  path_suffix = path_suffix.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe"));
+
+  std::vector<base::FilePath> updater_paths;
+  base::ranges::transform(
+      supported_archs, std::back_inserter(updater_paths),
+      [&](const std::wstring& arch) {
+        return old_updater_path.Append(arch).Append(path_suffix);
+      });
+  return updater_paths;
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {

@@ -107,12 +107,12 @@ std::set<base::FilePath::StringType> GetTestProcessNames();
 class VersionProcessFilter : public base::ProcessFilter {
  public:
   VersionProcessFilter();
+  ~VersionProcessFilter() override;
 
   bool Includes(const base::ProcessEntry& entry) const override;
 
  private:
-  const base::Version this_version_;
-  const base::Version older_version_;
+  const std::vector<base::Version> versions_;
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -278,12 +278,13 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
-// Gets the file path for the real updater lower version.
-base::FilePath GetRealUpdaterLowerVersionPath();
+// Gets the file paths for the real updater lower version.
+std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths();
 
 // Sets up a real updater on the system at a version lower than the test. The
 // exact version of the updater is not defined.
-void SetupRealUpdaterLowerVersion(UpdaterScope scope);
+void SetupRealUpdaterLowerVersion(UpdaterScope scope,
+                                  const base::FilePath& updater_path);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);

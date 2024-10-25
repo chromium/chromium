@@ -201,8 +201,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetupFakeUpdaterLowerVersion(updater_scope_);
   }
 
-  void SetupRealUpdaterLowerVersion() const override {
-    updater::test::SetupRealUpdaterLowerVersion(updater_scope_);
+  void SetupRealUpdaterLowerVersion(
+      const base::FilePath& updater_path) const override {
+    updater::test::SetupRealUpdaterLowerVersion(updater_scope_, updater_path);
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,

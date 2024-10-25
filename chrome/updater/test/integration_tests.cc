@@ -388,8 +388,8 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetupFakeUpdaterLowerVersion();
   }
 
-  void SetupRealUpdaterLowerVersion() {
-    test_commands_->SetupRealUpdaterLowerVersion();
+  void SetupRealUpdaterLowerVersion(const base::FilePath& updater_path) {
+    test_commands_->SetupRealUpdaterLowerVersion(updater_path);
   }
 
   void SetActive(const std::string& app_id) {
@@ -798,8 +798,17 @@ TEST_F(IntegrationTest, OverinstallRedundant) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, OverinstallWorking) {
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+class IntegrationLowerVersionTest
+    : public ::testing::WithParamInterface<base::FilePath>,
+      public IntegrationTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationLowerVersionTestCases,
+    IntegrationLowerVersionTest,
+    ::testing::ValuesIn(GetRealUpdaterLowerVersionPaths()));
+
+TEST_P(IntegrationLowerVersionTest, OverinstallWorking) {
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
@@ -830,8 +839,8 @@ TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, OverinstallBroken) {
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+TEST_P(IntegrationLowerVersionTest, OverinstallBroken) {
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(DeleteActiveUpdaterExecutable());
@@ -846,7 +855,7 @@ TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 
   // Cleanup the older version by reinstalling and uninstalling.
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1571,10 +1580,10 @@ TEST_F(IntegrationTest, RotateLog) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
+TEST_P(IntegrationLowerVersionTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
   // Trigger an old instance update check.
@@ -1598,10 +1607,10 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
+TEST_P(IntegrationLowerVersionTest, UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
   // Trigger an old instance update check.
@@ -1632,8 +1641,8 @@ TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, InstallLowerVersion) {
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+TEST_P(IntegrationLowerVersionTest, InstallLowerVersion) {
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 

@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -185,7 +186,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-base::FilePath GetRealUpdaterLowerVersionPath() {
+std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths() {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
@@ -199,8 +200,8 @@ base::FilePath GetRealUpdaterLowerVersionPath() {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.AppendASCII("cipd");
 #endif
-  return old_updater_path.AppendASCII(
-      base::StrCat({kExecutableName, kExecutableSuffix}));
+  return {old_updater_path.AppendASCII(
+      base::StrCat({kExecutableName, kExecutableSuffix}))};
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

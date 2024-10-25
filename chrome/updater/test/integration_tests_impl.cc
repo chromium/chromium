@@ -1175,8 +1175,9 @@ void ExpectCliResult(base::CommandLine command_line,
   }
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-  base::CommandLine command_line(GetRealUpdaterLowerVersionPath());
+void SetupRealUpdaterLowerVersion(UpdaterScope scope,
+                                  const base::FilePath& updater_path) {
+  base::CommandLine command_line(updater_path);
   command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
   Run(scope, command_line, &exit_code);
@@ -1514,16 +1515,21 @@ std::set<base::FilePath::StringType> GetCompanionAppProcessNames() {
 
 #if BUILDFLAG(IS_WIN)
 VersionProcessFilter::VersionProcessFilter()
-    : this_version_(base::Version(kUpdaterVersion)), older_version_([] {
-        const std::unique_ptr<FileVersionInfoWin> version_info =
-            FileVersionInfoWin::CreateFileVersionInfoWin(
-                GetRealUpdaterLowerVersionPath());
-        CHECK(version_info);
-        const base::Version version(
-            base::UTF16ToUTF8(version_info->file_version()));
-        CHECK(version.IsValid());
-        return version;
+    : versions_([] {
+        std::vector<base::Version> versions = {base::Version(kUpdaterVersion)};
+        for (const auto& updater_path : GetRealUpdaterLowerVersionPaths()) {
+          const std::unique_ptr<FileVersionInfoWin> version_info =
+              FileVersionInfoWin::CreateFileVersionInfoWin(updater_path);
+          CHECK(version_info);
+          const base::Version version(
+              base::UTF16ToUTF8(version_info->file_version()));
+          CHECK(version.IsValid());
+          versions.push_back(version);
+        }
+        return versions;
       }()) {}
+
+VersionProcessFilter::~VersionProcessFilter() = default;
 
 bool VersionProcessFilter::Includes(const base::ProcessEntry& entry) const {
   const base::Process process(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
@@ -1545,8 +1551,7 @@ bool VersionProcessFilter::Includes(const base::ProcessEntry& entry) const {
     return false;
   }
   const base::Version version(base::UTF16ToUTF8(version_info->file_version()));
-  return version.IsValid() &&
-         (version == this_version_ || version == older_version_);
+  return version.IsValid() && base::Contains(versions_, version);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -284,8 +284,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
-  void SetupRealUpdaterLowerVersion() const override {
-    RunCommand("setup_real_updater_lower_version");
+  void SetupRealUpdaterLowerVersion(
+      const base::FilePath& updater_path) const override {
+    RunCommand("setup_real_updater_lower_version",
+               {Param("updater_path", updater_path.MaybeAsASCII())});
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,
