@@ -1308,26 +1308,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-x64-cast",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Cast Android (dbg)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Cast Android (dbg)",
-            "compile_only",
-        ],
-    ),
-    builderless = not settings.is_main,
-    experiments = {
-        # crbug/940930
-        "chromium.enable_cleandead": 100,
-    },
-    main_list_view = "try",
-)
-
-try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [

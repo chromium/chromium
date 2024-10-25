@@ -6,7 +6,6 @@ ci/Android arm64 Builder All Targets (dbg)
 ci/Android x64 Builder (dbg)
 ci/Android x64 Builder All Targets (dbg)
 ci/Android x86 Builder (dbg)
-ci/Cast Android (dbg)
 ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/android-10-arm64-rel

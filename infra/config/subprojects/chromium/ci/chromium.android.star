@@ -589,62 +589,6 @@ ci.thin_tester(
 )
 
 ci.builder(
-    name = "Cast Android (dbg)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "cast_builder",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "cast_android",
-            "cast_receiver",
-            "clang",
-            "debug_static_builder",
-            "remoteexec",
-            "arm",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "cast_junit_tests",
-        ],
-        additional_compile_targets = [
-            "cast_junit_test_lists",
-            "cast_browser_apk",
-        ],
-        mixins = [
-            "has_native_resultdb_integration",
-        ],
-    ),
-    tree_closing = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "on_cq",
-        short_name = "cst",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    contact_team_email = "clank-engprod@google.com",
-)
-
-ci.builder(
     name = "android-cast-arm-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Android and Cast Receiver build and tests on ARM Release",
