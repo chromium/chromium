@@ -25,7 +25,8 @@ std::unique_ptr<ImageDecoder> CreateAVIFDecoder() {
   // fuzzer input.
   return std::make_unique<CrabbyAVIFImageDecoder>(
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit,
+      ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault,
+      ImageDecoder::kNoDecodedImageByteLimit,
       ImageDecoder::AnimationOption::kPreferAnimation);
 }
 

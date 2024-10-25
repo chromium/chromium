@@ -83,7 +83,6 @@ component("image_decoders") {
     deps += [
       "//third_party/crabbyavif",
       "//third_party/libavif",
-      "//third_party/libavifinfo",
     ]
   }
 }

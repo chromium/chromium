@@ -312,11 +312,11 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     if (base::FeatureList::IsEnabled(blink::features::kCrabbyAvif)) {
       decoder = std::make_unique<CrabbyAVIFImageDecoder>(
           alpha_option, high_bit_depth_decoding_option, color_behavior,
-          max_decoded_bytes, animation_option);
+          aux_image, max_decoded_bytes, animation_option);
     } else {
       decoder = std::make_unique<AVIFImageDecoder>(
           alpha_option, high_bit_depth_decoding_option, color_behavior,
-          max_decoded_bytes, animation_option);
+          aux_image, max_decoded_bytes, animation_option);
     }
 #endif
   }

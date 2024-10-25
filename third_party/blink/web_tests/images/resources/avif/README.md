@@ -186,15 +186,6 @@ A:   0,   0, 127
      0, 127, 255
    127, 255, 255
 
-### small-with-gainmap.avif
-A small image with a gainmap as an auxiliary item and XMP metadata, as in the
-spec from Adobe https://helpx.adobe.com/camera-raw/using/gain-map.html
-
-Source: the image was first created as a png with alpha, then encoded with a
-tweaked avifenc that stores the alpha aux image with the gainmap identifier.
-Then the file was edited with a hex editor to associate the xmp to the aux
-image.
-
 ### small-with-gainmap-iso.avif
 A small image with a gainmap as a "tmap" derived item, where the base is SDR.
 Has use_base_color_space set to true. Both the base image and alternate image
