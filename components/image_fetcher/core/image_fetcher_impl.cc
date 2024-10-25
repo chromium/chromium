@@ -24,10 +24,10 @@ ImageFetcherImpl::ImageFetcherImpl(
 
 ImageFetcherImpl::~ImageFetcherImpl() = default;
 
-ImageFetcherImpl::ImageRequest::ImageRequest() {}
+ImageFetcherImpl::ImageRequest::ImageRequest() = default;
 ImageFetcherImpl::ImageRequest::ImageRequest(ImageRequest&& other) = default;
 
-ImageFetcherImpl::ImageRequest::~ImageRequest() {}
+ImageFetcherImpl::ImageRequest::~ImageRequest() = default;
 
 void ImageFetcherImpl::FetchImageAndData(
     const GURL& image_url,
