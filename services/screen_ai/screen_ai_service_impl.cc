@@ -17,10 +17,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/crash/core/common/crash_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -150,13 +148,6 @@ class ModelDataHolder {
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
     CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
-
-    // TODO(crbug.com/361733242): Remove after the crash is fixed.
-    // `relative_file_path` is from `files_list_main_content_extraction.txt`
-    // or `files_list_ocr.txt` and under 100 characters long.
-    static crash_reporter::CrashKeyString<100> crash_info(
-        "last_loaded_screen_ai_file");
-    crash_info.Set(relative_file_path);
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
@@ -450,17 +441,6 @@ bool ScreenAIService::ExtractMainContentInternal(
     VLOG(0) << "Proto not generated.";
     return false;
   }
-
-  // Report request specifications in case the call crashes.
-  static crash_reporter::CrashKeyString<95> crash_info(
-      "main_content_extraction_info");
-  crash_info.Set(base::StringPrintf(
-      "TD:%i, TR:%i, SNC:%10zu, SBS:%10zu, TS:%10i, TW:%6i, TH:%6i, SS:%10zu",
-      snapshot.has_tree_data, snapshot.root_id != ui::kInvalidAXNodeID,
-      snapshot.nodes.size(), snapshot.ByteSize(), tree.size(),
-      static_cast<int>(converted_snapshot->tree_dimensions.width()),
-      static_cast<int>(converted_snapshot->tree_dimensions.height()),
-      converted_snapshot->serialized_proto.size()));
 
   content_node_ids =
       library_->ExtractMainContent(converted_snapshot->serialized_proto);
