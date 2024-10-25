@@ -535,6 +535,35 @@ PRETTY_XML_NESTED_IFTTT_OUTSIDE_ENUM = """
 """.strip()
 
 
+PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS = """
+<histogram-configuration>
+
+<enums>
+
+<!-- NOTE: Important note -->
+
+<!-- Regular comment -->
+
+<!-- LINT.IfChange(Enum1) -->
+
+<!-- Some other comment -->
+
+<enum name="Enum1">
+  <int value="0" label="Label1">Int text</int>
+</enum>
+
+<!-- Another comment -->
+
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum1) -->
+
+<!-- Comment after lint -->
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+
 class EnumXmlTest(unittest.TestCase):
 
   @parameterized.expand([
@@ -582,6 +611,9 @@ class EnumXmlTest(unittest.TestCase):
        PRETTY_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS),
       ('NestedIFTTTCommentsOutsideEnum', XML_NESTED_IFTTT_OUTSIDE_ENUM,
        PRETTY_XML_NESTED_IFTTT_OUTSIDE_ENUM),
+      ('IFTTTCommentsAndRegularCommentsOnTheSameLevel',
+       PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS,
+       PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS),
   ])
   def testPrettify(self, _, input_xml, expected_xml):
     result = histogram_configuration_model.PrettifyTree(

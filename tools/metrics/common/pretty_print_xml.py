@@ -12,10 +12,11 @@ import itertools
 import logging
 import sys
 import textwrap
+import collections
 
 from abc import abstractmethod
 from typing import (Any, Iterable, Mapping, Sequence, Protocol, List, Tuple,
-                    Dict, Optional)
+                    Optional, OrderedDict)
 from xml.dom import minidom
 
 import xml.etree.ElementTree as ET
@@ -42,6 +43,9 @@ class Comparable(Protocol):
   @abstractmethod
   def __lt__(self, other: Any) -> bool:
     pass
+
+
+SortKey = Tuple[Comparable, Comparable]
 
 
 @dataclasses.dataclass
@@ -104,10 +108,10 @@ class _CommentsTree:
   """
   id: int
   children: List['_CommentsTree'] = dataclasses.field(default_factory=list)
-  sort_key: Optional[Tuple[Comparable, Comparable]] = None
+  sort_key: Optional[SortKey] = None
   xml_element: Optional[ET.Element] = None
 
-  def GetSortKey(self) -> Tuple[Comparable, Comparable]:
+  def GetSortKey(self) -> SortKey:
     if self.sort_key:
       return self.sort_key
 
@@ -282,7 +286,7 @@ def _CalculateIFTTTCommentsLevels(
 
 
 def _CreateCommentsTree(
-    subnodes_map: Mapping[ET.Element, Tuple[Comparable, Comparable]],
+    subnodes_map: Mapping[ET.Element, SortKey],
     level_ids: Mapping[ET.Element, LevelIDsType]) -> _CommentsTree:
   """Creates a comments tree from the given subnodes map and level ids.
 
@@ -319,7 +323,7 @@ def _CreateCommentsTree(
 
 def _SortSubnodesByLevelIds(
     parent_node: ET.Element,
-    subnodes_map: Mapping[ET.Element, Tuple[Comparable, Comparable]],
+    subnodes_map: OrderedDict[ET.Element, SortKey],
     level_ids: Mapping[ET.Element, LevelIDsType],
 ) -> Iterable[ET.Element]:
   """Sorts the subnodes of the given parent node by the level ids in the IFTTT
@@ -412,7 +416,7 @@ class XmlStyle(object):
         subtags[subtag] = (index, key_function)
 
       # Map from the subnode to its sort key.
-      subnodes_map: Dict[ET.Element, Tuple[Comparable, Comparable]] = {}
+      subnodes_map: OrderedDict[ET.Element, SortKey] = collections.OrderedDict()
       # List of nodes whose sort key has not been found yet (their sort_key
       # will be set when the first suitable node is found).
       pending_nodes: List[ET.Element] = []
@@ -433,7 +437,8 @@ class XmlStyle(object):
           # so they stay in the same relative position.
           # Therefore we delay setting key until the next node is found.
           pending_nodes.append(child)
-          continue
+          # Set sort key to dummy value that will be overwritten in the future.
+          sort_key = None
         subnodes_map[child] = sort_key
 
       # Set the sort key for any leftover pending nodes.
