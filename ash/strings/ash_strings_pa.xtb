@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">ਕੈਰਟ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="2531025035050312891">ਡੀਵਾਈਸ ਹੌਲੀ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="2531107890083353124">ਟੈਬ ਨੂੰ ਘਸੀਟਦੇ ਸਮੇਂ, <ph name="KEY_ONE" /> ਦਬਾਓ</translation>
+<translation id="2545334090614121435">ਕੀ Home ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
 <translation id="254900897760075745">ਚੁਣੀ ਗਈ ਸਮੱਗਰੀ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="2549711466868162843">ਬਿਹਤਰ ਲਾਈਟਿੰਗ</translation>
 <translation id="2549985041256363841">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ</translation>
@@ -560,6 +561,7 @@
 <translation id="2985148236010982088">ਸਭ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="2992272421330787632">ਸਾਰੇ ਮੀਡੀਆ ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="2992327365391326550">ਡੀਵਾਈਸ ਦਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬਟਨ ਬੰਦ ਹੈ।</translation>
+<translation id="2993956882370897557">ਕੀ End ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
 <translation id="3000461861112256445">ਮੋਨੋ ਆਡੀਓ</translation>
 <translation id="3001391739687111021">ਸਕ੍ਰੀਨ ਦੇ ਆਕਾਰ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="3009178788565917040">ਆਉਟਪੁਟ</translation>
@@ -612,6 +614,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="316798519864381606">Google ਸਲਾਈਡ</translation>
 <translation id="3171170659304083361">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="3174897399179348329">ਕੀ Page Up ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
 <translation id="3176221688814061633">ਤੁਹਾਡੀ Chromebook ਜਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਵਿੱਚ ਬਲੂਟੁੱਥ ਦੇ ਪੁਰਾਣੇ ਵਰਜਨ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਬਿਹਤਰ ਆਡੀਓ ਕੁਆਲਿਟੀ ਲਈ ਬਲੂਟੁੱਥ ਸੁਪਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ ਜਾਂ ਅੰਦਰੂਨੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="3181441307743005334">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ਇੱਕ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}one{# ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}other{# ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}}</translation>
@@ -1260,6 +1263,7 @@
 <translation id="5297704307811127955">ਬੰਦ</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5302048478445481009">ਭਾਸ਼ਾ</translation>
+<translation id="5302531370473608800">YouTube Music ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਆਪਣਾ <ph name="DEVICE_TYPE" /> ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ।
 ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਸੀਮਤ ਹਨ।</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="7145639536026937076">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ।</translation>
 <translation id="7147587499155271409">ਕੋਈ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨਹੀਂ</translation>
+<translation id="7147657298465433425">F ਕੁੰਜੀਆਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, fn ਕੁੰਜੀ + ਸਿਖਰ ਵਾਲੀ ਕਤਾਰ ਦੀਆਂ ਕੁੰਜੀਆਂ ਦਬਾਓ</translation>
 <translation id="7149149900052329230">ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਦਾ Files ਐਪ ਵਿੱਚ ਹੀ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1926,6 +1931,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="7561982940498449837">ਮੀਨੂ ਬੰਦ ਕਰੋ</translation>
 <translation id="7564874036684306347">ਵਿੰਡੋਆਂ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੈਸਕਟਾਪ 'ਤੇ ਲਿਜਾਉਣ ਨਾਲ ਅਣਕਿਆਸਿਆ ਵਰਤਾਅ ਦਿਖ ਸਕਦਾ ਹੈ। ਇਸ ਤੋਂ ਬਾਅਦ ਦੀਆਂ ਸੂਚਨਾਵਾਂ, ਵਿੰਡੋਆਂ ਅਤੇ ਡਾਇਲੌਗ ਡੈਸਕਟਾਪਾਂ ਵਿੱਚ ਵੱਖ-ਵੱਖ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
+<translation id="7568154670718626683">ਕੀ Delete ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
 <translation id="7568790562536448087">ਅੱਪਡੇਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7569509451529460200">ਬ੍ਰੇਲ ਅਤੇ ChromeVox ਯੋਗ ਬਣਾਏ ਗਏ ਹਨ</translation>
 <translation id="7569886975397378678">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
@@ -2128,6 +2134,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> ਤੁਸੀਂ ਬਸ <ph name="FOCUSED_TIME" /> ਲਈ ਫੋਕਸ ਕੀਤਾ ਹੈ। ਦੁਬਾਰਾ ਫੋਕਸ ਕਰਨ ਲਈ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="8203224998425013577">ਹੋਰ ਇਮੋਜੀ ਅਤੇ GIF ਦਿਖਾਓ</translation>
 <translation id="8203795194971602413">ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="8205469348819768313">ਕੀ Page Down ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
 <translation id="8214996719228530800">Canary ਚੈਨਲ</translation>
 <translation id="8219451629189078428">ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡੀ Chromebook ਨੂੰ ਚਾਲੂ ਰਹਿਣ ਅਤੇ ਪਾਵਰ ਨਾਲ ਕਨੈਕਟ ਰਹਿਣ ਦੀ ਲੋੜ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਚਾਰਜਰ ਜਾਂ ਅਡਾਪਟਰ ਕੇਬਲਾਂ ਤੁਹਾਡੀ Chromebook ਅਤੇ ਪਾਵਰ ਸਾਕੇਟ ਦੋਵਾਂ ਵਿੱਚ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੱਗੀਆਂ ਹੋਈਆਂ ਹਨ। ਆਪਣੀ Chromebook ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -2320,6 +2327,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ਇਹ ਭਾਸ਼ਾ ਨਹੀਂ ਬੋਲਦੀ।</translation>
 <translation id="8926951137623668982">ਸ਼ੈਲਫ਼ ਹਮੇਸ਼ਾਂ ਲੁਕੀ ਰਹਿੰਦੀ ਹੈ</translation>
+<translation id="8929566928381252430">ਕੀ Caps Lock ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8938800817013097409">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਸੱਜਾ ਪੋਰਟ)</translation>

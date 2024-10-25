@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">તમારું <ph name="WEBSITE" /> એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="1506061864768559482">શોધ એન્જિન</translation>
 <translation id="1506063256525392513">આ તમને ફોટા લેવા અને અપલોડ કરવા તેમજ QR કોડ સ્કૅન કરવા દે છે</translation>
+<translation id="1508263560970797965">છૂપા મોડમાં ચાલુ રાખો</translation>
 <translation id="1509486075633541495">વેબસાઇટમાં સાઇન ઇન કરો</translation>
 <translation id="1509960214886564027">ઘણી સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="1513858653616922153">પાસવર્ડ ડિલીટ કરો</translation>
@@ -742,6 +743,7 @@
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4592672037257622855">{count,plural, =1{તમારી વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}one{તમારી વાંચન સૂચિમાં {count} પેજ ઉમેરવામાં આવ્યું}other{તમારી વાંચન સૂચિમાં {count} પેજ ઉમેરવામાં આવ્યા}}</translation>
 <translation id="459644946100970322">'કિંમતમાં ફેરફાર'ની સુવિધા ચાલુ કરીએ?</translation>
+<translation id="4597892826846980979">ટૅબના નોટિફિકેશન મેળવો</translation>
 <translation id="4601095002996233687">શંકાસ્પદ ડાઉનલોડ માટે સવિસ્તર સ્કૅનની સુવિધા.</translation>
 <translation id="4606247758155004938">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
 <translation id="4611811151908969241">'<ph name="DOMAIN_NAME" />ને અનફૉલો કરો' છુપાવો</translation>
@@ -1201,6 +1203,7 @@
 <translation id="6606914854592108404">સલામતી માટે તપાસની પ્રક્રિયા ચાલી રહી છે…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> અને <ph name="THIRD_WEBSITE" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
+<translation id="6612912757320004438">ટૅબના નોટિફિકેશનની મંજૂરી આપો…</translation>
 <translation id="6617761071025228250">ટેક્સ્ટ સાફ કરો</translation>
 <translation id="6620279676667515405">રદ કરો</translation>
 <translation id="6624219055418309072">છૂપા મોડમાં બ્લૉક કરો</translation>

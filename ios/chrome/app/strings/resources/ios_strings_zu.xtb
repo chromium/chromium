@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">I-akhawunti yakho ye-<ph name="WEBSITE" /> ngeke isulwe.</translation>
 <translation id="1506061864768559482">Injini yokusesha</translation>
 <translation id="1506063256525392513">Lokhu kukuvumela ukuthi uthathe futhi ulayishe izithombe, futhi uskene amakhodi we-QR</translation>
+<translation id="1508263560970797965">Qhubeka ku-Incognito</translation>
 <translation id="1509486075633541495">Ngena ngemvume kuwebhusayithi</translation>
 <translation id="1509960214886564027">Izici ezikumasayithi amaningi zingase zinqamuke</translation>
 <translation id="1513858653616922153">Susa iphasiwedi</translation>
@@ -742,6 +743,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4587589328781138893">Amasayithi</translation>
 <translation id="4592672037257622855">{count,plural, =1{Ikhasi lengezwe ohlwini lwakho lokufunda}one{Amakhasi angu-{count} engezwe ohlwini lwakho lokufunda}other{Amakhasi angu-{count} engezwe ohlwini lwakho lokufunda}}</translation>
 <translation id="459644946100970322">Vula izixwayiso zentengo?</translation>
+<translation id="4597892826846980979">Thola Amathebhu Ezaziso</translation>
 <translation id="4601095002996233687">Ukuskena okujulile kokudawunilodwa okusolisayo.</translation>
 <translation id="4606247758155004938">Ibhrawuza yakho iphethwe inhlangano yakho.</translation>
 <translation id="4611811151908969241">Fihla Ukuyekela Ukulandela <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="6606914854592108404">Ukuhlola Ukuphepha kuyaqhubeka…</translation>
 <translation id="6609890790934458793">Amaphasiwedi e-<ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, kanye nawe e-<ph name="THIRD_WEBSITE" /> azosulwa. Ama-akhawunti akho ngeke asulwe.</translation>
 <translation id="661266467055912436">Kuthuthukisa ukuvikeleka kwakho nawo wonke umuntu okuwebhu.</translation>
+<translation id="6612912757320004438">Vumela Amathebhu Ezaziso…</translation>
 <translation id="6617761071025228250">Sula umbhalo</translation>
 <translation id="6620279676667515405">Khansela</translation>
 <translation id="6624219055418309072">Vimbela ku-Incognito</translation>

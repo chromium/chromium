@@ -973,6 +973,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4356872429719185452">Erakutsi wifi-gunearen xehetasunak. Wifi-gunea aktibatzen ari da.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Grabatzen</translation>
 <translation id="4371348193907997655">Igortzeko eginbidearen ezarpenak</translation>
+<translation id="4371834685492830207">Balio duten karaktereak soilik izan ditzake PINak</translation>
 <translation id="4375482231364171368">Bilatu helbide-barran</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="4378551569595875038">Konektatzen…</translation>
@@ -1558,6 +1559,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> gailutik</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> kamera eta mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="6237231532760393653">1×</translation>
+<translation id="6240551054644725950">Balio duten karaktereak soilik izan ditzake pasahitzak</translation>
 <translation id="6240603910551255087">Goiko botoia</translation>
 <translation id="6240821072888636753">Galdetu beti</translation>
 <translation id="6247728804802644171">Ireki jakinarazpenak</translation>

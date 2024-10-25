@@ -115,6 +115,7 @@
 <translation id="1498283581832036924"><ph name="WEBSITE" /> webguneko kontua ez da ezabatuko.</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
 <translation id="1506063256525392513">Horrela, argazkiak atera eta kargatu ahal izango dituzu, eta QR kodeak eskaneatu</translation>
+<translation id="1508263560970797965">Egin aurrera ezkutuko moduan</translation>
 <translation id="1509486075633541495">Hasi saioa webgunean</translation>
 <translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="1513858653616922153">Ezabatu pasahitza</translation>
@@ -742,6 +743,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4587589328781138893">Webguneak</translation>
 <translation id="4592672037257622855">{count,plural, =1{Gehitu da orria zure irakurketa-zerrendan}other{{count} orri gehitu dira zure irakurketa-zerrendan}}</translation>
 <translation id="459644946100970322">Prezioen alertak aktibatu nahi dituzu?</translation>
+<translation id="4597892826846980979">Jaso fitxei buruzko jakinarazpenak</translation>
 <translation id="4601095002996233687">Deskarga susmagarrien azterketa sakonak.</translation>
 <translation id="4606247758155004938">Zure erakundeak kudeatzen du arakatzailea.</translation>
 <translation id="4611811151908969241">Ezkutatu "Utzi <ph name="DOMAIN_NAME" /> domeinuari jarraitzeari"</translation>
@@ -1201,6 +1203,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6606914854592108404">Abian da segurtasun-egiaztapena…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> eta <ph name="THIRD_WEBSITE" /> webguneetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainerako erabiltzaileentzat.</translation>
+<translation id="6612912757320004438">Eman fitxei buruzko jakinarazpenak bidaltzeko baimena…</translation>
 <translation id="6617761071025228250">Garbitu testua</translation>
 <translation id="6620279676667515405">Utzi</translation>
 <translation id="6624219055418309072">Blokeatu ezkutuko moduan</translation>

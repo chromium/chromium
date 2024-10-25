@@ -442,6 +442,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2530896289327917474">Laita näppäimistöselaaminen päälle tai pois päältä</translation>
 <translation id="2531025035050312891">hidas laite</translation>
 <translation id="2531107890083353124">Vedä välilehteä ja paina samalla <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Yritätkö käyttää Homea? Käytä yhdistelmää</translation>
 <translation id="254900897760075745">Kopioi valittu sisältö leikepöydälle</translation>
 <translation id="2549711466868162843">Valaistuksen parantaminen</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
@@ -560,6 +561,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2985148236010982088">Katso kaikki sovellukset</translation>
 <translation id="2992272421330787632">Piilota kaikki mediaehdotukset</translation>
 <translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
+<translation id="2993956882370897557">Yritätkö käyttää Endiä? Käytä yhdistelmää</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3001391739687111021">Muokkaa näytön kokoa</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
@@ -612,6 +614,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> palauttaa laitteen (<ph name="DEVICE_TYPE" />) aiempaan versioon. Laitteen tehdasasetukset palautetaan ja kaikki data poistetaan.</translation>
 <translation id="316798519864381606">Google Slides ‑dia</translation>
 <translation id="3171170659304083361">Syöttötapojen asetukset</translation>
+<translation id="3174897399179348329">Yritätkö käyttää Page Upia? Käytä yhdistelmää</translation>
 <translation id="3176221688814061633">Chromebookissa tai Bluetooth-laitteessa on vanhempi Bluetooth-versio. Laita Bluetooth Super Resolution päälle tai käytä sisäistä mikrofonia äänenlaadun parantamiseksi.</translation>
 <translation id="3181441307743005334">Uudelleenkäynnistys voi kestää hetken</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Yhdistetty 1 laitteeseen}other{Yhdistetty # laitteeseen}}</translation>
@@ -1259,6 +1262,7 @@ Voit myös käyttää pikanäppäintä. Korosta ensin teksti ja paina sitten <ph
 <translation id="5297704307811127955">Poissa päältä</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5302048478445481009">Kieli</translation>
+<translation id="5302531370473608800">Päivitä <ph name="DEVICE_TYPE" />, niin voit käyttää YouTube Musicia</translation>
 <translation id="5303319262469238330">Akkua jäljellä <ph name="PERCENTAGE" /> %.
 Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</translation>
 <translation id="5308380583665731573">Muodosta yhteys</translation>
@@ -1819,6 +1823,7 @@ Uusi asennus</translation>
 <translation id="7144942256906679589">Akun tila</translation>
 <translation id="7145639536026937076">Akkua ladataan, varaus nyt <ph name="PERCENTAGE" /> %. Virransäästö on päällä.</translation>
 <translation id="7147587499155271409">Ei selaushistoriaa</translation>
+<translation id="7147657298465433425">Jos haluat käyttää F-näppäimiä, paina fn-näppäintä ja ylärivin näppäimiä</translation>
 <translation id="7149149900052329230">Hallinnoi paikallisia tiedostoja ja Google Drive ‐tiedostoja Tiedostot-sovelluksessa.</translation>
 <translation id="7165278925115064263">Alt+Vaihto+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1925,6 +1930,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> käyttää tällä hetkellä mikrofonia</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
+<translation id="7568154670718626683">Yritätkö käyttää Deleteä? Käytä yhdistelmää</translation>
 <translation id="7568790562536448087">Päivitetään</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7569886975397378678">Hylkää puhelimen ilmoitusten ja sovellusten katselun käyttöönotto</translation>
@@ -2127,6 +2133,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Olet ollut keskittynyt <ph name="FOCUSED_TIME" />. Avaa Pika-asetukset ja keskity uudelleen.</translation>
 <translation id="8203224998425013577">Näytä lisää emojeita ja GIFejä</translation>
 <translation id="8203795194971602413">Klikkaus kakkospainikkeella</translation>
+<translation id="8205469348819768313">Yritätkö käyttää Page Down ‑näppäintä? Käytä yhdistelmää</translation>
 <translation id="8214996719228530800">Canary-versio</translation>
 <translation id="8219451629189078428">Chromebookin täytyy pysyä päällä ja yhdistettynä virtalähteeseen tänä aikana. Varmista, että laturin tai virtalähteen johdot on liitetty kunnolla sekä Chromebookiin että pistorasiaan. Älä sammuta Chromebookia.</translation>
 <translation id="8220076512072059941">Lisää <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2318,6 +2325,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ei ole käytettävissä tällä kielellä.</translation>
 <translation id="8926951137623668982">Hylly piilotetaan aina</translation>
+<translation id="8929566928381252430">Yritätkö käyttää Caps Lockia? Käytä yhdistelmää</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>

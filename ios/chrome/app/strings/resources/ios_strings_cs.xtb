@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Účet v doméně <ph name="WEBSITE" /> smazán nebude</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1506063256525392513">Toto umožňuje pořizovat a nahrávat fotky a skenovat QR kódy</translation>
+<translation id="1508263560970797965">Pokračovat v anonymním režimu</translation>
 <translation id="1509486075633541495">Přihlásit se k webu</translation>
 <translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
 <translation id="1513858653616922153">Vymazat heslo</translation>
@@ -742,6 +743,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stránka byla přidána do vašeho seznamu četby}few{Do vašeho seznamu četby byly přidány {count} stránky}many{Do vašeho seznamu četby bylo přidáno {count} stránky}other{Do vašeho seznamu četby bylo přidáno {count} stránek}}</translation>
 <translation id="459644946100970322">Zapnout upozornění na ceny?</translation>
+<translation id="4597892826846980979">Aktivujte si oznámení o kartách</translation>
 <translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4606247758155004938">Váš prohlížeč je spravován vaší organizací.</translation>
 <translation id="4611811151908969241">Skrýt možnost Přestat sledovat web <ph name="DOMAIN_NAME" /></translation>
@@ -1201,6 +1203,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6606914854592108404">Bezpečnostní kontrola běží…</translation>
 <translation id="6609890790934458793">Hesla pro domény <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> a <ph name="THIRD_WEBSITE" /> budou smazána. Vaše účty smazány nebudou.</translation>
 <translation id="661266467055912436">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu.</translation>
+<translation id="6612912757320004438">Povolit oznámení o kartách…</translation>
 <translation id="6617761071025228250">Vymazat text</translation>
 <translation id="6620279676667515405">Zrušit</translation>
 <translation id="6624219055418309072">V anonymním režimu blokovat</translation>

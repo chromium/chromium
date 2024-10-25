@@ -972,6 +972,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4356872429719185452">Shfaq detajet e zonës së qasjes për internet. Zona e qasjes për internet po aktivizohet.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Po regjistrohet</translation>
 <translation id="4371348193907997655">Cilësimet e transmetimit</translation>
+<translation id="4371834685492830207">Kodi PIN duhet të përmbajë vetëm karaktere të vlefshme</translation>
 <translation id="4375482231364171368">Kërko në shiritin e adresës</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /> për qind</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
@@ -1557,6 +1558,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6232416233079464213">Nga <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> po përdor aktualisht kamerën dhe mikrofonin tënd</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Fjalëkalimi duhet të përmbajë vetëm karaktere të vlefshme</translation>
 <translation id="6240603910551255087">Butoni në krye</translation>
 <translation id="6240821072888636753">Pyet çdo herë</translation>
 <translation id="6247728804802644171">Hap njoftimet</translation>

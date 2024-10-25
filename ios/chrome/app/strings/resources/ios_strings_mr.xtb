@@ -116,6 +116,7 @@
 <translation id="1498283581832036924">तुमचे <ph name="WEBSITE" /> खाते हटवले जाणार नाही.</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1506063256525392513">हे तुम्हाला फोटो काढू आणि अपलोड करू देते, तसेच QR कोड स्कॅन करू देते</translation>
+<translation id="1508263560970797965">गुप्त मोडमध्ये पुढे सुरू ठेवा</translation>
 <translation id="1509486075633541495">वेबसाइटवर साइन इन करा</translation>
 <translation id="1509960214886564027">अनेक साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
@@ -750,6 +751,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{पेज तुमच्या वाचन सूचीमध्ये जोडले आहे}other{{count} पेज तुमच्या वाचन सूचीमध्ये जोडली आहेत}}</translation>
 <translation id="459644946100970322">किमतीविषयी सूचना सुरू करायच्या आहेत का?</translation>
+<translation id="4597892826846980979">टॅबची नोटिफिकेशन मिळवा</translation>
 <translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4606247758155004938">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> ला अनफॉलो करा हे लपवा</translation>
@@ -1214,6 +1216,7 @@
 <translation id="6606914854592108404">सुरक्षितता तपासणी रन करत आहे…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> आणि <ph name="THIRD_WEBSITE" /> चे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
+<translation id="6612912757320004438">टॅबच्या नोटिफिकेशनना अनुमती द्या…</translation>
 <translation id="6617761071025228250">मजकूर साफ करा</translation>
 <translation id="6620279676667515405">रद्द करा</translation>
 <translation id="6624219055418309072">गुप्त मोडमध्ये ब्लॉक करा</translation>

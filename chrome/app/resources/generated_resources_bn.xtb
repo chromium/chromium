@@ -1817,6 +1817,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837"><ph name="DOMAINS" /> ডোমেনসমূহের মধ্যে যে কোনো ডিভাইসের সাথে ডেটা বিনিময় করুন</translation>
 <translation id="2270666014403455717">'বেছে নিন' বিকল্পের জন্য সুইচ অ্যাসাইন করুন</translation>
+<translation id="2270668657177045040">কোনও সাইট ও তার সাবডোমেন দেখতে পারে যে, সেই সম্পর্কিত কোন কোন ওয়েব অ্যাপ্লিকেশন আপনার ডিভাইসে ইনস্টল করা হয়েছে।</translation>
 <translation id="2271452184061378400">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে</translation>
 <translation id="2271986192355138465">কীভাবে ওয়েব অ্যাপ ইনস্টল করতে হয় তা জানুন</translation>
 <translation id="2272430695183451567">কোনও সুইচ অ্যাসাইন করা হয়নি</translation>
@@ -5334,6 +5335,7 @@
 <translation id="4823193082697477185">স্থানীয় নেটওয়ার্কে শেয়ার করা ফাইল, ফোল্ডার বা ড্রাইভ অ্যাক্সেস করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ব্যবহারকারী এবং ডিভাইস সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="4824037980212326045">Linux-এর ব্যাক-আপ এবং রিস্টোর করা</translation>
+<translation id="4824263260587281352">'কী'-এর কম্বিনেশন পরিবর্তন করুন <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
 <translation id="4825462365587146530">নতুন ট্যাবে Chrome Root Store সম্পর্কে আরও জানুন।</translation>
 <translation id="4825532258163983651">'পাসকী' মুছে ফেলা যাচ্ছে না</translation>
@@ -7830,6 +7832,7 @@
 <translation id="6676212663108450937">আপনার ভয়েস ট্রেনিং করার সময় হেডফোন ব্যবহার করুন</translation>
 <translation id="6676291960742508499">আপনার ট্যাব, পৃষ্ঠার টাইটেল ও URL, Google-এর কাছে পাঠানো হয়েছে</translation>
 <translation id="667752334740867460">ওয়াই-ফাই সংক্রান্ত তথ্য রিসিভ করা হচ্ছে...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" />-এর জন্য <ph name="GESTURE" /> জেসচার অ্যাসাইন করা হয়েছে</translation>
 <translation id="6678604587151240716">বড় ঢেউ সমুদ্রে আছড়ে পড়ছে, তার ব্যাকগ্রাউন্ডে দূরে স্থলভূমি দেখা যাচ্ছে। অন্ধকার আকাশে দিগন্তের ওপারে হালকা কমলা রঙের আভা।</translation>
 <translation id="6678717876183468697">কোয়েরি URL</translation>
 <translation id="6680442031740878064">খালি জায়গা: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10031,6 +10034,7 @@
 <translation id="8261378640211443080">এই এক্সটেনশনটি <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-এ তালিকাভুক্ত নেই এবং হয়ত আপনাকে না জানিয়ে যোগ করা হয়েছে৷</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8261625296061301062">স্ক্যানার সফ্টওয়্যার ইনস্টল করা হয়েছে</translation>
+<translation id="8263149565724023141">সম্পর্কিত অ্যাপ্লিকেশন</translation>
 <translation id="8263228331881858381">পাসকী সেভ করা হয়েছে</translation>
 <translation id="8263336784344783289">এই গ্রুপের নাম দিন</translation>
 <translation id="8264024885325823677">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে।</translation>

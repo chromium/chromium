@@ -1801,6 +1801,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     <ph name="BEGIN_PARAGRAPH2" />Pasi të fillojë instalimi, nuk mund të anulohet.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Shkëmbe të dhëna me çdo pajisje në domenet: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Cakto çelësin për veprimin “Zgjidh”</translation>
+<translation id="2270668657177045040">Një sajt dhe nëndomenet e tij mund të shohin se çfarë aplikacionesh uebi të lidhura janë instaluar në pajisjen tënde.</translation>
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
 <translation id="2271986192355138465">Mëso se si të instalosh aplikacionet e uebit</translation>
 <translation id="2272430695183451567">0 çelësa të caktuar</translation>
@@ -5315,6 +5316,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4823193082697477185">Qasu te skedarët, dosjet ose disqet e ndara në një rrjet lokal. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Lexo dhe ndrysho cilësimet e përdoruesit dhe të pajisjes</translation>
 <translation id="4824037980212326045">Rezervimi dhe restaurimi i Linux</translation>
+<translation id="4824263260587281352">Ndrysho kombinimin e tastit <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">Të anulohet sinkronizimi?</translation>
 <translation id="4825462365587146530">Mëso më shumë rreth Chrome Root Store në një skedë të re.</translation>
 <translation id="4825532258163983651">Çelësi i kalimit nuk mund të fshihet</translation>
@@ -7805,6 +7807,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6676212663108450937">Konsidero përdorimin e kufjeve kur trajnon zërin</translation>
 <translation id="6676291960742508499">Skedat, titujt e faqeve dhe URL-të e tua i dërgohen Google</translation>
 <translation id="667752334740867460">Informacionet e Wi-Fi po merren...</translation>
+<translation id="6677527809400770913">U caktua gjesti "<ph name="GESTURE" />" për "<ph name="ACTION" />"</translation>
 <translation id="6678604587151240716">Dallgë të mëdha që përplasen në det, me tokë në sfondin e largët. Përtej horizontit dallohen nuanca të dritës portokalli, në një qiell ndryshe të errët dhe të zymtë.</translation>
 <translation id="6678717876183468697">URL-ja e pyetjes</translation>
 <translation id="6680442031740878064">Në dispozicion: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10004,6 +10007,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8261378640211443080">Kjo shtesë nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8261625296061301062">Softueri i skanerit u instalua</translation>
+<translation id="8263149565724023141">Aplikacionet e lidhura</translation>
 <translation id="8263228331881858381">Çelësi i kalimit u ruajt</translation>
 <translation id="8263336784344783289">Emërtoje këtë grup</translation>
 <translation id="8264024885325823677">Ky cilësim menaxhohet nga administratori yt.</translation>

@@ -442,6 +442,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2530896289327917474">Vklop ali izklop brskanja s kazalko</translation>
 <translation id="2531025035050312891">počasna naprava</translation>
 <translation id="2531107890083353124">Med vlečenjem zavihka pritisnite <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Ali poskušate uporabiti tipko Home? Uporabite</translation>
 <translation id="254900897760075745">Kopiranje izbrane vsebine v odložišče</translation>
 <translation id="2549711466868162843">Izboljšanje osvetlitve</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
@@ -560,6 +561,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2985148236010982088">Prikaz vseh aplikacij</translation>
 <translation id="2992272421330787632">Skrij vse predloge za predstavnost</translation>
 <translation id="2992327365391326550">Gumb naprave za mikrofon je izklopljen.</translation>
+<translation id="2993956882370897557">Ali poskušate uporabiti tipko End? Uporabite</translation>
 <translation id="3000461861112256445">Mono zvok</translation>
 <translation id="3001391739687111021">Urejanje velikosti zaslona</translation>
 <translation id="3009178788565917040">Izhod</translation>
@@ -612,6 +614,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vrača napravo <ph name="DEVICE_TYPE" /> na prejšnjo različico. Naprava se bo ponastavila in vaši podatki bodo izbrisani.</translation>
 <translation id="316798519864381606">Google Predstavitev</translation>
 <translation id="3171170659304083361">Nastavitve načinov vnosa</translation>
+<translation id="3174897399179348329">Ali poskušate uporabiti tipko Page Up? Uporabite</translation>
 <translation id="3176221688814061633">Chromebook ali naprava Bluetooth uporablja starejšo različico Bluetootha. Vklopite super ločljivost Bluetooth ali uporabite notranji mikrofon za boljšo kakovost zvoka.</translation>
 <translation id="3181441307743005334">Vnovičen zagon lahko traja nekaj časa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Vzpostavljena je povezava z eno napravo}one{Vzpostavljena je povezava z # napravo}two{Vzpostavljena je povezava z # napravama}few{Vzpostavljena je povezava s # napravami}other{Vzpostavljena je povezava s # napravami}}</translation>
@@ -1259,6 +1262,7 @@ Uporabite lahko tudi bližnjično tipko. Najprej označite besedilo in nato prit
 <translation id="5297704307811127955">Izklopljeno</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5302048478445481009">Jezik</translation>
+<translation id="5302531370473608800">Posodobite napravo <ph name="DEVICE_TYPE" />, če želite uporabljati YouTube Music</translation>
 <translation id="5303319262469238330">Še <ph name="PERCENTAGE" /> % baterije.
 Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</translation>
 <translation id="5308380583665731573">Povezovanje</translation>
@@ -1819,6 +1823,7 @@ Nova namestitev</translation>
 <translation id="7144942256906679589">Stanje baterije</translation>
 <translation id="7145639536026937076">Baterija je <ph name="PERCENTAGE" />-% napolnjena in se polni. Varčevanje z energijo baterije je vklopljeno.</translation>
 <translation id="7147587499155271409">Ni zgodovine brskanja</translation>
+<translation id="7147657298465433425">Če želite dostopati do tipk F, pritisnite tipko fn in tipke v zgornji vrstici</translation>
 <translation id="7149149900052329230">Upravljajte lokalne datoteke in datoteke v Googlu Drive v aplikaciji Datoteke.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1925,6 +1930,7 @@ Nova namestitev</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno uporablja vaš mikrofon.</translation>
 <translation id="7561982940498449837">Zapri meni</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
+<translation id="7568154670718626683">Ali poskušate uporabiti tipko za brisanje? Uporabite</translation>
 <translation id="7568790562536448087">Posodabljanje</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7569886975397378678">Opustitev nastavitve ogleda obvestil in aplikacij telefona</translation>
@@ -2127,6 +2133,7 @@ Nova namestitev</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Za vami je <ph name="FOCUSED_TIME" /> osredotočanja. Odprite hitre nastavitve, če se želite znova osredotočiti.</translation>
 <translation id="8203224998425013577">Prikaz več emodžijev in GIF-ov</translation>
 <translation id="8203795194971602413">Desni klik</translation>
+<translation id="8205469348819768313">Ali poskušate uporabiti tipko Page Down? Uporabite</translation>
 <translation id="8214996719228530800">Kanal Canary</translation>
 <translation id="8219451629189078428">Chromebook mora medtem ostati vklopljen in priklopljen na vir napajanja. Poskrbite, da so kabli polnilnika ali napajalnika do konca priklopljeni v Chromebook in električno vtičnico. Chromebooka ne izklopite.</translation>
 <translation id="8220076512072059941">Dodajanje: <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2319,6 +2326,7 @@ Nova namestitev</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Pomočnik Google ne podpira tega jezika.</translation>
 <translation id="8926951137623668982">Polica vedno skrita</translation>
+<translation id="8929566928381252430">Ali poskušate uporabiti tipko Caps Lock? Uporabite</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>

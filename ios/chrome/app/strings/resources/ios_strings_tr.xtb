@@ -115,6 +115,7 @@
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinmeyecek.</translation>
 <translation id="1506061864768559482">Arama motoru</translation>
 <translation id="1506063256525392513">Bu şekilde, fotoğraf çekip yükleyebilir, QR kodlarını tarayabilirsiniz</translation>
+<translation id="1508263560970797965">Gizli modda devam et</translation>
 <translation id="1509486075633541495">Web sitesinde oturum açın</translation>
 <translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
 <translation id="1513858653616922153">Şifreyi sil</translation>
@@ -742,6 +743,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4587589328781138893">Siteler</translation>
 <translation id="4592672037257622855">{count,plural, =1{Sayfa, okuma listenize eklendi}other{{count} sayfa, okuma listenize eklendi}}</translation>
 <translation id="459644946100970322">Fiyat uyarıları açılsın mı?</translation>
+<translation id="4597892826846980979">Sekme Bildirimleri Alın</translation>
 <translation id="4601095002996233687">Şüpheli indirme işlemleri için ayrıntılı taramalar.</translation>
 <translation id="4606247758155004938">Tarayıcınız, kuruluşunuz tarafından yönetilmektedir.</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> Takibini Bırak'ı Gizle</translation>
@@ -1201,6 +1203,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="6606914854592108404">Güvenlik kontrolü çalışıyor…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ve <ph name="THIRD_WEBSITE" /> şifreleri silinecek. Hesaplarınız silinmeyecek.</translation>
 <translation id="661266467055912436">Hem siz hem de web'deki herkes için güvenliği iyileştirir.</translation>
+<translation id="6612912757320004438">Sekme Bildirimlerine İzin Ver…</translation>
 <translation id="6617761071025228250">Metni temizle</translation>
 <translation id="6620279676667515405">İptal</translation>
 <translation id="6624219055418309072">Gizli modda engelle</translation>

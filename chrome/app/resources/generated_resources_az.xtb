@@ -1816,6 +1816,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     <ph name="BEGIN_PARAGRAPH2" />Quraşdırma başladıqdan sonra ləğv edilə bilməz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Bu domenlərdə istənilən cihazla datanı mübadilə edin: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">"Seçin" əməliyyatına keçirici təyin edin</translation>
+<translation id="2270668657177045040">Sayt və onun alt domenləri cihazınızda hansı əlaqəli veb-tətbiqlərin quraşdırıldığını görə bilər.</translation>
 <translation id="2271452184061378400">Tab qruplarınız burada yaddaşda saxlanılır</translation>
 <translation id="2271986192355138465">Veb-tətbiq quraşdırma qaydası haqqında</translation>
 <translation id="2272430695183451567">0 dəyişdirici təyin edilib</translation>
@@ -5355,6 +5356,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4823193082697477185">Lokal şəbəkədə paylaşılan fayl, qovluq və ya disklərə giriş. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">İstifadəçi və cihaz ayarlarını oxuyun və dəyişin</translation>
 <translation id="4824037980212326045">Linux yedəkləmə və bərpası</translation>
+<translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> düymə kombinasiyasını dəyişin</translation>
 <translation id="4824958205181053313">Sinxronizasiya ləğv edilsin?</translation>
 <translation id="4825462365587146530">Yeni tabda Chrome Root Store haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="4825532258163983651">Parolu silmək olmur</translation>
@@ -7861,6 +7863,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6676212663108450937">Səsinizi yazarkən qulaqlıqlardan istifadə etməyiniz tövsiyə edilir</translation>
 <translation id="6676291960742508499">Tablar, səhifə başlıqları və URL-lər Google-a göndərilir</translation>
 <translation id="667752334740867460">Wi-Fi məlumatı qəbul edilir...</translation>
+<translation id="6677527809400770913"><ph name="GESTURE" /> jesti <ph name="ACTION" /> əməliyyatına təyin olundu</translation>
 <translation id="6678604587151240716">Uzaq fonda quru ərazi görünməklə dənizdə sıçrayan böyük dalğalar. Narıncı işığın parıltıları üfüqdən kənarda, başqa bir qaranlıq əhval-ruhiyyəli səmadadır.</translation>
 <translation id="6678717876183468697">Sorğu linki</translation>
 <translation id="6680442031740878064">Əlçatandır: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10078,6 +10081,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8261378640211443080">Bu artırma <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> siyahısında yoxdur və xəbəriniz olmadan əlavə edilmiş ola bilər.</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8261625296061301062">Skaner proqram təminatı quraşdırıldı</translation>
+<translation id="8263149565724023141">Əlaqəli tətbiqlər</translation>
 <translation id="8263228331881858381">Giriş açarı saxlanıldı</translation>
 <translation id="8263336784344783289">Bu Qrupu Adlandırın</translation>
 <translation id="8264024885325823677">Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>

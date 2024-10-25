@@ -972,6 +972,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4356872429719185452">Hotspot axborotini ochish. Hotspot yoqilmoqda.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Yozib olinmoqda…</translation>
 <translation id="4371348193907997655">Translatsiya sozlamalari</translation>
+<translation id="4371834685492830207">PIN kod ruxsat etilgan belgilardan iborat boʻlsin</translation>
 <translation id="4375482231364171368">Manzillar qatoridan qidirish</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal darajasi: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="4378551569595875038">Ulanmoqda...</translation>
@@ -1557,6 +1558,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6232416233079464213"><ph name="SESSION_NAME" />dan</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hozir kamera va mikrofondan foydalanmoqda</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Parol ruxsat etilgan belgilardan iborat boʻlsin</translation>
 <translation id="6240603910551255087">Yuqori tugma</translation>
 <translation id="6240821072888636753">Har safar soʻralsin</translation>
 <translation id="6247728804802644171">Bildirishnomalarni ochish</translation>

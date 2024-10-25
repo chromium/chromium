@@ -1803,6 +1803,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
     <ph name="BEGIN_PARAGRAPH2" />Instalazio-prozesua hasiz gero, ezin da bertan behera utzi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Trukatu datuak domeinu hauetako edozein gailurekin: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Esleitu erabilerraztasun-etengailu bat "Hautatu" ekintzari</translation>
+<translation id="2270668657177045040">Webgune batek eta bere azpidomeinuek zure gailuan instalatutako sareko aplikazio erlazionatuak ikus ditzakete.</translation>
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2271986192355138465">Lortu sareko aplikazioak instalatzeko argibideak</translation>
 <translation id="2272430695183451567">Ez da esleitu erabilerraztasun-etengailurik</translation>
@@ -5318,6 +5319,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4823193082697477185">Atzitu fitxategi, karpeta edo unitate partekatuak tokiko sare batean. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Irakurri eta aldatu erabiltzailearen eta gailuaren ezarpenak</translation>
 <translation id="4824037980212326045">Linux-en babeskopiak eta leheneratzea</translation>
+<translation id="4824263260587281352">Aldatu <ph name="KEY_COMBINATION" /> tekla-konbinazioa</translation>
 <translation id="4824958205181053313">Sinkronizazioa bertan behera utzi nahi duzu?</translation>
 <translation id="4825462365587146530">Lortu informazio gehiago Chrome Root Store-ri buruz beste fitxa batean.</translation>
 <translation id="4825532258163983651">Ezin da ezabatu sarbide-gakoa</translation>
@@ -7806,6 +7808,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6676212663108450937">Erabili entzungailuak ahotsa entrenatzen duzun bitartean</translation>
 <translation id="6676291960742508499">Fitxak, orrien izenak eta URLak Google-ri bidaltzen zaizkio.</translation>
 <translation id="667752334740867460">Wifiari buruzko informazioa jasotzen…</translation>
+<translation id="6677527809400770913">Esleitu zaio <ph name="GESTURE" /> keinua <ph name="ACTION" /> ekintzari</translation>
 <translation id="6678604587151240716">Itsasoko olatu handiak zipriztintzen, atzean, urrunean, lurra ikusten delarik. Zeruertzean argi-izpi laranja batzuk ikusten dira, zeru ilun eta goibel batean.</translation>
 <translation id="6678717876183468697">Kontsultaren URLa</translation>
 <translation id="6680442031740878064">Libre: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10005,6 +10008,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8261378640211443080">Luzapen hau ez dago <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan, eta agian zuk jakin gabe gehitu da.</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8261625296061301062">Instalatu da eskanerraren softwarea</translation>
+<translation id="8263149565724023141">Erlazionatutako aplikazioak</translation>
 <translation id="8263228331881858381">Gorde da sarbide-gakoa</translation>
 <translation id="8263336784344783289">Eman izena taldeari</translation>
 <translation id="8264024885325823677">Administratzaileak ezarpen hau kudeatzen du.</translation>

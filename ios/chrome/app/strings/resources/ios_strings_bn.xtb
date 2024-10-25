@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">আপনার <ph name="WEBSITE" /> অ্যাকাউন্ট মুছে ফেলা হবে না</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1506063256525392513">এর সাহায্যে আপনি ফটো তুলতে ও আপলোড করতে, এমনকি QR কোড স্ক্যানও করতে পারবেন</translation>
+<translation id="1508263560970797965">ছদ্মবেশী মোড ব্যবহার করে চালিয়ে যান</translation>
 <translation id="1509486075633541495">ওয়েবসাইটে সাইন-ইন করুন</translation>
 <translation id="1509960214886564027">একাধিক সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="1513858653616922153">পাসওয়ার্ড মুছুন</translation>
@@ -742,6 +743,7 @@
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4592672037257622855">{count,plural, =1{আপনার পড়ার তালিকায় পৃষ্ঠা যোগ করা হয়েছে}one{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা যোগ করা হয়েছে}other{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা যোগ করা হয়েছে}}</translation>
 <translation id="459644946100970322">ভাড়া বিষয়ক সতর্কতা চালু করবেন?</translation>
+<translation id="4597892826846980979">ট্যাব সম্পর্কিত বিজ্ঞপ্তি পান</translation>
 <translation id="4601095002996233687">এই সুবিধা সন্দেহজনক ডাউনলোড যাচাই করতে ভালভাবে স্ক্যান করে।</translation>
 <translation id="4606247758155004938">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে।</translation>
 <translation id="4611811151908969241">'<ph name="DOMAIN_NAME" /> আনফলো করুন' বিকল্পটি লুকান</translation>
@@ -1202,6 +1204,7 @@
 <translation id="6606914854592108404">নিরাপত্তা সংক্রান্ত পরীক্ষা চলছে…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> এবং <ph name="THIRD_WEBSITE" />-এর পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
+<translation id="6612912757320004438">ট্যাব সম্পর্কিত বিজ্ঞপ্তির অনুমতি দিন…</translation>
 <translation id="6617761071025228250">টেক্সট মুছুন</translation>
 <translation id="6620279676667515405">বাতিল করুন</translation>
 <translation id="6624219055418309072">ছদ্মবেশী মোডে ব্লক করুন</translation>

@@ -1805,6 +1805,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     <ph name="BEGIN_PARAGRAPH2" />Oʻrnatish boshlanganidan keyin uni bekor qilish imkonsiz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Bu domenlardagi har qanday qurilma bilan ma’lumot almashish: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“Tanlash” uchun kalitni tayinlash</translation>
+<translation id="2270668657177045040">Sayt va uning quyi domenlari qurilmada mavjud tegishli veb-ilovalarni aniqlashi mumkin.</translation>
 <translation id="2271452184061378400">Varaqlar guruhi shu yerda saqlanadi</translation>
 <translation id="2271986192355138465">Veb ilovalarni oʻrnatish haqida batafsil</translation>
 <translation id="2272430695183451567">hech qaysi tugma belgilanmagan</translation>
@@ -5320,6 +5321,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4823193082697477185">Mahalliy tarmoqda ulashilgan fayllar, jildlar yoki disklarga ruxsat. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Foydalanuvchilar va qurilmalar sozlamalarini ko‘rish va o‘zgartirish</translation>
 <translation id="4824037980212326045">Linux tizimini zaxiralash va tiklash</translation>
+<translation id="4824263260587281352">“<ph name="KEY_COMBINATION" />” tugmalar birikmasini oʻzgartirish</translation>
 <translation id="4824958205181053313">Sinxronizatsiya bekor qilinsinmi?</translation>
 <translation id="4825462365587146530">Chrome Root Store haqida batafsil (yangi varaqda ochiladi).</translation>
 <translation id="4825532258163983651">Kod oʻchmadi</translation>
@@ -7812,6 +7814,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6676212663108450937">Ovoz namunalaringizni sozlashda quloqliklar ishlatish tavsiya etiladi</translation>
 <translation id="6676291960742508499">Varaqlar, sahifa sarlavhalari va URL manzillar Googlega yuboriladi</translation>
 <translation id="667752334740867460">Wi-Fi axboroti qabul qilinmoqda...</translation>
+<translation id="6677527809400770913">“<ph name="ACTION" />” amaliga “<ph name="GESTURE" />” ishorasi tayinlandi</translation>
 <translation id="6678604587151240716">Masofaviy fonda yer koʻringan harakatdagi yirik dengiz toʻlqinlari. Ufq ortidagi gʻamgin tungi osmon fonida qizgʻish nur ishoralari.</translation>
 <translation id="6678717876183468697">So‘rovning URL manzili</translation>
 <translation id="6680442031740878064">Bo‘sh: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10011,6 +10014,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" />‘da bu kengaytma haqida ma’lumotlar yo‘q, kengaytma ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin.</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8261625296061301062">Skaner dasturi oʻrnatildi</translation>
+<translation id="8263149565724023141">Tegishli ilovalar</translation>
 <translation id="8263228331881858381">Kalit saqlandi</translation>
 <translation id="8263336784344783289">Bu guruhni nomlang</translation>
 <translation id="8264024885325823677">Bu sozlama administrator tomonidan boshqariladi.</translation>

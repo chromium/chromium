@@ -115,6 +115,7 @@
 <translation id="1498283581832036924">Llogaria jote e <ph name="WEBSITE" /> nuk do të fshihet.</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
 <translation id="1506063256525392513">Kjo të lejon të bësh dhe të ngarkosh fotografi, si dhe të skanosh kode QR</translation>
+<translation id="1508263560970797965">Vazhdo në "I fshehtë"</translation>
 <translation id="1509486075633541495">Identifikohu në sajtin e uebit</translation>
 <translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
@@ -742,6 +743,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4592672037257622855">{count,plural, =1{Faqja u shtua në listën tënde të leximit}other{{count} faqe u shtuan në listën tënde të leximit}}</translation>
 <translation id="459644946100970322">Të aktivizohen njoftimet për çmimet?</translation>
+<translation id="4597892826846980979">Merr njoftime të skedave</translation>
 <translation id="4601095002996233687">Skanime të thella për shkarkime të dyshimta.</translation>
 <translation id="4606247758155004938">Shfletuesi yt menaxhohet nga organizata jote.</translation>
 <translation id="4611811151908969241">Fshih "Anulo ndjekjen e <ph name="DOMAIN_NAME" />"</translation>
@@ -1201,6 +1203,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6606914854592108404">Po ekzekutohet "Kontrolli i sigurisë"…</translation>
 <translation id="6609890790934458793">Fjalëkalimet për <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> dhe <ph name="THIRD_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
+<translation id="6612912757320004438">Lejo njoftimet e skedave…</translation>
 <translation id="6617761071025228250">Pastro tekstin</translation>
 <translation id="6620279676667515405">Anulo</translation>
 <translation id="6624219055418309072">Blloko në modalitetin "i fshehtë"</translation>

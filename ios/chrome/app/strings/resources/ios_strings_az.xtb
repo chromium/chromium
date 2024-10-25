@@ -116,6 +116,7 @@
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinməyəcək.</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
 <translation id="1506063256525392513">Bu, foto çəkməyə və yükləməyə, həmçinin QR kodları skan etməyə imkan verir</translation>
+<translation id="1508263560970797965">Anonim rejimdə davam edin</translation>
 <translation id="1509486075633541495">Veb sayta daxil olun</translation>
 <translation id="1509960214886564027">Bir çox saytdakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="1513858653616922153">Parolu silin</translation>
@@ -750,6 +751,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4592672037257622855">{count,plural, =1{Səhifə oxu siyahısına əlavə edildi}other{{count} səhifə oxu siyahısına əlavə edildi}}</translation>
 <translation id="459644946100970322">Qiymət xəbərdarlıqları aktiv edilsin?</translation>
+<translation id="4597892826846980979">Tab bildirişlərini əldə edin</translation>
 <translation id="4601095002996233687">Şübhəli endirmələr üçün hərtərəfli skanlama.</translation>
 <translation id="4606247758155004938">Brauzeriniz təşkilatınız tərəfindən idarə edilir.</translation>
 <translation id="4611811151908969241">"<ph name="DOMAIN_NAME" /> saytını izləməyin" seçimini gizlədin</translation>
@@ -1213,6 +1215,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6606914854592108404">Təhlükəsizlik yoxlanışı icra olunur…</translation>
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> və <ph name="THIRD_WEBSITE" /> üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="661266467055912436">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır.</translation>
+<translation id="6612912757320004438">Tab bildirişlərinə icazə verin…</translation>
 <translation id="6617761071025228250">Mətni silin</translation>
 <translation id="6620279676667515405">Ləğv edin</translation>
 <translation id="6624219055418309072">Anonim rejimdə bloklayın</translation>

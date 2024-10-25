@@ -972,6 +972,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4356872429719185452">Zobrazit podrobnosti o hotspotu. Probíhá zapínání hotspotu.</translation>
 <translation id="4364101114148522660">Zaznamenávání (<ph name="DURATION" />)</translation>
 <translation id="4371348193907997655">Nastavení odesílání</translation>
+<translation id="4371834685492830207">PIN smí obsahovat jen platné znaky</translation>
 <translation id="4375482231364171368">Hledat v adresním řádku</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Připojování...</translation>
@@ -1557,6 +1558,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6232416233079464213">Zdroj: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Aplikace <ph name="APP_NAME" /> používá vaši kameru a mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Heslo smí obsahovat jen platné znaky</translation>
 <translation id="6240603910551255087">Horní tlačítko</translation>
 <translation id="6240821072888636753">Pokaždé se zeptat</translation>
 <translation id="6247728804802644171">Otevřít oznámení</translation>

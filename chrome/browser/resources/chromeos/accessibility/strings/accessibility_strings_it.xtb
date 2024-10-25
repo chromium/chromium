@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="100421257800558142">Premi il tasto Freccia destra</translation>
 <translation id="100506692671054486">nessun comando precedente</translation>
 <translation id="1009046985747440431">Premi la freccia su o giù per spostarti e INVIO per attivare</translation>
 <translation id="1011903154582639569">Trova un tasto, poi solleva il dito per digitarlo</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Pulsante di attivazione o disattivazione</translation>
 <translation id="1299774449519412690">Azzurro cielo chiaro</translation>
 <translation id="1303806948938513162">Tocca con quattro dita per aprire i menu di ChromeVox</translation>
+<translation id="1304162325618937178">Premi la barra spaziatrice</translation>
 <translation id="1313373992684326101">Passa alla sezione precedente. Alcuni esempi includono la barra di stato e Avvio app.</translation>
 <translation id="1315077335264761176">Tutorial sul tocco</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, pulsante di opzione di una voce di menu non selezionato</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Grano</translation>
 <translation id="1618597272655350600">Fornisce una descrizione completa della posizione corrente</translation>
 <translation id="1627222324347828322">Bianco gesso</translation>
+<translation id="1632810692616643246">Attiva o disattiva la modalità di scorrimento</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{simbolo di maggiore}other{# simboli di maggiore}}</translation>
 <translation id="1653266918374749391">Intestazione livello 3 precedente</translation>
 <translation id="1657616855184033958">Mostra i filtri del flusso di eventi</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Nessun controllo precedente</translation>
 <translation id="2045606329038304310">Controllo campo modulo</translation>
 <translation id="2063539687800151747">Epigrafe</translation>
+<translation id="2067158561093481039">Esegui una combinazione di tasti personalizzata</translation>
 <translation id="2086961585857038472">Parola successiva</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">it</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Marrone sella</translation>
 <translation id="2199994615414171367">Espressione matematica precedente</translation>
 <translation id="2203046366315513658">Riduci il valore</translation>
+<translation id="2206580811360135054">Mostra o nascondi la panoramica delle finestre</translation>
 <translation id="2216790501338699346">URL link: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Sposta indietro di un carattere</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
+<translation id="2239819015858077439">Premi il tasto Freccia giù</translation>
 <translation id="2243633977138166243">Premi la Freccia sinistra o destra per spostarti e Invio per attivare</translation>
 <translation id="224426591676115802">Nessuna voce disponibile per la lingua seguente: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Interruzione della modalità di apprendimento</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Rosso indiano</translation>
 <translation id="4432896207833262240">Contenuti contrassegnati</translation>
 <translation id="4437615272777527928">Digita il testo da cercare nei menu. Usa i tasti Freccia su e giù per spostarti tra i risultati. Usa i tasti Freccia sinistra e destra per regolare il cursore di testo e per spostarti tra i menu.</translation>
+<translation id="4441677939526091190">Premi il tasto Freccia su</translation>
 <translation id="4453530046591759283">Per passare ad altre parti dello schermo, come le barre degli strumenti o la barra delle applicazioni, premi Ctrl + F1. F1 è il primo tasto a destra del tasto Esc.</translation>
 <translation id="4457472090507035117">Seleziona la voce corrente:</translation>
 <translation id="4476183483923481720">nuova riga</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Utilizzare le funzioni di accessibilità touch screen del Chromebook</translation>
 <translation id="5655682562155942719">Comandi di spostamento</translation>
 <translation id="56637627897541303">Area di testo</translation>
+<translation id="5666746275818170484">Premi il tasto Freccia sinistra</translation>
 <translation id="5669637233317991674">Premi il tasto per la ricerca + Freccia destra oppure il tasto per la ricerca + Freccia sinistra per navigare in questa lezione</translation>
 <translation id="5677240841070992068">Posizione corrente</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Pulsante popup</translation>
 <translation id="7167657087543110">eco caratteri</translation>
 <translation id="7173102181852295013">Blu notte</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Espanso</translation>
 <translation id="7209751026933045237">Nessun cursore successivo</translation>
 <translation id="7218782500591078391">Ocra dorato</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Regione</translation>
 <translation id="8382679411218029383">Completamento automatico incorporato ed elenco</translation>
 <translation id="8394908167088220973">Play/Pausa contenuti multimediali</translation>
+<translation id="8409502156784390079">Modalità di scorrimento attiva</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428603554127842284">livello <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8989104346085848538">Per interrompere qualsiasi lettura di ChromeVox, premi il tasto Ctrl.</translation>
 <translation id="9014206344398081366">Tutorial di ChromeVox</translation>
+<translation id="9034592733577768445">Controlli con il volto in pausa</translation>
 <translation id="9040132695316389094">Intestazione 1</translation>
 <translation id="9061884144798498064">Seleziona una tabella braille a otto punti:</translation>
 <translation id="9063946545000394379">passa al carattere precedente</translation>

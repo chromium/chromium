@@ -1829,6 +1829,7 @@
     <ph name="BEGIN_PARAGRAPH2" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">डोमेनमध्ये कोणत्याही डिव्हाइससह डेटा अदलाबदल करा: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“निवडा” साठी स्विच असाइन करा</translation>
+<translation id="2270668657177045040">तुमच्या डिव्हाइसवर कोणती संबंधित वेब ॲप्लिकेशन इंस्टॉल केली आहेत हे साइट आणि तिचे सबडोमेन पाहू शकतात.</translation>
 <translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
 <translation id="2271986192355138465">वेब अ‍ॅप कशी इंस्टॉल करायची ते जाणून घ्या</translation>
 <translation id="2272430695183451567">शून्य स्विच नियुक्त केले</translation>
@@ -5368,6 +5369,7 @@
 <translation id="4823193082697477185">शेअर केलेल्या फाइल, फोल्डर किंवा ड्राइव्‍ह स्थानिक नेटवर्कवर अ‍ॅक्सेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">वापरकर्ता आणि डिव्हाइस सेटिंग्ज वाचा आणि बदला</translation>
 <translation id="4824037980212326045">Linux बॅकअप आणि रिस्टोअर</translation>
+<translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> हे की काँबिनेशन बदला</translation>
 <translation id="4824958205181053313">सिंक रद्द करायचे?</translation>
 <translation id="4825462365587146530">नवीन टॅबमध्ये Chrome Root Store बद्दल अधिक जाणून घ्या.</translation>
 <translation id="4825532258163983651">पासकी हटवू शकत नाही</translation>
@@ -7879,6 +7881,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6676212663108450937">तुमच्या व्हॉइसला प्रशिक्षित करत असताना कृपया हेडफोन वापरणे विचारात घ्या</translation>
 <translation id="6676291960742508499">तुमचे टॅब, पेजची शीर्षके आणि URLs Google ला पाठवल्या जातात</translation>
 <translation id="667752334740867460">वाय-फायची माहिती मिळवत आहे...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" /> साठी <ph name="GESTURE" /> हे जेश्चर असाइन केले आहे</translation>
 <translation id="6678604587151240716">बॅकग्राउंडमध्ये काही अंतरावर जमीन असलेल्या समुद्राध्ये उसळलेल्या मोठ्या लाटा. अन्यथा गडद मूडी आकाशामध्ये क्षितिजाच्या पलीकडे नारिंगी रंगाच्या छटा.</translation>
 <translation id="6678717876183468697">क्वेरी URL</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10096,6 +10099,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये हे एक्स्टेंशन सूचीबद्ध केले नाही आणि कदाचित तुमच्या माहिती शिवाय जोडले गेले आहे.</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8261625296061301062">स्कॅनर सॉफ्टवेअर इंस्टॉल केले</translation>
+<translation id="8263149565724023141">संबंधित अ‍ॅप्लिकेशन</translation>
 <translation id="8263228331881858381">पासकी सेव्ह केली आहे</translation>
 <translation id="8263336784344783289">या गटाला नाव द्या</translation>
 <translation id="8264024885325823677">हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>

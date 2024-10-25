@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">Rileva lingua</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puoi cambiare per vedere le password di un altro profilo Chrome</translation>
+<translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
 <translation id="1363996462118479832">Impossibile sincronizzare i dati in ChromeOS a causa di un errore durante l'accesso.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Su questo computer è già installata una versione più recente di Google Chrome. Se il software non funziona, disinstalla Google Chrome e riprova.</translation>
@@ -49,6 +50,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chrome prenda in considerazione.</translation>
 <translation id="1628000112320670027">Ricevi assistenza per Chrome</translation>
 <translation id="1640672724030957280">Download in corso...</translation>
+<translation id="1651617469580841801">Quando utilizzi Google Lens, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Informazioni su ChromeOS Flex</translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -192,6 +194,7 @@
 <translation id="3261565993776444564">Prova un nuovo colore per personalizzare il browser</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
+<translation id="3289358082435924389">In un secondo momento, Chrome ti chiederà se vuoi usare le informazioni salvate per compilare automaticamente i moduli</translation>
 <translation id="3292333338048274092">Dovrai quindi riavviare Chrome.</translation>
 <translation id="3360895254066713204">Supporto Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
@@ -501,6 +504,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7352881504289275361">La funzionalità Navigazione sicura avanzata offre la più efficace protezione online di Chrome per garantire la tua sicurezza mentre navighi</translation>
+<translation id="7386878009611068389">Per navigare online in modo più sicuro con le scelte del tuo genitore, passa al tuo profilo Chrome dove hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7394745511930161845">Crea il tuo tema con l'AI per dare al tuo browser un aspetto unico</translation>
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7412494426921990001">Fai clic sul menu Chrome</translation>
@@ -514,6 +518,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7477130805345743099">Chrome ti avvisa prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="749228101751499733">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. <ph name="SHORTCUT" /> può modificare le impostazioni dei servizi Google.</translation>
+<translation id="7512187482580860950">Chrome può comprendere più tipi di informazioni e compilare automaticamente i moduli più velocemente. Scopri di più sulla <ph name="BEGIN_LINK" />compilazione automatica di Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Servizio di Google Updater</translation>
 <translation id="7515191208480168435">Puoi bloccare Google Lens per un facile accesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -556,6 +561,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7886087451482920026">Seleziona testo con Google Lens</translation>
 <translation id="7890208801193284374">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze.</translation>
 <translation id="7896673875602241923">Qualcuno ha già eseguito l'accesso a Chrome su questo computer come <ph name="ACCOUNT_EMAIL_LAST" />. Crea un nuovo utente Chrome per tenere separate le tue informazioni.</translation>
+<translation id="7917470403848199310">Chrome ti chiederà se vuoi salvare le informazioni del modulo, ad esempio la data di nascita, l'età e il numero del passaporto</translation>
 <translation id="7917876797003313048">Puoi gestire gli Account Google a cui hai eseguito l'accesso. I tuoi Account Google vengono usati per il browser Chrome, il Play Store, Gmail e altro ancora. Se vuoi aggiungere un account per qualcun altro, come un membro del gruppo Famiglia, aggiungi invece una nuova persona a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ha bloccato questo download perché il file è ingannevole e potrebbe apportare modifiche impreviste al tuo dispositivo</translation>
 <translation id="7947083960301164556">Guarda le novità</translation>
@@ -612,6 +618,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8571790202382503603">Con i profili Chrome puoi separare tutti i tuoi contenuti di Chrome. In questo modo potrai alternare lavoro e divertimento con più facilità.</translation>
+<translation id="8601359445272098721">Novità. Puoi tradurre sia testo che immagini sullo schermo selezionando il pulsante "Traduzione schermata"</translation>
 <translation id="8614913330719544658">Google Chrome non risponde. Riavviarlo ora?</translation>
 <translation id="861702415419836452">Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verrà riavviato tra 1 minuto}other{Chrome verrà riavviato tra # minuti}}</translation>

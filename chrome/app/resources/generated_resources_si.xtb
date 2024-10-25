@@ -1805,6 +1805,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ස්ථාපනය ආරම්භ වූ පසු එය අවලංගු කළ නොහැකිය.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">මෙම වසම තුළ ඇති ඕනෑම උපාංගයක් සමඟ දත්ත හුවමාරු කරගන්න: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“තෝරන්න” සඳහා ස්විචයක් පවරන්න</translation>
+<translation id="2270668657177045040">අඩවියකට සහ එහි උප වසම්වලට ඔබේ උපාංගයෙහි ස්ථාපනය කර ඇති අදාළ වෙබ් යෙදුම් මොනවා දැයි බැලිය හැක.</translation>
 <translation id="2271452184061378400">ඔබේ පටිති සමූහය මෙහි සුරකිනු ලැබේ</translation>
 <translation id="2271986192355138465">වෙබ් යෙදුම් ස්ථාපනය කරන ආකාරය දැන ගන්න</translation>
 <translation id="2272430695183451567">ස්විච 0ක් පවරන ලදී</translation>
@@ -5321,6 +5322,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4823193082697477185">ස්ථානික ජාලයක බෙදා ගත් ගොනු, ෆෝල්ඩර, හෝ ධාවක වෙත ප්‍රවේශ වන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">පරිශීලක සහ උපාංගය සැකසීම් කියවා වෙනස් කරන්න</translation>
 <translation id="4824037980212326045">ලිනක්ස් උපස්ථය සහ ප්‍රතිසාධනය</translation>
+<translation id="4824263260587281352">යතුරු සංයෝජනය වෙනස් කරන්න <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">සමමුහූර්තය අවලංගු කරන්නේද?</translation>
 <translation id="4825462365587146530">නව පටිත්තකින් Chrome මූල ගබඩාව ගැන තව දැන ගන්න.</translation>
 <translation id="4825532258163983651">මුරයතුර මකා දැමිය නොහැක</translation>
@@ -7814,6 +7816,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6676212663108450937">ඔබේ හඬ පුරුදු කරන විට හෙඩ්ෆෝන් භාවිත කිරීම සලකා බලන්න</translation>
 <translation id="6676291960742508499">ඔබේ පටිති, පිටු මාතෘකා සහ URL Google වෙත යවනු ලැබේ</translation>
 <translation id="667752334740867460">Wi-Fi තතු ලබමින්...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" /> වෙත <ph name="GESTURE" /> අභිනය පවරන ලදි</translation>
 <translation id="6678604587151240716">ඈත පසුබිමේ ගොඩබිම සමඟ මුහුදේ විශාල රළ ඉසියි. තැඹිලි ආලෝකයේ ඉඟි ක්ෂිතිජයෙන් ඔබ්බට, වෙනත් ආකාරයකින් අඳුරු මනෝභාවයක් සහිත අහසක ඇත.</translation>
 <translation id="6678717876183468697">විමසුම් URL</translation>
 <translation id="6680442031740878064">ලබා ගත හැකි: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10013,6 +10016,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8261378640211443080">දිගුව <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> තුළ ලියාපදිංචි කර නැති අතර එය ඔබට නොදැනී එක් කර තිබේ.</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8261625296061301062">ස්කෑනර් මෘදුකාංගය ස්ථාපනය කර ඇත</translation>
+<translation id="8263149565724023141">අදාළ යෙදුම්</translation>
 <translation id="8263228331881858381">මුරයතුර සුරකින ලදි</translation>
 <translation id="8263336784344783289">මෙම සමූහය නම් කරන්න</translation>
 <translation id="8264024885325823677">මෙම සැකසුම ඔබේ පරිපාලකයා විසින් කළමනා කෙරේ.</translation>

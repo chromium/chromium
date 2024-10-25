@@ -1801,6 +1801,7 @@
     <ph name="BEGIN_PARAGRAPH2" />એકવાર ઇન્સ્ટૉલેશન શરૂ થયા પછી, તેને રદ કરી શકાશે નહીં.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">આ ડોમેન્સમાં કોઈપણ ઉપકરણ સાથે ડેટા વિનિમય કરો: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“પસંદ કરો” માટે સ્વિચની સોંપણી કરો</translation>
+<translation id="2270668657177045040">કોઈ સાઇટ અને તેના સબડોમેન જોઈ શકે છે કે તમારા ડિવાઇસ પર કઈ સંબંધિત વેબ ઍપ્લિકેશનો ઇન્સ્ટૉલ કરેલી છે.</translation>
 <translation id="2271452184061378400">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે</translation>
 <translation id="2271986192355138465">વેબ ઍપ કેવી રીતે ઇન્સ્ટોલ કરવી તે જાણો</translation>
 <translation id="2272430695183451567">એકેય સ્વિચની સોંપણી કરી નથી</translation>
@@ -5318,6 +5319,7 @@
 <translation id="4823193082697477185">કોઈ સ્થાનિક નેટવર્ક પરની શેર કરેલી ફાઇલો, ફોલ્ડરો કે ડ્રાઇવ ઍક્સેસ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">વપરાશકર્તા અને ડિવાઇસ સેટિંગ વાંચો અને બદલો</translation>
 <translation id="4824037980212326045">Linux બૅકઅપ લો અને રિસ્ટોર કરો</translation>
+<translation id="4824263260587281352">કી કૉમ્બિનેશન બદલો <ph name="KEY_COMBINATION" /></translation>
 <translation id="4824958205181053313">સિંક કરવાનું રદ કરીએ?</translation>
 <translation id="4825462365587146530">નવા ટૅબમાં Chrome Root Store વિશે વધુ જાણો.</translation>
 <translation id="4825532258163983651">પાસકી ડિલીટ કરી શકાતી નથી</translation>
@@ -7815,6 +7817,7 @@ USB ડિવાઇસ</translation>
 <translation id="6676212663108450937">તમારા અવાજને તાલીમ આપતી વખતે કૃપા કરીને હૅડફોનનો ઉપયોગ કરવાનું વિચારો</translation>
 <translation id="6676291960742508499">તમારા ટૅબ, પેજના શીર્ષકો અને URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="667752334740867460">વાઇ-ફાઇની માહિતી મેળવી રહ્યાં છીએ...</translation>
+<translation id="6677527809400770913"><ph name="ACTION" /> માટે <ph name="GESTURE" /> સંકેતની સોંપણી કરવામાં આવી</translation>
 <translation id="6678604587151240716">દૂર બૅકગ્રાઉન્ડમાં દેખાતા સમુદ્ર કિનારે મોટા મોટા ઉછળતા મોજાવાળું કોઈ દૃશ્ય. વિષાદી મૂડ ધરાવતા ઘેરા આકાશમાં ક્ષિતિજને પેલે પાર નારંગી રંગનો ઉજાસ રેલાવતું દૃશ્ય.</translation>
 <translation id="6678717876183468697">ક્વેરી URL</translation>
 <translation id="6680442031740878064">ઉપલબ્ધ: <ph name="AVAILABLE_SPACE" /></translation>
@@ -10011,6 +10014,7 @@ USB ડિવાઇસ</translation>
 <translation id="8261378640211443080">આ એક્સટેન્શન <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8261625296061301062">સ્કૅનર સૉફ્ટવેર ઇન્સ્ટૉલ કર્યું</translation>
+<translation id="8263149565724023141">સંબંધિત ઍપ્લિકેશન</translation>
 <translation id="8263228331881858381">પાસકી સાચવી</translation>
 <translation id="8263336784344783289">આ ગ્રૂપને નામ આપો</translation>
 <translation id="8264024885325823677">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>

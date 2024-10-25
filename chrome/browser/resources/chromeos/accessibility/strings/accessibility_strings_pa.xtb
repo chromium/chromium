@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="100421257800558142">ਸੱਜਾ ਤੀਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="100506692671054486">ਕੋਈ ਪਿਛਲਾ ਆਦੇਸ਼ ਨਹੀਂ</translation>
 <translation id="1009046985747440431">ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਉੱਪਰ ਜਾਂ ਹੇਠਾਂ ਵੱਲ ਦੀ ਤੀਰ ਕੁੰਜੀ ਦਬਾਓ; ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="1011903154582639569">ਕਿਸੇ ਕੁੰਜੀ 'ਤੇ ਜਾਓ ਫਿਰ ਟਾਈਪ ਕਰਨ ਲਈ ਉਂਗਲ ਚੁੱਕੋ</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">ਟੌਗਲ ਬਟਨ</translation>
 <translation id="1299774449519412690">ਹਲਕਾ ਅਸਮਾਨੀ</translation>
 <translation id="1303806948938513162">ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਲਈ 4 ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
+<translation id="1304162325618937178">ਸਪੇਸ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="1313373992684326101">ਪਿਛਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ। ਉਦਾਹਰਨਾਂ ਵਿੱਚ ਸਥਿਤੀ ਟ੍ਰੇ ਅਤੇ ਲਾਂਚਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="1315077335264761176">ਸਪਰਸ਼ ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ਮੀਨੂ ਆਈਟਮ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਅਣਚੁਣਿਆ ਗਿਆ</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">ਕਣਕਵੰਨਾ</translation>
 <translation id="1618597272655350600">ਵਰਤਮਾਨ ਪੋਜੀਸ਼ਨ ਦੇ ਇੱਕ ਪੂਰੇ ਵਰਣਨ ਦੀ ਘੋਸ਼ਣਾ ਕਰਦਾ ਹੈ</translation>
 <translation id="1627222324347828322">ਚਮਕਦਾਰ ਸਫ਼ੈਦ</translation>
+<translation id="1632810692616643246">ਸਕ੍ਰੋਲ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ ਜਾਂ ਉਸ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ਤੋਂ ਵੱਧ}one{# ਤੋਂ ਵੱਧ ਚਿੰਨ੍ਹ}other{# ਤੋਂ ਵੱਧ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="1653266918374749391">ਪਿਛਲਾ ਪੱਧਰ 3 ਸਿਰਲੇਖ</translation>
 <translation id="1657616855184033958">ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਫਿਲਟਰ ਦਿਖਾਓ</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">ਕੋਈ ਪਿਛਲਾ ਕੰਟਰੋਲ ਨਹੀਂ</translation>
 <translation id="2045606329038304310">ਫ਼ਾਰਮ ਖੇਤਰ ਕੰਟਰੋਲ</translation>
 <translation id="2063539687800151747">ਆਦਰਸ਼ ਵਾਕ</translation>
+<translation id="2067158561093481039">ਵਿਉਂਤਿਆ ਕੁੰਜੀ ਸੁਮੇਲ ਬਣਾਓ</translation>
 <translation id="2086961585857038472">ਅਗਲਾ ਸ਼ਬਦ</translation>
 <translation id="2087981446621639008">ਵਰਣਨ ਸੂਚੀ ਵੇਰਵਾ</translation>
 <translation id="2089387485033699258">pa</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">ਚਮੜੇ ਰੰਗਾ ਭੂਰਾ</translation>
 <translation id="2199994615414171367">ਪਿਛਲਾ ਮੈਥ</translation>
 <translation id="2203046366315513658">ਮੁੱਲ ਘਟਾਓ</translation>
+<translation id="2206580811360135054">ਵਿੰਡੋਆਂ ਦੀ ਰੂਪ-ਰੇਖਾ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="2216790501338699346">ਲਿੰਕ ਦਾ URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">ਇੱਕ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਪਿੱਛੇ ਵੱਲ ਲਿਜਾਓ</translation>
 <translation id="2220529011494928058">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
+<translation id="2239819015858077439">ਹੇਠਾਂ ਤੀਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="2243633977138166243">ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਖੱਬਾ ਜਾਂ ਸੱਜਾ ਤੀਰ ਦਬਾਓ; ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="224426591676115802">ਇਸ ਭਾਸ਼ਾ ਲਈ ਕੋਈ ਅਵਾਜ਼ ਉਪਲਬਧ ਨਹੀਂ ਹੈ: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">'ਸਿੱਖਣ ਸੰਬੰਧੀ ਮੋਡ' ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">ਭਾਰਤੀ ਲਾਲ</translation>
 <translation id="4432896207833262240">ਨਿਸ਼ਾਨਦੇਹੀ ਕੀਤੀ ਸਮੱਗਰੀ</translation>
 <translation id="4437615272777527928">ਮੀਨੂ ਖੋਜਣ ਲਈ ਟਾਈਪ ਕਰੋ। ਨਤੀਜਿਆਂ ਦੇ ਵਿੱਚ ਚੱਕਰ ਲਗਾਉਣ ਲਈ ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਵਾਲੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ, ਅਤੇ ਮੀਨੂਆਂ ਵਿਚਾਲੇ ਅੱਗੇ-ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੀ ਅਤੇ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
+<translation id="4441677939526091190">ਉੱਪਰ ਤੀਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="4453530046591759283">ਸਕ੍ਰੀਨ ਦੇ ਦੂਜੇ ਹਿੱਸਿਆਂ, ਜਿਵੇਂ ਟੂਲਬਾਰ ਜਾਂ ਸਿਸਟਮ ਟ੍ਰੇਅ 'ਤੇ ਜਾਣ ਲਈ, Control+F1 ਦਬਾਓ। Escape ਕੁੰਜੀ ਦੇ ਸੱਜੇ ਪਾਸੇ ਮੌਜੂਦ ਪਹਿਲੀ ਕੁੰਜੀ F1 ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="4457472090507035117">ਵਰਤਮਾਨ ਅਵਾਜ਼ ਨੂੰ ਚੁਣੋ:</translation>
 <translation id="4476183483923481720">ਨਵੀਂ ਲਾਈਨ</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook ਟੱਚ ਸਕ੍ਰੀਨ ਪਹੁੰਚਯੋਗਤਾ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="5655682562155942719">ਜੰਪ ਕਮਾਂਡਾਂ</translation>
 <translation id="56637627897541303">ਟੈਕਸਟ ਖੇਤਰ</translation>
+<translation id="5666746275818170484">ਖੱਬਾ ਤੀਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="5669637233317991674">ਇਸ ਪਾਠ ਨੂੰ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ, Search + ਸੱਜਾ ਤੀਰ, ਜਾਂ Search + ਖੱਬਾ ਤੀਰ ਦਬਾਓ</translation>
 <translation id="5677240841070992068">ਮੌਜੂਦਾ ਟਿਕਾਣਾ</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">ਪੌਪ-ਅੱਪ ਬਟਨ</translation>
 <translation id="7167657087543110">ਅੱਖਰ ਧੁਨੀ</translation>
 <translation id="7173102181852295013">ਘਸਮੈਲਾ ਨੀਲਾ</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">ਵਿਸਤ੍ਰਿਤ</translation>
 <translation id="7209751026933045237">ਕੋਈ ਅਗਲਾ ਸਲਾਈਡਰ ਨਹੀਂ</translation>
 <translation id="7218782500591078391">ਸੁਨਿਹਰੀ</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">ਖੇਤਰ</translation>
 <translation id="8382679411218029383">ਸਵੈ-ਮੁਕੰਮਲ ਇਨਲਾਈਨ ਅਤੇ ਸੂਚੀ</translation>
 <translation id="8394908167088220973">ਮੀਡੀਆ ਪਲੇ ਕਰੋ/ਰੋਕੋ</translation>
+<translation id="8409502156784390079">ਸਕ੍ਰੋਲ ਮੋਡ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8428603554127842284">ਪੱਧਰ <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">ਭੁੱਲਣਾ</translation>
 <translation id="8989104346085848538">ਕਿਸੇ ਮੌਜੂਦਾ ChromeVox ਬੋਲਚਾਲ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, Control ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="9014206344398081366">ChromeVox ਟਿਊਟੋਰੀਅਲ</translation>
+<translation id="9034592733577768445">ਚਿਹਰਾ ਕੰਟਰੋਲ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="9040132695316389094">ਸਿਰਲੇਖ 1</translation>
 <translation id="9061884144798498064">ਕੋਈ 8-ਬਿੰਦੀ ਬ੍ਰੇਲ ਸਾਰਨੀ ਚੁਣੋ:</translation>
 <translation id="9063946545000394379">ਪਿਛਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ 'ਤੇ ਜਾਓ</translation>
