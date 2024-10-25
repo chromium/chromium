@@ -54,8 +54,6 @@ void ExceptionState::SetCreateDOMExceptionFunction(
   DCHECK(s_create_dom_exception_func_);
 }
 
-ExceptionState::~ExceptionState() = default;
-
 NOINLINE void ExceptionState::ThrowSecurityError(
     const char* sanitized_message,
     const char* unsanitized_message) {

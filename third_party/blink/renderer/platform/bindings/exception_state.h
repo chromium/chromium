@@ -65,31 +65,33 @@ class PLATFORM_EXPORT ExceptionState {
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
   // If `isolate` is nullptr, this ExceptionState will ignore all exceptions.
-  explicit ExceptionState(v8::Isolate* isolate) : isolate_(isolate) {}
+  explicit ExceptionState(v8::Isolate* isolate)
+      : context_(v8::ExceptionContext::kUnknown, nullptr, nullptr),
+        isolate_(isolate) {}
 
-  NOINLINE ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
+  ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
       : context_(context), isolate_(isolate) {}
 
-  NOINLINE ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
+  ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
       : context_(std::move(context)), isolate_(isolate) {}
 
-  NOINLINE ExceptionState(v8::Isolate* isolate,
-                          v8::ExceptionContext context_type,
-                          const char* interface_name,
-                          const char* property_name)
+  ExceptionState(v8::Isolate* isolate,
+                 v8::ExceptionContext context_type,
+                 const char* interface_name,
+                 const char* property_name)
       : ExceptionState(
             isolate,
             ExceptionContext(context_type, interface_name, property_name)) {}
 
-  NOINLINE ExceptionState(v8::Isolate* isolate,
-                          v8::ExceptionContext context_type,
-                          const char* interface_name)
+  ExceptionState(v8::Isolate* isolate,
+                 v8::ExceptionContext context_type,
+                 const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
-  NOINLINE ~ExceptionState();
+  ~ExceptionState() = default;
 
   // Throws a DOMException due to the given exception code.
   NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
@@ -126,10 +128,7 @@ class PLATFORM_EXPORT ExceptionState {
   bool HadException() const { return had_exception_; }
 
   // Returns the context of what Web API is currently being executed.
-  const ExceptionContext& GetContext() const {
-    DCHECK(context_);
-    return *context_;
-  }
+  const ExceptionContext& GetContext() const { return context_; }
 
   ExceptionState& ReturnThis() { return *this; }
 
@@ -157,7 +156,7 @@ class PLATFORM_EXPORT ExceptionState {
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
 
   // The context represents what Web API is currently being executed.
-  std::optional<ExceptionContext> context_;
+  ExceptionContext context_;
 
   v8::Isolate* isolate_;
 
