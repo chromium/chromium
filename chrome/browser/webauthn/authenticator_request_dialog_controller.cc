@@ -458,6 +458,210 @@ void AuthenticatorRequestDialogController::OnModelDestroyed(
   model_ = nullptr;
 }
 
+void AuthenticatorRequestDialogController::StartOver() {
+  PrefService* pref_service =
+      Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+          ->GetOriginalProfile()
+          ->GetPrefs();
+  if (model_->step() == Step::kTrustThisComputerCreation ||
+      model_->step() == Step::kTrustThisComputerAssertion) {
+    device::enclave::RecordEvent(device::enclave::Event::kOnboardingRejected);
+    int current_gpm_decline_count = pref_service->GetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);
+    pref_service->SetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
+        std::min(current_gpm_decline_count + 1,
+                 device::enclave::kMaxGPMBootstrapPrompts));
+  } else if (enclave_was_priority_mechanism_) {
+    int current_gpm_decline_count = pref_service->GetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount);
+    pref_service->SetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount,
+        std::min(current_gpm_decline_count + 1,
+                 kMaxPriorityGPMCredentialCreations));
+    device::enclave::RecordEvent(
+        device::enclave::Event::kMakeCredentialPriorityDeclined);
+    enclave_was_priority_mechanism_ = false;
+  }
+  ResetEphemeralState();
+
+  for (auto& observer : model_->observers) {
+    observer.OnStartOver();
+  }
+  SetCurrentStep(Step::kMechanismSelection);
+}
+
+void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
+  HideDialogAndDispatchToPlatformAuthenticator();
+}
+
+void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
+  if (model_->step() == Step::kGPMReauthForPinReset) {
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCancelled);
+  }
+  CancelAuthenticatorRequest();
+}
+
+void AuthenticatorRequestDialogController::
+    ContinueWithFlowAfterBleAdapterPowered() {
+  DCHECK(model_->step() == Step::kBlePowerOnManual ||
+         model_->step() == Step::kBlePowerOnAutomatic);
+  DCHECK(model_->ble_adapter_is_powered);
+
+  std::move(after_ble_adapter_powered_).Run();
+}
+
+void AuthenticatorRequestDialogController::PowerOnBleAdapter() {
+  DCHECK_EQ(model_->step(), Step::kBlePowerOnAutomatic);
+  if (!bluetooth_adapter_power_on_callback_) {
+    return;
+  }
+
+  bluetooth_adapter_power_on_callback_.Run();
+}
+
+void AuthenticatorRequestDialogController::OpenBlePreferences() {
+#if BUILDFLAG(IS_MAC)
+  DCHECK_EQ(model_->step(), Step::kBlePermissionMac);
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
+#endif  // IS_MAC
+}
+
+void AuthenticatorRequestDialogController::
+    OnOffTheRecordInterstitialAccepted() {
+  std::move(after_off_the_record_interstitial_).Run();
+}
+
+void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
+  if (model_->step() == Step::kGPMChangeArbitraryPin ||
+      model_->step() == Step::kGPMChangePin) {
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinCancelled);
+  }
+  if (use_conditional_mediation_) {
+    // Conditional UI requests are never cancelled, they restart silently.
+    ResetEphemeralState();
+    for (auto& observer : model_->observers) {
+      observer.OnStartOver();
+    }
+    StartConditionalMediationRequest();
+    return;
+  }
+
+  if (is_request_complete()) {
+    SetCurrentStep(Step::kClosed);
+  }
+
+  for (auto& observer : model_->observers) {
+    observer.OnCancelRequest();
+  }
+}
+
+void AuthenticatorRequestDialogController::OnRequestComplete() {
+  if (use_conditional_mediation_) {
+    auto* render_frame_host = GetRenderFrameHost();
+    auto* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    if (web_contents && render_frame_host) {
+      ChromeWebAuthnCredentialsDelegate* delegate =
+          ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
+              ->GetDelegateForFrame(render_frame_host);
+      if (delegate) {
+        delegate->NotifyWebAuthnRequestAborted();
+      }
+    }
+  }
+  SetCurrentStep(Step::kClosed);
+}
+
+void AuthenticatorRequestDialogController::OnResidentCredentialConfirmed() {
+  DCHECK_EQ(model_->step(), Step::kResidentCredentialConfirmation);
+  HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
+}
+
+void AuthenticatorRequestDialogController::OnHavePIN(std::u16string pin) {
+  if (!pin_callback_) {
+    // Protect against the view submitting a PIN more than once without
+    // receiving a matching response first. |CollectPIN| is called again if
+    // the user needs to be prompted for a retry.
+    return;
+  }
+  std::move(pin_callback_).Run(pin);
+}
+
+void AuthenticatorRequestDialogController::EnclaveEnabled() {
+  enclave_enabled_ = true;
+}
+
+void AuthenticatorRequestDialogController::EnclaveNeedsReauth() {
+  enclave_needs_reauth_ = true;
+}
+
+void AuthenticatorRequestDialogController::OnAccountSelected(size_t index) {
+  if (!selection_callback_) {
+    // It's possible that the user could activate the dialog more than once
+    // before the Webauthn request is completed and its torn down.
+    return;
+  }
+
+  device::AuthenticatorGetAssertionResponse response =
+      std::move(ephemeral_state_.responses_.at(index));
+  model_->creds.clear();
+  ephemeral_state_.responses_.clear();
+  std::move(selection_callback_).Run(std::move(response));
+}
+
+void AuthenticatorRequestDialogController::OnAccountPreselectedIndex(
+    size_t index) {
+  OnAccountPreselected(model_->creds.at(index).cred_id);
+}
+
+void AuthenticatorRequestDialogController::ContactPriorityPhone() {
+  if (model_->step() == Step::kTrustThisComputerAssertion) {
+    auto* pref_service =
+        Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+            ->GetOriginalProfile()
+            ->GetPrefs();
+    int current_gpm_decline_count = pref_service->GetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);
+    pref_service->SetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
+        std::min(current_gpm_decline_count + 1,
+                 device::enclave::kMaxGPMBootstrapPrompts));
+  }
+  ContactPhone(paired_phones_[*priority_phone_index_]->name);
+}
+
+void AuthenticatorRequestDialogController::OnBioEnrollmentDone() {
+  std::move(bio_enrollment_callback_).Run();
+}
+
+void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
+  model_->mechanisms[*model_->priority_mechanism_index].callback.Run();
+}
+
+void AuthenticatorRequestDialogController::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
+  if (model_->step() != Step::kConditionalMediation) {
+    // Updating an in flight request is only supported for conditional UI.
+    return;
+  }
+
+  // If the user just opted in to sync, it is likely the hybrid discovery needs
+  // to be reconfigured for a newly synced down phone. Start the request over to
+  // give the request delegate a chance to do this.
+  for (auto& observer : model_->observers) {
+    observer.OnStartOver();
+  }
+}
+
+void AuthenticatorRequestDialogController::OnPasskeyModelShuttingDown() {
+  passkey_model_observation_.Reset();
+}
+
+void AuthenticatorRequestDialogController::OnPasskeyModelIsReady(
+    bool is_ready) {}
+
 void AuthenticatorRequestDialogController::HideDialog() {
   SetCurrentStep(Step::kNotStarted);
 }
@@ -514,39 +718,6 @@ void AuthenticatorRequestDialogController::StartFlow(
   } else {
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
   }
-}
-
-void AuthenticatorRequestDialogController::StartOver() {
-  PrefService* pref_service =
-      Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
-          ->GetOriginalProfile()
-          ->GetPrefs();
-  if (model_->step() == Step::kTrustThisComputerCreation ||
-      model_->step() == Step::kTrustThisComputerAssertion) {
-    device::enclave::RecordEvent(device::enclave::Event::kOnboardingRejected);
-    int current_gpm_decline_count = pref_service->GetInteger(
-        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);
-    pref_service->SetInteger(
-        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
-        std::min(current_gpm_decline_count + 1,
-                 device::enclave::kMaxGPMBootstrapPrompts));
-  } else if (enclave_was_priority_mechanism_) {
-    int current_gpm_decline_count = pref_service->GetInteger(
-        webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount);
-    pref_service->SetInteger(
-        webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount,
-        std::min(current_gpm_decline_count + 1,
-                 kMaxPriorityGPMCredentialCreations));
-    device::enclave::RecordEvent(
-        device::enclave::Event::kMakeCredentialPriorityDeclined);
-    enclave_was_priority_mechanism_ = false;
-  }
-  ResetEphemeralState();
-
-  for (auto& observer : model_->observers) {
-    observer.OnStartOver();
-  }
-  SetCurrentStep(Step::kMechanismSelection);
 }
 
 void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
@@ -780,6 +951,80 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
   return false;
 }
 
+void AuthenticatorRequestDialogController::
+    HideDialogAndDispatchToPlatformAuthenticator(
+        std::optional<AuthenticatorType> type) {
+  HideDialog();
+
+  std::vector<AuthenticatorReference>& authenticators =
+      ephemeral_state_.saved_authenticators_.authenticator_list();
+#if BUILDFLAG(IS_WIN)
+  // The Windows-native UI already handles retrying so we do not offer a second
+  // level of retry in that case.
+  if (type && *type != AuthenticatorType::kEnclave) {
+    model_->offer_try_again_in_ui = false;
+  }
+#elif BUILDFLAG(IS_MAC)
+  // If there are multiple platform authenticators, one of them is the default.
+  if (!type.has_value()) {
+    if (base::ranges::any_of(
+            authenticators, [](const AuthenticatorReference& ref) {
+              return ref.type == AuthenticatorType::kOther &&
+                     ref.transport == device::FidoTransportProtocol::kInternal;
+            })) {
+      type = AuthenticatorType::kOther;
+    }
+  }
+
+  if (!type.has_value()) {
+    type = AuthenticatorType::kTouchID;
+  }
+#endif
+
+  auto platform_authenticator_it = base::ranges::find_if(
+      authenticators, [type](const AuthenticatorReference& ref) -> bool {
+        if (type && *type == AuthenticatorType::kEnclave) {
+          return ref.type == *type;
+        }
+        return ref.transport == device::FidoTransportProtocol::kInternal &&
+               (!type || ref.type == *type);
+      });
+
+  if (platform_authenticator_it == authenticators.end()) {
+    return;
+  }
+
+  ephemeral_state_.dispatched_platform_authenticator_type_ =
+      platform_authenticator_it->type;
+  bool is_make_credential = transport_availability_.request_type ==
+                            device::FidoRequestType::kMakeCredential;
+  if (platform_authenticator_it->type == AuthenticatorType::kICloudKeychain) {
+    webauthn::user_actions::RecordICloudShown(is_make_credential);
+  } else if (platform_authenticator_it->type == AuthenticatorType::kTouchID) {
+    webauthn::user_actions::RecordChromeProfileAuthenticatorShown(
+        is_make_credential);
+  } else if (platform_authenticator_it->type == AuthenticatorType::kWinNative) {
+    webauthn::user_actions::RecordWindowsHelloShown(is_make_credential);
+  }
+
+  DispatchRequestAsync(&*platform_authenticator_it);
+}
+
+void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
+    TransportAvailabilityInfo transport_availability) {
+  if (model_->step() != Step::kConditionalMediation) {
+    // Updating an in flight request is only supported for conditional UI.
+    return;
+  }
+  transport_availability_ = std::move(transport_availability);
+  UpdateModelForTransportAvailability();
+  SortRecognizedCredentials();
+  model_->mechanisms.clear();
+  PopulateMechanisms();
+  model_->priority_mechanism_index = IndexOfPriorityMechanism();
+  StartConditionalMediationRequest();
+}
+
 void AuthenticatorRequestDialogController::OnPhoneContactFailed(
     const std::string& name) {
   ContactNextPhoneByName(name);
@@ -814,13 +1059,6 @@ void AuthenticatorRequestDialogController::OnCableConnectingTimerComplete() {
       model_->step() == Step::kCableV2Connecting) {
     SetCurrentStep(Step::kCableV2Connected);
   }
-}
-
-void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
-  if (model_->step() == Step::kGPMReauthForPinReset) {
-    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCancelled);
-  }
-  CancelAuthenticatorRequest();
 }
 
 void AuthenticatorRequestDialogController::StartPhonePairing() {
@@ -880,32 +1118,6 @@ void AuthenticatorRequestDialogController::OnBleStatusKnown(
       // This should have been handled by EnsureBleAdapterIsPoweredAndContinue.
       NOTREACHED();
   }
-}
-
-void AuthenticatorRequestDialogController::
-    ContinueWithFlowAfterBleAdapterPowered() {
-  DCHECK(model_->step() == Step::kBlePowerOnManual ||
-         model_->step() == Step::kBlePowerOnAutomatic);
-  DCHECK(model_->ble_adapter_is_powered);
-
-  std::move(after_ble_adapter_powered_).Run();
-}
-
-void AuthenticatorRequestDialogController::PowerOnBleAdapter() {
-  DCHECK_EQ(model_->step(), Step::kBlePowerOnAutomatic);
-  if (!bluetooth_adapter_power_on_callback_) {
-    return;
-  }
-
-  bluetooth_adapter_power_on_callback_.Run();
-}
-
-void AuthenticatorRequestDialogController::OpenBlePreferences() {
-#if BUILDFLAG(IS_MAC)
-  DCHECK_EQ(model_->step(), Step::kBlePermissionMac);
-  base::mac::OpenSystemSettingsPane(
-      base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
-#endif  // IS_MAC
 }
 
 void AuthenticatorRequestDialogController::TryUsbDevice() {
@@ -989,52 +1201,6 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
   }
 
   HideDialogAndDispatchToPlatformAuthenticator();
-}
-
-void AuthenticatorRequestDialogController::
-    OnOffTheRecordInterstitialAccepted() {
-  std::move(after_off_the_record_interstitial_).Run();
-}
-
-void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
-  if (model_->step() == Step::kGPMChangeArbitraryPin ||
-      model_->step() == Step::kGPMChangePin) {
-    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinCancelled);
-  }
-  if (use_conditional_mediation_) {
-    // Conditional UI requests are never cancelled, they restart silently.
-    ResetEphemeralState();
-    for (auto& observer : model_->observers) {
-      observer.OnStartOver();
-    }
-    StartConditionalMediationRequest();
-    return;
-  }
-
-  if (is_request_complete()) {
-    SetCurrentStep(Step::kClosed);
-  }
-
-  for (auto& observer : model_->observers) {
-    observer.OnCancelRequest();
-  }
-}
-
-void AuthenticatorRequestDialogController::OnRequestComplete() {
-  if (use_conditional_mediation_) {
-    auto* render_frame_host = GetRenderFrameHost();
-    auto* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
-    if (web_contents && render_frame_host) {
-      ChromeWebAuthnCredentialsDelegate* delegate =
-          ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
-              ->GetDelegateForFrame(render_frame_host);
-      if (delegate) {
-        delegate->NotifyWebAuthnRequestAborted();
-      }
-    }
-  }
-  SetCurrentStep(Step::kClosed);
 }
 
 void AuthenticatorRequestDialogController::OnRequestTimeout() {
@@ -1228,25 +1394,10 @@ void AuthenticatorRequestDialogController::SetRequestBlePermissionCallback(
   request_ble_permission_callback_ = std::move(callback);
 }
 
-void AuthenticatorRequestDialogController::OnHavePIN(std::u16string pin) {
-  if (!pin_callback_) {
-    // Protect against the view submitting a PIN more than once without
-    // receiving a matching response first. |CollectPIN| is called again if
-    // the user needs to be prompted for a retry.
-    return;
-  }
-  std::move(pin_callback_).Run(pin);
-}
-
 void AuthenticatorRequestDialogController::OnRetryUserVerification(
     int attempts) {
   model_->uv_attempts = attempts;
   SetCurrentStep(Step::kRetryInternalUserVerification);
-}
-
-void AuthenticatorRequestDialogController::OnResidentCredentialConfirmed() {
-  DCHECK_EQ(model_->step(), Step::kResidentCredentialConfirmation);
-  HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
 }
 
 void AuthenticatorRequestDialogController::AddAuthenticator(
@@ -1289,20 +1440,6 @@ void AuthenticatorRequestDialogController::SelectAccount(
                                            : Step::kSelectAccount);
 }
 
-void AuthenticatorRequestDialogController::OnAccountSelected(size_t index) {
-  if (!selection_callback_) {
-    // It's possible that the user could activate the dialog more than once
-    // before the Webauthn request is completed and its torn down.
-    return;
-  }
-
-  device::AuthenticatorGetAssertionResponse response =
-      std::move(ephemeral_state_.responses_.at(index));
-  model_->creds.clear();
-  ephemeral_state_.responses_.clear();
-  std::move(selection_callback_).Run(std::move(response));
-}
-
 AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
     const std::vector<uint8_t> credential_id) {
   // User selected one of the platform authenticator credentials enumerated in
@@ -1341,31 +1478,10 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
   return source;
 }
 
-void AuthenticatorRequestDialogController::OnAccountPreselectedIndex(
-    size_t index) {
-  OnAccountPreselected(model_->creds.at(index).cred_id);
-}
-
 void AuthenticatorRequestDialogController::SetSelectedAuthenticatorForTesting(
     AuthenticatorReference test_authenticator) {
   ephemeral_state_.saved_authenticators_.AddAuthenticator(
       std::move(test_authenticator));
-}
-
-void AuthenticatorRequestDialogController::ContactPriorityPhone() {
-  if (model_->step() == Step::kTrustThisComputerAssertion) {
-    auto* pref_service =
-        Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
-            ->GetOriginalProfile()
-            ->GetPrefs();
-    int current_gpm_decline_count = pref_service->GetInteger(
-        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);
-    pref_service->SetInteger(
-        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
-        std::min(current_gpm_decline_count + 1,
-                 device::enclave::kMaxGPMBootstrapPrompts));
-  }
-  ContactPhone(paired_phones_[*priority_phone_index_]->name);
 }
 
 void AuthenticatorRequestDialogController::ContactPhoneForTesting(
@@ -1440,10 +1556,6 @@ void AuthenticatorRequestDialogController::OnSampleCollected(
     model_->max_bio_samples = bio_samples_remaining + 1;
   }
   model_->OnSheetModelChanged();
-}
-
-void AuthenticatorRequestDialogController::OnBioEnrollmentDone() {
-  std::move(bio_enrollment_callback_).Run();
 }
 
 void AuthenticatorRequestDialogController::set_cable_transport_info(
@@ -2370,28 +2482,6 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
   return std::nullopt;
 }
 
-void AuthenticatorRequestDialogController::OnPasskeysChanged(
-    const std::vector<webauthn::PasskeyModelChange>& changes) {
-  if (model_->step() != Step::kConditionalMediation) {
-    // Updating an in flight request is only supported for conditional UI.
-    return;
-  }
-
-  // If the user just opted in to sync, it is likely the hybrid discovery needs
-  // to be reconfigured for a newly synced down phone. Start the request over to
-  // give the request delegate a chance to do this.
-  for (auto& observer : model_->observers) {
-    observer.OnStartOver();
-  }
-}
-
-void AuthenticatorRequestDialogController::OnPasskeyModelShuttingDown() {
-  passkey_model_observation_.Reset();
-}
-
-void AuthenticatorRequestDialogController::OnPasskeyModelIsReady(
-    bool is_ready) {}
-
 void AuthenticatorRequestDialogController::
     UpdateModelForTransportAvailability() {
   model_->request_type = transport_availability_.request_type;
@@ -2407,96 +2497,6 @@ void AuthenticatorRequestDialogController::
   model_->is_off_the_record = transport_availability_.is_off_the_record_context;
   model_->platform_has_biometrics =
       transport_availability_.platform_has_biometrics;
-}
-
-void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
-  model_->mechanisms[*model_->priority_mechanism_index].callback.Run();
-}
-
-void AuthenticatorRequestDialogController::
-    HideDialogAndDispatchToPlatformAuthenticator(
-        std::optional<AuthenticatorType> type) {
-  HideDialog();
-
-  std::vector<AuthenticatorReference>& authenticators =
-      ephemeral_state_.saved_authenticators_.authenticator_list();
-#if BUILDFLAG(IS_WIN)
-  // The Windows-native UI already handles retrying so we do not offer a second
-  // level of retry in that case.
-  if (type && *type != AuthenticatorType::kEnclave) {
-    model_->offer_try_again_in_ui = false;
-  }
-#elif BUILDFLAG(IS_MAC)
-  // If there are multiple platform authenticators, one of them is the default.
-  if (!type.has_value()) {
-    if (base::ranges::any_of(
-            authenticators, [](const AuthenticatorReference& ref) {
-              return ref.type == AuthenticatorType::kOther &&
-                     ref.transport == device::FidoTransportProtocol::kInternal;
-            })) {
-      type = AuthenticatorType::kOther;
-    }
-  }
-
-  if (!type.has_value()) {
-    type = AuthenticatorType::kTouchID;
-  }
-#endif
-
-  auto platform_authenticator_it = base::ranges::find_if(
-      authenticators, [type](const AuthenticatorReference& ref) -> bool {
-        if (type && *type == AuthenticatorType::kEnclave) {
-          return ref.type == *type;
-        }
-        return ref.transport == device::FidoTransportProtocol::kInternal &&
-               (!type || ref.type == *type);
-      });
-
-  if (platform_authenticator_it == authenticators.end()) {
-    return;
-  }
-
-  ephemeral_state_.dispatched_platform_authenticator_type_ =
-      platform_authenticator_it->type;
-  bool is_make_credential = transport_availability_.request_type ==
-                            device::FidoRequestType::kMakeCredential;
-  if (platform_authenticator_it->type == AuthenticatorType::kICloudKeychain) {
-    webauthn::user_actions::RecordICloudShown(is_make_credential);
-  } else if (platform_authenticator_it->type == AuthenticatorType::kTouchID) {
-    webauthn::user_actions::RecordChromeProfileAuthenticatorShown(
-        is_make_credential);
-  } else if (platform_authenticator_it->type == AuthenticatorType::kWinNative) {
-    webauthn::user_actions::RecordWindowsHelloShown(is_make_credential);
-  }
-
-  DispatchRequestAsync(&*platform_authenticator_it);
-}
-
-void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
-  HideDialogAndDispatchToPlatformAuthenticator();
-}
-
-void AuthenticatorRequestDialogController::EnclaveEnabled() {
-  enclave_enabled_ = true;
-}
-
-void AuthenticatorRequestDialogController::EnclaveNeedsReauth() {
-  enclave_needs_reauth_ = true;
-}
-
-void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
-    TransportAvailabilityInfo transport_availability) {
-  if (model_->step() != Step::kConditionalMediation) {
-    // Updating an in flight request is only supported for conditional UI.
-    return;
-  }
-  transport_availability_ = std::move(transport_availability);
-  UpdateModelForTransportAvailability();
-  SortRecognizedCredentials();
-  model_->mechanisms.clear();
-  PopulateMechanisms();
-  model_->priority_mechanism_index = IndexOfPriorityMechanism();
-  StartConditionalMediationRequest();
 }
 
 bool AuthenticatorRequestDialogController::CanDefaultToEnclave(

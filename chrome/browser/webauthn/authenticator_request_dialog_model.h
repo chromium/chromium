@@ -88,9 +88,6 @@ class Profile;
   /* Called when the enclave authenticator needs a reauth before it is */     \
   /* available for a request. */                                              \
   AUTHENTICATOR_REQUEST_EVENT_0(EnclaveNeedsReauth)                           \
-  /* Called when the ChromeOS authenticator is ready to handle a pending */   \
-  /* request. */                                                              \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnChromeOSGPMRequestReady)                    \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
   /* Called when the power state of the Bluetooth adapter has changed. */     \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)               \
@@ -112,8 +109,7 @@ class Profile;
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
   AUTHENTICATOR_REQUEST_EVENT_0(OnForgotGPMPinPressed)                        \
-  /* Called when the user clicks “Manage Devices” to manage their */      \
-  /* phones. */                                                               \
+  /* Called when the user clicks Manage Devices to manage their phones. */    \
   AUTHENTICATOR_REQUEST_EVENT_0(OnManageDevicesClicked)                       \
   /* OnOffTheRecordInterstitialAccepted is called when the user accepts */    \
   /* the interstitial that warns that platform/caBLE authenticators may */    \
