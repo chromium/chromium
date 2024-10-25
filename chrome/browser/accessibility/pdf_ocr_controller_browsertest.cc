@@ -301,6 +301,12 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithoutSelectToSpeak) {
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithSelectToSpeak) {
+  // When PDF Searchify is enabled, PDF OCR controller will not trigger OCR in
+  // renderer.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   EnableSelectToSpeak(true);
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
