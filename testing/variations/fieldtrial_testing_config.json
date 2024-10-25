@@ -1579,7 +1579,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableCardBenefitsForAmericanExpress"
+                        "AutofillEnableCardBenefitsForAmericanExpress",
+                        "AutofillEnableCardBenefitsSync"
                     ]
                 }
             ]
@@ -1618,21 +1619,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableCardBenefitsIph"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableCardBenefitsSync": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardBenefitsSync"
                     ]
                 }
             ]
