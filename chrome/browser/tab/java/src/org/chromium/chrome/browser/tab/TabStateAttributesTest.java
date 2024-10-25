@@ -495,6 +495,38 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    public void testTabUnarchived() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.onTabRestoredFromArchivedTabModel();
+        assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        mTab.onTabRestoredFromArchivedTabModel();
+        assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        verify(mAttributesObserver, times(2))
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.CONTENT_SCHEME + "://hello_world"));
+        mTab.onTabRestoredFromArchivedTabModel();
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+    }
+
+    @Test
     public void testDuplicateUpdateCalls() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);

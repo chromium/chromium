@@ -218,7 +218,8 @@ public class TabArchiver implements TabWindowManager.Observer {
             }
 
             TabState tabState = prepareTabState(tab);
-            tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+            Tab newTab = tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+            newTab.onTabRestoredFromArchivedTabModel();
         }
 
         int tabCount = tabs.size();

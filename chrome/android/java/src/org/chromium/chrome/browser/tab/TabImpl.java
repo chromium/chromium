@@ -2430,6 +2430,13 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         }
     }
 
+    @Override
+    public void onTabRestoredFromArchivedTabModel() {
+        for (TabObserver observer : mObservers) {
+            observer.onTabUnarchived(this);
+        }
+    }
+
     // SensitiveContentClient.Observer
     @Override
     public void onContentSensitivityChanged(boolean contentIsSensitive) {

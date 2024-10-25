@@ -443,4 +443,7 @@ public interface Tab extends TabLifecycle {
      * @param contentIsSensitive True if the content is sensitive.
      */
     void setTabHasSensitiveContent(boolean contentIsSensitive);
+
+    /** Called when the tab is restored from the archived tab model. */
+    void onTabRestoredFromArchivedTabModel();
 }

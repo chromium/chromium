@@ -248,9 +248,9 @@ public class ShoppingPersistedTabDataServiceTest {
 
         // Set up the recency to be tab1 > tab3 > tab2.
         long currentTimeStamp = System.currentTimeMillis();
-        tab1.setTimestampMillis(currentTimeStamp);
-        tab2.setTimestampMillis(currentTimeStamp - ONE_SECOND);
-        tab3.setTimestampMillis(currentTimeStamp - HALF_SECOND);
+        tab1.setTimestampMillisForTesting(currentTimeStamp);
+        tab2.setTimestampMillisForTesting(currentTimeStamp - ONE_SECOND);
+        tab3.setTimestampMillisForTesting(currentTimeStamp - HALF_SECOND);
 
         CallbackHelper widened = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(

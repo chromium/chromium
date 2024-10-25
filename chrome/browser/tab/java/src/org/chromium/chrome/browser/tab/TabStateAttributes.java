@@ -199,6 +199,12 @@ public class TabStateAttributes extends TabWebContentsUserData {
                         if (!tab.isInitialized()) return;
                         updateIsDirty(DirtinessState.UNTIDY);
                     }
+
+                    @Override
+                    public void onTabUnarchived(Tab tab) {
+                        if (!tab.isInitialized()) return;
+                        updateIsDirtyNotCheckingNtp(DirtinessState.DIRTY);
+                    }
                 });
     }
 
