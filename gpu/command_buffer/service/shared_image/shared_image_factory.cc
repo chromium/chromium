@@ -512,13 +512,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  SharedImageBackingFactory* factory = nullptr;
-  if (backing_factory_for_testing_) {
-    factory = backing_factory_for_testing_;
-  } else {
-    factory = GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
-  }
-
+  SharedImageBackingFactory* const factory =
+      GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
   if (!factory) {
     LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, debug_label);
     return false;
