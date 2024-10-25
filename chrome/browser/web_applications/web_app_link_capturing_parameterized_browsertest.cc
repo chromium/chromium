@@ -831,6 +831,22 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
+  void EnsureValidNewTabPage() {
+    // Ensure that if a fixture ended up loading a different page in the
+    // starting tab, create a new tab for the navigation.
+    GURL last_committed_url = browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetLastCommittedURL();
+    bool is_at_new_tab_page =
+        IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
+    if (!is_at_new_tab_page) {
+      LOG(ERROR) << "opening new tab due to "
+                 << last_committed_url.possibly_invalid_spec();
+      chrome::NewTab(browser());
+    }
+  }
+
   content::WebContents* LaunchStartPageAsApp(const webapps::AppId& app_id,
                                              const GURL& url) {
     base::test::TestFuture<base::WeakPtr<Browser>,
@@ -1343,19 +1359,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchStartPageAsApp(app_a, url_a);
       } else {
-        // Ensure that if a fixture ended up loading a different page in the
-        // starting tab, create a new tab for the navigation.
-        GURL last_committed_url = browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetLastCommittedURL();
-        bool is_at_new_tab_page =
-            IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
-        if (!is_at_new_tab_page) {
-          LOG(ERROR) << "opening new tab due to "
-                     << last_committed_url.possibly_invalid_spec();
-          chrome::NewTab(browser());
-        }
+        EnsureValidNewTabPage();
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchPageInTab(url_a);
       }
@@ -2106,19 +2110,7 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     url_observer.Wait();
 
     DLOG(INFO) << "Navigating to browser tab b.";
-    // Ensure that if a fixture ended up loading a different page in the
-    // starting tab, create a new tab for the navigation.
-    GURL last_committed_url = browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetLastCommittedURL();
-    bool is_at_new_tab_page =
-        IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
-    if (!is_at_new_tab_page) {
-      LOG(ERROR) << "opening new tab due to "
-                 << last_committed_url.possibly_invalid_spec();
-      chrome::NewTab(browser());
-    }
+    EnsureValidNewTabPage();
 
     GURL url_b_dest = embedded_test_server()->GetURL(kDestinationPageScopeB);
     LaunchPageInTab(url_b_dest);
