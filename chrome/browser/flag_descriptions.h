@@ -178,6 +178,9 @@ extern const char kDataSharingDescription[];
 extern const char kDataSharingJoinOnlyName[];
 extern const char kDataSharingJoinOnlyDescription[];
 
+extern const char kDataSharingAndroidV2Name[];
+extern const char kDataSharingAndroidV2Description[];
+
 extern const char kHistorySyncAlternativeIllustrationName[];
 extern const char kHistorySyncAlternativeIllustrationDescription[];
 

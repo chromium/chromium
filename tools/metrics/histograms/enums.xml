@@ -22319,6 +22319,7 @@ from previous Chrome versions.
   <int value="902649149" label="ArcGhostWindowNewStyle:enabled"/>
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
+  <int value="903773754" label="DataSharingAndroidV2:enabled"/>
   <int value="904047636"
       label="UnifiedPasswordManagerLocalPasswordsAndroidWithMigration:disabled"/>
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
@@ -24874,6 +24875,7 @@ from previous Chrome versions.
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>
   <int value="1921543515" label="ExoLockNotification:enabled"/>
+  <int value="1921615454" label="DataSharingAndroidV2:disabled"/>
   <int value="1923052799" label="CrostiniUseDlc:disabled"/>
   <int value="1923496816" label="AssistantIntentTranslateInfo:disabled"/>
   <int value="1923780021" label="PrivacyReorderedAndroid:enabled"/>

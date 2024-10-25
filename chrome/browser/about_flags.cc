@@ -11481,6 +11481,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingJoinOnlyDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"data-sharing-android-v2", flag_descriptions::kDataSharingAndroidV2Name,
+     flag_descriptions::kDataSharingAndroidV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingAndroidV2)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"history-sync-alternative-illustration",
      flag_descriptions::kHistorySyncAlternativeIllustrationName,
      flag_descriptions::kHistorySyncAlternativeIllustrationDescription, kOsAll,
