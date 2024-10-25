@@ -320,6 +320,28 @@ FormData FindForm(const blink::WebFormControlElement& element) {
   return FormData();
 }
 
+// TODO(crbug.com/40765988): Replace this with FormData::DeepEqual().
+#define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                      \
+  do {                                                                       \
+    EXPECT_EQ(expected.label(), actual.label());                             \
+    EXPECT_EQ(expected.name(), actual.name());                               \
+    EXPECT_EQ(expected.value(), actual.value());                             \
+    EXPECT_EQ(expected.form_control_type(), actual.form_control_type());     \
+    EXPECT_EQ(expected.autocomplete_attribute(),                             \
+              actual.autocomplete_attribute());                              \
+    EXPECT_EQ(expected.parsed_autocomplete(), actual.parsed_autocomplete()); \
+    EXPECT_EQ(expected.placeholder(), actual.placeholder());                 \
+    EXPECT_EQ(expected.max_length(), actual.max_length());                   \
+    EXPECT_EQ(expected.css_classes(), actual.css_classes());                 \
+    EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());             \
+    EXPECT_EQ(expected.is_user_edited(), actual.is_user_edited());           \
+    EXPECT_EQ(expected.section(), actual.section());                         \
+    EXPECT_EQ(expected.check_status(), actual.check_status());               \
+    EXPECT_EQ(expected.properties_mask(), actual.properties_mask());         \
+    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());               \
+    EXPECT_EQ(expected.name_attribute(), actual.name_attribute());           \
+  } while (0)
+
 class FormAutofillTest : public test::AutofillRendererTest {
  public:
   FormAutofillTest() = default;
