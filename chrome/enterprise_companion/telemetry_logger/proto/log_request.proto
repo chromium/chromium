@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 enum LogSource {
   UNKNOWN = 0;
   CHROME_ENTERPRISE_COMPANION_APP = 2454;
-  CHROME_UPDATER = 2536;
+  CHROME_UPDATER = 2545;
 }
 
 message LogEvent {
