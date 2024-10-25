@@ -6,6 +6,9 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_WORKLET_SERVICE_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
@@ -44,10 +47,12 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       delete;
   ~AuctionWorkletServiceImpl() override;
 
+#if BUILDFLAG(IS_ANDROID)
   // Factory method intended for use when running in the renderer.
   // Creates an instance owned by (and bound to) `receiver`.
   static void CreateForRenderer(
       mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
+#endif
 
   // Factory method intended for use when running as a service.
   // Will be bound to `receiver` but owned by the return value
@@ -114,6 +119,12 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
+#if BUILDFLAG(IS_ANDROID)
+  static void CreateForRendererOnThisThread(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
+#endif
+
   // Returns `trusted_signals_manager_kvv2_`, populating it if needed. If
   // SetTrustedSignalsCache() was never called, returns nullptr. Must be called
   // only after the relevant V8HelperHolders have been created. Uses
@@ -152,6 +163,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
 
   mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace auction_worklet

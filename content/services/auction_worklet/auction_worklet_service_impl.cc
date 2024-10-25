@@ -11,8 +11,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
@@ -29,6 +32,18 @@ namespace auction_worklet {
 namespace {
 
 static size_t g_next_seller_worklet_thread_index = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+scoped_refptr<base::SequencedTaskRunner> AuctionWorkletMojoRunner() {
+  // It's important we always use the same runner here since it needs to
+  // talk to AuctionV8HelperHolder.
+  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
+      auction_worklet_mojo_runner(
+          scoped_refptr(base::ThreadPool::CreateSequencedTaskRunner(
+              {base::TaskPriority::USER_VISIBLE})));
+  return *auction_worklet_mojo_runner;
+}
+#endif
 
 }  // namespace
 
@@ -199,15 +214,24 @@ std::vector<AuctionWorkletServiceImpl::V8HelperHolder*>*
 std::vector<AuctionWorkletServiceImpl::V8HelperHolder*>*
     AuctionWorkletServiceImpl::V8HelperHolder::g_seller_instances = nullptr;
 
+#if BUILDFLAG(IS_ANDROID)
 // static
 void AuctionWorkletServiceImpl::CreateForRenderer(
     mojo::PendingReceiver<mojom::AuctionWorkletService> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new AuctionWorkletServiceImpl(
-          ProcessModel::kShared,
-          mojo::PendingReceiver<mojom::AuctionWorkletService>())),
-      std::move(receiver));
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeAndroidWorkletOffMainThread)) {
+    auto task_runner = AuctionWorkletMojoRunner();
+
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AuctionWorkletServiceImpl::CreateForRendererOnThisThread,
+            task_runner, std::move(receiver)));
+  } else {
+    CreateForRendererOnThisThread(/*task_runner=*/nullptr, std::move(receiver));
+  }
 }
+#endif
 
 // static
 std::unique_ptr<AuctionWorkletServiceImpl>
@@ -234,6 +258,7 @@ AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 
 std::vector<scoped_refptr<AuctionV8Helper>>
 AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<scoped_refptr<AuctionV8Helper>> result;
   for (const auto& v8_helper_holder : auction_bidder_v8_helper_holders_) {
     result.push_back(v8_helper_holder->V8Helper());
@@ -246,6 +271,7 @@ AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
 
 void AuctionWorkletServiceImpl::SetTrustedSignalsCache(
     mojo::PendingRemote<mojom::TrustedSignalsCache> trusted_signals_cache) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!trusted_signals_kvv2_manager_);
   DCHECK(!pending_trusted_signals_cache_);
   pending_trusted_signals_cache_ = std::move(trusted_signals_cache);
@@ -268,6 +294,7 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
     mojom::TrustedSignalsPublicKeyPtr public_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If needed, expand the thread pool to match the number of threads requested.
   for (size_t i = auction_bidder_v8_helper_holders_.size();
        i < shared_storage_hosts.size(); ++i) {
@@ -313,6 +340,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
     mojom::TrustedSignalsPublicKeyPtr public_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers;
   for (size_t i = 0; i < auction_seller_v8_helper_holders_.size(); ++i) {
     v8_helpers.push_back(auction_seller_v8_helper_holders_[i]->V8Helper());
@@ -341,6 +369,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
 }
 
 size_t AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t result = g_next_seller_worklet_thread_index++;
   g_next_seller_worklet_thread_index %=
       auction_seller_v8_helper_holders_.size();
@@ -350,6 +379,7 @@ size_t AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex() {
 void AuctionWorkletServiceImpl::DisconnectSellerWorklet(
     mojo::ReceiverId receiver_id,
     const std::string& reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   seller_worklets_.RemoveWithReason(receiver_id, /*custom_reason_code=*/0,
                                     reason);
 }
@@ -357,12 +387,30 @@ void AuctionWorkletServiceImpl::DisconnectSellerWorklet(
 void AuctionWorkletServiceImpl::DisconnectBidderWorklet(
     mojo::ReceiverId receiver_id,
     const std::string& reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bidder_worklets_.RemoveWithReason(receiver_id, /*custom_reason_code=*/0,
                                     reason);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// static
+void AuctionWorkletServiceImpl::CreateForRendererOnThisThread(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    mojo::PendingReceiver<mojom::AuctionWorkletService> receiver) {
+  if (task_runner) {
+    DCHECK(task_runner->RunsTasksInCurrentSequence());
+  }
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new AuctionWorkletServiceImpl(
+          ProcessModel::kShared,
+          mojo::PendingReceiver<mojom::AuctionWorkletService>())),
+      std::move(receiver));
+}
+#endif
+
 TrustedSignalsKVv2Manager*
 AuctionWorkletServiceImpl::GetTrustedSignalsKVv2Manager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!trusted_signals_kvv2_manager_ && pending_trusted_signals_cache_) {
     // Check for bidder V8 context first, since sellers are automatically
     // populated, and want use V8 contexts that will be used anyways, instead of
