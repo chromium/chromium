@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -40,6 +41,7 @@ class ArcVolumeMounterBridge
     : public KeyedService,
       public ash::disks::DiskMountManager::Observer,
       public ash::disks::DiskMountManager::ArcDelegate,
+      public chromeos::PowerManagerClient::Observer,
       public ConnectionObserver<mojom::VolumeMounterInstance>,
       public mojom::VolumeMounterHost {
  public:
@@ -91,6 +93,10 @@ class ArcVolumeMounterBridge
       const base::FilePath& mount_path,
       ash::disks::DiskMountManager::ArcDelegate::Callback callback) override;
 
+  // chromeos::PowerManagerClient::Observer overrides:
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+
   // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
   void OnConnectionClosed() override;
 
@@ -99,6 +105,7 @@ class ArcVolumeMounterBridge
   void SetUpExternalStorageMountPoints(
       uint32_t media_provider_uid,
       SetUpExternalStorageMountPointsCallback callback) override;
+  void OnReadyToSuspend(bool success) override;
 
   // Initialize ArcVolumeMounterBridge with delegate.
   void Initialize(Delegate* delegate);
@@ -171,6 +178,26 @@ class ArcVolumeMounterBridge
   base::TimeDelta unmount_timeout_ = base::Seconds(30);
   // Holds the last time when PrepareForRemovableMediaUnmount mojo was called.
   base::TimeTicks unmount_mojo_start_time_;
+
+  // Represents the state of cleaning up ARC-side removable media caches before
+  // device suspension. State transition should be as follows:
+  // NO_SUSPEND -> NOT_READY_TO_SUSPEND:
+  //   When `SuspendImminent` is called.
+  // NOT_READY_TO_SUSPEND -> READY_TO_SUSPEND:
+  //   When `OnReadyToSuspend` is called.
+  // NOT_READY_TO_SUSPEND or READY_TO_SUSPEND -> NO_SUSPEND:
+  //   When `SuspendDone` is called.
+  enum class SuspendState {
+    // The device is not going to suspend.
+    NO_SUSPEND,
+    // The device is going to suspend, but there still might be removable drives
+    // mounted on the ARC side.
+    NOT_READY_TO_SUSPEND,
+    // The device is going to suspend, and all removable drives should have been
+    // unmounted on the ARC side.
+    READY_TO_SUSPEND,
+  };
+  SuspendState suspend_state_ = SuspendState::NO_SUSPEND;
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 

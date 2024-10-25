@@ -137,6 +137,8 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
   manager->AddObserver(this);
   manager->SetArcDelegate(this);
 
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
+
   change_registerar_.Init(pref_service_);
   // Start monitoring |kArcVisibleExternalStorages| changes. Note that the
   // registerar automatically stops monitoring the pref in its dtor.
@@ -147,6 +149,8 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
 }
 
 ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+
   DiskMountManager* const manager = DiskMountManager::GetInstance();
   DCHECK(manager);
   manager->SetArcDelegate(nullptr);
@@ -339,6 +343,12 @@ void ArcVolumeMounterBridge::DropArcCaches(
   CHECK(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(mount_path));
 
+  if (suspend_state_ == SuspendState::READY_TO_SUSPEND) {
+    // Caches for all removable media should already be cleaned up.
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
+
   VLOG(1) << "Queueing unmount request for " << mount_path;
   unmount_requests_.emplace(mount_path, std::move(callback));
 
@@ -366,7 +376,7 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
                                   PrepareForRemovableMediaUnmount);
   if (!volume_mounter_instance) {
-    std::move(unmount_callback_).Run(false);
+    std::move(unmount_callback_).Run(/*success=*/false);
     if (IsArcVmEnabled()) {
       ReportRemovableMediaUnmountResult(
           ArcVmRemovableMediaUnmountResult::kFailedInstanceNotFound);
@@ -375,10 +385,13 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
     return;
   }
 
-  // `unmount_callback_` will run when the mojo method callback runs or the
-  // `unmount_timeout_` has elapsed, whichever that happens first. The timeout
-  // is set to ensure that host-side unmount is not blocked for too long even
-  // when ARC is not responsive or takes too long to drop caches.
+  // `unmount_callback_` will run at one of the following timing (whichever that
+  // happens first):
+  // - when the mojo method callback (`unmount_mojo_callback_`) runs,
+  // - when the `unmount_timeout_` has elapsed, or
+  // - when `OnReadyToSuspend` is called.
+  // The timeout is set to ensure that host-side unmount is not blocked for too
+  // long even when ARC is not responsive or takes too long to drop caches.
 
   unmount_mojo_callback_.Reset(base::BindOnce(
       &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
@@ -425,6 +438,50 @@ void ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount(
   unmount_timer_.Stop();
 
   ProcessPendingRemovableMediaUnmountRequest();
+}
+
+void ArcVolumeMounterBridge::OnReadyToSuspend(bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__ << " called";
+
+  LOG_IF(ERROR, !success) << "Failed to unmount some of removable drives or "
+                          << "drop caches on ARC side before suspension. "
+                          << "Host-side unmount might fail.";
+
+  if (suspend_state_ == SuspendState::NOT_READY_TO_SUSPEND) {
+    suspend_state_ = SuspendState::READY_TO_SUSPEND;
+  }
+
+  // Even if `suspend_state_` is NO_SUSPEND, we run all the pending callbacks.
+  DCHECK(suspend_state_ == SuspendState::NO_SUSPEND ||
+         suspend_state_ == SuspendState::READY_TO_SUSPEND);
+
+  unmount_mojo_callback_.Cancel();
+  unmount_timer_.Stop();
+
+  // Run all the pending callbacks with true, because even when `success` is
+  // false we don't know for which device the unmount failed.
+  if (unmount_callback_) {
+    std::move(unmount_callback_).Run(/*success=*/true);
+  }
+  while (!unmount_requests_.empty()) {
+    std::move(std::get<1>(unmount_requests_.front())).Run(/*success=*/true);
+    unmount_requests_.pop();
+  }
+}
+
+void ArcVolumeMounterBridge::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  VLOG(1) << __func__ << " called";
+  DCHECK(suspend_state_ == SuspendState::NO_SUSPEND);
+  suspend_state_ = SuspendState::NOT_READY_TO_SUSPEND;
+}
+
+void ArcVolumeMounterBridge::SuspendDone(base::TimeDelta sleep_duration) {
+  VLOG(1) << __func__ << " called";
+  DCHECK(suspend_state_ == SuspendState::NOT_READY_TO_SUSPEND ||
+         suspend_state_ == SuspendState::READY_TO_SUSPEND);
+  suspend_state_ = SuspendState::NO_SUSPEND;
 }
 
 void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
