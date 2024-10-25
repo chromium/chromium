@@ -358,6 +358,12 @@ void CodeCacheHostImpl::OnReceiveCachedCode(
     base::UmaHistogramTimes("SiteIsolatedCodeCache.JS.FetchCodeCache",
                             base::TimeTicks::Now() - start_time);
   }
+
+  if (data.size() > 0) {
+    base::UmaHistogramCustomCounts("SiteIsolatedCodeCache.DataSize",
+                                   data.size(), 1, 10000000, 100);
+  }
+
   std::move(callback).Run(response_time, std::move(data));
 }
 
