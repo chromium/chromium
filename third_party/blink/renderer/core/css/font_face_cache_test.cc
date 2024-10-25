@@ -69,8 +69,8 @@ void FontFaceCacheTest::AppendTestFaceForCapabilities(const CSSValue& stretch,
       CSSPropertyValue(CSSPropertyName(CSSPropertyID::kFontFamily),
                        *family_name),
       CSSPropertyValue(CSSPropertyName(CSSPropertyID::kSrc), *src_value_list)};
-  auto* font_face_descriptor = MakeGarbageCollected<MutableCSSPropertyValueSet>(
-      properties, static_cast<wtf_size_t>(std::size(properties)));
+  auto* font_face_descriptor =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(properties);
 
   font_face_descriptor->SetProperty(CSSPropertyID::kFontStretch, stretch);
   font_face_descriptor->SetProperty(CSSPropertyID::kFontStyle, style);

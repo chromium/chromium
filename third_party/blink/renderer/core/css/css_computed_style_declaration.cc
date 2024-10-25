@@ -477,8 +477,7 @@ MutableCSSPropertyValueSet* CSSComputedStyleDeclaration::CopyPropertiesInSet(
       list.push_back(CSSPropertyValue(name, *value, false));
     }
   }
-  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list.data(),
-                                                          list.size());
+  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list);
 }
 
 CSSRule* CSSComputedStyleDeclaration::parentRule() const {

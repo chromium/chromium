@@ -72,9 +72,8 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
 
   StyleRule* from_rule = nullptr;
   if (from.has_value() && !from.value().empty()) {
-    auto* properties = MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
-        /* properties */ nullptr, /* count */ 0,
-        CSSParserMode::kHTMLStandardMode);
+    auto* properties = ImmutableCSSPropertyValueSet::Create(
+        base::span<CSSPropertyValue>(), CSSParserMode::kHTMLStandardMode);
     from_rule = StyleRule::Create(from.value(), properties);
   }
 

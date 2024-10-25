@@ -206,8 +206,8 @@ class OOFCandidateStyleIterator {
           CSSPropertyName(CSSPropertyID::kPositionArea),
           *ComputedStyleUtils::ValueForPositionArea(
               fallback.GetPositionArea()));
-      return ImmutableCSSPropertyValueSet::Create(&declaration, /* length */ 1u,
-                                                  kHTMLStandardMode);
+      return ImmutableCSSPropertyValueSet::Create(
+          base::span_from_ref(declaration), kHTMLStandardMode);
     } else if (const ScopedCSSName* name = fallback.GetPositionTryName()) {
       if (const StyleRulePositionTry* rule = GetPositionTryRule(*name)) {
         return &rule->Properties();

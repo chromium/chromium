@@ -17,17 +17,11 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_VALUE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_VALUE_SET_H_
 
 #include "base/bits.h"
-
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -256,48 +250,85 @@ class CORE_EXPORT alignas(std::max(alignof(Member<const CSSValue>),
                                    alignof(CSSPropertyValueMetadata)))
     ImmutableCSSPropertyValueSet : public CSSPropertyValueSet {
  public:
-  ImmutableCSSPropertyValueSet(const CSSPropertyValue*,
-                               unsigned count,
+  // The value and metadata arrays are allocated in-line with the containing
+  // ImmutableCSSPropertyValueSet. In order to guarantee safety when accessing
+  // those arrays, we must ensure that ImmutableCSSPropertyValueSet can only
+  // be constructed via the Create() method, which allocates the correct amount
+  // of space.
+  using PassKey = base::PassKey<ImmutableCSSPropertyValueSet>;
+  ImmutableCSSPropertyValueSet(PassKey,
+                               base::span<const CSSPropertyValue>,
                                CSSParserMode,
                                bool contains_cursor_hand = false);
 
   static ImmutableCSSPropertyValueSet* Create(
-      const CSSPropertyValue* properties,
-      unsigned count,
+      base::span<const CSSPropertyValue>,
       CSSParserMode,
       bool contains_cursor_hand = false);
 
   unsigned PropertyCount() const { return array_size_; }
 
-  const Member<const CSSValue>* ValueArray() const;
-  const CSSPropertyValueMetadata* MetadataArray() const;
+  base::span<const Member<const CSSValue>> ValueArray() const;
+  base::span<const CSSPropertyValueMetadata> MetadataArray() const;
 
   template <typename T>  // CSSPropertyID or AtomicString
   int FindPropertyIndex(const T& property) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  const Member<const CSSValue>* ValueArrayBase() const;
+  const CSSPropertyValueMetadata* MetadataArrayBase() const;
 };
 
-inline const Member<const CSSValue>* ImmutableCSSPropertyValueSet::ValueArray()
-    const {
+inline const Member<const CSSValue>*
+ImmutableCSSPropertyValueSet::ValueArrayBase() const {
   static_assert(
       sizeof(ImmutableCSSPropertyValueSet) % alignof(Member<const CSSValue>) ==
           0,
       "ValueArray may be improperly aligned");
-  return reinterpret_cast<const Member<const CSSValue>*>(this + 1);
+  // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
+  // Create(), we guarantee that the array will exist where we expect it.
+  CHECK_GT(array_size_, 0u);
+  return UNSAFE_BUFFERS(
+      reinterpret_cast<const Member<const CSSValue>*>(this + 1));
 }
 
 inline const CSSPropertyValueMetadata*
-ImmutableCSSPropertyValueSet::MetadataArray() const {
+ImmutableCSSPropertyValueSet::MetadataArrayBase() const {
   static_assert(sizeof(ImmutableCSSPropertyValueSet) %
                         alignof(CSSPropertyValueMetadata) ==
                     0,
                 "MetadataArray may be improperly aligned");
   // Size of Member<> can be smaller than that of CSSPropertyValueMetadata.
   // Align it up.
-  return reinterpret_cast<const CSSPropertyValueMetadata*>(base::bits::AlignUp(
-      reinterpret_cast<const uint8_t*>(ValueArray() + array_size_),
-      alignof(CSSPropertyValueMetadata)));
+  // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
+  // Create(), we guarantee that the array will exist where we expect it.
+  CHECK_GT(array_size_, 0u);
+  return UNSAFE_BUFFERS(
+      reinterpret_cast<const CSSPropertyValueMetadata*>(base::bits::AlignUp(
+          reinterpret_cast<const uint8_t*>(ValueArrayBase() + array_size_),
+          alignof(CSSPropertyValueMetadata))));
+}
+
+inline base::span<const Member<const CSSValue>>
+ImmutableCSSPropertyValueSet::ValueArray() const {
+  if (array_size_ == 0) {
+    return base::span<const Member<const CSSValue>>();
+  }
+  // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
+  // Create(), we guarantee that the array will have the size we expect.
+  return UNSAFE_BUFFERS(base::span(ValueArrayBase(), array_size_));
+}
+
+inline base::span<const CSSPropertyValueMetadata>
+ImmutableCSSPropertyValueSet::MetadataArray() const {
+  if (array_size_ == 0) {
+    return base::span<const CSSPropertyValueMetadata>();
+  }
+  // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
+  // Create(), we guarantee that the array will have the size we expect.
+  return UNSAFE_BUFFERS(base::span(MetadataArrayBase(), array_size_));
 }
 
 template <>
@@ -311,8 +342,8 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
  public:
   explicit MutableCSSPropertyValueSet(CSSParserMode);
   explicit MutableCSSPropertyValueSet(const CSSPropertyValueSet&);
-  MutableCSSPropertyValueSet(const CSSPropertyValue* properties,
-                             unsigned count);
+  explicit MutableCSSPropertyValueSet(
+      base::span<const CSSPropertyValue> properties);
   ~MutableCSSPropertyValueSet() = default;
 
   unsigned PropertyCount() const { return property_vector_.size(); }

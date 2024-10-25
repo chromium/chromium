@@ -20,12 +20,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 
 #include "third_party/blink/renderer/core/core_export.h"
@@ -56,14 +50,14 @@ AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
 }
 
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(
-    const CSSPropertyValue* properties,
-    unsigned count,
+    base::span<const CSSPropertyValue> properties,
     CSSParserMode css_parser_mode,
     bool contains_cursor_hand) {
-  DCHECK_LE(count, static_cast<unsigned>(kMaxArraySize));
+  DCHECK_LE(properties.size(), static_cast<unsigned>(kMaxArraySize));
   return MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
-      AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(count),
-      properties, count, css_parser_mode, contains_cursor_hand);
+      AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
+          properties.size()),
+      PassKey(), properties, css_parser_mode, contains_cursor_hand);
 }
 
 ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
@@ -76,8 +70,7 @@ ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
 
   const auto* mutable_this = To<MutableCSSPropertyValueSet>(this);
   return ImmutableCSSPropertyValueSet::Create(
-      mutable_this->property_vector_.data(),
-      mutable_this->property_vector_.size(), CssParserMode());
+      base::span(mutable_this->property_vector_), CssParserMode());
 }
 
 unsigned CSSPropertyValueSet::ComputeHash() const {
@@ -129,31 +122,37 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
     : CSSPropertyValueSet(css_parser_mode) {}
 
 MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
-    const CSSPropertyValue* properties,
-    unsigned length)
+    base::span<const CSSPropertyValue> properties)
     : CSSPropertyValueSet(kHTMLStandardMode) {
-  property_vector_.ReserveInitialCapacity(length);
-  for (unsigned i = 0; i < length; ++i) {
-    property_vector_.UncheckedAppend(properties[i]);
-    may_have_logical_properties_ |=
-        kLogicalGroupProperties.Has(properties[i].Id());
+  property_vector_.ReserveInitialCapacity(properties.size());
+  for (const CSSPropertyValue& property : properties) {
+    property_vector_.UncheckedAppend(property);
+    may_have_logical_properties_ |= kLogicalGroupProperties.Has(property.Id());
   }
 }
 
 ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
-    const CSSPropertyValue* properties,
-    unsigned length,
+    PassKey,
+    base::span<const CSSPropertyValue> properties,
     CSSParserMode css_parser_mode,
     bool contains_query_hand)
-    : CSSPropertyValueSet(css_parser_mode, length, contains_query_hand) {
-  CSSPropertyValueMetadata* metadata_array =
-      const_cast<CSSPropertyValueMetadata*>(MetadataArray());
-  Member<const CSSValue>* value_array =
-      const_cast<Member<const CSSValue>*>(ValueArray());
-  for (unsigned i = 0; i < array_size_; ++i) {
-    new (metadata_array + i) CSSPropertyValueMetadata();
-    metadata_array[i] = properties[i].Metadata();
-    value_array[i] = properties[i].Value();
+    : CSSPropertyValueSet(css_parser_mode,
+                          properties.size(),
+                          contains_query_hand) {
+  if (array_size_ > 0) {
+    // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet
+    // through Create(), we guarantee that the arrays will have storage where we
+    // expect.
+    UNSAFE_BUFFERS(base::span<CSSPropertyValueMetadata> metadata_array(
+        const_cast<CSSPropertyValueMetadata*>(MetadataArrayBase()),
+        array_size_));
+    UNSAFE_BUFFERS(base::span<Member<const CSSValue>> value_array(
+        const_cast<Member<const CSSValue>*>(ValueArrayBase()), array_size_));
+    for (unsigned i = 0; i < array_size_; ++i) {
+      new (&metadata_array[i]) CSSPropertyValueMetadata();
+      metadata_array[i] = properties[i].Metadata();
+      value_array[i] = properties[i].Value();
+    }
   }
 }
 
@@ -221,9 +220,8 @@ template CORE_EXPORT int ImmutableCSSPropertyValueSet::FindPropertyIndex(
 
 void ImmutableCSSPropertyValueSet::TraceAfterDispatch(
     blink::Visitor* visitor) const {
-  const Member<const CSSValue>* values = ValueArray();
-  for (unsigned i = 0; i < array_size_; i++) {
-    visitor->Trace(values[i]);
+  for (const auto value : ValueArray()) {
+    visitor->Trace(value);
   }
   CSSPropertyValueSet::TraceAfterDispatch(visitor);
 }
@@ -684,7 +682,7 @@ bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
     return false;
   }
 
-  CSSPropertyValue* properties = property_vector_.data();
+  base::span<CSSPropertyValue> properties(property_vector_);
   unsigned old_size = property_vector_.size();
   unsigned new_index = 0;
   for (unsigned old_index = 0; old_index < old_size; ++old_index) {
@@ -761,15 +759,14 @@ MutableCSSPropertyValueSet* CSSPropertyValueSet::CopyPropertiesInSet(
     const Vector<const CSSProperty*>& properties) const {
   HeapVector<CSSPropertyValue, 64> list;
   list.ReserveInitialCapacity(properties.size());
-  for (unsigned i = 0; i < properties.size(); ++i) {
-    CSSPropertyName name(properties[i]->PropertyID());
+  for (const CSSProperty* property : properties) {
+    CSSPropertyName name(property->PropertyID());
     const CSSValue* value = GetPropertyCSSValue(name.Id());
     if (value) {
       list.push_back(CSSPropertyValue(name, *value, false));
     }
   }
-  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list.data(),
-                                                          list.size());
+  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list);
 }
 
 CSSStyleDeclaration* MutableCSSPropertyValueSet::EnsureCSSStyleDeclaration(
@@ -801,16 +798,14 @@ template CORE_EXPORT int MutableCSSPropertyValueSet::FindPropertyIndex(
 template <typename T>
 const CSSPropertyValue* MutableCSSPropertyValueSet::FindPropertyPointer(
     const T& property) const {
-  const CSSPropertyValue* begin = property_vector_.data();
-  const CSSPropertyValue* end = begin + property_vector_.size();
-
   uint16_t id = GetConvertedCSSPropertyID(property);
 
-  const CSSPropertyValue* it = std::find_if(
-      begin, end, [property, id](const CSSPropertyValue& css_property) -> bool {
+  auto it = std::find_if(
+      property_vector_.begin(), property_vector_.end(),
+      [property, id](const CSSPropertyValue& css_property) -> bool {
         return IsPropertyMatch(css_property.Metadata(), id, property);
       });
-  return (it == end) ? nullptr : it;
+  return (it == property_vector_.end()) ? nullptr : &*it;
 }
 
 void MutableCSSPropertyValueSet::TraceAfterDispatch(

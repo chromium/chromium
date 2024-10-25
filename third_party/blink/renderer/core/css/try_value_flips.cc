@@ -137,8 +137,7 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
 
   // Consider updating `kMaxDeclarations` when new properties are added.
 
-  return ImmutableCSSPropertyValueSet::Create(
-      declarations.data(), declarations.size(), kHTMLStandardMode);
+  return ImmutableCSSPropertyValueSet::Create(declarations, kHTMLStandardMode);
 }
 
 namespace {

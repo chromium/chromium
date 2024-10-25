@@ -155,7 +155,8 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   watched_callback_selectors_.clear();
 
   CSSPropertyValueSet* callback_property_set =
-      ImmutableCSSPropertyValueSet::Create(nullptr, 0, kUASheetMode);
+      ImmutableCSSPropertyValueSet::Create(base::span<CSSPropertyValue>(),
+                                           kUASheetMode);
 
   // UA stylesheets always parse in the insecure context mode.
   auto* context = MakeGarbageCollected<CSSParserContext>(

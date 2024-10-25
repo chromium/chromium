@@ -264,8 +264,8 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     // Fast path for the situations where we can trivially detect that there can
     // be no collision between properties, and don't need to reorder, make
     // bitsets, or similar.
-    ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-        parsed_properties.data(), parsed_properties.size(), mode);
+    ImmutableCSSPropertyValueSet* result =
+        ImmutableCSSPropertyValueSet::Create(parsed_properties, mode);
     parsed_properties.clear();
     return result;
   }
@@ -309,8 +309,7 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
   }
 
   ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-      results.data() + unused_entries, results.size() - unused_entries, mode,
-      count_cursor_hand);
+      base::span(results).subspan(unused_entries), mode, count_cursor_hand);
   parsed_properties.clear();
   return result;
 }
