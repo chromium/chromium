@@ -45,4 +45,11 @@ PressureServiceForDedicatedWorker::GetTokenFor(
   return std::nullopt;
 }
 
+RenderFrameHost* PressureServiceForDedicatedWorker::GetRenderFrameHost() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return RenderFrameHostImpl::FromID(
+      worker_host_->GetAncestorRenderFrameHostId());
+}
+
 }  // namespace content

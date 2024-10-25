@@ -1,0 +1,6 @@
+Tests setPressureSourceOverridesEnabled(true) prints info message.
+PASS: Enabling pressure source override
+Log.onEntryAdded
+level: info
+text: Non-virtual observers are running while a virtual source is being added. The virtual source will have no effect on any observer as long as observers are still running. Stop all the observers and restart them if they want to use the virtual source.
+

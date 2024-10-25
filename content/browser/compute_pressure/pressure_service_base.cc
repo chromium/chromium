@@ -15,6 +15,22 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+namespace {
+
+constexpr char kVirtualPressureSourceStartConsoleMessage[] =
+    "Non-virtual observers are running while a virtual source is being added. "
+    "The virtual source will have no effect on any observer as long as "
+    "observers are still running. Stop all the observers and restart them if "
+    "they want to use the virtual source.";
+
+constexpr char kVirtualPressureSourceStopConsoleMessage[] =
+    "Virtual observers are still running after the virtual source was "
+    "disconnected. The non-virtual source will have no effect on any observer "
+    "as long as observers are still running. Stop all the observers and "
+    "restart them if they want to use the non-virtual source.";
+
+}  // namespace
+
 namespace content {
 
 PressureServiceBase::PressureServiceBase()
@@ -22,6 +38,20 @@ PressureServiceBase::PressureServiceBase()
 
 PressureServiceBase::~PressureServiceBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Manually remove the observer here instead of using
+  // base::ScopedObserver. In general, this class will be destroyed before
+  // the observable (WebContentsPressureManagerProxy) but in some cases
+  // (e.g. active PressureObserver instances in both a shared worker and a
+  // dedicated worker may cause the PressureServiceForDedicatedWorker to be
+  // destroyed only when its DedicatedWorkerHost's RenderProcessHost is
+  // destroyed, which happens after WebContentsPressureManagerProxy object is
+  // destroyed) this is not true. The condition above can be reproduced by
+  // ComputePressureBrowserTest when SupportsSharedWorker() is true and shared
+  // workers are used.
+  auto* pressure_manager_proxy = GetWebContentsPressureManagerProxy();
+  if (pressure_manager_proxy) {
+    pressure_manager_proxy->RemoveObserver(this);
+  }
 }
 
 // static
@@ -137,12 +167,67 @@ void PressureServiceBase::AddClient(device::mojom::PressureSource source,
         device::mojom::PressureManagerAddClientResult::NewPressureClient(
             pressure_client.BindNewPipeAndPassReceiver()));
   } else {
+    const std::optional<base::UnguessableToken>& token = GetTokenFor(source);
     manager_remote_->AddClient(
-        source, GetTokenFor(source),
+        source, token,
         base::BindOnce(&PressureServiceBase::DidAddClient,
-                       weak_ptr_factory_.GetWeakPtr(), source,
+                       weak_ptr_factory_.GetWeakPtr(), source, token,
                        std::move(callback)));
   }
+}
+
+void PressureServiceBase::DidAddVirtualPressureSource(
+    device::mojom::PressureSource source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
+
+  if (pressure_client.pressure_source_type() ==
+      PressureClientImpl::PressureSourceType::kNonVirtual) {
+    AddMessageToConsole(kVirtualPressureSourceStartConsoleMessage);
+  }
+}
+
+void PressureServiceBase::DidRemoveVirtualPressureSource(
+    device::mojom::PressureSource source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
+  if (pressure_client.pressure_source_type() ==
+      PressureClientImpl::PressureSourceType::kVirtual) {
+    AddMessageToConsole(kVirtualPressureSourceStopConsoleMessage);
+  }
+}
+
+WebContentsPressureManagerProxy*
+PressureServiceBase::GetWebContentsPressureManagerProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RenderFrameHost* rfh = GetRenderFrameHost();
+  auto* web_content = WebContents::FromRenderFrameHost(rfh);
+  // Checking the validity of RenderFrameHost* because in some cases as
+  // explained in ~PressureServiceBase(), the order of destruction might not be
+  // as expected.
+  if (rfh && web_content) {
+    return WebContentsPressureManagerProxy::FromWebContents(web_content);
+  } else {
+    return nullptr;
+  }
+}
+
+RenderFrameHost* PressureServiceBase::GetRenderFrameHost() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return nullptr;
+}
+
+void PressureServiceBase::AddMessageToConsole(
+    const std::string& message) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RenderFrameHost* rfh = GetRenderFrameHost();
+  CHECK(rfh);
+  rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
 }
 
 // Disconnection handler for |manager_receiver_| and |manager_remote_|. If
@@ -153,10 +238,15 @@ void PressureServiceBase::OnPressureManagerDisconnected() {
 
   manager_receiver_.reset();
   manager_remote_.reset();
+  auto* pressure_manager_proxy = GetWebContentsPressureManagerProxy();
+  if (pressure_manager_proxy) {
+    pressure_manager_proxy->RemoveObserver(this);
+  }
 }
 
 void PressureServiceBase::DidAddClient(
     device::mojom::PressureSource source,
+    const std::optional<base::UnguessableToken>& token,
     AddClientCallback client_callback,
     device::mojom::PressureManagerAddClientResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -167,13 +257,24 @@ void PressureServiceBase::DidAddClient(
   }
 
   auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
-  pressure_client.BindReceiver(std::move(result->get_pressure_client()));
+  pressure_client.BindReceiver(std::move(result->get_pressure_client()),
+                               token.has_value());
 
   std::move(client_callback)
       .Run(device::mojom::PressureManagerAddClientResult::NewPressureClient(
           // This is safe because AddClient() already checked
           // PressureClientImpl::is_client_remote_bound()'s return value.
           pressure_client.BindNewPipeAndPassReceiver()));
+
+  RenderFrameHost* rfh = GetRenderFrameHost();
+  auto* web_content = WebContents::FromRenderFrameHost(rfh);
+  if (rfh && web_content) {
+    auto* pressure_manager_proxy =
+        WebContentsPressureManagerProxy::GetOrCreate(web_content);
+    if (pressure_manager_proxy) {
+      pressure_manager_proxy->AddObserver(this);
+    }
+  }
 }
 
 }  // namespace content

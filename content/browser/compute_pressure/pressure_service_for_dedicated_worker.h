@@ -32,6 +32,7 @@ class CONTENT_EXPORT PressureServiceForDedicatedWorker
   bool ShouldDeliverUpdate() const override;
   std::optional<base::UnguessableToken> GetTokenFor(
       device::mojom::PressureSource) const override;
+  RenderFrameHost* GetRenderFrameHost() const override;
 
  private:
   // DedicatedWorkerHost owns an instance of this class.
