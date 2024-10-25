@@ -57,7 +57,7 @@ need to update it to install Fuchsia-specific dependencies.
 
 Build the target as you would for any other platform:
 ```shell
-$ autoninja out/fuchsia <target_name>
+$ autoninja -C out/fuchsia <target_name>
 ```
 
 To run the tests in an emulator, see the [Run](#run) section.
