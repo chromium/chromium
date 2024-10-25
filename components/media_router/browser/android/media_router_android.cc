@@ -88,7 +88,7 @@ MediaRouterAndroid::MediaRouteRequest::MediaRouteRequest(
       presentation_id(presentation_id),
       callback(std::move(callback)) {}
 
-MediaRouterAndroid::MediaRouteRequest::~MediaRouteRequest() {}
+MediaRouterAndroid::MediaRouteRequest::~MediaRouteRequest() = default;
 
 MediaRouterAndroid::MediaRouterAndroid()
     : bridge_(new MediaRouterAndroidBridge(this)) {}

@@ -108,7 +108,7 @@ LocalPresentationManager::LocalPresentation::LocalPresentation(
     const PresentationInfo& presentation_info)
     : presentation_info_(presentation_info) {}
 
-LocalPresentationManager::LocalPresentation::~LocalPresentation() {}
+LocalPresentationManager::LocalPresentation::~LocalPresentation() = default;
 
 void LocalPresentationManager::LocalPresentation::RegisterController(
     const content::GlobalRenderFrameHostId& render_frame_host_id,

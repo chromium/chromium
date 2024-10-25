@@ -677,7 +677,8 @@ CastSocketImpl::CastSocketMessageDelegate::CastSocketMessageDelegate(
   DCHECK(socket_);
 }
 
-CastSocketImpl::CastSocketMessageDelegate::~CastSocketMessageDelegate() {}
+CastSocketImpl::CastSocketMessageDelegate::~CastSocketMessageDelegate() =
+    default;
 
 // CastTransport::Delegate implementation.
 void CastSocketImpl::CastSocketMessageDelegate::OnError(
