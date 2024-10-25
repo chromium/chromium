@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -1010,40 +1009,6 @@ TEST_F(GeolocationNetworkProviderTest, DiagnosticsNoLocationInNetworkResponse) {
       test_url_loader_factory_.pending_requests()->back().request.url.spec(),
       kBadNetworkResponse);
   EXPECT_FALSE(response_future.Get());
-}
-
-TEST_F(GeolocationNetworkProviderTest, DiagnosticsObserverDisabled) {
-  // Disable the diagnostics observer feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
-
-  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
-  auto provider = CreateProvider(/*set_permission_granted=*/true);
-  provider->StartProvider(/*high_accuracy=*/false);
-
-  // Simulate a Wi-Fi data update so a network request is created. The
-  // diagnostics callback is not called.
-  EXPECT_CALL(network_request_callback_, Run).Times(0);
-  wifi_data_provider_->SetData(CreateReferenceWifiScanData(/*ap_count=*/6));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
-
-  // Simulate a network response. The diagnostics callback is not called.
-  EXPECT_CALL(network_response_callback_, Run).Times(0);
-  constexpr char kReferenceNetworkResponse[] =
-      "{"
-      "  \"accuracy\": 1200.4,"
-      "  \"location\": {"
-      "    \"lat\": 51.0,"
-      "    \"lng\": -0.1"
-      "  }"
-      "}";
-  test_url_loader_factory_.AddResponse(
-      test_url_loader_factory_.pending_requests()->back().request.url.spec(),
-      kReferenceNetworkResponse);
-  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace device

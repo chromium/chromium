@@ -309,10 +309,7 @@ void NetworkLocationRequest::OnRequestComplete(
       base::Value::Dict response_data = std::move(*response_result).TakeDict();
       result = CreateGeopositionResultFromResponse(
           response_data, wifi_timestamp_, url_loader_->GetFinalURL());
-      if (base::FeatureList::IsEnabled(
-              features::kGeolocationDiagnosticsObserver)) {
-        response = ResponseToMojom(response_data);
-      }
+      response = ResponseToMojom(response_data);
     }
     if (!result) {
       // We failed to parse the response.

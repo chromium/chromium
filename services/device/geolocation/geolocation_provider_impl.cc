@@ -420,11 +420,6 @@ void GeolocationProviderImpl::AddInternalsObserver(
     AddInternalsObserverCallback callback) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (!base::FeatureList::IsEnabled(
-          features::kGeolocationDiagnosticsObserver)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
   internals_observers_.Add(std::move(observer));
   if (!location_provider_manager_) {
     std::move(callback).Run(nullptr);

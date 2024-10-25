@@ -23,10 +23,6 @@ BASE_FEATURE(kGenericSensorExtraClasses,
 BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
              "EnableBluetoothSerialPortProfileInSerialApi",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enable real-time diagnostic updates in chrome://location-internals.
-BASE_FEATURE(kGeolocationDiagnosticsObserver,
-             "GeolocationDiagnosticsObserver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Expose serial port logical connection state and dispatch connection events
 // for Bluetooth serial ports when the Bluetooth device connection state
 // changes.

@@ -169,10 +169,7 @@ void NetworkLocationProvider::OnLocationResponse(
     location_provider_update_callback_.Run(this, std::move(result));
   }
   internals_updated_closure_.Run();
-
-  if (base::FeatureList::IsEnabled(features::kGeolocationDiagnosticsObserver)) {
-    network_response_callback_.Run(std::move(response_data));
-  }
+  network_response_callback_.Run(std::move(response_data));
 }
 
 void NetworkLocationProvider::StartProvider(bool high_accuracy) {
@@ -308,9 +305,7 @@ void NetworkLocationProvider::RequestPosition() {
   request_->MakeRequest(wifi_data_, wifi_timestamp_, partial_traffic_annotation,
                         NetworkLocationRequestSource::kNetworkLocationProvider);
 
-  if (base::FeatureList::IsEnabled(features::kGeolocationDiagnosticsObserver)) {
-    network_request_callback_.Run(request_->GetRequestDataForDiagnostics());
-  }
+  network_request_callback_.Run(request_->GetRequestDataForDiagnostics());
 }
 
 }  // namespace device
