@@ -150,12 +150,27 @@ void DrawGainmapImageRect(SkCanvas* canvas,
                         recorder);
       }
 
+      // SkGainmapShader will internally use SkImage::makeRawShader, which does
+      // not support cubic filtering. Disable cubic filtering here.
+      // https://crbug.com/374783345
+      std::vector<SkSamplingOptions> tile_sampling = {sampling, sampling};
+      for (size_t i = 0; i < 2; ++i) {
+        if (!tile_source_images[i] || !tile_sampling[i].useCubic) {
+          continue;
+        }
+        tile_sampling[i] = SkSamplingOptions(SkFilterMode::kLinear,
+                                             tile_source_images[i]->hasMipmaps()
+                                                 ? SkMipmapMode::kLinear
+                                                 : SkMipmapMode::kNone);
+      }
+
       // Draw the tile.
       SkPaint tile_paint = paint;
       auto shader = SkGainmapShader::Make(
-          tile_source_images[0], tile_source_rects[0], sampling,
-          tile_source_images[1], tile_source_rects[1], sampling, gainmap_info,
-          tile_dest_rect, hdr_headroom, canvas->imageInfo().refColorSpace());
+          tile_source_images[0], tile_source_rects[0], tile_sampling[0],
+          tile_source_images[1], tile_source_rects[1], tile_sampling[1],
+          gainmap_info, tile_dest_rect, hdr_headroom,
+          canvas->imageInfo().refColorSpace());
       tile_paint.setShader(std::move(shader));
       canvas->drawRect(tile_dest_rect, tile_paint);
     }
