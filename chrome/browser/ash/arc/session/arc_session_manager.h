@@ -57,7 +57,6 @@ constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
 constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
 
 class ArcDataRemover;
-class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
@@ -594,8 +593,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::optional<std::string> arc_salt_on_disk_;
 
   std::optional<bool> property_files_expansion_result_;
-
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
   std::optional<guest_os::GuestOsMountProviderRegistry::Id>
       arcvm_mount_provider_id_;

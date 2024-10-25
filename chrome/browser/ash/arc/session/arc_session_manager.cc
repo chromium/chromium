@@ -15,7 +15,6 @@
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_data_remover.h"
-#include "ash/components/arc/session/arc_dlc_installer.h"
 #include "ash/components/arc/session/arc_instance_mode.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_session.h"
@@ -377,14 +376,6 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
   return ArcSessionManager::ExpansionResult{std::move(*salt), true};
 }
 
-// Checks whether ARC DLCs needs to be installed/uninstalled. Currently,
-// "houdini-rvc-dlc" is the only enabled DLC, so we only need to check
-// for the presence of kEnableHoudiniDlc flag in the command line.
-bool IsDlcRequired() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kEnableHoudiniDlc);
-}
-
 // Inform ArcMetricsServices about the starting time of ARC provisioning.
 void ReportProvisioningStartTime(const base::TimeTicks& start_time,
                                  Profile* profile) {
@@ -536,12 +527,10 @@ ArcSessionManager::ArcSessionManager(
   }
   ResetStabilityMetrics();
   ash::ConciergeClient::Get()->AddVmObserver(this);
-  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 }
 
 ArcSessionManager::~ArcSessionManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  arc_dlc_installer_.reset();
 
   ash::ConciergeClient::Get()->RemoveVmObserver(this);
 
@@ -602,10 +591,6 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
   }
 
   MaybeStartArcDataRemoval();
-
-  if (!enable_requested_ && IsDlcRequired()) {
-    arc_dlc_installer_->RequestDisable();
-  }
 }
 
 void ArcSessionManager::OnSessionRestarting() {
@@ -1027,10 +1012,6 @@ void ArcSessionManager::RequestEnable() {
   SetArcEnabledStateMetric(true);
 
   VLOG(1) << "ARC opt-in. Starting ARC session.";
-
-  if (IsDlcRequired()) {
-    arc_dlc_installer_->RequestEnable();
-  }
 
   // |skipped_terms_of_service_negotiation_| is reset only in case terms are shown.
   // In all other cases it is conidered as skipped.

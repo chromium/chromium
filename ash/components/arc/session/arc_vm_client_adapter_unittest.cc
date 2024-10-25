@@ -23,7 +23,6 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_dlc_installer.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/file_system_status.h"
@@ -393,7 +392,6 @@ class ArcVmClientAdapterTest : public testing::Test,
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
     app_host_ = std::make_unique<FakeAppHost>(arc_bridge_service()->app());
     app_instance_ = std::make_unique<FakeAppInstance>(app_host_.get());
-    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -402,7 +400,6 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   void TearDown() override {
     scoped_user_manager_.reset();
-    arc_dlc_installer_.reset();
     ash::PatchPanelClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
@@ -661,7 +658,6 @@ class ArcVmClientAdapterTest : public testing::Test,
   FakeDemoModeDelegate demo_mode_delegate_;
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<TestDebugDaemonClient> test_debug_daemon_client_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
