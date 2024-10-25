@@ -1130,9 +1130,10 @@ NSString* kDriveIconRepositoryPrefix =
 // Helper function to compute whether the filter menu should be enabled.
 - (BOOL)filterMenuShouldBeEnabled {
   if (_shouldShowSearchItems) {
-    return YES;
+    return _searchText.length > 0;
   }
   return _collectionType != DriveFilePickerCollectionType::kRoot &&
+         _collectionType != DriveFilePickerCollectionType::kRecent &&
          _collectionType != DriveFilePickerCollectionType::kSharedDrives;
 }
 

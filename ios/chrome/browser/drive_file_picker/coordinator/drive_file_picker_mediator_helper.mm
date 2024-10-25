@@ -220,8 +220,8 @@ DriveListQuery CreateDriveListQuery(
       query.filename_prefix = search_text;
       ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
                                 /* folders_first= */ false, query);
+      ApplyFilterToDriveListQuery(filter, query);
     }
-    ApplyFilterToDriveListQuery(filter, query);
     return query;
   }
 
@@ -247,7 +247,6 @@ DriveListQuery CreateDriveListQuery(
     case DriveFilePickerCollectionType::kRecent:
       query.extra_term = kRecentExtraTerm;
       query.order_by = kRecentOrderBy;
-      ApplyFilterToDriveListQuery(filter, query);
       break;
     case DriveFilePickerCollectionType::kSharedWithMe:
       query.extra_term = kSharedWithMeExtraTerm;
