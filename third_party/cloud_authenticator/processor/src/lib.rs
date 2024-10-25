@@ -118,6 +118,15 @@ pub enum Error {
     // be accepted from it.
     UnknownClient,
 
+    // This error signals that the key used to sign a request is unknown to the
+    // service, which means there is a problem with the client device's
+    // registration and it might need to re-register.
+    UnknownKey,
+
+    // This error signals that the signature attached to the request failed to
+    // verify, which is a problem that would need to be understood better.
+    SignatureVerificationFailed,
+
     // A large number of errors are not distinguished and are just strings.
     // The only exception is an error while parsing the client's request, since
     // we can include the detail of the CBOR parse error, which may be useful
@@ -143,6 +152,10 @@ pub struct MetricsUpdate {
     pub cannot_parse_public_key: u32,
     pub signature_verification_failed: u32,
     pub error_result: u32,
+    pub missing_uv_key_with_deferred_bit: u32,
+    pub missing_uv_key_without_deferred_bit: u32,
+    pub missing_uv_key_with_hw_key_present: u32,
+    pub missing_uv_and_hw_key: u32,
 
     // Operation events. (These are only updated if the operation was successful.)
     pub debug_success: u32,
@@ -620,10 +633,20 @@ pub fn process_client_msg(
         else {
             if auth_level == AuthLevel::UserVerification {
                 metrics.missing_uv_key += 1;
+
+                match client.get(UV_KEY_PENDING_KEY).unwrap_or(&Value::Boolean(false)) {
+                    Value::Boolean(true) => metrics.missing_uv_key_with_deferred_bit += 1,
+                    _ => metrics.missing_uv_key_without_deferred_bit += 1,
+                }
+
+                match pub_keys.get(&MapKeyRef::Str("hw") as &dyn MapLookupKey) {
+                    Some(_) => metrics.missing_uv_key_with_hw_key_present += 1,
+                    None => metrics.missing_uv_and_hw_key += 1,
+                }
             } else {
                 metrics.missing_key += 1;
             }
-            return Err(Error::Str("no such public key at that auth level"));
+            return Err(Error::UnknownKey);
         };
         let Some((pub_key_type, pub_key)) = spki::parse(pub_key) else {
             metrics.cannot_parse_public_key += 1;
@@ -636,7 +659,7 @@ pub fn process_client_msg(
             spki::PublicKeyType::RSA => crypto::rsa_verify(pub_key, &signed_message, sig),
         } {
             metrics.signature_verification_failed += 1;
-            return Err(Error::Str("signature validation failed"));
+            return Err(Error::SignatureVerificationFailed);
         }
         auth = Authentication::Device(
             device_id,
@@ -1215,6 +1238,28 @@ mod tests {
             assert_eq!(output, cbor!([{"ok": true}]));
             ClientState::Explicit(state)
         };
+        static ref REGISTERED_STATE_NO_KEYS: ClientState = {
+            let encoded_register = cbor!([{
+                CMD: "device/register",
+                DEVICE_ID: (TEST_DEVICE_ID.clone()),
+                PUB_KEYS: {"dummyentry": (SPKI.as_slice())},
+            }])
+            .to_bytes();
+            let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+            let mut metrics = MetricsUpdate::default();
+            let (output, StateUpdate::Major(state)) = process_client_msg(
+                ClientState::Initial,
+                &mut metrics,
+                EXTERNAL_CONTEXT.clone(),
+                TEST_HANDSHAKE_HASH.as_slice(),
+                msg,
+            )
+            .unwrap() else {
+                panic!("");
+            };
+            assert_eq!(output, cbor!([{"ok": true}]));
+            ClientState::Explicit(state)
+        };
         static ref ENTITY_PROTOBUF_BYTES: Vec<u8> = {
             let msg = sign_request(cbor!({
                 CMD: "passkeys/create",
@@ -1579,7 +1624,46 @@ mod tests {
         ) else {
             panic!("should have failed");
         };
-        assert_eq!(metrics, MetricsUpdate { missing_uv_key: 1, ..MetricsUpdate::default() });
+        assert_eq!(
+            metrics,
+            MetricsUpdate {
+                missing_uv_key: 1,
+                missing_uv_key_with_deferred_bit: 1,
+                missing_uv_key_with_hw_key_present: 1,
+                ..MetricsUpdate::default()
+            }
+        );
+    }
+
+    #[test]
+    fn test_uv_key_missing_with_no_deferred_uv_and_no_hw_key_metrics() {
+        // We have observed this failure case in the wild thus we are especially
+        // interested that this metric works.
+        let Value::Map(cmd) = cbor!({CMD: "debug/success"}) else {
+            panic!("!");
+        };
+        let msg = sign_authenticated_request(cmd, "uv", |to_be_signed| {
+            KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
+        });
+        let mut metrics = MetricsUpdate::default();
+        let Err(_) = process_client_msg(
+            REGISTERED_STATE_NO_KEYS.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        ) else {
+            panic!("should have failed");
+        };
+        assert_eq!(
+            metrics,
+            MetricsUpdate {
+                missing_uv_key: 1,
+                missing_uv_key_without_deferred_bit: 1,
+                missing_uv_and_hw_key: 1,
+                ..MetricsUpdate::default()
+            }
+        );
     }
 
     #[test]

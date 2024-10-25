@@ -339,6 +339,8 @@ impl EnclaveServer {
 
                 let err = match err {
                     processor::Error::UnknownClient => Value::Int(0),
+                    processor::Error::UnknownKey => Value::Int(1),
+                    processor::Error::SignatureVerificationFailed => Value::Int(2),
                     processor::Error::Str(s) => Value::String(String::from(s)),
                     _ => Value::String(format!("{:?}", err)),
                 };
