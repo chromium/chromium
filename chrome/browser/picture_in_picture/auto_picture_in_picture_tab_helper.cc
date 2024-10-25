@@ -5,6 +5,7 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -57,7 +59,9 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
   }
 }
 
-AutoPictureInPictureTabHelper::~AutoPictureInPictureTabHelper() = default;
+AutoPictureInPictureTabHelper::~AutoPictureInPictureTabHelper() {
+  StopAndResetAsyncTasks();
+}
 
 bool AutoPictureInPictureTabHelper::HasAutoPictureInPictureBeenRegistered()
     const {
@@ -68,6 +72,8 @@ void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
   has_ever_registered_for_auto_picture_in_picture_ = false;
   // On navigation, forget any 'allow once' state.
   auto_pip_setting_helper_.reset();
+
+  StopAndResetAsyncTasks();
 }
 
 void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
@@ -122,6 +128,7 @@ void AutoPictureInPictureTabHelper::OnTabActivatedChanged(
     }
 
     MaybeEnterAutoPictureInPicture();
+    MaybeScheduleAsyncTasks();
   }
 }
 
@@ -176,21 +183,50 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   if (!IsEligibleForAutoPictureInPicture()) {
-    MaybeGetVisibility();
     return;
   }
-
-  EnterAutoPictureInPicture();
-}
-
-void AutoPictureInPictureTabHelper::EnterAutoPictureInPicture() {
   auto_picture_in_picture_activation_time_ =
       base::TimeTicks::Now() + blink::kActivationLifespan;
   content::MediaSession::Get(web_contents())->EnterAutoPictureInPicture();
 }
 
+void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
+  if (!base::FeatureList::IsEnabled(
+          media::kAutoPictureInPictureForVideoPlayback)) {
+    return;
+  }
+
+  StopAndResetAsyncTasks();
+
+  // Prevent scheduling asynchronous checks if we are already in picture in
+  // picture, or a media session does not exist. Also prevent these checks if we
+  // are already eligible for auto picture in picture, since auto picture in
+  // picture requests will succeed anyways.
+  if (is_in_picture_in_picture_ ||
+      !(content::MediaSession::GetIfExists(web_contents())) ||
+      IsEligibleForAutoPictureInPicture()) {
+    return;
+  }
+
+  ScheduleAsyncVisibilityCheck();
+  ScheduleUrlSafetyCheck();
+}
+
+void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
+  if (!base::FeatureList::IsEnabled(
+          media::kAutoPictureInPictureForVideoPlayback)) {
+    return;
+  }
+
+  async_tasks_weak_factory_.InvalidateWeakPtrs();
+  safe_browsing_checker_client_.reset();
+
+  has_safe_url_ = false;
+  has_sufficiently_visible_video_ = false;
+}
+
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
-  get_visibility_weak_factory_.InvalidateWeakPtrs();
+  StopAndResetAsyncTasks();
 
   if (!is_in_auto_picture_in_picture_) {
     return;
@@ -209,8 +245,7 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
   }
 }
 
-bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
-    HasSufficientlyVisibleVideo has_sufficiently_visible_video) {
+bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() {
   // Don't try to autopip if picture-in-picture is currently disabled.
   if (PictureInPictureWindowManager::GetInstance()
           ->IsPictureInPictureDisabled()) {
@@ -218,8 +253,7 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   }
 
   // The tab must either have playback or be using camera/microphone to autopip.
-  if (!MeetsVideoPlaybackConditions(has_sufficiently_visible_video) &&
-      !IsUsingCameraOrMicrophone()) {
+  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -267,15 +301,14 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   return true;
 }
 
-bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions(
-    HasSufficientlyVisibleVideo has_sufficiently_visible_video) const {
+bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
   if (!base::FeatureList::IsEnabled(
           media::kAutoPictureInPictureForVideoPlayback)) {
     return false;
   }
 
   return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
-         (has_sufficiently_visible_video == HasSufficientlyVisibleVideo::kYes);
+         has_safe_url_ && has_sufficiently_visible_video_;
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
@@ -305,30 +338,59 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
   return setting;
 }
 
-void AutoPictureInPictureTabHelper::MaybeGetVisibility() {
-  get_visibility_weak_factory_.InvalidateWeakPtrs();
+void AutoPictureInPictureTabHelper::ScheduleAsyncVisibilityCheck() {
+  CHECK(!is_in_picture_in_picture_);
+
   content::MediaSession* media_session =
       content::MediaSession::GetIfExists(web_contents());
-  if (!media_session || is_in_picture_in_picture_) {
-    return;
-  }
+  CHECK(media_session);
 
   media_session->GetVisibility(
-      base::BindOnce(&AutoPictureInPictureTabHelper::GetVideoVisibility,
-                     get_visibility_weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AutoPictureInPictureTabHelper::OnVideoVisibilityResult,
+                     async_tasks_weak_factory_.GetWeakPtr()));
 }
 
-void AutoPictureInPictureTabHelper::GetVideoVisibility(
+void AutoPictureInPictureTabHelper::OnVideoVisibilityResult(
     bool has_sufficiently_visible_video) {
-  if (!has_sufficiently_visible_video || is_in_picture_in_picture_) {
+  has_sufficiently_visible_video_ = has_sufficiently_visible_video;
+
+  if (!has_sufficiently_visible_video_) {
     return;
   }
 
-  if (!IsEligibleForAutoPictureInPicture(HasSufficientlyVisibleVideo::kYes)) {
+  MaybeEnterAutoPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::OnUrlSafetyResult(bool has_safe_url) {
+  has_safe_url_ = has_safe_url;
+
+  if (!has_safe_url_) {
     return;
   }
 
-  EnterAutoPictureInPicture();
+  MaybeEnterAutoPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
+  CHECK(!is_in_picture_in_picture_);
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->safe_browsing_service());
+
+  if (!safe_browsing_checker_client_) {
+    // Create the AutoPiP safe browsing checker client, which will be used for
+    // determining URL safety.
+    safe_browsing_checker_client_ = std::make_unique<
+        AutoPictureInPictureSafeBrowsingCheckerClient>(
+        g_browser_process->safe_browsing_service()->database_manager().get(),
+        kSafeBrowsingCheckDelay,
+        base::BindRepeating(&AutoPictureInPictureTabHelper::OnUrlSafetyResult,
+                            async_tasks_weak_factory_.GetWeakPtr()));
+  }
+
+  safe_browsing_checker_client_->CheckUrlSafety(
+      // TODO(crbug.com/40250017): Replace with MediaSession routed frame last
+      // committed URL, and ensure the rfh is in primary main frame.
+      web_contents()->GetLastCommittedURL());
 }
 
 void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {

@@ -81,11 +81,13 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/permissions",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/safe_browsing:safe_browsing",
       "//chrome/browser/ui/color:color_headers",
       "//components/content_settings/core/browser",
       "//components/permissions",
