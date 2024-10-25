@@ -564,7 +564,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1407970155431887387">Cliquer pour ouvrir la boîte de dialogue Modifier pour <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1408504635543854729">Explorer le contenu de l'appareil dans l'application Fichiers. Le contenu est restreint par un administrateur et ne peut pas être modifié.</translation>
 <translation id="1408980562518920698">Gérer les renseignements personnels</translation>
-<translation id="1410197035576869800">Icône de l'application</translation>
+<translation id="1410197035576869800">Icône de l'appli</translation>
 <translation id="1410616244180625362">Continuer à autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="1410797069449661718">Faire défiler l'écran vers le premier onglet</translation>
 <translation id="1410806973194718079">Impossible de vérifier les politiques</translation>
@@ -8955,7 +8955,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 témoin}one{{NUM_COOKIES} témoin}other{{NUM_COOKIES} témoins}}</translation>
 <translation id="7493386493263658176">L'extension <ph name="EXTENSION_NAME" /> peut recueillir tout le texte que vous entrez, y compris des données personnelles comme des mots de passe et des numéros de carte de crédit. Voulez-vous utiliser cette extension?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
-<translation id="7495149565104413027">Application Android</translation>
+<translation id="7495149565104413027">Appli Android</translation>
 <translation id="7495217365392072364">Organiser les onglets similaires</translation>
 <translation id="7497322070873193353">IA de Google</translation>
 <translation id="7497981768003291373">Aucun journal de texte WebRTC n'a été créé récemment.</translation>

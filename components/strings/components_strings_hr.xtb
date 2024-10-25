@@ -3741,7 +3741,7 @@ Dodatne pojedinosti:
 <translation id="7831993212387676366">Što je popis za kupnju?</translation>
 <translation id="7840103971441592723">Snimanje zaslona je počelo</translation>
 <translation id="784137052867620416">Uvidi za Shopping</translation>
-<translation id="7842611866969435396">Krenimo</translation>
+<translation id="7842611866969435396">Započnimo</translation>
 <translation id="784404208867107517">Grupirana povijest</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ništa}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Fakultetski sportovi</translation>
@@ -4261,7 +4261,7 @@ Dodatne pojedinosti:
 <translation id="8811470563853401328">Želite li spremiti adresu na račun?</translation>
 <translation id="8811725516933141693">Upišite @gemini da biste chatali s Geminijem</translation>
 <translation id="8813277370772331957">Podsjeti me kasnije</translation>
-<translation id="8814547618907885931">Pogledajte sve tablice za usporedbu</translation>
+<translation id="8814547618907885931">Prikaži sve tablice za usporedbu</translation>
 <translation id="8814707942599948500">Omotnica C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste ažurirali Chrome iz postavki Chromea</translation>
 <translation id="8820817407110198400">Oznake</translation>

@@ -3626,7 +3626,7 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
       Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> et les applications ARC ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
 
       Si ces règles ne sont pas configurées, les utilisateurs peuvent choisir eux-mêmes leurs paramètres de proxy.</translation>
-<translation id="3758249152301468420">Désactiver les outils de développement</translation>
+<translation id="3758249152301468420">Désactiver les outils pour les développeurs</translation>
 <translation id="3758910737665387561">Autoriser les appareils à utiliser Plugin VM</translation>
 <translation id="3759650373178711405">La règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> vous permet de dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, à moins que la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> soit définie pour restaurer définitivement les URL des sessions précédentes.
 

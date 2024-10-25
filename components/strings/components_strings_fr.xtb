@@ -3902,7 +3902,7 @@ Informations supplémentaires :
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="8150722005171944719">Le fichier disponible à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées empêchent d'y accéder.</translation>
-<translation id="8151185429379586178">Outils de développement</translation>
+<translation id="8151185429379586178">Outils pour les développeurs</translation>
 <translation id="8153865548451212769">{0,plural, =1{Une règle de l'administrateur déconseille de télécharger ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille de télécharger ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille de télécharger ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Équipement de hockey</translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>
