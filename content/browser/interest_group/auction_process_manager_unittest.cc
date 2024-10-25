@@ -1482,14 +1482,13 @@ TEST_P(AuctionProcessManagerTest,
   EXPECT_EQ(ProcessCreationOrder(handle3), 0u);
 }
 
-// A base class for AuctionProcessManager tests that sets up the basic test
-// environment. Since this class creates SiteInstances and (implicitly)
-// BrowsingInstances, it's important that it knows whether to use
-// kOriginKeyedProcessesByDefault at the time it's constructed.
-class InRendererAuctionProcessManagerTestBase
+// Tests for the kInRendererSharedProcess ProcessMode only. These are different
+// enough for the the other two modes test, that no tests are currently run in
+// all three modes.
+class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
     : public AuctionProcessManagerTest {
  public:
-  InRendererAuctionProcessManagerTestBase() {
+  InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "3s"}});
@@ -1499,25 +1498,6 @@ class InRendererAuctionProcessManagerTestBase
   base::test::ScopedFeatureList feature_list_;
 };
 
-// A test class for AuctionProcessManager tests that require desktop-like
-// behavior, i.e. site-per-process is enabled, and
-// kOriginKeyedProcessesByDefault and process sharing for non-default
-// SiteInstances is allowed.
-using InRendererAuctionProcessManagerTest =
-    InRendererAuctionProcessManagerTestBase;
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InRendererAuctionProcessManagerTest,
-    testing::Combine(
-        testing::Values(AuctionProcessManager::WorkletType::kSeller,
-                        AuctionProcessManager::WorkletType::kBidder),
-        testing::Values(ProcessMode::kInRendererSitePerProcess)));
-
-// A test class for AuctionProcessManager tests that require Android-like
-// behavior, i.e. site-per-process is disabled, kOriginKeyedProcessesByDefault
-// is disabled, and process sharing is set for default SiteInstances only.
-using InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault =
-    InRendererAuctionProcessManagerTestBase;
 INSTANTIATE_TEST_SUITE_P(
     All,
     InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
@@ -1526,9 +1506,15 @@ INSTANTIATE_TEST_SUITE_P(
                         AuctionProcessManager::WorkletType::kBidder),
         testing::Values(ProcessMode::kInRendererSharedProcess)));
 
-TEST_P(InRendererAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
-  // Exercise the codepath where a RenderProcessHostDestroyed is received, to
-  // make sure it doesn't crash.
+// Exercise the codepath where a RenderProcessHostDestroyed is received, to
+// make sure it doesn't crash.
+TEST_P(AuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
+  // The process crashing case in the dedicated process world is covered by the
+  // ProcessCrash test, rather than this one.
+  if (GetProcessMode() == ProcessMode::kDedicated) {
+    return;
+  }
+
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceExpectSuccess(kOriginA);
   ASSERT_FALSE(rph_factory_.GetProcesses()->empty());
@@ -1541,7 +1527,7 @@ TEST_P(InRendererAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
+TEST_P(AuctionProcessManagerTest, PidLookup) {
   auto handle = GetServiceExpectSuccess(kOriginA);
 
   base::ProcessId expected_pid = base::Process::Current().Pid();
@@ -1566,9 +1552,13 @@ TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
           }));
   EXPECT_FALSE(pid1.has_value());
 
-  for (std::unique_ptr<MockRenderProcessHost>& proc :
-       *rph_factory_.GetProcesses()) {
-    proc->SimulateReady();
+  if (dedicated_process_manager_) {
+    SimulateReadyProcess(/*creation_index=*/0);
+  } else {
+    for (std::unique_ptr<MockRenderProcessHost>& proc :
+         *rph_factory_.GetProcesses()) {
+      proc->SimulateReady();
+    }
   }
 
   run_loop0.Run();
@@ -1581,11 +1571,25 @@ TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
       handle->GetPid(base::BindOnce([](base::ProcessId pid) {
         ADD_FAILURE() << "Should not get to callback in pid2 case";
       }));
-  ASSERT_TRUE(pid2.has_value());
-  EXPECT_EQ(expected_pid, pid2.value());
+  EXPECT_EQ(expected_pid, pid2);
+
+  // Reusing the process with another handle should also result in synchronous
+  // PID lookups.
+  auto handle2 = GetServiceExpectSuccess(kOriginA);
+  std::optional<base::ProcessId> pid3 =
+      handle2->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid2 case";
+      }));
+  EXPECT_EQ(expected_pid, pid3);
 }
 
-TEST_P(InRendererAuctionProcessManagerTest, PidLookupAlreadyRunning) {
+TEST_P(AuctionProcessManagerTest, PidLookupRendererProcessAlreadyRunning) {
+  // There's no analog to a renderer process already existing in the dedicated
+  // process world.
+  if (GetProcessMode() == ProcessMode::kDedicated) {
+    return;
+  }
+
   // "Launch" the appropriate process before we even ask for it, and mark its
   // launch as completed. |frame_site_instance| will help keep it alive.
   scoped_refptr<SiteInstance> frame_site_instance =
@@ -1617,7 +1621,7 @@ TEST_P(InRendererAuctionProcessManagerTest, PidLookupAlreadyRunning) {
 }
 
 TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
-       AndroidLike) {
+       MultipleSiteInstances) {
   base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
@@ -1707,37 +1711,47 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   EXPECT_EQ(GetActiveProcessesOfWorkletType(GetWorkletType()), 1u);
 }
 
-TEST_P(InRendererAuctionProcessManagerTest, DesktopLike) {
+// Tests the site-per-process sharing model, focusing on the multiple
+// SiteInstances case, which should not affect process sharing.
+TEST_P(AuctionProcessManagerTest, MultipleSiteInstances) {
   base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
                                     site_instance1_);
-  int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
-
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
                                     site_instance2_);
-  int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
+  // Despite having different SiteInstances, `handle_a1` and `handle_a2` should
+  // share the same process and service, since they share an origin.
+  EXPECT_EQ(handle_a1->worklet_process_for_testing(),
+            handle_a2->worklet_process_for_testing());
+  EXPECT_EQ(handle_a1->GetService(), handle_a2->GetService());
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
                                     site_instance1_);
-  int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
-
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
                                     site_instance2_);
-  int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
+  // Similarly, `handle_b1` and `handle_b2` should share a process and service.
+  EXPECT_EQ(handle_b1->worklet_process_for_testing(),
+            handle_b2->worklet_process_for_testing());
+  EXPECT_EQ(handle_b1->GetService(), handle_b2->GetService());
 
-  // Since we are site-per-process, things should be grouped by origin.
-  EXPECT_EQ(id_a1, id_a2);
-  EXPECT_NE(id_a1, id_b1);
-  EXPECT_NE(id_a1, id_b2);
-  EXPECT_NE(id_a2, id_b1);
-  EXPECT_NE(id_a2, id_b2);
-  EXPECT_EQ(id_b1, id_b2);
+  // Since sites are partitioned by origin, the `a` handles and `b` handles
+  // should use different processes and services.
+  EXPECT_NE(handle_a1->worklet_process_for_testing(),
+            handle_b1->worklet_process_for_testing());
+  EXPECT_NE(handle_a1->GetService(), handle_b1->GetService());
+
+  // If using InRendererMode, they should also use different RenderProcessHosts.
+  if (GetProcessMode() != ProcessMode::kDedicated) {
+    EXPECT_NE(handle_a1->GetRenderProcessHostForTesting()->GetID(),
+              handle_b1->GetRenderProcessHostForTesting()->GetID());
+  }
+
   histogram_tester.ExpectBucketCount(
       RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 2);
@@ -1749,18 +1763,21 @@ TEST_P(InRendererAuctionProcessManagerTest, DesktopLike) {
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
                                     site_instance1_);
-  int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
-
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
                                     site_instance2_);
-  int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
+  EXPECT_EQ(handle_i1->worklet_process_for_testing(),
+            handle_i2->worklet_process_for_testing());
+  EXPECT_EQ(handle_i1->GetService(), handle_i2->GetService());
 
-  EXPECT_EQ(id_i1, id_i2);
-  EXPECT_NE(id_i1, id_a1);
-  EXPECT_NE(id_i1, id_a2);
-  EXPECT_NE(id_i1, id_b1);
-  EXPECT_NE(id_i1, id_b2);
+  // If using InRendererMode, they should also use different RenderProcessHosts.
+  if (GetProcessMode() != ProcessMode::kDedicated) {
+    EXPECT_NE(handle_i1->GetRenderProcessHostForTesting()->GetID(),
+              handle_a1->GetRenderProcessHostForTesting()->GetID());
+    EXPECT_NE(handle_i1->GetRenderProcessHostForTesting()->GetID(),
+              handle_b1->GetRenderProcessHostForTesting()->GetID());
+  }
+
   histogram_tester.ExpectBucketCount(
       RequestWorkletServiceOutcomeUmaName(),
       RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 3);
