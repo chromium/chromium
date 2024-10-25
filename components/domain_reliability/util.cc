@@ -199,8 +199,8 @@ class ActualTimer : public MockableTime::Timer {
 
 }  // namespace
 
-MockableTime::Timer::~Timer() {}
-MockableTime::Timer::Timer() {}
+MockableTime::Timer::~Timer() = default;
+MockableTime::Timer::Timer() = default;
 
 MockableTime::~MockableTime() = default;
 MockableTime::MockableTime() = default;

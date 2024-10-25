@@ -208,7 +208,7 @@ DomainReliabilityMonitor::RequestInfo::RequestInfo(
 DomainReliabilityMonitor::RequestInfo::RequestInfo(const RequestInfo& other) =
     default;
 
-DomainReliabilityMonitor::RequestInfo::~RequestInfo() {}
+DomainReliabilityMonitor::RequestInfo::~RequestInfo() = default;
 
 // static
 bool DomainReliabilityMonitor::RequestInfo::ShouldReportRequest(

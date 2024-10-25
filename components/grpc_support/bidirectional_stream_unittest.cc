@@ -282,7 +282,7 @@ TestBidirectionalStreamCallback::WriteData::WriteData(std::string_view data,
                                                       bool flush_after)
     : buffer(data), flush(flush_after) {}
 
-TestBidirectionalStreamCallback::WriteData::~WriteData() {}
+TestBidirectionalStreamCallback::WriteData::~WriteData() = default;
 
 // Regression test for b/144733928. Test that coalesced headers will be split by
 // cronet by '\0' separator.
