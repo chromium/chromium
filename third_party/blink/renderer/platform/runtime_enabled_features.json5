@@ -1962,7 +1962,7 @@
     {
       // Non-OPFS File System Access API.
       name: "FileSystemAccessLocal",
-      status: {"Android": "test", "default": "stable"},
+      status: {"default": "stable"},
     },
     {
       name: "FileSystemAccessLockingScheme",
