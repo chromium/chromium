@@ -539,9 +539,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // possible, and returns `true` on success. `delegate` will be notified of
   // events. `suggestions` are generated using the `cards_to_suggest` data and
   // include fields such as `main_text`, `minor_text`, and
-  // `apply_deactivated_style`. Should be called only if the feature is
-  // supported by the platform. This function is implemented on all platforms,
-  // so this should be a pure virtual function to enforce the override
+  // `HasDeactivatedStyle` member function. Should be called only if the feature
+  // is supported by the platform. This function is implemented on all
+  // platforms so this should be a pure virtual function to enforce the override
   // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,

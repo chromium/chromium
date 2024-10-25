@@ -579,9 +579,12 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   suggestion.type = SuggestionType::kVirtualCreditCardEntry;
   // If a virtual card is non-acceptable, it needs to be displayed in
   // grayed-out style.
-  suggestion.apply_deactivated_style = !suggestion.IsAcceptable();
+  if (!suggestion.IsAcceptable()) {
+    suggestion.acceptability =
+        Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  }
   suggestion.feature_for_iph =
-      suggestion.apply_deactivated_style &&
+      suggestion.HasDeactivatedStyle() &&
               base::FeatureList::IsEnabled(
                   features::kAutofillEnableVcnGrayOutForMerchantOptOut)
           ? &feature_engagement::
@@ -920,8 +923,11 @@ Suggestion CreateCreditCardSuggestion(
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
   suggestion.type = SuggestionType::kCreditCardEntry;
-  suggestion.is_acceptable =
+  bool is_acceptable =
       IsCardSuggestionAcceptable(credit_card, client, is_manual_fallback);
+  suggestion.acceptability = is_acceptable
+                                 ? Suggestion::Acceptability::kAcceptable
+                                 : Suggestion::Acceptability::kUnacceptable;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
@@ -1288,13 +1294,17 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
         main_text_content_description, should_display_terms_available);
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       suggestion.type = SuggestionType::kVirtualCreditCardEntry;
-      suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(
+      bool acceptable = IsCardSuggestionAcceptable(
           credit_card, client, /*is_manual_fallback= */ false);
+      suggestion.acceptability =
+          acceptable ? autofill::Suggestion::Acceptability::kAcceptable
+                     : autofill::Suggestion::Acceptability::
+                           kUnacceptableWithDeactivatedStyle;
       suggestion.labels.push_back(std::vector<Suggestion::Text>{
           Suggestion::Text(l10n_util::GetStringUTF16(
-              suggestion.apply_deactivated_style
-                  ? IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE
-                  : IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))});
+              acceptable
+                  ? IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE
+                  : IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))});
     } else {
       suggestion.type = SuggestionType::kCreditCardEntry;
       suggestion.labels.push_back(

@@ -285,7 +285,9 @@ void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
     bool is_loading,
     autofill::Suggestion& suggestion) {
   suggestion.is_loading = Suggestion::IsLoading(is_loading);
-  suggestion.is_acceptable = !is_loading;
+  suggestion.acceptability = is_loading
+                                 ? Suggestion::Acceptability::kUnacceptable
+                                 : Suggestion::Acceptability::kAcceptable;
   auto existing_payload =
       suggestion.GetPayload<Suggestion::PlusAddressPayload>();
   existing_payload.offer_refresh = !is_loading;

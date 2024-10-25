@@ -2323,16 +2323,17 @@ TEST_P(
                                         /*virtual_card_option=*/true,
                                         /*card_linked_offer_available=*/false);
 
-  // `.IsAcceptable()` returns false only when merchant has opted out of VCN.
+  // `IsAcceptable()` returns false only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(),
             !is_merchant_opted_out());
 
-  // `apply_deactivated_style` is true only when merchant has opted out of VCN.
-  EXPECT_EQ(virtual_card_name_field_suggestion.apply_deactivated_style,
+  // `HasDeactivatedStyle()` returns true only when merchant has opted out of
+  // VCN.
+  EXPECT_EQ(virtual_card_name_field_suggestion.HasDeactivatedStyle(),
             is_merchant_opted_out());
   EXPECT_EQ(
       virtual_card_name_field_suggestion.feature_for_iph,
-      virtual_card_name_field_suggestion.apply_deactivated_style
+      virtual_card_name_field_suggestion.HasDeactivatedStyle()
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
           : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
@@ -2370,12 +2371,13 @@ TEST_P(
   // opted out of VCN.
   EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(),
             !is_merchant_opted_out());
-  // `apply_deactivated_style` is true only when merchant has opted out of VCN.
-  EXPECT_EQ(virtual_card_number_field_suggestion.apply_deactivated_style,
+  // `HasDeactivatedStyle()` returns true only when merchant has opted out of
+  // VCN.
+  EXPECT_EQ(virtual_card_number_field_suggestion.HasDeactivatedStyle(),
             is_merchant_opted_out());
   EXPECT_EQ(
       virtual_card_number_field_suggestion.feature_for_iph,
-      virtual_card_number_field_suggestion.apply_deactivated_style
+      virtual_card_number_field_suggestion.HasDeactivatedStyle()
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
           : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
@@ -3436,15 +3438,16 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
             virtual_card.CardNameForAutofillDisplay(virtual_card.nickname()));
   EXPECT_EQ(suggestions[0].minor_text.value,
             virtual_card.ObfuscatedNumberWithVisibleLastFourDigits());
-  // `apply_deactivated_style` is true only when merchant has opted out of VCN.
-  EXPECT_EQ(suggestions[0].apply_deactivated_style, is_merchant_opted_out());
+  // `HasDeactivatedStyle()` returns true only when merchant has opted out of
+  // VCN.
+  EXPECT_EQ(suggestions[0].HasDeactivatedStyle(), is_merchant_opted_out());
 
   EXPECT_EQ(suggestions[1].main_text.value,
             server_card.CardNameForAutofillDisplay(server_card.nickname()));
   EXPECT_EQ(suggestions[1].minor_text.value,
             server_card.ObfuscatedNumberWithVisibleLastFourDigits());
-  // `apply_deactivated_style` is false for the real card.
-  EXPECT_EQ(suggestions[1].apply_deactivated_style, false);
+  // `HasDeactivatedStyle()` is false for the real card.
+  EXPECT_EQ(suggestions[1].HasDeactivatedStyle(), false);
 }
 
 TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,

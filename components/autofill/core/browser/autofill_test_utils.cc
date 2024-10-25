@@ -1006,11 +1006,14 @@ Suggestion CreateAutofillSuggestion(SuggestionType type,
 
 Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
                                     const std::u16string& minor_text_value,
-                                    bool apply_deactivated_style) {
+                                    bool has_deactivated_style) {
   Suggestion suggestion;
   suggestion.main_text.value = main_text_value;
   suggestion.minor_text.value = minor_text_value;
-  suggestion.apply_deactivated_style = apply_deactivated_style;
+  suggestion.acceptability =
+      has_deactivated_style
+          ? Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle
+          : Suggestion::Acceptability::kAcceptable;
   return suggestion;
 }
 

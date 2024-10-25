@@ -94,7 +94,7 @@ bool TouchToFillPaymentMethodViewImpl::Show(
             env, suggestion.main_text.value, suggestion.minor_text.value,
             suggestion.labels[0][0].value, secondarySubLabel,
             payments_payload.main_text_content_description,
-            suggestion.apply_deactivated_style,
+            suggestion.HasDeactivatedStyle(),
             payments_payload.should_display_terms_available));
   }
   Java_TouchToFillPaymentMethodViewBridge_showSheet(

@@ -277,6 +277,19 @@ struct Suggestion {
     kStatic,
   };
 
+  // Describes whether a suggestion can be accepted and how it should be styled
+  // when it cannot be.
+  enum class Acceptability {
+    // The suggestion can be accepted.
+    kAcceptable,
+    // The suggestion cannot be accepted (i.e. trying to accept it is ignored by
+    // the UI controller).
+    kUnacceptable,
+    // The suggestion cannot be accepted and is displayed in a
+    // disabled/grayed-out form.
+    kUnacceptableWithDeactivatedStyle,
+  };
+
   // TODO(crbug.com/335194240): Consolidate expected param types for these
   // constructors. Some expect UTF16 strings and others UTF8, while internally
   // we only use UTF16. The ones expecting UTF8 are only used by tests and could
@@ -437,21 +450,14 @@ struct Suggestion {
   // `FieldType` used to build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 
-  // Whether the user is able to preview the suggestion by hovering on it or
-  // accept it by clicking on it. For reading value use `isAcceptable()` as this
-  // field is being removed (crbug.com/373323920).
-  bool is_acceptable = true;
-
   // How the suggestion should be handled by the filtration logic, see the enum
   // values doc for details.
   // Now used for filtering manually triggered password suggestions only and
   // has no effect on other suggestions.
   FiltrationPolicy filtration_policy = FiltrationPolicy::kFilterable;
 
-  // If true, the user will see the suggestion in a "disabled and grayed-out"
-  // form. This field should be true only when `is_acceptable` is false  which
-  // will make the suggestion deactivated and unclickable.
-  bool apply_deactivated_style = false;
+  // The acceptability of the suggestion, see the enum values doc for details.
+  Acceptability acceptability = Acceptability::kAcceptable;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // If true, selecting a suggestion or, when it exists, expanding its
@@ -462,9 +468,11 @@ struct Suggestion {
 
   // Returns whether the user is able to preview the suggestion by hovering on
   // it or accept it by clicking on it.
-  // This is a helper function that should be favored over `is_acceptable`, as
-  // the field is being removed (crbug.com/373323920).
   bool IsAcceptable() const;
+
+  // Returns whether the user will see the suggestion in
+  // a "disabled and grayed-out" form.
+  bool HasDeactivatedStyle() const;
 };
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);

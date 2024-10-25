@@ -133,7 +133,7 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
 }
 
 bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
-  return suggestion.apply_deactivated_style &&
+  return suggestion.HasDeactivatedStyle() &&
          GetFillingProductFromSuggestionType(suggestion.type) ==
              FillingProduct::kPassword;
 }
@@ -219,7 +219,7 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
     std::optional<user_education::DisplayNewBadge> show_new_badge,
     views::style::TextStyle primary_text_style = kMainTextStyle) {
   views::style::TextStyle main_text_label_style;
-  if (suggestion.apply_deactivated_style) {
+  if (suggestion.HasDeactivatedStyle()) {
     main_text_label_style = kDisabledTextStyle;
   } else {
     main_text_label_style = suggestion.main_text.is_primary
@@ -248,8 +248,7 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
   }
   auto label = std::make_unique<views::Label>(
       suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      suggestion.apply_deactivated_style ? kDisabledTextStyle
-                                         : kMinorTextStyle);
+      suggestion.HasDeactivatedStyle() ? kDisabledTextStyle : kMinorTextStyle);
   label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   return label;
 }
@@ -340,7 +339,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       suggestion, /*show_new_badge=*/std::nullopt, kMainTextStyleLight);
   // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
   // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
-  if (!suggestion.apply_deactivated_style) {
+  if (!suggestion.HasDeactivatedStyle()) {
     main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);

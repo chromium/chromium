@@ -120,16 +120,17 @@ std::vector<Suggestion> SetUnlockLoadingState(
   return suggestions;
 }
 
-std::vector<autofill::Suggestion> PrepareLoadingStateSuggestions(
-    std::vector<autofill::Suggestion> current_suggestions,
-    const autofill::Suggestion& selected_suggestion) {
+std::vector<Suggestion> PrepareLoadingStateSuggestions(
+    std::vector<Suggestion> current_suggestions,
+    const Suggestion& selected_suggestion) {
   auto modifier_fun = [&selected_suggestion](auto& suggestion) {
+    using enum Suggestion::Acceptability;
     if (suggestion == selected_suggestion) {
+      suggestion.acceptability = kUnacceptable;
       suggestion.is_loading = IsLoading(true);
     } else {
-      suggestion.apply_deactivated_style = true;
+      suggestion.acceptability = kUnacceptableWithDeactivatedStyle;
     }
-    suggestion.is_acceptable = false;
   };
   base::ranges::for_each(current_suggestions, modifier_fun);
   return current_suggestions;

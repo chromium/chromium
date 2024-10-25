@@ -273,7 +273,9 @@ void AppendManualFallbackSuggestions(
         /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
     suggestion.payload = payload;
-    suggestion.is_acceptable = on_password_form.value();
+    suggestion.acceptability = on_password_form.value()
+                                   ? Suggestion::Acceptability::kAcceptable
+                                   : Suggestion::Acceptability::kUnacceptable;
     if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)
             .IsValidWebFacetURI()) {
       suggestion.custom_icon = Suggestion::FaviconDetails(

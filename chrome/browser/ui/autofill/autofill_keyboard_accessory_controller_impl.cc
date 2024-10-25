@@ -269,7 +269,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` invalidate the reference.
   Suggestion suggestion = suggestions_[index];
-  if (!suggestion.is_acceptable) {
+  if (!suggestion.IsAcceptable()) {
     return;
   }
 

@@ -177,14 +177,16 @@ autofill::Suggestion CreateLoadingSuggestion() {
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
   loading_suggestion.trailing_icon = GetAutofillPredictionImprovementsIcon();
-  loading_suggestion.is_acceptable = false;
+  loading_suggestion.acceptability =
+      autofill::Suggestion::Acceptability::kUnacceptable;
   return loading_suggestion;
 }
 
 autofill::Suggestion CreateFeedbackSuggestion() {
   autofill::Suggestion feedback_suggestion(
       autofill::SuggestionType::kPredictionImprovementsFeedback);
-  feedback_suggestion.is_acceptable = false;
+  feedback_suggestion.acceptability =
+      autofill::Suggestion::Acceptability::kUnacceptable;
   feedback_suggestion.voice_over = base::JoinString(
       {
           l10n_util::GetStringUTF16(
@@ -224,7 +226,8 @@ std::vector<autofill::Suggestion> CreateErrorOrNoInfoSuggestions(
       autofill::Suggestion::Text::IsPrimary(true),
       autofill::Suggestion::Text::ShouldTruncate(true));
   error_suggestion.highlight_on_select = false;
-  error_suggestion.is_acceptable = false;
+  error_suggestion.acceptability =
+      autofill::Suggestion::Acceptability::kUnacceptable;
   return {error_suggestion,
           autofill::Suggestion(autofill::SuggestionType::kSeparator),
           CreateFeedbackSuggestion()};

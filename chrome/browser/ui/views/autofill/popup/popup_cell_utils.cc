@@ -400,11 +400,11 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     std::optional<ui::ImageModel> image_model =
         ImageModelFromImageSkia(icon->AsImageSkia());
     return ConvertModelToImageView(image_model,
-                                   suggestion.apply_deactivated_style);
+                                   suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
       ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
-                              suggestion.apply_deactivated_style);
+                              suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
@@ -429,7 +429,7 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
   std::optional<ui::ImageModel> image_model =
       GetIconImageModelFromIcon(suggestion.trailing_icon);
   std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(image_model, suggestion.apply_deactivated_style);
+      ConvertModelToImageView(image_model, suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 

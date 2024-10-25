@@ -12,6 +12,20 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
+namespace {
+  std::string_view ConvertAcceptabilityToPrintableString(
+    Suggestion::Acceptability acceptability) {
+    switch (acceptability) {
+      case Suggestion::Acceptability::kAcceptable:
+        return "kAcceptable";
+      case Suggestion::Acceptability::kUnacceptable:
+        return "kUnacceptable";
+      case Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle:
+        return "kUnacceptableWithDeactivatedStyle";
+    }
+    NOTREACHED();
+  }
+} // namespace
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails() = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     std::u16string_view username,
@@ -196,7 +210,25 @@ Suggestion& Suggestion::operator=(Suggestion&& other) = default;
 Suggestion::~Suggestion() = default;
 
 bool Suggestion::IsAcceptable() const {
-  return is_acceptable;
+  switch (acceptability) {
+    case Acceptability::kAcceptable:
+      return true;
+    case Acceptability::kUnacceptable:
+    case Acceptability::kUnacceptableWithDeactivatedStyle:
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool Suggestion::HasDeactivatedStyle() const {
+  switch (acceptability) {
+    case Acceptability::kAcceptable:
+    case Acceptability::kUnacceptable:
+      return false;
+    case Acceptability::kUnacceptableWithDeactivatedStyle:
+      return true;
+  }
+  NOTREACHED();
 }
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
@@ -301,8 +333,9 @@ void PrintTo(const Suggestion& suggestion, std::ostream* os) {
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", apply_deactivated_style: \"" << suggestion.apply_deactivated_style
-      << "\"" << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
+      << ", acceptability: \""
+      << ConvertAcceptabilityToPrintableString(suggestion.acceptability) << "\""
+      << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
       << ", trailing_icon:"
       << ConvertIconToPrintableString(suggestion.trailing_icon) << ")";
 }

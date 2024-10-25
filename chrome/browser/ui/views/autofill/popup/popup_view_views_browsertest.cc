@@ -142,17 +142,19 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
   return suggestions;
 }
 
-std::vector<Suggestion> CreatePasswordSuggestions(bool is_deactivated = false) {
+std::vector<Suggestion> CreatePasswordSuggestions(
+    Suggestion::Acceptability acceptability =
+        Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"Title suggestion", SuggestionType::kTitle);
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(u"Password main text",
                            SuggestionType::kPasswordEntry);
   suggestions.back().labels = {
       {Suggestion::Text(u"example.username@gmail.com")}};
   suggestions.back().icon = Suggestion::Icon::kGlobe;
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(autofill::SuggestionType::kSeparator);
 
@@ -161,36 +163,38 @@ std::vector<Suggestion> CreatePasswordSuggestions(bool is_deactivated = false) {
       SuggestionType::kAllSavedPasswordsEntry);
   suggestions.back().icon = Suggestion::Icon::kSettings;
   suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   return suggestions;
 }
 
-std::vector<Suggestion> CreateWebAuthnSuggestions(bool is_deactivated = false) {
+std::vector<Suggestion> CreateWebAuthnSuggestions(
+    Suggestion::Acceptability acceptability =
+        Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(
       "cool passkey",
       {{Suggestion::Text(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.push_back(Suggestion(
       "coolest passkey",
       {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY),
       SuggestionType::kWebauthnSignInWithAnotherDevice);
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
   suggestions.emplace_back(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS),
       SuggestionType::kAllSavedPasswordsEntry);
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
   suggestions.back().icon = Suggestion::Icon::kSettings;
   suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
 
@@ -198,12 +202,13 @@ std::vector<Suggestion> CreateWebAuthnSuggestions(bool is_deactivated = false) {
 }
 
 std::vector<Suggestion> CreatePasswordAndWebAuthnSuggestions(
-    bool is_deactivated = false) {
+    Suggestion::Acceptability acceptability =
+        Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions =
-      CreatePasswordSuggestions(is_deactivated);
+      CreatePasswordSuggestions(acceptability);
   suggestions.pop_back();
   std::vector<Suggestion> webauthn_suggestions =
-      CreateWebAuthnSuggestions(is_deactivated);
+      CreateWebAuthnSuggestions(acceptability);
   suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
                      webauthn_suggestions.end());
   return suggestions;
@@ -365,8 +370,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_And_WebAuthn_Deactivated) {
-  PrepareSuggestions(
-      CreatePasswordAndWebAuthnSuggestions(/*is_deactivated=*/true));
+  PrepareSuggestions(CreatePasswordAndWebAuthnSuggestions(
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle));
   ShowAndVerifyUi();
 }
 

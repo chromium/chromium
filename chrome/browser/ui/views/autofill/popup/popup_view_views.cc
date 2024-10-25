@@ -142,7 +142,7 @@ bool CanShowRootPopup(AutofillSuggestionController& controller) {
 // when hovering the content area. This is used for manual fallback
 // suggestions.
 bool ContentCellShouldOpenSubPopupSuggestion(const Suggestion& suggestion) {
-  return !suggestion.IsAcceptable() && !suggestion.apply_deactivated_style &&
+  return !suggestion.IsAcceptable() && !suggestion.HasDeactivatedStyle() &&
          !suggestion.children.empty();
 }
 
@@ -276,7 +276,7 @@ bool PopupViewViews::Show(
     // Selecting first selectable row.
     // TODO(crbug.com/327931044): Remove the if condition and make the else as
     // the default as part of cleanup.
-    if (!controller_->GetSuggestionAt(0).apply_deactivated_style) {
+    if (!controller_->GetSuggestionAt(0).HasDeactivatedStyle()) {
       SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
                       PopupCellSelectionSource::kNonUserInput);
     } else {

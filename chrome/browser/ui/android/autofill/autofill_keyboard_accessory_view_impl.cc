@@ -123,7 +123,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),
-            suggestion.apply_deactivated_style));
+            suggestion.HasDeactivatedStyle()));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,
                                                 std::move(java_suggestions));

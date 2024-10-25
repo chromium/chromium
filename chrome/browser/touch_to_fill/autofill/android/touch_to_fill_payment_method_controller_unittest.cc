@@ -152,11 +152,11 @@ class TouchToFillPaymentMethodControllerTest
       test::CreateAutofillSuggestion(
           credit_cards_[0].CardNameForAutofillDisplay(),
           credit_cards_[0].ObfuscatedNumberWithVisibleLastFourDigits(),
-          /*apply_deactivated_style=*/false),
+          /*has_deactivated_style=*/false),
       test::CreateAutofillSuggestion(
           credit_cards_[1].CardNameForAutofillDisplay(),
           credit_cards_[1].ObfuscatedNumberWithVisibleLastFourDigits(),
-          /*apply_deactivated_style=*/false)};
+          /*has_deactivated_style=*/false)};
   std::unique_ptr<MockTouchToFillPaymentMethodViewImpl> mock_view_;
 
   void OnBeforeAskForValuesToFill() {
