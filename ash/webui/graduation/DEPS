@@ -3,4 +3,9 @@ specific_include_rules = {
     "+components/user_manager/user.h",
     "+components/user_manager/user_manager.h",
   ],
+  "webview_auth_handler\.(cc|h)": [
+    "+components/signin/public/base",
+    "+components/signin/public/identity_manager",
+    "+google_apis/gaia",
+  ],
 }

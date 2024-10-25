@@ -39,9 +39,14 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
   ~GraduationManagerImpl() override;
 
   // ash::graduation::GraduationManager:
-  const std::string GetLanguageCode() const override;
+  std::string GetLanguageCode() const override;
+
+  signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* context) override;
+
   void AddObserver(GraduationManagerObserver* observer) override;
   void RemoveObserver(GraduationManagerObserver* observer) override;
+
   void SetClocksForTesting(const base::Clock* clock,
                            const base::TickClock* tick_clock) override;
   void ResumeTimerForTesting() override;

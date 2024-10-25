@@ -15,6 +15,8 @@ static_library("graduation") {
     "graduation_ui.h",
     "graduation_ui_handler.cc",
     "graduation_ui_handler.h",
+    "webview_auth_handler.cc",
+    "webview_auth_handler.h",
   ]
 
   public_deps = [ ":url_constants" ]
@@ -31,6 +33,8 @@ static_library("graduation") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chromeos/strings",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",

@@ -15,6 +15,14 @@ class Clock;
 class TickClock;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash::graduation {
 
 // A checked observer which receives notification of changes to the
@@ -38,7 +46,12 @@ class ASH_PUBLIC_EXPORT GraduationManager {
   virtual ~GraduationManager();
 
   // Returns the language code of the device's current locale.
-  virtual const std::string GetLanguageCode() const = 0;
+  virtual std::string GetLanguageCode() const = 0;
+
+  // Returns identity manager for given `context`.
+  // Needed to avoid ash/chrome dependency.
+  virtual signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* context) = 0;
 
   // Adds the specified observer to be notified of updates to the Graduation
   // app.

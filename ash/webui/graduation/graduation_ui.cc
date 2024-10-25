@@ -21,6 +21,7 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/graduation/graduation_ui_handler.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
+#include "ash/webui/graduation/webview_auth_handler.h"
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/grit/ash_graduation_resources_map.h"
 #include "base/containers/span.h"
@@ -39,8 +40,7 @@ namespace ash::graduation {
 
 namespace {
 const std::string GetTransferUrl() {
-  const std::string language_code =
-      ash::graduation::GraduationManager::Get()->GetLanguageCode();
+  const std::string language_code = GraduationManager::Get()->GetLanguageCode();
 
   const GURL transfer_url_base(kTransferURLBase);
   GURL::Replacements replacements;
@@ -116,7 +116,14 @@ GraduationUI::~GraduationUI() = default;
 
 void GraduationUI::BindInterface(
     mojo::PendingReceiver<graduation_ui::mojom::GraduationUiHandler> receiver) {
-  ui_handler_ = std::make_unique<GraduationUiHandler>(std::move(receiver));
+  content::BrowserContext* context =
+      web_ui()->GetWebContents()->GetBrowserContext();
+  CHECK(context);
+  const std::string host_name =
+      web_ui()->GetWebContents()->GetVisibleURL().host();
+  auto auth_handler = std::make_unique<WebviewAuthHandler>(context, host_name);
+  ui_handler_ = std::make_unique<GraduationUiHandler>(std::move(receiver),
+                                                      std::move(auth_handler));
 }
 
 void GraduationUI::BindInterface(

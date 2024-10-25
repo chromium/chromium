@@ -4,10 +4,13 @@
 
 #include "ash/webui/graduation/graduation_ui_handler.h"
 
-#include <string>
+#include <memory>
+#include <utility>
 
 #include "ash/webui/graduation/graduation_state_tracker.h"
+#include "ash/webui/graduation/mojom/graduation_ui.mojom-shared.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
+#include "ash/webui/graduation/webview_auth_handler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/user_manager/user.h"
@@ -20,11 +23,33 @@
 
 namespace ash::graduation {
 
+GraduationUiHandler::TestApi::TestApi(GraduationUiHandler* handler)
+    : handler_(handler) {
+  CHECK(handler_);
+}
+
+GraduationUiHandler::TestApi::~TestApi() = default;
+
+WebviewAuthHandler* GraduationUiHandler::TestApi::GetWebviewAuthHandler() {
+  return handler_->auth_handler_.get();
+}
+
 GraduationUiHandler::GraduationUiHandler(
-    mojo::PendingReceiver<graduation_ui::mojom::GraduationUiHandler> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    mojo::PendingReceiver<graduation_ui::mojom::GraduationUiHandler> receiver,
+    std::unique_ptr<WebviewAuthHandler> auth_handler)
+    : receiver_(this, std::move(receiver)),
+      auth_handler_(std::move(auth_handler)) {
+  CHECK(auth_handler_);
+}
 
 GraduationUiHandler::~GraduationUiHandler() = default;
+
+void GraduationUiHandler::AuthenticateWebview(
+    AuthenticateWebviewCallback callback) {
+  auth_handler_->AuthenticateWebview(
+      base::BindOnce(&GraduationUiHandler::OnAuthenticationFinished,
+                     base::Unretained(this), std::move(callback)));
+}
 
 void GraduationUiHandler::GetProfileInfo(GetProfileInfoCallback callback) {
   const user_manager::User* active_user =
@@ -58,6 +83,14 @@ void GraduationUiHandler::OnScreenSwitched(
 void GraduationUiHandler::OnTransferComplete() {
   state_tracker_.set_flow_state(
       GraduationStateTracker::FlowState::kTakeoutTransferComplete);
+}
+
+void GraduationUiHandler::OnAuthenticationFinished(
+    AuthenticateWebviewCallback callback,
+    bool is_success) {
+  std::move(callback).Run(is_success
+                              ? graduation_ui::mojom::AuthResult::kSuccess
+                              : graduation_ui::mojom::AuthResult::kError);
 }
 
 }  // namespace ash::graduation

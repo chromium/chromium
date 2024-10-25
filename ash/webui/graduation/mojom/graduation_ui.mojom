@@ -21,9 +21,19 @@ enum GraduationScreen {
   kError,
 };
 
+// Webview authentication result.
+enum AuthResult {
+  kSuccess,
+  kError,
+};
+
 // Interface that supports integration between ChromeOS and the Content Transfer
 // System Web App.
 interface GraduationUiHandler {
+  // Performs authentication and sets the credential in the webview.
+  // Returns the authentication result.
+  AuthenticateWebview() => (AuthResult result);
+
   // Returns a struct containing the current user's email and profile photo URL.
   GetProfileInfo() => (ProfileInfo profile_info);
 

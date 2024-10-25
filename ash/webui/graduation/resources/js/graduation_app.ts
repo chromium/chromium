@@ -73,7 +73,13 @@ export class GraduationApp extends PolymerElement {
   override ready() {
     super.ready();
     this.addEventListeners();
+    this.authenticate();
     this.switchToScreen(navigator.onLine ? Screens.WELCOME : Screens.OFFLINE);
+  }
+
+  private async authenticate(): Promise<void> {
+    // TODO(b.corp.google.com/374815862): Handle authentication result.
+    getGraduationUiHandler().authenticateWebview();
   }
 
   getCurrentScreenForTest(): Screens {
