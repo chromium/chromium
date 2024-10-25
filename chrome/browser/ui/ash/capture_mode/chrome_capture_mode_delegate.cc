@@ -46,6 +46,7 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -148,6 +149,29 @@ bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
     return true;
   }
   return false;
+}
+
+void ChromeCaptureModeDelegate::CreateLensOverlayQueryController() {
+  if (Profile* profile = ProfileManager::GetActiveUserProfile();
+      profile && ash::features::IsSunfishFeatureEnabled()) {
+    lens_overlay_query_controller_ =
+        std::make_unique<lens::LensOverlayQueryController>(
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleStartQueryResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleInteractionURLResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleSuggestInputsResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleThumbnailCreated,
+                weak_ptr_factory_.GetWeakPtr()),
+            profile->GetVariationsClient(), /*identity_manager=*/nullptr,
+            profile, lens::LensOverlayInvocationSource(),
+            /*use_dark_mode=*/false, /*gen204_controller=*/nullptr);
+  }
 }
 
 base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()

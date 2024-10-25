@@ -14,11 +14,25 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+namespace screen_ai {
+class OpticalCharacterRecognizer;
+}  // namespace screen_ai
+
+namespace lens {
+class LensOverlayQueryController;
+}  // namespace lens
 
 // Implements the interface needed for the delegate of the Capture Mode feature
 // in Chrome.
@@ -42,6 +56,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // content showing up on the screen, or if screen capture becomes locked.
   // Returns true if a video recording was interrupted, and false otherwise.
   bool InterruptVideoRecordingIfAny();
+
+  // TODO(crbug.com/375491451): Determine when to call this. Currently unused.
+  void CreateLensOverlayQueryController();
 
   // ash::CaptureModeDelegate:
   base::FilePath GetUserDefaultDownloadsFolder() const override;
@@ -106,6 +123,16 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   }
 
  private:
+  void HandleStartQueryResponse(
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text,
+      bool is_error) {}
+  void HandleInteractionURLResponse(
+      lens::proto::LensOverlayUrlResponse response) {}
+  void HandleSuggestInputsResponse(
+      lens::proto::LensOverlaySuggestInputs suggest_inputs) {}
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes) {}
+
   // Called back by the Drive integration service when the quota usage is
   // retrieved.
   void OnGetDriveQuotaUsage(ash::OnGotDriveFsFreeSpace callback,
@@ -163,6 +190,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<lens::LensOverlayQueryController>
+      lens_overlay_query_controller_;
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };

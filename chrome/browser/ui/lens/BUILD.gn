@@ -14,12 +14,20 @@ source_set("lens") {
   public = [
     "lens_overlay_controller.h",
     "lens_overlay_entry_point_controller.h",
+    "lens_overlay_gen204_controller.h",
+    "lens_overlay_image_helper.h",
     "lens_overlay_side_panel_navigation_throttle.h",
     "lens_overlay_untrusted_ui.h",
     "lens_side_panel_untrusted_ui.h",
     "search_bubble_ui.h",
   ]
-  friend = [ ":*" ]
+  friend = [
+    ":*",
+
+    # TODO(crbug.com/375491451): This short-term solution allows Ash Chrome to # depend on Lens Overlay directly for expediency. Remove this when the
+    # long-term refactor to separate clients is implemented.
+    "//chrome/browser/ui/ash/capture_mode",
+  ]
   sources = [
     "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_blur_layer_delegate.h",
@@ -31,9 +39,7 @@ source_set("lens") {
     "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",
     "lens_overlay_gen204_controller.cc",
-    "lens_overlay_gen204_controller.h",
     "lens_overlay_image_helper.cc",
-    "lens_overlay_image_helper.h",
     "lens_overlay_proto_converter.cc",
     "lens_overlay_proto_converter.h",
     "lens_overlay_query_controller.cc",
