@@ -110,6 +110,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
@@ -280,6 +281,8 @@
   TabGroupIndicatorCoordinator* _tabGroupIndicatorCoordinator;
   // Indicates whether the fakebox was tapped as part of an omnibox focus event.
   BOOL _fakeboxTapped;
+  // Whether an account menu is displayed on top of this NTP.
+  BOOL _accountMenuCoordinatorStarted;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -907,7 +910,17 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-      [handler showAccountMenuWithAnchorView:identityDisc];
+      if (_accountMenuCoordinatorStarted) {
+        // Double tap, or tap before dismiss of the previous one is complete.
+        return;
+      }
+      _accountMenuCoordinatorStarted = YES;
+      __weak __typeof(self) weakSelf = self;
+      [handler showAccountMenuWithAnchorView:identityDisc
+                                  completion:^() {
+                                    [weakSelf accountMenuCoordinatorIsStopped];
+                                  }];
+
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }
@@ -1571,6 +1584,12 @@
 }
 
 #pragma mark - Private
+
+// Update the state, to take into account that the menu coordinator is stopped.
+- (void)accountMenuCoordinatorIsStopped {
+  CHECK(_accountMenuCoordinatorStarted);
+  _accountMenuCoordinatorStarted = NO;
+}
 
 // Updates the feed visibility or content based on the supervision state
 // of the account defined in `value`.

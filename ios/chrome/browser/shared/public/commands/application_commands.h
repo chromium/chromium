@@ -164,7 +164,8 @@ enum class TabGridOpeningMode {
 
 // Shows the account menu. On scene with regular width, the account menu appears
 // as a popover near the anchor view.
-- (void)showAccountMenuWithAnchorView:(UIView*)anchorView;
+- (void)showAccountMenuWithAnchorView:(UIView*)anchorView
+                           completion:(void (^)())completion;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using

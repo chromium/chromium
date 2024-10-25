@@ -1853,7 +1853,8 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:command.callback];
 }
 
-- (void)showAccountMenuWithAnchorView:(UIView*)anchorView {
+- (void)showAccountMenuWithAnchorView:(UIView*)anchorView
+                           completion:(void (^)())completion {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
@@ -1867,7 +1868,12 @@ using UserFeedbackDataCallback =
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
-  [self startSigninCoordinatorWithCompletion:nil];
+  [self startSigninCoordinatorWithCompletion:^(SigninCoordinatorResult result,
+                                               SigninCompletionInfo*) {
+    if (completion) {
+      completion();
+    }
+  }];
 }
 
 - (void)
