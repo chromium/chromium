@@ -8,6 +8,8 @@ import "third_party/blink/public/mojom/ai/ai_assistant.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
+import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
+import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -129,4 +131,9 @@ interface AIManager {
   // AIRewriterCreateOptions when the JS API `ai.rewriter.create()` is called.
   CreateRewriter(pending_remote<AIManagerCreateRewriterClient> client,
                  AIRewriterCreateOptions options);
+  // Registers the observer that will be notified when the on device model
+  // download progress is updated.
+  AddModelDownloadProgressObserver(
+    pending_remote<ModelDownloadProgressObserver> observer_remote
+  );
 };

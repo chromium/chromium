@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
@@ -22,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
 
 using testing::_;
 using testing::Test;
@@ -37,6 +39,7 @@ const uint32_t kTestInitialPromptsToken = 5u;
 const uint32_t kDefaultTopK = 1u;
 const uint32_t kOverrideMaxTopK = 5u;
 const float kDefaultTemperature = 0.0;
+const uint64_t kTestModelDownloadSize = 572u;
 
 const std::string kTestPrompt = "Test prompt";
 const std::string kExpectedFormattedTestPrompt = "User: Test prompt\nModel: ";
@@ -254,6 +257,25 @@ class AIAssistantTest : public AITestUtils::AITestBase {
             }));
 
     mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+    EXPECT_EQ(GetAIManagerDownloadProgressObserversSize(), 0u);
+    AITestUtils::MockModelDownloadProgressMonitor mock_monitor;
+    base::RunLoop download_progress_run_loop;
+    EXPECT_CALL(mock_monitor, OnDownloadProgressUpdate(_, _))
+        .WillOnce(testing::Invoke(
+            [&](uint64_t downloaded_bytes, uint64_t total_bytes) {
+              EXPECT_EQ(downloaded_bytes, kTestModelDownloadSize);
+              EXPECT_EQ(total_bytes, kTestModelDownloadSize);
+              download_progress_run_loop.Quit();
+            }));
+
+    mock_remote->AddModelDownloadProgressObserver(
+        mock_monitor.BindNewPipeAndPassRemote());
+    ASSERT_TRUE(base::test::RunUntil(
+        [this] { return GetAIManagerDownloadProgressObserversSize() == 1u; }));
+
+    MockDownloadProgressUpdate(kTestModelDownloadSize, kTestModelDownloadSize);
+    download_progress_run_loop.Run();
 
     mock_remote->CreateAssistant(
         mock_create_assistant_client.BindNewPipeAndPassRemote(),

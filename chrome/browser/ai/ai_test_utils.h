@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AI_AI_TEST_UTILS_H_
 
 #include "base/supports_user_data.h"
+#include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -14,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 class AITestUtils {
@@ -41,6 +43,29 @@ class AITestUtils {
 
    private:
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
+  };
+
+  class MockModelDownloadProgressMonitor
+      : public blink::mojom::ModelDownloadProgressObserver {
+   public:
+    MockModelDownloadProgressMonitor();
+    ~MockModelDownloadProgressMonitor() override;
+    MockModelDownloadProgressMonitor(const MockModelDownloadProgressMonitor&) =
+        delete;
+    MockModelDownloadProgressMonitor& operator=(
+        const MockModelDownloadProgressMonitor&) = delete;
+
+    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    BindNewPipeAndPassRemote();
+
+    // `blink::mojom::ModelDownloadProgressObserver` implementation.
+    MOCK_METHOD(void,
+                OnDownloadProgressUpdate,
+                (uint64_t downloaded_bytes, uint64_t total_bytes),
+                (override));
+
+   private:
+    mojo::Receiver<blink::mojom::ModelDownloadProgressObserver> receiver_{this};
   };
 
   class MockCreateAssistantClient
@@ -82,11 +107,15 @@ class AITestUtils {
     MockSupportsUserData* mock_host() { return mock_host_.get(); }
     void ResetMockHost();
     size_t GetAIManagerReceiversSize();
+    size_t GetAIManagerDownloadProgressObserversSize();
+    void MockDownloadProgressUpdate(uint64_t downloaded_bytes,
+                                    uint64_t total_bytes);
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
 
    private:
+    AIManagerKeyedService* GetAIManager();
     std::unique_ptr<MockSupportsUserData> mock_host_;
   };
 

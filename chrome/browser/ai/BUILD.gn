@@ -14,6 +14,7 @@ source_set("ai") {
     "ai_data_keyed_service_factory.h",
     "ai_manager_keyed_service.h",
     "ai_manager_keyed_service_factory.h",
+    "ai_on_device_model_component_observer.h",
     "ai_rewriter.h",
     "ai_summarizer.h",
     "ai_utils.h",
@@ -23,9 +24,12 @@ source_set("ai") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//components/component_updater:component_updater",
     "//components/optimization_guide/core",
+    "//components/update_client:update_client",
     "//content/public/browser",
   ]
 }
@@ -39,6 +43,7 @@ source_set("impl") {
     "ai_data_keyed_service_factory.cc",
     "ai_manager_keyed_service.cc",
     "ai_manager_keyed_service_factory.cc",
+    "ai_on_device_model_component_observer.cc",
     "ai_rewriter.cc",
     "ai_summarizer.cc",
     "ai_utils.cc",

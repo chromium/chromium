@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -38,8 +39,10 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
@@ -210,7 +213,9 @@ class AIManagerReceiverRemover : public AIContextBoundObject {
 
 AIManagerKeyedService::AIManagerKeyedService(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+    : browser_context_(browser_context),
+      component_observer_(
+          std::make_unique<AIOnDeviceModelComponentObserver>(this)) {}
 
 AIManagerKeyedService::~AIManagerKeyedService() = default;
 
@@ -512,4 +517,31 @@ double AIManagerKeyedService::GetAssistantModelDefaultTemperature() {
     return features::kAIAssistantOverrideConfigurationDefaultTemperature.Get();
   }
   return optimization_guide::features::GetOnDeviceModelDefaultTemperature();
+}
+
+void AIManagerKeyedService::AddModelDownloadProgressObserver(
+    mojo::PendingRemote<blink ::mojom::ModelDownloadProgressObserver>
+        observer_remote) {
+  download_progress_observers_.Add(std::move(observer_remote));
+}
+
+void AIManagerKeyedService::SendDownloadProgressUpdate(
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  for (auto& observer : download_progress_observers_) {
+    observer->OnDownloadProgressUpdate(downloaded_bytes, total_bytes);
+  }
+}
+
+void AIManagerKeyedService::SendDownloadProgressUpdateForTesting(
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
+}
+
+void AIManagerKeyedService::OnTextModelDownloadProgressChange(
+    base::PassKey<AIOnDeviceModelComponentObserver> observer_key,
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
 }

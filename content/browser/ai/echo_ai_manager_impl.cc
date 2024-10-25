@@ -12,6 +12,7 @@
 #include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_writer.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
@@ -33,7 +34,9 @@ void EchoAIManagerImpl::Create(
 void EchoAIManagerImpl::CanCreateAssistant(
     CanCreateAssistantCallback callback) {
   std::move(callback).Run(
-      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+      /*result=*/mocked_is_downloaded_
+          ? blink::mojom::ModelAvailabilityCheckResult::kReadily
+          : blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
 }
 
 void EchoAIManagerImpl::CreateAssistant(
@@ -41,17 +44,18 @@ void EchoAIManagerImpl::CreateAssistant(
     blink::mojom::AIAssistantCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
       std::move(client));
-  mojo::PendingRemote<blink::mojom::AIAssistant> assistant;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
-                              assistant.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(
-      std::move(assistant),
-      blink::mojom::AIAssistantInfo::New(
-          optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-          blink::mojom::AIAssistantSamplingParams::New(
-              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-              optimization_guide::features::
-                  GetOnDeviceModelDefaultTemperature())));
+
+  if (!mocked_is_downloaded_) {
+    // Simulate the time taken by downloading.
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(client_remote)),
+        base::Seconds(1));
+  } else {
+    ReturnAIAssistantCreationResult(std::move(client_remote));
+  }
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
@@ -98,6 +102,42 @@ void EchoAIManagerImpl::CreateRewriter(
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIRewriter>(),
                               rewriter.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(std::move(rewriter));
+}
+
+void EchoAIManagerImpl::ReturnAIAssistantCreationResult(
+    mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
+  mojo::PendingRemote<blink::mojom::AIAssistant> assistant;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
+                              assistant.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(
+      std::move(assistant),
+      blink::mojom::AIAssistantInfo::New(
+          optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
+          blink::mojom::AIAssistantSamplingParams::New(
+              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+              optimization_guide::features::
+                  GetOnDeviceModelDefaultTemperature())));
+}
+
+void EchoAIManagerImpl::DoMockDownloadingAndReturn(
+    mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
+  // Mock the downloading process update for testing.
+  if (!mocked_is_downloaded_) {
+    for (auto& observer : download_progress_observers_) {
+      observer->OnDownloadProgressUpdate(10, 30);
+      observer->OnDownloadProgressUpdate(20, 30);
+      observer->OnDownloadProgressUpdate(30, 30);
+    }
+    mocked_is_downloaded_ = true;
+  }
+
+  ReturnAIAssistantCreationResult(std::move(client_remote));
+}
+
+void EchoAIManagerImpl::AddModelDownloadProgressObserver(
+    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+        observer_remote) {
+  download_progress_observers_.Add(std::move(observer_remote));
 }
 
 }  // namespace content

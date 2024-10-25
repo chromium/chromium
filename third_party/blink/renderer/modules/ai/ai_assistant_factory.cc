@@ -4,10 +4,14 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt_role.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -51,10 +55,18 @@ class CreateAssistantClient
       AbortSignal* signal,
       mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
-      Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts)
+      Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts,
+      std::optional<
+          mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>>
+          observer_remote)
       : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()) {
+    if (observer_remote.has_value()) {
+      ai_->GetAIRemote()->AddModelDownloadProgressObserver(
+          std::move(observer_remote.value()));
+    }
+
     mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
@@ -252,9 +264,12 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
     }
   }
 
+  // TODO(crbug.com/348108460): implement the class for
+  // `mojom::blink::ModelDownloadProgressObserver`.
   MakeGarbageCollected<CreateAssistantClient>(
       script_state, ai_, resolver, signal, std::move(sampling_params),
-      system_prompt, std::move(initial_prompts));
+      system_prompt, std::move(initial_prompts),
+      /*observer_remote=*/std::nullopt);
 
   return promise;
 }

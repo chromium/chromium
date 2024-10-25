@@ -66,7 +66,7 @@ const testPromptAPI = async () => {
   try {
     const capabilities = await ai.languageModel.capabilities();
     const status = capabilities.available;
-    if (status !== "readily") {
+    if (status === "no") {
       return {
         success: false,
         error: "cannot create text session"

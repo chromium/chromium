@@ -14,7 +14,7 @@ promise_test(async t => {
   // Make sure the session could be created.
   const capabilities = await ai.languageModel.capabilities();
   const status = capabilities.available;
-  assert_true(status === 'readily');
+  assert_true(status !== 'no');
 
   let session;
   let result;
