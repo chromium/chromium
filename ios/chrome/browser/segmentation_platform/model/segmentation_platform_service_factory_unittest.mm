@@ -20,6 +20,7 @@
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/internal/constants.h"
 #import "components/segmentation_platform/internal/database/client_result_prefs.h"
+#import "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/prediction_options.h"
@@ -255,6 +256,14 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 TEST_F(SegmentationPlatformServiceFactoryTest, Test) {
   // TODO(crbug.com/40227968): Add test for the API once the initialization is
   // fixed.
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestMetricsEnabled) {
+  WaitForServiceInit();
+  SegmentationPlatformServiceImpl* service =
+      reinterpret_cast<SegmentationPlatformServiceImpl*>(
+          profile_data_->service.get());
+  EXPECT_TRUE(service->IsMetricsEnabledForTesting());
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestSearchUserModel) {
