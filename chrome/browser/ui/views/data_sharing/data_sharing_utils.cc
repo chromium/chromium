@@ -10,6 +10,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -17,6 +18,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "mojo/public/mojom/base/absl_status.mojom.h"
 #include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 std::optional<GURL> data_sharing::GenerateWebUIUrl(
     std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>
@@ -125,6 +127,12 @@ void data_sharing::ProcessPreviewOutcome(
         }
       }
     }
+    // If group is unnamed use default name e.g. "1 tab" / "3 tabs".
+    if (group_preview->title.empty()) {
+      group_preview->title = l10n_util::GetPluralStringFUTF8(
+          IDS_SAVED_TAB_GROUP_TABS_COUNT, group_preview->shared_tabs.size());
+    }
+
     group_preview->status_code = mojo_base::mojom::AbslStatusCode::kOk;
   } else {
     // TODO(crbug.com/368634445): Convert returned PeopleGroupActionFailure to

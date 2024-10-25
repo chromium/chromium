@@ -8,13 +8,14 @@
 #include "components/data_sharing/public/group_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(DataSharingUtils, ProcessPreviewOutcome) {
-  std::string kTitle = "foo_title";
-  std::string kUrl = "https://www.foo.com?foo=1";
-  std::string kFaviconUrl = "https://www.foo.com/favicon.ico";
+namespace {
+const char kTitle[] = "foo_title";
+const char kUrl[] = "https://www.foo.com?foo=1";
+const char kFaviconUrl[] = "https://www.foo.com/favicon.ico";
 
+data_sharing::SharedDataPreview MockPreviewWithTitle(std::string title) {
   sync_pb::SharedTabGroupDataSpecifics specifics_group;
-  specifics_group.mutable_tab_group()->set_title(kTitle);
+  specifics_group.mutable_tab_group()->set_title(title);
   sync_pb::SharedTabGroupDataSpecifics specifics_tab;
   specifics_tab.mutable_tab()->set_url(kUrl);
   specifics_tab.mutable_tab()->set_favicon_url(kFaviconUrl);
@@ -33,6 +34,11 @@ TEST(DataSharingUtils, ProcessPreviewOutcome) {
   preview.shared_entities.push_back(entity_group);
   preview.shared_entities.push_back(entity_tab);
 
+  return preview;
+}
+}  // namespace
+
+TEST(DataSharingUtils, ProcessPreviewWithValidTitle) {
   data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback =
       base::BindLambdaForTesting(
           [&](data_sharing::mojom::GroupPreviewPtr preview) {
@@ -44,5 +50,21 @@ TEST(DataSharingUtils, ProcessPreviewOutcome) {
             EXPECT_EQ(preview->status_code,
                       mojo_base::mojom::AbslStatusCode::kOk);
           });
-  data_sharing::ProcessPreviewOutcome(std::move(callback), preview);
+  data_sharing::ProcessPreviewOutcome(std::move(callback),
+                                      MockPreviewWithTitle(kTitle));
+}
+
+TEST(DataSharingUtils, ProcessPreviewWithEmptyTitle) {
+  data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback =
+      base::BindLambdaForTesting(
+          [&](data_sharing::mojom::GroupPreviewPtr preview) {
+  // The unnamed group has 1 tab.
+#if BUILDFLAG(IS_MAC)
+            EXPECT_EQ(preview->title, "1 Tab");
+#else
+            EXPECT_EQ(preview->title, "1 tab");
+#endif  // BUILDFLAG(IS_MAC)
+          });
+  data_sharing::ProcessPreviewOutcome(std::move(callback),
+                                      MockPreviewWithTitle(std::string()));
 }
