@@ -1072,6 +1072,13 @@ const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =
     "when the connection is using a well known root cert or when the server is "
     "a localhost.";
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const char kContextualCueingName[] = "Contextual cueing";
+const char kContextualCueingDescription[] =
+    "Enables the contextual cueing system to support showing actions";
+
+#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_ANDROID)
 const char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";
@@ -8385,6 +8392,7 @@ const char kSupervisedProfileShowKiteBadgeName[] =
     "Supervised Profile show kite badge";
 const char kSupervisedProfileShowKiteBadgeDescription[] =
     "Shows a kite badge on the profile avatar for supervised users.";
+
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // ============================================================================

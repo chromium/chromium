@@ -560,6 +560,11 @@ extern const char kCapturedSurfaceControlDescription[];
 extern const char kCommerceHintAndroidName[];
 extern const char kCommerceHintAndroidDescription[];
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+extern const char kContextualCueingName[];
+extern const char kContextualCueingDescription[];
+#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
@@ -4878,6 +4883,7 @@ extern const char kSupervisedProfileSignInIphDescription[];
 
 extern const char kSupervisedProfileShowKiteBadgeName[];
 extern const char kSupervisedProfileShowKiteBadgeDescription[];
+
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // ============================================================================

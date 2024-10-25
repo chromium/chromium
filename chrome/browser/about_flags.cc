@@ -353,6 +353,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -11406,6 +11407,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupervisedProfileShowKiteBadgeDescription,
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(supervised_user::kShowKiteForSupervisedUsers)},
+
 #endif
 
     {"use-frame-interval-decider",
@@ -11769,6 +11771,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordFormClientsideClassifierDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormClientsideClassifier)},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"contextual-cueing", flag_descriptions::kContextualCueingName,
+     flag_descriptions::kContextualCueingDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueing)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
