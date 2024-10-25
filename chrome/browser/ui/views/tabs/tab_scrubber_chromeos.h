@@ -93,10 +93,6 @@ class TabScrubberChromeOS : public ui::EventHandler,
 
   bool GetEnabledForTesting() const { return enabled_; }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  static bool MaybeDelegateHandlingToLacros(ui::ScrollEvent* event);
-#endif
-
   // Are we currently scrubbing?.
   bool scrubbing_ = false;
   // The last browser we used for scrubbing, NULL if |scrubbing_| is false and
