@@ -135,7 +135,7 @@ PersistentPageConsistencyCheckTask::CheckResult&
 PersistentPageConsistencyCheckTask::CheckResult::operator=(
     const CheckResult& other) = default;
 
-PersistentPageConsistencyCheckTask::CheckResult::~CheckResult() {}
+PersistentPageConsistencyCheckTask::CheckResult::~CheckResult() = default;
 
 PersistentPageConsistencyCheckTask::PersistentPageConsistencyCheckTask(
     OfflinePageMetadataStore* store,
