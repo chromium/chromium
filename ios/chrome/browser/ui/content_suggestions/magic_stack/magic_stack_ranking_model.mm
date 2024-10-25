@@ -271,6 +271,14 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
+- (void)removeSendTabPromoModule {
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kSendTabPromo);
+  [self.delegate
+      magicStackRankingModel:self
+               didRemoveItem:_sendTabPromoMediator.sendTabPromoItemToShow];
+}
+
 #pragma mark - TipsMagicStackMediatorDelegate
 
 - (void)removeTipsModule {

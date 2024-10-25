@@ -171,6 +171,7 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
       return YES;
@@ -296,6 +297,7 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kParcelTracking:
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSendTabPromo:
       return @"";
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
@@ -332,6 +334,11 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_HIDE_CARD);
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SEND_TAB_TO_SELF_HIDE_CONTEXT_MENU_DESCRIPTION,
+          base::SysNSStringToUTF16(
+              l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_TITLE)));
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
       return l10n_util::GetNSStringF(

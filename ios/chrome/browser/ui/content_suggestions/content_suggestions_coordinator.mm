@@ -824,6 +824,10 @@ using segmentation_platform::TipIdentifier;
       [_priceTrackingPromoMediator disableModule];
       break;
     }
+    case ContentSuggestionsModuleType::kSendTabPromo: {
+      [_sendTabPromoMediator disableModule];
+      break;
+    }
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips: {
       [_tipsMediator disableModule];

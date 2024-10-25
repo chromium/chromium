@@ -21,6 +21,9 @@ class PrefService;
 // devices.
 - (void)sentTabReceived;
 
+// Signals that the Send Tab Promo Module should be removed.
+- (void)removeSendTabPromoModule;
+
 @end
 
 // Mediator for managing the state of the Send Tab to Self Promo Magic Stack
@@ -42,6 +45,9 @@ class PrefService;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Disables and hides the send tab promo module.
+- (void)disableModule;
 
 - (void)disconnect;
 

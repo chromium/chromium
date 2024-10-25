@@ -49,6 +49,10 @@
   }
 }
 
+- (void)disableModule {
+  [_delegate removeSendTabPromoModule];
+}
+
 #pragma mark - StandaloneModuleDelegate
 
 - (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {

@@ -4740,6 +4740,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_DEVICE_SWITCHER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Desktop Users or Android switchers.">
         Get the best from the Browser you love
       </message>
+      <message name="IDS_IOS_SEND_TAB_TO_SELF_HIDE_CONTEXT_MENU_DESCRIPTION" desc="Description for the long-press context menu hide action of the send tab to self module.">
+        Hide "<ph name="Module_Name"><ex>Get Tabs Notifications</ex>$1</ph>"
+      </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_BODY" desc="Body text of the Send Tabs notifications entry in the Notification Settings Screen.">
         Alerts when you receive tabs from your other devices.
       </message>
