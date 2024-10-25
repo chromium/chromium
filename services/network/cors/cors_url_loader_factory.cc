@@ -261,7 +261,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     // 1. Perform CORS, but fail loads that represent CORS preflight requests
     // 2. Allow loads that represent CORS preflight requests, but do not perform
     //    CORS
-    DCHECK(disable_web_security_);
+    CHECK(disable_web_security_);
   }
   if (params->automatically_assign_isolation_info) {
     DCHECK(params->isolation_info.IsEmpty());
