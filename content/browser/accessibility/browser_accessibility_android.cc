@@ -729,7 +729,7 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
   // First, always return the |value| attribute if this is an
   // input field.
   std::u16string value = GetValueForControl();
-  if (ShouldExposeValueAsName()) {
+  if (ShouldExposeValueAsName(value)) {
     return value;
   }
 
@@ -875,7 +875,7 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
 
   // If we're returning the value as the main text, the name needs to be
   // part of the hint.
-  if (ShouldExposeValueAsName()) {
+  if (ShouldExposeValueAsName(GetValueForControl())) {
     std::u16string name = GetNameAsString16();
     if (!name.empty()) {
       strings.push_back(name);
@@ -2061,7 +2061,8 @@ bool BrowserAccessibilityAndroid::HasListMarkerChild() const {
   return false;
 }
 
-bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
+bool BrowserAccessibilityAndroid::ShouldExposeValueAsName(
+    const std::u16string& value) const {
   switch (GetRole()) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
@@ -2075,6 +2076,8 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
 
   if (GetData().IsRangeValueSupported()) {
     return false;
+  } else if (!value.empty()) {
+    return true;
   }
 
   if (IsTextField()) {

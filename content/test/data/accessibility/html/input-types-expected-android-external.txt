@@ -27,7 +27,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++EditText hint:"Empty:" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="Empty:"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText"]
 ++++++TextView text:"File: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++Button text:"File:: No file chosen" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++++++Button text:"No file chosen" hint:"File:: No file chosen" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hint="File:: No file chosen", roleDescription="button"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText", hasImage="true"]
 ++++++TextView text:"Image: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++Button text:"Image:" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hasImage="true", roleDescription="button"]
