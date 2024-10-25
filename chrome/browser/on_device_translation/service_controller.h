@@ -49,22 +49,10 @@ class OnDeviceTranslationServiceController {
       base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
           callback);
 
-  // Returns the language packs that are registered.
-  static std::set<LanguagePackKey> GetRegisteredLanguagePacks();
-  // Returns the language packs that are installed.
-  static std::set<LanguagePackKey> GetInstalledLanguagePacks();
-
  private:
   friend base::NoDestructor<OnDeviceTranslationServiceController>;
 
   class FileOperationProxyImpl;
-
-  // The information of a language pack.
-  struct LanguagePackInfo {
-    std::string language1;
-    std::string language2;
-    base::FilePath package_path;
-  };
 
   // The information of a pending task. This is used to keep the tasks that are
   // waiting for the language packs to be installed.
@@ -98,9 +86,6 @@ class OnDeviceTranslationServiceController {
                             mojo::PendingReceiver<mojom::Translator> receiver,
                             base::OnceCallback<void(bool)> callback);
 
-  // Returns the language packs that are installed or set by the command line.
-  std::vector<LanguagePackInfo> GetLanguagePackInfo();
-
   // Called when the TranslateKitBinaryPath pref is changed.
   void OnTranslateKitBinaryPathChanged(const std::string& pref_name);
 
@@ -111,17 +96,12 @@ class OnDeviceTranslationServiceController {
 
   void MaybeRunPendingTasks();
 
-  void CalculateLanguagePackRequirements(
+  static void CalculateLanguagePackRequirements(
       const std::string& source_lang,
       const std::string& target_lang,
       std::set<LanguagePackKey>& required_packs,
       std::vector<LanguagePackKey>& required_not_installed_packs,
       std::vector<LanguagePackKey>& to_be_registered_packs);
-
-  // Get a list of LanguagePackInfo from the command line flag
-  // `--translate-kit-packages`.
-  static std::optional<std::vector<LanguagePackInfo>>
-  GetLanguagePackInfoFromCommandLine();
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
@@ -129,10 +109,6 @@ class OnDeviceTranslationServiceController {
   // Used to listen for changes on the pref values of TranslateKit component and
   // language pack components.
   PrefChangeRegistrar pref_change_registrar_;
-  // The LanguagePackInfo from the command line. This is nullopt if the command
-  // line flag `--translate-kit-packages` is not set.
-  const std::optional<std::vector<LanguagePackInfo>>
-      language_packs_from_command_line_;
   // The file operation proxy to access the files on disk. This is deleted on
   // a background task runner.
   std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>

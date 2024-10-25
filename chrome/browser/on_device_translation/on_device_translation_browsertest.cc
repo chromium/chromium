@@ -59,7 +59,7 @@ class MockComponentManager : public ComponentManager {
               UninstallTranslateKitLanguagePackComponent,
               (LanguagePackKey),
               (override));
-  base::FilePath GetTranslateKitComponentPath() override {
+  base::FilePath GetTranslateKitComponentPathImpl() override {
     return package_dir_;
   }
 
@@ -184,6 +184,56 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
         (async () => {
           try {
             const translator = await window._testPromise;
+            return await translator.translate('hello');
+          } catch (e) {
+            return e;
+          }
+        })();
+      )")
+                .ExtractString(),
+            "English to Japanese: hello");
+}
+
+class OnDeviceTranslationCommandLineBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationCommandLineBrowserTest() = default;
+  ~OnDeviceTranslationCommandLineBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchPath("translate-kit-binary-path",
+                                   GetMockLibraryPath());
+
+    const auto dict_dir_path = GetTempDir().AppendASCII("en_ja");
+    const auto dict_path = dict_dir_path.AppendASCII("dict.dat");
+    CHECK(base::CreateDirectory(dict_dir_path));
+    CHECK(
+        base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
+            .WriteAndCheck(
+                0, base::byte_span_from_cstring("English to Japanese: ")));
+    command_line->AppendSwitchASCII(
+        "translate-kit-packages",
+        base::StrCat({"en,ja,", dict_dir_path.AsUTF8Unsafe()}));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCommandLineBrowserTest,
+                       SimpleTranslation) {
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+  // Translate "hello" to Japanese.
+  // Note: the mock TranslateKit component returns the concatenation of the
+  // content of "dict.dat" in the language pack and the input text.
+  // See comments in mock_translate_kit_lib.cc for more details.
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            const translator = await  translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
             return await translator.translate('hello');
           } catch (e) {
             return e;
