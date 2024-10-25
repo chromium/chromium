@@ -4,6 +4,7 @@
 
 #include "components/data_sharing/internal/group_data_model.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
@@ -33,11 +34,11 @@ using testing::Optional;
 // entities to test utils files, they are used across multiple files.
 sync_pb::CollaborationGroupSpecifics MakeSpecifics(
     const GroupId& id,
-    const base::Time& changed_at = base::Time::Now()) {
+    const int64_t& changed_at_millis_since_unix_epoch) {
   sync_pb::CollaborationGroupSpecifics result;
   result.set_collaboration_id(id.value());
   result.set_changed_at_timestamp_millis_since_unix_epoch(
-      changed_at.InMillisecondsSinceUnixEpoch());
+      changed_at_millis_since_unix_epoch);
   return result;
 }
 
@@ -147,7 +148,8 @@ class GroupDataModelTest : public testing::Test {
     const GroupId id = sdk_delegate_.AddGroupAndReturnId(display_name);
 
     syncer::EntityChangeList entity_changes;
-    entity_changes.push_back(EntityChangeAddFromSpecifics(MakeSpecifics(id)));
+    entity_changes.push_back(EntityChangeAddFromSpecifics(
+        MakeSpecifics(id, next_changed_at_millis_since_unix_epoch_++)));
     collaboration_group_bridge_->ApplyIncrementalSyncChanges(
         collaboration_group_bridge_->CreateMetadataChangeList(),
         std::move(entity_changes));
@@ -167,8 +169,8 @@ class GroupDataModelTest : public testing::Test {
     sdk_delegate_.AddMember(group_id, member_gaia_id);
 
     syncer::EntityChangeList entity_changes;
-    entity_changes.push_back(
-        EntityChangeUpdateFromSpecifics(MakeSpecifics(group_id)));
+    entity_changes.push_back(EntityChangeUpdateFromSpecifics(
+        MakeSpecifics(group_id, next_changed_at_millis_since_unix_epoch_++)));
     collaboration_group_bridge_->ApplyIncrementalSyncChanges(
         collaboration_group_bridge_->CreateMetadataChangeList(),
         std::move(entity_changes));
@@ -185,8 +187,8 @@ class GroupDataModelTest : public testing::Test {
     sdk_delegate_.RemoveGroup(group_id);
 
     syncer::EntityChangeList entity_changes;
-    entity_changes.push_back(
-        EntityChangeDeleteFromSpecifics(MakeSpecifics(group_id)));
+    entity_changes.push_back(EntityChangeDeleteFromSpecifics(
+        MakeSpecifics(group_id, next_changed_at_millis_since_unix_epoch_++)));
     collaboration_group_bridge_->ApplyIncrementalSyncChanges(
         collaboration_group_bridge_->CreateMetadataChangeList(),
         std::move(entity_changes));
@@ -221,6 +223,11 @@ class GroupDataModelTest : public testing::Test {
 
   FakeDataSharingSDKDelegate sdk_delegate_;
   std::unique_ptr<GroupDataModel> model_;
+
+  // Used to ensure that changed_at_timestamp_millis_since_unix_epoch is always
+  // advanced when changes are made (base::Time::Now() doesn't guarantee that in
+  // some cases).
+  int64_t next_changed_at_millis_since_unix_epoch_ = 1000;
 
   testing::NiceMock<MockModelObserver> observer_;
 };
@@ -320,14 +327,7 @@ TEST_F(GroupDataModelTest, ShouldHandleNewGroupsAfterRestart) {
               Optional(HasDisplayName(group_display_name)));
 }
 
-// TODO(crbug.com/372824571): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
-#define MAYBE_ShouldHandleUpdatesAfterRestart \
-  DISABLED_ShouldHandleUpdatesAfterRestart
-#else
-#define MAYBE_ShouldHandleUpdatesAfterRestart ShouldHandleUpdatesAfterRestart
-#endif
-TEST_F(GroupDataModelTest, MAYBE_ShouldHandleUpdatesAfterRestart) {
+TEST_F(GroupDataModelTest, ShouldHandleUpdatesAfterRestart) {
   WaitForModelLoaded();
 
   const std::string group_display_name = "group";
