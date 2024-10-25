@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -837,7 +838,7 @@ class PrerenderLocalFrameViewTest : public base::test::WithFeatureOverride,
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PrerenderLocalFrameViewTest);
 
-TEST_P(PrerenderLocalFrameViewTest, RunPrePaintLifecyclePhaseBeforeActivation) {
+TEST_P(PrerenderLocalFrameViewTest, DryRunPaintBeforePrerenderActivation) {
   InitializePrerenderPageRoot();
   ASSERT_TRUE(GetDocument().IsPrerendering());
   SimRequest resource("https://example.test", "text/html");
@@ -847,12 +848,15 @@ TEST_P(PrerenderLocalFrameViewTest, RunPrePaintLifecyclePhaseBeforeActivation) {
     This is a prerendering page.
     </body>
   )");
+  PaintControllerPersistentData& pd =
+      GetDocument().View()->GetPaintControllerPersistentDataForTesting();
 
   if (base::FeatureList::IsEnabled(
           features::kPrerender2EarlyDocumentLifecycleUpdate)) {
-    EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
+    EXPECT_EQ(DocumentLifecycle::kPaintClean,
               GetDocument().Lifecycle().GetState());
     EXPECT_FALSE(GetPage().GetVisualViewport().NeedsPaintPropertyUpdate());
+    EXPECT_EQ(1u, pd.GetPaintChunks().size());
   } else {
     EXPECT_EQ(DocumentLifecycle::kLayoutClean,
               GetDocument().Lifecycle().GetState());

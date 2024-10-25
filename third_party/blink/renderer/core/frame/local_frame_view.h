@@ -388,6 +388,12 @@ class CORE_EXPORT LocalFrameView final
   // desired state.
   bool UpdateLifecycleToLayoutClean(DocumentUpdateReason reason);
 
+  // Executes prepaint lifecycle for prerendering page, and pre-builds paint
+  // tree. A prerendering page should never been shown before activation, so
+  // this step just caches intermediate results, and the painting pipeline can
+  // reuse them after activation.
+  void DryRunPaintingForPrerender();
+
   void SetTargetStateForTest(DocumentLifecycle::LifecycleState state) {
     target_state_ = state;
   }
