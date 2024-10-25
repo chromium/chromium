@@ -492,6 +492,7 @@ void PolicyUIHandler::SendStatus() {
 }
 
 void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
+  AllowJavascript();
   ResolveJavascriptCallback(
       args[0],
       base::Value(

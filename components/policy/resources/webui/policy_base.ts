@@ -10,6 +10,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import './status_box.js';
 import './policy_table.js';
+import './policy_promotion.js';
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -19,7 +20,6 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {Policy} from './policy_row.js';
 import type {PolicyTableElement, PolicyTableModel} from './policy_table.js';
 import type {Status, StatusBoxElement} from './status_box.js';
-
 export interface PolicyNamesResponse {
   [id: string]: {name: string, policyNames: NonNullable<string[]>};
 }
@@ -63,6 +63,23 @@ export class Page {
     this.mainSection = getRequiredElement('main-section');
 
     const policyElement = getRequiredElement('policy-ui');
+
+    sendWithPromise('shouldShowPromotion').then((shouldShowPromo: boolean) => {
+      if (!shouldShowPromo) {
+        return;
+      }
+      const promotionSection = document.createElement('promotion-banner-section-container') as HTMLElement;
+      policyElement.insertBefore(promotionSection, getRequiredElement('status-section'));
+
+      const promotionDismissButton =
+      promotionSection.shadowRoot!.getElementById('promotion-dismiss-button');
+
+      promotionDismissButton?.addEventListener('click' ,() => {
+        chrome.send('setBannerDismissed');
+        promotionSection.remove();
+      });
+    });
+
     // Add or remove header shadow based on scroll position.
     policyElement.addEventListener('scroll', () => {
       document.getElementsByTagName('header')[0]!.classList.toggle(
@@ -153,13 +170,6 @@ export class Page {
             this.onPoliciesReceived_(names, values));
     addWebUiListener(
         'download-json', (json: string) => this.downloadJson(json));
-
-    sendWithPromise('shouldShowPromotion').then((shouldShowPromo: boolean) => {
-        const bannerSection = getRequiredElement('promotion-banner-section');
-            if(shouldShowPromo){
-              bannerSection.hidden = false;
-            }
-    });
   }
 
   private onPoliciesReceived_(

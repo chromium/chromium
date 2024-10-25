@@ -1014,14 +1014,20 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
 
   static constexpr std::string_view kPromotionBannerVisibilityJavaScript = R"(
     (function () {
-      const element = document.getElementById('promotion-banner-section');
-      if (!element) return 'not-found';
-      return element.hidden ? 'hidden' : 'visible';
+      const element =
+        document.getElementsByTagName('promotion-banner-section-container')[0];
+      return element ? 'visible' : 'hidden';
     })();
   )";
 
   static constexpr std::string_view kPromotionBannerDismissJavaScript = R"(
-          document.getElementById('promotion-dismiss-button').click();
+    const promotionContainer =
+      document.getElementsByTagName('promotion-banner-section-container')[0];
+    if (promotionContainer){
+      const dismissButton =
+        promotionContainer.shadowRoot.getElementById('promotion-dismiss-button');
+      dismissButton.click();
+    }
   )";
 
   static constexpr std::string_view kBannerVisible = "visible";
