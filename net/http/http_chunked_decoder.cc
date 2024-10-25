@@ -42,17 +42,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_chunked_decoder.h"
 
 #include <algorithm>
 #include <string_view>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -66,84 +62,80 @@ const size_t HttpChunkedDecoder::kMaxLineBufLen = 16384;
 
 HttpChunkedDecoder::HttpChunkedDecoder() = default;
 
-int HttpChunkedDecoder::FilterBuf(char* buf, int buf_len) {
-  int result = 0;
-
-  while (buf_len > 0) {
+int HttpChunkedDecoder::FilterBuf(base::span<uint8_t> buf) {
+  size_t result = 0;
+  while (buf.size() > 0) {
     if (chunk_remaining_ > 0) {
-      // Since |chunk_remaining_| is positive and |buf_len| an int, the minimum
-      // of the two must be an int.
-      int num = static_cast<int>(
-          std::min(chunk_remaining_, static_cast<int64_t>(buf_len)));
+      size_t num =
+          std::min(base::saturated_cast<size_t>(chunk_remaining_), buf.size());
 
-      buf_len -= num;
       chunk_remaining_ -= num;
-
       result += num;
-      buf += num;
+      buf = buf.subspan(num);
 
       // After each chunk's data there should be a CRLF.
       if (chunk_remaining_ == 0)
         chunk_terminator_remaining_ = true;
       continue;
     } else if (reached_eof_) {
-      bytes_after_eof_ += buf_len;
+      bytes_after_eof_ += buf.size();
       break;  // Done!
     }
 
-    int bytes_consumed = ScanForChunkRemaining(buf, buf_len);
+    int bytes_consumed = ScanForChunkRemaining(buf);
     if (bytes_consumed < 0)
       return bytes_consumed; // Error
 
-    buf_len -= bytes_consumed;
-    if (buf_len > 0)
-      memmove(buf, buf + bytes_consumed, buf_len);
+    base::span<const uint8_t> subspan =
+        buf.subspan(base::checked_cast<size_t>(bytes_consumed));
+    if (!subspan.empty()) {
+      buf.copy_prefix_from(subspan);
+    }
+    buf = buf.first(subspan.size());
   }
-
-  return result;
+  // TODO(Kelsen): the return type should become size_t.
+  return base::checked_cast<int>(result);
 }
 
-int HttpChunkedDecoder::ScanForChunkRemaining(const char* buf, int buf_len) {
-  DCHECK_EQ(0, chunk_remaining_);
-  DCHECK_GT(buf_len, 0);
-
+int HttpChunkedDecoder::ScanForChunkRemaining(base::span<const uint8_t> buf) {
   int bytes_consumed = 0;
 
-  size_t index_of_lf = std::string_view(buf, buf_len).find('\n');
+  size_t index_of_lf = base::as_string_view(buf).find('\n');
   if (index_of_lf != std::string_view::npos) {
-    buf_len = static_cast<int>(index_of_lf);
-    if (buf_len && buf[buf_len - 1] == '\r')  // Eliminate a preceding CR.
-      buf_len--;
+    buf = buf.first(index_of_lf);
+    // Eliminate a preceding CR.
+    if (!buf.empty() && buf.back() == '\r') {
+      buf = buf.first(buf.size() - 1u);
+    }
     bytes_consumed = static_cast<int>(index_of_lf) + 1;
 
     // Make buf point to the full line buffer to parse.
     if (!line_buf_.empty()) {
-      line_buf_.append(buf, buf_len);
-      buf = line_buf_.data();
-      buf_len = static_cast<int>(line_buf_.size());
+      line_buf_.append(base::as_string_view(buf));
+      buf = base::as_byte_span(line_buf_);
     }
 
     if (reached_last_chunk_) {
-      if (buf_len > 0)
+      if (!buf.empty()) {
         DVLOG(1) << "ignoring http trailer";
-      else
+      } else {
         reached_eof_ = true;
+      }
     } else if (chunk_terminator_remaining_) {
-      if (buf_len > 0) {
+      if (!buf.empty()) {
         DLOG(ERROR) << "chunk data not terminated properly";
         return ERR_INVALID_CHUNKED_ENCODING;
       }
       chunk_terminator_remaining_ = false;
-    } else if (buf_len > 0) {
+    } else if (!buf.empty()) {
       // Ignore any chunk-extensions.
-      size_t index_of_semicolon = std::string_view(buf, buf_len).find(';');
+      size_t index_of_semicolon = base::as_string_view(buf).find(';');
       if (index_of_semicolon != std::string_view::npos) {
-        buf_len = static_cast<int>(index_of_semicolon);
+        buf = buf.first(index_of_semicolon);
       }
 
-      if (!ParseChunkSize(buf, buf_len, &chunk_remaining_)) {
-        DLOG(ERROR) << "Failed parsing HEX from: " <<
-            std::string(buf, buf_len);
+      if (!ParseChunkSize(buf, &chunk_remaining_)) {
+        DLOG(ERROR) << "Failed parsing HEX from: " << base::as_string_view(buf);
         return ERR_INVALID_CHUNKED_ENCODING;
       }
 
@@ -156,22 +148,22 @@ int HttpChunkedDecoder::ScanForChunkRemaining(const char* buf, int buf_len) {
     line_buf_.clear();
   } else {
     // Save the partial line; wait for more data.
-    bytes_consumed = buf_len;
+    bytes_consumed = buf.size();
 
     // Ignore a trailing CR
-    if (buf[buf_len - 1] == '\r')
-      buf_len--;
+    if (buf.back() == '\r') {
+      buf = buf.first(buf.size() - 1);
+    }
 
-    if (line_buf_.length() + buf_len > kMaxLineBufLen) {
+    if (line_buf_.length() + buf.size() > kMaxLineBufLen) {
       DLOG(ERROR) << "Chunked line length too long";
       return ERR_INVALID_CHUNKED_ENCODING;
     }
 
-    line_buf_.append(buf, buf_len);
+    line_buf_.append(base::as_string_view(buf));
   }
   return bytes_consumed;
 }
-
 
 // While the HTTP 1.1 specification defines chunk-size as 1*HEX
 // some sites rely on more lenient parsing.
@@ -193,18 +185,16 @@ int HttpChunkedDecoder::ScanForChunkRemaining(const char* buf, int buf_len) {
 // known sites.
 //
 //         Us: ^\X+[ ]*$
-bool HttpChunkedDecoder::ParseChunkSize(const char* start,
-                                        int len,
-                                        int64_t* out) {
-  DCHECK_GE(len, 0);
-
+bool HttpChunkedDecoder::ParseChunkSize(base::span<const uint8_t> buf,
+                                        uint64_t* out) {
   // Strip trailing spaces
-  while (len > 0 && start[len - 1] == ' ')
-    len--;
+  while (!buf.empty() && buf.back() == ' ') {
+    buf = buf.first(buf.size() - 1u);
+  }
 
   // Be more restrictive than HexStringToInt64;
   // don't allow inputs with leading "-", "+", "0x", "0X"
-  std::string_view chunk_size(start, len);
+  std::string_view chunk_size = base::as_string_view(buf);
   if (!base::ranges::all_of(chunk_size, base::IsHexDigit<char>)) {
     return false;
   }

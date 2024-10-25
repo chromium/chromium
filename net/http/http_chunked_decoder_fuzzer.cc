@@ -7,17 +7,20 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "net/http/http_chunked_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <vector>
 
-#include "net/http/http_chunked_decoder.h"
+#include "base/containers/to_vector.h"
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  const char* data_ptr = reinterpret_cast<const char*>(data);
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
+  // SAFETY: libfuzzer provides a valid pointer and size pair.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
   net::HttpChunkedDecoder decoder;
 
   // Feed data to decoder.FilterBuf() by blocks of "random" size.
@@ -40,8 +43,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     block_size = std::min(block_size, size - offset);
 
     // Create new buffer with current block of data and feed it to the decoder.
-    std::vector<char> buffer(data_ptr + offset, data_ptr + offset + block_size);
-    int result = decoder.FilterBuf(buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer =
+        base::ToVector(data.subspan(offset, block_size));
+    int result = decoder.FilterBuf(buffer);
     if (result < 0)
       return 0;
   }
