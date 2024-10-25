@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
@@ -55,16 +54,6 @@ public class StripStackerUnitTest {
             when(tab.getDrawX()).thenReturn(x);
             x += TAB_WIDTH;
         }
-    }
-
-    @Test
-    public void testCreateVisualOrdering() {
-        final StripLayoutTab[] output = new StripLayoutTab[mInput.length];
-        final StripLayoutTab[] expected_output =
-                new StripLayoutTab[] {mTab1, mTab2, mTab5, mTab4, mTab3};
-
-        mTarget.createVisualOrdering(2, mInput, output);
-        assertThat("Visual ordering does not match", output, equalTo(expected_output));
     }
 
     @Test

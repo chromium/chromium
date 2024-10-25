@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -14,34 +13,6 @@ import org.chromium.ui.base.LocalizationUtils;
  * visually order tabs.
  */
 public abstract class StripStacker {
-    /**
-     * This gives the implementing class a chance to determine how the tabs should be ordered
-     * visually. The positioning logic is the same regardless, this just has to do with visual
-     * stacking.
-     *
-     * @param selectedIndex The selected index of the tabs.
-     * @param indexOrderedTabs A list of tabs ordered by index.
-     * @param outVisualOrderedTabs The new list of tabs, ordered from back (low z-index) to front
-     *     (high z-index) visually.
-     */
-    public void createVisualOrdering(
-            int selectedIndex,
-            StripLayoutTab[] indexOrderedTabs,
-            StripLayoutTab[] outVisualOrderedTabs) {
-        // TODO(crbug.com/40268645): Stacking order can be ignored for TSR.
-        assert indexOrderedTabs.length == outVisualOrderedTabs.length;
-
-        selectedIndex = MathUtils.clamp(selectedIndex, 0, indexOrderedTabs.length);
-
-        int outIndex = 0;
-        for (int i = 0; i < selectedIndex; i++) {
-            outVisualOrderedTabs[outIndex++] = indexOrderedTabs[i];
-        }
-
-        for (int i = indexOrderedTabs.length - 1; i >= selectedIndex; --i) {
-            outVisualOrderedTabs[outIndex++] = indexOrderedTabs[i];
-        }
-    }
 
     /**
      * Computes and sets the draw X, draw Y, visibility and content offset for each view.
