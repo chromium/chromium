@@ -2675,9 +2675,6 @@ extern const char kSegmentationPlatformAndroidHomeModuleRankerV2Description[];
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
-extern const char kMessagesForAndroidAdsBlockedName[];
-extern const char kMessagesForAndroidAdsBlockedDescription[];
-
 extern const char kMigrateSyncingUserToSignedInName[];
 extern const char kMigrateSyncingUserToSignedInDescription[];
 

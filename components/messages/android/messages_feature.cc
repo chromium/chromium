@@ -30,9 +30,6 @@ base::android::FeatureMap* GetFeatureMap() {
 
 }  // namespace
 
-BASE_FEATURE(kMessagesForAndroidAdsBlocked,
-             "MessagesForAndroidAdsBlocked",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              "MessagesForAndroidFullyVisibleCallback",
@@ -42,10 +39,6 @@ BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
 BASE_FEATURE(kMessagesAndroidExtraHistograms,
              "MessagesAndroidExtraHistograms",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAdsBlockedMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
-}
 
 static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetFeatureMap());

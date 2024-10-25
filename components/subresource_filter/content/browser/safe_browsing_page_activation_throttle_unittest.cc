@@ -21,9 +21,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
@@ -370,41 +367,6 @@ class SafeBrowsingPageActivationThrottleTest
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;
-};
-
-class SafeBrowsingPageActivationThrottleInfoBarUiTest
-    : public SafeBrowsingPageActivationThrottleTest {
- public:
-  void SetUp() override {
-    SafeBrowsingPageActivationThrottleTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(false);
-    messages::MessageDispatcherBridge::SetInstanceForTesting(
-        &message_dispatcher_bridge_);
-#endif
-  }
-
-  bool presenting_ads_blocked_infobar() {
-    auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-        content::RenderViewHostTestHarness::web_contents());
-    if (infobar_manager->infobars().empty()) {
-      return false;
-    }
-
-    // No infobars other than the ads blocked infobar should be displayed in the
-    // context of these tests.
-    EXPECT_EQ(infobar_manager->infobars().size(), 1u);
-    auto* infobar = infobar_manager->infobars()[0].get();
-    EXPECT_EQ(infobar->GetIdentifier(),
-              infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
-
-    return true;
-  }
-
- protected:
-#if BUILDFLAG(IS_ANDROID)
-  messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
-#endif
 };
 
 class SafeBrowsingPageActivationThrottleParamTest
@@ -1115,18 +1077,6 @@ TEST_F(SafeBrowsingPageActivationThrottleTest,
                   : mojom::ActivationLevel::kDisabled,
               *observer()->GetPageActivationForLastCommittedLoad());
   }
-}
-
-TEST_F(SafeBrowsingPageActivationThrottleInfoBarUiTest,
-       NotificationVisibility) {
-  GURL url(kURL);
-  ConfigureForMatch(url);
-  content::RenderFrameHost* rfh = SimulateNavigateAndCommit({url}, main_rfh());
-
-  EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(rfh));
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(presenting_ads_blocked_infobar());
-#endif
 }
 
 TEST_P(SafeBrowsingPageActivationThrottleParamTest,

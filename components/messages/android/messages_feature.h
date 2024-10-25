@@ -9,19 +9,12 @@
 
 namespace messages {
 
-// Feature that controls whether "ads blocked" messages use Messages or
-// Infobars infrastructure.
-// TODO(https://crbug.com/40258218): Remove flag.
-BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
-
 // Feature that exposes a listener to notify whether the current message
 // is fully visible.
 BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
 
 // Feature that enables extra histogram recordings.
 BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
-
-bool IsAdsBlockedMessagesUiEnabled();
 
 }  // namespace messages
 

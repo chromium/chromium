@@ -4620,10 +4620,6 @@ const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "
     "ignored as of Android U)";
 
-const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
-const char kMessagesForAndroidAdsBlockedDescription[] =
-    "When enabled, ads blocked message will use the new Messages UI.";
-
 const char kMigrateSyncingUserToSignedInName[] =
     "Migrate syncing user to signed-in";
 const char kMigrateSyncingUserToSignedInDescription[] =
