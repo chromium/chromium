@@ -31,17 +31,17 @@ const CGFloat kGradientOverlayTopAlpha = 0.0;
 // Alpha for bottom of gradienet overlay.
 const CGFloat kGradientOverlayBottomAlpha = 0.14;
 
-// Inset for product image fallback from the UIImageView boundary.
-const CGFloat kProductImageFallbackInset = 10.0f;
-
 // Radius of background circle of product image fallback.
-const CGFloat kProductImageFallbackCornerRadius = 25.0;
+const CGFloat kProductImageFallbackCornerRadius = 18.0;
 
-// Height and width of product image fallback.
-const CGFloat kProductImageFallbackSize = 28.0;
+// Vertical margin between down trend symbol and circle around it.
+const CGFloat kProductImageFallbackVerticalMargin = 6.0;
 
-// Point size of product image fallback.
-const CGFloat kProductImageFallbackPointSize = 10.0;
+// Horizontal margin between down trend symbol and circle around it.
+const CGFloat kProductImageFallbackHorizontalMargin = 4.0;
+
+// Width and height of product image fallback
+const CGFloat kProductImageFallbackSize = 36.0;
 
 // Rounded corners of the product image radius
 const CGFloat kProductImageCornerRadius = 8.0;
@@ -151,17 +151,20 @@ const CGFloat kSeparatorHeight = 0.5;
 
   } else {
     _fallbackProductImageView = [[UIImageView alloc] init];
-    _fallbackProductImageView.image = CustomSymbolWithPointSize(
-        kDownTrendSymbol, kProductImageFallbackPointSize);
+    UIImageSymbolConfiguration* fallbackImageConfig =
+        [UIImageSymbolConfiguration
+            configurationWithWeight:UIImageSymbolWeightLight];
+    _fallbackProductImageView.image =
+        CustomSymbolWithConfiguration(kDownTrendSymbol, fallbackImageConfig);
     _fallbackProductImageView.contentMode = UIViewContentModeScaleAspectFit;
     _fallbackProductImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _fallbackProductImageView.layer.borderWidth = 0;
 
     [NSLayoutConstraint activateConstraints:@[
-      [_fallbackProductImageView.widthAnchor
+      [_productImage.heightAnchor
           constraintEqualToConstant:kProductImageFallbackSize],
-      [_fallbackProductImageView.widthAnchor
-          constraintEqualToAnchor:_fallbackProductImageView.heightAnchor],
+      [_productImage.widthAnchor
+          constraintEqualToConstant:kProductImageFallbackSize],
     ]];
 
     _productImage.layer.cornerRadius = kProductImageFallbackCornerRadius;
@@ -169,8 +172,12 @@ const CGFloat kSeparatorHeight = 0.5;
 
     [_productImage addSubview:_fallbackProductImageView];
 
-    AddSameConstraintsWithInset(_fallbackProductImageView, _productImage,
-                                kProductImageFallbackInset);
+    AddSameConstraintsWithInsets(
+        _fallbackProductImageView, _productImage,
+        NSDirectionalEdgeInsets{kProductImageFallbackVerticalMargin,
+                                kProductImageFallbackHorizontalMargin,
+                                kProductImageFallbackVerticalMargin,
+                                kProductImageFallbackHorizontalMargin});
   }
 
   _allowButton = [[UIButton alloc] init];
