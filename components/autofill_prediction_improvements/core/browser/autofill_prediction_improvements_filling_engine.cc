@@ -12,15 +12,21 @@ namespace autofill_prediction_improvements {
 
 AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
     std::u16string value,
-    std::u16string label)
-    : Prediction(std::move(value), std::move(label), std::nullopt) {}
+    std::u16string label,
+    bool is_focusable)
+    : Prediction(std::move(value),
+                 std::move(label),
+                 is_focusable,
+                 std::nullopt) {}
 
 AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
     std::u16string value,
     std::u16string label,
+    bool is_focusable,
     std::optional<std::u16string> select_option_text)
     : value(std::move(value)),
       label(std::move(label)),
+      is_focusable(is_focusable),
       select_option_text(select_option_text) {}
 
 AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(

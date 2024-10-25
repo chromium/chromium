@@ -178,7 +178,7 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
       predictions.emplace_back(
           field.global_id(),
           Prediction{predicted_select_option_it->value, std::move(label),
-                     predicted_select_option_it->text});
+                     field.IsFocusable(), predicted_select_option_it->text});
       continue;
     }
     // Skip predictions for non-empty text fields.
@@ -186,9 +186,9 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
       continue;
     }
 
-    predictions.emplace_back(
-        field.global_id(),
-        Prediction{std::move(predicted_value), std::move(label)});
+    predictions.emplace_back(field.global_id(),
+                             Prediction{std::move(predicted_value),
+                                        std::move(label), field.IsFocusable()});
   }
   return predictions;
 }

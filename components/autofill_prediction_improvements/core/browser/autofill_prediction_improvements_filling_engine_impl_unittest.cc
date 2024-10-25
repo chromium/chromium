@@ -130,7 +130,8 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
           {.label = u"label"},
           {.label = u"not in response, not filled"},
           {.label = u"empty, not filled"},
-          {.label = u"State",
+          {.is_focusable = false,
+           .label = u"State",
            .value = u"-1",
            .form_control_type = autofill::FormControlType::kSelectOne,
            .select_options = {{.value = u"-1", .text = u"Select state"},
@@ -163,11 +164,13 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
           Pair(form.fields()[0].global_id(),
                // Also tests that Prediction::label is set to the normalized
                // label if set and non-empty.
-               HasPrediction(Prediction(u"value", u"normalized label"))),
+               HasPrediction(Prediction(u"value", u"normalized label",
+                                        /*is_focusable=*/true))),
           Pair(form.fields()[3].global_id(),
                // Also tests that Prediction::label falls back to the field
                // label if the normalized label is not set or empty.
-               HasPrediction(Prediction(u"33", u"State", u"North Carolina")))));
+               HasPrediction(Prediction(u"33", u"State", /*is_focusable=*/false,
+                                        u"North Carolina")))));
 }
 
 TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,

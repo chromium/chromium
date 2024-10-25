@@ -217,6 +217,11 @@ class AutofillPredictionImprovementsManager
       const autofill::FormData& form,
       const autofill::Suggestion& autofill_suggestion);
 
+  // Sets the potentially new state of the `form` fields' focusability in the
+  // `cache_`. This is meant to be called in `GetSuggestions()`, which is
+  // expected to be called on field focus.
+  void UpdateFieldFocusabilityInCache(const autofill::FormData& form);
+
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =
       PredictionRetrievalState::kReady;

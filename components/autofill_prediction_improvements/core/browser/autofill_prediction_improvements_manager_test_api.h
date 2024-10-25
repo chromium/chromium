@@ -26,6 +26,12 @@ class AutofillPredictionImprovementsManagerTestApi {
     manager_->cache_ = cache;
   }
 
+  std::optional<
+      AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
+  GetCache() {
+    return manager_->cache_;
+  }
+
   void SetLastQueriedFormGlobalId(
       std::optional<autofill::FormGlobalId> last_queried_form_global_id) {
     manager_->last_queried_form_global_id_ = last_queried_form_global_id;

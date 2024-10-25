@@ -66,8 +66,7 @@ bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field) {
 
 bool IsFieldEligibleForFilling(const AutofillField& form_field) {
   return IsFieldEligibleByTypeCriteria(form_field) &&
-         form_field.value(autofill::ValueSemantics::kCurrent).empty() &&
-         form_field.IsFocusable();
+         form_field.value(autofill::ValueSemantics::kCurrent).empty();
 }
 
 void SetFieldFillingEligibility(autofill::FormStructure& form) {
@@ -80,7 +79,7 @@ void SetFieldFillingEligibility(autofill::FormStructure& form) {
 bool IsFormEligibleForFilling(const autofill::FormStructure& form) {
   int total_number_of_fillable_fields = 0;
   for (auto& form_field : form) {
-    if (IsFieldEligibleForFilling(*form_field)) {
+    if (form_field->IsFocusable() && IsFieldEligibleForFilling(*form_field)) {
       ++total_number_of_fillable_fields;
     }
   }

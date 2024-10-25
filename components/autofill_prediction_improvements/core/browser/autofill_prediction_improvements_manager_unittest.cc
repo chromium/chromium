@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -54,12 +55,12 @@ MATCHER_P(HasType, expected_type, "") {
   return true;
 }
 
-MATCHER(HasPredictionImprovementsPayload, "") {
+MATCHER_P(HasPredictionImprovementsPayload, expected_payload, "") {
   EXPECT_THAT(
       arg,
       Field("Suggestion::payload", &Suggestion::payload,
             ::testing::VariantWith<Suggestion::PredictionImprovementsPayload>(
-                _)));
+                expected_payload)));
   return true;
 }
 
@@ -412,10 +413,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
               HasType(SuggestionType::kPredictionImprovementsLoadingState));
 
   std::move(predictions_received_callback)
-      .Run(
-          PredictionsByGlobalId{{filled_field.global_id(),
-                                 {filled_field.value(), filled_field.label()}}},
-          "");
+      .Run(PredictionsByGlobalId{{filled_field.global_id(),
+                                  {filled_field.value(), filled_field.label(),
+                                   filled_field.IsFocusable()}}},
+           "");
   base::test::RunUntil([this]() {
     return !test_api(*manager_).loading_suggestion_timer().IsRunning();
   });
@@ -747,8 +748,9 @@ TEST_F(
   EXPECT_CALL(client_, GetCachedFormStructure)
       .WillRepeatedly(Return(&form_structure));
   test_api(*manager_).SetAutofillSuggestions(autofill_suggestions);
-  test_api(*manager_).SetCache(PredictionsByGlobalId{
-      {form.fields().front().global_id(), {u"value", u"label"}}});
+  test_api(*manager_).SetCache(
+      PredictionsByGlobalId{{form.fields().front().global_id(),
+                             {u"value", u"label", /*is_focusable=*/true}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   test_api(*manager_).SetPredictionRetrievalState(
       AutofillPredictionImprovementsManager::PredictionRetrievalState::
@@ -777,13 +779,22 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   .heuristic_type = autofill::NAME_FIRST},
                  {.role = autofill::ADDRESS_HOME_STATE,
                   .heuristic_type = autofill::ADDRESS_HOME_STATE,
-                  .form_control_type = autofill::FormControlType::kSelectOne}}};
+                  .form_control_type = autofill::FormControlType::kSelectOne},
+                 // An existing prediction for a non-focusable field won't show
+                 // up in child suggestions.
+                 {.role = autofill::ADDRESS_HOME_CITY,
+                  .heuristic_type = autofill::ADDRESS_HOME_CITY,
+                  .is_focusable = false}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields()[0].global_id(),
-       {trigger_field_value, trigger_field_label}},
+       {trigger_field_value, trigger_field_label,
+        form.fields()[0].IsFocusable()}},
       {form.fields()[1].global_id(),
-       {select_field_value, select_field_label, select_field_option_text}}});
+       {select_field_value, select_field_label, form.fields()[1].IsFocusable(),
+        select_field_option_text}},
+      {form.fields()[2].global_id(),
+       {u"value", u"label", form.fields()[2].IsFocusable()}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   test_api(*manager_).SetPredictionRetrievalState(
       AutofillPredictionImprovementsManager::PredictionRetrievalState::
@@ -795,12 +806,18 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       ElementsAre(
           AllOf(
               HasType(SuggestionType::kFillPredictionImprovements),
-              HasPredictionImprovementsPayload(),
+              HasPredictionImprovementsPayload(Field(
+                  "Suggestion::PredictionImprovementsPayload::values_to_fill",
+                  &autofill::Suggestion::PredictionImprovementsPayload::
+                      values_to_fill,
+                  ElementsAre(
+                      Pair(form.fields()[0].global_id(), trigger_field_value),
+                      Pair(form.fields()[1].global_id(), select_field_value)))),
               Field("Suggestion::children", &Suggestion::children,
                     ElementsAre(
                         AllOf(HasType(
                                   SuggestionType::kFillPredictionImprovements),
-                              HasPredictionImprovementsPayload()),
+                              HasPredictionImprovementsPayload(_)),
                         HasType(SuggestionType::kSeparator),
                         AllOf(HasType(
                                   SuggestionType::kFillPredictionImprovements),
@@ -832,7 +849,8 @@ TEST_F(
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(), {u"Jane", u"First name"}}});
+      {form.fields()[0].global_id(),
+       {u"Jane", u"First name", form.fields()[0].IsFocusable()}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   test_api(*manager_).SetPredictionRetrievalState(
       AutofillPredictionImprovementsManager::PredictionRetrievalState::
@@ -860,9 +878,12 @@ TEST_F(
                   .form_control_type = autofill::FormControlType::kSelectOne}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(), {u"Jane", u"First name"}},
-      {form.fields()[1].global_id(), {u"Country roads str", u"Street name"}},
-      {form.fields()[2].global_id(), {u"33", u"state", u"West Virginia"}}});
+      {form.fields()[0].global_id(),
+       {u"Jane", u"First name", form.fields()[0].IsFocusable()}},
+      {form.fields()[1].global_id(),
+       {u"Country roads str", u"Street name", form.fields()[1].IsFocusable()}},
+      {form.fields()[2].global_id(),
+       {u"33", u"state", form.fields()[2].IsFocusable(), u"West Virginia"}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   test_api(*manager_).SetPredictionRetrievalState(
       AutofillPredictionImprovementsManager::PredictionRetrievalState::
@@ -893,10 +914,14 @@ TEST_F(
            .form_control_type = autofill::FormControlType::kSelectOne}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(), {u"Jane", u"First name"}},
-      {form.fields()[1].global_id(), {u"Doe", u"Last name"}},
-      {form.fields()[2].global_id(), {u"Country roads str", u"Street name"}},
-      {form.fields()[3].global_id(), {u"33", u"state", u"West Virginia"}}});
+      {form.fields()[0].global_id(),
+       {u"Jane", u"First name", form.fields()[0].IsFocusable()}},
+      {form.fields()[1].global_id(),
+       {u"Doe", u"Last name", form.fields()[1].IsFocusable()}},
+      {form.fields()[2].global_id(),
+       {u"Country roads str", u"Street name", form.fields()[2].IsFocusable()}},
+      {form.fields()[3].global_id(),
+       {u"33", u"state", form.fields()[3].IsFocusable(), u"West Virginia"}}});
   test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   test_api(*manager_).SetPredictionRetrievalState(
       AutofillPredictionImprovementsManager::PredictionRetrievalState::
@@ -907,6 +932,47 @@ TEST_F(
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0],
               HasLabel(u"Fill First name, Last name & 2 more fields"));
+}
+
+// Tests that on field focus the potentially new state of the form fields'
+// focusability is set in the cache.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       GetSuggestions_kDoneSuccess_UpdatesFieldFocusabilityInCache) {
+  // Set up manager to reflect having received predictions successfully for two
+  // form fields, one of which is not focusable at the time of retrieval.
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST, .is_focusable = false},
+                 {.role = autofill::NAME_LAST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetCache(PredictionsByGlobalId{
+      {form.fields()[0].global_id(),
+       {u"Jane", u"First name", form.fields()[0].IsFocusable()}},
+      {form.fields()[1].global_id(),
+       {u"Doe", u"Last name", form.fields()[1].IsFocusable()}}});
+  test_api(*manager_).SetPredictionRetrievalState(
+      AutofillPredictionImprovementsManager::PredictionRetrievalState::
+          kDoneSuccess);
+
+  // Now swap focusability of the two form fields.
+  test_api(form).fields()[0].set_is_focusable(!form.fields()[0].IsFocusable());
+  test_api(form).fields()[1].set_is_focusable(!form.fields()[1].IsFocusable());
+
+  // With the above setup, `GetSuggestions()` is expected to call
+  // `UpdateFieldFocusabilityInCache()`.
+  manager_->GetSuggestions(/*autofill_suggestions=*/{}, form, form.fields()[0]);
+
+  EXPECT_THAT(test_api(*manager_).GetCache(),
+              Optional(ElementsAre(
+                  Pair(form.fields()[0].global_id(),
+                       Field("Prediction::is_focusable",
+                             &AutofillPredictionImprovementsFillingEngine::
+                                 Prediction::is_focusable,
+                             form.fields()[0].IsFocusable())),
+                  Pair(form.fields()[1].global_id(),
+                       Field("Prediction::is_focusable",
+                             &AutofillPredictionImprovementsFillingEngine::
+                                 Prediction::is_focusable,
+                             form.fields()[1].IsFocusable())))));
 }
 
 class AutofillPredictionImprovementsManagerUserFeedbackTest
@@ -1194,8 +1260,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       .SetFieldTypes(
           {autofill::FieldType::NAME_FIRST, autofill::FieldType::NAME_LAST});
   test_api(*manager_).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(), {u"Jane", u"First Name"}},
-      {form.fields()[1].global_id(), {u"Doe", u"Last Name"}}});
+      {form.fields()[0].global_id(),
+       {u"Jane", u"First Name", form.fields()[0].IsFocusable()}},
+      {form.fields()[1].global_id(),
+       {u"Doe", u"Last Name", form.fields()[1].IsFocusable()}}});
   EXPECT_CALL(client_, GetCachedFormStructure)
       .WillRepeatedly(Return(&form_structure));
   EXPECT_CALL(client_, GetAutofillNameFillingValue(

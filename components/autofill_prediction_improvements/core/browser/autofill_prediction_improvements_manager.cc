@@ -427,10 +427,10 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   // remaining fields in no particular order.
   AddChildFillingSuggestion(suggestion, prediction);
   for (const auto& [child_field_global_id, child_prediction] : *cache_) {
-    // Only add a child suggestion if the field is not the triggering field
-    // and the value to fill is not empty.
+    // Only add a child suggestion if the field is not the triggering field, the
+    // value to fill is not empty and the field is focusable.
     if (child_field_global_id != field.global_id() &&
-        !child_prediction.value.empty()) {
+        !child_prediction.value.empty() && child_prediction.is_focusable) {
       AddChildFillingSuggestion(suggestion, child_prediction);
     }
   }
@@ -467,6 +467,19 @@ bool AutofillPredictionImprovementsManager::IsPredictionImprovementsEligible(
 
 bool AutofillPredictionImprovementsManager::IsUserEligible() const {
   return client_->IsUserEligible();
+}
+
+void AutofillPredictionImprovementsManager::UpdateFieldFocusabilityInCache(
+    const autofill::FormData& form) {
+  if (!cache_) {
+    return;
+  }
+  for (const autofill::FormFieldData& field : form.fields()) {
+    if (!cache_->contains(field.global_id())) {
+      continue;
+    }
+    cache_->at(field.global_id()).is_focusable = field.IsFocusable();
+  }
 }
 
 std::vector<autofill::Suggestion>
@@ -510,6 +523,12 @@ AutofillPredictionImprovementsManager::GetSuggestions(
       // being retrieved.
       return {CreateLoadingSuggestion()};
     case PredictionRetrievalState::kDoneSuccess:
+      // The `form` fields' focusability states may have changed since the last
+      // `form` field focus event, so they need to be updated in the `cache_`.
+      // This ensures that child suggestions will be created correctly in
+      // `CreateFillingSuggestions()`. This only needs to be done in the
+      // `kDoneSuccess` case because otherwise `cache_` is null.
+      UpdateFieldFocusabilityInCache(form);
       // Show a cached prediction improvements filling suggestion for `field` if
       // it exists. This may contain additional `autofill_suggestions`, appended
       // to the prediction improvements.
@@ -694,10 +713,12 @@ AutofillPredictionImprovementsManager::GetValuesToFill() {
     return {};
   }
   std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
-      values_to_fill(cache_->size());
-  size_t i = 0;
+      values_to_fill;
   for (const auto& [field_global_id, prediction] : *cache_) {
-    values_to_fill[i++] = {field_global_id, prediction.value};
+    if (!prediction.is_focusable) {
+      continue;
+    }
+    values_to_fill.emplace_back(field_global_id, prediction.value);
   }
   return values_to_fill;
 }
