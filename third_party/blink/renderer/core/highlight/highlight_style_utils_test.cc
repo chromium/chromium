@@ -77,7 +77,6 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
 }
 
 TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
-  ScopedSelectionRespectsColorsForTest selection_respects_color_enabled(true);
   // Test that we respect the author's colors in ::selection
   SimRequest main_resource("https://example.com/test.html", "text/html");
 

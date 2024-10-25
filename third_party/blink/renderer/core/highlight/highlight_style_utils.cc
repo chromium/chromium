@@ -412,15 +412,13 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     if (result.IsFullyTransparent()) {
       return Color::kTransparent;
     }
-    if (!RuntimeEnabledFeatures::SelectionRespectsColorsEnabled() ||
-        (UseDefaultHighlightColors(pseudo_style, pseudo,
-                                   GetCSSPropertyColor()) &&
-         UseDefaultHighlightColors(pseudo_style, pseudo,
-                                   GetCSSPropertyBackgroundColor()))) {
+    if (UseDefaultHighlightColors(pseudo_style, pseudo,
+                                  GetCSSPropertyColor()) &&
+        UseDefaultHighlightColors(pseudo_style, pseudo,
+                                  GetCSSPropertyBackgroundColor())) {
       // If the text color ends up being the same as the selection background
       // and we are using default colors, invert the background color. We do not
-      // do this when the author has requested colors in a ::selection pseudo
-      // (unless the flag is disabled).
+      // do this when the author has requested colors in a ::selection pseudo.
       if (current_layer_color && *current_layer_color == result) {
         return Color(0xff - result.Red(), 0xff - result.Green(),
                      0xff - result.Blue());
