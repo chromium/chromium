@@ -39,8 +39,10 @@ Whereas GN rules for the verion **0.2.8** version would be stored at
 
 Third-party Rust libraries that are not distributed through [crates.io](
 https://crates.io) are uncommon. But they may live under
-`//third_party/rust/crate_name` directly, as a git submodule,
-with GN rules written for them by hand.
+`//third_party/rust/crate_name` or `//third_party/project_name` directly,
+as a git submodule, with GN rules written for them by hand
+(such GN rules would most likely use either the `cargo_crate("foo")` or the
+`rust_static_library("foo")` template from Chromium's `//build/rust/*.gni`).
 
 ## OWNERS
 
