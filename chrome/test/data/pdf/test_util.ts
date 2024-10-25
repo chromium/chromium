@@ -8,7 +8,7 @@ import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, View
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {BeforeUnloadProxy, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {BeforeUnloadProxy, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -478,6 +478,32 @@ export function assertSelectedSize(
   for (let i = 0; i < sizeButtons.length; ++i) {
     const buttonSelected = sizeButtons[i].dataset['selected'];
     chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
+  }
+}
+
+/**
+ * Helper to get a non-empty list of brush color buttons.
+ * @param selector The ink color selector element.
+ * @returns A list of color buttons.
+ */
+export function getColorButtons(selector: InkColorSelectorElement):
+    NodeListOf<HTMLElement> {
+  const colorButtons = selector.shadowRoot!.querySelectorAll('input');
+  assert(colorButtons);
+  return colorButtons;
+}
+
+/**
+ * Tests that the color options have corrected values for the selected
+ * attribute. The color button with index `buttonIndex` should be selected.
+ * @param colorButtons A list of ink color buttons.
+ * @param buttonIndex The expected selected color button.
+ */
+export function assertSelectedColor(
+    colorButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+  for (let i = 0; i < colorButtons.length; ++i) {
+    chrome.test.assertEq(
+        i === buttonIndex, colorButtons[i].hasAttribute('checked'));
   }
 }
 

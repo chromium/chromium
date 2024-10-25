@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {AnnotationBrush, InkBrushSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertSelectedSize, getRequiredElement, getSizeButtons, setupTestMockPluginForInk} from './test_util.js';
+import {assertSelectedSize, getColorButtons, getRequiredElement, getSizeButtons, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
@@ -56,19 +55,6 @@ function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
 }
 
 /**
- * Tests that the color options have corrected values for the selected
- * attribute. The color button with index `buttonIndex` should be selected.
- * @param buttonIndex The expected selected color button.
- */
-function assertSelectedColor(buttonIndex: number) {
-  const colorButtons = getColorButtons();
-  for (let i = 0; i < colorButtons.length; ++i) {
-    chrome.test.assertEq(
-        i === buttonIndex, colorButtons[i].hasAttribute('checked'));
-  }
-}
-
-/**
  * @returns The non-null brush type selector.
  */
 function getBrushSelector(): InkBrushSelectorElement {
@@ -81,32 +67,9 @@ function getSizeSelector(): InkSizeSelectorElement {
       sidePanel, 'ink-size-selector');
 }
 
-/**
- * Helper to get a non-empty list of brush color buttons.
- * @returns A list of color buttons.
- */
-function getColorButtons(): NodeListOf<HTMLElement> {
-  const colorSelector =
-      getRequiredElement<HTMLElement>(sidePanel, 'ink-color-selector');
-  const colorButtons = colorSelector.shadowRoot!.querySelectorAll('input');
-  assert(colorButtons);
-  return colorButtons;
-}
-
-/**
- * Tests that the selected color index is `expectedButtonIndex` after
- * `targetElement` receives a keyboard event with key `key`.
- * @param targetElement The target element to receive the keyboard event.
- * @param key The key being pressed.
- * @param expectedButtonIndex The expected color button index after the keyboard
- *     event.
- */
-async function testColorKeyboardEvent(
-    targetElement: HTMLElement, key: string, expectedButtonIndex: number) {
-  keyDownOn(targetElement, 0, [], key);
-  await microtasksFinished();
-
-  assertSelectedColor(/*buttonIndex=*/ expectedButtonIndex);
+function getColorSelector(): InkColorSelectorElement {
+  return getRequiredElement<InkColorSelectorElement>(
+      sidePanel, 'ink-color-selector');
 }
 
 chrome.test.runTests([
@@ -129,12 +92,8 @@ chrome.test.runTests([
       size: 1,
     });
 
-    // Change the pen color.
-    // Pens should have 20 color options.
-    const colorButtons = getColorButtons();
-    chrome.test.assertEq(20, colorButtons.length);
-
-    // Click the color corresponding to '#fdd663'.
+    // Change the pen color to '#fdd663'.
+    const colorButtons = getColorButtons(getColorSelector());
     colorButtons[6].click();
     await microtasksFinished();
 
@@ -204,12 +163,8 @@ chrome.test.runTests([
       size: 16,
     });
 
-    // Change the highlighter color.
-    // Highlighters should have 10 color options.
-    const colorButtons = getColorButtons();
-    chrome.test.assertEq(10, colorButtons.length);
-
-    // Click the color corresponding to '#34a853'.
+    // Change the highlighter color to '#34a853'.
+    const colorButtons = getColorButtons(getColorSelector());
     colorButtons[2].click();
     await microtasksFinished();
 
@@ -218,101 +173,6 @@ chrome.test.runTests([
       color: {r: 52, g: 168, b: 83},
       size: 16,
     });
-    chrome.test.succeed();
-  },
-
-  // Test that arrow keys does nothing to the color when the color buttons are
-  // not focused.
-  async function testArrowKeysColorNonFocused() {
-    assertSelectedColor(/*buttonIndex=*/ 2);
-
-    // Press arrow keys on the root element. This should not change the size.
-    await testColorKeyboardEvent(
-        document.documentElement, 'ArrowLeft', /*expectedButtonIndex=*/ 2);
-
-    await testColorKeyboardEvent(
-        document.documentElement, 'ArrowRight', /*expectedButtonIndex=*/ 2);
-
-    await testColorKeyboardEvent(
-        document.documentElement, 'ArrowUp', /*expectedButtonIndex=*/ 2);
-
-    await testColorKeyboardEvent(
-        document.documentElement, 'ArrowDown', /*expectedButtonIndex=*/ 2);
-
-    chrome.test.succeed();
-  },
-
-  // Test that left and right arrow keys change brush colors when the brush
-  // color buttons are focused.
-  async function testArrowKeysChangeColor() {
-    assertSelectedColor(/*buttonIndex=*/ 2);
-
-    const colorButtons = getColorButtons();
-
-    await testColorKeyboardEvent(
-        colorButtons[2], 'ArrowLeft', /*expectedButtonIndex=*/ 1);
-
-    await testColorKeyboardEvent(
-        colorButtons[1], 'ArrowRight', /*expectedButtonIndex=*/ 2);
-
-    await testColorKeyboardEvent(
-        colorButtons[2], 'ArrowDown', /*expectedButtonIndex=*/ 7);
-
-    await testColorKeyboardEvent(
-        colorButtons[7], 'ArrowUp', /*expectedButtonIndex=*/ 2);
-
-    chrome.test.succeed();
-  },
-
-  // Test that when the color button in the first column is selected, pressing
-  // 'ArrowLeft' will select the color button in the last column in the same
-  // row.
-  // Test that when the color button in the last column is selected,
-  // pressing 'ArrowRight' will select the color button in the first column in
-  // the same row.
-  async function testArrowKeysChangeColorFirstLastColumn() {
-    const colorButtons = getColorButtons();
-
-    getColorButtons()[5].click();
-    await microtasksFinished();
-
-    assertSelectedColor(5);
-
-    await testColorKeyboardEvent(
-        colorButtons[5], 'ArrowLeft', /*expectedButtonIndex=*/ 9);
-
-    await testColorKeyboardEvent(
-        colorButtons[9], 'ArrowRight', /*expectedButtonIndex=*/ 5);
-
-    chrome.test.succeed();
-  },
-
-  // Test that when the color button in the first row is selected, pressing
-  // 'ArrowUp' will select the color button in the last row in the same column.
-  // Test that when the color button in the last row is selected,
-  // pressing 'ArrowDown' will select the color button in the first row in the
-  // same column.
-  async function testArrowKeysChangeColorFirstLastRow() {
-    // Switch to pen, which has multiple rows of colors.
-    setGetAnnotationBrushReply(
-        AnnotationBrushType.PEN, /*size=*/ 1,
-        /*color=*/ {r: 253, g: 214, b: 99});
-    getBrushSelector().$.pen.click();
-    await microtasksFinished();
-
-    const colorButtons = getColorButtons();
-
-    colorButtons[1].click();
-    await microtasksFinished();
-
-    assertSelectedColor(1);
-
-    await testColorKeyboardEvent(
-        colorButtons[1], 'ArrowUp', /*expectedButtonIndex=*/ 16);
-
-    await testColorKeyboardEvent(
-        colorButtons[16], 'ArrowDown', /*expectedButtonIndex=*/ 1);
-
     chrome.test.succeed();
   },
 ]);
