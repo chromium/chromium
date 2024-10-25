@@ -270,7 +270,7 @@ std::optional<bool> GetDictationOfflineNudgePrefForLocale(
 struct ReadDlcFileResponse {
   ReadDlcFileResponse(std::vector<uint8_t> contents,
                       std::optional<std::string> error)
-      : contents(contents), error(error) {}
+      : contents(std::move(contents)), error(std::move(error)) {}
   ~ReadDlcFileResponse() = default;
   ReadDlcFileResponse(const ReadDlcFileResponse&) = default;
   ReadDlcFileResponse& operator=(const ReadDlcFileResponse&) = default;
@@ -294,22 +294,20 @@ ReadDlcFileResponse ReadDlcFile(base::FilePath path) {
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }
 
-  std::optional<int64_t> file_size = base::GetFileSize(path);
-  if (!file_size.has_value() || (file_size.value() <= 0)) {
+  std::optional<uint64_t> file_size = base::GetFileSize(path);
+  if (!file_size.has_value() || file_size.value() == 0) {
     error = "Error: failed to read size of file: " + path.AsUTF8Unsafe();
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }
 
   std::vector<uint8_t> contents(file_size.value());
-  int bytes_read =
-      base::ReadFile(path, reinterpret_cast<char*>(contents.data()),
-                     base::checked_cast<int>(file_size.value()));
+  std::optional<uint64_t> bytes_read = base::ReadFile(path, contents);
   if (bytes_read != file_size.value()) {
     error = "Error: could not read file: " + path.AsUTF8Unsafe();
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }
 
-  return ReadDlcFileResponse(contents, std::nullopt);
+  return ReadDlcFileResponse(std::move(contents), std::nullopt);
 }
 
 // Runs when `ReadDlcFile` returns the contents of a file.
@@ -329,14 +327,13 @@ std::optional<FaceGazeAssets> CreateFaceGazeAssets(base::FilePath base_path) {
   });
 
   for (const auto& iter : files_to_data) {
-    std::string file_name = iter.first;
+    const std::string& file_name = iter.first;
     std::vector<uint8_t>* file_data = iter.second;
     ReadDlcFileResponse response = ReadDlcFile(base_path.Append(file_name));
     if (response.error.has_value()) {
       return std::nullopt;
     }
-
-    *file_data = response.contents;
+    *file_data = std::move(response.contents);
   }
 
   return assets;
@@ -366,14 +363,14 @@ std::optional<PumpkinData> CreatePumpkinData(base::FilePath base_pumpkin_path) {
   });
 
   for (const auto& iter : files_to_data) {
-    std::string file_name = iter.first;
+    const std::string& file_name = iter.first;
     std::vector<uint8_t>* file_data = iter.second;
     ReadDlcFileResponse response =
         ReadDlcFile(base_pumpkin_path.Append(file_name));
-    if (response.error.has_value())
+    if (response.error.has_value()) {
       return std::nullopt;
-
-    *file_data = response.contents;
+    }
+    *file_data = std::move(response.contents);
   }
 
   return data;
