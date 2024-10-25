@@ -180,7 +180,7 @@ HUPScoringParams::ScoreBuckets::ScoreBuckets()
 HUPScoringParams::ScoreBuckets::ScoreBuckets(const ScoreBuckets& other) =
     default;
 
-HUPScoringParams::ScoreBuckets::~ScoreBuckets() {}
+HUPScoringParams::ScoreBuckets::~ScoreBuckets() = default;
 
 size_t HUPScoringParams::ScoreBuckets::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(buckets_);
