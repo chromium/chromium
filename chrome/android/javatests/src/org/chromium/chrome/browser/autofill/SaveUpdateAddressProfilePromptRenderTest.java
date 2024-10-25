@@ -20,22 +20,27 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -48,8 +53,12 @@ import java.util.List;
  */
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @RunWith(ParameterizedRunner.class)
-public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivityTestCase {
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+public class SaveUpdateAddressProfilePromptRenderTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
+
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -58,10 +67,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(0)
+                    .setRevision(1)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;
@@ -76,15 +86,14 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     private SaveUpdateAddressProfilePrompt mPrompt;
 
     public SaveUpdateAddressProfilePromptRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
     @Before
-    @Override
-    public void setUpTest() throws Exception {
-        // Mocks need to be initialized in the setup rather than before each test method.
-        MockitoAnnotations.openMocks(this);
+    public void setUp() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityCompletelyLoaded();
 
         runOnUiThreadBlocking(
                 () -> {
@@ -104,14 +113,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         mJniMocker.mock(
                 SaveUpdateAddressProfilePromptControllerJni.TEST_HOOKS, mPromptControllerJni);
         mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
-        super.setUpTest();
     }
 
     @After
-    @Override
-    public void tearDownTest() throws Exception {
+    public void tearDown() throws Exception {
         runOnUiThreadBlocking(mPrompt::dismiss);
-        super.tearDownTest();
     }
 
     @AfterClass
@@ -129,8 +135,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                             mPrompt =
                                     new SaveUpdateAddressProfilePrompt(
                                             mPromptController,
-                                            getActivity().getModalDialogManager(),
-                                            getActivity(),
+                                            mActivityTestRule.getActivity().getModalDialogManager(),
+                                            mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
                                             /* isUpdate= */ false,
@@ -159,8 +165,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                             mPrompt =
                                     new SaveUpdateAddressProfilePrompt(
                                             mPromptController,
-                                            getActivity().getModalDialogManager(),
-                                            getActivity(),
+                                            mActivityTestRule.getActivity().getModalDialogManager(),
+                                            mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
                                             /* isUpdate= */ false,
@@ -174,7 +180,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* email= */ "example@example.com",
                                     /* phone= */ "+0000000000000");
                             mPrompt.setRecordTypeNotice(
-                                    getActivity()
+                                    mActivityTestRule
+                                            .getActivity()
                                             .getString(
                                                     R.string
                                                             .autofill_address_will_be_saved_in_account_record_type_notice)
@@ -195,8 +202,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                             mPrompt =
                                     new SaveUpdateAddressProfilePrompt(
                                             mPromptController,
-                                            getActivity().getModalDialogManager(),
-                                            getActivity(),
+                                            mActivityTestRule.getActivity().getModalDialogManager(),
+                                            mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
                                             /* isUpdate= */ false,
@@ -210,7 +217,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* email= */ "example@example.com",
                                     /* phone= */ "+0000000000000");
                             mPrompt.setRecordTypeNotice(
-                                    getActivity()
+                                    mActivityTestRule
+                                            .getActivity()
                                             .getString(
                                                     R.string
                                                             .autofill_address_will_be_saved_in_account_record_type_notice)
@@ -231,8 +239,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                             mPrompt =
                                     new SaveUpdateAddressProfilePrompt(
                                             mPromptController,
-                                            getActivity().getModalDialogManager(),
-                                            getActivity(),
+                                            mActivityTestRule.getActivity().getModalDialogManager(),
+                                            mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
                                             /* isUpdate= */ true,
@@ -261,8 +269,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                             mPrompt =
                                     new SaveUpdateAddressProfilePrompt(
                                             mPromptController,
-                                            getActivity().getModalDialogManager(),
-                                            getActivity(),
+                                            mActivityTestRule.getActivity().getModalDialogManager(),
+                                            mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
                                             /* isUpdate= */ true,
@@ -276,7 +284,8 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* oldDetails= */ "321 Spear Street",
                                     /* newDetails= */ "123 Lake Street");
                             mPrompt.setRecordTypeNotice(
-                                    getActivity()
+                                    mActivityTestRule
+                                            .getActivity()
                                             .getString(
                                                     R.string
                                                             .autofill_address_already_saved_in_account_record_type_notice)

@@ -26,11 +26,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
@@ -45,11 +47,14 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
@@ -57,7 +62,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -73,7 +77,8 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+public class AddressEditorRenderTest {
     private static final String USER_EMAIL = "example@gmail.com";
     private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS =
             List.of(
@@ -114,6 +119,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                     .setLanguageCode("en-US")
                     .build();
 
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -121,10 +128,11 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
@@ -143,14 +151,15 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
 
     public AddressEditorRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
     @Before
-    @Override
-    public void setUpTest() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityCompletelyLoaded();
 
         mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
         mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
@@ -203,7 +212,6 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
-        super.setUpTest();
     }
 
     @AfterClass
@@ -251,7 +259,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                         () -> {
                             mAddressEditor =
                                     new AddressEditorCoordinator(
-                                            getActivity(),
+                                            mActivityTestRule.getActivity(),
                                             mDelegate,
                                             mProfile,
                                             /* saveToDisk= */ false);
@@ -274,7 +282,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                     .thenReturn(true);
                             mAddressEditor =
                                     new AddressEditorCoordinator(
-                                            getActivity(),
+                                            mActivityTestRule.getActivity(),
                                             mDelegate,
                                             mProfile,
                                             /* saveToDisk= */ false);
@@ -297,11 +305,11 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                     .thenReturn(true);
                             mAddressEditor =
                                     new AddressEditorCoordinator(
-                                            getActivity(),
+                                            mActivityTestRule.getActivity(),
                                             mDelegate,
                                             mProfile,
                                             new AutofillAddress(
-                                                    getActivity(),
+                                                    mActivityTestRule.getActivity(),
                                                     sLocalProfile,
                                                     mPersonalDataManager),
                                             UPDATE_EXISTING_ADDRESS_PROFILE,
@@ -325,11 +333,11 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                     .thenReturn(true);
                             mAddressEditor =
                                     new AddressEditorCoordinator(
-                                            getActivity(),
+                                            mActivityTestRule.getActivity(),
                                             mDelegate,
                                             mProfile,
                                             new AutofillAddress(
-                                                    getActivity(),
+                                                    mActivityTestRule.getActivity(),
                                                     sAccountProfile,
                                                     mPersonalDataManager),
                                             SAVE_NEW_ADDRESS_PROFILE,
@@ -353,11 +361,11 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                     .thenReturn(true);
                             mAddressEditor =
                                     new AddressEditorCoordinator(
-                                            getActivity(),
+                                            mActivityTestRule.getActivity(),
                                             mDelegate,
                                             mProfile,
                                             new AutofillAddress(
-                                                    getActivity(),
+                                                    mActivityTestRule.getActivity(),
                                                     sLocalProfile,
                                                     mPersonalDataManager),
                                             MIGRATE_EXISTING_ADDRESS_PROFILE,
