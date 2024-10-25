@@ -87,7 +87,8 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
 
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state &&
-      state->IsHttpsEnforcedForUrl(handle->GetURL(), storage_partition)) {
+      state->IsHttpsEnforcedForUrl(handle->GetURL(), storage_partition) &&
+      !MustDisableSiteEngagementHeuristic(profile)) {
     interstitial_state.enabled_by_engagement_heuristic = true;
   }
 
@@ -149,8 +150,8 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
        tab_helper->has_failed_upgrade(handle->GetURL())) &&
       !handle->GetURL().SchemeIsCryptographic()) {
     if (IsInterstitialEnabled(interstitial_state_) &&
-        !(ShouldExcludeUrlFromInterstitial(interstitial_state_,
-                                           handle->GetURL()))) {
+        !ShouldExcludeUrlFromInterstitial(interstitial_state_,
+                                          handle->GetURL())) {
       security_interstitials::https_only_mode::RecordInterstitialReason(
           interstitial_state_);
 
