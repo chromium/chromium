@@ -114,8 +114,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       std::optional<std::string> plus_address_override = std::nullopt) {
     FormStructure* form_structure;
     AutofillField* autofill_field;
-    CHECK(manager_->GetCachedFormAndField(form, field, &form_structure,
-                                          &autofill_field));
+    CHECK(manager_->GetCachedFormAndField(form.global_id(), field.global_id(),
+                                          &form_structure, &autofill_field));
     return manager_->GetProfileSuggestions(form, form_structure, field,
                                            autofill_field, trigger_source,
                                            std::move(plus_address_override));

@@ -53,7 +53,8 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldStatus) {
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
   FillTestProfile(form);
   SubmitForm(form);
@@ -90,7 +91,8 @@ TEST_F(PlaceholderMetricsTest,
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
   FillTestProfile(form);
   SubmitForm(form);
@@ -128,7 +130,8 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldClassifications) {
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
   // Fill form.
   FillTestProfile(form);
@@ -180,7 +183,8 @@ TEST_F(PlaceholderMetricsTest,
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->field(1)->set_may_use_prefilled_placeholder(true);
   cached_form->field(2)->set_may_use_prefilled_placeholder(true);
   cached_form->field(3)->set_may_use_prefilled_placeholder(false);
@@ -235,7 +239,8 @@ class PlaceholderMetricsValueStatusTest : public PlaceholderMetricsTest {
     FormStructure* cached_form;
     AutofillField* cached_triggering_field;
     ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-        form_, form_.fields()[0], &cached_form, &cached_triggering_field));
+        form_.global_id(), form_.fields()[0].global_id(), &cached_form,
+        &cached_triggering_field));
     cached_form->field(1)->set_may_use_prefilled_placeholder(true);
   }
 

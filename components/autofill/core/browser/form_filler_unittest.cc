@@ -408,7 +408,7 @@ TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
     AutofillField* autofill_field = nullptr;
     FormStructure* form_structure = nullptr;
     ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
-        form, field, &form_structure, &autofill_field));
+        form.global_id(), field.global_id(), &form_structure, &autofill_field));
     ASSERT_TRUE(autofill_field);
     EXPECT_THAT(
         autofill_field->field_log_events(),

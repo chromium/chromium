@@ -465,11 +465,11 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
 }
 
 bool AutofillManager::GetCachedFormAndField(
-    const FormData& form,
-    const FormFieldData& field,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
     FormStructure** form_structure,
     AutofillField** autofill_field) const {
-  FormStructure* cached_form = FindCachedFormById(form.global_id());
+  FormStructure* cached_form = FindCachedFormById(form_id);
   // TODO: crbug.com/40232021 - Look into removing the `autofill_count() == 0`
   // disjunct. Because it is inconvenient that some code needs to tolerate null
   // FormStructures and/or AutofillFields because for Autocomplete still needs
@@ -483,8 +483,8 @@ bool AutofillManager::GetCachedFormAndField(
     return false;
   }
   *form_structure = cached_form;
-  auto field_it = base::ranges::find(*cached_form, field.global_id(),
-                                     &AutofillField::global_id);
+  auto field_it =
+      base::ranges::find(*cached_form, field_id, &AutofillField::global_id);
   *autofill_field = field_it == cached_form->end() ? nullptr : field_it->get();
   return *autofill_field != nullptr;
 }

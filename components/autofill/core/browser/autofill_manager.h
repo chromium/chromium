@@ -281,13 +281,13 @@ class AutofillManager
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
-  // Fills |form_structure| and |autofill_field| with the cached elements
-  // corresponding to |form| and |field|.  This might have the side-effect of
-  // updating the cache.  Returns false if the |form| is not autofillable, or if
-  // it is not already present in the cache and the cache is full.
+  // Fills `form_structure` and `autofill_field` with the cached elements
+  // corresponding to `form_id` and `field_id`.  This might have the side-effect
+  // of updating the cache.  Returns false if the form is not autofillable, or
+  // if either the form or the field cannot be found.
   [[nodiscard]] bool GetCachedFormAndField(
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       FormStructure** form_structure,
       AutofillField** autofill_field) const;
 

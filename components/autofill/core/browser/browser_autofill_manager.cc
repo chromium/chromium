@@ -1290,16 +1290,17 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
 
   // Log events when user edits the field.
   // If the user types into the same field multiple times, repeated
   // TypingFieldLogEvents are coalesced.
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   autofill_field->AppendLogEventIfNotRepeated(TypingFieldLogEvent{
       .has_value_after_typing = ToOptionalBoolean(!field.value().empty())});
 
@@ -1443,7 +1444,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // We cannot early-return here because GetCachedFormAndField() yields nullptr
@@ -1451,8 +1451,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // such cases, we still need to offer Autocomplete. Therefore, the code below,
   // including called functions, must handle `form_structure == nullptr` and
   // `autofill_field == nullptr`.
-  std::ignore =
-      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  std::ignore = GetCachedFormAndField(form.global_id(), field_id,
+                                      &form_structure, &autofill_field);
 
   if (form_structure) {
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
@@ -1476,6 +1476,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     client().NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback);
   }
 
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->SetCurrentDataListValues(field.datalist_options());
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
 
@@ -1533,8 +1534,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   //   down in the code path)
   // * the following code needs to gracefully deal with the situation that
   //   form_structure and autofill_field are null.
-  std::ignore =
-      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
+                                      &form_structure, &autofill_field);
 
   context.field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
@@ -1577,8 +1578,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   // This function cannot exit early in case GetCachedFormAndField() yields
   // `nullptrs` for `form_structure` and `autofill_field`. See the comment in
   // `GenerateSuggestionsAndMaybeShowUIPhase1` for context.
-  std::ignore =
-      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
+                                      &form_structure, &autofill_field);
   autofill_metrics::SuggestionRankingContext ranking_context;
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
@@ -1901,7 +1902,8 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   AutofillField* autofill_field = nullptr;
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kFormControlElementClicked &&
-      GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+      GetCachedFormAndField(form.global_id(), field.global_id(),
+                            &form_structure, &autofill_field)) {
     autofill_field->AppendLogEventIfNotRepeated(AskForValuesToFillFieldLogEvent{
         .has_suggestion = ToOptionalBoolean(!suggestions.empty()),
         .suggestion_is_shown = ToOptionalBoolean(show_suggestions),
@@ -1953,7 +1955,8 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
     const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
   metrics_->last_selected_card = credit_card;
@@ -1985,7 +1988,8 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
     const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, field, &profile,
@@ -2002,8 +2006,8 @@ void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
     const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_trigger_field = nullptr;
-  if (!GetCachedFormAndField(form, trigger_field, &form_structure,
-                             &autofill_trigger_field)) {
+  if (!GetCachedFormAndField(form.global_id(), trigger_field.global_id(),
+                             &form_structure, &autofill_trigger_field)) {
     return;
   }
   form_filler_->FillOrPreviewFormWithPredictionImprovements(
@@ -2032,8 +2036,8 @@ void BrowserAutofillManager::FillOrPreviewField(
   // `autofill_field == nullptr`.
   // TODO: crbug.com/40232021 - Look into removing the `autofill_count() > 0`
   // condition from.
-  std::ignore =
-      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
+                                      &form_structure, &autofill_field);
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(type);
   form_filler_->FillOrPreviewField(action_persistence, action_type, field,
@@ -2073,7 +2077,8 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
     AutofillTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
   metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
@@ -2115,7 +2120,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   }
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, field, &credit_card,
@@ -2154,10 +2160,10 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     ProcessPendingFormForUpload();
   }
 
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
   autofill_field->set_was_focused(true);
@@ -2172,6 +2178,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 #endif
 
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   SuggestionsContext context =
       BuildSuggestionsContext(form, form_structure, field, autofill_field,
                               AutofillSuggestionTriggerSource::kUnspecified);
@@ -2239,8 +2246,8 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  const bool has_cached_form_and_field =
-      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  const bool has_cached_form_and_field = GetCachedFormAndField(
+      form.global_id(), field.global_id(), &form_structure, &autofill_field);
 
   // Check if Autofill was triggered via manual fallback on a field that was
   // either unclassified or classified differently as the target
@@ -2362,7 +2369,8 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
                                                    const FormFieldData& field) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
 
@@ -2439,7 +2447,8 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
   AnalyzeJavaScriptChangedAutofilledValue(
@@ -2504,7 +2513,8 @@ void BrowserAutofillManager::OnCreditCardFetched(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return;
   }
 
@@ -2857,7 +2867,8 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     return nullptr;
   }
 

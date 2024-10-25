@@ -202,7 +202,8 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
       });
 
   current_field_ = {field.global_id(),
-                    manager->ComputeFieldTypeGroupForField(form, field),
+                    manager->ComputeFieldTypeGroupForField(form.global_id(),
+                                                           field.global_id()),
                     field.origin()};
 
   if (credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
