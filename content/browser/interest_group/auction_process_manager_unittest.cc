@@ -67,6 +67,10 @@ using RequestWorkletServiceOutcome =
 const size_t kMaxSellerProcesses = AuctionProcessManager::kMaxSellerProcesses;
 const size_t kMaxBidderProcesses = AuctionProcessManager::kMaxBidderProcesses;
 
+base::OnceClosure NeverInvokedClosure() {
+  return base::BindOnce([]() { ADD_FAILURE() << "This should not be called"; });
+}
+
 template <class AuctionManagerBaseType>
 class TestAuctionProcessManager
     : public AuctionManagerBaseType,
@@ -247,11 +251,11 @@ enum class ProcessMode {
   kInRendererSharedProcess,
 };
 
-class AuctionProcessManagerTestBase
+class AuctionProcessManagerTest
     : public testing::TestWithParam<
           std::tuple<AuctionProcessManager::WorkletType, ProcessMode>> {
  protected:
-  AuctionProcessManagerTestBase() {
+  AuctionProcessManagerTest() {
     SiteIsolationPolicy::DisableFlagCachingForTesting();
     std::vector<base::test::FeatureRefAndParams> enabled_features{
         {features::kFledgeStartAnticipatoryProcesses,
@@ -304,7 +308,7 @@ class AuctionProcessManagerTestBase
     site_instance2_ = SiteInstance::Create(&test_browser_context_);
   }
 
-  virtual ~AuctionProcessManagerTestBase() {
+  virtual ~AuctionProcessManagerTest() {
     if (original_browser_client_) {
       content::SetBrowserClientForTesting(original_browser_client_);
     }
@@ -370,6 +374,32 @@ class AuctionProcessManagerTestBase
     histogram_tester.ExpectUniqueSample(
         RequestWorkletServiceOutcomeUmaName(worklet_type), expected_outcome,
         1u);
+  }
+
+  // Request a worklet service and expect the request to complete synchronously.
+  // There's no async version, since async calls are only triggered by deleting
+  // another handle. Uses `site_instance1_` if no `site_instance` is provided.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle>
+  GetServiceOfTypeExpectSuccess(
+      AuctionProcessManager::WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> site_instance = nullptr) {
+    if (!site_instance) {
+      site_instance = site_instance1_;
+    }
+    auto process_handle =
+        std::make_unique<AuctionProcessManager::ProcessHandle>();
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
+        worklet_type, origin, std::move(site_instance), process_handle.get(),
+        NeverInvokedClosure()));
+    EXPECT_TRUE(process_handle->GetService());
+    return process_handle;
+  }
+
+  // Requests a process of type GetWorkletType().
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> GetServiceExpectSuccess(
+      const url::Origin& origin) {
+    return GetServiceOfTypeExpectSuccess(GetWorkletType(), origin);
   }
 
   // Returns the maximum number of processes of type GetWorkletType().
@@ -464,37 +494,6 @@ class AuctionProcessManagerTestBase
 
   // Points to whichever of the above is non-null.
   raw_ptr<AuctionProcessManager> auction_process_manager_;
-};
-
-class AuctionProcessManagerTest : public AuctionProcessManagerTestBase {
- protected:
-  AuctionProcessManagerTest() = default;
-
-  // Request a worklet service and expect the request to complete synchronously.
-  // There's no async version, since async calls are only triggered by deleting
-  // another handle.
-  std::unique_ptr<AuctionProcessManager::ProcessHandle>
-  GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
-                                const url::Origin& origin) {
-    auto process_handle =
-        std::make_unique<AuctionProcessManager::ProcessHandle>();
-    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
-        worklet_type, origin, site_instance1_, process_handle.get(),
-        NeverInvokedClosure()));
-    EXPECT_TRUE(process_handle->GetService());
-    return process_handle;
-  }
-
-  // Requests a process of type GetWorkletType().
-  std::unique_ptr<AuctionProcessManager::ProcessHandle> GetServiceExpectSuccess(
-      const url::Origin& origin) {
-    return GetServiceOfTypeExpectSuccess(GetWorkletType(), origin);
-  }
-
-  base::OnceClosure NeverInvokedClosure() {
-    return base::BindOnce(
-        []() { ADD_FAILURE() << "This should not be called"; });
-  }
 };
 
 // Run most tests in both kDedicated and kInRendererSitePerProcess modes, as
@@ -1488,30 +1487,12 @@ TEST_P(AuctionProcessManagerTest,
 // BrowsingInstances, it's important that it knows whether to use
 // kOriginKeyedProcessesByDefault at the time it's constructed.
 class InRendererAuctionProcessManagerTestBase
-    : public AuctionProcessManagerTestBase {
+    : public AuctionProcessManagerTest {
  public:
   InRendererAuctionProcessManagerTestBase() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kFledgeStartAnticipatoryProcesses,
         {{"AnticipatoryProcessHoldTime", "3s"}});
-  }
-
-  std::unique_ptr<AuctionProcessManager::ProcessHandle>
-  GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType worklet_type,
-                                scoped_refptr<SiteInstance> site_instance,
-                                const url::Origin& origin) {
-    auto process_handle =
-        std::make_unique<AuctionProcessManager::ProcessHandle>();
-    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
-        worklet_type, origin, site_instance, process_handle.get(),
-        NeverInvokedClosure()));
-    EXPECT_TRUE(process_handle->GetService());
-    return process_handle;
-  }
-
-  base::OnceClosure NeverInvokedClosure() {
-    return base::BindOnce(
-        []() { ADD_FAILURE() << "This should not be called"; });
   }
 
  private:
@@ -1549,8 +1530,7 @@ TEST_P(InRendererAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   // Exercise the codepath where a RenderProcessHostDestroyed is received, to
   // make sure it doesn't crash.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginA);
+      GetServiceExpectSuccess(kOriginA);
   ASSERT_FALSE(rph_factory_.GetProcesses()->empty());
   for (std::unique_ptr<MockRenderProcessHost>& proc :
        *rph_factory_.GetProcesses()) {
@@ -1562,8 +1542,7 @@ TEST_P(InRendererAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
 }
 
 TEST_P(InRendererAuctionProcessManagerTest, PidLookup) {
-  auto handle = GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                              kOriginA);
+  auto handle = GetServiceExpectSuccess(kOriginA);
 
   base::ProcessId expected_pid = base::Process::Current().Pid();
 
@@ -1617,8 +1596,8 @@ TEST_P(InRendererAuctionProcessManagerTest, PidLookupAlreadyRunning) {
     proc->SimulateReady();
   }
 
-  auto handle = GetServiceOfTypeExpectSuccess(GetWorkletType(),
-                                              frame_site_instance, kOriginA);
+  auto handle = GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                              frame_site_instance);
 
   base::ProcessId expected_pid = base::Process::Current().Pid();
 
@@ -1643,23 +1622,23 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance1_);
   int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance2_);
   int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginB);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
+                                    site_instance1_);
   int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
-                                    kOriginB);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
+                                    site_instance2_);
   int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
 
   // Non-site-isolation requiring origins can share processes, but not across
@@ -1677,13 +1656,13 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   // Site-isolation requiring origins are distinct from non-isolated ones, but
   // can share across browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
+                                    site_instance1_);
   int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
-                                    kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
+                                    site_instance2_);
   int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
 
   EXPECT_EQ(id_i1, id_i2);
@@ -1733,23 +1712,23 @@ TEST_P(InRendererAuctionProcessManagerTest, DesktopLike) {
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance1_);
   int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance2_);
   int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginB);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
+                                    site_instance1_);
   int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
-                                    kOriginB);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
+                                    site_instance2_);
   int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
 
   // Since we are site-per-process, things should be grouped by origin.
@@ -1768,13 +1747,13 @@ TEST_P(InRendererAuctionProcessManagerTest, DesktopLike) {
 
   // Stuff that's also isolated by explicit requests gets the same treatment.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
+                                    site_instance1_);
   int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance2_,
-                                    kIsolatedOrigin);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
+                                    site_instance2_);
   int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
 
   EXPECT_EQ(id_i1, id_i2);
@@ -1794,8 +1773,8 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
        PolicyChange) {
   // Launch site in default instance.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance1_);
   EXPECT_FALSE(
       handle_a1->site_instance_for_testing()->RequiresDedicatedProcess());
   RenderProcessHost* shared_process =
@@ -1809,8 +1788,8 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
 
   // Launch another A-origin worklet, this should get a different process.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance1_);
   EXPECT_TRUE(
       handle_a2->site_instance_for_testing()->RequiresDedicatedProcess());
   EXPECT_NE(handle_a2->GetRenderProcessHostForTesting(), shared_process);
@@ -1819,8 +1798,8 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
   // same non-shared process.
   handle_a1.reset();
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a3 =
-      GetServiceOfTypeExpectSuccess(GetWorkletType(), site_instance1_,
-                                    kOriginA);
+      GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
+                                    site_instance1_);
   EXPECT_TRUE(
       handle_a3->site_instance_for_testing()->RequiresDedicatedProcess());
   EXPECT_EQ(handle_a2->GetRenderProcessHostForTesting(),
