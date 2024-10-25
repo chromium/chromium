@@ -31,6 +31,10 @@
 
 class Profile;
 
+namespace base {
+class Value;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -169,6 +173,14 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                                int count) override;
   void TabNavigationPathEntriesDeleted(SessionID window_id,
                                        SessionID tab_id) override;
+
+#if DCHECK_IS_ON()
+  // Returns the state of this class and logs for the
+  // chrome://internals/session-service debug page. The logs are in reverse
+  // order for truncation ease. This value is NOT STABLE -
+  // do not rely on it's contents for anything.
+  virtual base::Value ToDebugValue() const;
+#endif  // DCHECK_IS_ON()
 
  protected:
   // Creates a SessionService for the specified profile.
