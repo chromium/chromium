@@ -52,10 +52,27 @@ namespace base {
 
 namespace internal {
 
+// Exposition-only concept from [span.syn]
+template <typename T>
+concept IntegralConstantLike =
+    std::is_integral_v<decltype(T::value)> &&
+    !std::is_same_v<bool, std::remove_const_t<decltype(T::value)>> &&
+    std::convertible_to<T, decltype(T::value)> &&
+    std::equality_comparable_with<T, decltype(T::value)> &&
+    std::bool_constant<T() == T::value>::value &&
+    std::bool_constant<static_cast<decltype(T::value)>(T()) == T::value>::value;
+
+// Exposition-only concept from [span.syn]
+template <typename T>
+inline constexpr size_t MaybeStaticExt = dynamic_extent;
+template <typename T>
+  requires IntegralConstantLike<T>
+inline constexpr size_t MaybeStaticExt<T> = {T::value};
+
 template <typename From, typename To>
 concept LegalDataConversion =
-    std::convertible_to<std::remove_reference_t<From> (*)[],
-                        std::remove_reference_t<To> (*)[]>;
+    std::is_convertible_v<std::remove_reference_t<From> (*)[],
+                          std::remove_reference_t<To> (*)[]>;
 
 template <typename T, typename It>
 concept CompatibleIter = std::contiguous_iterator<It> &&
@@ -263,9 +280,6 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 // - operator<=>() comparator function.
 // - operator<<() printing function.
 //
-// Furthermore, all constructors and methods are marked noexcept due to the lack
-// of exceptions in Chromium.
-//
 // Due to the lack of class template argument deduction guides in C++14
 // appropriate make_span() utility functions are provided for historic reasons.
 
@@ -302,9 +316,8 @@ class GSL_POINTER span {
   // valid range of the collection pointed to by the iterator.
   template <typename It>
     requires(internal::CompatibleIter<T, It>)
-  UNSAFE_BUFFER_USAGE explicit constexpr span(
-      It first,
-      StrictNumeric<size_t> count) noexcept
+  UNSAFE_BUFFER_USAGE constexpr explicit span(It first,
+                                              StrictNumeric<size_t> count)
       :  // The use of to_address() here is to handle the case where the
          // iterator `first` is pointing to the container's `end()`. In that
          // case we can not use the address returned from the iterator, or
@@ -347,8 +360,8 @@ class GSL_POINTER span {
   template <typename It, typename End>
     requires(internal::CompatibleIter<T, It> &&
              std::sized_sentinel_for<End, It> &&
-             !std::convertible_to<End, size_t>)
-  UNSAFE_BUFFER_USAGE explicit constexpr span(It begin, End end) noexcept
+             !std::is_convertible_v<End, size_t>)
+  UNSAFE_BUFFER_USAGE constexpr explicit span(It begin, End end)
       // SAFETY: The caller must guarantee that the iterator and end sentinel
       // are part of the same allocation, in which case it is the number of
       // elements between the iterators and thus a valid size for the pointer to
@@ -364,7 +377,7 @@ class GSL_POINTER span {
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(T (&arr)[N]) noexcept
+  constexpr span(std::type_identity_t<T> (&arr)[N]) noexcept
       // SAFETY: The std::ranges::size() function gives the number of elements
       // pointed to by the std::ranges::data() function, which meets the
       // requirement of span.
@@ -884,8 +897,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // valid range of the collection pointed to by the iterator.
   template <typename It>
     requires(internal::CompatibleIter<T, It>)
-  UNSAFE_BUFFER_USAGE constexpr span(It first,
-                                     StrictNumeric<size_t> count) noexcept
+  UNSAFE_BUFFER_USAGE constexpr span(It first, StrictNumeric<size_t> count)
       // The use of to_address() here is to handle the case where the iterator
       // `first` is pointing to the container's `end()`. In that case we can
       // not use the address returned from the iterator, or dereference it
@@ -921,8 +933,8 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   template <typename It, typename End>
     requires(internal::CompatibleIter<T, It> &&
              std::sized_sentinel_for<End, It> &&
-             !std::convertible_to<End, size_t>)
-  UNSAFE_BUFFER_USAGE constexpr span(It begin, End end) noexcept
+             !std::is_convertible_v<End, size_t>)
+  UNSAFE_BUFFER_USAGE constexpr span(It begin, End end)
       // SAFETY: The caller must guarantee that the iterator and end sentinel
       // are part of the same allocation, in which case it is the number of
       // elements between the iterators and thus a valid size for the pointer to
@@ -939,7 +951,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
 
   template <size_t N>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(T (&arr)[N]) noexcept
+  constexpr span(std::type_identity_t<T> (&arr)[N]) noexcept
       // SAFETY: The std::ranges::size() function gives the number of elements
       // pointed to by the std::ranges::data() function, which meets the
       // requirement of span.
@@ -1364,7 +1376,8 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
 // [span.deduct], deduction guides.
 template <typename It, typename EndOrSize>
   requires(std::contiguous_iterator<It>)
-span(It, EndOrSize) -> span<std::remove_reference_t<std::iter_reference_t<It>>>;
+span(It, EndOrSize) -> span<std::remove_reference_t<std::iter_reference_t<It>>,
+                            internal::MaybeStaticExt<EndOrSize>>;
 
 template <
     typename R,

@@ -56,6 +56,10 @@ namespace {
         std::is_same_v<decltype(span(v.begin(), v.size())), span<const int>>);
     static_assert(
         std::is_same_v<decltype(span(v.data(), v.size())), span<const int>>);
+    static_assert(
+        std::is_same_v<decltype(span(v.cbegin(),
+                                     std::integral_constant<size_t, 0>())),
+                       span<const int, 0>>);
   }
 
   {
@@ -66,6 +70,10 @@ namespace {
         std::is_same_v<decltype(span(v.begin(), v.size())), span<int>>);
     static_assert(
         std::is_same_v<decltype(span(v.data(), v.size())), span<int>>);
+    static_assert(
+        std::is_same_v<decltype(span(v.cbegin(),
+                                     std::integral_constant<size_t, 0>())),
+                       span<const int, 0>>);
   }
 
   {
