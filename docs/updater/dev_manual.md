@@ -9,8 +9,10 @@ including tips and tricks.
 ## Code Organization
 
 ## Bots & Lab
+
 >**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.
+
 ### Builders / Testers
 There are two sets of configuration files for our builders/testers. One is
 for chromium-branded and locates in `src`. The other one is for chrome-branded
@@ -289,6 +291,27 @@ Build outputs will land in the directory created by `gn gen` that you have been
 providing to assorted `gn`, `ninja`, and `autoninja` commands. `updater.zip`
 contains copies of the "final" outputs created by the build. `UpdaterSetup` is
 probably what you want for installing the updater you have built.
+
+## Signing
+
+GoogleUpdater signing doesn't take place on Chromium infra, but rather on
+proprietary Google infrastructure (go/o4signing). The build system packages all
+necessary ingredients for signing in updater.zip, which is uploaded by Chrome
+archive builders to the unsigned builds bucket in GCS. The zip contains both
+the artifacts to be signed and scripts to sign them. Signing infrastructure is
+triggered after each upload, ingests the files, injects the key material, signs,
+and then uploads the results to the signed builds bucket. More detail is
+available for Googlers at go/o4signing.
+
+On Windows, it's important to sign updater.exe, and then package that into
+UpdaterSetup.exe, and sign UpdaterSetup.exe. The signing scripts take an
+unsigned UpdaterSetup.exe, extract updater.exe, sign, reconstruct, and then
+sign the new UpdaterSetup.exe.
+
+On macOS, the GoogleUpdater.app bundle is signed directly, and then notarized
+(sent to Apple for countersigning). Notarization is "stapled" into the app
+bundle, and then the entire thing is packaged into a DMG, which in turn is
+signed, notarized, and stapled.
 
 ## Code Coverage
 Gerrit now down-votes the changes that do not have enough coverage. And it's
