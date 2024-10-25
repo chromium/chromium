@@ -165,7 +165,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_HUB_FLOATING_ACTION_BUTTON =
             "AndroidHubFloatingActionButton";
     public static final String ANDROID_HUB_SEARCH = "AndroidHubSearch";
-    public static final String ANDROID_HUB_V2 = "AndroidHubV2";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
@@ -576,7 +575,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_HUB_SEARCH,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sAndroidHubV2 = newCachedFlag(ANDROID_HUB_V2, false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
@@ -753,7 +751,6 @@ public abstract class ChromeFeatureList {
                     sAndroidElegantTextHeight,
                     sAndroidHubFloatingActionButton,
                     sAndroidHubSearch,
-                    sAndroidHubV2,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,

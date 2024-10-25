@@ -4224,9 +4224,6 @@ const char kAndroidHubSearchName[] = "Android Hub Search";
 const char kAndroidHubSearchDescription[] =
     "Enables searching through the hub.";
 
-const char kAndroidHubV2Name[] = "Android Hub V2";
-const char kAndroidHubV2Description[] = "Improvements to the Hub UI surface.";
-
 const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
 const char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";

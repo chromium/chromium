@@ -3545,29 +3545,6 @@ const FeatureEntry::FeatureVariation kWebAuthnAndroidCredManVariations[] = {
     {"for 3rd party passkeys", &kWebAuthnAndroidCredManGpmNotInCredManParam, 1,
      nullptr}};
 
-const FeatureEntry::FeatureParam kHubPhase2WithIcons[] = {
-    {"supports_other_tabs", "true"}};
-const FeatureEntry::FeatureParam kHubPhase2WithText[] = {
-    {"pane_switcher_uses_text", "true"},
-    {"supports_other_tabs", "true"}};
-const FeatureEntry::FeatureParam kHubPhase3[] = {
-    {"pane_switcher_uses_text", "true"},
-    {"supports_other_tabs", "true"},
-    {"supports_search", "true"}};
-const FeatureEntry::FeatureParam kHubPhase4[] = {
-    {"pane_switcher_uses_text", "true"},
-    {"supports_other_tabs", "true"},
-    {"supports_search", "true"},
-    {"supports_bookmarks", "true"}};
-
-const FeatureEntry::FeatureVariation kAndroidHubV2Variations[] = {
-    {"Phase 2 w/ Icons", kHubPhase2WithIcons, std::size(kHubPhase2WithIcons),
-     nullptr},
-    {"Phase 2 w/ Text", kHubPhase2WithText, std::size(kHubPhase2WithText),
-     nullptr},
-    {"Phase 3", kHubPhase3, std::size(kHubPhase3), nullptr},
-    {"Phase 4", kHubPhase4, std::size(kHubPhase4), nullptr}};
-
 const FeatureEntry::FeatureParam kTabGroupCreationDialogAndroidShowSetting[] = {
     {"show_tab_group_creation_dialog_setting", "true"}};
 
@@ -10561,12 +10538,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-hub-search", flag_descriptions::kAndroidHubSearchName,
      flag_descriptions::kAndroidHubSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidHubSearch)},
-
-    {"android-hub-v2", flag_descriptions::kAndroidHubV2Name,
-     flag_descriptions::kAndroidHubV2Description, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidHubV2,
-                                    kAndroidHubV2Variations,
-                                    "AndroidHubV2")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
