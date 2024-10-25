@@ -11,12 +11,6 @@
 
 @protocol Credential;
 
-typedef std::vector<uint8_t> SharedKey;
-typedef std::vector<SharedKey> SharedKeyList;
-
-typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
-typedef void (^EnrollCompletionBlock)(NSError* error);
-typedef void (^FetchKeysCompletionBlock)(const SharedKeyList& key_list);
 typedef void (^FetchSecurityDomainSecretCompletionBlock)(
     NSData* security_domain_secret);
 

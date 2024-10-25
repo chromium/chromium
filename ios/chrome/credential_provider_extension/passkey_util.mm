@@ -69,8 +69,6 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
   sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
   if (!webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
           trusted_vault_key, credential_specifics, &credential_secrets)) {
-    // TODO(crbug.com/355047427): On the first failed attempt, mark keys as
-    // stale, re-fetch the keys and try to decrypt again.
     return nil;
   }
 

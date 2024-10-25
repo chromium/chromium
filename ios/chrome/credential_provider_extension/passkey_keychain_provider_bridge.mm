@@ -6,6 +6,11 @@
 
 #import "base/functional/callback.h"
 
+typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
+typedef void (^ErrorCompletionBlock)(NSError* error);
+typedef void (^FetchKeysCompletionBlock)(
+    const PasskeyKeychainProvider::SharedKeyList& key_list);
+
 namespace {
 
 // Returns the security domain secret from the vault keys.
@@ -27,17 +32,22 @@ NSData* GetSecurityDomainSecret(
   // Navigation controller needed by `_passkeyKeychainProvider` to display some
   // UI to the user.
   UINavigationController* _navigationController;
+
+  // The branded navigation item title view to use in the navigation
+  // controller's UIs.
+  UIView* _navigationItemTitleView;
 }
 
 - (instancetype)initWithEnableLogging:(BOOL)enableLogging
                  navigationController:
-                     (UINavigationController*)navigationController {
+                     (UINavigationController*)navigationController
+              navigationItemTitleView:(UIView*)navigationItemTitleView {
   self = [super init];
   if (self) {
-    // TODO(crbug.com/370513825): Pass `enableLogging` to the
-    // PasskeyKeychainProvider's constructor.
-    _passkeyKeychainProvider = std::make_unique<PasskeyKeychainProvider>();
+    _passkeyKeychainProvider =
+        std::make_unique<PasskeyKeychainProvider>(enableLogging);
     _navigationController = navigationController;
+    _navigationItemTitleView = navigationItemTitleView;
   }
   return self;
 }
@@ -131,8 +141,9 @@ NSData* GetSecurityDomainSecret(
 // Starts the enrollment process for the account associated with the provided
 // gaia ID and calls the completion block.
 - (void)enrollForGaia:(NSString*)gaia
-           completion:(EnrollCompletionBlock)completion {
+           completion:(ErrorCompletionBlock)completion {
   _passkeyKeychainProvider->Enroll(gaia, _navigationController,
+                                   _navigationItemTitleView,
                                    base::BindOnce(^(NSError* error) {
                                      completion(error);
                                    }));
@@ -157,7 +168,8 @@ NSData* GetSecurityDomainSecret(
         [weakSelf onKeysFetchedForGaia:gaia
                                purpose:purpose
                             completion:fetchSecurityDomainSecretCompletion
-                               keyList:key_list];
+                               keyList:key_list
+                     canReauthenticate:YES];
       };
   [self fetchKeysForGaia:gaia purpose:purpose completion:fetchKeysCompletion];
 }
@@ -181,19 +193,28 @@ NSData* GetSecurityDomainSecret(
     onKeysFetchedForGaia:(NSString*)gaia
                  purpose:(PasskeyKeychainProvider::ReauthenticatePurpose)purpose
               completion:(FetchSecurityDomainSecretCompletionBlock)completion
-                 keyList:
-                     (const PasskeyKeychainProvider::SharedKeyList&)keyList {
-  if (keyList.size() == 0 && _navigationController) {
-    // A valid navigation controller is needed to show the reauthentication UI.
-    // Otherwise, it won't be possible to perform reauthentication.
-    __weak __typeof(self) weakSelf = self;
-    [self.delegate showReauthenticationWelcomeScreen:^{
-      [weakSelf reauthenticateForGaia:gaia
-                              purpose:purpose
-                           completion:completion];
-    }];
+                 keyList:(const PasskeyKeychainProvider::SharedKeyList&)keyList
+       canReauthenticate:(BOOL)canReauthenticate {
+  if (!keyList.empty()) {
+    // On success, check degraded recoverability.
+    auto degradedRecoverabilityCompletion = ^(NSError* error) {
+      completion(error ? nil : GetSecurityDomainSecret(keyList));
+    };
+    [self checkDegradedRecoverabilityForGaia:gaia
+                                  completion:degradedRecoverabilityCompletion];
   } else {
-    completion(GetSecurityDomainSecret(keyList));
+    if (_navigationController && canReauthenticate) {
+      // A valid navigation controller is needed to show the reauthentication
+      // UI. Otherwise, it won't be possible to perform reauthentication.
+      __weak __typeof(self) weakSelf = self;
+      [self.delegate showReauthenticationWelcomeScreen:^{
+        [weakSelf reauthenticateForGaia:gaia
+                                purpose:purpose
+                             completion:completion];
+      }];
+    } else {
+      completion(nil);
+    }
   }
 }
 
@@ -205,9 +226,38 @@ NSData* GetSecurityDomainSecret(
                    completion:
                        (FetchSecurityDomainSecretCompletionBlock)completion {
   _passkeyKeychainProvider->Reauthenticate(
-      gaia, _navigationController, purpose,
+      gaia, _navigationController, _navigationItemTitleView, purpose,
       base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& key_list) {
-        completion(GetSecurityDomainSecret(key_list));
+        [self onKeysFetchedForGaia:gaia
+                           purpose:purpose
+                        completion:completion
+                           keyList:key_list
+                 canReauthenticate:NO];
+      }));
+}
+
+// Checks if the account associated with the provided gaia ID is in degraded
+// recoverability and calls the completion block.
+- (void)checkDegradedRecoverabilityForGaia:(NSString*)gaia
+                                completion:(ErrorCompletionBlock)completion {
+  _passkeyKeychainProvider->CheckDegradedRecoverability(
+      gaia, base::BindOnce(^(BOOL inDegradedRecoverability, NSError* error) {
+        if (inDegradedRecoverability) {
+          [self fixDegradedRecoverabilityForGaia:gaia completion:completion];
+        } else {
+          completion(error);
+        }
+      }));
+}
+
+// Fixes the degraded recoverability state for the account associated with the
+// provided gaia ID and calls the completion block.
+- (void)fixDegradedRecoverabilityForGaia:(NSString*)gaia
+                              completion:(ErrorCompletionBlock)completion {
+  _passkeyKeychainProvider->FixDegradedRecoverability(
+      gaia, _navigationController, _navigationItemTitleView,
+      base::BindOnce(^(NSError* error) {
+        completion(error);
       }));
 }
 

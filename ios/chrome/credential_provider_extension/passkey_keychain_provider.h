@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_H_
 
+#define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_API_UPDATE
+
 #import <UIKit/UIKit.h>
 
 #import <vector>
@@ -36,8 +38,11 @@ class PasskeyKeychainProvider {
   using EnrollCallback = base::OnceCallback<void(NSError*)>;
   using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using KeysMarkedAsAsStaleCallback = base::OnceCallback<void(void)>;
+  using CheckDegradedRecoverabilityCallback =
+      base::OnceCallback<void(BOOL, NSError*)>;
+  using FixDegradedRecoverabilityCallback = base::OnceCallback<void(NSError*)>;
 
-  PasskeyKeychainProvider();
+  PasskeyKeychainProvider(bool metrics_reporting_enabled);
 
   PasskeyKeychainProvider(const PasskeyKeychainProvider&) = delete;
   PasskeyKeychainProvider& operator=(const PasskeyKeychainProvider&) = delete;
@@ -56,10 +61,13 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "navigation_controller" is used to display UI for the user to enter
   //   credentials.
+  // - "navigation_item_title_view" is a branded title view of the
+  //   password manager.
   // - "callback" is called once the enrollment process is finished and
   // receives the potential error as input.
   void Enroll(NSString* gaia,
               UINavigationController* navigation_controller,
+              UIView* navigation_item_title_view,
               EnrollCallback callback);
 
   // Asynchronously fetches the shared keys for the identity identified by
@@ -87,6 +95,8 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "navigation_controller" is used to display UI for the user to enter
   //   credentials.
+  // - "navigation_item_title_view" is a branded title view of the
+  //   password manager.
   // - "purpose" is used to specify if the keys will be used to encrypt or
   //   decrypt. This is mostly for logging purposes and has no effect on the
   //   fetched keys.
@@ -94,8 +104,32 @@ class PasskeyKeychainProvider {
   //   keys as input (the array will be empty on failure).
   void Reauthenticate(NSString* gaia,
                       UINavigationController* navigation_controller,
+                      UIView* navigation_item_title_view,
                       ReauthenticatePurpose purpose,
                       KeysFetchedCallback callback);
+
+  // Checks if the identity identified by `gaia` is in the degraded
+  // recoverability state.
+  // - "gaia" is used to identify the account.
+  // - "callback" is called once the degraded recoverability status is known and
+  // receives the result and the potential error as input.
+  void CheckDegradedRecoverability(
+      NSString* gaia,
+      CheckDegradedRecoverabilityCallback callback);
+
+  // Asynchronously fixes the degraded recoverability state for the identity
+  // identified by `gaia` and invokes `callback`.
+  // - "gaia" is used to identify the account.
+  // - "navigation_controller" is used to display UI for the user to enter
+  //   credentials.
+  // - "navigation_item_title_view" is a branded title view of the
+  //   password manager.
+  // - "callback" is called once the degraded recoverability fix is completed
+  // and receives the potential error as input.
+  void FixDegradedRecoverability(NSString* gaia,
+                                 UINavigationController* navigation_controller,
+                                 UIView* navigation_item_title_view,
+                                 FixDegradedRecoverabilityCallback callback);
 
  private:
   // Folsom service.

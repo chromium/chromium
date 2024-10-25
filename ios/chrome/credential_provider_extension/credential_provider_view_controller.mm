@@ -369,8 +369,10 @@ UIColor* BackgroundColor() {
 - (PasskeyKeychainProviderBridge*)passkeyKeychainProviderBridge {
   if (!_passkeyKeychainProviderBridge) {
     _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
-        initWithEnableLogging:[self metricsAreEnabled]
-         navigationController:self.passkeyNavigationController];
+          initWithEnableLogging:[self metricsAreEnabled]
+           navigationController:self.passkeyNavigationController
+        // TODO(crbug.com/375390807): Create the branded title view.
+        navigationItemTitleView:nil];
     _passkeyKeychainProviderBridge.delegate = self;
   }
   return _passkeyKeychainProviderBridge;

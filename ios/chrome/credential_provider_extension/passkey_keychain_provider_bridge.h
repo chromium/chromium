@@ -29,6 +29,7 @@
 - (instancetype)initWithEnableLogging:(BOOL)enableLogging
                  navigationController:
                      (UINavigationController*)navigationController
+              navigationItemTitleView:(UIView*)navigationItemTitleView
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
