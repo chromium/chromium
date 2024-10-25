@@ -209,7 +209,12 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       std::make_unique<views::FlexLayout>());
   suggestion_and_button_row->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      // FlexSpecification has multiple constructors, and if no direction is
+      // specified, the settings will be used in both horizontal and vertical
+      // directions. Therefore, we must specify the horizontal direction.
+      // Otherwise, the vertical height will be stretched.
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   suggestion_view_ = suggestion_and_button_row->AddChildView(
