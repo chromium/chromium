@@ -9,13 +9,6 @@ namespace ash::standalone_browser::features {
 // On adding a new flag, please sort in the lexicographical order by
 // the variable name.
 
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the Chrome app Kiosk session uses Lacros-chrome as the web browser to
-// launch Chrome apps. When disabled, the Ash-chrome will be used instead.
-BASE_FEATURE(kChromeKioskEnableLacros,
-             "ChromeKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A kill switch for lacros chrome apps.
 BASE_FEATURE(kLacrosDisableChromeApps,
              "LacrosDisableChromeApps",
@@ -41,13 +34,5 @@ BASE_FEATURE(kLacrosOnly, "LacrosOnly", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLacrosProfileMigrationForceOff,
              "LacrosProfileMigrationForceOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
-// launch web (PWA) applications. When disabled, the Ash-chrome will be used
-// instead.
-BASE_FEATURE(kWebKioskEnableLacros,
-             "WebKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ash::standalone_browser::features

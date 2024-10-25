@@ -4234,17 +4234,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"webrtc-hw-encoding", flag_descriptions::kWebrtcHwEncodingName,
      flag_descriptions::kWebrtcHwEncodingDescription, kOsAndroid | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebRtcHWEncoding)},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-lacros-in-chrome-kiosk",
-     flag_descriptions::kChromeKioskEnableLacrosName,
-     flag_descriptions::kChromeKioskEnableLacrosDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::standalone_browser::features::kChromeKioskEnableLacros)},
-    {"enable-lacros-in-web-kiosk", flag_descriptions::kWebKioskEnableLacrosName,
-     flag_descriptions::kWebKioskEnableLacrosDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::standalone_browser::features::kWebKioskEnableLacros)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-webrtc-remote-event-log",
      flag_descriptions::kWebRtcRemoteEventLogName,

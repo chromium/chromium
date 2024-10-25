@@ -60,10 +60,7 @@ bool IsUserTypeAllowed(const user_manager::User& user) {
     case user_manager::UserType::kChild:
       return base::FeatureList::IsEnabled(features::kLacrosForSupervisedUsers);
     case user_manager::UserType::kWebKioskApp:
-      return base::FeatureList::IsEnabled(features::kWebKioskEnableLacros);
     case user_manager::UserType::kKioskApp:
-      return base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros);
-    // IWA Kiosk does not support lacros.
     case user_manager::UserType::kKioskIWA:
       return false;
   }

@@ -8195,18 +8195,6 @@ const char kWebrtcPipeWireCameraDescription[] =
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kChromeKioskEnableLacrosName[] =
-    "Enables Lacros in the chrome app Kiosk";
-const char kChromeKioskEnableLacrosDescription[] =
-    "Uses Lacros-chrome as the web browser in the chrome app Kiosk session on "
-    "ChromeOS. When disabled, the Ash-chrome will be used";
-
-const char kWebKioskEnableLacrosName[] =
-    "Enables Lacros in the web (PWA) Kiosk";
-const char kWebKioskEnableLacrosDescription[] =
-    "Uses Lacros-chrome as the web browser in the web (PWA) Kiosk session on "
-    "ChromeOS. When disabled, the Ash-chrome will be used";
-
 const char kPromiseIconsName[] = "Promise Icons";
 const char kPromiseIconsDescription[] =
     "Enables promise icons in the Launcher and Shelf (if the app is pinned) "

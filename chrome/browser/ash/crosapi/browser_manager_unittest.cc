@@ -255,35 +255,16 @@ class BrowserManagerTest : public testing::Test {
         std::make_unique<user_manager::FakeDeviceOwnershipWaiter>());
   }
 
-  enum class UserType {
-    kRegularUser = 0,
-    kWebKiosk = 1,
-    kChromeAppKiosk = 2,
-    kMaxValue = kChromeAppKiosk,
-  };
-
   void AddKnownUser(bool lacros_enabled) {
     AccountId account_id =
         AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
   }
 
-  void AddUser(UserType user_type) {
+  void AddRegularUser() {
     AccountId account_id =
         AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
 
-    User* user;
-    switch (user_type) {
-      case UserType::kRegularUser:
-        user = fake_user_manager_->AddUser(account_id);
-        break;
-      case UserType::kWebKiosk:
-        user = fake_user_manager_->AddWebKioskAppUser(account_id);
-        break;
-      case UserType::kChromeAppKiosk:
-        user = fake_user_manager_->AddKioskAppUser(account_id);
-        break;
-    }
-
+    User* user = fake_user_manager_->AddUser(account_id);
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
@@ -340,7 +321,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
       fake_browser_manager_.get());
 
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
 
   using State = BrowserManagerFake::State;
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
@@ -382,7 +363,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
       fake_browser_manager_.get());
 
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -418,7 +399,7 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
   BrowserManager::ScopedUnsetAllKeepAliveForTesting unset_keep_alive(
       fake_browser_manager_.get());
 
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -452,7 +433,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
       fake_browser_manager_.get());
 
   EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_)).Times(0);
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
 
   using State = BrowserManagerFake::State;
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
@@ -510,32 +491,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
   EXPECT_EQ(fake_browser_manager_->start_count(), 4);
 }
 
-// In the Kiosk session, the Lacros window is created during the kiosk launch,
-// no need to create a new window in this case.
-TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInChromeAppKiosk) {
-  AddUser(UserType::kChromeAppKiosk);
-  ExpectCallingLoad();
-
-  fake_browser_manager_->InitializeAndStartIfNeeded();
-
-  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
-
-  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
-}
-
-TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
-  AddUser(UserType::kWebKiosk);
-  ExpectCallingLoad();
-
-  fake_browser_manager_->InitializeAndStartIfNeeded();
-
-  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
-
-  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
-}
-
 TEST_F(BrowserManagerTest, VerifyProfileIdForNewWindow) {
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -555,7 +512,7 @@ TEST_F(BrowserManagerTest, VerifyProfileIdForNewWindow) {
 }
 
 TEST_F(BrowserManagerTest, VerifyProfileIdForLaunch) {
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -567,7 +524,7 @@ TEST_F(BrowserManagerTest, VerifyProfileIdForLaunch) {
 }
 
 TEST_F(BrowserManagerTest, VerifyProfileIdForNewTab) {
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
   ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -579,7 +536,7 @@ TEST_F(BrowserManagerTest, VerifyProfileIdForNewTab) {
 }
 
 TEST_F(BrowserManagerTest, OnLacrosUserDataDirRemoved) {
-  AddUser(UserType::kRegularUser);
+  AddRegularUser();
   const User* user = fake_user_manager_->GetPrimaryUser();
   content::BrowserContext* context =
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user);
