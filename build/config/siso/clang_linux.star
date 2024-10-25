@@ -90,8 +90,6 @@ def __filegroups(ctx):
                     "type": "glob",
                     "includes": ["*"],
                 }
-    if win_sdk.enabled(ctx):
-        fg.update(win_sdk.filegroups(ctx))
     fg.update(clang_all.filegroups(ctx))
     return fg
 

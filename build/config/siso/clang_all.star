@@ -5,9 +5,11 @@
 """Siso configuration for clang."""
 
 load("@builtin//struct.star", "module")
+load("./mac_sdk.star", "mac_sdk")
+load("./win_sdk.star", "win_sdk")
 
 def __filegroups(ctx):
-    return {
+    fg = {
         "third_party/libc++/src/include:headers": {
             "type": "glob",
             "includes": ["*"],
@@ -39,6 +41,11 @@ def __filegroups(ctx):
             ],
         },
     }
+    if win_sdk.enabled(ctx):
+        fg.update(win_sdk.filegroups(ctx))
+    if mac_sdk.enabled(ctx):
+        fg.update(mac_sdk.filegroups(ctx))
+    return fg
 
 __input_deps = {
     # need this because we use
