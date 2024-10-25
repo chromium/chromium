@@ -71,5 +71,6 @@ public interface SigninAndHistorySyncActivityLauncher {
      * history opt-in are allowed.
      */
     @MainThread
-    void launchFullscreenSigninActivityIfAllowed(Context context, Profile profile);
+    void launchFullscreenSigninActivityIfAllowed(
+            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config);
 }

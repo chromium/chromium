@@ -23,7 +23,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
     &switches::kHideSettingsSignInPromo,
     &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
-    &switches::kCctSignInPrompt};
+    &switches::kCctSignInPrompt,
+    &switches::kPutParcelableSigninConfigInExtra,
+};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {

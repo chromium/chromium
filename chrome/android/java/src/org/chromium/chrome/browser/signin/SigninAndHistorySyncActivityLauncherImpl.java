@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
@@ -97,12 +98,14 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     }
 
     @Override
-    public void launchFullscreenSigninActivityIfAllowed(Context context, Profile profile) {
+    public void launchFullscreenSigninActivityIfAllowed(
+            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config) {
         if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
                 || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile,
                         BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
-            Intent intent = SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context);
+            Intent intent =
+                    SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
             context.startActivity(intent);
         }
     }

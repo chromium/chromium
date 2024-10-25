@@ -1,0 +1,118 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.signin;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+
+/**
+ * Class containing IDs of resources for the fullscreen sign-in view and the history sync opt-in
+ * view.
+ */
+public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
+    public final FullscreenSigninConfig signinConfig;
+    public final HistorySyncConfig historySyncConfig;
+
+    /**
+     * Builder for {@link FullscreenSigninAndHistorySyncConfig} which contains resource IDs for the
+     * sign-in and history sync fullscreen views.
+     */
+    public static class Builder {
+        private @StringRes int mSigninTitleId = R.string.signin_fre_title;
+        private @StringRes int mSigninSubtitleId = R.string.signin_fre_subtitle;
+        private @DrawableRes int mSigninLogoId = R.drawable.fre_product_logo;
+        private @StringRes int mHistorySyncTitleId = R.string.history_sync_title;
+        private @StringRes int mHistorySyncSubtitleId = R.string.history_sync_subtitle;
+
+        public Builder() {}
+
+        public Builder signinTitleId(@StringRes int signinTitleId) {
+            assert signinTitleId != 0;
+            this.mSigninTitleId = signinTitleId;
+            return this;
+        }
+
+        public Builder signinSubtitleId(@StringRes int signinSubtitleId) {
+            assert signinSubtitleId != 0;
+            this.mSigninSubtitleId = signinSubtitleId;
+            return this;
+        }
+
+        public Builder signinLogoId(@DrawableRes int signinLogoId) {
+            assert signinLogoId != 0;
+            this.mSigninLogoId = signinLogoId;
+            return this;
+        }
+
+        public Builder historySyncTitleId(@StringRes int historySyncTitleId) {
+            assert historySyncTitleId != 0;
+            this.mHistorySyncTitleId = historySyncTitleId;
+            return this;
+        }
+
+        public Builder historySyncSubtitleId(@StringRes int historySyncSubtitleId) {
+            assert historySyncSubtitleId != 0;
+            this.mHistorySyncSubtitleId = historySyncSubtitleId;
+            return this;
+        }
+
+        public FullscreenSigninAndHistorySyncConfig build() {
+            final FullscreenSigninConfig signinConfig =
+                    new FullscreenSigninConfig(
+                            /* titleId= */ mSigninTitleId,
+                            /* subtitleId= */ mSigninSubtitleId,
+                            /* logoId= */ mSigninLogoId);
+            final HistorySyncConfig historySyncConfig =
+                    new HistorySyncConfig(
+                            /* titleId= */ mHistorySyncTitleId,
+                            /* subtitleId= */ mHistorySyncSubtitleId);
+
+            return new FullscreenSigninAndHistorySyncConfig(signinConfig, historySyncConfig);
+        }
+    }
+
+    public static final Parcelable.Creator<FullscreenSigninAndHistorySyncConfig> CREATOR =
+            new Parcelable.Creator<FullscreenSigninAndHistorySyncConfig>() {
+                @Override
+                public FullscreenSigninAndHistorySyncConfig createFromParcel(Parcel in) {
+                    return new FullscreenSigninAndHistorySyncConfig(in);
+                }
+
+                @Override
+                public FullscreenSigninAndHistorySyncConfig[] newArray(int size) {
+                    return new FullscreenSigninAndHistorySyncConfig[size];
+                }
+            };
+
+    private FullscreenSigninAndHistorySyncConfig(
+            FullscreenSigninConfig signinConfig, HistorySyncConfig historySyncConfig) {
+        this.signinConfig = signinConfig;
+        this.historySyncConfig = historySyncConfig;
+    }
+
+    private FullscreenSigninAndHistorySyncConfig(Parcel in) {
+        signinConfig = in.readParcelable(FullscreenSigninConfig.class.getClassLoader());
+        historySyncConfig = in.readParcelable(HistorySyncConfig.class.getClassLoader());
+    }
+
+    /** Implements {@link Parcelable} */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /** Implements {@link Parcelable} */
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeParcelable(signinConfig, 0);
+        out.writeParcelable(historySyncConfig, 0);
+    }
+}

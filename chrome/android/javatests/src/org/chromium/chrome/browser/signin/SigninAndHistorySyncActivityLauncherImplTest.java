@@ -44,10 +44,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -57,7 +59,10 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests {@link SigninAndHistorySyncActivityLauncherImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+@Features.EnableFeatures({
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    SigninFeatures.PUT_PARCELABLE_SIGNIN_CONFIG_IN_EXTRA
+})
 public class SigninAndHistorySyncActivityLauncherImplTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -70,6 +75,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
             new AccountPickerBottomSheetStrings.Builder(
                             R.string.signin_account_picker_bottom_sheet_title)
                     .build();
+    private static final FullscreenSigninAndHistorySyncConfig CONFIG =
+            new FullscreenSigninAndHistorySyncConfig.Builder().build();
 
     @Mock private Context mContextMock;
     @Mock private IdentityServicesProvider mIdentityProviderMock;
@@ -383,7 +390,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(
+                                    mContextMock, mProfileMock, CONFIG);
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -401,7 +409,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(
+                                    mContextMock, mProfileMock, CONFIG);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -421,7 +430,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(
+                                    mContextMock, mProfileMock, CONFIG);
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -440,7 +450,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(
+                                    mContextMock, mProfileMock, CONFIG);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -460,7 +471,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(
+                                    mContextMock, mProfileMock, CONFIG);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());

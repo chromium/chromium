@@ -48,9 +48,10 @@ public final class FullscreenSigninPromoLauncher {
 
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
         if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
+            FullscreenSigninAndHistorySyncConfig config =
+                    new FullscreenSigninAndHistorySyncConfig.Builder().build();
             signinAndHistorySyncActivityLauncher.launchFullscreenSigninActivityIfAllowed(
-                    context, profile);
-
+                    context, profile, config);
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
             final List<CoreAccountInfo> coreAccountInfos =
                     AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(

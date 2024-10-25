@@ -57,6 +57,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -379,9 +380,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     }
 
     private void launchActivity(boolean shouldReplaceProgressBars) {
+        FullscreenSigninAndHistorySyncConfig config =
+                new FullscreenSigninAndHistorySyncConfig.Builder().build();
         Intent intent =
                 SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
-                        ApplicationProvider.getApplicationContext());
+                        ApplicationProvider.getApplicationContext(), config);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.RESUMED);
