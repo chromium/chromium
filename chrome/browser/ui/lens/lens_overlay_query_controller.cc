@@ -446,6 +446,10 @@ void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
   gen204_controller_->SendSemanticEventGen204IfEnabled(event);
 }
 
+void LensOverlayQueryController::ResetRequestClusterInfoStateForTesting() {
+  ResetRequestClusterInfoState();
+}
+
 std::unique_ptr<EndpointFetcher>
 LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
@@ -509,6 +513,8 @@ void LensOverlayQueryController::FetchClusterInfoRequest() {
 void LensOverlayQueryController::PerformClusterInfoFetchRequest(
     base::TimeTicks query_start_time,
     std::vector<std::string> request_headers) {
+  cluster_info_access_token_fetcher_.reset();
+
   // Add protobuf content type to the request headers.
   request_headers.push_back(kContentTypeKey);
   request_headers.push_back(kContentType);
@@ -562,6 +568,14 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
+
+  // Clear the cluster info after its lifetime expires.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LensOverlayQueryController::ResetRequestClusterInfoState,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(
+          lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
 
   // Store the fetch response time.
   cluster_info_fetch_response_time_ = base::TimeTicks::Now() - query_start_time;
@@ -796,6 +810,15 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   if (!cluster_info_.has_value()) {
     cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
     cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
+
+    // Clear the cluster info after its lifetime expires.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LensOverlayQueryController::ResetRequestClusterInfoState,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(
+            lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
   }
 
   // Clear the cluster info after its lifetime expires.

@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,6 +54,12 @@ constexpr char kTestSearchSessionId[] = "search_session_id";
 
 // The locale to use.
 constexpr char kLocale[] = "en-US";
+
+// Fake username for OAuth.
+constexpr char kFakePrimaryUsername[] = "test-primary@example.com";
+
+// Fake OAuth token.
+constexpr char kFakeOAuthToken[] = "fake-oauth-token";
 
 // The fake page information.
 constexpr char kTestPageUrl[] = "https://www.google.com/";
@@ -175,6 +182,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   lens::LensOverlayObjectsRequest sent_full_image_objects_request_;
   lens::LensOverlayObjectsRequest sent_page_content_objects_request_;
   lens::LensOverlayInteractionRequest sent_interaction_request_;
+  int num_cluster_info_fetch_requests_sent_ = 0;
   int num_full_page_objects_gen204_pings_sent_ = 0;
   int num_full_page_translate_gen204_pings_sent_ = 0;
 
@@ -189,6 +197,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     std::string fake_server_response_string;
     if (!request) {
       // Cluster info request.
+      num_cluster_info_fetch_requests_sent_++;
       fake_server_response_string =
           fake_cluster_info_response_.SerializeAsString();
     } else if (request->has_objects_request() &&
@@ -423,6 +432,83 @@ TEST_F(LensOverlayQueryControllerTest,
                                          kSessionIdQueryParameterKey,
                                          &session_id_value));
   ASSERT_EQ(session_id_value, kTestServerSessionId);
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       ClusterInfoExpires_RefetchesClusterInfo) {
+  // Prep the Primary account.
+  signin::IdentityTestEnvironment identity_test_env;
+  const AccountInfo primary_account_info =
+      identity_test_env.MakePrimaryAccountAvailable(
+          kFakePrimaryUsername, signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(identity_test_env.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(), identity_test_env.identity_manager(),
+      profile(), lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId2);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
+
+  // Wait for the access token request for the cluster info to be sent.
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kFakeOAuthToken, base::Time::Max());
+  // Wait for the access token request for the full image request to be sent.
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kFakeOAuthToken, base::Time::Max());
+
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(1, query_controller.num_cluster_info_fetch_requests_sent_);
+
+  // Reset the cluster info state.
+  query_controller.ResetRequestClusterInfoStateForTesting();
+  full_image_response_future.Clear();
+
+  // Send interaction to trigger new query flow.
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
+
+  // Wait for the access token request for the interaction request to be sent.
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kFakeOAuthToken, base::Time::Max());
+  // Wait for the access token request for the cluster info request to be sent.
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kFakeOAuthToken, base::Time::Max());
+
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  // Verify the cluster info was refetched.
+  ASSERT_EQ(2, query_controller.num_cluster_info_fetch_requests_sent_);
 }
 
 // Tests that the query controller attaches the server session id from the

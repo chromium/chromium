@@ -158,6 +158,9 @@ class LensOverlayQueryController {
 
   uint64_t gen204_id() const { return gen204_id_; }
 
+  // Testing method to reset the cluster info state.
+  void ResetRequestClusterInfoStateForTesting();
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
