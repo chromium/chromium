@@ -51,6 +51,7 @@ external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 external/wpt/xhr/*
 
+virtual/cookie-deprecation-label/*
 virtual/float16array-enabled/external/wpt/xhr/*
 virtual/gpu/external/wpt/*
 virtual/keepalive-in-browser-migration/external/wpt/xhr/*
