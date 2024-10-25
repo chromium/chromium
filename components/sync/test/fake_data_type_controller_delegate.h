@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_controller_delegate.h"
@@ -58,6 +59,9 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
   // TODO(crbug.com/40945017): Replace this with something like "HasMetadata".
   int clear_metadata_count() const;
 
+  // The value that will be returned for GetAllNodesForDebugging().
+  void SetNodesForDebugging(base::Value::List nodes);
+
   // DataTypeControllerDelegate overrides
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
@@ -84,6 +88,7 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
   std::optional<ModelError> model_error_;
   StartCallback start_callback_;
   ModelErrorHandler error_handler_;
+  base::Value::List all_nodes_for_debugging_;
   base::WeakPtrFactory<FakeDataTypeControllerDelegate> weak_ptr_factory_{this};
 };
 

@@ -424,13 +424,18 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
 
 void DataTypeManagerImpl::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) const {
-  // If the configurer isn't initialized yet, then there are no nodes to return.
-  if (!configurer_) {
+  const DataTypeSet active_types = GetActiveDataTypes();
+  if (active_types.empty()) {
+    // `GetAllNodesRequestBarrier` only supports waiting for a non-empty set of
+    // types, so return empty here if there are no active types. This can happen
+    // if `state_` is not CONFIGURED.
     std::move(callback).Run(base::Value::List());
     return;
   }
 
-  const DataTypeSet active_types = GetActiveDataTypes();
+  // If there are active types, the configurer must have been initialized.
+  CHECK(configurer_);
+
   auto barrier = base::MakeRefCounted<GetAllNodesRequestBarrier>(
       active_types, std::move(callback));
 
@@ -452,6 +457,9 @@ void DataTypeManagerImpl::GetAllNodesForDebugging(
       // This can happen e.g. if we're waiting for a custom passphrase to be
       // entered - the data types are already considered active in this case,
       // but their DataTypeControllers are still NOT_RUNNING.
+      // TODO(crbug.com/374401600): This code appears unreachable as an active
+      // type cannot be in NOT_RUNNING state, even in the crypto-error scenario
+      // described in the comment above.
       barrier->OnReceivedNodesForType(type, base::Value::List());
     } else {
       controller->GetAllNodes(base::BindOnce(

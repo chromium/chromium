@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_mode.h"
@@ -33,6 +34,7 @@ namespace {
 
 using testing::_;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 
@@ -75,6 +77,14 @@ MATCHER(ConfigureAborted, "") {
   return arg.status == DataTypeManager::ABORTED;
 }
 
+MATCHER_P(MatchesDictionary, dict_matcher, "") {
+  if (!arg.is_dict()) {
+    *result_listener << "Not a dictionary";
+    return false;
+  }
+  return dict_matcher.MatchAndExplain(arg.GetDict(), result_listener);
+}
+
 // Fake DataTypeConfigurer implementation that allows the test body to control
 // when downloads complete and whether failures occurred.
 class FakeDataTypeConfigurer : public DataTypeConfigurer {
@@ -106,7 +116,10 @@ class FakeDataTypeConfigurer : public DataTypeConfigurer {
   }
 
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override {
-    // Not implemented but also not needed for these tests.
+    // Set up one dummy Nigori node, using an empty dictionary.
+    base::Value::List nigori_nodes;
+    nigori_nodes.Append(base::Value::Dict());
+    std::move(callback).Run(std::move(nigori_nodes));
   }
 
   // Completes any ongoing download request and returns the set of types that
@@ -2076,6 +2089,51 @@ TEST_F(DataTypeManagerImplTest,
               TriggerLocalDataMigration(password_ids));
 
   dtm_->TriggerLocalDataMigration(items);
+}
+
+TEST_F(DataTypeManagerImplTest, ShouldGetAllNodesForDebugging) {
+  InitDataTypeManager({BOOKMARKS});
+  Configure({BOOKMARKS});
+  FinishAllDownloadsUntilIdle();
+  ASSERT_EQ(DataTypeSet{BOOKMARKS}, dtm_->GetRegisteredDataTypes());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+
+  // Set up three dummy bookmark nodes. Three is only chosen to rule out that
+  // the test passes based on the number of bookmark nodes.
+  base::Value::List bookmark_nodes;
+  bookmark_nodes.Append(base::Value::Dict());
+  bookmark_nodes.Append(base::Value::Dict());
+  bookmark_nodes.Append(base::Value::Dict());
+  GetController(BOOKMARKS)->model()->SetNodesForDebugging(
+      std::move(bookmark_nodes));
+
+  // The result should include two entries: one for bookmarks and one for
+  // Nigori.
+  base::MockCallback<base::OnceCallback<void(base::Value::List)>>
+      mock_completion_callback;
+  EXPECT_CALL(
+      mock_completion_callback,
+      Run(UnorderedElementsAre(MatchesDictionary(base::test::DictionaryHasValue(
+                                   "type", base::Value("Encryption Keys"))),
+                               MatchesDictionary(base::test::DictionaryHasValue(
+                                   "type", base::Value("Bookmarks"))))));
+
+  dtm_->GetAllNodesForDebugging(mock_completion_callback.Get());
+}
+
+// Regression test for crbug.com/374401600.
+TEST_F(DataTypeManagerImplTest, ShouldReturnNoDebuggingNodesWhileConfiguring) {
+  InitDataTypeManager({BOOKMARKS});
+  Configure({BOOKMARKS});
+  ASSERT_EQ(DataTypeSet{BOOKMARKS}, dtm_->GetRegisteredDataTypes());
+  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+
+  // While configuring, an empty list of nodes should be returned.
+  base::MockCallback<base::OnceCallback<void(base::Value::List)>>
+      mock_completion_callback;
+  EXPECT_CALL(mock_completion_callback, Run(IsEmpty()));
+
+  dtm_->GetAllNodesForDebugging(mock_completion_callback.Get());
 }
 
 }  // namespace

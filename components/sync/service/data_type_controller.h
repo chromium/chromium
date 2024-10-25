@@ -116,7 +116,7 @@ class DataTypeController {
   virtual void Stop(SyncStopMetadataFate fate, StopCallback callback);
 
   // Current state of the data type controller.
-  virtual State state() const;
+  State state() const;
 
   // Whether preconditions are met for the datatype to start. This is useful for
   // example if the datatype depends on certain user preferences other than the
@@ -132,27 +132,27 @@ class DataTypeController {
   // changes that are waiting to be committed.
   // May be invoked at any time; if the model isn't loaded yet or is in an error
   // state, this should typically return "false".
-  virtual void HasUnsyncedData(base::OnceCallback<void(bool)> callback);
+  void HasUnsyncedData(base::OnceCallback<void(bool)> callback);
 
   // Returns a Value::List representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
-  virtual void GetAllNodes(AllNodesCallback callback);
+  void GetAllNodes(AllNodesCallback callback);
 
   // Collects TypeEntitiesCount for this datatype and passes them to |callback|.
   // Used to display entity counts in chrome://sync-internals.
-  virtual void GetTypeEntitiesCount(
+  void GetTypeEntitiesCount(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback) const;
 
   // Records entities count and estimated memory usage of the type into
   // histograms. May do nothing if state() is NOT_RUNNING or FAILED.
-  virtual void RecordMemoryUsageAndCountsHistograms();
+  void RecordMemoryUsageAndCountsHistograms();
 
   // Returns the uploader passed on construction.
   DataTypeLocalDataBatchUploader* GetLocalDataBatchUploader();
 
   // Reports data type error to simulate the error reported by the bridge.
-  virtual void ReportBridgeErrorForTest();
+  void ReportBridgeErrorForTest();
 
   DataTypeControllerDelegate* GetDelegateForTesting(SyncMode sync_mode);
 
