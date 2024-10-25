@@ -293,16 +293,23 @@ void InputManager::CreateAndroidInputReceiver(
     return;
   }
 
-  // Creation of InputReceiverCallbacks with a null context is supported.
-  // TODO(b/364201006): Implement InputReceiverCallbacks for passing input
-  // events to InputManager and pass a non-null context while creation.
-  input::ScopedInputReceiverCallbacks callbacks(/*context=*/nullptr);
+  AndroidInputCallback android_input_callback(frame_sink_id, this);
+  // Destructor of |ScopedInputReceiverCallbacks| will call
+  // |AInputReceiverCallbacks_release|, so we don't have to explicitly unset the
+  // motion event callback we set below using
+  // |AInputReceiverCallbacks_setMotionEventCallback|.
+  input::ScopedInputReceiverCallbacks callbacks(&android_input_callback);
   if (!callbacks) {
     UMA_HISTOGRAM_ENUMERATION(
         kInputReceiverCreationResultHistogram,
         CreateAndroidInputReceiverResult::kFailedNullCallbacks);
     return;
   }
+
+  base::AndroidInputReceiverCompat::GetInstance()
+      .AInputReceiverCallbacks_setMotionEventCallbackFn(
+          callbacks.a_input_receiver_callbacks(),
+          AndroidInputCallback::OnMotionEventThunk);
 
   input::ScopedInputReceiver receiver(
       looper, browser_input_token.a_input_transfer_token(), surface->surface(),
@@ -335,6 +342,17 @@ void InputManager::CreateAndroidInputReceiver(
   input::InputTokenForwarder::GetInstance()->ForwardVizInputTransferToken(
       surface_handle, viz_input_token_java);
 }
+
+bool InputManager::OnMotionEvent(AInputEvent* input_event,
+                                 const FrameSinkId& root_frame_sink_id) {
+  // TODO(370506271): Implement once we do the state transfer from Browser on
+  // touch down.
+
+  // Always return true since we are receiving input on Viz after hit testing on
+  // Browser already determined that web contents are being hit.
+  return true;
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace viz

@@ -19,6 +19,10 @@
 #include "components/viz/service/input/render_input_router_support_base.h"
 #include "gpu/ipc/common/surface_handle.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/viz/service/input/android_input_callback.h"
+#endif
+
 namespace input {
 class TouchEmulator;
 }
@@ -47,6 +51,9 @@ struct FrameSinkMetadata {
 class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
       public input::RenderWidgetHostInputEventRouter::Delegate,
+#if BUILDFLAG(IS_ANDROID)
+      public AndroidInputCallbackClient,
+#endif
       public RenderInputRouterSupportBase::Delegate {
  public:
   explicit InputManager(FrameSinkManagerImpl* frame_sink_manager);
@@ -79,6 +86,12 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
   RenderInputRouterSupportBase* GetRootRenderInputRouterSupport(
       const FrameSinkId& frame_sink_id) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  // AndroidInputCallbackClient implementation.
+  bool OnMotionEvent(AInputEvent*,
+                     const FrameSinkId& root_frame_sink_id) override;
+#endif
 
  private:
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
