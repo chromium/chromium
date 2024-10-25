@@ -347,9 +347,6 @@ gfx::Size GetScaledViewportSize(BrowserContext* context,
   }
 #endif
 
-  base::UmaHistogramBoolean("ClientHints.Viewport.IsDeviceScaleFactorOne",
-                            GetDeviceScaleFactor() == 1.0);
-
   double zoom_factor = GetZoomFactor(context, url);
   if (zoom_factor > 0) {
     viewport_size = ScaleToRoundedSize(viewport_size, 1.0 / zoom_factor);
