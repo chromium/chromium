@@ -16,7 +16,7 @@
 const int kInactiveTabsDisabledByUser = -1;
 
 BASE_FEATURE(kInactiveTabsIPadFeature,
-             "InactiveTabsFeature",
+             "InactiveTabsIPadFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsInactiveTabsAvailable() {

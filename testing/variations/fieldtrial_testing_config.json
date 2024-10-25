@@ -12388,6 +12388,21 @@
             ]
         }
     ],
+    "IOSiPadInactiveTabs": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InactiveTabsIPadFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "IPProtectionPhase0": [
         {
             "platforms": [
