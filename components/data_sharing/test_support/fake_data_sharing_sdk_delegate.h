@@ -50,6 +50,9 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
   void RemoveMember(
       const data_sharing_pb::RemoveMemberParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override;
+  void LeaveGroup(
+      const data_sharing_pb::LeaveGroupParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) override;
   void DeleteGroup(
       const data_sharing_pb::DeleteGroupParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override;
@@ -64,10 +67,13 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
           void(const base::expected<data_sharing_pb::AddAccessTokenResult,
                                     absl::Status>&)> callback) override;
 
+  void SetUserGaiaId(const std::string& gaia_id);
+
  private:
   std::map<GroupId, data_sharing_pb::GroupData> groups_;
   std::map<std::string, std::string> email_to_gaia_id_;
   int next_group_id_ = 0;
+  std::string user_gaia_id_;
 };
 
 }  // namespace data_sharing

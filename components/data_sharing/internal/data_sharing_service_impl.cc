@@ -342,6 +342,26 @@ void DataSharingServiceImpl::RemoveMember(
           weak_ptr_factory_.GetWeakPtr(), group_id, std::move(callback)));
 }
 
+void DataSharingServiceImpl::LeaveGroup(
+    const GroupId& group_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       PeopleGroupActionOutcome::kPersistentFailure));
+    return;
+  }
+
+  data_sharing_pb::LeaveGroupParams params;
+  params.set_group_id(group_id.value());
+  sdk_delegate_->LeaveGroup(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void DataSharingServiceImpl::OnModelLoaded() {
   for (auto& observer : observers_) {
     observer.OnGroupDataModelLoaded();

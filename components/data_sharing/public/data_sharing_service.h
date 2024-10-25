@@ -181,6 +181,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 
+  // Attempts to leave a group the current user has joined before.
+  virtual void LeaveGroup(
+      const GroupId& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
+
   // Check if the given URL should be intercepted.
   virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
 

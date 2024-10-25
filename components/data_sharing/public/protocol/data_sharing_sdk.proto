@@ -44,6 +44,10 @@ message RemoveMemberParams {
   optional string member_gaia_id = 2;
 };
 
+message LeaveGroupParams {
+  optional string group_id = 1;
+}
+
 message DeleteGroupParams {
   optional string group_id = 1;
 };

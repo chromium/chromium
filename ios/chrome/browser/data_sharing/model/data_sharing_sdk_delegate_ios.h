@@ -42,6 +42,9 @@ class DataSharingSDKDelegateIOS : public DataSharingSDKDelegate {
   void RemoveMember(
       const data_sharing_pb::RemoveMemberParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override;
+  void LeaveGroup(
+      const data_sharing_pb::LeaveGroupParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) override;
   void DeleteGroup(
       const data_sharing_pb::DeleteGroupParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override;

@@ -152,6 +152,37 @@ void FakeDataSharingSDKDelegate::RemoveMember(
       FROM_HERE, base::BindOnce(std::move(callback), status));
 }
 
+void FakeDataSharingSDKDelegate::LeaveGroup(
+    const data_sharing_pb::LeaveGroupParams& params,
+    base::OnceCallback<void(const absl::Status&)> callback) {
+  auto group_it = groups_.find(GroupId(params.group_id()));
+  if (group_it == groups_.end()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  absl::Status(absl::StatusCode::kNotFound,
+                                               "Group not found")));
+    return;
+  }
+
+  absl::Status status = absl::OkStatus();
+  auto* group_members = group_it->second.mutable_members();
+  std::string user_gaia_id = user_gaia_id_;
+  CHECK(!user_gaia_id.empty());
+  auto member_it =
+      std::find_if(group_members->begin(), group_members->end(),
+                   [&user_gaia_id](const data_sharing_pb::GroupMember& member) {
+                     return member.gaia_id() == user_gaia_id;
+                   });
+  if (member_it != group_members->end()) {
+    group_members->erase(member_it);
+  } else {
+    status = absl::Status(absl::StatusCode::kNotFound, "Member not found");
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), status));
+}
+
 void FakeDataSharingSDKDelegate::DeleteGroup(
     const data_sharing_pb::DeleteGroupParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
@@ -201,6 +232,10 @@ void FakeDataSharingSDKDelegate::AddAccessToken(
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+void FakeDataSharingSDKDelegate::SetUserGaiaId(const std::string& gaia_id) {
+  user_gaia_id_ = gaia_id;
 }
 
 }  // namespace data_sharing

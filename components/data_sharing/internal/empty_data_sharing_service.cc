@@ -73,6 +73,10 @@ void EmptyDataSharingService::RemoveMember(
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
+void EmptyDataSharingService::LeaveGroup(
+    const GroupId& group_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
+
 bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
   return false;

@@ -45,6 +45,12 @@ void DataSharingSDKDelegateIOS::RemoveMember(
   NOTIMPLEMENTED();
 }
 
+void DataSharingSDKDelegateIOS::LeaveGroup(
+    const data_sharing_pb::LeaveGroupParams& params,
+    base::OnceCallback<void(const absl::Status&)> callback) {
+  NOTIMPLEMENTED();
+}
+
 void DataSharingSDKDelegateIOS::DeleteGroup(
     const data_sharing_pb::DeleteGroupParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {

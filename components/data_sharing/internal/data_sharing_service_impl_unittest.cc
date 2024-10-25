@@ -279,6 +279,31 @@ TEST_F(DataSharingServiceImplTest, ShouldRemoveMember) {
   EXPECT_TRUE(group->members().empty());
 }
 
+TEST_F(DataSharingServiceImplTest, ShouldLeaveGroup) {
+  const GroupId group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+
+  const std::string email = "user@gmail.com";
+  const std::string gaia_id = "123456789";
+  not_owned_sdk_delegate_->SetUserGaiaId(gaia_id);
+  not_owned_sdk_delegate_->AddAccount(email, gaia_id);
+  not_owned_sdk_delegate_->AddMember(group_id, gaia_id);
+
+  base::RunLoop run_loop;
+  base::MockOnceCallback<void(DataSharingService::PeopleGroupActionOutcome)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(DataSharingService::PeopleGroupActionOutcome::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  data_sharing_service_->LeaveGroup(group_id, callback.Get());
+  run_loop.Run();
+
+  auto group = not_owned_sdk_delegate_->GetGroup(group_id);
+  ASSERT_TRUE(group.has_value());
+  EXPECT_TRUE(group->members().empty());
+}
+
 TEST_F(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   GroupData group_data = GroupData();
   group_data.group_token =

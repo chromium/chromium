@@ -95,6 +95,9 @@ class DataSharingServiceImpl : public DataSharingService,
       const GroupId& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  void LeaveGroup(
+      const GroupId& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
   void HandleShareURLNavigationIntercepted(
       const GURL& url,
