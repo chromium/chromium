@@ -21,10 +21,13 @@ class ThreadControllerPowerMonitorTest : public testing::Test {
   void SetUp() override {
     thread_controller_power_monitor_ =
         std::make_unique<ThreadControllerPowerMonitor>();
+    internal::ThreadControllerPowerMonitor::OverrideUsePowerMonitorForTesting(
+        true);
   }
 
   void TearDown() override {
     thread_controller_power_monitor_.reset();
+    internal::ThreadControllerPowerMonitor::ResetForTesting();
   }
 
  protected:
