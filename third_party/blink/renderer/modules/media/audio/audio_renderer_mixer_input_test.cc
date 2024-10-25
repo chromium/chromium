@@ -64,6 +64,7 @@ class AudioRendererMixerInputTest : public testing::Test,
   }
 
   AudioRendererMixer* GetMixer(
+      const LocalFrameToken&,
       const FrameToken&,
       const media::AudioParameters& params,
       media::AudioLatency::Type,
@@ -88,6 +89,7 @@ class AudioRendererMixerInputTest : public testing::Test,
 
   scoped_refptr<media::AudioRendererSink> GetSink(
       const LocalFrameToken&,
+      const FrameToken&,
       std::string_view device_id) override {
     media::OutputDeviceStatus status = media::OUTPUT_DEVICE_STATUS_OK;
     if (device_id == kNonexistentDeviceId) {

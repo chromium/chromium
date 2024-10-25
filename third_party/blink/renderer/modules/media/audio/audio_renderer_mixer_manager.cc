@@ -145,6 +145,7 @@ scoped_refptr<AudioRendererMixerInput> AudioRendererMixerManager::CreateInput(
 }
 
 AudioRendererMixer* AudioRendererMixerManager::GetMixer(
+    const LocalFrameToken& source_frame_token,
     const FrameToken& main_frame_token,
     const media::AudioParameters& input_params,
     media::AudioLatency::Type latency,
@@ -158,8 +159,8 @@ AudioRendererMixer* AudioRendererMixerManager::GetMixer(
   // given device.
   CHECK_EQ(sink_info.device_status(), media::OUTPUT_DEVICE_STATUS_OK);
 
-  const MixerKey key(main_frame_token, input_params, latency,
-                     sink_info.device_id());
+  const MixerKey key(source_frame_token, main_frame_token, input_params,
+                     latency, sink_info.device_id());
   base::AutoLock auto_lock(mixers_lock_);
 
   auto it = mixers_.find(key);
@@ -236,18 +237,33 @@ void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
 
 scoped_refptr<media::AudioRendererSink> AudioRendererMixerManager::GetSink(
     const LocalFrameToken& source_frame_token,
+    const FrameToken& main_frame_token,
     std::string_view device_id) {
+  std::string device_id_str = std::string(device_id);
+
+  auto token_for_creation = source_frame_token;
+  if (media::AudioDeviceDescription::IsDefaultDevice(device_id_str) &&
+      main_frame_token.Is<blink::LocalFrameToken>()) {
+    // In order to share resources within sub-frames of a main frame, we must
+    // bind sinks to the main frame to ensure they have proper lifetimes. This
+    // is only safe to do for the default device, since otherwise we need to
+    // authorize on a per frame basis.
+    token_for_creation = main_frame_token.GetAs<blink::LocalFrameToken>();
+  }
+
   return create_sink_cb_.Run(
-      source_frame_token, media::AudioSinkParameters(base::UnguessableToken(),
-                                                     std::string(device_id)));
+      token_for_creation, media::AudioSinkParameters(base::UnguessableToken(),
+                                                     std::move(device_id_str)));
 }
 
 AudioRendererMixerManager::MixerKey::MixerKey(
+    const LocalFrameToken& source_frame_token,
     const FrameToken& main_frame_token,
     const media::AudioParameters& params,
     media::AudioLatency::Type latency,
     std::string_view device_id)
-    : main_frame_token(main_frame_token),
+    : source_frame_token(source_frame_token),
+      main_frame_token(main_frame_token),
       params(params),
       latency(latency),
       device_id(device_id) {}
