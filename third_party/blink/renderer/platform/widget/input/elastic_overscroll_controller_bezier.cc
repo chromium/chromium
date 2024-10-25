@@ -151,6 +151,14 @@ double ElasticOverscrollControllerBezier::StretchAmountForForwardBounce(
       double progress = bounce_forwards_curve.Solve(curve_progress);
       return initial_stretch * (1 - progress) +
              bounce_forwards_distance * progress;
+    } else if (delta < std::max(bounce_forwards_duration_x_,
+                                bounce_forwards_duration_y_)) {
+      // If the overscroll animation has been fully progressed on this axis but
+      // the forward bounce is still ongoing on the other axis, stretch the
+      // overscroll to its maximum position.
+      double progress = bounce_forwards_curve.Solve(1.f);
+      return initial_stretch * (1 - progress) +
+             bounce_forwards_distance * progress;
     }
   }
   return 0.f;

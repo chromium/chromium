@@ -403,4 +403,72 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyAnimationNotCreated) {
   controller_.Animate(now + base::Milliseconds(32));
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
 }
+
+// Tests that the forward bounce animation handles different animation durations
+// gracefully.
+TEST_F(ElasticOverscrollControllerBezierTest, VerifyTwoAxisForwardAnimation) {
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 0),
+                                            gfx::PointF(100, 100));
+
+  // Test vertical forward bounce animations.
+  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  SendGestureScrollBegin(PhaseState::kNonMomentum);
+  EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
+  // The gesture will be much greater vertically than horizontally. This should
+  // cause the animation to be longer on the Y axis than on the X axis.
+  SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-50, -100));
+  controller_.scroll_velocity_ = gfx::Vector2dF(-1000.f, -4000.f);
+
+  // This signals that the finger has lifted off which triggers a fling.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  SendGestureScrollEnd(now);
+
+  constexpr int kMaxFrames = 100;
+  controller_.Animate(now);
+  float x_stretch_amount = fabsf(helper_.StretchAmount().x());
+  float y_stretch_amount = fabsf(helper_.StretchAmount().y());
+  enum AnimationState {
+    kBouncingForwardBoth,
+    kBouncingForwardY,
+    kBouncingBackwards
+  };
+  AnimationState state(kBouncingForwardBoth);
+  for (int i = 1;
+       i < kMaxFrames && (x_stretch_amount > 0 && y_stretch_amount > 0); i++) {
+    controller_.Animate(now + base::Milliseconds(i * 16));
+    const float new_x_stretch_amount = fabs(helper_.StretchAmount().x());
+    const float new_y_stretch_amount = fabs(helper_.StretchAmount().y());
+    if (state == kBouncingForwardBoth &&
+        new_x_stretch_amount == x_stretch_amount) {
+      EXPECT_NE(new_x_stretch_amount, 0);
+      state = kBouncingForwardY;
+    }
+    if (state == kBouncingForwardY &&
+        new_y_stretch_amount <= y_stretch_amount) {
+      state = kBouncingBackwards;
+    }
+    switch (state) {
+      case kBouncingForwardBoth:
+        // While both axis are bouncing forward, the stretch amount should
+        // increase on each tick of the animation.
+        EXPECT_GT(new_x_stretch_amount, x_stretch_amount);
+        EXPECT_GT(new_y_stretch_amount, y_stretch_amount);
+        break;
+      case kBouncingForwardY:
+        // While one axis has completed it's animation and the other one hasn't,
+        // only the one still animating should increase in value.
+        EXPECT_EQ(new_x_stretch_amount, x_stretch_amount);
+        EXPECT_GT(new_y_stretch_amount, y_stretch_amount);
+        break;
+      case kBouncingBackwards:
+        // Once the bounce backwards animation has kicked in, both stretches
+        // should monotonically decrease until they become zero.
+        EXPECT_LE(new_x_stretch_amount, x_stretch_amount);
+        EXPECT_LE(new_y_stretch_amount, y_stretch_amount);
+        break;
+    }
+    y_stretch_amount = new_y_stretch_amount;
+    x_stretch_amount = new_x_stretch_amount;
+  }
+}
 }  // namespace blink
