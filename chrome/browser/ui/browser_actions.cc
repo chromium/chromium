@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
-#include "chrome/browser/ui/translate_browser_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -545,13 +544,10 @@ void BrowserActions::InitializeBrowserActions() {
 }
 
 void BrowserActions::RemoveListeners() {
-  translate_browser_action_listener_.reset();
   browser_action_prefs_listener_.reset();
 }
 
 void BrowserActions::AddListeners() {
-  translate_browser_action_listener_ =
-      std::make_unique<TranslateBrowserActionListener>(browser_.get());
   browser_action_prefs_listener_ =
       std::make_unique<BrowserActionPrefsListener>(browser_.get());
 }
