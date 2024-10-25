@@ -551,6 +551,10 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 extern const char kLensOverlayEnableIPadCompatibilityName[];
 extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 
+// Title and description for the flag to allow lens overlay same tab navigation.
+extern const char kLensOverlayEnableSameTabNavigationName[];
+extern const char kLensOverlayEnableSameTabNavigationDescription[];
+
 // Title and description for the flag to enable the Lens translate toggle mode.
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];

@@ -302,6 +302,9 @@ extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 // Feature to force allow iPad support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 
+// Feature to open lens overlay navigation in the same tab.
+BASE_DECLARE_FEATURE(kLensOverlayEnableSameTabNavigation);
+
 // Feature to enable force showing the lens overlay onboarding screen.
 BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 

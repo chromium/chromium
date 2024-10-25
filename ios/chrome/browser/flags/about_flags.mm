@@ -2004,6 +2004,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensUnaryApisWithHttpTransportEnabled)},
+    {"lens-overlay-enable-same-tab-navigation",
+     flag_descriptions::kLensOverlayEnableSameTabNavigationName,
+     flag_descriptions::kLensOverlayEnableSameTabNavigationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayEnableSameTabNavigation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

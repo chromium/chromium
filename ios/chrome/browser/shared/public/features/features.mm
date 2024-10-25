@@ -242,6 +242,10 @@ BASE_FEATURE(kLensOverlayEnableIPadCompatibility,
              "EnableLensOverlayForceIPadSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayEnableSameTabNavigation,
+             "EnableLensOverlaySameTabNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayForceShowOnboardingScreen,
              "EnableLensOverlayForceShowOnboardingScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);

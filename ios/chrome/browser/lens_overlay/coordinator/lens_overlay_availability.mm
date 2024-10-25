@@ -28,3 +28,7 @@ bool IsLensOverlayAvailable() {
   return featureEnabled && (forceIPadEnabled || isIPhone) &&
          IsLensOverlayAllowedByPolicy();
 }
+
+bool IsLensOverlaySameTabNavigationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayEnableSameTabNavigation);
+}
