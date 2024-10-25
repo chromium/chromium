@@ -263,6 +263,116 @@ class FetchManagerResourceRequestContext final : public ResourceRequestContext {
   void RecordTrace() override {}
 };
 
+// Stores a resolver for Response objects, and a TypeError exception to reject
+// them with. The default exception is created at construction time so it has an
+// appropriate JavaScript stack.
+class ResponseResolver final : public GarbageCollected<ResponseResolver> {
+ public:
+  // ResponseResolver uses the ScriptState held by the ScriptPromiseResolver.
+  explicit ResponseResolver(ScriptPromiseResolver<Response>*);
+
+  ResponseResolver(const ResponseResolver&) = delete;
+  ResponseResolver& operator=(const ResponseResolver&) = delete;
+
+  // Exposed the ExecutionContext from the resolver for use by
+  // FetchManager::Loader.
+  ExecutionContext* GetExecutionContext() {
+    return resolver_->GetExecutionContext();
+  }
+
+  // The caller should clear references to this object after calling one of the
+  // resolve or reject methods, but just to ensure there are no mistakes this
+  // object clears its internal references after resolving or rejecting.
+
+  // Resolves the promise with the specified response.
+  void Resolve(Response* response);
+
+  // Rejects the promise with the supplied object.
+  void Reject(v8::Local<v8::Value> error);
+  void Reject(DOMException*);
+
+  // Rejects the promise with the TypeError exception created at construction
+  // time. Also passes the exception object to devtools if `devtools_request_id`
+  // or `issue_id` are set.
+  void RejectBecauseFailed(std::optional<String> devtools_request_id,
+                           std::optional<base::UnguessableToken> issue_id);
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(resolver_);
+    visitor->Trace(exception_);
+  }
+
+ private:
+  // Clear all members.
+  void Clear();
+
+  Member<ScriptPromiseResolver<Response>> resolver_;
+  TraceWrapperV8Reference<v8::Value> exception_;
+};
+
+ResponseResolver::ResponseResolver(ScriptPromiseResolver<Response>* resolver)
+    : resolver_(resolver) {
+  auto* script_state = resolver_->GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  // Only use a handle scope as we should be in the right context already.
+  v8::HandleScope scope(isolate);
+  // Create the exception at this point so we get the stack-trace that
+  // belongs to the fetch() call.
+  v8::Local<v8::Value> exception =
+      V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
+  exception_.Reset(isolate, exception);
+}
+
+void ResponseResolver::Resolve(Response* response) {
+  CHECK(resolver_);
+  resolver_->Resolve(response);
+  Clear();
+}
+
+void ResponseResolver::Reject(v8::Local<v8::Value> error) {
+  CHECK(resolver_);
+  resolver_->Reject(error);
+  Clear();
+}
+
+void ResponseResolver::Reject(DOMException* dom_exception) {
+  CHECK(resolver_);
+  resolver_->Reject(dom_exception);
+  Clear();
+}
+
+void ResponseResolver::RejectBecauseFailed(
+    std::optional<String> devtools_request_id,
+    std::optional<base::UnguessableToken> issue_id) {
+  CHECK(resolver_);
+  auto* script_state = resolver_->GetScriptState();
+  auto* isolate = script_state->GetIsolate();
+  auto context = script_state->GetContext();
+  v8::Local<v8::Value> value = exception_.Get(isolate);
+  exception_.Reset();
+  if (devtools_request_id || issue_id) {
+    ThreadDebugger* debugger = ThreadDebugger::From(isolate);
+    auto* inspector = debugger->GetV8Inspector();
+    if (devtools_request_id) {
+      inspector->associateExceptionData(
+          context, value, V8AtomicString(isolate, "requestId"),
+          V8String(isolate, *devtools_request_id));
+    }
+    if (issue_id) {
+      inspector->associateExceptionData(
+          context, value, V8AtomicString(isolate, "issueId"),
+          V8String(isolate, IdentifiersFactory::IdFromToken(*issue_id)));
+    }
+  }
+  resolver_->Reject(value);
+  Clear();
+}
+
+void ResponseResolver::Clear() {
+  resolver_.Clear();
+  exception_.Clear();
+}
+
 }  // namespace
 
 // FetchLoaderBase provides common logic to prepare a blink::ResourceRequest
@@ -443,8 +553,8 @@ class FetchManager::Loader final
         if (check_result) {
           updater_->Update(
               MakeGarbageCollected<FormDataBytesConsumer>(std::move(buffer_)));
-          loader_->resolver_->Resolve(response_);
-          loader_->resolver_.Clear();
+          loader_->response_resolver_->Resolve(response_);
+          loader_->response_resolver_.Clear();
           return;
         }
       }
@@ -471,8 +581,6 @@ class FetchManager::Loader final
    private:
     Member<BytesConsumer> body_;
     Member<PlaceHolderBytesConsumer> updater_;
-    // We cannot store a Response because its JS wrapper can be collected.
-    // TODO(yhirano): Fix this.
     Member<Response> response_;
     Member<FetchManager::Loader> loader_;
     String integrity_metadata_;
@@ -498,7 +606,7 @@ class FetchManager::Loader final
       std::optional<base::UnguessableToken> issue_id = std::nullopt) override;
 
   Member<FetchManager> fetch_manager_;
-  Member<ScriptPromiseResolver<Response>> resolver_;
+  Member<ResponseResolver> response_resolver_;
   Member<ThreadableLoader> threadable_loader_;
   Member<PlaceHolderBytesConsumer> place_holder_body_;
   bool failed_;
@@ -508,7 +616,6 @@ class FetchManager::Loader final
   Member<SRIVerifier> integrity_verifier_;
   Vector<KURL> url_list_;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
-  TraceWrapperV8Reference<v8::Value> exception_;
   base::TimeTicks request_started_time_;
 };
 
@@ -523,7 +630,7 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
                       script_state,
                       signal),
       fetch_manager_(fetch_manager),
-      resolver_(resolver),
+      response_resolver_(MakeGarbageCollected<ResponseResolver>(resolver)),
       failed_(false),
       finished_(false),
       response_http_status_code_(0),
@@ -531,14 +638,6 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
       request_started_time_(base::TimeTicks::Now()) {
   DCHECK(World());
   url_list_.push_back(fetch_request_data->Url());
-  v8::Isolate* isolate = script_state->GetIsolate();
-  // Only use a handle scope as we should be in the right context already.
-  v8::HandleScope scope(isolate);
-  // Create the exception at this point so we get the stack-trace that belongs
-  // to the fetch() call.
-  v8::Local<v8::Value> exception =
-      V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
-  exception_.Reset(isolate, exception);
 }
 
 FetchManager::Loader::~Loader() {
@@ -547,12 +646,11 @@ FetchManager::Loader::~Loader() {
 
 void FetchManager::Loader::Trace(Visitor* visitor) const {
   visitor->Trace(fetch_manager_);
-  visitor->Trace(resolver_);
+  visitor->Trace(response_resolver_);
   visitor->Trace(threadable_loader_);
   visitor->Trace(place_holder_body_);
   visitor->Trace(integrity_verifier_);
   visitor->Trace(cached_metadata_handler_);
-  visitor->Trace(exception_);
   FetchLoaderBase::Trace(visitor);
   ThreadableLoaderClient::Trace(visitor);
 }
@@ -681,12 +779,12 @@ void FetchManager::Loader::DidReceiveResponse(
 
   response_has_no_store_header_ = response.CacheControlContainsNoStore();
 
-  Response* r =
-      Response::Create(resolver_->GetExecutionContext(), tainted_response);
+  Response* r = Response::Create(response_resolver_->GetExecutionContext(),
+                                 tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
   if (GetFetchRequestData()->Integrity().empty()) {
-    resolver_->Resolve(r);
-    resolver_.Clear();
+    response_resolver_->Resolve(r);
+    response_resolver_.Clear();
   } else {
     DCHECK(!integrity_verifier_);
     // We have another place holder body for SRI.
@@ -893,9 +991,9 @@ void FetchManager::Loader::Abort() {
   ScriptState* script_state = GetScriptState();
   v8::Local<v8::Value> error = Signal()->reason(script_state).V8Value();
   // 1. Reject promise with error.
-  if (resolver_) {
-    resolver_->Reject(error);
-    resolver_.Clear();
+  if (response_resolver_) {
+    response_resolver_->Reject(error);
+    response_resolver_.Clear();
   }
   if (threadable_loader_) {
     // Prevent re-entrancy.
@@ -1182,32 +1280,16 @@ void FetchManager::Loader::Failed(
   if (!AddConsoleMessage(message, issue_id)) {
     return;
   }
-  if (resolver_) {
+  if (response_resolver_) {
     ScriptState::Scope scope(GetScriptState());
     if (dom_exception) {
-      resolver_->Reject(dom_exception);
+      response_resolver_->Reject(dom_exception);
     } else {
-      v8::Local<v8::Value> value =
-          exception_.Get(GetScriptState()->GetIsolate());
-      exception_.Reset();
-      ThreadDebugger* debugger =
-          ThreadDebugger::From(GetScriptState()->GetIsolate());
-      if (devtools_request_id) {
-        debugger->GetV8Inspector()->associateExceptionData(
-            GetScriptState()->GetContext(), value,
-            V8AtomicString(GetScriptState()->GetIsolate(), "requestId"),
-            V8String(GetScriptState()->GetIsolate(), *devtools_request_id));
-      }
-      if (issue_id) {
-        debugger->GetV8Inspector()->associateExceptionData(
-            GetScriptState()->GetContext(), value,
-            V8AtomicString(GetScriptState()->GetIsolate(), "issueId"),
-            V8String(GetScriptState()->GetIsolate(),
-                     IdentifiersFactory::IdFromToken(*issue_id)));
-      }
-      resolver_->Reject(value);
+      response_resolver_->RejectBecauseFailed(std::move(devtools_request_id),
+                                              issue_id);
       LogIfKeepalive("Failed");
     }
+    response_resolver_.Clear();
   }
   NotifyFinished();
 }
