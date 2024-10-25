@@ -20,7 +20,7 @@ fn test_preserve_order() {
 fn test_shift_insert() {
     let mut v: Value = from_str(r#"{"b":null,"a":null,"c":null}"#).unwrap();
     let val = v.as_object_mut().unwrap();
-    val.shift_insert(0, "d".to_string(), Value::Null);
+    val.shift_insert(0, "d".to_owned(), Value::Null);
 
     let keys: Vec<_> = val.keys().collect();
     assert_eq!(keys, &["d", "b", "a", "c"]);

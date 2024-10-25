@@ -751,9 +751,9 @@ impl<'a> Read<'a> for StrRead<'a> {
 
 //////////////////////////////////////////////////////////////////////////////
 
-impl<'a, 'de, R> private::Sealed for &'a mut R where R: Read<'de> {}
+impl<'de, R> private::Sealed for &mut R where R: Read<'de> {}
 
-impl<'a, 'de, R> Read<'de> for &'a mut R
+impl<'de, R> Read<'de> for &mut R
 where
     R: Read<'de>,
 {

@@ -1,8 +1,8 @@
 use super::Value;
 use crate::map::Map;
 use crate::number::Number;
-use alloc::borrow::Cow;
-use alloc::string::{String, ToString};
+use alloc::borrow::{Cow, ToOwned};
+use alloc::string::String;
 use alloc::vec::Vec;
 
 macro_rules! from_integer {
@@ -85,7 +85,7 @@ impl From<String> for Value {
     /// ```
     /// use serde_json::Value;
     ///
-    /// let s: String = "lorem".to_string();
+    /// let s: String = "lorem".to_owned();
     /// let x: Value = s.into();
     /// ```
     fn from(f: String) -> Self {
@@ -105,7 +105,7 @@ impl From<&str> for Value {
     /// let x: Value = s.into();
     /// ```
     fn from(f: &str) -> Self {
-        Value::String(f.to_string())
+        Value::String(f.to_owned())
     }
 }
 
@@ -126,7 +126,7 @@ impl<'a> From<Cow<'a, str>> for Value {
     /// use serde_json::Value;
     /// use std::borrow::Cow;
     ///
-    /// let s: Cow<str> = Cow::Owned("lorem".to_string());
+    /// let s: Cow<str> = Cow::Owned("lorem".to_owned());
     /// let x: Value = s.into();
     /// ```
     fn from(f: Cow<'a, str>) -> Self {
@@ -159,7 +159,7 @@ impl From<Map<String, Value>> for Value {
     /// use serde_json::{Map, Value};
     ///
     /// let mut m = Map::new();
-    /// m.insert("Lorem".to_string(), "ipsum".into());
+    /// m.insert("Lorem".to_owned(), "ipsum".into());
     /// let x: Value = m.into();
     /// ```
     fn from(f: Map<String, Value>) -> Self {

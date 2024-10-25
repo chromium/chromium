@@ -13,12 +13,13 @@
 edition = "2021"
 rust-version = "1.56"
 name = "serde_json"
-version = "1.0.128"
+version = "1.0.132"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
 ]
 build = "build.rs"
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false

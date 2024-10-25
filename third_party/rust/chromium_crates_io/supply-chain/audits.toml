@@ -2105,6 +2105,16 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.127 -> 1.0.128"
 
+[[audits.serde_json]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.128 -> 1.0.132"
+notes = """
+Methods moved into new deserializer trait in de.rs.
+New methods for converting Number to i128 or u128 in number.rs
+No new unsafe changes.
+"""
+
 [[audits.serde_json_lenient]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

@@ -137,7 +137,7 @@ mod private {
     impl Sealed for usize {}
     impl Sealed for str {}
     impl Sealed for alloc::string::String {}
-    impl<'a, T> Sealed for &'a T where T: ?Sized + Sealed {}
+    impl<T> Sealed for &T where T: ?Sized + Sealed {}
 }
 
 /// Used in panic messages.
