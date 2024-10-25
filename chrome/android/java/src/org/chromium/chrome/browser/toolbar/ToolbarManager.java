@@ -445,6 +445,7 @@ public class ToolbarManager
             mBackGestureInProgress = false;
             if (mHandler == null) return;
             mHandler.onBackCancelled();
+            mHandler = null;
         }
 
         @Override
