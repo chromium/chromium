@@ -215,14 +215,18 @@ class TouchToFillControllerAutofillTest
         std::make_unique<MockPasswordAccessLossWarningBridge>();
     mock_access_loss_warning_bridge_ = mock_bridge.get();
 
-    auto mock_jni_bridge =
+    auto ack_grouped_cred_jni_bridge =
         std::make_unique<MockAckGroupedCredentialJniDelegate>();
-    grouped_credential_sheet_bridge_ = mock_jni_bridge.get();
+    grouped_credential_sheet_bridge_jni_ = ack_grouped_cred_jni_bridge.get();
+    auto ack_grouped_cred_bridge =
+        std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
+            base::PassKey<class TouchToFillControllerAutofillTest>(),
+            std::move(ack_grouped_cred_jni_bridge),
+            window_android_.get()->get());
+    grouped_credential_sheet_bridge_ = ack_grouped_cred_bridge.get();
     auto grouped_credential_sheet_controller =
         std::make_unique<AcknowledgeGroupedCredentialSheetController>(
-            std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
-                base::PassKey<class TouchToFillControllerAutofillTest>(),
-                std::move(mock_jni_bridge), window_android_.get()->get()));
+            std::move(ack_grouped_cred_bridge));
     return std::make_unique<TouchToFillControllerAutofillDelegate>(
         base::PassKey<TouchToFillControllerAutofillTest>(), &client_,
         web_contents(), std::move(authenticator_),
@@ -254,7 +258,11 @@ class TouchToFillControllerAutofillTest
     return mock_access_loss_warning_bridge_;
   }
 
-  MockAckGroupedCredentialJniDelegate* grouped_credential_sheet_bridge() {
+  MockAckGroupedCredentialJniDelegate* grouped_credential_sheet_bridge_jni() {
+    return grouped_credential_sheet_bridge_jni_;
+  }
+
+  AcknowledgeGroupedCredentialSheetBridge* grouped_credential_sheet_bridge() {
     return grouped_credential_sheet_bridge_;
   }
 
@@ -293,7 +301,10 @@ class TouchToFillControllerAutofillTest
   raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordCredentialFiller> weak_filler_;
   password_manager::PasswordForm form_to_fill_;
-  raw_ptr<MockAckGroupedCredentialJniDelegate> grouped_credential_sheet_bridge_;
+  raw_ptr<MockAckGroupedCredentialJniDelegate>
+      grouped_credential_sheet_bridge_jni_;
+  raw_ptr<AcknowledgeGroupedCredentialSheetBridge>
+      grouped_credential_sheet_bridge_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
       window_android_ = ui::WindowAndroid::CreateForTesting();
 };
@@ -996,9 +1007,15 @@ TEST_F(TouchToFillControllerAutofillTest,
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
-  EXPECT_CALL(*grouped_credential_sheet_bridge(), Show);
+  EXPECT_CALL(*grouped_credential_sheet_bridge_jni(), Show);
   ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
+
+  // `FillUsernameAndPassword` should be called if acknowledge grouped
+  // credential sheet is accepted.
+  EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword);
+  grouped_credential_sheet_bridge()->OnDismissed(
+      jni_zero::AttachCurrentThread(), /*accepted=*/true);
 }
 
 class TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest

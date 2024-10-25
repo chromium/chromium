@@ -58,6 +58,11 @@ public class AcknowledgeGroupedCredentialSheetController {
         mOnSheetDismissed.onResult(accepted);
     }
 
+    public void onClick(boolean accepted) {
+        onDismissed(accepted);
+        dismiss();
+    }
+
     private AcknowledgeGroupedCredentialSheetView createView(
             String currentOrigin, String credentialOrigin) {
         View contentView =
@@ -65,7 +70,7 @@ public class AcknowledgeGroupedCredentialSheetController {
                         .inflate(R.layout.acknowledge_grouped_credential_sheet_content, null);
         mView =
                 new AcknowledgeGroupedCredentialSheetView(
-                        contentView, currentOrigin, credentialOrigin);
+                        contentView, currentOrigin, credentialOrigin, this::onClick);
         return mView;
     }
 }

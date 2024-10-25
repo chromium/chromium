@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.grouped_affiliations;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,5 +91,43 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
         verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
         verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, false);
+    }
+
+    @Test
+    public void testAcceptButtonClicked() {
+        mBridge.show(CURRENT_DOMAIN, CREDENTIAL_DOMAIN);
+
+        doAnswer(
+                        (invocation) -> {
+                            mBottomSheetObserverCaptor
+                                    .getValue()
+                                    .onSheetClosed(BottomSheetController.StateChangeReason.NONE);
+                            return null;
+                        })
+                .when(mBottomSheetController)
+                .hideContent(any(), anyBoolean());
+        when(mBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mBottomSheetContentCaptor.getValue());
+
+        mBottomSheetContentCaptor
+                .getValue()
+                .getContentView()
+                .findViewById(R.id.confirmation_button)
+                .callOnClick();
+        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, true);
+        verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
+    }
+
+    @Test
+    public void testNegativeButtonClicked() {
+        mBridge.show(CURRENT_DOMAIN, CREDENTIAL_DOMAIN);
+
+        mBottomSheetContentCaptor
+                .getValue()
+                .getContentView()
+                .findViewById(R.id.cancel_button)
+                .callOnClick();
+        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, false);
+        verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
     }
 }

@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.grouped_affiliations;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.SpanApplier;
@@ -21,15 +23,22 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     private final View mContent;
     private final String mCurrentOrigin;
     private final String mCredentialOrigin;
+    private final Callback<Boolean> mInterationCallback;
 
     public AcknowledgeGroupedCredentialSheetView(
-            View content, String currentOrigin, String credentialOrigin) {
+            View content,
+            String currentOrigin,
+            String credentialOrigin,
+            Callback<Boolean> interactionCallback) {
         mContent = content;
         mCurrentOrigin = currentOrigin;
         mCredentialOrigin = credentialOrigin;
+        mInterationCallback = interactionCallback;
+        mContent.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
         setHeaderIcon();
         setTitle();
         setDescription();
+        setInteractionCallback();
     }
 
     private void setHeaderIcon() {
@@ -66,6 +75,13 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
                         new SpanApplier.SpanInfo(
                                 "<b3>", "</b3>", new StyleSpan(android.graphics.Typeface.BOLD)));
         descView.setText(formattedString);
+    }
+
+    private void setInteractionCallback() {
+        Button positiveButton = mContent.findViewById(R.id.confirmation_button);
+        positiveButton.setOnClickListener(view -> mInterationCallback.onResult(true));
+        Button negativeButton = mContent.findViewById(R.id.cancel_button);
+        negativeButton.setOnClickListener(view -> mInterationCallback.onResult(false));
     }
 
     @Override
