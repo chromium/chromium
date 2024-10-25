@@ -111,6 +111,7 @@ void PaymentRequestDialogView::ShowDialog() {
   views::Widget* widget = constrained_window::ShowWebModalDialogViews(
       this, request_->web_contents());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+  occlusion_observation_.Observe(widget);
 }
 
 void PaymentRequestDialogView::CloseDialog() {
@@ -575,6 +576,15 @@ void PaymentRequestDialogView::ViewHierarchyChanged(
       controller_map_.find(details.child) != controller_map_.end()) {
     DCHECK(!details.move_view);
     controller_map_.erase(details.child);
+  }
+}
+
+void PaymentRequestDialogView::OnOcclusionStateChanged(bool occluded) {
+  if (occluded) {
+    SetEnabled(false);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PaymentRequestDialogView::CloseDialog,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
