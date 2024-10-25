@@ -60,7 +60,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             return getDelegate()
                     .createSearchWidgetRemoteViews(
                             context,
-                            new SearchActivityClientImpl(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                            new SearchActivityClientImpl(
+                                    context, IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
                             prefs,
                             areaWidthDp,
                             areaHeightDp);
@@ -103,7 +104,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             return getDelegate()
                     .createDinoWidgetRemoteViews(
                             context,
-                            new SearchActivityClientImpl(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                            new SearchActivityClientImpl(
+                                    context, IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
                             prefs,
                             areaWidthDp,
                             areaHeightDp);

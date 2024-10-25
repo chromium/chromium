@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.Toast;
-import org.chromium.url.GURL;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.annotation.Retention;
@@ -118,12 +117,8 @@ public class LaunchIntentDispatcher {
      */
     public static @Action int dispatchToSearchActivity(
             SearchActivityClient client, Activity currentActivity, Intent intent) {
-        client.requestOmniboxForResult(
-                currentActivity,
-                new GURL(UrlConstants.NTP_URL),
-                /* referrer= */ null,
-                /* isIncognito= */ false);
-        return Action.CONTINUE;
+        client.requestOmniboxForResult(client.newIntentBuilder().build());
+        return Action.FINISH_ACTIVITY;
     }
 
     /**

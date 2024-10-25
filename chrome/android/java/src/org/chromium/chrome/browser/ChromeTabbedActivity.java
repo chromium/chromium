@@ -510,8 +510,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Manager for tab group visual data lifecycle updates.
     private TabGroupVisualDataManager mTabGroupVisualDataManager;
     private SearchActivityClient mJumpStartSearchClient =
-            new SearchActivityClientImpl(IntentOrigin.LAUNCHER);
-    private SearchActivityClient mHubSearchClient = new SearchActivityClientImpl(IntentOrigin.HUB);
+            new SearchActivityClientImpl(this, IntentOrigin.LAUNCHER);
+    private SearchActivityClient mHubSearchClient =
+            new SearchActivityClientImpl(this, IntentOrigin.HUB);
 
     /**
      * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
@@ -3615,18 +3616,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mJumpStartSearchClient.isOmniboxResult(requestCode, data)) {
-            // This path is taken by the Jump-start Omnibox, after the user finished interaction
-            // with the SearchActivity.
-            // The absence of LoadUrlParams signifies that the user has made no selection, in which
-            // case we take the user back to the most recently visited website.
-            LoadUrlParams params =
-                    mJumpStartSearchClient.getOmniboxResult(requestCode, resultCode, data);
-            var tab = getActivityTab();
-            if (params != null && tab != null) tab.loadUrl(params);
-            return;
-        }
-
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onActivityResult")) {
             super.onActivityResult(requestCode, resultCode, data);
         }

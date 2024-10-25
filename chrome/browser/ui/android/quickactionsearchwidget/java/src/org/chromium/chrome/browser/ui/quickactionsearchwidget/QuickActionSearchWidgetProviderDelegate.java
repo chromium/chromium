@@ -520,9 +520,8 @@ public class QuickActionSearchWidgetProviderDelegate {
             @NonNull Context context,
             @NonNull SearchActivityClient client,
             @SearchType int searchType) {
-        Intent intent = client.createIntent(context, null, searchType);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return createPendingIntent(context, intent);
+        return createPendingIntent(
+                context, client.newIntentBuilder().setSearchType(searchType).build());
     }
 
     /**

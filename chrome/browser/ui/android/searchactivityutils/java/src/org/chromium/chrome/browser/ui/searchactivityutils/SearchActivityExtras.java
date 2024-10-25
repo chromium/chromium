@@ -26,9 +26,9 @@ public @interface SearchActivityExtras {
     /** The incognito status (boolean) associated with the origin activity. */
     String EXTRA_IS_INCOGNITO = "org.chromium.chrome.browser.ui.searchactivityutils.is_incognito";
 
-    /** Whether intent is requesting LoadUrlParams (true) or direct navigation (false). */
-    String EXTRA_IS_SERVICE_REQUEST =
-            "org.chromium.chrome.browser.ui.searchactivityutils.is_service_request";
+    /** Carries {@link ResolutionType} describing how the intent should be resolved. */
+    String EXTRA_RESOLUTION_TYPE =
+            "org.chromium.chrome.browser.ui.searchactivityutils.resolution_type";
 
     // Only alphanumeric characters, dots and dashes.
     // Must be at least 2 characters long, and begin and end with an alphanumeric character.
@@ -86,5 +86,13 @@ public @interface SearchActivityExtras {
 
         /** Total count of items, used for histogram recording. */
         int COUNT = 3;
+    }
+
+    /** Defines resolution types for the search intent. */
+    @IntDef({ResolutionType.OPEN_IN_CHROME, ResolutionType.SEND_TO_CALLER})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ResolutionType {
+        int OPEN_IN_CHROME = 0;
+        int SEND_TO_CALLER = 1;
     }
 }

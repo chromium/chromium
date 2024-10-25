@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -241,8 +242,15 @@ public class SearchActivityUnitTest {
 
     private Intent buildTestIntent(
             @IntentOrigin int intentOrigin, String url, String referrer, boolean isServiceIntent) {
-        return SearchActivityClientImpl.createServiceRequestIntent(
-                mActivity, intentOrigin, url, referrer, isServiceIntent, /* isIncognito= */ false);
+        return new SearchActivityClientImpl(mActivity, intentOrigin)
+                .newIntentBuilder()
+                .setPageUrl(new GURL(url))
+                .setReferrer(referrer)
+                .setResolutionType(
+                        isServiceIntent
+                                ? ResolutionType.SEND_TO_CALLER
+                                : ResolutionType.OPEN_IN_CHROME)
+                .build();
     }
 
     @Test

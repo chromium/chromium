@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -685,10 +686,14 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
         recordNavigationTargetType(new GURL(params.url));
 
-        if (SearchActivityUtils.isServiceRequest(getIntent())) {
-            SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
-        } else {
-            loadUrlInChromeBrowser(params);
+        switch (SearchActivityUtils.getResolutionType(getIntent())) {
+            case ResolutionType.SEND_TO_CALLER:
+                SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
+                break;
+
+            case ResolutionType.OPEN_IN_CHROME:
+                loadUrlInChromeBrowser(params);
+                break;
         }
 
         finish(TerminationReason.NAVIGATION);
@@ -745,13 +750,17 @@ public class SearchActivity extends AsyncInitializationActivity
         if (isFinishing()) return;
 
         var exitAnimationRes = 0;
-        if (SearchActivityUtils.isServiceRequest(getIntent())) {
-            if (reason != TerminationReason.NAVIGATION) {
-                SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
-            }
-            exitAnimationRes = android.R.anim.fade_out;
-        } else {
-            exitAnimationRes = R.anim.activity_close_exit;
+        switch (SearchActivityUtils.getResolutionType(getIntent())) {
+            case ResolutionType.SEND_TO_CALLER:
+                if (reason != TerminationReason.NAVIGATION) {
+                    SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
+                }
+                exitAnimationRes = android.R.anim.fade_out;
+                break;
+
+            case ResolutionType.OPEN_IN_CHROME:
+                exitAnimationRes = R.anim.activity_close_exit;
+                break;
         }
 
         recordEnumeratedHistogramWithIntentOriginBreakdown(

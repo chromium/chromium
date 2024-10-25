@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
@@ -81,10 +82,13 @@ public class SearchActivityUtils {
     }
 
     /** Returns whether intent requests a response (true) or action (false). */
-    /* package */ static boolean isServiceRequest(@NonNull Intent intent) {
+    /* package */ static @ResolutionType int getResolutionType(@NonNull Intent intent) {
         return IntentUtils.isTrustedIntentFromSelf(intent)
-                && IntentUtils.safeGetBooleanExtra(
-                        intent, SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false);
+                ? IntentUtils.safeGetIntExtra(
+                        intent,
+                        SearchActivityExtras.EXTRA_RESOLUTION_TYPE,
+                        ResolutionType.OPEN_IN_CHROME)
+                : ResolutionType.OPEN_IN_CHROME;
     }
 
     /** Returns the incognito status of the associated launching activity. */

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ResourceRequestBodyJni;
@@ -72,7 +73,7 @@ public class SearchActivityUtilsUnitTest {
 
     private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     private SearchActivityClientImpl mClient =
-            new SearchActivityClientImpl(IntentOrigin.CUSTOM_TAB);
+            new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
 
     // UrlFormatter call intercepting mock.
     private interface TestUrlFormatter {
@@ -111,7 +112,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentOrigin_trustedIntent() {
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -119,7 +120,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentOrigin_untrustedIntent() {
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
@@ -128,7 +129,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_trustedIntent() {
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -143,7 +144,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_untrustedIntent() {
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
@@ -151,48 +152,57 @@ public class SearchActivityUtilsUnitTest {
     }
 
     @Test
-    public void isServiceRequest_trustedIntent() {
+    public void getResoultionType_trustedIntent() {
         // Generate intent used for testing.
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(
+                mClient.newIntentBuilder()
+                        .setPageUrl(EMPTY_URL)
+                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                        .build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
 
         // Want Activity Result
-        assertTrue(intent.getBooleanExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false));
-        assertTrue(SearchActivityUtils.isServiceRequest(intent));
+        assertEquals(
+                ResolutionType.SEND_TO_CALLER,
+                intent.getIntExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE, ~0));
+        assertEquals(ResolutionType.SEND_TO_CALLER, SearchActivityUtils.getResolutionType(intent));
 
         // Want Intent Dispatch
-        intent.putExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false);
-        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+        intent.putExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE, ResolutionType.OPEN_IN_CHROME);
+        assertEquals(ResolutionType.OPEN_IN_CHROME, SearchActivityUtils.getResolutionType(intent));
 
         // Unspecified
-        intent.removeExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST);
-        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+        intent.removeExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE);
+        assertEquals(ResolutionType.OPEN_IN_CHROME, SearchActivityUtils.getResolutionType(intent));
     }
 
     @Test
-    public void isServiceRequest_untrustedIntent() {
+    public void getResoultionType_untrustedIntent() {
         // Generate intent used for testing.
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
 
         // Want Activity Result
-        assertTrue(intent.getBooleanExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false));
-        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+        assertEquals(
+                ResolutionType.OPEN_IN_CHROME,
+                intent.getIntExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE, ~0));
+        assertEquals(ResolutionType.OPEN_IN_CHROME, SearchActivityUtils.getResolutionType(intent));
 
         // Want Intent Dispatch
-        intent.putExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST, false);
-        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+        intent.putExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE, ResolutionType.OPEN_IN_CHROME);
+        assertEquals(ResolutionType.OPEN_IN_CHROME, SearchActivityUtils.getResolutionType(intent));
 
         // Unspecified
-        intent.removeExtra(SearchActivityExtras.EXTRA_IS_SERVICE_REQUEST);
-        assertFalse(SearchActivityUtils.isServiceRequest(intent));
+        intent.removeExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE);
+        assertEquals(ResolutionType.OPEN_IN_CHROME, SearchActivityUtils.getResolutionType(intent));
     }
 
     @Test
     public void getIntentIncognitoStatus_trustedIntent() {
         // Generate intent used for testing.
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ true);
+        mClient.requestOmniboxForResult(
+                mClient.newIntentBuilder().setPageUrl(EMPTY_URL).setIncognito(true).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
 
         // Want incognito.
@@ -211,7 +221,8 @@ public class SearchActivityUtilsUnitTest {
     @Test
     public void getIntentIncognitoStatus_untrustedIntent() {
         // Generate intent used for testing.
-        mClient.requestOmniboxForResult(mActivity, EMPTY_URL, null, /* isIncognito= */ true);
+        mClient.requestOmniboxForResult(
+                mClient.newIntentBuilder().setPageUrl(EMPTY_URL).setIncognito(true).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
 
@@ -230,7 +241,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentUrl_forNullUrl() {
-        mClient.requestOmniboxForResult(mActivity, null, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(null).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertNull(SearchActivityUtils.getIntentUrl(intent));
         // Remove trust
@@ -241,7 +252,7 @@ public class SearchActivityUtilsUnitTest {
     @Test
     public void getIntentUrl_forEmptyUrl() {
         mClient.requestOmniboxForResult(
-                mActivity, GURL.emptyGURL(), null, /* isIncognito= */ false);
+                mClient.newIntentBuilder().setPageUrl(GURL.emptyGURL()).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertNull(SearchActivityUtils.getIntentUrl(intent));
         // Remove trust
@@ -252,7 +263,7 @@ public class SearchActivityUtilsUnitTest {
     @Test
     public void getIntentUrl_forInvalidUrl() {
         mClient.requestOmniboxForResult(
-                mActivity, new GURL("abcd"), null, /* isIncognito= */ false);
+                mClient.newIntentBuilder().setPageUrl(new GURL("abcd")).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertNull(SearchActivityUtils.getIntentUrl(intent));
         // Remove trust
@@ -262,8 +273,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentUrl_forValidUrl() {
-        mClient.requestOmniboxForResult(
-                mActivity, new GURL("https://abc.xyz"), null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(GOOD_URL).build());
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals("https://abc.xyz/", SearchActivityUtils.getIntentUrl(intent).getSpec());
         // Remove trust
@@ -273,7 +283,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_emptyPackageName() {
-        mClient.requestOmniboxForResult(mActivity, GOOD_URL, "", /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(
+                mClient.newIntentBuilder().setPageUrl(GOOD_URL).setReferrer("").build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -286,7 +297,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_nullPackageName() {
-        mClient.requestOmniboxForResult(mActivity, GOOD_URL, null, /* isIncognito= */ false);
+        mClient.requestOmniboxForResult(
+                mClient.newIntentBuilder().setPageUrl(GOOD_URL).setReferrer(null).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -303,7 +315,7 @@ public class SearchActivityUtilsUnitTest {
 
         for (var testCase : cases) {
             mClient.requestOmniboxForResult(
-                    mActivity, GOOD_URL, testCase, /* isIncognito= */ false);
+                    mClient.newIntentBuilder().setPageUrl(GOOD_URL).setReferrer(testCase).build());
             var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
             assertEquals(testCase, SearchActivityUtils.getReferrer(intent));
             // Remove trust
@@ -318,7 +330,7 @@ public class SearchActivityUtilsUnitTest {
 
         for (var testCase : cases) {
             mClient.requestOmniboxForResult(
-                    mActivity, GOOD_URL, testCase, /* isIncognito= */ false);
+                    mClient.newIntentBuilder().setPageUrl(GOOD_URL).setReferrer(testCase).build());
             var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
             // Referrer will likely be stripped by the Client part...
             assertNull(IntentUtils.safeGetStringExtra(intent, SearchActivityExtras.EXTRA_REFERRER));
