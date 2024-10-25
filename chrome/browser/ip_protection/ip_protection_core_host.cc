@@ -533,11 +533,6 @@ void IpProtectionCoreHost::Shutdown() {
   receivers_.Clear();
 }
 
-/*static*/
-IpProtectionCoreHost* IpProtectionCoreHost::Get(Profile* profile) {
-  return IpProtectionCoreHostFactory::GetForProfile(profile);
-}
-
 void IpProtectionCoreHost::AddNetworkService(
     mojo::PendingReceiver<ip_protection::mojom::CoreHost> pending_receiver,
     mojo::PendingRemote<ip_protection::mojom::CoreControl> pending_remote) {

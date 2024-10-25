@@ -38,6 +38,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -1511,7 +1512,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       profile_->GetPrefs()->GetBoolean(
           prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
-  IpProtectionCoreHost* ipp_core_host = IpProtectionCoreHost::Get(profile_);
+  IpProtectionCoreHost* ipp_core_host =
+      IpProtectionCoreHostFactory::GetForProfile(profile_);
   if (ipp_core_host) {
     ipp_core_host->AddNetworkService(
         network_context_params->ip_protection_core_host

@@ -85,8 +85,6 @@ class IpProtectionCoreHost
   // KeyedService:
   void Shutdown() override;
 
-  static IpProtectionCoreHost* Get(Profile* profile);
-
   mojo::ReceiverSet<ip_protection::mojom::CoreHost>& receivers_for_testing() {
     return receivers_;
   }
