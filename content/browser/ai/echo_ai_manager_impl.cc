@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_assistant.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
@@ -18,6 +19,13 @@
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 
 namespace content {
+
+namespace {
+
+const int kMockDownloadPreperationTimeMillisecond = 300;
+const int kMockModelSizeBytes = 3000;
+
+}  // namespace
 
 EchoAIManagerImpl::EchoAIManagerImpl() = default;
 
@@ -34,9 +42,7 @@ void EchoAIManagerImpl::Create(
 void EchoAIManagerImpl::CanCreateAssistant(
     CanCreateAssistantCallback callback) {
   std::move(callback).Run(
-      /*result=*/mocked_is_downloaded_
-          ? blink::mojom::ModelAvailabilityCheckResult::kReadily
-          : blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
+      blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
 }
 
 void EchoAIManagerImpl::CreateAssistant(
@@ -45,17 +51,14 @@ void EchoAIManagerImpl::CreateAssistant(
   mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
       std::move(client));
 
-  if (!mocked_is_downloaded_) {
-    // Simulate the time taken by downloading.
-    content::GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(client_remote)),
-        base::Seconds(1));
-  } else {
-    ReturnAIAssistantCreationResult(std::move(client_remote));
-  }
+  // In order to test the model download progress handling, the
+  // `EchoAIManagerImpl` will always start from the `after-download` state, and
+  // we simulate the downloading time by posting a delayed task.
+  content::GetUIThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote)),
+      base::Milliseconds(kMockDownloadPreperationTimeMillisecond));
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
@@ -122,13 +125,13 @@ void EchoAIManagerImpl::ReturnAIAssistantCreationResult(
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(
     mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
   // Mock the downloading process update for testing.
-  if (!mocked_is_downloaded_) {
-    for (auto& observer : download_progress_observers_) {
-      observer->OnDownloadProgressUpdate(10, 30);
-      observer->OnDownloadProgressUpdate(20, 30);
-      observer->OnDownloadProgressUpdate(30, 30);
-    }
-    mocked_is_downloaded_ = true;
+  for (auto& observer : download_progress_observers_) {
+    observer->OnDownloadProgressUpdate(kMockModelSizeBytes / 3,
+                                       kMockModelSizeBytes);
+    observer->OnDownloadProgressUpdate(kMockModelSizeBytes / 3 * 2,
+                                       kMockModelSizeBytes);
+    observer->OnDownloadProgressUpdate(kMockModelSizeBytes,
+                                       kMockModelSizeBytes);
   }
 
   ReturnAIAssistantCreationResult(std::move(client_remote));

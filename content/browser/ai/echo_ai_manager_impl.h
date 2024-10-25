@@ -74,7 +74,6 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       download_progress_observers_;
 
   mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
-  bool mocked_is_downloaded_ = false;
 
   base::WeakPtrFactory<EchoAIManagerImpl> weak_ptr_factory_{this};
 };

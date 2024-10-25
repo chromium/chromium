@@ -73,11 +73,29 @@ const testPromptAPI = async () => {
       };
     }
 
+    isDownloadProgressEventTriggered = false;
+    let isWaitingForModelDownload = status === "after-download";
+
     const session = await ai.languageModel.create({
       topK: 3,
       temperature: 0.8,
-      systemPrompt: "Let's talk about Mauritius."
+      systemPrompt: "Let's talk about Mauritius.",
+      monitor(m) {
+        m.addEventListener("downloadprogress", e => {
+          isDownloadProgressEventTriggered = true;
+        });
+      }
     });
+
+    if (isWaitingForModelDownload && !isDownloadProgressEventTriggered) {
+      return {
+        success: false,
+        error:
+          "when the status is 'after-download', the creation request " +
+          "should wait for the model download, and the `downloadprogress` " +
+          "event should be triggered."
+      };
+    }
     return testSession(session);
   } catch (e) {
     return {

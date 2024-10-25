@@ -114,6 +114,7 @@
     "dismiss",
     "display",
     "dispose",
+    "downloadprogress",
     "downloading",
     "drag",
     "dragend",

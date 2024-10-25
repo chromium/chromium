@@ -33,6 +33,11 @@ interface AIAssistantFactory
     method capabilities
     method constructor
     method create
+interface AICreateMonitor : EventTarget
+    attribute @@toStringTag
+    getter ondownloadprogress
+    method constructor
+    setter ondownloadprogress
 interface AILanguageDetector
     attribute @@toStringTag
     method constructor

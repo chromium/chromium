@@ -38,6 +38,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create
+[Worker] interface AICreateMonitor : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter ondownloadprogress
+[Worker]     method constructor
+[Worker]     setter ondownloadprogress
 [Worker] interface AILanguageDetector
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

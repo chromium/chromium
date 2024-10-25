@@ -11,6 +11,8 @@ dictionary AIAssistantInitialPrompt {
 
 dictionary AIAssistantCreateOptions {
   AbortSignal signal;
+  AICreateMonitorCallback monitor;
+
   [EnforceRange] unsigned long topK;
   float temperature;
   DOMString systemPrompt;

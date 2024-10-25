@@ -12,13 +12,17 @@
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt_role.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_assistant.h"
 #include "third_party/blink/renderer/modules/ai/ai_assistant_capabilities.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -56,15 +60,14 @@ class CreateAssistantClient
       mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
       Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts,
-      std::optional<
-          mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>>
-          observer_remote)
+      AICreateMonitor* monitor)
       : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
+        monitor_(monitor),
         receiver_(this, ai->GetExecutionContext()) {
-    if (observer_remote.has_value()) {
+    if (monitor) {
       ai_->GetAIRemote()->AddModelDownloadProgressObserver(
-          std::move(observer_remote.value()));
+          monitor->BindRemote());
     }
 
     mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
@@ -84,6 +87,7 @@ class CreateAssistantClient
   void Trace(Visitor* visitor) const override {
     AIMojoClient::Trace(visitor);
     visitor->Trace(ai_);
+    visitor->Trace(monitor_);
     visitor->Trace(receiver_);
   }
 
@@ -108,6 +112,12 @@ class CreateAssistantClient
 
  private:
   Member<AI> ai_;
+  // The `CreateAssistantClient` owns the `AICreateMonitor`, so the
+  // `ai.languageModel.create()` will only receive model download progress
+  // update while the creation promise is pending. After the `AIAssistant` is
+  // created, the `AICreateMonitor` will be destroyed so there is no more events
+  // even if the model is uninstalled and downloaded again.
+  Member<AICreateMonitor> monitor_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateAssistantClient,
                    CreateAssistantClient>
       receiver_;
@@ -207,12 +217,18 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
   }
 
   AbortSignal* signal = nullptr;
+  AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
+      GetExecutionContext(), task_runner_);
 
   if (options) {
     signal = options->getSignalOr(nullptr);
     if (signal && signal->aborted()) {
       resolver->Reject(signal->reason(script_state));
       return promise;
+    }
+
+    if (options->hasMonitor()) {
+      std::ignore = options->monitor()->Invoke(nullptr, monitor);
     }
 
     if (!options->hasTopK() && !options->hasTemperature()) {
@@ -264,12 +280,9 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
     }
   }
 
-  // TODO(crbug.com/348108460): implement the class for
-  // `mojom::blink::ModelDownloadProgressObserver`.
   MakeGarbageCollected<CreateAssistantClient>(
       script_state, ai_, resolver, signal, std::move(sampling_params),
-      system_prompt, std::move(initial_prompts),
-      /*observer_remote=*/std::nullopt);
+      system_prompt, std::move(initial_prompts), monitor);
 
   return promise;
 }
