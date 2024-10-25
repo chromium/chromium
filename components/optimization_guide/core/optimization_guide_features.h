@@ -402,6 +402,12 @@ base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime();
 
+// Feature params for handling exponential backoff after timeouts.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelMaxTimeoutBackoffTime();
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelTimeoutBackoffBaseTime();
+
 // Returns the number of sessions that timed out before the on-device model
 // won't be used.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

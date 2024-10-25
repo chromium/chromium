@@ -2277,10 +2277,62 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
 
   // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
   // next session should use the server.
-  EXPECT_EQ(nullptr,
-            test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                            logger_.GetWeakPtr(), nullptr,
-                                            /*config_params=*/std::nullopt));
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       AllowsConnectingAfterTimeoutAfterBackoffPeriod) {
+  Initialize();
+  fake_settings_.set_execute_delay(
+      features::GetOnDeviceModelTimeForInitialResponse() * 2);
+
+  auto create_session_and_timeout = [&] {
+    auto session = test_controller_->CreateSession(
+        kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt);
+    ASSERT_TRUE(session);
+    session->ExecuteModel(PageUrlRequest("2z"),
+                          response_.GetStreamingCallback());
+    task_environment_.FastForwardBy(
+        features::GetOnDeviceModelTimeForInitialResponse() +
+        base::Milliseconds(1));
+    EXPECT_TRUE(response_.streamed().empty());
+    EXPECT_FALSE(response_.value());
+    EXPECT_TRUE(remote_execute_called_);
+    remote_execute_called_ = false;
+  };
+
+  // Create a bunch of sessions that all timeout.
+  for (int i = 0; i < features::GetOnDeviceModelTimeoutCountBeforeDisable();
+       ++i) {
+    create_session_and_timeout();
+  }
+
+  // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
+  // next session will be blocked.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+
+  // Fast forward by backoff time and starting a session should succeed.
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
+      base::Milliseconds(1));
+  create_session_and_timeout();
+  task_environment_.RunUntilIdle();
+
+  // Starting another session after another timeout should fail.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+
+  // Fast forward base time should not work.
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
+      base::Milliseconds(1));
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+
+  // Fast forward again should allow retrying (now 2 * base time).
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
+      base::Milliseconds(1));
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {

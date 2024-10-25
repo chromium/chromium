@@ -691,6 +691,22 @@ int GetOnDeviceModelTimeoutCountBeforeDisable() {
   return kOnDeviceModelDisableTimeoutCount.Get();
 }
 
+base::TimeDelta GetOnDeviceModelMaxTimeoutBackoffTime() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelMaxTimeoutBackoffTime{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_max_timeout_backoff_time", base::Hours(1)};
+  return kOnDeviceModelMaxTimeoutBackoffTime.Get();
+}
+
+base::TimeDelta GetOnDeviceModelTimeoutBackoffBaseTime() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelTimeoutBackoffBaseTime{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_timeout_backoff_base_time", base::Minutes(1)};
+  return kOnDeviceModelTimeoutBackoffBaseTime.Get();
+}
+
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
