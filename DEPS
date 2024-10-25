@@ -777,11 +777,12 @@ deps = {
     'condition': 'not llvm_force_head_revision',
     'objects': [
       {
+        # The Android libclang_rt.builtins libraries are currently only included in the Linux clang package.
         'object_name': 'Linux_x64/clang-llvmorg-20-init-9764-gb81d8e90-2.tar.xz',
         'sha256sum': 'a3a0c489cb85fd7f5413abe385ba8535965d55dc304953b276c946be956a2ccc',
         'size_bytes': 54131176,
         'generation': 1729716109986925,
-        'condition': 'host_os == "linux" and non_git_source',
+        'condition': '(host_os == "linux" or checkout_android) and non_git_source',
       },
       {
         'object_name': 'Linux_x64/clang-tidy-llvmorg-20-init-9764-gb81d8e90-2.tar.xz',
@@ -2094,7 +2095,7 @@ deps = {
   # Android Explicit Synchronization.
   'src/third_party/libsync/src': {
       'url': Var('chromium_git') + '/aosp/platform/system/core/libsync.git' + '@' + 'f4f4387b6bf2387efbcfd1453af4892e8982faf6',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux or checkout_android',
   },
 
   'src/third_party/libunwindstack': {

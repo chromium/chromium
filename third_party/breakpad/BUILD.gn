@@ -555,6 +555,23 @@ if (is_mac) {
 
       deps = [ ":common" ]
     }
+
+    # Include dependencies for Android
+    if (target_os == "android") {
+      copy_exe("generate_test_dump") {
+        testonly = true
+        has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
+        target = ":$target_name($_tests_launcher_toolchain)"
+      }
+      copy_exe("minidump-2-core") {
+        has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
+        target = ":$target_name($_tests_launcher_toolchain)"
+      }
+      copy_exe("core-2-minidump") {
+        has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
+        target = ":$target_name($_tests_launcher_toolchain)"
+      }
+    }
   } else if (current_toolchain == default_toolchain) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.

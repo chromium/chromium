@@ -4,7 +4,7 @@
 
 # A tool that removes all non-interface-specific parts from a .jar file.
 
-if (is_linux || is_chromeos) {
+if (is_linux || is_chromeos || target_os == "android") {
   config("ijar_compiler_flags") {
     if (is_clang) {
       cflags = [

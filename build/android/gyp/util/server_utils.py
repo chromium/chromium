@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 import socket
+import platform
 
 # Use a unix abstract domain socket:
 # https://man7.org/linux/man-pages/man7/unix.7.html#:~:text=abstract:
@@ -16,6 +17,10 @@ BUILD_SERVER_ENV_VARIABLE = 'INVOKED_BY_BUILD_SERVER'
 
 def MaybeRunCommand(name, argv, stamp_file, force):
   """Returns True if the command was successfully sent to the build server."""
+
+  if platform.system() == "Darwin":
+    # Build server does not support Mac.
+    return False
 
   # When the build server runs a command, it sets this environment variable.
   # This prevents infinite recursion where the script sends a request to the

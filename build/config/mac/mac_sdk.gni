@@ -9,7 +9,9 @@ import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 
-assert(current_os == "mac" || current_toolchain == default_toolchain)
+# Allow Android builds on macOS
+assert(current_os == "mac" || current_toolchain == default_toolchain ||
+       target_os == "android")
 
 declare_args() {
   # The following two variables control the minimum supported version for

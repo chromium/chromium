@@ -144,6 +144,13 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
       # use the arm64 simulator.
       arm_control_flow_integrity = "standard"
     }
+
+    if (host_os == "mac" && host_cpu == "arm64") {
+      # Disable ARM integrity flow or build
+      # will fail because of this issue
+      # https://groups.google.com/g/v8-users/c/rykJ2F9RIcc/m/QKpWNoeJDgAJ
+      arm_control_flow_integrity = "none"
+    }
   }
   assert(arm_control_flow_integrity == "none" ||
              arm_control_flow_integrity == "standard" ||

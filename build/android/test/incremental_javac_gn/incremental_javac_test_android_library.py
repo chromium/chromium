@@ -14,12 +14,16 @@ import os
 import pathlib
 import subprocess
 import shutil
+import platform
 
 _CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[4].resolve()
 _NINJA_PATH = _CHROMIUM_SRC / 'third_party' / 'ninja' / 'ninja'
 
 # Relative to _CHROMIUM_SRC
-_GN_SRC_REL_PATH = 'buildtools/linux64/gn'
+if platform.system() == "Darwin":
+  _GN_SRC_REL_PATH = 'buildtools/mac/gn'
+else:
+  _GN_SRC_REL_PATH = 'buildtools/linux64/gn'
 
 _USING_PARTIAL_JAVAC_MSG = 'Using partial javac optimization'
 
