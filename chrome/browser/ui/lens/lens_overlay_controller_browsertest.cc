@@ -65,6 +65,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -103,6 +104,7 @@
 #include "ui/compositor/compositor_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -1113,6 +1115,89 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_results_opened_);
+}
+
+namespace {
+
+class TestWebModalDialog : public views::DialogDelegateView {
+ public:
+  TestWebModalDialog() {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetModalType(ui::mojom::ModalType::kChild);
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().SetName("Test dialog",
+                                   ax::mojom::NameFrom::kAttribute);
+  }
+
+  TestWebModalDialog(const TestWebModalDialog&) = delete;
+  TestWebModalDialog& operator=(const TestWebModalDialog&) = delete;
+
+  ~TestWebModalDialog() override = default;
+
+  views::View* GetInitiallyFocusedView() override { return this; }
+};
+
+// Show a web modal dialog hosted by `host_contents`.
+views::Widget* ShowTestWebModalDialog(content::WebContents* host_contents) {
+  return constrained_window::ShowWebModalDialogViews(new TestWebModalDialog,
+                                                     host_contents);
+}
+
+}  // namespace
+
+// Regression test for crbug.com/375224885. The result side panel can open modal
+// dialogs (e.g., screen-sharing permission request dialog). If lens overlay
+// dies (e.g., due to tab refresh) before the side panel web view, the modal
+// should close normally without crashing.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelModalDialog) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Now show the side panel.
+  controller->results_side_panel_coordinator()->RegisterEntryAndShow();
+
+  // Prevent flakiness by flushing the tasks.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  fake_controller->FlushForTesting();
+
+  // Wait for open animation to progress. This is important, otherwise when we
+  // close the lens overlay at a later time the side panel will be closed
+  // together synchronously.
+  SidePanel* side_panel =
+      BrowserView::GetBrowserViewForBrowser(browser())->unified_side_panel();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel->GetAnimationValue() > 0; }));
+
+  // Open a web modal dialog.
+  views::Widget* modal_widget = ShowTestWebModalDialog(
+      controller->results_side_panel_coordinator()->GetSidePanelWebContents());
+  views::test::WidgetDestroyedWaiter modal_widget_destroy_waiter(modal_widget);
+
+  // Close the lens overlay.
+  controller->CloseUISync(lens::LensOverlayDismissalSource::kPageChanged);
+
+  // The side panel will not be closed immediately because the animation is in
+  // progress.
+  ASSERT_NE(side_panel->state(), SidePanel::State::kClosed);
+  ASSERT_TRUE(modal_widget->IsVisible());
+
+  // Overlay should eventually close.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+
+  // Modal dialog should close without crashing.
+  modal_widget_destroy_waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

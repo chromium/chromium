@@ -12,6 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -37,16 +38,26 @@ LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
               Profile::FromBrowserContext(browser_context),
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
               /*esc_closes_ui=*/false)),
-      coordinator_(coordinator) {}
+      coordinator_(coordinator) {
+  CHECK(coordinator);
+  // Register the modal dialog manager for this side panel web contents so
+  // browser dialogs can open when requested by the side panel WebUI.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      GetWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(GetWebContents())
+      ->SetDelegate(coordinator);
+}
 
 LensOverlaySidePanelWebView::~LensOverlaySidePanelWebView() {
   if (coordinator_) {
     coordinator_->WebViewClosing();
-    coordinator_ = nullptr;
+    ClearCoordinator();
   }
 }
 
 void LensOverlaySidePanelWebView::ClearCoordinator() {
+  web_modal::WebContentsModalDialogManager::FromWebContents(GetWebContents())
+      ->SetDelegate(nullptr);
   coordinator_ = nullptr;
 }
 
