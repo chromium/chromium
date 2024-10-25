@@ -14,7 +14,7 @@
 
 namespace blink {
 
-ScriptPromiseUntyped UnderlyingSourceBase::StartWrapper(
+ScriptPromise<IDLUndefined> UnderlyingSourceBase::StartWrapper(
     ScriptState* script_state,
     ReadableStreamDefaultController* controller,
     ExceptionState& exception_state) {
@@ -28,17 +28,19 @@ ScriptPromiseUntyped UnderlyingSourceBase::StartWrapper(
   return Start(script_state, exception_state);
 }
 
-ScriptPromiseUntyped UnderlyingSourceBase::Start(ScriptState* script_state,
-                                                 ExceptionState&) {
+ScriptPromise<IDLUndefined> UnderlyingSourceBase::Start(
+    ScriptState* script_state,
+    ExceptionState&) {
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped UnderlyingSourceBase::Pull(ScriptState* script_state,
-                                                ExceptionState&) {
+ScriptPromise<IDLUndefined> UnderlyingSourceBase::Pull(
+    ScriptState* script_state,
+    ExceptionState&) {
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped UnderlyingSourceBase::CancelWrapper(
+ScriptPromise<IDLUndefined> UnderlyingSourceBase::CancelWrapper(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -47,9 +49,10 @@ ScriptPromiseUntyped UnderlyingSourceBase::CancelWrapper(
   return Cancel(script_state, reason, exception_state);
 }
 
-ScriptPromiseUntyped UnderlyingSourceBase::Cancel(ScriptState* script_state,
-                                                  ScriptValue reason,
-                                                  ExceptionState&) {
+ScriptPromise<IDLUndefined> UnderlyingSourceBase::Cancel(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState&) {
   return ToResolvedUndefinedPromise(script_state);
 }
 

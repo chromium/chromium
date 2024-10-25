@@ -132,8 +132,8 @@ class TestTransferringOptimizer final
     explicit Source(ScriptState* script_state)
         : UnderlyingSourceBase(script_state) {}
 
-    ScriptPromiseUntyped Start(ScriptState* script_state,
-                               ExceptionState&) override {
+    ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
+                                      ExceptionState&) override {
       Controller()->Enqueue(V8String(script_state->GetIsolate(), "foo"));
       Controller()->Enqueue(V8String(script_state->GetIsolate(), ", bar"));
       Controller()->Close();

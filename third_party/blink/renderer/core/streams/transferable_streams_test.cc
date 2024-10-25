@@ -43,7 +43,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   TestUnderlyingSource(SourceType source_type,
                        ScriptState* script_state,
                        Vector<int> sequence,
-                       ScriptPromiseUntyped start_promise)
+                       ScriptPromise<IDLUndefined> start_promise)
       : UnderlyingSourceBase(script_state),
         type_(source_type),
         sequence_(std::move(sequence)),
@@ -57,8 +57,8 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
                              ToResolvedUndefinedPromise(script_state)) {}
   ~TestUnderlyingSource() override = default;
 
-  ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
+                                    ExceptionState&) override {
     started_ = true;
     if (type_ == SourceType::kPush) {
       for (int element : sequence_) {
@@ -69,8 +69,8 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     }
     return start_promise_;
   }
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState&) override {
     if (type_ == SourceType::kPush) {
       return ToResolvedUndefinedPromise(script_state);
     }
@@ -82,9 +82,9 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     ++index_;
     return ToResolvedUndefinedPromise(script_state);
   }
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(ScriptState* script_state,
+                                     ScriptValue reason,
+                                     ExceptionState&) override {
     cancelled_ = true;
     cancel_reason_ = reason;
     return ToResolvedUndefinedPromise(script_state);
@@ -114,7 +114,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   const Vector<int> sequence_;
   wtf_size_t index_ = 0;
 
-  const ScriptPromiseUntyped start_promise_;
+  const ScriptPromise<IDLUndefined> start_promise_;
   bool started_ = false;
   bool cancelled_ = false;
   ScriptValue cancel_reason_;

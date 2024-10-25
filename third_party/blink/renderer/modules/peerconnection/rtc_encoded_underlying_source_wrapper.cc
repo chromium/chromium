@@ -71,7 +71,7 @@ RTCEncodedUnderlyingSourceWrapper::GetAudioTransformer() {
       WrapCrossThreadPersistent(audio_from_encoder_underlying_source_.Get()));
 }
 
-ScriptPromiseUntyped RTCEncodedUnderlyingSourceWrapper::Pull(
+ScriptPromise<IDLUndefined> RTCEncodedUnderlyingSourceWrapper::Pull(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -86,7 +86,7 @@ ScriptPromiseUntyped RTCEncodedUnderlyingSourceWrapper::Pull(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped RTCEncodedUnderlyingSourceWrapper::Cancel(
+ScriptPromise<IDLUndefined> RTCEncodedUnderlyingSourceWrapper::Cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {

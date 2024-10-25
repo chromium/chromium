@@ -320,8 +320,8 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
   TestReadableStreamSource(ScriptState* script_state, Type type)
       : UnderlyingSourceBase(script_state), type_(type) {}
 
-  ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
+                                    ExceptionState&) override {
     if (generator_) {
       return ToResolvedUndefinedPromise(script_state);
     }
@@ -330,8 +330,8 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
     return resolver_->Promise();
   }
 
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState&) override {
     if (!generator_) {
       return ToResolvedUndefinedPromise(script_state);
     }

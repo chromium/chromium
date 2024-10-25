@@ -53,7 +53,7 @@ RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
   task_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 }
 
-ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Pull(
+ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSource::Pull(
     ScriptState* script_state,
     ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -62,7 +62,7 @@ ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Pull(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSource::Cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState&) {

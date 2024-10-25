@@ -116,10 +116,15 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
 
  private:
   ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
-    if constexpr (std::is_same_v<IDLType, IDLUndefined> ||
-                  std::is_same_v<IDLType, IDLSequence<IDLUndefined>>) {
-      static_cast<Derived*>(this)->React(script_state);
-      return ScriptValue();
+    if constexpr (std::is_same_v<IDLType, IDLUndefined>) {
+      if constexpr (std::is_same_v<IDLPromise<IDLUndefined>, ThenReturnType>) {
+        v8::Local<v8::Value> return_value = ToV8Traits<ThenReturnType>::ToV8(
+            script_state, static_cast<Derived*>(this)->React(script_state));
+        return ScriptValue(script_state->GetIsolate(), return_value);
+      } else {
+        static_cast<Derived*>(this)->React(script_state);
+        return ScriptValue();
+      }
     } else {
       v8::Isolate* isolate = script_state->GetIsolate();
       v8::TryCatch try_catch(isolate);
@@ -301,6 +306,21 @@ class ScriptPromise : public ScriptPromiseUntyped {
         script_state,
         MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
         MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
+    return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
+        script_state->GetIsolate(), v8_promise);
+  }
+
+  // For chaining promises in ThenCallable<>::React().
+  template <typename ReturnPromiseResolveType, typename ResolveClass>
+  ScriptPromise<ReturnPromiseResolveType> ThenTyped(
+      ScriptState* script_state,
+      ThenCallable<IDLResolvedType,
+                   ResolveClass,
+                   IDLPromise<ReturnPromiseResolveType>>* on_fulfilled) const {
+    v8::Local<v8::Promise> v8_promise = ThenRaw(
+        script_state,
+        MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+        nullptr);
     return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
         script_state->GetIsolate(), v8_promise);
   }

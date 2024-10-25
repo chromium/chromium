@@ -280,6 +280,15 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
         MakeGarbageCollected<IDLResolvedType>(value));
   }
 
+  // A promise may be resolved with another promise if they are the same type.
+  void Resolve(ScriptPromise<IDLResolvedType> promise) {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    value_.Reset(script_state_->GetIsolate(), promise.V8Promise());
+    NotifyResolveOrReject();
+  }
+
   // Many IDL-exposed promises with a type other than undefined nevertheless
   // resolve with undefined in certain circumstances. Do we need to support this
   // behavior?

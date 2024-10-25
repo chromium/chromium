@@ -568,8 +568,8 @@ class WebTransport::StreamVendingUnderlyingSource final
         script_state_(script_state),
         vendor_(vendor) {}
 
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState&) override {
     if (!is_opened_) {
       is_pull_waiting_ = true;
       return ToResolvedUndefinedPromise(script_state);

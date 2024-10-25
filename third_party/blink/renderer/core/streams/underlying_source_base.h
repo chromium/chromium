@@ -26,19 +26,19 @@ class CORE_EXPORT UnderlyingSourceBase
   void Trace(Visitor*) const override;
   ~UnderlyingSourceBase() override = default;
 
-  ScriptPromiseUntyped StartWrapper(ScriptState*,
-                                    ReadableStreamDefaultController*,
-                                    ExceptionState&);
-  virtual ScriptPromiseUntyped Start(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> StartWrapper(ScriptState*,
+                                           ReadableStreamDefaultController*,
+                                           ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Start(ScriptState*, ExceptionState&);
 
-  virtual ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&);
 
-  ScriptPromiseUntyped CancelWrapper(ScriptState*,
-                                     ScriptValue reason,
-                                     ExceptionState&);
-  virtual ScriptPromiseUntyped Cancel(ScriptState*,
-                                      ScriptValue reason,
-                                      ExceptionState&);
+  ScriptPromise<IDLUndefined> CancelWrapper(ScriptState*,
+                                            ScriptValue reason,
+                                            ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                             ScriptValue reason,
+                                             ExceptionState&);
 
   // ExecutionContextLifecycleObserver implementation:
 

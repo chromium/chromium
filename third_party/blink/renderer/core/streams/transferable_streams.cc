@@ -56,12 +56,6 @@ namespace blink {
 
 namespace {
 
-template <typename T, typename... Args>
-ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
-}
-
 // These are the types of messages that are sent between peers.
 enum class MessageType { kPull, kChunk, kClose, kError };
 
@@ -777,22 +771,24 @@ class CrossRealmTransformReadable::CancelAlgorithm final
 
 class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
  public:
-  class PullSource2 final : public ScriptFunction::Callable {
+  class PullSource2 final : public ThenCallable<IDLUndefined,
+                                                PullSource2,
+                                                IDLPromise<IDLUndefined>> {
    public:
     explicit PullSource2(ConcatenatingUnderlyingSource* source,
                          const ExceptionContext& exception_context)
         : source_(source), exception_context_(exception_context) {}
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    ScriptPromise<IDLUndefined> React(ScriptState* script_state) {
       v8::Isolate* isolate = script_state->GetIsolate();
       ExceptionState exception_state(isolate, exception_context_);
-      return ScriptValue(
-          isolate,
-          source_->source2_->Pull(script_state, exception_state).V8Promise());
+      return source_->source2_->Pull(script_state, exception_state);
     }
+
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLUndefined, PullSource2, IDLPromise<IDLUndefined>>::Trace(
+          visitor);
     }
 
    private:
@@ -804,7 +800,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
    public:
     explicit ConcatenatingUnderlyingSourceReadRequest(
         ConcatenatingUnderlyingSource* source,
-        ScriptPromiseResolver<IDLPromise<IDLAny>>* resolver)
+        ScriptPromiseResolver<IDLUndefined>* resolver)
         : source_(source), resolver_(resolver) {}
 
     void ChunkSteps(ScriptState* script_state,
@@ -826,8 +822,9 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         resolver_->Resolve(
             source_->source2_
                 ->StartWrapper(script_state, controller, exception_state)
-                .Then(CreateFunction<PullSource2>(
-                    script_state, source_, exception_state.GetContext())));
+                .ThenTyped(script_state,
+                           MakeGarbageCollected<PullSource2>(
+                               source_, exception_state.GetContext())));
       } else {
         // TODO(crbug.com/1418910): Investigate how to handle cases when the
         // controller is cleared.
@@ -863,7 +860,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
 
    private:
     Member<ConcatenatingUnderlyingSource> source_;
-    Member<ScriptPromiseResolver<IDLPromise<IDLAny>>> resolver_;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
 
   ConcatenatingUnderlyingSource(ScriptState* script_state,
@@ -873,27 +870,27 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         stream1_(stream1),
         source2_(source2) {}
 
-  ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state,
+                                    ExceptionState&) override {
     v8::TryCatch try_catch(script_state->GetIsolate());
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
         script_state, stream1_,
         PassThroughException(script_state->GetIsolate()));
     if (try_catch.HasCaught()) {
-      return ScriptPromiseUntyped::Reject(script_state, try_catch.Exception());
+      return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                                 try_catch.Exception());
     }
     DCHECK(reader_for_stream1_);
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
       return source2_->Pull(script_state, exception_state);
     }
     auto* promise =
-        MakeGarbageCollected<ScriptPromiseResolver<IDLPromise<IDLAny>>>(
-            script_state);
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     auto* read_request =
         MakeGarbageCollected<ConcatenatingUnderlyingSourceReadRequest>(this,
                                                                        promise);
@@ -902,9 +899,9 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     return promise->Promise();
   }
 
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(ScriptState* script_state,
+                                     ScriptValue reason,
+                                     ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
       return source2_->Cancel(script_state, reason, exception_state);
     }

@@ -198,14 +198,14 @@ class StreamingResponder final
   }
 
   // `UnderlyingSourceBase` implementation.
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState& exception_state) override {
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(ScriptState* script_state,
+                                     ScriptValue reason,
+                                     ExceptionState& exception_state) override {
     return ToResolvedUndefinedPromise(script_state);
   }
 

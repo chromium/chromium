@@ -61,7 +61,7 @@ RTCEncodedAudioUnderlyingSource::GetController() {
   return Controller();
 }
 
-ScriptPromiseUntyped RTCEncodedAudioUnderlyingSource::Pull(
+ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSource::Pull(
     ScriptState* script_state,
     ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -70,7 +70,7 @@ ScriptPromiseUntyped RTCEncodedAudioUnderlyingSource::Pull(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseUntyped RTCEncodedAudioUnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSource::Cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState&) {
