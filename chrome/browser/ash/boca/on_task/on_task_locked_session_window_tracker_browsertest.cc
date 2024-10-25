@@ -9,9 +9,11 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -19,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -283,6 +286,62 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   EXPECT_FALSE(nav_handle_obs.has_committed());
   EXPECT_TRUE(nav_handle_obs.is_download());
   EXPECT_FALSE(url_obs.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       AllowOpeningInNewWindow) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  // Spawns a tab for testing purposes (outside the homepage tab).
+  const GURL base_url(kTabUrl1);
+  system_web_app_manager()->CreateBackgroundTabWithUrl(
+      window_id, base_url, LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  boca_app_browser->tab_strip_model()->ActivateTabAt(1);
+
+  // Open the url in a new tab.
+  const GURL url_for_new_window = GURL(kTabUrl2);
+  content::ContextMenuParams params;
+  params.is_editable = false;
+  params.page_url = base_url;
+  params.link_url = url_for_new_window;
+
+  content::WebContents* web_contents =
+      boca_app_browser->tab_strip_model()->GetActiveWebContents();
+  TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(), params);
+  ui_test_utils::TabAddedWaiter tab_add(browser());
+
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+
+  tab_add.Wait();
+  int index_of_new_tab = browser()->tab_strip_model()->count() - 1;
+  content::WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(index_of_new_tab);
+
+  // Verify that the URL was committed.
+  content::NavigationController& navigation_controller =
+      new_web_contents->GetController();
+  WaitForLoadStop(new_web_contents);
+  EXPECT_FALSE(navigation_controller.GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_EQ(url_for_new_window, new_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(base_url, boca_app_browser->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
 }
 
 }  // namespace

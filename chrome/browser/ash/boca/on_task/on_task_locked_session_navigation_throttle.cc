@@ -144,6 +144,16 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
+  Browser* const content_browser =
+      LockedSessionWindowTracker::GetBrowserWithTab(
+          navigation_handle()->GetWebContents());
+
+  // Handle the case where the creation of the tab is in the OnTask app
+  // context, but is moved to a different browser right after (such as open link
+  // in chrome window context menu).
+  if (content_browser && content_browser != window_tracker->browser()) {
+    return PROCEED;
+  }
 
   if (ShouldBlockSensitiveUrlNavigation() &&
       !window_tracker->oauth_in_progress()) {
@@ -168,9 +178,6 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     should_redirects_pass_ = true;
     return PROCEED;
   }
-  Browser* const content_browser =
-      LockedSessionWindowTracker::GetBrowserWithTab(
-          navigation_handle()->GetWebContents());
 
   // If the navigation is taking place in a popup and isn't recognized as an
   // OAuth navigation, still give it a chance to finish. If by the end
