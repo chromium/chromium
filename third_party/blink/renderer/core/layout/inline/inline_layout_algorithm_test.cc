@@ -29,8 +29,8 @@ struct TextBoxTrimResult {
   explicit TextBoxTrimResult(const LayoutBox& layout_object) {
     const LayoutResult* result = layout_object.GetCachedLayoutResult(nullptr);
     const ConstraintSpace& space = result->GetConstraintSpaceForCaching();
-    should_trim_start = space.ShouldTextBoxTrimStart();
-    should_trim_end = space.ShouldTextBoxTrimEnd();
+    should_trim_start = space.ShouldTextBoxTrimNodeStart();
+    should_trim_end = space.ShouldTextBoxTrimNodeEnd();
   }
 
   bool should_trim_start;

@@ -561,8 +561,9 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     container_builder_.SetMetrics(line_box_metrics);
 
   const ConstraintSpace& space = GetConstraintSpace();
-  if (space.ShouldTextBoxTrimStart() || space.ShouldTextBoxTrimEnd())
-      [[unlikely]] {
+  if (space.ShouldTextBoxTrimNodeStart() || space.ShouldTextBoxTrimNodeEnd() ||
+      space.ShouldTextBoxTrimFragmentainerStart() ||
+      space.ShouldTextBoxTrimFragmentainerEnd()) [[unlikely]] {
     bool is_truncated = line_clamp_state == LineClampState::kEllipsize ||
                         space.GetLineClampData().state ==
                             LineClampData::kMeasureLinesUntilBfcOffset;
@@ -613,11 +614,13 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
     return;
   }
 
-  const bool should_apply_start =
-      space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine();
-  const bool should_apply_end = space.ShouldTextBoxTrimEnd() &&
-                                (is_truncated || !line_info.GetBreakToken() ||
-                                 space.ShouldForceTextBoxTrimEnd());
+  const bool should_apply_start = (space.ShouldTextBoxTrimNodeStart() &&
+                                   line_info.IsFirstFormattedLine()) ||
+                                  space.ShouldTextBoxTrimFragmentainerStart();
+  const bool should_apply_end =
+      (space.ShouldTextBoxTrimNodeEnd() &&
+       (is_truncated || !line_info.GetBreakToken())) ||
+      space.ShouldForceTextBoxTrimEnd();
   if (!should_apply_start && !should_apply_end) {
     return;
   }

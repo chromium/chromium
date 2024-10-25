@@ -505,6 +505,24 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const LogicalFragment& fragment,
       const LogicalOffset& logical_offset);
 
+  bool ShouldTextBoxTrimStart() const {
+    return should_text_box_trim_node_start_ ||
+           should_text_box_trim_fragmentainer_start_;
+  }
+  bool ShouldTextBoxTrimEnd() const {
+    return should_text_box_trim_node_end_ ||
+           should_text_box_trim_fragmentainer_end_;
+  }
+
+  bool ShouldTextBoxTrim() const {
+    return ShouldTextBoxTrimStart() || ShouldTextBoxTrimEnd();
+  }
+
+  void ClearShouldTextBoxTrimEnd() {
+    should_text_box_trim_node_end_ = false;
+    should_text_box_trim_fragmentainer_end_ = false;
+  }
+
   LogicalSize child_percentage_size_;
   LogicalSize replaced_child_percentage_size_;
 
@@ -556,9 +574,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // (between block-level siblings or line box siblings).
   bool has_break_opportunity_before_next_child_ : 1;
 
-  // If the `text-box-trim` is effective for block-start/end edges.
-  bool should_text_box_trim_start_ : 1;
-  bool should_text_box_trim_end_ : 1;
+  // If the `text-box-trim` is effective for block-start/end edges of a node.
+  bool should_text_box_trim_node_start_ : 1;
+  bool should_text_box_trim_node_end_ : 1;
+
+  // If the `text-box-trim` is effective for block-start/end edges of a
+  // fragmentainer.
+  bool should_text_box_trim_fragmentainer_start_ : 1;
+  bool should_text_box_trim_fragmentainer_end_ : 1;
 };
 
 }  // namespace blink

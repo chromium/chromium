@@ -4,7 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-edge">
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-box-trim">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5335#issuecomment-1908655635">
-<link rel="match" href="text-box-trim-multicol-002-ref.html">
+<link rel="match" href="text-box-trim-multicol-005-ref.html">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .spacer {
@@ -15,8 +15,9 @@
   column-count: 3;
   column-fill: auto;
   border: 1px solid;
-  height: 360px;
+  height: 290px;
   width: 20ch;
+  text-box-trim: trim-both;
   font-family: Ahem;
   font-size: 40px;
   line-height: 2;
@@ -24,7 +25,7 @@
   widows: 1;
 }
 .trim {
-  text-box-trim: trim-both;
+  text-box-trim: trim-end;
   text-box-edge: text;
 }
 </style>
@@ -32,7 +33,6 @@
   <div class="trim">
     abc abc abc abc
     abc abc abc abc
-    abc abc
   </div>
   <div class="spacer"></div>
 </div>
