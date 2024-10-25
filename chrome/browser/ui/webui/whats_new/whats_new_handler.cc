@@ -206,14 +206,22 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   // Look for a survey override associated with any editions that we
   // requested from the server.
   const auto survey_override = whats_new_registry_->GetActiveEditionSurvey();
-  auto trigger_id = survey_override.has_value() ? survey_override.value()
-                                                : kHatsSurveyTriggerWhatsNew;
-
-  hats_service->LaunchDelayedSurveyForWebContents(
-      trigger_id, web_contents_,
-      features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
-          .InMilliseconds(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/{},
-      /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+  if (survey_override.has_value()) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerWhatsNew, web_contents_,
+        features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
+            .InMilliseconds(),
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN,
+        base::DoNothing(), base::DoNothing(), survey_override.value());
+  } else {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerWhatsNew, web_contents_,
+        features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
+            .InMilliseconds(),
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
+  }
 }
