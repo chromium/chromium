@@ -3952,12 +3952,12 @@ public class StripLayoutHelperTest {
         // Verify.
         assertEquals(
                 "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
-        assertEquals(
-                "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
+        assertNotEquals(
+                "Should be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
         assertEquals(
                 "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
-        assertNotEquals(
-                "Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
+        assertEquals(
+                "Should not be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
     }
 
     @Test
