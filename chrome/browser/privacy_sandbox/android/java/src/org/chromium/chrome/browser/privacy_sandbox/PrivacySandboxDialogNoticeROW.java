@@ -150,7 +150,6 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
                     R.string.privacy_sandbox_m1_notice_row_learn_more_expand_label);
             view.announceForAccessibility(
                     getContext()
-                            .getResources()
                             .getString(
                                     isDropdownExpanded()
                                             ? R.string.accessibility_expanded_group

@@ -34,7 +34,6 @@ class FooterItemViewBinder {
                     view.getContext().getString(model.get(LABEL))
                             + ", "
                             + view.getContext()
-                                    .getResources()
                                     .getString(
                                             R.string
                                                     .fast_checkout_detail_screen_non_selected_description));

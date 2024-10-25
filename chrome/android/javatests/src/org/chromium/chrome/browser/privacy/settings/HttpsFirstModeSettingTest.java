@@ -59,7 +59,6 @@ public class HttpsFirstModeSettingTest {
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
         final String unlockedSummaryText =
                 ApplicationProvider.getApplicationContext()
-                        .getResources()
                         .getString(R.string.settings_https_first_mode_summary);
 
         Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);
@@ -80,7 +79,6 @@ public class HttpsFirstModeSettingTest {
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
         final String lockedSummaryText =
                 ApplicationProvider.getApplicationContext()
-                        .getResources()
                         .getString(
                                 R.string
                                         .settings_https_first_mode_with_advanced_protection_summary);

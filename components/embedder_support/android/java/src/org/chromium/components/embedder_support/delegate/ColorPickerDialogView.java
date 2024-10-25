@@ -119,9 +119,7 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
                                 AccessibilityNodeInfo.CollectionInfo.obtain(
                                         adapter.getCount(), 1, false, SELECTION_MODE_SINGLE));
                         info.setText(
-                                getContext()
-                                        .getResources()
-                                        .getString(R.string.color_picker_button_suggestions));
+                                getContext().getString(R.string.color_picker_button_suggestions));
                         info.setClassName(ListView.class.getName());
                     }
                 });

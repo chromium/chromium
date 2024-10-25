@@ -393,9 +393,7 @@ public class StatusView extends LinearLayout {
                         if (mAccessibilityDoubleTapDescription == 0) return;
 
                         String onTapDescription =
-                                getContext()
-                                        .getResources()
-                                        .getString(mAccessibilityDoubleTapDescription);
+                                getContext().getString(mAccessibilityDoubleTapDescription);
                         info.addAction(
                                 new AccessibilityAction(
                                         AccessibilityNodeInfo.ACTION_CLICK, onTapDescription));

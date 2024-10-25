@@ -70,22 +70,16 @@ class OutdatedGmsCoreDialog {
                         .with(ModalDialogProperties.CONTROLLER, modalDialogController)
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .password_manager_outdated_gms_dialog_description))
+                                mContext.getString(
+                                        R.string.password_manager_outdated_gms_dialog_description))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .password_manager_outdated_gms_positive_button))
+                                mContext.getString(
+                                        R.string.password_manager_outdated_gms_positive_button))
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .password_manager_outdated_gms_negative_button))
+                                mContext.getString(
+                                        R.string.password_manager_outdated_gms_negative_button))
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)

@@ -68,18 +68,16 @@ public class PrivacySandboxDialogUtils {
         String dropdownButtonText = context.getString(stringRes);
 
         String collapseOrExpandedText =
-                context.getResources()
-                        .getString(
-                                isDropdownExpanded
-                                        ? R.string.accessibility_expanded_group
-                                        : R.string.accessibility_collapsed_group);
+                context.getString(
+                        isDropdownExpanded
+                                ? R.string.accessibility_expanded_group
+                                : R.string.accessibility_collapsed_group);
 
         String description =
-                context.getResources()
-                        .getString(
-                                R.string.concat_two_strings_with_periods,
-                                dropdownButtonText,
-                                collapseOrExpandedText);
+                context.getString(
+                        R.string.concat_two_strings_with_periods,
+                        dropdownButtonText,
+                        collapseOrExpandedText);
         dropdownElement.setContentDescription(description);
     }
 

@@ -90,9 +90,7 @@ class OtpVerificationDialogCoordinator {
         title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
         title_view_stub.inflate();
         TextView titleView = (TextView) mDialogView.findViewById(R.id.title);
-        titleView.setText(
-                mContext.getResources()
-                        .getString(R.string.autofill_card_unmask_otp_input_dialog_title));
+        titleView.setText(mContext.getString(R.string.autofill_card_unmask_otp_input_dialog_title));
         ImageView iconView = (ImageView) mDialogView.findViewById(R.id.title_icon);
         iconView.setImageResource(R.drawable.google_pay);
 
@@ -150,11 +148,9 @@ class OtpVerificationDialogCoordinator {
                 .with(OTP_LENGTH, otpLength)
                 .with(
                         EDIT_TEXT_HINT,
-                        mContext.getResources()
-                                .getString(
-                                        R.string
-                                                .autofill_payments_otp_verification_dialog_otp_input_hint,
-                                        otpLength))
+                        mContext.getString(
+                                R.string.autofill_payments_otp_verification_dialog_otp_input_hint,
+                                otpLength))
                 .build();
     }
 
@@ -169,16 +165,14 @@ class OtpVerificationDialogCoordinator {
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                 .with(
                         ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                        mContext.getResources()
-                                .getString(
-                                        org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                                .autofill_payments_otp_verification_dialog_negative_button_label))
+                        mContext.getString(
+                                org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                        .autofill_payments_otp_verification_dialog_negative_button_label))
                 .with(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                        mContext.getResources()
-                                .getString(
-                                        org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                                .autofill_payments_otp_verification_dialog_positive_button_label))
+                        mContext.getString(
+                                org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                        .autofill_payments_otp_verification_dialog_positive_button_label))
                 .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
                 .with(
                         ModalDialogProperties.BUTTON_STYLES,

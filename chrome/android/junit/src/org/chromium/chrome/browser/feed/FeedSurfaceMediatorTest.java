@@ -381,8 +381,7 @@ public class FeedSurfaceMediatorTest {
                 model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                         .get(0)
                         .get(SectionHeaderProperties.HEADER_TEXT_KEY),
-                mContext.getResources()
-                        .getString(R.string.supervised_user_ntp_discover_on_branded));
+                mContext.getString(R.string.supervised_user_ntp_discover_on_branded));
     }
 
     @Test
@@ -402,8 +401,7 @@ public class FeedSurfaceMediatorTest {
                 model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                         .get(0)
                         .get(SectionHeaderProperties.HEADER_TEXT_KEY),
-                mContext.getResources()
-                        .getString(R.string.supervised_user_ntp_discover_off_branded));
+                mContext.getString(R.string.supervised_user_ntp_discover_off_branded));
     }
 
     @Test

@@ -165,8 +165,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(SafetyHubMagicStackViewProperties.TITLE, title);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
         mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(
@@ -189,13 +188,11 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(
                 SafetyHubMagicStackViewProperties.TITLE,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_notifications_title));
+                mContext.getString(R.string.safety_hub_magic_stack_notifications_title));
         mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
         mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(
@@ -219,13 +216,11 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(
                 SafetyHubMagicStackViewProperties.TITLE,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_browsing_title));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_title));
         mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
         mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(
@@ -251,13 +246,11 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(
                 SafetyHubMagicStackViewProperties.TITLE,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
         mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
         mModel.set(
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(

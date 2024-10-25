@@ -116,10 +116,8 @@ public class PriceInsightsBottomSheetMediator {
     private void updatePriceTrackingButtonIneligible() {
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(
-                                R.string
-                                        .price_insights_content_price_tracking_disabled_button_text));
+                mContext.getString(
+                        R.string.price_insights_content_price_tracking_disabled_button_text));
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_ICON,
                 R.drawable.price_insights_sheet_price_tracking_button_disabled);

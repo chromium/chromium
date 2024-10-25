@@ -667,9 +667,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void ensureCaption() {
         if (getSearchBarControl().hasCaption()) return;
         getSearchBarControl()
-                .setCaption(
-                        mContext.getResources()
-                                .getString(R.string.contextual_search_default_caption));
+                .setCaption(mContext.getString(R.string.contextual_search_default_caption));
     }
 
     /** Hides the caption. */

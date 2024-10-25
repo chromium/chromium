@@ -369,7 +369,6 @@ public class FastCheckoutDetailScreenViewTest {
                 getTextFromListItemWithId(1, R.id.fast_checkout_add_new_item_label),
                 equalTo(
                         mView.getContext()
-                                .getResources()
                                 .getString(
                                         R.string
                                                 .fast_checkout_detail_screen_add_autofill_profile_text)));

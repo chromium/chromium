@@ -473,11 +473,10 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         // cases it looks less broken to show 0 instead of -1 (as desktop does).
         Context context = getContext();
         String text =
-                context.getResources()
-                        .getString(
-                                R.string.find_in_page_count,
-                                Math.max(result.activeMatchOrdinal, 0),
-                                result.numberOfMatches);
+                context.getString(
+                        R.string.find_in_page_count,
+                        Math.max(result.activeMatchOrdinal, 0),
+                        result.numberOfMatches);
         setStatus(text, result.numberOfMatches == 0);
 
         setPrevNextEnabled(result.numberOfMatches > 0);
@@ -511,11 +510,8 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     private String getAccessibleStatusText(int activeMatchOrdinal, int numberOfMatches) {
         Context context = getContext();
         return (numberOfMatches > 0)
-                ? context.getResources()
-                        .getString(
-                                R.string.accessible_find_in_page_count,
-                                activeMatchOrdinal,
-                                numberOfMatches)
+                ? context.getString(
+                        R.string.accessible_find_in_page_count, activeMatchOrdinal, numberOfMatches)
                 : context.getString(R.string.accessible_find_in_page_no_results);
     }
 

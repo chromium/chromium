@@ -98,8 +98,7 @@ public class ImprovedBookmarkRowCoordinator {
                         String.format(
                                 "%s %s",
                                 contentDescription,
-                                mContext.getResources()
-                                        .getString(R.string.local_bookmarks_section_header));
+                                mContext.getString(R.string.local_bookmarks_section_header));
             }
             propertyModel.set(
                     ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION, contentDescription);

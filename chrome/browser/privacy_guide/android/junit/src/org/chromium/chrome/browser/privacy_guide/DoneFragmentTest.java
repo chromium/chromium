@@ -167,7 +167,6 @@ public class DoneFragmentTest {
 
         String privacySandboxDescriptionAdTopicsString =
                 ApplicationProvider.getApplicationContext()
-                        .getResources()
                         .getString(R.string.privacy_guide_privacy_sandbox_description_ad_topics);
         assertEquals(mPrivacySandboxDescriptionText, privacySandboxDescriptionAdTopicsString);
     }
@@ -180,7 +179,6 @@ public class DoneFragmentTest {
 
         String privacySandboxDescriptionString =
                 ApplicationProvider.getApplicationContext()
-                        .getResources()
                         .getString(R.string.privacy_guide_privacy_sandbox_description);
         assertEquals(mPrivacySandboxDescriptionText, privacySandboxDescriptionString);
     }

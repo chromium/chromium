@@ -1811,9 +1811,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
             ContentView cv = ContentView.createContentView(mThemedApplicationContext, webContents);
             cv.setContentDescription(
-                    mThemedApplicationContext
-                            .getResources()
-                            .getString(R.string.accessibility_content_view));
+                    mThemedApplicationContext.getString(R.string.accessibility_content_view));
             mContentView = cv;
             webContents.setDelegates(
                     PRODUCT_VERSION,

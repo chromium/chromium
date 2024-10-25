@@ -747,12 +747,10 @@ public class PickerVideoPlayer extends FrameLayout
         }
 
         String formattedProgress =
-                mContext.getResources()
-                        .getString(R.string.photo_picker_video_duration, current, total);
+                mContext.getString(R.string.photo_picker_video_duration, current, total);
         mRemainingTime.setText(formattedProgress);
         mRemainingTime.setContentDescription(
-                mContext.getResources()
-                        .getString(R.string.accessibility_playback_time, current, total));
+                mContext.getString(R.string.accessibility_playback_time, current, total));
         int percentage =
                 mVideoView.getDuration() == 0
                         ? 0

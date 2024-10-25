@@ -70,7 +70,6 @@ public class PriceInsightsBottomSheetViewBinder {
                     AccessibilityActionCompat.ACTION_CLICK,
                     priceTrackingButton
                             .getContext()
-                            .getResources()
                             .getString(
                                     R.string
                                             .price_insights_content_price_tracking_button_action_description),

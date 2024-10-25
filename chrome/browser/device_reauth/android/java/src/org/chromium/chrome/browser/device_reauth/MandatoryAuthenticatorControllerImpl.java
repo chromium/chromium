@@ -150,8 +150,7 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
         BiometricPrompt.Builder promptBuilder =
                 new BiometricPrompt.Builder(mContext)
                         .setTitle(
-                                mContext.getResources()
-                                        .getString(R.string.password_filling_reauth_prompt_title));
+                                mContext.getString(R.string.password_filling_reauth_prompt_title));
         if (availability == BiometricsAvailability.REQUIRED) {
             promptBuilder.setAllowedAuthenticators(AUTHENTICATOR_MANDATORY_BIOMETRICS);
         }

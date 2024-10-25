@@ -102,8 +102,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
                             mContext, merchantInfo, MessageDescriptionUI.RATING_AND_REVIEWS);
             if (subTitle != null) return subTitle;
         } else if (merchantInfo.hasReturnPolicy) {
-            return mContext.getResources()
-                    .getString(R.string.page_info_store_info_description_with_no_rating);
+            return mContext.getString(R.string.page_info_store_info_description_with_no_rating);
         }
         assert false : "Invalid trust signal";
         return "";

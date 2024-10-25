@@ -305,11 +305,9 @@ public class SyncPromoController {
                         (context, profileData) -> {
                             if (ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                                return context.getResources()
-                                        .getString(R.string.signin_promo_turn_on);
+                                return context.getString(R.string.signin_promo_turn_on);
                             }
-                            return context.getResources()
-                                    .getString(R.string.sync_promo_turn_on_sync);
+                            return context.getString(R.string.sync_promo_turn_on_sync);
                         };
                 break;
             case SigninAccessPoint.SETTINGS:
@@ -331,8 +329,7 @@ public class SyncPromoController {
                                     IdentityServicesProvider.get().getIdentityManager(mProfile);
                             if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                                     || profileData == null) {
-                                return context.getResources()
-                                        .getString(R.string.sync_promo_turn_on_sync);
+                                return context.getString(R.string.sync_promo_turn_on_sync);
                             }
                             return SigninUtils.getContinueAsButtonText(context, profileData);
                         };

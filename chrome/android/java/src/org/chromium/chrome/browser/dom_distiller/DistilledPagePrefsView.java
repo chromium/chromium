@@ -269,7 +269,6 @@ public class DistilledPagePrefsView extends LinearLayout
         // the scaling percent. For previous versions the SeekBar percentage is always announced.
         String userFriendlyFontDescription =
                 getContext()
-                        .getResources()
                         .getString(
                                 R.string.font_size_accessibility_label,
                                 mPercentageFormatter.format(newValue));

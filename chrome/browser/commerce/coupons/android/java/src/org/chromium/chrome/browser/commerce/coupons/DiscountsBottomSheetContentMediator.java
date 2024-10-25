@@ -73,8 +73,7 @@ public class DiscountsBottomSheetContentMediator {
                             .with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec))
                             .with(
                                     COPY_BUTTON_TEXT,
-                                    mContext.getResources()
-                                            .getString(R.string.discount_code_copy_button_text))
+                                    mContext.getString(R.string.discount_code_copy_button_text))
                             .build();
             propertyModel.set(
                     COPY_BUTTON_ON_CLICK_LISTENER, createCopyButtonOnClickListener(propertyModel));
@@ -87,8 +86,7 @@ public class DiscountsBottomSheetContentMediator {
         String expiryTime =
                 new SimpleDateFormat("MM/dd/yyyy", locale)
                         .format(new Date(Double.valueOf(expiryTimeSec * 1000).longValue()));
-        return mContext.getResources()
-                .getString(R.string.discount_expiration_date_android, expiryTime);
+        return mContext.getString(R.string.discount_expiration_date_android, expiryTime);
     }
 
     private OnClickListener createCopyButtonOnClickListener(PropertyModel propertyModel) {
@@ -111,8 +109,7 @@ public class DiscountsBottomSheetContentMediator {
                     .model
                     .set(
                             COPY_BUTTON_TEXT,
-                            mContext.getResources()
-                                    .getString(R.string.discount_code_copy_button_text));
+                            mContext.getString(R.string.discount_code_copy_button_text));
         }
     }
 }

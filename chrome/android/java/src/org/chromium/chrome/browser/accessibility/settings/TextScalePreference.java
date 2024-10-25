@@ -10,10 +10,11 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import org.chromium.chrome.R;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
+
+import org.chromium.chrome.R;
 
 import java.text.NumberFormat;
 
@@ -81,7 +82,6 @@ public class TextScalePreference extends Preference implements SeekBar.OnSeekBar
         // the scaling percent. For previous versions the SeekBar percentage is always announced.
         String userFriendlyFontDescription =
                 getContext()
-                        .getResources()
                         .getString(
                                 R.string.font_size_accessibility_label,
                                 mFormat.format(mUserFontScaleFactor));

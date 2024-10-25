@@ -93,19 +93,18 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
         switch (authenticatorOptionType) {
             case CardUnmaskChallengeOptionType.SMS_OTP:
             case CardUnmaskChallengeOptionType.EMAIL_OTP:
-                return mContext.getResources()
-                        .getString(
-                                R.string
-                                        .autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
+                return mContext.getString(
+                        R.string
+                                .autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
             case CardUnmaskChallengeOptionType.CVC:
-                return mContext.getResources()
-                        .getString(
-                                R.string
-                                        .autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
+                return mContext.getString(
+                        R.string
+                                .autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
             case CardUnmaskChallengeOptionType.UNKNOWN_TYPE:
                 // This will never happen.
                 assert false
-                        : "Attempted to get positive button text for an authenticator option with Unknown type.";
+                        : "Attempted to get positive button text for an authenticator option with"
+                                + " Unknown type.";
         }
         return "";
     }
@@ -123,12 +122,11 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                         .inflate(R.layout.authenticator_selection_dialog, null);
 
         String title =
-                mContext.getResources()
-                        .getString(
-                                authenticatorOptions.size() > 1
-                                        ? R.string
-                                                .autofill_card_auth_selection_dialog_title_multiple_options
-                                        : R.string.autofill_card_unmask_verification_title);
+                mContext.getString(
+                        authenticatorOptions.size() > 1
+                                ? R.string
+                                        .autofill_card_auth_selection_dialog_title_multiple_options
+                                : R.string.autofill_card_unmask_verification_title);
         ViewStub title_view_stub =
                 mAuthenticatorSelectionDialogView.findViewById(R.id.title_with_icon_stub);
         title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
@@ -160,10 +158,9 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                         .with(ModalDialogProperties.CUSTOM_VIEW, mAuthenticatorSelectionDialogView)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .autofill_payments_authenticator_selection_dialog_negative_button_label))
+                                mContext.getString(
+                                        R.string
+                                                .autofill_payments_authenticator_selection_dialog_negative_button_label))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 getPositiveButtonText(mSelectedAuthenticatorOption.getType()))

@@ -210,8 +210,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         String speedString = SpeedMenuSheetContent.speedFormatter(speed);
         mSpeedButton.setText(mContext.getString(R.string.readaloud_speed, speedString));
         mSpeedButton.setContentDescription(
-                mContext.getResources()
-                        .getString(R.string.readaloud_speed_menu_button, speedString));
+                mContext.getString(R.string.readaloud_speed_menu_button, speedString));
     }
 
     void setHighlightingSupported(boolean supported) {

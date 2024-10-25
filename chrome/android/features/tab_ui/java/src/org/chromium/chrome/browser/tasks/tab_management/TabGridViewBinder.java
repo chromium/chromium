@@ -335,11 +335,10 @@ class TabGridViewBinder {
 
             TextResolver contentDescriptionResolver =
                     (context) -> {
-                        return context.getResources()
-                                .getString(
-                                        R.string.accessibility_tab_price_card,
-                                        priceDrop.previousPrice,
-                                        priceDrop.price);
+                        return context.getString(
+                                R.string.accessibility_tab_price_card,
+                                priceDrop.previousPrice,
+                                priceDrop.price);
                     };
             PriceDropTextResolver priceDropResolver =
                     new PriceDropTextResolver(priceDrop.price, priceDrop.previousPrice);

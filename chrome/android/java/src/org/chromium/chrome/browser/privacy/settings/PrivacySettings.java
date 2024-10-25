@@ -190,7 +190,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         if (new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection()) {
             httpsFirstModePref.setSummary(
                     getContext()
-                            .getResources()
                             .getString(
                                     R.string
                                             .settings_https_first_mode_with_advanced_protection_summary));

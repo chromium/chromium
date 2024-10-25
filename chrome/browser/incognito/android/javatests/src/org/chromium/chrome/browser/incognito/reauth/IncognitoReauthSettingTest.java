@@ -72,7 +72,6 @@ public class IncognitoReauthSettingTest {
         intending(anyIntent()).respondWith(result);
         String summaryText =
                 ApplicationProvider.getApplicationContext()
-                        .getResources()
                         .getString(
                                 R.string.settings_incognito_tab_lock_summary_android_setting_off);
         summaryText = summaryText.replaceAll("</?link>", "");

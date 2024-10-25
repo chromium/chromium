@@ -227,10 +227,7 @@ public class ManagedPreferencesUtils {
         button.setImageDrawable(getManagedIconDrawable(delegate, preference));
         if (delegate.isPreferenceControlledByPolicy(preference)) {
             button.setContentDescription(
-                    preference
-                            .getContext()
-                            .getResources()
-                            .getString(R.string.managed_by_your_organization));
+                    preference.getContext().getString(R.string.managed_by_your_organization));
         }
         button.setOnClickListener(
                 (View v) -> {

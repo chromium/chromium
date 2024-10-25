@@ -143,8 +143,7 @@ public class PwaBottomSheetController
             view.setAdjustViewBounds(true);
             view.setImageBitmap(bitmap);
             view.setContentDescription(
-                    mContext.getResources()
-                            .getString(R.string.pwa_install_bottom_sheet_screenshot));
+                    mContext.getString(R.string.pwa_install_bottom_sheet_screenshot));
             view.setOnClickListener(
                     v -> {
                         final ImageZoomView dialog = new ImageZoomView(mContext, bitmap);

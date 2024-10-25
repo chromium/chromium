@@ -133,9 +133,7 @@ public class IncognitoDescriptionView extends LinearLayout {
             return;
         }
 
-        String text =
-                context.getResources()
-                        .getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
+        String text = context.getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
         ClickableSpan span =
                 new ClickableSpan() {
                     @Override
@@ -353,9 +351,7 @@ public class IncognitoDescriptionView extends LinearLayout {
     /** Adjust the "Learn More" link. */
     private void adjustLearnMore() {
         final String subtitleText =
-                getContext()
-                        .getResources()
-                        .getString(R.string.new_tab_otr_subtitle_with_reading_list);
+                getContext().getString(R.string.new_tab_otr_subtitle_with_reading_list);
 
         final ClickableSpan learnMoreSpan =
                 new ClickableSpan() {

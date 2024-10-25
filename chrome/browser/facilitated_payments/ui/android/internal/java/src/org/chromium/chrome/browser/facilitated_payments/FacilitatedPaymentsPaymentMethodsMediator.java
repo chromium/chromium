@@ -276,18 +276,15 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
     @VisibleForTesting
     static String getBankAccountSummaryString(Context context, BankAccount bankAccount) {
-        return context.getResources()
-                .getString(
-                        R.string.settings_pix_bank_account_identifer,
-                        getBankAccountTypeString(context, bankAccount.getAccountType()),
-                        bankAccount.getAccountNumberSuffix());
+        return context.getString(
+                R.string.settings_pix_bank_account_identifer,
+                getBankAccountTypeString(context, bankAccount.getAccountType()),
+                bankAccount.getAccountNumberSuffix());
     }
 
     static String getBankAccountTransactionLimit(Context context) {
-        return context.getResources()
-                .getString(
-                        R.string.pix_bank_account_transaction_limit,
-                        PIX_BANK_ACCOUNT_TRANSACTION_LIMIT);
+        return context.getString(
+                R.string.pix_bank_account_transaction_limit, PIX_BANK_ACCOUNT_TRANSACTION_LIMIT);
     }
 
     @VisibleForTesting

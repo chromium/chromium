@@ -126,13 +126,11 @@ public class SafetyHubMagicStackMediatorTest {
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_browsing_title));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_title));
         assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_browsing_button_text));
         assertEquals(
                 shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
                         .getCreatedFromResId(),
@@ -163,8 +161,7 @@ public class SafetyHubMagicStackMediatorTest {
         assertNull(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
         assertEquals(
                 shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
                         .getCreatedFromResId(),
@@ -191,13 +188,11 @@ public class SafetyHubMagicStackMediatorTest {
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_notifications_title));
+                mContext.getString(R.string.safety_hub_magic_stack_notifications_title));
         assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+                mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
         assertEquals(
                 shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
                         .getCreatedFromResId(),
@@ -223,13 +218,11 @@ public class SafetyHubMagicStackMediatorTest {
                 mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
         assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+                mContext.getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
         assertEquals(
                 shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
                         .getCreatedFromResId(),

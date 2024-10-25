@@ -143,13 +143,12 @@ public class LanguageItem {
 
     /**
      * Create a LanguageItem representing the system default language.
+     *
      * @return LanguageItem
      */
     public static LanguageItem makeFollowSystemLanguageItem() {
         String displayName =
-                ContextUtils.getApplicationContext()
-                        .getResources()
-                        .getString(R.string.default_lang_subtitle);
+                ContextUtils.getApplicationContext().getString(R.string.default_lang_subtitle);
         String nativeName =
                 GlobalAppLocaleController.getInstance()
                         .getOriginalSystemLocale()

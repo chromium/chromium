@@ -32,8 +32,7 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
         float currentSpeed = mModel.get(PlayerProperties.SPEED);
         for (int i = 0; i < mSpeeds.length; i++) {
             String speedString =
-                    mContext.getResources()
-                            .getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
+                    mContext.getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
             MenuItem item =
                     mMenu.addItem(i, 0, speedString, /* header= */ null, MenuItem.Action.RADIO);
             if (mSpeeds[i] == currentSpeed) {

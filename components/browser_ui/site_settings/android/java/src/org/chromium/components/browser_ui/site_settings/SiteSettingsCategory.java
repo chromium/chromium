@@ -584,10 +584,8 @@ public class SiteSettingsCategory {
         } else if (type == ContentSettingsType.NOTIFICATIONS) {
             permission_string = R.string.android_notifications_permission_off;
         }
-        return context.getResources()
-                .getString(
-                        plural ? R.string.android_permission_off_plural : permission_string,
-                        appName);
+        return context.getString(
+                plural ? R.string.android_permission_off_plural : permission_string, appName);
     }
 
     /** Returns the message to display when per-app permission is blocked. */

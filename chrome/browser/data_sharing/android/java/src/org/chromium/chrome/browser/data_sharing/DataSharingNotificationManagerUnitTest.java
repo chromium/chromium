@@ -76,10 +76,8 @@ public class DataSharingNotificationManagerUnitTest {
 
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);
         String placeHolderText =
-                mContext.getResources()
-                        .getString(
-                                R.string.data_sharing_invitation_notification_title,
-                                originFallback);
+                mContext.getString(
+                        R.string.data_sharing_invitation_notification_title, originFallback);
         assertFalse(shadowNotification.isWhenShown());
         assertEquals(placeHolderText, shadowNotification.getContentTitle());
     }

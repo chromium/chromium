@@ -223,10 +223,8 @@ public class TabListEditorShareAction extends TabListEditorAction {
                     drawable.draw(canvas);
 
                     ShareImageFileUtils.generateTemporaryUriFromBitmap(
-                            mContext.getResources()
-                                    .getString(
-                                            R.string
-                                                    .tab_selection_editor_share_sheet_preview_thumbnail),
+                            mContext.getString(
+                                    R.string.tab_selection_editor_share_sheet_preview_thumbnail),
                             bitmap,
                             uri -> {
                                 bitmap.recycle();

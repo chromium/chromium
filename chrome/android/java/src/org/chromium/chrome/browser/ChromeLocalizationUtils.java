@@ -84,19 +84,16 @@ public class ChromeLocalizationUtils {
 
     /**
      * @return the current Chromium locale used to display UI elements.
-     *
-     * This matches what the Android framework resolves localized string resources to, using the
-     * system locale and the application's resources. For example, if the system uses a locale
-     * that is not supported by Chromium resources (e.g. 'fur-rIT'), Android will likely fallback
-     * to 'en-rUS' strings when Resources.getString() is called, and this method will return the
-     * matching Chromium name (i.e. 'en-US').
-     *
-     * Using this value is necessary to ensure that the strings accessed from the locale .pak files
-     * from C++ match the resources displayed by the Java-based UI views.
+     *     <p>This matches what the Android framework resolves localized string resources to, using
+     *     the system locale and the application's resources. For example, if the system uses a
+     *     locale that is not supported by Chromium resources (e.g. 'fur-rIT'), Android will likely
+     *     fallback to 'en-rUS' strings when Resources.getString() is called, and this method will
+     *     return the matching Chromium name (i.e. 'en-US').
+     *     <p>Using this value is necessary to ensure that the strings accessed from the locale .pak
+     *     files from C++ match the resources displayed by the Java-based UI views.
      */
     public static String getJavaUiLocale() {
         return ContextUtils.getApplicationContext()
-                .getResources()
                 .getString(R.string.current_detected_ui_locale_name);
     }
 
@@ -104,13 +101,13 @@ public class ChromeLocalizationUtils {
      * Records the status of the current UI language under "LanguageUsage.UI.Android.*". Tracks if
      * the Android system language is available and if the Chromium UI language is correct.
      *
-     * On N+ both the top Android language and default Android language are checked for
+     * <p>On N+ both the top Android language and default Android language are checked for
      * availability. The default language is the one used by the JVM for localization. These will be
      * different if the top Android is not available for localization in Chromium. Otherwise they
      * are the same.
      *
-     * For correctness both the Java and native UI languages are checked. These can be different if
-     * an override language is set and Play Store hygiene has not run.
+     * <p>For correctness both the Java and native UI languages are checked. These can be different
+     * if an override language is set and Play Store hygiene has not run.
      */
     public static void recordUiLanguageStatus() {
         String defaultLanguage = LocaleUtils.toBaseLanguage(Locale.getDefault().toLanguageTag());

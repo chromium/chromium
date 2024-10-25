@@ -78,11 +78,9 @@ public class HomeScreenViewBinder {
             view.mAcceptButton.setOnClickListener(
                     (v) -> {
                         view.mAcceptButton.announceForAccessibility(
-                                view.mContext
-                                        .getResources()
-                                        .getString(
-                                                R.string
-                                                        .fast_checkout_home_sheet_accept_button_clicked_description));
+                                view.mContext.getString(
+                                        R.string
+                                                .fast_checkout_home_sheet_accept_button_clicked_description));
                         delegate.onOptionsAccepted();
                     });
         } else if (propertyKey == SELECTED_PROFILE) {

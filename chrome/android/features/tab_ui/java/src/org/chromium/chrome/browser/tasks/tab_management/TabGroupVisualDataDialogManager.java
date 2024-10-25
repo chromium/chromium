@@ -267,20 +267,17 @@ public class TabGroupVisualDataDialogManager {
         if (mDialogType == DialogType.TAB_GROUP_CREATION) {
             builder.with(
                             ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                            mContext.getResources()
-                                    .getString(R.string.tab_group_creation_positive_button_text))
+                            mContext.getString(R.string.tab_group_creation_positive_button_text))
                     .with(
                             ModalDialogProperties.BUTTON_STYLES,
                             ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE);
         } else if (mDialogType == DialogType.TAB_GROUP_EDIT) {
             builder.with(
                             ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                            mContext.getResources()
-                                    .getString(R.string.tab_group_rename_positive_button_text))
+                            mContext.getString(R.string.tab_group_rename_positive_button_text))
                     .with(
                             ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                            mContext.getResources()
-                                    .getString(R.string.tab_group_rename_negative_button_text))
+                            mContext.getString(R.string.tab_group_rename_negative_button_text))
                     .with(
                             ModalDialogProperties.BUTTON_STYLES,
                             ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);

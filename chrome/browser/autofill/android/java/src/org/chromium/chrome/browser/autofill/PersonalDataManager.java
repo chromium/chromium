@@ -289,12 +289,10 @@ public class PersonalDataManager implements Destroyable {
         }
 
         public String getFormattedExpirationDateWithCvcSavedMessage(Context context) {
-            return context.getResources()
-                    .getString(
-                            R.string.autofill_settings_page_summary_separated_by_pipe,
-                            getFormattedExpirationDate(context),
-                            context.getResources()
-                                    .getString(R.string.autofill_settings_page_cvc_saved_label));
+            return context.getString(
+                    R.string.autofill_settings_page_summary_separated_by_pipe,
+                    getFormattedExpirationDate(context),
+                    context.getString(R.string.autofill_settings_page_cvc_saved_label));
         }
 
         @CalledByNative("CreditCard")

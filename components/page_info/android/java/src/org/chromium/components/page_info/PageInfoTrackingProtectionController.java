@@ -59,7 +59,6 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         mFullUrl = mainController.getURL().getSpec();
         mTitle =
                 mRowView.getContext()
-                        .getResources()
                         .getString(
                                 delegate.shouldShowTrackingProtectionBrandedUI()
                                         ? R.string.page_info_tracking_protection_title

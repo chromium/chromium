@@ -209,7 +209,6 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                     R.string.privacy_sandbox_m1_consent_learn_more_expand_label);
             view.announceForAccessibility(
                     getContext()
-                            .getResources()
                             .getString(
                                     isDropdownExpanded()
                                             ? R.string.accessibility_expanded_group
@@ -231,7 +230,6 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             mLearnMoreText.setText(
                     SpanApplier.applySpans(
                             getContext()
-                                    .getResources()
                                     .getString(
                                             R.string.privacy_sandbox_m1_notice_learn_more_v2_clank),
                             new SpanApplier.SpanInfo(

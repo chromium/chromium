@@ -236,10 +236,8 @@ public class BaseSuggestionProcessorUnitTest {
         var action = actions.get(0);
 
         var expectedDescription =
-                mContext.getResources()
-                        .getString(
-                                R.string.accessibility_omnibox_btn_refine,
-                                mSuggestion.getFillIntoEdit());
+                mContext.getString(
+                        R.string.accessibility_omnibox_btn_refine, mSuggestion.getFillIntoEdit());
         Assert.assertEquals(expectedDescription, action.accessibilityDescription);
         Assert.assertEquals(
                 R.drawable.btn_suggestion_refine,
@@ -267,10 +265,8 @@ public class BaseSuggestionProcessorUnitTest {
         var action = actions.get(0);
 
         var expectedDescription =
-                mContext.getResources()
-                        .getString(
-                                R.string.accessibility_omnibox_btn_refine,
-                                mSuggestion.getFillIntoEdit());
+                mContext.getString(
+                        R.string.accessibility_omnibox_btn_refine, mSuggestion.getFillIntoEdit());
         Assert.assertEquals(expectedDescription, action.accessibilityDescription);
         Assert.assertEquals(
                 R.drawable.btn_suggestion_refine,
@@ -320,10 +316,9 @@ public class BaseSuggestionProcessorUnitTest {
         var action = actions.get(0);
 
         var expectedDescription =
-                mContext.getResources()
-                        .getString(
-                                R.string.accessibility_omnibox_switch_to_tab,
-                                mSuggestion.getFillIntoEdit());
+                mContext.getString(
+                        R.string.accessibility_omnibox_switch_to_tab,
+                        mSuggestion.getFillIntoEdit());
         Assert.assertEquals(expectedDescription, action.accessibilityDescription);
         Assert.assertEquals(
                 R.drawable.switch_to_tab, shadowOf(action.icon.drawable).getCreatedFromResId());

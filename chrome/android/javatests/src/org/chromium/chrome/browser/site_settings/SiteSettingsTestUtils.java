@@ -58,8 +58,8 @@ public class SiteSettingsTestUtils {
                         () -> {
                             Context context =
                                     InstrumentationRegistry.getInstrumentation().getContext();
-                            return context.getResources()
-                                    .getString(ContentSettingsResources.getTitleForCategory(type));
+                            return context.getString(
+                                    ContentSettingsResources.getTitleForCategory(type));
                         });
         fragmentArgs.putString(SingleCategorySettings.EXTRA_TITLE, title);
         return startSiteSettings(SingleCategorySettings.class, fragmentArgs);

@@ -85,7 +85,6 @@ public class WebApkInstallService {
             boolean isIconMaskable) {
         String message =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_webapk_install_in_progress, shortName);
         if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
@@ -113,8 +112,7 @@ public class WebApkInstallService {
             @WebApkInstallResult int resultCode) {
         Context context = ContextUtils.getApplicationContext();
         String titleMessage =
-                context.getResources()
-                        .getString(R.string.notification_webapk_install_failed, shortName);
+                context.getString(R.string.notification_webapk_install_failed, shortName);
         String contentMessage = getInstallErrorMessage(resultCode);
 
         PendingIntentProvider openUrlIntent =
@@ -202,12 +200,10 @@ public class WebApkInstallService {
         if (resultCode == WebApkInstallResult.NOT_ENOUGH_SPACE) {
             message =
                     ContextUtils.getApplicationContext()
-                            .getResources()
                             .getString(R.string.notification_webapk_install_failed_space);
         } else {
             message =
                     ContextUtils.getApplicationContext()
-                            .getResources()
                             .getString(
                                     R.string.notification_webapk_install_failed_contents_general);
         }

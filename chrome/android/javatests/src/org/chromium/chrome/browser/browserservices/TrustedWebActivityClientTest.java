@@ -176,9 +176,7 @@ public class TrustedWebActivityClientTest {
         Assert.assertEquals(mResponseHandler.mNotificationId, NOTIFICATION_ID);
         Assert.assertEquals(
                 mResponseHandler.mNotificationChannel,
-                mTargetContext
-                        .getResources()
-                        .getString(R.string.notification_category_group_general));
+                mTargetContext.getString(R.string.notification_category_group_general));
     }
 
     private void postNotification() throws TimeoutException {

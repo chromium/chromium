@@ -103,7 +103,6 @@ class AutofillProfileItemViewBinder {
         builder.append(getIfNotEmpty(profile.getPhoneNumber()));
         builder.append(
                 view.getContext()
-                        .getResources()
                         .getString(
                                 isSelected
                                         ? R.string.fast_checkout_detail_screen_selected_description

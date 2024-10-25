@@ -136,13 +136,13 @@ public class TrustedWebActivityClient {
 
     /**
      * Gets the notification permission setting of the TWA for the given origin.
+     *
      * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
     public void checkNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_category_group_general);
 
         connectAndExecute(
@@ -201,13 +201,13 @@ public class TrustedWebActivityClient {
 
     /**
      * Requests notification permission for the TWA for the given url using a dialog.
+     *
      * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
     public void requestNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_category_group_general);
         connectAndExecute(
                 Uri.parse(url),

@@ -665,10 +665,8 @@ public class StripLayoutHelperManager
         mModelSelectorButton.setClickSlop(MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
         mModelSelectorButton.setAccessibilityDescription(
-                context.getResources()
-                        .getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
-                context.getResources()
-                        .getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
+                context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
+                context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
     }
 
     /** Cleans up internal state. */

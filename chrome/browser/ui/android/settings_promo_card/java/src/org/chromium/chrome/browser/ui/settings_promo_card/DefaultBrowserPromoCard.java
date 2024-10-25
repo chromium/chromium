@@ -71,16 +71,13 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
                                 R.drawable.default_browser_promo_illustration))
                 .with(
                         PromoCardProperties.TITLE,
-                        mContext.getResources()
-                                .getString(R.string.default_browser_promo_card_title))
+                        mContext.getString(R.string.default_browser_promo_card_title))
                 .with(
                         PromoCardProperties.DESCRIPTION,
-                        mContext.getResources()
-                                .getString(R.string.default_browser_promo_card_description))
+                        mContext.getString(R.string.default_browser_promo_card_description))
                 .with(
                         PromoCardProperties.PRIMARY_BUTTON_TEXT,
-                        mContext.getResources()
-                                .getString(R.string.default_browser_promo_open_settings_label))
+                        mContext.getString(R.string.default_browser_promo_open_settings_label))
                 .with(PromoCardProperties.BUTTONS_WIDTH, LayoutParams.WRAP_CONTENT)
                 .with(PromoCardProperties.PRIMARY_BUTTON_CALLBACK, this::onPromoClicked)
                 .with(PromoCardProperties.HAS_CLOSE_BUTTON, true)

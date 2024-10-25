@@ -72,21 +72,18 @@ public class ListMenuButton extends ChromeImageButton
     }
 
     /**
-     * Text that represents the item this menu button is related to.  This will affect the content
+     * Text that represents the item this menu button is related to. This will affect the content
      * description of the view {@see #setContentDescription(CharSequence)}.
      *
      * @param context The string representation of the list item this button represents.
      */
     public void setContentDescriptionContext(String context) {
         if (TextUtils.isEmpty(context)) {
-            setContentDescription(
-                    getContext().getResources().getString(R.string.accessibility_toolbar_btn_menu));
+            setContentDescription(getContext().getString(R.string.accessibility_toolbar_btn_menu));
             return;
         }
         setContentDescription(
-                getContext()
-                        .getResources()
-                        .getString(R.string.accessibility_list_menu_button, context));
+                getContext().getString(R.string.accessibility_list_menu_button, context));
     }
 
     /**
@@ -95,7 +92,7 @@ public class ListMenuButton extends ChromeImageButton
      * show or work without the delegate.
      *
      * @param delegate The {@link ListMenuButtonDelegate} to use for menu creation and selection
-     *         handling.
+     *     handling.
      */
     public void setDelegate(ListMenuButtonDelegate delegate) {
         setDelegate(delegate, true);

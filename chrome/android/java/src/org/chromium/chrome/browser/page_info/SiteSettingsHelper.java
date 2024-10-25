@@ -57,8 +57,7 @@ public class SiteSettingsHelper {
                 SiteSettingsCategory.preferenceKey(category));
         extras.putString(
                 SingleCategorySettings.EXTRA_TITLE,
-                context.getResources()
-                        .getString(ContentSettingsResources.getTitleForCategory(category)));
+                context.getString(ContentSettingsResources.getTitleForCategory(category)));
         Intent preferencesIntent =
                 settingsNavigation.createSettingsIntent(
                         context, SingleCategorySettings.class, extras);

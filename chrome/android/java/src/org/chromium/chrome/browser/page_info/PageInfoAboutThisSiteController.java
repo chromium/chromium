@@ -174,9 +174,7 @@ public class PageInfoAboutThisSiteController {
     }
 
     private String getTitle() {
-        return mRowView.getContext()
-                .getResources()
-                .getString(R.string.page_info_about_this_page_title);
+        return mRowView.getContext().getString(R.string.page_info_about_this_page_title);
     }
 
     private @Nullable SiteInfo getSiteInfo() {

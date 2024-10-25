@@ -86,9 +86,8 @@ public class DataSharingNotificationManager {
      */
     public void showInvitationFlowNotification(String displayName) {
         String contentTitle =
-                mContext.getResources()
-                        .getString(
-                                R.string.data_sharing_invitation_notification_title, displayName);
+                mContext.getString(
+                        R.string.data_sharing_invitation_notification_title, displayName);
         buildAndNotify(contentTitle, /* showWhen= */ false);
     }
 

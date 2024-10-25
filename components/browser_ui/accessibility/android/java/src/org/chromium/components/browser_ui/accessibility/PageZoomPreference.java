@@ -170,9 +170,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             mCurrentValueText.setText(getContext().getString(R.string.page_zoom_level, zoomLevel));
         } else if (seekBar.getId() == R.id.text_size_contrast_slider) {
             mTextSizeContrastCurrentLevelText.setText(
-                    getContext()
-                            .getResources()
-                            .getString(R.string.text_size_contrast_level, progress));
+                    getContext().getString(R.string.text_size_contrast_level, progress));
         }
     }
 

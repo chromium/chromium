@@ -146,7 +146,6 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         // For accessibility, read out the whole title and whether the group is collapsed/expanded.
         String collapseOrExpandedText =
                 getContext()
-                        .getResources()
                         .getString(
                                 mExpanded
                                         ? R.string.accessibility_expanded_group
@@ -154,7 +153,6 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
 
         String description =
                 getContext()
-                        .getResources()
                         .getString(
                                 R.string.concat_two_strings_with_periods,
                                 getTitle(),

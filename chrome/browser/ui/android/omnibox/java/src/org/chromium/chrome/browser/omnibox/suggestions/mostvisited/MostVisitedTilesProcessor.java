@@ -98,9 +98,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
                         .with(
                                 BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string.accessibility_omnibox_most_visited_list))
+                                mContext.getString(
+                                        R.string.accessibility_omnibox_most_visited_list))
                         .with(
                                 BaseCarouselSuggestionViewProperties.TOP_PADDING,
                                 OmniboxResourceProvider.getMostVisitedCarouselTopPadding(mContext))

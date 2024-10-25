@@ -78,15 +78,11 @@ public class DetailScreenViewBinder {
             view.mToolbarTitleTextView.setText(titleText);
         } else if (propertyKey == DETAIL_SCREEN_TITLE_DESCRIPTION) {
             String titleContentDescription =
-                    view.mContext
-                            .getResources()
-                            .getString(model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
+                    view.mContext.getString(model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
             view.mToolbarA11yOverlayView.setContentDescription(titleContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
             String settingsContentDescription =
-                    view.mContext
-                            .getResources()
-                            .getString(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+                    view.mContext.getString(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
             view.mToolbarSettingsImageButton.setContentDescription(settingsContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
             SimpleRecyclerViewAdapter adapter =

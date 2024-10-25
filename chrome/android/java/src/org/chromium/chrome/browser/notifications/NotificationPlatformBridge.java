@@ -438,9 +438,7 @@ public class NotificationPlatformBridge {
                     SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
             fragmentArguments.putString(
                     SingleCategorySettings.EXTRA_TITLE,
-                    applicationContext
-                            .getResources()
-                            .getString(R.string.push_notifications_permission_title));
+                    applicationContext.getString(R.string.push_notifications_permission_title));
         }
 
         Class<? extends PreferenceFragmentCompat> fragment =
