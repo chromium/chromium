@@ -129,6 +129,10 @@ using segmentation_platform::TipIdentifier;
   tips_prefs::DisableTipsInMagicStack(_profilePrefService);
 }
 
+- (void)removeModule {
+  [self.delegate removeTipsModule];
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

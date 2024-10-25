@@ -10,7 +10,6 @@ static_library("home_modules") {
     "card_selection_info.h",
     "card_selection_signals.cc",
     "card_selection_signals.h",
-    "constants.h",
     "ephemeral_home_module_backend.cc",
     "ephemeral_home_module_backend.h",
     "home_modules_card_registry.cc",
@@ -21,8 +20,16 @@ static_library("home_modules") {
 
   if (is_ios) {
     sources += [
-      "tips_ephemeral_module.h",
-      "tips_ephemeral_module.mm",
+      "address_bar_position_ephemeral_module.cc",
+      "address_bar_position_ephemeral_module.h",
+      "autofill_passwords_ephemeral_module.cc",
+      "autofill_passwords_ephemeral_module.h",
+      "enhanced_safe_browsing_ephemeral_module.cc",
+      "enhanced_safe_browsing_ephemeral_module.h",
+      "lens_ephemeral_module.cc",
+      "lens_ephemeral_module.h",
+      "save_passwords_ephemeral_module.cc",
+      "save_passwords_ephemeral_module.h",
     ]
   }
 
@@ -39,8 +46,8 @@ static_library("home_modules") {
 
 source_set("constants") {
   sources = [
-    "tips_ephemeral_module_constants.cc",
-    "tips_ephemeral_module_constants.h",
+    "constants.cc",
+    "constants.h",
   ]
   public_deps = [ "//base" ]
   deps = [ "//components/segmentation_platform/embedder/home_modules/tips_manager:constants" ]
@@ -57,7 +64,15 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
-    sources += [ "tips_ephemeral_module_unittest.mm" ]
+    sources += [
+      "address_bar_position_ephemeral_module_unittest.cc",
+      "autofill_passwords_ephemeral_module_unittest.cc",
+      "enhanced_safe_browsing_ephemeral_module_unittest.cc",
+      "lens_ephemeral_module_unittest.cc",
+      "save_passwords_ephemeral_module_unittest.cc",
+      "test_utils.cc",
+      "test_utils.h",
+    ]
   }
 
   deps = [
@@ -70,6 +85,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
+    "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
     "//testing/gmock",
     "//testing/gtest",

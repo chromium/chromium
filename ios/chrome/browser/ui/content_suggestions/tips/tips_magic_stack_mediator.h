@@ -68,6 +68,11 @@ enum class TipIdentifier;
 // Disables and hides the Tips module in the Magic Stack.
 - (void)disableModule;
 
+// Removes the module from the Magic Stack on the current homepage without
+// disabling the underlying feature. This prevents the module from being shown
+// on the current homepage but does not affect its functionality elsewhere.
+- (void)removeModule;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_TIPS_TIPS_MAGIC_STACK_MEDIATOR_H_

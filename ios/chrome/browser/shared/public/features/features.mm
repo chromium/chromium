@@ -7,7 +7,6 @@
 #import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/country_codes/country_codes.h"
-#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"

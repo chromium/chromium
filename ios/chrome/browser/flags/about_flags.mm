@@ -58,7 +58,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/features.h"
-#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/send_tab_to_self/features.h"
@@ -912,71 +912,71 @@ const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
 // Address Bar Position
 const FeatureEntry::FeatureParam kTipsAddressBarPositionForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsAddressBarPositionVariation},
+     segmentation_platform::kAddressBarPositionEphemeralModule},
 };
 const FeatureEntry::FeatureParam kTipsAddressBarPositionForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsAddressBarPositionVariation},
+     segmentation_platform::kAddressBarPositionEphemeralModule},
 };
 
 // Autofill Passwords
 const FeatureEntry::FeatureParam kTipsAutofillPasswordsForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsAutofillPasswordsVariation},
+     segmentation_platform::kAutofillPasswordsEphemeralModule},
 };
 const FeatureEntry::FeatureParam kTipsAutofillPasswordsForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsAutofillPasswordsVariation},
+     segmentation_platform::kAutofillPasswordsEphemeralModule},
 };
 
 // Enhanced Safe Browsing
 const FeatureEntry::FeatureParam kTipsEnhancedSafeBrowsingForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsEnhancedSafeBrowsingVariation},
+     segmentation_platform::kEnhancedSafeBrowsingEphemeralModule},
 };
 const FeatureEntry::FeatureParam kTipsEnhancedSafeBrowsingForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsEnhancedSafeBrowsingVariation},
+     segmentation_platform::kEnhancedSafeBrowsingEphemeralModule},
 };
 
 // Lens Search
 const FeatureEntry::FeatureParam kTipsLensSearchForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsLensSearchVariation},
+     segmentation_platform::kLensEphemeralModuleSearchVariation},
 };
 const FeatureEntry::FeatureParam kTipsLensSearchForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsLensSearchVariation},
+     segmentation_platform::kLensEphemeralModuleSearchVariation},
 };
 
 // Lens Shop
 const FeatureEntry::FeatureParam kTipsLensShopForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsLensShopVariation},
+     segmentation_platform::kLensEphemeralModuleShopVariation},
 };
 const FeatureEntry::FeatureParam kTipsLensShopForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsLensShopVariation},
+     segmentation_platform::kLensEphemeralModuleShopVariation},
 };
 
 // Lens Translate
 const FeatureEntry::FeatureParam kTipsLensTranslateForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsLensTranslateVariation},
+     segmentation_platform::kLensEphemeralModuleTranslateVariation},
 };
 const FeatureEntry::FeatureParam kTipsLensTranslateForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsLensTranslateVariation},
+     segmentation_platform::kLensEphemeralModuleTranslateVariation},
 };
 
 // Save Passwords
 const FeatureEntry::FeatureParam kTipsSavePasswordsForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::home_modules::kTipsSavePasswordsVariation},
+     segmentation_platform::kSavePasswordsEphemeralModule},
 };
 const FeatureEntry::FeatureParam kTipsSavePasswordsForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::home_modules::kTipsSavePasswordsVariation},
+     segmentation_platform::kSavePasswordsEphemeralModule},
 };
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =

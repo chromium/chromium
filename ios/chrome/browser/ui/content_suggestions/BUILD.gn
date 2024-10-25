@@ -31,6 +31,7 @@ source_set("content_suggestions") {
     "//components/prefs",
     "//components/search_engines",
     "//components/segmentation_platform/embedder/home_modules",
+    "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",

@@ -17,9 +17,13 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/segmentation_platform/embedder/home_modules/address_bar_position_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/autofill_passwords_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
-#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module.h"
-#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
+#import "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/segmentation_platform/public/constants.h"
@@ -68,8 +72,12 @@
 #import "ui/base/device_form_factor.h"
 
 using segmentation_platform::TipIdentifier;
-using segmentation_platform::home_modules::TipIdentifierForOutputLabel;
-using segmentation_platform::home_modules::TipsEphemeralModule;
+using segmentation_platform::TipIdentifierForOutputLabel;
+using segmentation_platform::home_modules::AddressBarPositionEphemeralModule;
+using segmentation_platform::home_modules::AutofillPasswordsEphemeralModule;
+using segmentation_platform::home_modules::EnhancedSafeBrowsingEphemeralModule;
+using segmentation_platform::home_modules::LensEphemeralModule;
+using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
                                       ParcelTrackingMediatorDelegate,
@@ -394,10 +402,11 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
   if (IsTipsMagicStackEnabled() && _tipsManager) {
     // Profile signals
     inputContext->metadata_args.emplace(
-        segmentation_platform::tips_manager::signals::kLensUsed,
+        segmentation_platform::kLensNotUsedRecently,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            _tipsManager->WasSignalFired(
-                segmentation_platform::tips_manager::signals::kLensUsed)));
+            !_tipsManager->WasSignalFiredWithin(
+                segmentation_platform::tips_manager::signals::kLensUsed,
+                base::Days(30))));
 
     inputContext->metadata_args.emplace(
         segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite,
@@ -414,10 +423,10 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
                     kOpenedWebsiteInAnotherLanguage)));
 
     inputContext->metadata_args.emplace(
-        segmentation_platform::tips_manager::signals::kSavedPasswords,
+        segmentation_platform::kNoSavedPasswords,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
-                                             signals::kSavedPasswords)));
+            !_tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                              signals::kSavedPasswords)));
 
     inputContext->metadata_args.emplace(
         segmentation_platform::tips_manager::signals::kUsedGoogleTranslation,
@@ -426,15 +435,15 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
                                              signals::kUsedGoogleTranslation)));
 
     inputContext->metadata_args.emplace(
-        segmentation_platform::tips_manager::signals::kUsedPasswordAutofill,
+        segmentation_platform::kDidNotUsePasswordAutofill,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
-                                             signals::kUsedPasswordAutofill)));
+            !_tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                              signals::kUsedPasswordAutofill)));
 
     inputContext->metadata_args.emplace(
-        segmentation_platform::kHasEnhancedSafeBrowsing,
+        segmentation_platform::kLacksEnhancedSafeBrowsing,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            _prefService->GetBoolean(prefs::kSafeBrowsingEnhanced)));
+            !_prefService->GetBoolean(prefs::kSafeBrowsingEnhanced)));
 
     inputContext->metadata_args.emplace(
         segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
@@ -449,10 +458,9 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
 
     // Local signals
     inputContext->metadata_args.emplace(
-        segmentation_platform::tips_manager::signals::
-            kAddressBarPositionChoiceScreenDisplayed,
+        segmentation_platform::kDidNotSeeAddressBarPositionChoiceScreen,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            _tipsManager->WasSignalFired(
+            !_tipsManager->WasSignalFired(
                 segmentation_platform::tips_manager::signals::
                     kAddressBarPositionChoiceScreenDisplayed)));
 
@@ -499,7 +507,8 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
         card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
         break;
       }
-    } else if (TipsEphemeralModule::IsModuleLabel(label) &&
+    } else if (segmentation_platform::home_modules::HomeModulesCardRegistry::
+                   IsEphemeralTipsModuleLabel(label) &&
                IsTipsMagicStackEnabled() &&
                !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);

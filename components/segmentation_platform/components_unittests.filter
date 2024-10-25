@@ -1,4 +1,6 @@
+*AddressBarPositionEphemeralModuleTest.*
 *AndroidHomeModuleRankerTest.*
+*AutofillPasswordsEphemeralModuleTest.*
 *BackgroundRecorderTest.*
 *CachedResultProviderTest.*
 *CachedResultWriterTest.*
@@ -17,6 +19,7 @@
 *DeviceTierSegmentTest.*
 *DummyModelProviderFactoryImplTest.*
 *DummySegmentationPlatformServiceTest.*
+*EnhancedSafeBrowsingEphemeralModuleTest.*
 *EphemeralHomeModuleBackendTest.*
 *EphemeralHomeModuleBackendWithTestCard.*
 *FailedUkmDatabaseTest.*
@@ -32,6 +35,7 @@
 *InputContextAndroidTest.*
 *IntentionalUserModelTest.*
 *IosModuleRankerTest.*
+*LensEphemeralModuleTest.*
 *LowUserEngagementModelTest.*
 *MetadataUtilsTest.*
 *MetricsClusteringTest.*
@@ -52,6 +56,7 @@
 *ResultMigrationUtilsTest.*
 *ResultRefreshManagerTest.*
 *ResumeHeavyUserModelTest.*
+*SavePasswordsEphemeralModuleTest.*
 *SearchUserModelTest.*
 *SegmentInfoCacheTest.*
 *SegmentInfoDatabaseTest.*
