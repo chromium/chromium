@@ -1625,7 +1625,9 @@ public class CustomTabActivityTest {
             CriteriaHelper.pollUiThread(
                     () ->
                             WarmupManager.getInstance()
-                                    .hasSpareTab(ProfileManager.getLastUsedRegularProfile()),
+                                    .hasSpareTab(
+                                            ProfileManager.getLastUsedRegularProfile(),
+                                            /* targetsNetwork= */ false),
                     "No new spare tab");
         } else {
             CriteriaHelper.pollUiThread(

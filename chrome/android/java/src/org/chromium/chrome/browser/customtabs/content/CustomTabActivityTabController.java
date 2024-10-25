@@ -430,7 +430,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
         Tab tab = null;
         if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
-                && warmupManager.hasSpareTab(profile)) {
+                && warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
             tab = warmupManager.takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
             TabAssociatedApp.from(tab)
                     .setAppId(mConnection.getClientPackageNameForSession(mSession));
@@ -477,17 +477,14 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             return webContents;
         }
 
-        // Multi-network CCT does not support spare web contents.
-        // TODO: this check can be removed once the spare web contents can be created with a
-        // particular target network as well, e.g. via {@link CustomTabsSession#mayLaunchUrl}.
-        if (!mIntentDataProvider.hasTargetNetwork()) {
-            webContents =
-                    mWarmupManager.takeSpareWebContents(
-                            mIntentDataProvider.isOffTheRecord(), /* initiallyHidden= */ false);
-            if (webContents != null) {
-                recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
-                return webContents;
-            }
+        webContents =
+                mWarmupManager.takeSpareWebContents(
+                        mIntentDataProvider.isOffTheRecord(),
+                        /* initiallyHidden= */ false,
+                        mIntentDataProvider.hasTargetNetwork());
+        if (webContents != null) {
+            recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
+            return webContents;
         }
 
         recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);

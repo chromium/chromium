@@ -806,8 +806,13 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
         if (mPendingLoadParams != null) {
             assert isFrozen();
+            // TODO(crbug.com/366242716): This codepath can also be used by CCT, but it's not
+            // clear whether multi-network CCT will ever end up here. As such, we should investigate
+            // whether the parameter targetsNetwork should ever be set to true.
             WebContents webContents =
-                    WarmupManager.getInstance().takeSpareWebContents(isIncognito(), isHidden());
+                    WarmupManager.getInstance()
+                            .takeSpareWebContents(
+                                    isIncognito(), isHidden(), /* targetsNetwork= */ false);
             if (webContents == null) {
                 webContents = WebContentsFactory.createWebContents(mProfile, isHidden(), false);
             }
@@ -1153,9 +1158,15 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
             boolean creatingWebContents = webContents == null;
             if (creatingWebContents) {
+                // TODO(crbug.com/366242716): This codepath can also be used by CCT, but it's not
+                // clear whether multi-network CCT will ever end up here. As such, we should
+                // investigate whether the parameter targetsNetwork should ever be set to true.
                 webContents =
                         WarmupManager.getInstance()
-                                .takeSpareWebContents(isIncognito(), initiallyHidden);
+                                .takeSpareWebContents(
+                                        isIncognito(),
+                                        initiallyHidden,
+                                        /* targetsNetwork= */ false);
                 if (webContents == null) {
                     webContents =
                             WebContentsFactory.createWebContents(

@@ -348,7 +348,11 @@ public class ChromeTabCreator extends TabCreator {
                                 .setInitiallyHidden(!openInForeground)
                                 .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
-            } else if (WarmupManager.getInstance().hasSpareTab(getProfile())) {
+                // TODO(http://crbug.com/375621886): Multi-network CCT might not be restoring tabs
+                // from disk correctly since we're passing targetsNetwork = false. Investigate and
+                // consider what should be done about this.
+            } else if (WarmupManager.getInstance()
+                    .hasSpareTab(getProfile(), /* targetsNetwork= */ false)) {
                 // Load URL using spare tab if available. This occurs only if a spare tab has been
                 // created beforehand. The creation of a spare tab is a costly operation that should
                 // not be performed without testing. Spare tab is only used for navigations in the
