@@ -67,6 +67,10 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
   // Tries to activate the `client_id`'s associated window.
   virtual bool ActivateClientWindow(const base::UnguessableToken client_id) = 0;
 
+  // Sets/gets the current user selected text.
+  virtual void SetSelectedText(const std::string& selected_text) = 0;
+  virtual std::string GetSelectedText() const = 0;
+
  protected:
   MahiMediaAppContentManager();
 

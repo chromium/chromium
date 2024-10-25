@@ -256,8 +256,9 @@ declare interface ClientApiDelegate {
    * Mahi to show its widget card accordingly.
    * @param anchor The coordinate and size of the context menu to help Mahi
    *     align the widget.
+   * @param selectedText Any currently selected/highlighted text in the PDF.
    */
-  onPdfContextMenuShow(anchor: RectF): void;
+  onPdfContextMenuShow(anchor: RectF, selectedText: string): void;
   /**
    * Called when the media app hides its context menu from PDF surface, to
    * notify Mahi to hide its widget card accordingly.

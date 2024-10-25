@@ -111,9 +111,12 @@ void MahiMediaAppClient::OnPdfFileNameUpdated(const std::string& new_name) {
   OnWindowFocused(focus_observation_.GetSource()->GetFocusedWindow(), nullptr);
 }
 
-void MahiMediaAppClient::OnPdfContextMenuShow(const ::gfx::RectF& anchor) {
+void MahiMediaAppClient::OnPdfContextMenuShow(
+    const ::gfx::RectF& anchor,
+    const std::string& selected_text) {
   chromeos::MahiMediaAppEventsProxy::Get()->OnPdfContextMenuShown(
       client_id_, ::gfx::ToEnclosingRect(anchor));
+  chromeos::MahiMediaAppContentManager::Get()->SetSelectedText(selected_text);
 }
 
 void MahiMediaAppClient::OnPdfContextMenuHide() {

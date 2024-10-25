@@ -447,8 +447,8 @@ const DELEGATE: ClientApiDelegate = {
       await mahiUntrustedPageHandler?.onPdfLoaded();
     }
   },
-  async onPdfContextMenuShow(anchor: RectF) {
-    await mahiUntrustedPageHandler?.onPdfContextMenuShow(anchor);
+  async onPdfContextMenuShow(anchor: RectF, selectedText: string) {
+    await mahiUntrustedPageHandler?.onPdfContextMenuShow(anchor, selectedText);
   },
   async onPdfContextMenuHide() {
     await mahiUntrustedPageHandler?.onPdfContextMenuHide();

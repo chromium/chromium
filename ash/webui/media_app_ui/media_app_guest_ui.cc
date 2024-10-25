@@ -298,12 +298,6 @@ void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
         receiver,
     mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
-    untrusted_page_handler_factory_.ReportBadMessage(
-        "Trying to bind interface when flag is not enabled.");
-    return;
-  }
-
   delegate_->CreateAndBindMahiHandler(
       std::move(receiver), std::move(page), file_name,
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());

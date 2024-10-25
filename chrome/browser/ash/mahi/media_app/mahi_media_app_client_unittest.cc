@@ -236,4 +236,20 @@ TEST_F(MahiMediaAppClientTest, PdfRename) {
 
   EXPECT_EQ(mahi_media_app_client_->file_name(), "new_name");
 }
+
+TEST_F(MahiMediaAppClientTest, ShowPdfContextMenuSelectedText) {
+  std::unique_ptr<aura::Window> window(
+      aura::test::CreateTestWindowWithId(-1, nullptr));
+
+  auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
+      receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
+
+  EXPECT_CALL(mock_mahi_media_app_content_manager_,
+              SetSelectedText(testing::Eq("some selected text")))
+      .Times(1);
+
+  const gfx::RectF test_rect;
+  mahi_media_app_client_->OnPdfContextMenuShow(test_rect, "some selected text");
+}
+
 }  // namespace ash

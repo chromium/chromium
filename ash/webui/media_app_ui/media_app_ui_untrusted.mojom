@@ -107,8 +107,9 @@ interface MahiUntrustedPageHandler {
   OnPdfFileNameUpdated(string new_name);
 
   // Notifies when the PDF context menu is shown. This may be used to show the
-  // Mahi widget card.
-  OnPdfContextMenuShow(gfx.mojom.RectF anchor);
+  // Mahi widget card. `selected_text` contains any currently highlighted /
+  // selected text, with it being an empty string if there is no selected text.
+  OnPdfContextMenuShow(gfx.mojom.RectF anchor, string selected_text);
 
   // Notifies when the PDF context menu is hidden. This may be used to hide the
   // Mahi widget card.
