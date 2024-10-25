@@ -242,7 +242,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   }
 
   // Returns the name of this thread (for display in debugger too).
-  const std::string& thread_name() const { return name_; }
+  const std::string& thread_name() const LIFETIME_BOUND { return name_; }
 
   // Returns the thread ID.  Should not be called before the first Start*()
   // call.  Keeps on returning the same ID even after a Stop() call. The next

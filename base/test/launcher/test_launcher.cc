@@ -22,6 +22,7 @@
 #include "base/at_exit.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/environment.h"
@@ -1015,9 +1016,11 @@ class TestLauncher::TestInfo {
   // Returns test name excluding DISABLED_ and PRE_ prefixes.
   std::string GetPrefixStrippedName() const;
 
-  const std::string& test_case_name() const { return test_case_name_; }
-  const std::string& test_name() const { return test_name_; }
-  const std::string& file() const { return file_; }
+  const std::string& test_case_name() const LIFETIME_BOUND {
+    return test_case_name_;
+  }
+  const std::string& test_name() const LIFETIME_BOUND { return test_name_; }
+  const std::string& file() const LIFETIME_BOUND { return file_; }
   int line() const { return line_; }
   bool disabled() const { return disabled_; }
   bool pre_test() const { return pre_test_; }

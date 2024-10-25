@@ -12,6 +12,7 @@
 #include "base/base_switches.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
@@ -80,8 +81,8 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
     group_name_ = group;
   }
 
-  const std::string& trial_name() const { return trial_name_; }
-  const std::string& group_name() const { return group_name_; }
+  const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
+  const std::string& group_name() const LIFETIME_BOUND { return group_name_; }
 
  private:
   std::string trial_name_;
@@ -146,8 +147,8 @@ class TestFieldTrialObserverIncludingLowAnonymity
     group_name_ = group;
   }
 
-  const std::string& trial_name() const { return trial_name_; }
-  const std::string& group_name() const { return group_name_; }
+  const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
+  const std::string& group_name() const LIFETIME_BOUND { return group_name_; }
 
  private:
   std::string trial_name_;

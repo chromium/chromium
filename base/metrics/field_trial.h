@@ -87,6 +87,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -259,7 +260,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   void AppendGroup(const std::string& name, Probability group_probability);
 
   // Return the name of the FieldTrial (excluding the group name).
-  const std::string& trial_name() const { return trial_name_; }
+  const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
 
   // Finalizes the group assignment and notifies any/all observers. This is a
   // no-op if the trial is already active. Note this will force an instance to
@@ -269,12 +270,12 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
   // If the group's name is empty, a string version containing the group number
   // is used as the group name. This causes a winner to be chosen if none was.
-  const std::string& group_name();
+  const std::string& group_name() LIFETIME_BOUND;
 
   // Finalizes the group choice and returns the chosen group, but does not mark
   // the trial as active - so its state will not be reported until group_name()
   // or similar is called.
-  const std::string& GetGroupNameWithoutActivation();
+  const std::string& GetGroupNameWithoutActivation() LIFETIME_BOUND;
 
   // Set the field trial as forced, meaning that it was setup earlier than
   // the hard coded registration of the field trial to override it.
@@ -409,7 +410,9 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   void GetStateWhileLocked(PickleState* field_trial_state);
 
   // Returns the group_name. A winner need not have been chosen.
-  const std::string& group_name_internal() const { return group_name_; }
+  const std::string& group_name_internal() const LIFETIME_BOUND {
+    return group_name_;
+  }
 
   // The name of the field trial, as can be found via the FieldTrialList.
   const std::string trial_name_;

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/unguessable_token.h"
@@ -104,7 +105,9 @@ class BASE_EXPORT MemoryAllocatorDump {
   void AddString(const char* name, const char* units, const std::string& value);
 
   // Absolute name, unique within the scope of an entire ProcessMemoryDump.
-  const std::string& absolute_name() const { return absolute_name_; }
+  const std::string& absolute_name() const LIFETIME_BOUND {
+    return absolute_name_;
+  }
 
   // Called at trace generation time to populate the TracedValue.
   void AsValueInto(TracedValue* value) const;

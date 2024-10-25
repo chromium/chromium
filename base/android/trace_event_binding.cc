@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
@@ -203,7 +204,7 @@ class TraceEventDataConverter {
 
   // Return saved values to pass to TRACE_EVENT macros.
   const char* arg_name() { return has_arg_ ? "arg" : nullptr; }
-  const std::string& arg() { return arg_; }
+  const std::string& arg() const LIFETIME_BOUND { return arg_; }
 
  private:
   bool has_arg_;

@@ -7,6 +7,7 @@
 
 #include <deque>
 
+#include "base/compiler_specific.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -70,7 +71,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     // when unregistering metrics).
     virtual std::optional<uint64_t> Measure() const = 0;
 
-    const std::string& name() const { return name_; }
+    const std::string& name() const LIFETIME_BOUND { return name_; }
 
    protected:
     friend class PreFreezeBackgroundMemoryTrimmer;

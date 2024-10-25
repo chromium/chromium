@@ -101,7 +101,7 @@ class Foo : public RefCounted<Foo> {
   }
 
   int test_count() const { return test_count_; }
-  const std::string& result() const { return result_; }
+  const std::string& result() const LIFETIME_BOUND { return result_; }
 
  private:
   friend class RefCounted<Foo>;
