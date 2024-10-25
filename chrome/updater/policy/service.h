@@ -141,6 +141,13 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 
+  // Returns whether the Chrome Enterprise Companion App experiment is enabled.
+  bool IsCecaExperimentEnabled() const { return is_ceca_experiment_enabled_; }
+
+  // Queries whether the machine appears to be cloud managed by Chrome
+  // Enterprise Core (formerly Chrome Enterprise Cloud Management).
+  void IsCloudManaged(base::OnceCallback<void(bool)> callback) const;
+
  protected:
   virtual ~PolicyService();
 

@@ -26,6 +26,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -38,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/change_owners_task.h"
@@ -634,6 +636,39 @@ void UpdateServiceImplImpl::GetVersion(
       base::BindOnce(std::move(callback), base::Version(kUpdaterVersion)));
 }
 
+void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
+    base::OnceClosure callback,
+    bool is_cloud_managed) {
+  VLOG(1) << __func__;
+
+  if (!is_cloud_managed) {
+    std::move(callback).Run();
+    return;
+  }
+
+  VLOG(1) << "Starting an OTA installation of the enterprise companion app.";
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&update_client::UpdateClient::Install),
+          update_client_, enterprise_companion::kCompanionAppId,
+          base::BindOnce(
+              &internal::GetComponents, config_->GetPolicyService(),
+              config_->GetCrxVerifierFormat(),
+              config_->GetUpdaterPersistedData(), kEmptyFlatMap, kEmptyFlatMap,
+              kInstallSourcePolicy, Priority::kForeground,
+              /*update_blocked=*/false, PolicySameVersionUpdate::kNotAllowed),
+          MakeUpdateClientCrxStateChangeCallback(
+              config_, config_->GetUpdaterPersistedData(),
+              /*new_install=*/false, /*callback=*/base::DoNothing()),
+          MakeUpdateClientCallback(
+              base::BindOnce([](Result result) {
+                VLOG(1) << "OTA installation of the enterprise companion app "
+                           "completed with result: "
+                        << result;
+              }).Then(std::move(callback)))));
+}
+
 void UpdateServiceImplImpl::FetchPolicies(
     base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
@@ -643,7 +678,18 @@ void UpdateServiceImplImpl::FetchPolicies(
     VLOG(2) << "Policy fetch skipped for user updater.";
     std::move(callback).Run(0);
   } else {
-    config_->GetPolicyService()->FetchPolicies(std::move(callback));
+    if (config_->GetPolicyService()->IsCecaExperimentEnabled() &&
+        !config_->GetUpdaterPersistedData()
+             ->GetProductVersion(enterprise_companion::kCompanionAppId)
+             .IsValid()) {
+      config_->GetPolicyService()->IsCloudManaged(base::BindOnce(
+          &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
+          base::WrapRefCounted(this),
+          base::BindOnce(&PolicyService::FetchPolicies,
+                         config_->GetPolicyService(), std::move(callback))));
+    } else {
+      config_->GetPolicyService()->FetchPolicies(std::move(callback));
+    }
   }
 }
 

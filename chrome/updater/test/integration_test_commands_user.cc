@@ -185,6 +185,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         from_version, to_version, do_fault_injection, skip_download);
   }
 
+  void ExpectEnterpriseCompanionAppOTAInstallSequence(
+      ScopedServer* test_server) const override {
+    updater::test::ExpectEnterpriseCompanionAppOTAInstallSequence(test_server);
+  }
+
   void ExpectVersionActive(const std::string& version) const override {
     updater::test::ExpectVersionActive(updater_scope_, version);
   }

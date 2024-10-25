@@ -99,21 +99,26 @@ constexpr char kSelfUpdateCRXName[] = "updater_selfupdate.crx3";
 constexpr char kSelfUpdateCRXRun[] = PRODUCT_FULLNAME_STRING "_test.app";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
 constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
+constexpr char kEnterpriseCompanionCRXRun[] = "enterprise_companion_test.zip";
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     FILE_PATH_LITERAL("enterprise_companion_test");
 #elif BUILDFLAG(IS_WIN)
 constexpr char kSelfUpdateCRXRun[] = "UpdaterSetup_test.exe";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
+constexpr char kEnterpriseCompanionCRXRun[] = "enterprise_companion_test.exe";
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     FILE_PATH_LITERAL("enterprise_companion_test.exe");
 #elif BUILDFLAG(IS_LINUX)
 constexpr char kSelfUpdateCRXRun[] = "updater_test";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app";
+constexpr char kEnterpriseCompanionCRXRun[] = "enterprise_companion_test";
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     FILE_PATH_LITERAL("enterprise_companion_test");
 #endif
+constexpr char kEnterpriseCompanionCRXName[] = "enterprise_companion_test.crx3";
+constexpr char kEnterpriseCompanionCRXArguments[] = "--install";
 
 std::string GetHashHex(const base::FilePath& file) {
   base::MemoryMappedFile mmfile;
@@ -273,11 +278,10 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const base::Version& from_version,
                           const base::Version& to_version,
                           bool do_fault_injection,
-                          bool skip_download) {
-  base::FilePath test_data_path;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
+                          bool skip_download,
+                          const base::FilePath& crx_path,
+                          const std::string& run_action,
+                          const std::string& arguments) {
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
@@ -300,7 +304,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
        request::GetUpdaterEnableUpdatesMatcher()},
       GetUpdateResponse(app_id, install_data_index,
                         test_server->download_url().spec(), to_version,
-                        crx_path, kDoNothingCRXRun, {}));
+                        crx_path, run_action, arguments));
 
   // Second request: update download.
   if (!skip_download) {
@@ -1285,9 +1289,14 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const base::Version& to_version,
                           bool do_fault_injection,
                           bool skip_download) {
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
+                                .AppendASCII(kDoNothingCRXName);
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/3, from_version, to_version,
-                       do_fault_injection, skip_download);
+                       do_fault_injection, skip_download, crx_path,
+                       kDoNothingCRXRun, /*arguments=*/{});
 }
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
@@ -1350,9 +1359,28 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& to_version,
                            bool do_fault_injection,
                            bool skip_download) {
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
+                                .AppendASCII(kDoNothingCRXName);
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/2, from_version, to_version,
-                       do_fault_injection, skip_download);
+                       do_fault_injection, skip_download, crx_path,
+                       kDoNothingCRXRun, /*arguments=*/{});
+}
+
+void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server) {
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));
+  base::FilePath crx_path =
+      test_data_path.AppendASCII(kEnterpriseCompanionCRXName);
+  ExpectUpdateSequence(
+      UpdaterScope::kSystem, test_server, enterprise_companion::kCompanionAppId,
+      /*install_data_index=*/{}, UpdateService::Priority::kForeground,
+      /*event_type=*/2, base::Version({0, 0, 0, 0}),
+      base::Version({1, 0, 0, 0}),
+      /*do_fault_injection=*/false, /*skip_download=*/false, crx_path,
+      kEnterpriseCompanionCRXRun, kEnterpriseCompanionCRXArguments);
 }
 
 // Runs multiple cycles of instantiating the update service, calling

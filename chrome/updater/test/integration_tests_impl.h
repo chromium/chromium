@@ -425,6 +425,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            bool do_fault_injection,
                            bool skip_download);
 
+void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
+
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,
                               const base::Value::Dict& request_attributes,

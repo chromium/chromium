@@ -130,6 +130,9 @@ class UpdateServiceImplImpl : public UpdateService {
       base::OnceCallback<void(Result)> callback,
       bool update_blocked);
 
+  void MaybeInstallEnterpriseCompanionAppOTA(base::OnceClosure callback,
+                                             bool is_cloud_managed);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<Configurator> config_;

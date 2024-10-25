@@ -768,6 +768,49 @@ if (is_win || is_mac || is_linux) {
         }
       }
     }
+
+    if (is_mac) {
+      copy("enterprise_companion_test_crx_install_script") {
+        sources = [ "test/data/enterprise_companion_install_script.sh" ]
+        outputs = [
+          "$target_gen_dir/enterprise_companion_test_crx_contents/.install",
+        ]
+      }
+      copy("enterprise_companion_test_crx_binary") {
+        sources = [ "$root_build_dir/enterprise_companion_test" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/{{source_file_part}}" ]
+        deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+      }
+      zip("enterprise_companion_test_crx_contents_zip") {
+        inputs = get_target_outputs(
+                     ":enterprise_companion_test_crx_install_script") +
+                 get_target_outputs(":enterprise_companion_test_crx_binary")
+        base_dir = "$target_gen_dir/enterprise_companion_test_crx_contents/"
+        output = "$target_gen_dir/enterprise_companion_test.zip"
+        deps = [
+          ":enterprise_companion_test_crx_binary",
+          ":enterprise_companion_test_crx_install_script",
+        ]
+      }
+    }
+
+    crx3("enterprise_companion_test_crx") {
+      testonly = true
+      if (is_linux) {
+        inputs = [ "$root_build_dir/enterprise_companion_test" ]
+        deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+      } else if (is_mac) {
+        inputs =
+            get_target_outputs(":enterprise_companion_test_crx_contents_zip")
+        deps = [ ":enterprise_companion_test_crx_contents_zip" ]
+        base_dir = "$target_gen_dir"
+      } else if (is_win) {
+        inputs = [ "$root_build_dir/enterprise_companion_test.exe" ]
+        deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+      }
+      key = "//chrome/updater/test/data/selfupdate_test_key.der"
+      output = "$root_build_dir/enterprise_companion_test.crx3"
+    }
   }
 
   source_set("unit_test_util_sources") {
@@ -901,6 +944,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     data_deps = [
+      ":enterprise_companion_test_crx",
       ":updater_selfupdate_test_crx",
       "//chrome/enterprise_companion:enterprise_companion_test",
       "//chrome/updater/test/test_installer:app_installers",
