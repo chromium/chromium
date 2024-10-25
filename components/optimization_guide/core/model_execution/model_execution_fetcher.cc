@@ -136,6 +136,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO: b/330346344 - Add traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
       // Used for testing purposes. No real features use this.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kFormsAnnotations:

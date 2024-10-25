@@ -34,9 +34,11 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS,
   kHistoryQueryIntent = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT,
+  kBlingPrototyping =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING,
 };
 
-inline constexpr std::array<ModelBasedCapabilityKey, 11>
+inline constexpr std::array<ModelBasedCapabilityKey, 12>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -49,6 +51,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 11>
         ModelBasedCapabilityKey::kFormsPredictions,
         ModelBasedCapabilityKey::kFormsAnnotations,
         ModelBasedCapabilityKey::kHistoryQueryIntent,
+        ModelBasedCapabilityKey::kBlingPrototyping,
 };
 
 // A "real" feature implemented by a model-based capability.
@@ -112,6 +115,9 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT:
       return ModelBasedCapabilityKey::kHistoryQueryIntent;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING:
+      return ModelBasedCapabilityKey::kBlingPrototyping;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -148,6 +154,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT;
+    case ModelBasedCapabilityKey::kBlingPrototyping:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING;
   }
 }
 

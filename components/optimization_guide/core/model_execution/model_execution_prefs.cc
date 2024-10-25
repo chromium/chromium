@@ -131,6 +131,7 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kTextSafety:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
       // This should not be called for features that are not on-device.
       NOTREACHED();
   }
