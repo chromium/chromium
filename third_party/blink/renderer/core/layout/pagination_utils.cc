@@ -357,16 +357,18 @@ PhysicalRect StitchedPageContentRect(
   if (const BlockBreakToken* previous_break_token =
           FindPreviousBreakTokenForPageArea(page_area)) {
     LayoutUnit consumed_block_size = previous_break_token->ConsumedBlockSize();
-    WritingMode writing_mode = page_container.Style().GetWritingMode();
-    if (writing_mode == WritingMode::kVerticalRl) {
+    PhysicalDirection block_end =
+        page_container.Style().GetWritingDirection().BlockEnd();
+    if (block_end == PhysicalDirection::kLeft) {
       const LayoutView& view = *page_container.GetDocument().GetLayoutView();
       const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
       physical_page_rect.offset.left += first_page_area.Size().width;
       physical_page_rect.offset.left -=
           consumed_block_size + page_area.Size().width;
-    } else if (writing_mode == WritingMode::kVerticalLr) {
+    } else if (block_end == PhysicalDirection::kRight) {
       physical_page_rect.offset.left += consumed_block_size;
     } else {
+      CHECK_EQ(block_end, PhysicalDirection::kDown);
       physical_page_rect.offset.top += consumed_block_size;
     }
   }
