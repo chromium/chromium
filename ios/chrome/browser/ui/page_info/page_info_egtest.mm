@@ -130,19 +130,6 @@ void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
       static_cast<int>(action), count);
 }
 
-// Opens the Last Visited page in Page Info.
-void OpenLastVisitedPage() {
-  [ChromeEarlGreyUI openPageInfo];
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_text(l10n_util::GetNSString(
-                                              IDS_PAGE_INFO_HISTORY))];
-
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_PAGE_INFO_HISTORY))]
-      performAction:grey_tap()];
-}
-
 // Adds entry to the history service with `url` and visit `timestamp`.
 void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   [ChromeEarlGrey addHistoryServiceTypedURL:url visitTimestamp:timestamp];
@@ -176,20 +163,14 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
   }
-
-  [ChromeEarlGrey closeAllExtraWindows];
-
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
 }
 
 - (void)tearDownHelper {
-  [ChromeEarlGrey closeAllExtraWindows];
-
+  [super tearDownHelper];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-
-  [super tearDownHelper];
 }
 
 // Checks that if the alert for site permissions pops up, and allow it.
@@ -521,7 +502,15 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that the Last Visited section is displayed when there exists a previous
 // visit, and also, it tests that the correct timestamp of the last visit is
 // presented.
-- (void)testLastVisitedSectionDisplaysYesterday {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLastVisitedSectionDisplaysYesterday \
+  DISABLED_testLastVisitedSectionDisplaysYesterday
+#else
+#define MAYBE_testLastVisitedSectionDisplaysYesterday \
+  testLastVisitedSectionDisplaysYesterday
+#endif
+- (void)MAYBE_testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on `URL`.
@@ -545,7 +534,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 }
 
 // Tests that tapping on the Last Visited row reveals the Last Visited subpage.
-- (void)testLastVisitedSubpage {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLastVisitedSubpage DISABLED_testLastVisitedSubpage
+#else
+#define MAYBE_testLastVisitedSubpage testLastVisitedSubpage
+#endif
+- (void)MAYBE_testLastVisitedSubpage {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -555,9 +550,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Visit `URL` and open Page Info.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGreyUI openPageInfo];
 
-  // Open Last Visited page.
-  OpenLastVisitedPage();
+  // Check that tapping on the Last Visited Row leads to the Last Visited
+  // subpage.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Assert that Last Visited subpage displays one entry.
   [[EarlGrey
@@ -577,7 +576,15 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that tapping on the show full history button leads to the history page.
 // Additionally, it tests that dismissing full history reveals back the Last
 // Visited subpage.
-- (void)testLastVisitedSubpageOpensFullHistory {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testLastVisitedSubpageOpensFullHistory \
+  DISABLED_testLastVisitedSubpageOpensFullHistory
+#else
+#define MAYBE_testLastVisitedSubpageOpensFullHistory \
+  testLastVisitedSubpageOpensFullHistory
+#endif
+- (void)MAYBE_testLastVisitedSubpageOpensFullHistory {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -587,9 +594,12 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Visit `URL` and open Page Info.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Open full history by pressing on the "Show Full History" button.
   [[EarlGrey
@@ -625,7 +635,15 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that tapping on a history entry from the Last Visited subpage dismisses
 // Page Info (which presents the Last Visited subpage) and opens the
 // corresponding URL.
-- (void)testOpeningURLFromLastVisitedDismissesPageInfo {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo \
+  DISABLED_testOpeningURLFromLastVisitedDismissesPageInfo
+#else
+#define MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo \
+  testOpeningURLFromLastVisitedDismissesPageInfo
+#endif
+- (void)MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -635,9 +653,12 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Visit `URL` and open Page Info.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Tap on the latest history entry from the Last Visited subpage.
   [[[EarlGrey
@@ -660,7 +681,15 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo \
+  DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo
+#else
+#define MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo \
+  testOpeningURLFromFullHistoryDismissesPageInfo
+#endif
+- (void)MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -670,9 +699,12 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Visit `URL` and open Page Info.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Open full history by pressing on the "Show Full History" button.
   [[EarlGrey
@@ -700,7 +732,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry from the Last Visited subpage.
-- (void)testContextMenuOpenInNewTab {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuOpenInNewTab DISABLED_testContextMenuOpenInNewTab
+#else
+#define MAYBE_testContextMenuOpenInNewTab testContextMenuOpenInNewTab
+#endif
+- (void)MAYBE_testContextMenuOpenInNewTab {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -714,8 +752,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Visit `kURLExternalWebsite`.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Long press on the latest history element.
   [[[EarlGrey
@@ -758,8 +801,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Visit `kURLExternalWebsite`.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Long press on the latest history element.
   [[[EarlGrey
@@ -780,14 +828,19 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Assert that the Context Menu History Entry Actions metric is populated.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
       /*count=*/1, /*action=*/MenuActionType::OpenInNewWindow);
-
-  // Close all windows.
-  [ChromeEarlGrey closeAllExtraWindows];
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry from the Last Visited subpage.
-- (void)testContextMenuOpenInNewIncognitoTab {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuOpenInNewIncognitoTab \
+  DISABLED_testContextMenuOpenInNewIncognitoTab
+#else
+#define MAYBE_testContextMenuOpenInNewIncognitoTab \
+  testContextMenuOpenInNewIncognitoTab
+#endif
+- (void)MAYBE_testContextMenuOpenInNewIncognitoTab {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -801,8 +854,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Visit `kURLExternalWebsite`.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Long press on the latest history element.
   [[[EarlGrey
@@ -828,7 +886,12 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests display and selection of 'Copy URL' in a context menu on a history
 // entry from the Last Visited subpage.
 // TODO(crbug.com/374063042): Flaky on device.
-- (void)testContextMenuCopy {
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuCopy DISABLED_testContextMenuCopy
+#else
+#define MAYBE_testContextMenuCopy testContextMenuCopy
+#endif
+- (void)MAYBE_testContextMenuCopy {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -842,8 +905,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Visit `kURLExternalWebsite`.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Long press on the latest history element.
   [[[EarlGrey
@@ -871,7 +939,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests display and selection of "Share" in the context menu for a history
 // entry from the Last Visited subpage.
-- (void)testContextMenuShare {
+// TODO(crbug.com/374063042): Flaky on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuShare DISABLED_testContextMenuShare
+#else
+#define MAYBE_testContextMenuShare testContextMenuShare
+#endif
+- (void)MAYBE_testContextMenuShare {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -885,8 +959,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Visit `kURLExternalWebsite`.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
 
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Long press on the history element.
   [[EarlGrey
@@ -933,8 +1012,13 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Visit `URL1`.
   [ChromeEarlGrey loadURL:URL1];
 
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
   // Open Last Visited page.
-  OpenLastVisitedPage();
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
 
   // Long press on the history element.
   [[EarlGrey
