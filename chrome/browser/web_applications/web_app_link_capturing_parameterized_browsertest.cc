@@ -685,12 +685,9 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
 // on MacOS.
 // TODO(crbug.com/375317754): Fix flakiness for ServerSideViaX A2B tests on Win.
 #if BUILDFLAG(IS_MAC)
-    "CaptureOn_AppWnd_ScopeA2X_ServerSideViaB_ViaLink_ShiftClick_WithOpener_"
-    "TargetBlank",
-    "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_"
-    "TargetBlank",
-    "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_"
-    "TargetBlank",
+    "AppWnd_ScopeA2X_ServerSideViaB_ViaLink_ShiftClick_WithOpener_TargetBlank",
+    "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_TargetBlank",
+    "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_TargetBlank",
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
     "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
