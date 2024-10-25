@@ -21,7 +21,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Based on |media.mojom.MediaLog| but does not depend on
 // |media.mojom.MediaLogRecord|.
 // Next min method ID: 1
-[Stable, Uuid="2e4c1aed-fd62-40e6-8601-e5c4288246c0"]
+[Uuid="2e4c1aed-fd62-40e6-8601-e5c4288246c0"]
 interface MediaLog {
   // Adds a log record to a MediaLog service.
   AddLogRecord@0(MediaLogRecord event);
@@ -30,7 +30,7 @@ interface MediaLog {
 // Based on |media.mojom.VideoFrameHandleReleaser| but does not depend on
 // |gpu.mojom.SyncToken|.
 // Next min method ID: 1
-[Stable, Uuid="8afdcf21-99d7-4864-a957-75d2a7e17da6"]
+[Uuid="8afdcf21-99d7-4864-a957-75d2a7e17da6"]
 interface VideoFrameHandleReleaser {
   // Signals that the VideoFrame identified by |release_token| should be
   // released.
@@ -40,7 +40,7 @@ interface VideoFrameHandleReleaser {
 // Based on |media.mojom.VideoDecoderClient| but does not depend on
 // |media.mojom.VideoFrame| or |media.mojom.WaitingReason|.
 // Next min method ID: 2
-[Stable, Uuid="8a6fce77-7fcc-42e1-ac74-443859039696"]
+[Uuid="8a6fce77-7fcc-42e1-ac74-443859039696"]
 interface VideoDecoderClient {
   // Output a decoded frame. Frames are output in presentation order.
   //
@@ -62,7 +62,7 @@ interface VideoDecoderClient {
 
 // Interface for handling callbacks from the StableCdmContext interface below.
 // Next min method ID: 1
-[Stable, Uuid="a1a73e1f-5297-49a2-a4e5-df875a44b61e"]
+[Uuid="a1a73e1f-5297-49a2-a4e5-df875a44b61e"]
 interface CdmContextEventCallback {
   // Sends the event back to the registrar.
   EventCallback@0(CdmContextEvent event);
@@ -71,7 +71,7 @@ interface CdmContextEventCallback {
 // Maps to the media::CdmContext interface for remoting it to another process.
 // Next MinVersion: 5
 // Next min method ID: 7
-[Stable, Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
+[Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
 interface StableCdmContext {
   // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
   [MinVersion=1]
@@ -115,7 +115,7 @@ interface StableCdmContext {
 // Based on |media.mojom.VideoDecoder|.
 // Next min method ID: 5
 // Next min version: 2
-[Stable, Uuid="85611470-3e87-43a9-ac75-a11a63e76415"]
+[Uuid="85611470-3e87-43a9-ac75-a11a63e76415"]
 interface StableVideoDecoder {
   // Returns a list of supported configs as well as the decoder ID for the
   // decoder which supports them. It is expected that Initialize() will fail
@@ -190,7 +190,7 @@ const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
 //
 // This interface is intended to be implemented by the browser process and used
 // by the video decoder processes.
-[Stable, Uuid="b2211aaa-78e9-4326-8c85-a7ab15b32032"]
+[Uuid="b2211aaa-78e9-4326-8c85-a7ab15b32032"]
 interface StableVideoDecoderTracker {};
 
 // A StableVideoDecoderFactory allows the browser process to bind a
@@ -198,7 +198,7 @@ interface StableVideoDecoderTracker {};
 // lacros-chrome browser process or a renderer process in ash-chrome.
 // Next min method ID: 1
 // Next min version: 2
-[Stable, Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
+[Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
 interface StableVideoDecoderFactory {
   // Creates a StableVideoDecoder and should be called by the browser process.
   // If |tracker| is provided, the caller can handle its disconnection in order

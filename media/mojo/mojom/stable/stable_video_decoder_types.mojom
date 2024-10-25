@@ -12,7 +12,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 
 // Maps to |media.mojom.VideoCodec|.
-[Stable, Extensible]
+[Extensible]
 enum VideoCodec {
   [Default] kUnknown = 0,
   kH264,
@@ -32,7 +32,7 @@ enum VideoCodec {
 };
 
 // Maps to |media.mojom.VideoCodecProfile|.
-[Stable, Extensible]
+[Extensible]
 enum VideoCodecProfile {
   // Keep the values in this enum unique, as they imply format (h.264 vs. VP8,
   // for example), and keep the values for a particular format grouped
@@ -113,14 +113,13 @@ enum VideoCodecProfile {
 
 // Based on |media.mojom.SubsampleEntry|.
 // Next min field ID: 2
-[Stable]
 struct SubsampleEntry {
   uint32 clear_bytes@0;
   uint32 cypher_bytes@1;
 };
 
 // Maps to |media.mojom.EncryptionScheme|.
-[Stable, Extensible]
+[Extensible]
 enum EncryptionScheme {
   [Default] kUnencrypted = 0,
   kCenc,  // 'cenc' subsample encryption using AES-CTR mode.
@@ -130,7 +129,6 @@ enum EncryptionScheme {
 // Based on |media.mojom.DecryptConfig| but does not depend on
 // |media.mojom.EncryptionScheme| and |media.mojom.SubsampleEntry|.
 // Next min field ID: 5
-[Stable]
 struct DecryptConfig {
   EncryptionScheme encryption_scheme@0;
   string key_id@1;
@@ -141,7 +139,6 @@ struct DecryptConfig {
 
 // Based on |gfx.mojom.ColorVolumeMetadata|.
 // Next min field ID: 6
-[Stable]
 struct ColorVolumeMetadata {
   gfx.mojom.PointF primary_r@0;
   gfx.mojom.PointF primary_g@1;
@@ -154,7 +151,6 @@ struct ColorVolumeMetadata {
 // Based on |gfx.mojom.HDRMetadata| but does not depend on
 // |gfx.mojom.ColorVolumeMetadata|.
 // Next min field ID: 3
-[Stable]
 struct HDRMetadata {
   ColorVolumeMetadata color_volume_metadata@0;
   uint32 max_content_light_level@1;
@@ -166,7 +162,6 @@ struct HDRMetadata {
 // |media.mojom.VideoTransformation|, |media.mojom.EncryptionScheme|,
 // |media.mojom.VideoColorSpace| and |gfx.mojom.HDRMetadata|.
 // Next min field ID: 11
-[Stable]
 struct VideoDecoderConfig {
   VideoCodec codec@0;
   VideoCodecProfile profile@1;
@@ -184,7 +179,6 @@ struct VideoDecoderConfig {
 // Based on |media.mojom.SupportedVideoDecoderConfig| but does not
 // depend on |media.mojom.VideoCodecProfile|
 // Next min field ID: 6
-[Stable]
 struct SupportedVideoDecoderConfig {
   // Range of VideoCodecProfiles to match, inclusive.
   VideoCodecProfile profile_min@0;
@@ -201,7 +195,7 @@ struct SupportedVideoDecoderConfig {
   bool require_encrypted@5;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum StatusCode {
   kOk_DEPRECATED,
   kAborted,
@@ -210,7 +204,6 @@ enum StatusCode {
 
 // Based on |media.mojom.StatusData|.
 // Next min field ID: 6
-[Stable]
 struct StatusData {
   string group@0;
   StatusCode code@1;
@@ -224,14 +217,12 @@ struct StatusData {
 
 // Based on |media.mojom.Status|.
 // Next min field ID: 1
-[Stable]
 struct Status {
   StatusData? internal@0;
 };
 
 // Based on |media.mojom.DecoderBufferSideData|.
 // Next min field ID: 3
-[Stable]
 struct DecoderBufferSideData {
   array<uint32> spatial_layers@0;
   array<uint8> alpha_data@1;
@@ -242,7 +233,6 @@ struct DecoderBufferSideData {
 // |media.mojom.DecryptConfig|.
 // Next min field ID: 10
 // Next version: 2
-[Stable]
 struct DecoderBuffer {
   mojo_base.mojom.TimeDelta timestamp@0;
   mojo_base.mojom.TimeDelta duration@1;
@@ -265,7 +255,7 @@ struct DecoderBuffer {
 };
 
 // Maps to |media.mojom.VideoDecoderType|.
-[Stable, Extensible]
+[Extensible]
 enum VideoDecoderType {
   [Default] kUnknown,
   kVaapi,
@@ -275,7 +265,7 @@ enum VideoDecoderType {
 };
 
 // Maps to |gfx.mojom.ColorSpacePrimaryID|.
-[Stable, Extensible]
+[Extensible]
 enum ColorSpacePrimaryID {
   [Default] kInvalid,
   kBT709,
@@ -297,7 +287,7 @@ enum ColorSpacePrimaryID {
 };
 
 // Maps to |gfx.mojom.ColorSpaceTransferID|.
-[Stable, Extensible]
+[Extensible]
 enum ColorSpaceTransferID {
   [Default] kInvalid,
   kBT709,
@@ -328,7 +318,7 @@ enum ColorSpaceTransferID {
 };
 
 // Maps to |gfx.mojom.ColorSpaceMatrixID|.
-[Stable, Extensible]
+[Extensible]
 enum ColorSpaceMatrixID {
   [Default] kInvalid,
   kRGB,
@@ -346,7 +336,7 @@ enum ColorSpaceMatrixID {
 };
 
 // Maps to |gfx.mojom.ColorSpaceRangeID|.
-[Stable, Extensible]
+[Extensible]
 enum ColorSpaceRangeID {
   [Default] kInvalid,
   kLimited,
@@ -358,7 +348,6 @@ enum ColorSpaceRangeID {
 // |gfx.mojom.ColorSpacePrimaryID|, |gfx.mojom.ColorSpaceTransferID|,
 // |gfx.mojom.ColorSpaceMatrixID| and |gfx.mojom.ColorSpaceRangeID|.
 // Next min field ID: 6
-[Stable]
 struct ColorSpace {
   ColorSpacePrimaryID primaries@0;
   ColorSpaceTransferID transfer@1;
@@ -369,7 +358,7 @@ struct ColorSpace {
 };
 
 // Maps to |media.mojom.VideoPixelFormat|.
-[Stable, Extensible]
+[Extensible]
 enum VideoPixelFormat {
   [Default] kPixelFormatUnknown = 0,  // Unknown or unspecified format value.
   kPixelFormatI420 =
@@ -459,7 +448,6 @@ enum VideoPixelFormat {
 // Based on |gfx.mojom.GpuMemoryBufferHandle| but does not depend on
 // |gfx.mojom.GpuMemoryBufferPlatformHandle|.
 // Next min field ID: 2
-[Stable]
 struct NativeGpuMemoryBufferHandle {
   gfx.mojom.GpuMemoryBufferId id@0;
   NativePixmapHandle platform_handle@1;
@@ -469,7 +457,6 @@ struct NativeGpuMemoryBufferHandle {
 // |media.mojom.VideoTransformation|.
 // Next min field ID: 3
 // Next version: 2
-[Stable]
 struct VideoFrameMetadata {
   bool protected_video@0;
   bool hw_protected@1;
@@ -481,7 +468,6 @@ struct VideoFrameMetadata {
 // |media.mojom.VideoFrameMetadata|, |gfx.mojom.ColorSpace| or
 // or |gfx.mojom.HDRMetadata|.
 // Next min field ID: 9
-[Stable]
 struct VideoFrame {
   // Format of the frame.
   VideoPixelFormat format@0;
@@ -509,7 +495,7 @@ struct VideoFrame {
 };
 
 // Maps to |media.mojom.WaitingReason|.
-[Stable, Extensible]
+[Extensible]
 enum WaitingReason {
   // The playback cannot start because "Media Data May Contain Encrypted Blocks"
   // and no CDM is available. The playback will start after a CDM is set. See
@@ -535,9 +521,8 @@ enum WaitingReason {
 
 // Based on |media.mojom.MediaLogRecord|.
 // Next min field ID: 4
-[Stable]
 struct MediaLogRecord {
-  [Stable, Extensible]
+  [Extensible]
   enum Type {
     // See media/base/media_log_message_levels.h for info.
     [Default] kMessage,
@@ -557,14 +542,14 @@ struct MediaLogRecord {
   mojo_base.mojom.TimeTicks time@3;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum DecryptStatus {
   kSuccess,
   kNoKey,
   [Default] kFailure,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum CdmContextEvent {
   // We use |kHasAdditionalUsableKey| as the default since this maps to an
   // existing enum in Chrome that only has the two values below. Receiving an
