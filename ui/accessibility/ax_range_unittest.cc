@@ -74,8 +74,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
     if (!node)
       return gfx::Rect();
 
-    TestAXNodeHelper* wrapper =
-        TestAXNodeHelper::GetOrCreate(tree_manager_->GetTree(), node);
+    auto wrapper = TestAXNodeHelper::Create(tree_manager_->GetTree(), node);
     return wrapper->GetInnerTextRangeBoundsRect(
         start_offset, end_offset, AXCoordinateSystem::kScreenDIPs,
         clipping_behavior, offscreen_result);
@@ -91,8 +90,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
     if (!node)
       return gfx::Rect();
 
-    TestAXNodeHelper* wrapper =
-        TestAXNodeHelper::GetOrCreate(tree_manager_->GetTree(), node);
+    auto wrapper = TestAXNodeHelper::Create(tree_manager_->GetTree(), node);
     return wrapper->GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
                                   AXClippingBehavior::kClipped,
                                   offscreen_result);

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -109,7 +110,8 @@ class AXTreeChangeWaiter : public ui::AXTreeObserver {
   }
 
   void WaitForChange(ui::AXTree* tree) {
-    tree->AddObserver(this);
+    base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> observation(this);
+    observation.Observe(tree);
     loop_runner_->Run();
     loop_runner_.reset();
     loop_runner_quit_closure_.Reset();

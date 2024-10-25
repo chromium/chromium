@@ -11,9 +11,11 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -28,7 +30,9 @@ namespace ui {
 
 // For testing, a TestAXNodeWrapper wraps an AXNode, implements
 // AXPlatformNodeDelegate, and owns an AXPlatformNode.
-class TestAXNodeWrapper : public AXPlatformNodeDelegate {
+// TODO(crbug.com/374813016): Refactor global variables into class members in
+// ui/accessibility/platform/test_ax_node_wrapper.h
+class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
  public:
   // Create TestAXNodeWrapper instances on-demand from an AXTree and AXNode.
   static TestAXNodeWrapper* GetOrCreate(AXTree* tree, AXNode* node);
@@ -197,12 +201,16 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   // Determine the offscreen status of a particular element given its bounds.
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
+  // `AXTreeObserver`
+  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override;
+
   raw_ptr<AXTree> tree_;
-  raw_ptr<AXNode, DanglingUntriaged> node_;
+  raw_ptr<AXNode> node_;
   AXUniqueId unique_id_;
   raw_ptr<AXPlatformNode> platform_node_;
   gfx::AcceleratedWidget native_event_target_;
   bool minimized_ = false;
+  base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};
 };
 
 }  // namespace ui

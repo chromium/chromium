@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node.h"
@@ -149,9 +150,15 @@ class TestAXTreeObserver final : public AXTreeObserver {
   TestAXTreeObserver(const TestAXTreeObserver&) = delete;
   TestAXTreeObserver& operator=(const TestAXTreeObserver&) = delete;
 
+  void Observe(AXTree* tree) {
+    ASSERT_FALSE(observation_.IsObserving());
+    observation_.Observe(tree);
+  }
+
   void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override {
     ++manager_remove_count_;
     previous_tree_id_ = previous_tree_id;
+    observation_.Reset();
   }
 
   int manager_remove_count() const { return manager_remove_count_; }
@@ -161,6 +168,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
  private:
   int manager_remove_count_ = 0;
   AXTreeID previous_tree_id_;
+  base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};
 };
 
 }  // namespace
@@ -328,7 +336,7 @@ TEST_F(AXTreeManagerBaseTest, AttachingAndDetachingChildTrees) {
 
 TEST_F(AXTreeManagerBaseTest, Observers) {
   TestAXTreeObserver observer;
-  simple_manager_.GetTree()->AddObserver(&observer);
+  observer.Observe(simple_manager_.GetTree());
   EXPECT_TRUE(simple_manager_.GetTree()->HasObserver(&observer));
   EXPECT_FALSE(complex_manager_.GetTree()->HasObserver(&observer));
 
@@ -341,7 +349,7 @@ TEST_F(AXTreeManagerBaseTest, Observers) {
   EXPECT_EQ(1, observer.manager_remove_count());
   EXPECT_EQ(simple_tree_id_, observer.previous_tree_id());
 
-  simple_manager_.GetTree()->AddObserver(&observer);
+  observer.Observe(simple_manager_.GetTree());
   simple_manager_.ReleaseTree();
   EXPECT_EQ(2, observer.manager_remove_count());
   EXPECT_EQ(new_tree_id, observer.previous_tree_id());

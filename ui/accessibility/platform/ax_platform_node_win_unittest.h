@@ -87,6 +87,8 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
 
   void TearDown() override;
 
+  void DestroyTree() override;
+
  protected:
   static const std::u16string kEmbeddedCharacterAsString;
 

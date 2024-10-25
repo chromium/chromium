@@ -24,6 +24,9 @@ class AXPlatformNodeTest : public ::testing::Test,
   AXPlatformNodeTest(const AXPlatformNodeTest&) = delete;
   AXPlatformNodeTest& operator=(const AXPlatformNodeTest&) = delete;
 
+  // `TestSingleAXTreeManager`
+  void SetTree(std::unique_ptr<AXTree> tree) override;
+
  protected:
   void TearDown() override;
 

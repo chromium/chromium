@@ -817,6 +817,8 @@ AXTree::~AXTree() {
   // observer list will already be destroyed. To avoid that problem, free
   // language detection manager before.
   language_detection_manager.reset();
+
+  CHECK(observers_.empty());
 }
 
 void AXTree::AddObserver(AXTreeObserver* observer) {

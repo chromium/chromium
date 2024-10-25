@@ -289,9 +289,15 @@ void AXPlatformNodeWinTest::TearDown() {
   // Destroy the tree and make sure we're not leaking any objects.
   ax_fragment_root_.reset(nullptr);
   DestroyTree();
-  TestAXNodeWrapper::SetGlobalIsWebContent(false);
-  TestAXNodeWrapper::ResetGlobalState();
   ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
+}
+
+void AXPlatformNodeWinTest::DestroyTree() {
+  TestAXNodeWrapper::SetGlobalIsWebContent(false);
+  // Must unregister all observers from the tree before it is destroyed.
+  TestAXNodeWrapper::ResetGlobalState();
+
+  TestSingleAXTreeManager::DestroyTree();
 }
 
 AXPlatformNode* AXPlatformNodeWinTest::AXPlatformNodeFromNode(AXNode* node) {

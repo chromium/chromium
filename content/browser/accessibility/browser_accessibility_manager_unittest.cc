@@ -9,9 +9,11 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #if BUILDFLAG(IS_WIN)
 #include "ui/accessibility/platform/browser_accessibility_win.h"
@@ -1284,7 +1286,9 @@ TEST_F(BrowserAccessibilityManagerTest, TreeUpdatesAreMergedWhenPossible) {
   std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       CreateBrowserAccessibilityManager(
           tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
-  manager->ax_tree()->AddObserver(&observer);
+  base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> observation(
+      &observer);
+  observation.Observe(manager->ax_tree());
 
   // Update each of the children using separate AXTreeUpdates.
   ui::AXUpdatesAndEvents events;
@@ -1512,7 +1516,10 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
       CreateBrowserAccessibilityManager(
           update1, node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
-  manager->ax_tree()->AddObserver(&observer);
+  base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> observation(
+      &observer);
+  observation.Observe(manager->ax_tree());
+
   ASSERT_EQ(0, observer.reparent_count());
   ASSERT_EQ(0, observer.node_count());
 
