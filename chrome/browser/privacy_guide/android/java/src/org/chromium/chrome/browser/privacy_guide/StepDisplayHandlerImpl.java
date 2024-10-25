@@ -69,7 +69,10 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
                 WebsitePreferenceBridge.isCategoryEnabled(mProfile, ContentSettingsType.COOKIES);
         @CookieControlsMode
         int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(mProfile);
-        return allowCookies && cookieControlsMode != CookieControlsMode.OFF;
+        return allowCookies
+                && (cookieControlsMode != CookieControlsMode.OFF
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO));
     }
 
     @Override

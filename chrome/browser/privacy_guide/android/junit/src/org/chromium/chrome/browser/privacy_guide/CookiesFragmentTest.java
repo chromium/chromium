@@ -26,8 +26,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -106,6 +109,7 @@ public class CookiesFragmentTest {
     }
 
     @Test(expected = AssertionError.class)
+    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testInitWhenCookiesAllowed() {
         initFragmentWithCookiesState(CookieControlsMode.OFF, true);
     }
@@ -165,5 +169,12 @@ public class CookiesFragmentTest {
         mBlockThirdParty.performClick();
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeCookiesBlock3P"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void blockThirdPartyIncogintoCheckedWhenOff() {
+        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
+        assertTrue(mBlockThirdPartyIncognito.isChecked());
     }
 }

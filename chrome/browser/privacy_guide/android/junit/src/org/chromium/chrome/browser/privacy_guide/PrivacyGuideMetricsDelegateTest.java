@@ -338,6 +338,7 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PIncognitoTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -351,6 +352,7 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.INCOGNITO_ONLY);
@@ -364,12 +366,39 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.BLOCK_THIRD_PARTY);
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void testCookies_offTo3PSettingsStatesHistogram() {
+        mockCookieControlsMode(CookieControlsMode.OFF, CookieControlsMode.BLOCK_THIRD_PARTY);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void testCookies_offTo3PIncognitoSettingsStatesHistogram() {
+        mockCookieControlsMode(CookieControlsMode.OFF, CookieControlsMode.INCOGNITO_ONLY);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
         watcher.assertExpected();
     }

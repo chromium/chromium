@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -190,8 +191,15 @@ class PrivacyGuideMetricsDelegate {
         @CookieControlsMode int currentValue = PrivacyGuideUtils.getCookieControlsMode(mProfile);
 
         boolean isInitialStateBlock3PIncognito =
-                mInitialCookiesControlMode == CookieControlsMode.INCOGNITO_ONLY;
-        boolean isEndStateBlock3PIncognito = currentValue == CookieControlsMode.INCOGNITO_ONLY;
+                mInitialCookiesControlMode == CookieControlsMode.INCOGNITO_ONLY
+                        || (ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
+                                && mInitialCookiesControlMode == CookieControlsMode.OFF);
+        boolean isEndStateBlock3PIncognito =
+                currentValue == CookieControlsMode.INCOGNITO_ONLY
+                        || (ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
+                                && currentValue == CookieControlsMode.OFF);
 
         @PrivacyGuideSettingsStates int stateChange;
 

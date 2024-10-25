@@ -13,6 +13,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -74,6 +75,10 @@ public class CookiesFragment extends PrivacyGuideBasePage
                 mBlockThirdParty.setChecked(true);
                 break;
             case CookieControlsMode.OFF:
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
+                    mBlockThirdPartyIncognito.setChecked(true);
+                    break;
+                }
                 assert false : "Cookies page should not be shown when cookie control is off";
                 break;
             default:

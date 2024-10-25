@@ -186,6 +186,7 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testDontDisplayCookiesWhenCookiesAllAllowed() {
         setCookieState(CookieControlsMode.OFF, true);
         assertFalse(mStepDisplayHandler.shouldDisplayCookies());
@@ -207,6 +208,13 @@ public class StepDisplayHandlerImplTest {
     public void testDontDisplayCookiesWhenCookiesAllBlocked() {
         setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, false);
         assertFalse(mStepDisplayHandler.shouldDisplayCookies());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void testShowDisplayCookiesWhenAlwaysBlock3pcsIncognitoEnabled() {
+        setCookieState(CookieControlsMode.OFF, true);
+        assertTrue(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
