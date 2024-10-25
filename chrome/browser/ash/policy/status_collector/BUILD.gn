@@ -40,6 +40,7 @@ static_library("status_collector") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/child_accounts/time_limits",
