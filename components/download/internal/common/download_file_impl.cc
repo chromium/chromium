@@ -1016,6 +1016,6 @@ DownloadFileImpl::RenameParameters::RenameParameters(
       retries_left(kMaxRenameRetries),
       completion_callback(std::move(completion_callback)) {}
 
-DownloadFileImpl::RenameParameters::~RenameParameters() {}
+DownloadFileImpl::RenameParameters::~RenameParameters() = default;
 
 }  // namespace download
