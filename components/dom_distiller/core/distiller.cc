@@ -47,9 +47,9 @@ std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistillerForUrl(
   return std::move(distiller);
 }
 
-DistillerImpl::DistilledPageData::DistilledPageData() {}
+DistillerImpl::DistilledPageData::DistilledPageData() = default;
 
-DistillerImpl::DistilledPageData::~DistilledPageData() {}
+DistillerImpl::DistilledPageData::~DistilledPageData() = default;
 
 DistillerImpl::DistillerImpl(
     const DistillerURLFetcherFactory& distiller_url_fetcher_factory,
