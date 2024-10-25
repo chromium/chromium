@@ -6,9 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -26,7 +27,9 @@ namespace password_manager {
 BrandedNavigationItemTitleView* CreatePasswordManagerTitleView(
     NSString* title) {
   BrandedNavigationItemTitleView* title_view =
-      [[BrandedNavigationItemTitleView alloc] init];
+      [[BrandedNavigationItemTitleView alloc]
+          initWithFont:ios::provider::GetBrandedProductRegularFont(
+                           UIFont.labelFontSize)];
 
   title_view.title = title;
 

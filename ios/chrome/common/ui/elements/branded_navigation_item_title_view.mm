@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/public/provider/chrome/browser/font/font_api.h"
 
 @interface BrandedNavigationItemTitleView () {
   UILabel* _titleLabel;
   UIImageView* _logoImageView;
   UIStackView* _containerStackView;
+  UIFont* _font;
 }
 
 @end
 
 @implementation BrandedNavigationItemTitleView
 
-- (instancetype)init {
+- (instancetype)initWithFont:(UIFont*)font {
   self = [super init];
 
   if (self) {
+    _font = font;
     _titleLabel = [self createTitleLabel];
     _logoImageView = [self createLogoImageView];
     _containerStackView = [self createContainerStackView];
@@ -78,10 +79,8 @@
 - (UILabel*)createTitleLabel {
   UILabel* label = [[UILabel alloc] init];
 
-  UIFont* productFont =
-      ios::provider::GetBrandedProductRegularFont(UIFont.labelFontSize);
   label.font = [[[UIFontMetrics alloc] initForTextStyle:UIFontTextStyleHeadline]
-      scaledFontForFont:productFont];
+      scaledFontForFont:_font];
   label.adjustsFontForContentSizeCategory = YES;
 
   label.textColor = [UIColor colorNamed:kGrey700Color];

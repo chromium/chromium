@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_
-#define IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_
+#ifndef IOS_CHROME_COMMON_UI_ELEMENTS_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_
+#define IOS_CHROME_COMMON_UI_ELEMENTS_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
 // Navigation Item title branded with the Product Sans Regular font and a logo.
 @interface BrandedNavigationItemTitleView : UIView
+
+// Initializes the view with the provided title font.
+- (instancetype)initWithFont:(UIFont*)font;
 
 // The title text displayed in the view.
 @property(nonatomic, copy) NSString* title;
@@ -21,4 +24,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_
+#endif  // IOS_CHROME_COMMON_UI_ELEMENTS_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_

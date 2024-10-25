@@ -123,6 +123,7 @@ source_set("password_ui") {
     "//ios/chrome/common",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/reauthentication",
@@ -153,9 +154,9 @@ source_set("title_view") {
   ]
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/public/provider/chrome/browser/font:font_api",
     "//ui/base",
   ]

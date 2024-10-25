@@ -41,10 +41,10 @@ source_set("reauthentication_ui") {
   deps = [
     ":reauthentication_constants",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
