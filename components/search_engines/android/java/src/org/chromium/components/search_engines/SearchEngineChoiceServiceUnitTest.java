@@ -17,8 +17,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
@@ -37,6 +35,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 import org.chromium.components.search_engines.test.util.SearchEnginesFeaturesTestUtil;
 
@@ -48,15 +48,15 @@ import java.util.Map;
 
 @SmallTest
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@EnableFeatures(SearchEnginesFeatures.CLAY_BACKEND_CONNECTION_V2)
 public class SearchEngineChoiceServiceUnitTest {
-    @Parameters
+    @Parameters(name = "isClayBlockingEnabled={0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{true}, {false}});
     }
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private @Mock Context mContext;
     private @Mock SearchEngineCountryDelegate mDelegate;
 
     private final boolean mIsClayBlockingEnabled;
@@ -81,13 +81,20 @@ public class SearchEngineChoiceServiceUnitTest {
 
     @Test
     public void testAbstractDelegate() {
-        var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate(mContext) {});
+        var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate() {});
 
         // The default implementation should be set to not trigger anything disruptive.
         assertTrue(service.getDeviceCountry().isRejected());
 
         assertFalse(service.isDeviceChoiceDialogEligible());
         assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
+        assertFalse(service.isDefaultBrowserPromoSuppressed());
+
+        service.notifyDeviceChoiceBlockShown();
+        service.launchDeviceChoiceScreens();
+        service.refreshDeviceChoiceRequiredNow(RefreshReason.APP_RESUME);
+        service.notifyDeviceChoiceBlockCleared();
+        ShadowLooper.runUiThreadTasks();
     }
 
     @Test
@@ -118,9 +125,11 @@ public class SearchEngineChoiceServiceUnitTest {
         }
 
         // The calls below should be fine to run without triggering anything.
-        service.launchDeviceChoiceScreens();
-        service.notifyDeviceChoiceBlockCleared();
+        assertFalse(service.isDefaultBrowserPromoSuppressed());
         service.notifyDeviceChoiceBlockShown();
+        service.launchDeviceChoiceScreens();
+        service.refreshDeviceChoiceRequiredNow(RefreshReason.APP_RESUME);
+        service.notifyDeviceChoiceBlockCleared();
         ShadowLooper.runUiThreadTasks();
     }
 
@@ -312,7 +321,7 @@ public class SearchEngineChoiceServiceUnitTest {
             }
             SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(params);
         } else {
-            FeatureList.setTestFeatures(Map.of(SearchEnginesFeatures.CLAY_BLOCKING, false));
+            SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(null);
         }
     }
 }

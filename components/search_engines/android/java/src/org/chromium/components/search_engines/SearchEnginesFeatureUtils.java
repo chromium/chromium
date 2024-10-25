@@ -96,6 +96,20 @@ public final class SearchEnginesFeatureUtils {
                 "default_browser_promo_suppressed_millis", 24 * 60 * 60 * 1000);
     }
 
+    /**
+     * Number of times a failed backend call will be retried.
+     *
+     * <p>Should be a positive value. {@code 0} or values that are not positive integers will result
+     * in failures being directly propagated without retrying.
+     */
+    public static int clayConnectionV2MaxRetries() {
+        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BACKEND_CONNECTION_V2);
+
+        return SearchEnginesFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsInt(
+                        SearchEnginesFeatures.CLAY_BACKEND_CONNECTION_V2, "max_retries", 0);
+    }
+
     @VisibleForTesting
     static boolean clayBlockingFeatureParamAsBoolean(String param, boolean defaultValue) {
         assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)

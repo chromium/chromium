@@ -81,6 +81,11 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 // default apps (for Browser & Search) in Android.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kClayBlocking);
+
+// Enables the alternative behaviour for the connection to the default apps
+// choice internal backend in Android.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kClayBackendConnectionV2);
 #endif
 
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source

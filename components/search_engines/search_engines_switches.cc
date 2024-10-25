@@ -77,6 +77,11 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount{
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kClayBlocking, "ClayBlocking", base::FEATURE_DISABLED_BY_DEFAULT);
+
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kClayBackendConnectionV2,
+             "ClayBackendConnectionV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

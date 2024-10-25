@@ -82,6 +82,10 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow() {
+        // For code coverage.
+        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
+                Map.of("enable_verbose_logging", "true"));
+
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Search.OsDefaultsChoice.DialogShownAttempt", 1)
