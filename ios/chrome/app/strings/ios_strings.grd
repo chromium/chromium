@@ -3693,6 +3693,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_SAVE_BUTTON" desc="Save button text for adding a new credential manually via settings [Length: 10em]">
         Save
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR" desc="Text on the alert dialog explaining an error in the update PIN flow. [iOS only]">
+        Your PIN wasn't changed. Check your internet connection and try again
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON" desc="Text on the button in the alert dialog explaining an error in the update PIN flow. [iOS only]">
+        Got it
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_TITLE" desc="Title text on the alert dialog explaining an error in the update PIN flow. [iOS only]">
+        Something went wrong
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT" desc="Placeholder text for the username field indicating that the field is optional when adding a new credential manually via settings [Length: 10em]">
         optional
       </message>

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -68,6 +69,11 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogCancelled =
 // dialog's accept button is clicked.
 constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
     "Mobile.PasswordsSettings.BulkSavePasswordsToAccountDialog.Accepted";
+
+// Represents the code of an error returned when the user dismisses the update
+// GPM Pin flow by clicking the "Cancel" button. This should not be treated as
+// an actual error.
+const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
 }  // namespace
 
@@ -164,6 +170,9 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
   // Identity of the user. Can be nil if there is no primary account.
   id<SystemIdentity> _identity;
+
+  // Coordinator for displaying errors in update GPM PIN flow.
+  AlertCoordinator* _updateGPMPinErrorCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -350,6 +359,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   [_dispatcher closePresentedViewsAndOpenURL:command];
 }
 
+// TODO(crbug.com/358342483): Add EG tests.
 - (void)showChangeGPMPinDialog {
   __weak __typeof(self) weakSelf = self;
   TrustedVaultClientBackendFactory::GetForProfile(self.browser->GetProfile())
@@ -694,6 +704,49 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   [self startReauthCoordinatorWithAuthOnStart:NO];
 }
 
+// Starts `_updateGPMPinErrorCoordinator` from the currently visible view
+// controller (which should be the update GPM Pin VC). The cancel completion
+// should close both of them.
+- (void)startUpdateGPMPinErrorCoordinator {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_TITLE);
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR);
+  NSString* buttonTitle =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON);
+
+  [_updateGPMPinErrorCoordinator stop];
+  _updateGPMPinErrorCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:_settingsNavigationController
+                                     .visibleViewController
+                         browser:self.browser
+                           title:title
+                         message:message];
+  __weak __typeof(self) weakSelf = self;
+  [_updateGPMPinErrorCoordinator
+      addItemWithTitle:buttonTitle
+                action:^() {
+                  [weakSelf dismissUpdateGPMPinViewController];
+                  [weakSelf stopUpdateGPMPinErrorCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
+  [_updateGPMPinErrorCoordinator start];
+}
+
+// Stops `_updateGPMPinErrorCoordinator`.
+- (void)stopUpdateGPMPinErrorCoordinator {
+  [_updateGPMPinErrorCoordinator stop];
+  _updateGPMPinErrorCoordinator = nil;
+}
+
+// Dismisses the view controller displayed by trusted vault client backend for
+// the update GPM Pin flow.
+- (void)dismissUpdateGPMPinViewController {
+  [_settingsNavigationController.topViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
+
 // Starts the export passwords flow after the user confirmed the corresponding
 // alert.
 - (void)onStartExportFlowConfirmed {
@@ -705,15 +758,15 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   [_mediator exportFlowCanceled];
 }
 
-// Dismisses the UI presented by `settingsNavigationController` for the GPM Pin
-// update and handles `error` if it is not nil.
+// Handles update GPM Pin flow completion. If there is an `error` other than
+// user dismissing the flow by clicking "Cancel", presents the error alert.
+// Otherwise, dismisses the UI.
 - (void)updateGPMPinFinishedWithError:(NSError*)error {
-  [_settingsNavigationController.topViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-
-  // TODO(crbug.com/358342483): Check with UX how to handle displaying success /
-  // errors.
+  if (error && error.code != kErrorUserDismissedUpdateGPMPinFlow) {
+    [self startUpdateGPMPinErrorCoordinator];
+  } else {
+    [self dismissUpdateGPMPinViewController];
+  }
 }
 
 @end
