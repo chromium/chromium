@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_CHROMEOS_DRIVEFS_DRIVEFS_NATIVE_MESSAGE_HOST_ORIGINS_H_
 #define CHROME_BROWSER_CHROMEOS_DRIVEFS_DRIVEFS_NATIVE_MESSAGE_HOST_ORIGINS_H_
 
-#include "base/containers/span.h"
+#include <array>
 
 namespace drive {
 
-extern const char kDriveFsNativeMessageHostName[];
+inline constexpr char kDriveFsNativeMessageHostName[] =
+    "com.google.drive.nativeproxy";
 
-extern const base::span<const char* const> kDriveFsNativeMessageHostOrigins;
+inline constexpr auto kDriveFsNativeMessageHostOrigins =
+    std::to_array({"chrome-extension://lmjegmlicamnimmfhcmpkclmigmmcbeh/"});
 
 }  // namespace drive
 
-#endif  //  CHROME_BROWSER_CHROMEOS_DRIVEFS_DRIVEFS_NATIVE_MESSAGE_HOST_ORIGINS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_DRIVEFS_DRIVEFS_NATIVE_MESSAGE_HOST_ORIGINS_H_

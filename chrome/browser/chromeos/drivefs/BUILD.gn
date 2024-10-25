@@ -8,10 +8,7 @@ assert(is_chromeos)
 
 source_set("native_message_host_origins") {
   deps = [ "//base" ]
-  sources = [
-    "drivefs_native_message_host_origins.cc",
-    "drivefs_native_message_host_origins.h",
-  ]
+  sources = [ "drivefs_native_message_host_origins.h" ]
 }
 
 source_set("drivefs") {
