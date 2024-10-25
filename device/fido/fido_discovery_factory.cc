@@ -16,14 +16,13 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/hid/fido_hid_discovery.h"
-#include "device/fido/mac/icloud_keychain.h"
 
 #if BUILDFLAG(IS_WIN)
 // clang-format off
 // rpc.h needs to be included before winuser.h.
 #include <rpc.h>
 #include <Winuser.h>
-//clang-format on
+// clang-format on
 
 #include "device/fido/win/discovery.h"
 #include "device/fido/win/webauthn_api.h"
@@ -32,6 +31,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/process/process_info.h"
 #include "device/fido/mac/discovery.h"
+#include "device/fido/mac/icloud_keychain.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
