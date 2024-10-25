@@ -67,7 +67,9 @@ MATCHER_P(HasUserColor, color, "") {
 
 std::unique_ptr<syncer::LoopbackServerEntity> CreateDefaultThemeEntity() {
   sync_pb::EntitySpecifics specifics;
-  specifics.mutable_theme();
+  // Clients always write `browser_color_scheme` field.
+  specifics.mutable_theme()->set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
       ThemeSyncableService::kSyncEntityClientTag,
       ThemeSyncableService::kSyncEntityClientTag, specifics,
@@ -76,6 +78,9 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateDefaultThemeEntity() {
 
 std::unique_ptr<syncer::LoopbackServerEntity> CreateSystemThemeEntity() {
   sync_pb::EntitySpecifics specifics;
+  // Clients always write `browser_color_scheme` field.
+  specifics.mutable_theme()->set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
   specifics.mutable_theme()->set_use_system_theme_by_default(true);
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
       ThemeSyncableService::kSyncEntityTitle,
