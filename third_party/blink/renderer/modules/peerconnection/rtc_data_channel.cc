@@ -876,6 +876,7 @@ void RTCDataChannel::BlobReader::DidFinishLoading(FileReaderData data) {
   message_->buffer_ = webrtc::DataBuffer(buffer, true);
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBufferReady;
   data_channel_->ProcessSendQueue();
+  Dispose();
 }
 
 void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
@@ -886,6 +887,7 @@ void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
       "Couldn't read Blob content, skipping message."));
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBlobFailure;
   data_channel_->ProcessSendQueue();
+  Dispose();
 }
 
 RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
@@ -896,7 +898,8 @@ RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
           this,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       data_channel_(data_channel),
-      message_(message) {}
+      message_(message),
+      keep_alive_(this) {}
 
 RTCDataChannel::BlobReader::~BlobReader() = default;
 
@@ -921,6 +924,12 @@ bool RTCDataChannel::BlobReader::HasFinishedLoading() const {
 void RTCDataChannel::BlobReader::ContextDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   loader_->Cancel();
+  Dispose();
+}
+
+void RTCDataChannel::BlobReader::Dispose() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keep_alive_.Clear();
 }
 
 }  // namespace blink
