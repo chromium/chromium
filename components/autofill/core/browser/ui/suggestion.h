@@ -475,7 +475,6 @@ struct Suggestion {
   bool HasDeactivatedStyle() const;
 };
 
-std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);
 void PrintTo(const Suggestion& suggestion, std::ostream* os);
 
 }  // namespace autofill

@@ -12,20 +12,118 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
+
 namespace {
-  std::string_view ConvertAcceptabilityToPrintableString(
-    Suggestion::Acceptability acceptability) {
-    switch (acceptability) {
-      case Suggestion::Acceptability::kAcceptable:
-        return "kAcceptable";
-      case Suggestion::Acceptability::kUnacceptable:
-        return "kUnacceptable";
-      case Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle:
-        return "kUnacceptableWithDeactivatedStyle";
-    }
-    NOTREACHED();
+
+std::string_view ConvertAcceptabilityToPrintableString(
+  Suggestion::Acceptability acceptability) {
+  switch (acceptability) {
+    case Suggestion::Acceptability::kAcceptable:
+      return "kAcceptable";
+    case Suggestion::Acceptability::kUnacceptable:
+      return "kUnacceptable";
+    case Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle:
+      return "kUnacceptableWithDeactivatedStyle";
   }
+  NOTREACHED();
+}
+
+std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
+  switch (icon) {
+    case Suggestion::Icon::kAccount:
+      return "kAccount";
+    case Suggestion::Icon::kClear:
+      return "kClear";
+    case Suggestion::Icon::kCreate:
+      return "kCreate";
+    case Suggestion::Icon::kCode:
+      return "kCode";
+    case Suggestion::Icon::kDelete:
+      return "kDelete";
+    case Suggestion::Icon::kDevice:
+      return "kDevice";
+    case Suggestion::Icon::kEdit:
+      return "kEdit";
+    case Suggestion::Icon::kEmail:
+      return "kEmail";
+    case Suggestion::Icon::kEmpty:
+      return "kEmpty";
+    case Suggestion::Icon::kError:
+      return "kError";
+    case Suggestion::Icon::kGlobe:
+      return "kGlobe";
+    case Suggestion::Icon::kGoogle:
+      return "kGoogle";
+    case Suggestion::Icon::kGoogleMonochrome:
+      return "kGoogleMonochrome";
+    case Suggestion::Icon::kGooglePasswordManager:
+      return "kGooglePasswordManager";
+    case Suggestion::Icon::kGooglePay:
+      return "kGooglePay";
+    case Suggestion::Icon::kGooglePayDark:
+      return "kGooglePayDark";
+    case Suggestion::Icon::kHttpWarning:
+      return "kHttpWarning";
+    case Suggestion::Icon::kHttpsInvalid:
+      return "kHttpsInvalid";
+    case Suggestion::Icon::kKey:
+      return "kKey";
+    case Suggestion::Icon::kLocation:
+      return "kLocation";
+    case Suggestion::Icon::kMagic:
+      return "kMagic";
+    case Suggestion::Icon::kOfferTag:
+      return "kOfferTag";
+    case Suggestion::Icon::kPenSpark:
+      return "kPenSpark";
+    case Suggestion::Icon::kScanCreditCard:
+      return "kScanCreditCard";
+    case Suggestion::Icon::kSettings:
+      return "kSettings";
+    case Suggestion::Icon::kAutofillPredictionImprovements:
+      return "kAutofillPredictionImprovements";
+    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
+      return "kAutofillPredictionImprovementsDark";
+    case Suggestion::Icon::kSettingsAndroid:
+      return "kSettingsAndroid";
+    case Suggestion::Icon::kUndo:
+      return "kUndo";
+    case Suggestion::Icon::kCardGeneric:
+      return "kCardGeneric";
+    case Suggestion::Icon::kCardAmericanExpress:
+      return "kCardAmericanExpress";
+    case Suggestion::Icon::kCardDiners:
+      return "kCardDiners";
+    case Suggestion::Icon::kCardDiscover:
+      return "kCardDiscover";
+    case Suggestion::Icon::kCardElo:
+      return "kCardElo";
+    case Suggestion::Icon::kCardJCB:
+      return "kCardJCB";
+    case Suggestion::Icon::kCardMasterCard:
+      return "kCardMasterCard";
+    case Suggestion::Icon::kCardMir:
+      return "kCardMir";
+    case Suggestion::Icon::kCardTroy:
+      return "kCardTroy";
+    case Suggestion::Icon::kCardUnionPay:
+      return "kCardUnionPay";
+    case Suggestion::Icon::kCardVerve:
+      return "kCardVerve";
+    case Suggestion::Icon::kCardVisa:
+      return "kCardVisa";
+    case Suggestion::Icon::kIban:
+      return "kIban";
+    case Suggestion::Icon::kPlusAddress:
+      return "kPlusAddress";
+    case Suggestion::Icon::kNoIcon:
+      return "kNoIcon";
+  }
+  NOTREACHED();
+}
+
 } // namespace
+
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails() = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     std::u16string_view username,
@@ -227,100 +325,6 @@ bool Suggestion::HasDeactivatedStyle() const {
       return false;
     case Acceptability::kUnacceptableWithDeactivatedStyle:
       return true;
-  }
-  NOTREACHED();
-}
-
-std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
-  switch (icon) {
-    case Suggestion::Icon::kAccount:
-      return "kAccount";
-    case Suggestion::Icon::kClear:
-      return "kClear";
-    case Suggestion::Icon::kCreate:
-      return "kCreate";
-    case Suggestion::Icon::kCode:
-      return "kCode";
-    case Suggestion::Icon::kDelete:
-      return "kDelete";
-    case Suggestion::Icon::kDevice:
-      return "kDevice";
-    case Suggestion::Icon::kEdit:
-      return "kEdit";
-    case Suggestion::Icon::kEmail:
-      return "kEmail";
-    case Suggestion::Icon::kEmpty:
-      return "kEmpty";
-    case Suggestion::Icon::kError:
-      return "kError";
-    case Suggestion::Icon::kGlobe:
-      return "kGlobe";
-    case Suggestion::Icon::kGoogle:
-      return "kGoogle";
-    case Suggestion::Icon::kGoogleMonochrome:
-      return "kGoogleMonochrome";
-    case Suggestion::Icon::kGooglePasswordManager:
-      return "kGooglePasswordManager";
-    case Suggestion::Icon::kGooglePay:
-      return "kGooglePay";
-    case Suggestion::Icon::kGooglePayDark:
-      return "kGooglePayDark";
-    case Suggestion::Icon::kHttpWarning:
-      return "kHttpWarning";
-    case Suggestion::Icon::kHttpsInvalid:
-      return "kHttpsInvalid";
-    case Suggestion::Icon::kKey:
-      return "kKey";
-    case Suggestion::Icon::kLocation:
-      return "kLocation";
-    case Suggestion::Icon::kMagic:
-      return "kMagic";
-    case Suggestion::Icon::kOfferTag:
-      return "kOfferTag";
-    case Suggestion::Icon::kPenSpark:
-      return "kPenSpark";
-    case Suggestion::Icon::kScanCreditCard:
-      return "kScanCreditCard";
-    case Suggestion::Icon::kSettings:
-      return "kSettings";
-    case Suggestion::Icon::kAutofillPredictionImprovements:
-      return "kAutofillPredictionImprovements";
-    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
-      return "kAutofillPredictionImprovementsDark";
-    case Suggestion::Icon::kSettingsAndroid:
-      return "kSettingsAndroid";
-    case Suggestion::Icon::kUndo:
-      return "kUndo";
-    case Suggestion::Icon::kCardGeneric:
-      return "kCardGeneric";
-    case Suggestion::Icon::kCardAmericanExpress:
-      return "kCardAmericanExpress";
-    case Suggestion::Icon::kCardDiners:
-      return "kCardDiners";
-    case Suggestion::Icon::kCardDiscover:
-      return "kCardDiscover";
-    case Suggestion::Icon::kCardElo:
-      return "kCardElo";
-    case Suggestion::Icon::kCardJCB:
-      return "kCardJCB";
-    case Suggestion::Icon::kCardMasterCard:
-      return "kCardMasterCard";
-    case Suggestion::Icon::kCardMir:
-      return "kCardMir";
-    case Suggestion::Icon::kCardTroy:
-      return "kCardTroy";
-    case Suggestion::Icon::kCardUnionPay:
-      return "kCardUnionPay";
-    case Suggestion::Icon::kCardVerve:
-      return "kCardVerve";
-    case Suggestion::Icon::kCardVisa:
-      return "kCardVisa";
-    case Suggestion::Icon::kIban:
-      return "kIban";
-    case Suggestion::Icon::kPlusAddress:
-      return "kPlusAddress";
-    case Suggestion::Icon::kNoIcon:
-      return "kNoIcon";
   }
   NOTREACHED();
 }
