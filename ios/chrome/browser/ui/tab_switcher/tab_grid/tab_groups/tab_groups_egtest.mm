@@ -1324,12 +1324,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 // Ensures inactive tabs are moved correctly when creating a group from search
 // result.
 - (void)testCreateGroupFromInactiveTab {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
-
   std::string URL1 = "chrome://version";
   std::string content1 = "Revision";
 

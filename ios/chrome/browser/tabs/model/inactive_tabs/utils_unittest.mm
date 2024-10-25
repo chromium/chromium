@@ -117,10 +117,6 @@ class InactiveTabsUtilsTest : public PlatformTest {
 // Ensure that the active tab in the active tab list with date set at "Now" is
 // not added to the inactive tab list.
 TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -149,10 +145,6 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
 // Ensure that inactive tabs are moved from the active tab list to the inactive
 // tab list.
 TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -183,10 +175,6 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
 
 // Ensure there is no active tab in the inactive tab list.
 TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -214,10 +202,6 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
 
 // Ensure that inactive tab stay in inactive list.
 TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -279,10 +263,6 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
 // Ensure that all moving functions are working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -409,10 +389,6 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -504,10 +480,6 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
 // filters out duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest,
        MoveTabsFromInactiveToActiveRemovesCrossDuplicates) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -540,10 +512,6 @@ TEST_F(InactiveTabsUtilsTest,
 // filters out duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest,
        MoveTabsFromActiveToInactiveRemovesCrossDuplicates) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 
@@ -573,10 +541,6 @@ TEST_F(InactiveTabsUtilsTest,
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
 

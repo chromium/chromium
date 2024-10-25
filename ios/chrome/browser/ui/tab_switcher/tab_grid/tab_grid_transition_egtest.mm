@@ -684,10 +684,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
 // Tests leaving tab grid after entering and exit inactive tabs grid.
 - (void)testLeaveSwitcherAfterEnteringAndExittingInactiveTabs {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
   // Mark the User Education screen as already-seen by default.
   [ChromeEarlGrey setUserDefaultsObject:@YES
                                  forKey:kInactiveTabsUserEducationShownOnceKey];

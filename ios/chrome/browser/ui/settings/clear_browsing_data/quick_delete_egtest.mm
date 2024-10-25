@@ -966,11 +966,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // selected.
 // TODO(crbug.com/374048360): Re-enable test.
 - (void)DISABLED_testInactiveTabsForDeletion {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
-
   // Set pref to close tabs.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];

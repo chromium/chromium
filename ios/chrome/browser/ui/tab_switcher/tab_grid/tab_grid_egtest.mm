@@ -463,10 +463,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // correctly recovered when pressing undo and there is no selection mode when
 // there are inactive tabs but no regular tabs.
 - (void)testCloseAllAndUndoCloseAllWithInactiveTabs {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
   [self loadTestURLsInNewTabs];
   [self relaunchAppWithInactiveTabsEnabled];
 
@@ -3218,10 +3214,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that interacting with the Tab Grid search UI shows the correct header
 // at each step.
 - (void)testSearchHeaderWithInactiveTabs {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
   [self loadTestURLsInNewTabs];
   [self relaunchAppWithInactiveTabsEnabled];
 

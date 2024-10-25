@@ -46,11 +46,6 @@
 
 // Ensures that the inactive tabs settings open.
 - (void)testOpenInactiveTabsSettings {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
   [self openInactiveTabsSettings];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -59,11 +54,6 @@
 }
 
 - (void)testInactiveTabsPreferenceChange {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
   [self openInactiveTabsSettings];
 
   NSArray<NSString*>* inactiveTabsThresholdOptions = @[

@@ -257,10 +257,6 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
 }
 
 TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
-  // No inactive tabs on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   // Enabled inactive tabs feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);

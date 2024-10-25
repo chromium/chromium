@@ -38,10 +38,6 @@
 
 // Ensures that the tabs settings open.
 - (void)testOpenTabsSettings {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
-
   [self openTabsSettings];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsTabsTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -50,11 +46,6 @@
 // Ensures that the user still have access to tabs settings even if the inactive
 // tabs feature has been manually disabled.
 - (void)testOpenTabsSettingsWhenInactiveTabsDisabledByUser {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
   GREYAssertEqual(
       0,
       [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
