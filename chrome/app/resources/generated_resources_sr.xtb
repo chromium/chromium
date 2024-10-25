@@ -430,6 +430,7 @@
 <translation id="1291421198328146277">Ресетуј тастере</translation>
 <translation id="1292849930724124745">Уметните паметну картицу да бисте остали пријављени</translation>
 <translation id="1293264513303784526">Уређај са USB прикључком типа C (леви порт)</translation>
+<translation id="1293360286536751243"><ph name="MAIN_GESTURE" /> може да се преклапа са покретима <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> и <ph name="CONFLICTING_GESTURE_THREE" />. Пробајте да изаберете други покрет ако је то могуће.</translation>
 <translation id="1293556467332435079">Датотеке</translation>
 <translation id="1294807885394205587">Овај процес може да потраје пар минута. Покреће се менаџер контејнера.</translation>
 <translation id="12951065153783848">Организација управља налогом</translation>
@@ -2612,6 +2613,7 @@
 <translation id="2806372837663997957">Уређај са којим покушавате да делите садржај га није прихватио</translation>
 <translation id="2806891468525657116">Пречица већ постоји</translation>
 <translation id="2807517655263062534">Датотеке које преузмете ће се појавити овде</translation>
+<translation id="2808985063107661499">Покрет <ph name="MAIN_GESTURE" /> може да се преклапа са покретима <ph name="CONFLICTING_GESTURE_ONE" /> и <ph name="CONFLICTING_GESTURE_TWO" />. Пробајте да изаберете други покрет ако је то могуће.</translation>
 <translation id="2811205483104563968">Налози</translation>
 <translation id="2812049959647166806">Thunderbolt није подржан</translation>
 <translation id="2812171980080389735">Сачуване мреже и лозинке које вам омогућавају да се одмах повежете</translation>
@@ -3462,7 +3464,6 @@
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> се пребацује на <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Ажурирај налог</translation>
 <translation id="3449393517661170867">Нови прозор са картицама</translation>
-<translation id="3449839693241009168">Притисните <ph name="SEARCH_KEY" /> да бисте послали команде у <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Приказуј системска обавештења о функцијама и саветима за Chrome</translation>
 <translation id="3450157232394774192">Проценат заузетости стања мировања</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> захтева да се одмах повежете на WiFi и да преузмете ажурирање.</translation>
@@ -4348,6 +4349,7 @@
 <translation id="404894744863342743">Када завршите са коришћењем преузетог фајла, избришите га да други који користе овај уређај не би могли да виде ваше лозинке.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# контакт није доступан. Да бисте користили дељење у близини са њим, у контакте додајте имејл адресе повезане са његовим Google налозима.}one{# контакт није доступан. Да бисте користили дељење у близини са тим контактима, у контакте додајте имејл адресе повезане са њиховим Google налозима.}few{# контакта нису доступна. Да бисте користили дељење у близини са тим контактима, у контакте додајте имејл адресе повезане са њиховим Google налозима.}other{# контаката није доступно. Да бисте користили дељење у близини са тим контактима, у контакте додајте имејл адресе повезане са њиховим Google налозима.}}</translation>
 <translation id="4050225813016893843">Метод за потврду идентитета</translation>
+<translation id="4050379682069019014">Покрет <ph name="MAIN_GESTURE" /> може да се преклапа са покретом <ph name="CONFLICTING_GESTURE" />. Пробајте да изаберете други покрет ако је то могуће.</translation>
 <translation id="4050534976465737778">Уверите се да су оба уређаја откључана, близу један другом и да је укључен Bluetooth. Ако делите са Chromebook-ом, који није у контактима, уверите се да му је укључена Видљивост у близини (отворите област статуса, па укључите Видљивост у близини). <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Да бисте прешли на последњи коришћени метод уноса, притисните <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">тастер за претрагу + стрелица надесно</translation>
@@ -6662,7 +6664,6 @@
 <translation id="5780973441651030252">Приоритет процеса</translation>
 <translation id="5781092003150880845">Синхронизуј као <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Преместите податке школског налога на лични налог</translation>
-<translation id="5781865261247219930">Шаљите команде у <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Превођење је у току...</translation>
 <translation id="5783346913439924978">Праћење главе</translation>
 <translation id="57838592816432529">Искључи звук</translation>
@@ -7170,7 +7171,6 @@
 <translation id="6150116777338468525">Квалитет звука</translation>
 <translation id="6150278227694566734">Неки контакти</translation>
 <translation id="6150961653851236686">Овај језик се користи при превођењу страница</translation>
-<translation id="6151323131516309312">Притисните <ph name="SEARCH_KEY" /> да бисте претражили <ph name="SITE_NAME" /> сајт</translation>
 <translation id="6151771661215463137">Датотека већ постоји у директоријуму са преузимањима.</translation>
 <translation id="6152918902620844577">Чека се следећа радња</translation>
 <translation id="6153439704237222699">Сазнајте више о захтеву „Не прати“</translation>
@@ -7852,7 +7852,6 @@
 <translation id="6657240842932274095">Желите да дозволите системским услугама да користе локацију?</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659213950629089752">Ову страницу је зумирао додатак „<ph name="NAME" />“</translation>
-<translation id="6659594942844771486">Картица</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Камера снима</translation>
 <translation id="6660301751798595791">Избор гласа</translation>
 <translation id="6660819301598582123">Реците жељу и биће — мађија џиновског духа из флаше почиње.</translation>

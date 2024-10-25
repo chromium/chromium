@@ -442,6 +442,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2530896289327917474">I-on o i-off ang caret browsing</translation>
 <translation id="2531025035050312891">mabagal ang device</translation>
 <translation id="2531107890083353124">Habang dina-drag ang tab, pindutin ang <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Sinusubukang gamitin ang Home? Gamitin ang</translation>
 <translation id="254900897760075745">Kopyahin ang napiling content sa clipboard</translation>
 <translation id="2549711466868162843">Ayusin ang lighting</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
@@ -560,6 +561,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2985148236010982088">Tingnan ang lahat ng app</translation>
 <translation id="2992272421330787632">I-hide ang lahat ng suhestyon sa media</translation>
 <translation id="2992327365391326550">Naka-off ang button ng mikropono ng device.</translation>
+<translation id="2993956882370897557">Sinusubukang gamitin ang End? Gamitin ang</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">I-edit ang laki ng screen</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -612,6 +614,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="316356270129335934">Iniro-roll back ng <ph name="MANAGER" /> ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">Mga setting ng mga pamamaraan ng pag-input</translation>
+<translation id="3174897399179348329">Sinusubukang gamitin ang Page Up? Gamitin ang</translation>
 <translation id="3176221688814061633">Gumagamit ng mas lumang bersyon ng Bluetooth ang iyong Chromebook o Bluetooth device. I-on ang Super Resolution ng Bluetooth o gumamit ng internal na mikropono para sa mas magandang kalidad ng audio.</translation>
 <translation id="3181441307743005334">Posibleng magtagal nang ilang sandali ang pag-restart</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Nakakonekta sa isang device}one{Nakakonekta sa # device}other{Nakakonekta sa # na device}}</translation>
@@ -1259,6 +1262,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5297704307811127955">Naka-off</translation>
 <translation id="5300589172476337783">Ipakita</translation>
 <translation id="5302048478445481009">Wika</translation>
+<translation id="5302531370473608800">I-update ang iyong <ph name="DEVICE_TYPE" /> para magamit ang YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% na lang ang baterya.
 Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
@@ -1536,7 +1540,6 @@ Walang nakakonektang device.</translation>
 <translation id="6166852626429024716">Maghanap sa iyong device, mga app, mga setting, web...</translation>
 <translation id="6168318496333165060">Buksan ang Diagnostics app</translation>
 <translation id="6168622430237609329">Ang iyong mga naka-install na app</translation>
-<translation id="6173151025443907148">Hindi sinusuportahan ang pag-sign in ng pangalawang user kung naka-enable ang Lacros. Gumamit na lang ng pangalawang profile ng browser sa Lacros o i-disable ang Lacros at subukan ulit.</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
 <translation id="6180193585172850042">Button na Bumalik</translation>
 <translation id="6180651297859206670">Button na Pa-forward</translation>
@@ -1689,7 +1692,6 @@ Kaka-install lang</translation>
 <translation id="6682029141988159141">I-paste ang content mula sa clipboard</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6686023075541098243">I-set up ang pagtingin sa mga notification ng iyong telepono</translation>
-<translation id="6688019813898140556">Esc nang 5 beses</translation>
 <translation id="6694462491298752106">Naka-disable ang built-in na touchpad</translation>
 <translation id="6694973220096431421">Maghanap sa Google Drive</translation>
 <translation id="6696025732084565524">Nangangailangan ng mahalagang update ang iyong naaalis na keyboard</translation>
@@ -1819,6 +1821,7 @@ Kaka-install lang</translation>
 <translation id="7144942256906679589">Status ng baterya</translation>
 <translation id="7145639536026937076">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge ito. Naka-on ang Pantipid ng Baterya.</translation>
 <translation id="7147587499155271409">Walang history ng pag-browse</translation>
+<translation id="7147657298465433425">Para i-access ang mga F key, pindutin ang fn key + mga key sa itaas na row</translation>
 <translation id="7149149900052329230">Pamahalaan ang mga lokal na file mo at iyong file sa Google Drive, lahat sa app na Mga File.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
@@ -1924,6 +1927,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7557816257942363084">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong mikropono</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="7564874036684306347">Kapag inilipat ang mga window sa isa pang desktop, maaari itong magresulta sa hindi inaasahang gawi. Maaaring hatiin ang mga susunod na notification, window, at dialog sa pagitan ng mga desktop.</translation>
+<translation id="7568154670718626683">Sinusubukang Mag-delete? Gamitin ang</translation>
 <translation id="7568790562536448087">Ina-update</translation>
 <translation id="7569509451529460200">Na-enable ang Braille at ChromeVox</translation>
 <translation id="7569886975397378678">I-dismiss ang pag-set up sa pagtingin sa mga notification at app ng iyong telepono</translation>
@@ -2126,6 +2130,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="820256110035940528"><ph name="TITLE" /> Nag-focus ka lang sa loob ng <ph name="FOCUSED_TIME" />. Buksan ang Mga mabilisang setting para mag-focus ulit.</translation>
 <translation id="8203224998425013577">Magpakita ng higit pang emoji at GIF</translation>
 <translation id="8203795194971602413">Mag-right click</translation>
+<translation id="8205469348819768313">Sinusubukang gamitin ang Page Down? Gamitin ang</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Kailangang manatiling naka-on at nakasaksak ang iyong Chromebook sa panahong ito. Tiyaking nakasaksak nang maayos ang charger o mga adapter cable, sa iyong Chromebook at sa saksakan. Huwag i-off ang iyong Chromebook.</translation>
 <translation id="8220076512072059941">Magdagdag ng <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2322,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Hindi nagsasalita ng ganitong wika ang Google Assistant.</translation>
 <translation id="8926951137623668982">Palaging nakatago ang shelf</translation>
+<translation id="8929566928381252430">Sinusubukang gamitin ang Caps Lock? Gamitin ang</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}one{# file}other{# na file}}</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>

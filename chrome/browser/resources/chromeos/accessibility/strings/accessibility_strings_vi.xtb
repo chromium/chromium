@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">khóa truy cập:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Mục này không có văn bản</translation>
 <translation id="2127747486437921899">In nghiêng</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Đóng khu vực thực hành</translation>
 <translation id="2163782704988363449">Bản đính chính</translation>
 <translation id="2169714232367507776">Nhấp vào mục hiện tại</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Vuốt sang trái hoặc phải để di chuyển theo mục</translation>
 <translation id="3070245424257836917">Vuốt lên trên bằng ba ngón tay</translation>
 <translation id="307516670110542567">Khám phá nhanh</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Tiêu đề cấp 2 tiếp theo</translation>
 <translation id="3078740164268491126">bảng</translation>
 <translation id="3082249673510793544">Cuộn lùi</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">Tiêu đề cấp 1 trước</translation>
 <translation id="3323447499041942178">Hộp văn bản</translation>
 <translation id="3324983252691184275">Đỏ thẫm</translation>
+<translation id="334252345105450327">Chụp ảnh màn hình</translation>
 <translation id="335581015389089642">Giọng nói</translation>
 <translation id="3356951775008366684">Cho biết cách phát âm của từ</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Màu tuyết</translation>
 <translation id="3781428340399460090">Hồng đậm</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Hiển thị nhật ký</translation>
 <translation id="3801735343383419236">Tự động hoàn thành danh sách</translation>
 <translation id="3806327402890551732">Chuyển tới mục trước hoặc mục tiếp theo</translation>
@@ -520,6 +524,7 @@
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4294967782363273192">Sắp xếp theo thứ tự tăng dần</translation>
 <translation id="4300318234632215983">Thông báo URL ở sau liên kết</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Màu hung đỏ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{dấu chấm}=3{dấu chấm lửng}other{# dấu chấm}}</translation>
 <translation id="4352022650330571548">nhập <ph name="PHRASE" /></translation>
@@ -533,6 +538,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Màu xanh da trời đậm</translation>
 <translation id="4406249099130339147">Đọc to dấu câu:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Màu đỏ Ấn Độ</translation>
 <translation id="4432896207833262240">Nội dung được đánh dấu</translation>
 <translation id="4437615272777527928">Nhập để tìm kiếm trong trình đơn. Sử dụng các mũi tên lên và xuống để chuyển qua kết quả. Sử dụng các mũi tên trái và phải để điều chỉnh điểm chèn văn bản và di chuyển giữa các trình đơn.</translation>
@@ -553,6 +559,7 @@
 <translation id="4562381607973973258">Tiêu đề</translation>
 <translation id="4597532268155981612">biểu mẫu</translation>
 <translation id="4601367666219428522">bảng <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Tổ hợp phím tuỳ chỉnh: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Bỏ qua nhấn phím tiếp theo</translation>
 <translation id="4617384941327705512">Chế độ phím dính thông minh đang tắt</translation>
 <translation id="4623097797855662355">Lời ghi cuối sách</translation>
@@ -844,6 +851,7 @@
 <translation id="6584162722998608255">Tiếp theo, bạn sẽ tìm hiểu cách di chuyển xung quanh màn hình. Bạn có thể vuốt bằng một ngón tay từ trái sang phải để chuyển đến mục tiếp theo. Hãy thử ngay để chuyển đến bước tiếp theo.</translation>
 <translation id="6609828810966525877">Khám phá các cử chỉ khác trong Chế độ học và Trung tâm trợ giúp Chromebook</translation>
 <translation id="6628427060004938651">Phần</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">nhật ký</translation>
 <translation id="6657128831881431364">Thanh tiến độ</translation>
 <translation id="667999046851023355">Tài liệu</translation>
@@ -908,6 +916,7 @@
 <translation id="7096001299300236431">Phương tiện trước</translation>
 <translation id="7096668131290451939">Nhấn phím Escape lần nữa để thoát chế độ Học tập</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">nói từ</translation>
 <translation id="7137397390322864165">Màu hồng cam</translation>
 <translation id="7140168702531682811">Chỉ số trên</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="100421257800558142">Оңго жебе баскычын басыңыз</translation>
 <translation id="100506692671054486">мурунку буйрук жок</translation>
 <translation id="1009046985747440431">Чабыттоо үчүн өйдө же ылдый басыңыз; жандыруу үчүн Enter'ди басыңыз</translation>
 <translation id="1011903154582639569">Клавиатураны таап, экрандын үстүнө көтөрүп алып, терип баштаңыз</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Күйгүзүү/өчүрүү баскычы</translation>
 <translation id="1299774449519412690">Ачык асмандын түсүндөй көк</translation>
 <translation id="1303806948938513162">ChromeVox менюсуна өтүү үчүн 4 манжаңыз менен таптаңыз</translation>
+<translation id="1304162325618937178">Боштук баскычын басыңыз</translation>
 <translation id="1313373992684326101">Мурунку бөлүмгө өтүү. Мисалы, Абал түпкүчү жана Жүргүзгүч.</translation>
 <translation id="1315077335264761176">Тийүүнүн багыты</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, менюдагы нерсенин радио баскычы тандоодон чыгарылды</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Буудай ыраң</translation>
 <translation id="1618597272655350600">Учурдагы абалдын толук сүрөттөмөсүн жарыялайт</translation>
 <translation id="1627222324347828322">Күңүрт агыш</translation>
+<translation id="1632810692616643246">Сыдыруу режимине кирүү же чыгуу</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{мындан чоңураак}other{# мындан чоңураак белгилер}}</translation>
 <translation id="1653266918374749391">Мурунку 3-деңгээлдеги баш ат</translation>
 <translation id="1657616855184033958">Иш-чаралардын агымынын чыпкасын көрсөтүү</translation>
@@ -175,6 +178,7 @@
 <translation id="2121067395472282800">access key:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Бул нерсе үчүн жеткиликтүү текст жок</translation>
 <translation id="2127747486437921899">Жантык</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Көнүгүү аймагын жабуу</translation>
 <translation id="2163782704988363449">каталар тизмеси</translation>
 <translation id="2169714232367507776">Бул нерсени чыкылдатыңыз</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Тери түстүү күрөң</translation>
 <translation id="2199994615414171367">Мурунку математикалык туюнтма</translation>
 <translation id="2203046366315513658">Маанисин азайтуу</translation>
+<translation id="2206580811360135054">Терезелер тууралуу жалпы маалыматты көрсөтүү же жашыруу</translation>
 <translation id="2216790501338699346">Шилтеменин URL дареги: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Бир тамга артка жылдыруу</translation>
 <translation id="2220529011494928058">Маселе жөнүндө кабар берүү</translation>
+<translation id="2239819015858077439">Ылдый жебе баскычын басыңыз</translation>
 <translation id="2243633977138166243">Өтүү үчүн солго же оңго жебени, жандыруу үчүн Enter баскычын басыңыз</translation>
 <translation id="224426591676115802">Төмөнкү тил үчүн жеткиликтүү үн жок: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Үйрөнүү режими токтотулууда</translation>
@@ -317,6 +323,7 @@
 <translation id="3060880924447482063">Элементтерди жылдыруу үчүн солго же оңго сүрүңүз</translation>
 <translation id="3070245424257836917">Үч манжаңыз менен экранды үйдө сүрүңүз</translation>
 <translation id="307516670110542567">Кыска курс</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Кийинки 2-деңгээлдин баш аты</translation>
 <translation id="3078740164268491126">жадыбал</translation>
 <translation id="3082249673510793544">Артка сыдыруу</translation>
@@ -374,6 +381,7 @@
 <translation id="3322936298410871309">Мурунку 1-деңгээлдеги баш аты жок</translation>
 <translation id="3323447499041942178">Текст кутусу</translation>
 <translation id="3324983252691184275">Кочкул кызыл</translation>
+<translation id="334252345105450327">Скриншот тартып алуу</translation>
 <translation id="335581015389089642">Кеп</translation>
 <translation id="3356951775008366684">Сөздүн фонетикалык айтылышын жарыялоо</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Кар түстүү ак</translation>
 <translation id="3781428340399460090">Ачык кызгылтым</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Таржымалды көрсөтүү</translation>
 <translation id="3801735343383419236">Автотолуктоо тизмеси</translation>
 <translation id="3806327402890551732">Кийинки же мурунку нерсеге өтүү</translation>
@@ -519,6 +528,7 @@
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4294967782363273192">Өсүү тартибинде</translation>
 <translation id="4300318234632215983">Шилтеменин артындагы URL'ди жарыялоо</translation>
+<translation id="4321179778687042513">Ctrl</translation>
 <translation id="4322625298640984693">Охра</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{чекит}=3{көп чекит}other{# чекит}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> деп териңиз</translation>
@@ -532,9 +542,11 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Асмандын түсүндөй кочкул көк</translation>
 <translation id="4406249099130339147">Тыныш белгилеринин жаңырыгы:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Индустардын кызыл түсү</translation>
 <translation id="4432896207833262240">Белгиленген мазмун</translation>
 <translation id="4437615272777527928">Менюларда издөө үчүн териңиз. Натыйжаларды карап чыгуу үчүн жогору жана төмөн баскычтарын басыңыз. Курсорду тууралоо жана менюдан менюга жылуу үчүн солго жана оңго баскычтарын басыңыз.</translation>
+<translation id="4441677939526091190">Өйдө жебе баскычын басыңыз</translation>
 <translation id="4453530046591759283">Куралдар тилкеси же маселелер тактасы сыяктуу экрандын башка бөлүктөрүнө өтүү үчүн Control+F1 баскычтарын басыңыз. F1 — Escape баскычынын оң жагындагы биринчи баскыч.</translation>
 <translation id="4457472090507035117">Учурдагы үндү тандаңыз:</translation>
 <translation id="4476183483923481720">жаңы сап</translation>
@@ -552,6 +564,7 @@
 <translation id="4562381607973973258">Баш аталыш</translation>
 <translation id="4597532268155981612">форма</translation>
 <translation id="4601367666219428522"><ph name="TABLENAME" /> тбл <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Жеке баскычтардын айкалышы: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Кийинки баскычтын басылышын этибарга албоо</translation>
 <translation id="4617384941327705512">Smart sticky mode өчүк</translation>
 <translation id="4623097797855662355">Чыгуу маалыматы</translation>
@@ -713,6 +726,7 @@
 <translation id="5653397561111110475">Chromebook'тун сенсордук экранынын атайын мүмкүнчүлүктөр функциясын пайдалануу</translation>
 <translation id="5655682562155942719">Секирүү буйруктары</translation>
 <translation id="56637627897541303">Текст аймагы</translation>
+<translation id="5666746275818170484">Солго жебе баскычын басыңыз</translation>
 <translation id="5669637233317991674">Бул сабактагы нерселерге өтүү үчүн Издөө + Оңго жебе же Издөө + Солго жебени басыңыз</translation>
 <translation id="5677240841070992068">Учурда турган жер</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -843,6 +857,7 @@
 <translation id="6584162722998608255">Эми экрандагы элементтерге өткөндү үйрөнөсүз. Кийинки элементке өтүү үчүн экранды бир манжаңыз менен солдон оңго сүрүңүз. Кийинки кадамга өтүү үчүн аны азыр аткарып көрүңүз.</translation>
 <translation id="6609828810966525877">Үйрөнүү режимине жана Chromebook'тун Жардам борборуна өтүп, көбүрөөк жаңсоолорду үйрөнүп алыңыз</translation>
 <translation id="6628427060004938651">Бөлүм</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Илгерилөө тилкеси</translation>
 <translation id="667999046851023355">Документ</translation>
@@ -907,6 +922,7 @@
 <translation id="7096001299300236431">Мурунку медиа</translation>
 <translation id="7096668131290451939">Үйрөнүү режиминен чыгуу үчүн Escape баскычын кайрадан басыңыз</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">сөз жаңырыгы</translation>
 <translation id="7137397390322864165">Кызгылтым</translation>
 <translation id="7140168702531682811">Жогорку индекс</translation>
@@ -917,6 +933,7 @@
 <translation id="7161771961008409533">Калкып чыкма баскычы</translation>
 <translation id="7167657087543110">белгинин жаңырыгы</translation>
 <translation id="7173102181852295013">Түнкү асмандын түсүндөй көк</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Жайылып көрсөтүлгөн</translation>
 <translation id="7209751026933045237">Кийинки сыдырма жок</translation>
 <translation id="7218782500591078391">Кызыл алтын түстүү сары</translation>
@@ -1090,6 +1107,7 @@
 <translation id="8378855320830505539">Аймак</translation>
 <translation id="8382679411218029383">Автотолуктоо кыналмасы жана тизме</translation>
 <translation id="8394908167088220973">Медиа файлды ойнотуу/бир азга токтотуу</translation>
+<translation id="8409502156784390079">Сыдыруу режими жигердүү</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8428603554127842284">деңгээл <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1185,7 @@
 <translation id="8986362086234534611">Унутуу</translation>
 <translation id="8989104346085848538">ChromeVox окуп жатканда токтотуу үчүн Control баскычын басыңыз.</translation>
 <translation id="9014206344398081366">ChromeVox үйрөткүчү</translation>
+<translation id="9034592733577768445">Жүз менен бүтүрүү тындырылды</translation>
 <translation id="9040132695316389094">1-баш аты</translation>
 <translation id="9061884144798498064">8 чекиттүү брайль жадыбалын тандаңыз:</translation>
 <translation id="9063946545000394379">мурунку символго өтүү</translation>

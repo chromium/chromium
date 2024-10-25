@@ -168,7 +168,6 @@
 <translation id="2045055672832940894">Ei edellisiä säätimiä</translation>
 <translation id="2045606329038304310">Lomakekentän säädin</translation>
 <translation id="2063539687800151747">Epigrafi</translation>
-<translation id="2067158561093481039">Käytä omaa näppäinyhdistelmää</translation>
 <translation id="2086961585857038472">Seuraava sana</translation>
 <translation id="2087981446621639008">kuvluett tied</translation>
 <translation id="2089387485033699258">fi</translation>
@@ -179,6 +178,7 @@
 <translation id="2121067395472282800">pääsyavain: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Tässä kohdassa ei ole tekstiä saatavilla</translation>
 <translation id="2127747486437921899">Kursivoitu</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Sulje harjoittelualue</translation>
 <translation id="2163782704988363449">Oikaisut</translation>
 <translation id="2169714232367507776">Klikkaa nykyistä kohdetta</translation>
@@ -323,6 +323,7 @@
 <translation id="3060880924447482063">Siirry kohde kerrallaan pyyhkäisemällä vasemmalle tai oikealle</translation>
 <translation id="3070245424257836917">Pyyhkäise ylös kolmella sormella</translation>
 <translation id="307516670110542567">Pikaohje</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Seuraava tason 2 otsikko</translation>
 <translation id="3078740164268491126">taulukko</translation>
 <translation id="3082249673510793544">Vieritä taaksepäin</translation>
@@ -380,6 +381,7 @@
 <translation id="3322936298410871309">Edellinen tason 1 otsikko</translation>
 <translation id="3323447499041942178">Tekstiruutu</translation>
 <translation id="3324983252691184275">Karmiininpunainen</translation>
+<translation id="334252345105450327">Ota kuvakaappaus</translation>
 <translation id="335581015389089642">Puhe</translation>
 <translation id="3356951775008366684">Sano sanan ääntämys</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Lumenvalkoinen</translation>
 <translation id="3781428340399460090">Pinkki</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Näytä loki</translation>
 <translation id="3801735343383419236">Ennakoivan tekstinsyötön luettelo</translation>
 <translation id="3806327402890551732">Seuraavaan tai edelliseen kohteeseen siirtyminen</translation>
@@ -525,6 +528,7 @@
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4294967782363273192">Nouseva lajittelu</translation>
 <translation id="4300318234632215983">Ilmoita linkin takana oleva URL-osoite</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{piste}=3{ellipsi}other{# pistettä}}</translation>
 <translation id="4352022650330571548">kirjoita <ph name="PHRASE" /></translation>
@@ -538,6 +542,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Syvä taivaansininen</translation>
 <translation id="4406249099130339147">Välimerkkien puhuminen:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Intianpunainen</translation>
 <translation id="4432896207833262240">Merkitty sisältö</translation>
 <translation id="4437615272777527928">Hae valikoista kirjoittamalla. Selaa tuloksia ylä- ja alanuolilla. Säädä tekstikursoria ja siirry valikoiden välillä vasemmalla ja oikealla nuolinäppäimellä.</translation>
@@ -559,6 +564,7 @@
 <translation id="4562381607973973258">Otsikko</translation>
 <translation id="4597532268155981612">lomake</translation>
 <translation id="4601367666219428522">taul <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Oma näppäinyhdistelmä: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Seuraava näppäimen painallus ohitetaan</translation>
 <translation id="4617384941327705512">Älykäs kiinnitetty tila pois päältä</translation>
 <translation id="4623097797855662355">Kolofoni</translation>
@@ -851,6 +857,7 @@
 <translation id="6584162722998608255">Seuraavaksi opit liikkumaan näytöllä. Voit siirtyä seuraavaan kohteeseen pyyhkäisemällä vasemmalta oikealle yhdellä sormella. Kokeile nyt siirtyäksesi seuraavaan vaiheeseen.</translation>
 <translation id="6609828810966525877">Tutustu muihin eleisiin opettelutilassa ja Chromebook-ohjekeskuksessa</translation>
 <translation id="6628427060004938651">Osa</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6637586476836377253">loki</translation>
 <translation id="6657128831881431364">Etenemispalkki</translation>
 <translation id="667999046851023355">Dokumentti</translation>
@@ -915,6 +922,7 @@
 <translation id="7096001299300236431">Edellinen mediakohde</translation>
 <translation id="7096668131290451939">Poistu opettelutilasta painamalla Esc uudelleen</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">sanojen puhuminen</translation>
 <translation id="7137397390322864165">Lohenpunainen</translation>
 <translation id="7140168702531682811">Yläindeksi</translation>

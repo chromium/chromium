@@ -415,6 +415,7 @@
 <translation id="2940075786175545812">Επιλογή για να εγκρίνετε ή να μην εγκρίνετε έναν ιστότοπο</translation>
 <translation id="2942036813789421260">Η καρτέλα προεπισκόπησης είναι κλειστή</translation>
 <translation id="2951071800649516099">Προσθέστε σελίστες στη λίστα ανάγνωσης για αργότερα.</translation>
+<translation id="2954586176076923855">Μετακίνηση γραμμής διευθύνσεων στο επάνω μέρος</translation>
 <translation id="2956070106555335453">Περίληψη</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="2972109037780336501">Αυτόματη κατάργηση αδειών</translation>
@@ -639,6 +640,7 @@
 <translation id="4092709865241032354">Για να βοηθήσετε τη Διαχείριση κωδικών πρόσβασης να αποθηκεύσει τα στοιχεία σύνδεσης, προσθέστε το όνομα χρήστη για αυτόν τον ιστότοπο</translation>
 <translation id="4095146165863963773">Διαγραφή δεδομένων εφαρμογών;</translation>
 <translation id="4096227151372679484">Ροή αποθήκευσης σελιδοδείκτη ανοιγμένη στο μισό ύψος</translation>
+<translation id="4105527135143631701">Άνοιξε η ενημέρωση για τη Διαχείριση κωδικών πρόσβασης Google</translation>
 <translation id="4108314971463891922">Παρακολούθηση</translation>
 <translation id="4113030288477039509">Διαχειρίζεται από το διαχειριστή σας</translation>
 <translation id="4116038641877404294">Κατεβάστε σελίδες για να τις χρησιμοποιήσετε εκτός σύνδεσης</translation>
@@ -666,6 +668,7 @@
 <translation id="4248098802131000011">Προστατέψτε τους κωδικούς πρόσβασής σας από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας.</translation>
 <translation id="424864128008805179">Αποσύνδεση από το Chrome;</translation>
 <translation id="4249955472157341256">Ταξινόμηση με βάση την πιο πρόσφατη</translation>
+<translation id="4255841059940367080">Προστασία σε πραγματικό χρόνο από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις με την υποστήριξη AI, η οποία βασίζεται στα δεδομένα περιήγησης που αποστέλλονται στην Google</translation>
 <translation id="4256782883801055595">Άδειες λογισμικού ανοικτού κώδικα</translation>
 <translation id="4257230861809842349">Διαγραφή κωδικών πρόσβασης από τη Διαχείριση κωδικών πρόσβασης;</translation>
 <translation id="426652736638196239">Αυτό το IBAN θα αποθηκευτεί μόνο στη συγκεκριμένη συσκευή.</translation>
@@ -1194,7 +1197,6 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
 <translation id="6649642165559792194">Προεπισκόπηση εικόνας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
-<translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
 <translation id="6672697278890207089">Εισαγάγετε την φράση πρόσβασής σας</translation>
@@ -1230,6 +1232,7 @@
 <translation id="6813446258015311409">Σύνδεση στο Chrome, έγινε άνοιγμα.</translation>
 <translation id="6817747507826986771">Κοινοποιήστε γρήγορα αυτήν τη σελίδα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Έκλεισε η ενημέρωση για τη Διαχείριση κωδικών πρόσβασης Google</translation>
 <translation id="6828070228333235514">Διακοπή παρακολούθησης τιμής</translation>
 <translation id="6830728435402077660">Μη ασφαλές</translation>
 <translation id="6831043979455480757">Μετάφραση</translation>
@@ -1425,6 +1428,7 @@
 <translation id="7612619742409846846">Έχετε συνδεθεί στην Google ως</translation>
 <translation id="7612989789287281429">Γίνεται σύνδεση…</translation>
 <translation id="7619072057915878432">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στο δίκτυο.</translation>
+<translation id="762537095495606755">Οι κωδικοί πρόσβασης θα σταματήσουν να λειτουργούν σε αυτή τη συσκευή</translation>
 <translation id="7626032353295482388">Καλώς ήρθατε στο Chrome</translation>
 <translation id="7628417132421583481">Μετάβαση στη Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="7630202231528827509">URL παρόχου</translation>
@@ -1513,6 +1517,7 @@
 <translation id="8015452622527143194">Επαναφορά στοιχείων σελίδας σε κανονικό μέγεθος</translation>
 <translation id="8017431260099661477">Δεν ήταν δυνατό το άνοιγμα του συνδέσμου πρόσκλησης</translation>
 <translation id="8026238112629815203">Αλλάξαμε τον τρόπο με τον οποίο αποθηκεύονται οι κωδικοί πρόσβασης σε αυτή τη συσκευή</translation>
+<translation id="8027395186860110042">Οι κωδικοί πρόσβασης ενδέχεται να σταματήσουν να λειτουργούν σύντομα</translation>
 <translation id="8027863900915310177">Επιλέξτε πού θα γίνει λήψη</translation>
 <translation id="8030852056903932865">Έγκριση</translation>
 <translation id="8032569120109842252">Παρακολούθηση</translation>
@@ -1582,7 +1587,9 @@
 <translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8282297628636750033">Σκούρο θέμα σε ιστοτ., όταν είναι δυνατό</translation>
 <translation id="8282950411412455249">Μετάβαση στις ρυθμίσεις ασφαλείας</translation>
+<translation id="8306751933352925837">Οι κωδικοί πρόσβασης θα σταματήσουν να λειτουργούν σύντομα σε αυτή τη συσκευή. Για να συνεχίσετε να χρησιμοποιείτε τους κωδικούς πρόσβασής σας, ενημερώστε τις υπηρεσίες Google Play. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469">Ο χρήστης <ph name="GIVEN_NAME" /> κατάργησε την καρτέλα <ph name="TAB_NAME" /></translation>
+<translation id="8310451567823644042">Οι κωδικοί πρόσβασης θα σταματήσουν να λειτουργούν σύντομα</translation>
 <translation id="831192587911042850">Προσθέτει τον τρέχοντα ιστότοπο στη λίστα των ιστοτόπων που ακολουθείτε.</translation>
 <translation id="8342727528718219152">Το Chrome θα σας ενημερώνει σχετικά με τους ιστοτόπους που μπορεί να στέλνουν πάρα πολλές ειδοποιήσεις</translation>
 <translation id="834313815369870491">Να μην γίνεται ποτέ μετάφραση ιστοτόπων</translation>
@@ -1649,6 +1656,7 @@
 <translation id="8570677896027847510">Δεν είναι δυνατή η λήψη του αρχείου με ασφάλεια.</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8582529315803410153">Εδώ θα βρείτε τις καρτέλες σας από τις άλλες συσκευές</translation>
+<translation id="8585103689515290060">Υπηρεσίες αυτόματης συμπλήρωσης</translation>
 <translation id="859046281437143747">Παρακολούθηση τιμής από το κουμπί Περισσότερες επιλογές</translation>
 <translation id="859064343657890103">Η ομάδα καρτελών <ph name="TAB_GROUP_TITLE" /> διαγράφηκε</translation>
 <translation id="860043288473659153">Όνομα κατόχου κάρτας</translation>
@@ -1715,6 +1723,7 @@
 <translation id="8963117664422609631">Μετάβαση στις ρυθμίσεις ιστοτόπου</translation>
 <translation id="8965591936373831584">σε εκκρεμότητα</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει <ph name="INCOGNITO_TAB_COUNT" /> καρτέλα ανώνυμης περιήγησης και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα.}other{Πρόκειται να κλείσουν <ph name="INCOGNITO_TAB_COUNT" /> καρτέλες ανώνυμης περιήγησης και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες.}}</translation>
+<translation id="897061774231912216">Οι κωδικοί πρόσβασης θα σταματήσουν να λειτουργούν σύντομα, επειδή οι υπηρεσίες Google Play δεν είναι διαθέσιμες. Για να χρησιμοποιήσετε τους κωδικούς πρόσβασης που είναι αποθηκευμένοι στον Λογαριασμό σας Google, συνδεθείτε χρησιμοποιώντας κάποια άλλη συσκευή ή μεταβείτε στη διεύθυνση passwords.google.com.</translation>
 <translation id="8970887620466824814">Προέκυψε πρόβλημα.</translation>
 <translation id="8972098258593396643">Λήψη στον προεπιλεγμένο φάκελο;</translation>
 <translation id="8982113230057126145">Με την επιλογή Δεν εγκρίνω υποβάλλεται ένα σχόλιο που δηλώνει ότι αυτή η σύνοψη δεν σας αρέσει</translation>
@@ -1763,6 +1772,7 @@
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9157212632995922070">Επιλέξτε έναν λογαριασμό για να συνεχίσετε στο <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Κοινοποίηση μόνο περιεχομένου</translation>
+<translation id="9168847423516963845">Μετακίνηση γραμμής διευθύνσεων στο κάτω μέρος</translation>
 <translation id="9169507124922466868">Το ιστορικό πλοήγησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Το ιστορικό σας θα εμφανίζεται σε όλες τις συγχρονισμένες συσκευές, ώστε να μπορείτε να συνεχίζετε ό,τι κάνετε</translation>

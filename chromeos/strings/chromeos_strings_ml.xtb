@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">അനുവദനീയമായ പരമാവധി ശ്രമങ്ങൾ നടത്തിക്കഴിഞ്ഞു.</translation>
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
 <translation id="1908394185991500139">ഇടത്തേക്കുള്ള അമ്പടയാളം</translation>
+<translation id="1914144885717544695">വെള്ളിയാഴ്ച</translation>
 <translation id="1923388006036088459">ആക്സന്റ് നിറങ്ങൾ</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">ഒഴുകി നീങ്ങൂ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ഫോട്ടോകൾ</translation>
 <translation id="2154460308960858308">തിരയൽ മായ്ക്കുക</translation>
 <translation id="2157660087437850958">ഇമോജി പിക്കർ</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2715723665057727940">നദി</translation>
 <translation id="2717139507051041123">ഡാർക്ക് കളർ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="2726755229438917165">തിങ്കളാഴ്ച</translation>
 <translation id="2728460467788544679">പ്രിന്റ് ചരിത്രം മുഴുവനായും മായ്‌ക്കുക</translation>
 <translation id="2731700343119398978">കാത്തിരിക്കുക...</translation>
 <translation id="2740531572673183784">ശരി</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">എൻഡ്പോയിന്റ്</translation>
 <translation id="3060579846059757016">ഔട്ട്ലൈനുകൾ</translation>
 <translation id="3061850252076394168">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="3066772729299747758">ചൊവ്വാഴ്ച</translation>
 <translation id="3069085583900247081">ടെസ്റ്റ് പരാജയപ്പെട്ടു</translation>
 <translation id="3078740164268491126">പട്ടിക</translation>
 <translation id="3081652522083185657">ലൈറ്റ്</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">സുഷി</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">എർത്ത് ഫ്ലോ വാൾപേപ്പർ</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> പശ്ചാത്തലത്തിലുള്ള <ph name="LETTERS_LETTER" /> എന്ന അക്ഷരം</translation>
 <translation id="3383623117265110236">എക്‌സ്ക്ലൂസീവ്</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="4130750466177569591">ഞാന്‍ അംഗീകരിക്കുന്നു</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
+<translation id="4137700675046373159">ശനിയാഴ്ച</translation>
 <translation id="4143226836069425823">പകരം മറ്റൊരു കീ നൽകാൻ ഒരു കീബോർഡ് കീയിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">ഞായറാഴ്ച</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4251839292699800785">സ്റ്റൈലിഷ് ഓഫീസ്</translation>
 <translation id="4258281355379922695">HTTP പ്രതികരണ സമയം</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">പുൽത്തകിടി</translation>
 <translation id="551689408806449779">ഉപകരണം വിച്ഛേദിച്ചിരിക്കുന്നു. ടെസ്റ്റ് ചെയ്യുന്നതിന് വീണ്ടും കണക്‌റ്റ് ചെയ്യാൻ ശ്രമിക്കുക</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">മൈക്ക് ഓപ്ഷനുകൾ</translation>
 <translation id="5534900277405737921">ഭൂപ്രദേശം</translation>
 <translation id="554067135846762198">കോറലും ടാനും</translation>
 <translation id="5543701552415191873">ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">അജ്ഞാതമായ വെെഫെെ സുരക്ഷാ പ്രോട്ടോക്കോൾ</translation>
 <translation id="6535178685492749208">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. ഫീഡ്‌ബാക്ക് പിന്നീട് അയയ്ക്കും.</translation>
 <translation id="6543412779435705598">ടാകോസ്</translation>
+<translation id="6550369542114086980">വ്യാഴാഴ്ച</translation>
 <translation id="6551839203326557324">ആപ്പിളുകൾ</translation>
 <translation id="65526652485742171">'സ്ഥിരീകരിക്കുക' ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="6557784757915238407">APN തരം <ph name="ATTACH" /> ആണ്.</translation>
@@ -1143,7 +1152,6 @@
 <translation id="6650062777702288430">കാന/ആൽഫാന്യൂമെറിക് സ്വിച്ച്</translation>
 <translation id="6657240842932274095">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ സിസ്റ്റം സർവീസുകളെ അനുവദിക്കണോ?</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
-<translation id="6659594942844771486">ബ്രൗസർ ടാബ്</translation>
 <translation id="66621959568103627">കോറൽ പിങ്ക്</translation>
 <translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
           <ph name="LINE_BREAK" />
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">ഇച്ഛാനുസൃതമാക്കുക</translation>
 <translation id="7182063559013288142">തൽക്ഷണ ഹോട്ട്സ്പോട്ട്</translation>
 <translation id="7184043045742675738">നിങ്ങളുടെ ബട്ടൺ ഇഷ്ടാനുസൃതമാക്കാൻ ഏതെങ്കിലും കീയിൽ ക്ലിക്ക് ചെയ്യുക. മൗസ് അല്ലെങ്കിൽ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് കീയുടെ സ്ഥാനം മാറ്റുക.</translation>
+<translation id="7187669805838282391">ബുധനാഴ്ച</translation>
 <translation id="7206979415662233817">സേവന നിബന്ധനകൾ</translation>
 <translation id="7210635925306941239">സിയാൻ</translation>
 <translation id="7212547870105584639">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">ബിൽറ്റ് ഇൻ ടച്ച്‌പാഡ്</translation>
 <translation id="7397270852490618635">ലൈറ്റ് തീം ഓഫാക്കുക</translation>
 <translation id="7401543881546089382">കുറുക്കുവഴി ഇല്ലാതാക്കുക</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാൻ തയ്യാറാണ്</translation>
 <translation id="741244894080940828">പരിവർത്തനം</translation>
 <translation id="7415801143053185905">വളരെ ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="7425037327577270384">എന്നെ എഴുതാൻ സഹായിക്കൂ</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">സ്പീക്കറുകൾ തിരിച്ചറിയാനും ലേബൽ ചെയ്യാനും റെക്കോർഡറിനെ അനുവദിക്കണോ?</translation>
 <translation id="7501957181231305652">അല്ലെങ്കിൽ</translation>
 <translation id="7502658306369382406">IPv6 വിലാസം</translation>
+<translation id="7503342217608032738">ഉപകരണം ഉപയോഗിക്കാനാകുന്നില്ല</translation>
 <translation id="7507061649493508884">മനോഹരമായ <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">താഴേക്ക്</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">ഷഫിൾ ചെയ്യുക</translation>
 <translation id="7550715992156305117">പ്രശ്‌നനിർണ്ണയ ദിനചര്യകൾ</translation>
 <translation id="7551123448725492271">ഉപകരണം ഒരു ഓഡിയോ ഉപകരണമാണ്.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />ഈ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാകുന്ന സമയം <ph name="MANAGER" /> അഡ്‌മിൻ സജ്ജീകരിച്ചു.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" /><ph name="DAY" />, <ph name="TIME" />-ന് നിങ്ങൾക്ക് ഈ ഉപകരണം വീണ്ടും ഉപയോഗിക്കാനാകും.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">പ്രിവ്യൂ സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7561759921596375678">ശബ്ദം ഓണാക്കുക</translation>
@@ -1398,6 +1411,7 @@
 <translation id="785170686607360576">ടുലിപ്</translation>
 <translation id="7856267634822906833">Bluetooth ടച്ച്സ്ക്രീൻ</translation>
 <translation id="7859006200041800233">കള്ളിമുൾച്ചെടിയുടെ പൂവ്</translation>
+<translation id="7865217133132122390">മെെക്ക് ഓണാക്കുക</translation>
 <translation id="7869143217755017858">ഡാർക്ക് മോഡ് പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="7878972877380405573">'എന്നെ വായിക്കാൻ സഹായിക്കൂ' ഉപയോഗിച്ച് സംഗ്രഹിക്കുക</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1426,6 +1440,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" സ്വയമേവ ആരംഭിച്ചു}other{# ആപ്പുകൾ സ്വയമേവ ആരംഭിച്ചു}}</translation>
 <translation id="7994702968232966508">EAP രീതി</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
+<translation id="8010765388850538088">ജനറേറ്റീവ് AI-യെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="8017679124341497925">കുറുക്കുവഴി എഡിറ്റ് ചെയ്‌തു</translation>
 <translation id="802154636333426148">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="8028993641010258682">വലുപ്പം</translation>
@@ -1435,6 +1450,7 @@
 <translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
 <translation id="8054112564438735763">ബീജ്</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> പശ്ചാത്തലത്തിൽ <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN കണക്റ്റ് ചെയ്തു.</translation>
 <translation id="8067208048261192356">തവിട്ട്</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ഇല്ലാതാക്കുക</translation>
@@ -1538,6 +1554,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">നിങ്ങളുടെ സേവനദാതാവിന് അവരുടെ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഈ ഓപ്‌ഷൻ ആവശ്യമായി വന്നേക്കാം. വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ സേവനദാതാവുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" /> എന്നതിനുള്ള ഫേംവെയർ <ph name="VERSION" /> പതിപ്പിലേക്ക് ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പൂർത്തിയാക്കാൻ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. നിങ്ങളുടെ കമ്പ്യൂട്ടർ പല തവണ റീബൂട്ട് ചെയ്യുന്നതായി ദൃശ്യമായേക്കാം. ഈ പ്രവർത്തനം പ്രതീക്ഷിച്ചതാണ്.</translation>
 <translation id="8593058461203131755">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
@@ -1671,6 +1688,7 @@
 <translation id="917720651393141712">ടെസ്‌റ്റ്</translation>
 <translation id="9188992814426075118">നിങ്ങളുടെ കീബോർഡിന് വാൾപേപ്പറുമായി സ്വയമേവ പൊരുത്തപ്പെടാനാകും</translation>
 <translation id="9189000703457422362">സ്വയമേവ കണ്ടെത്തിയ APN-കൾ ഉപയോഗിച്ച് ഈ നെറ്റ്‌വർക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യാനാകുന്നില്ല. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">തിരഞ്ഞെടുത്ത ജോയ്‌സ്റ്റിക്ക് കീകൾ <ph name="KEYS" /> എന്നിവയാണ്. നിയന്ത്രണം എഡിറ്റ് ചെയ്യാൻ ബട്ടണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="9204237731135241582">Android ആപ്പുകളിൽ നിന്ന് ഗേറ്റ്‌വേയുമായി ബന്ധപ്പെടാനാകുന്നില്ല</translation>
@@ -1691,5 +1709,6 @@
 <translation id="982713511914535780">ഡിസ്‌ചാർജ്ജ് ടെസ്‌റ്റ് റൺ ചെയ്യുക</translation>
 <translation id="98515147261107953">ലാന്‍ഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="987264212798334818">പൊതുവായ</translation>
+<translation id="994473081369871639">മൈക്ക് ഓഫാക്കുക</translation>
 <translation id="995062385528875723">ഉച്ചാരണം സൂചിപ്പിക്കുന്ന അക്ഷരങ്ങളോ ലാറ്റിൻ ഇതര അക്ഷരമാലയോ ചിഹ്നങ്ങളോ ഉപയോഗിക്കാൻ കഴിയില്ല</translation>
 </translationbundle>

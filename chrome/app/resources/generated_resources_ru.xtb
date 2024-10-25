@@ -3436,7 +3436,6 @@
 <translation id="3447797901512053632">Вкладка "<ph name="TAB_NAME" />" транслируется на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">Обновить аккаунт</translation>
 <translation id="3449393517661170867">Новое окно с вкладками</translation>
-<translation id="3449839693241009168">Нажмите <ph name="SEARCH_KEY" /> для отправки команд в <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Показывать системные уведомления и советы о функциях Chrome</translation>
 <translation id="3450157232394774192">Продолжительность состояния бездействия в процентах</translation>
 <translation id="3450180775417907283">Согласно действующим правилам (источник – <ph name="MANAGER" />) необходимо скачать обновление по Wi-Fi.</translation>
@@ -6607,7 +6606,6 @@
 <translation id="5780973441651030252">Приоритет процессов</translation>
 <translation id="5781092003150880845">Синхронизировать с аккаунтом пользователя <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Перенести данные из учебного аккаунта в личный</translation>
-<translation id="5781865261247219930">Отправлять команды в <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784291589716625675">Изменить язык приложения</translation>
@@ -7113,7 +7111,6 @@
 <translation id="6150116777338468525">Качество звука</translation>
 <translation id="6150278227694566734">Некоторые контакты</translation>
 <translation id="6150961653851236686">Этот язык используется для перевода страниц</translation>
-<translation id="6151323131516309312">Нажмите <ph name="SEARCH_KEY" /> для поиска на <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Файл уже есть в папке назначения</translation>
 <translation id="6152918902620844577">Ожидание следующей операции</translation>
 <translation id="6153439704237222699">Подробнее о заголовке Do Not Track…</translation>
@@ -7791,7 +7788,6 @@
 <translation id="6657240842932274095">Разрешить системным службам доступ к данным о местоположении?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659213950629089752">Масштаб этой страницы изменен расширением "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />, включена запись с камеры</translation>
 <translation id="6660301751798595791">Выбор голоса</translation>
 <translation id="6660819301598582123">Съешь же ещё этих мягких французских булок да выпей чаю.</translation>

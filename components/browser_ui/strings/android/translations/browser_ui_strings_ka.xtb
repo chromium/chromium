@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1240190568154816272">Chrome-ის მინიშნებები</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ში ჩაშენებული</translation>
+<translation id="1263609676484797429">შეეხეთ: აპები  &gt; ნაგულისხმევი აპები</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1289742167380433257">მონაცემთა მოცულობის დაზოგვის მიზნით, სურათები ოპტიმიზებულია Google-ის მიერ.</translation>
 <translation id="129382876167171263">ვებსაიტების მიერ შენახული ფაილები აქ გამოჩნდება</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ზოგიერთმა ფუნქციამ, შესაძლოა, არ იმუშაოს. დაკავშირებულ საიტებს მაინც შეეძლება მესამე მხარის ქუქი-ჩანაწერების გამოყენება.</translation>
+<translation id="3922092564198021702">თქვენს ტელეფონში გახსენით პარამეტრები</translation>
 <translation id="3933121352599513978">არასასურველი მოთხოვნების ჩაკეცვა (რეკომენდებული)</translation>
 <translation id="3955193568934677022">ვებსაიტებისთვის დაცული კონტენტის დაკვრის დაშვება (რეკომენდებული)</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">სარეკლამო კონფიდენციალურობა</translation>
 <translation id="6207207788774442484">წაიშალოს მონაცემები და გადაყენდეს ნებართვები</translation>
 <translation id="6231752747840485235">გსურთ <ph name="APP_NAME" />-ის დეინსტალაცია?</translation>
+<translation id="6234351944623978659">შეეხეთ: ბრაუზერის აპი &gt; Chrome</translation>
 <translation id="6262191102408817757">თქვენი ბოლო ჩანართის საფუძველზე</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაბლოკილია</translation>
 <translation id="6270391203985052864">საიტებს შეუძლიათ შეტყობინებების გამოგზავნის თხოვნა</translation>

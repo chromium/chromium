@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">এক্সেছ কী:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">এই বস্তুটোৰ বাবে কোনো উপলব্ধ পাঠ নাই</translation>
 <translation id="2127747486437921899">ইটালিক</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">অনুশীলনৰ ক্ষেত্ৰ বন্ধ কৰক</translation>
 <translation id="2163782704988363449">আসোঁৱাহ</translation>
 <translation id="2169714232367507776">বৰ্তমানৰ বস্তুটোত ক্লিক কৰক</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">বস্তু অনুসৰি আঁতৰাবলৈ বাওঁ বা সোঁফালে ছোৱাইপ কৰক</translation>
 <translation id="3070245424257836917">তিনিটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="307516670110542567">ক্ষিপ্ৰ অ'ৰিয়েণ্টশ্বন</translation>
+<translation id="3077734595579995578">Shift+</translation>
 <translation id="3078345202707391975">পৰৱর্তী স্তৰ ২ৰ শিৰোনাম</translation>
 <translation id="3078740164268491126">তালিকা</translation>
 <translation id="3082249673510793544">পিছলৈ স্ক্ৰ’ল কৰক</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">পূর্বৱর্তী স্তৰ ১ৰ শিৰোনাম</translation>
 <translation id="3323447499041942178">পাঠৰ বাকচ</translation>
 <translation id="3324983252691184275">ক্ৰিমছন</translation>
+<translation id="334252345105450327">এটা স্ক্ৰীনশ্বট লওক</translation>
 <translation id="335581015389089642">কথন</translation>
 <translation id="3356951775008366684">শব্দৰ ধ্বনিগত উচ্চাৰণ ঘোষণা কৰক</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">বৰফ</translation>
 <translation id="3781428340399460090">উজ্জ্বল গুলপীয়া</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">লগ দেখুৱাওক</translation>
 <translation id="3801735343383419236">স্বয়ংক্ৰিয়ভাৱে সম্পূর্ণ হোৱা সূচী</translation>
 <translation id="3806327402890551732">পৰৱৰ্তী অথবা পূৰ্বৱৰ্তী বস্তুটোলৈ যাওক</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
 <translation id="4294967782363273192">ঊর্ধ্বক্রমত সজোৱা</translation>
 <translation id="4300318234632215983">কোনো লিংকৰ অন্তৰালত থকা URLটো ঘোষণা কৰক</translation>
+<translation id="4321179778687042513">Ctrl</translation>
 <translation id="4322625298640984693">ছিয়েনা</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{বিন্দু}=3{এলিপ্সিছ}one{#টা বিন্দু}other{#টা বিন্দু}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> টাইপ কৰক</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">গাঢ় আকাশী নীলা</translation>
 <translation id="4406249099130339147">যতিচিহ্নৰ ইক’:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">ভাৰতীয় ৰঙা</translation>
 <translation id="4432896207833262240">চিহ্নিত কৰা সমল</translation>
 <translation id="4437615272777527928">মেনুসমূহ সন্ধান কৰিবলৈ টাইপ কৰক। ফলাফলসমূহৰ মাজত তল ওপৰ কৰিবলৈ up আৰু down কাঁড়চিহ্ন ব্যৱহাৰ কৰক। পাঠৰ কেৰেট মিলাবলৈ আৰু মেনুসমূহৰ মাজত ইফাল-সিফাল কৰিবলৈ left আৰু right কাঁড়চিহ্ন ব্যৱহাৰ কৰক।</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">হে’ডাৰ</translation>
 <translation id="4597532268155981612">ফ’ৰ্ম</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">কাষ্টম কীৰ মিশ্ৰণ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">পৰৱৰ্তী কীৰ হেঁচা অগ্রাহ্য কৰি থকা হৈছে</translation>
 <translation id="4617384941327705512">স্মাৰ্ট ষ্টিকি ম’ড অফ আছে</translation>
 <translation id="4623097797855662355">ক'ল'ফ'ন</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">ইয়াৰ পাছত, আপুনি স্ক্ৰীনখনৰ চাৰিওফালে কেনেকৈ ইফাল সিফাল কৰিব লাগে সেয়া শিকিব। আপুনি পৰৱৰ্তী বস্তুটোলৈ যাবলৈ এটা আঙুলিৰে বাওঁফালৰ পৰা সোঁফাললৈ ছোৱাইপ কৰিব পাৰে। পৰৱৰ্তী পদক্ষেপলৈ যাবলৈ এইটো এতিয়াই কৰি চাওক।</translation>
 <translation id="6609828810966525877">শিকাৰ ম’ডত আৰু Chromebook সহায়তা কেন্দ্ৰত অধিক আঙুলিৰ স্পৰ্শৰে দিয়া নিৰ্দেশ অন্বেষণ কৰক</translation>
 <translation id="6628427060004938651">অংশ</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">লগ</translation>
 <translation id="6657128831881431364">প্ৰগতিৰ হাৰ নির্দেশ কৰা দণ্ড</translation>
 <translation id="667999046851023355">নথি</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">পূর্বৱর্তী মিডিয়া</translation>
 <translation id="7096668131290451939">শিক্ষণ ম’ডৰ পৰা বাহিৰ হ’বলৈ পুনৰ এ’ছ্‌কে’প টিপক</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">শব্দৰ প্ৰতিধ্বনি</translation>
 <translation id="7137397390322864165">ছেলম'ন</translation>
 <translation id="7140168702531682811">ছুপাৰস্ক্ৰিপ্ট</translation>

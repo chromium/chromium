@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">Zugriffsschlüssel: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Für dieses Element ist kein Text verfügbar</translation>
 <translation id="2127747486437921899">Kursiv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Übungsbereich schließen</translation>
 <translation id="2163782704988363449">Druckfehler</translation>
 <translation id="2169714232367507776">Auf aktuelles Element klicken</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Wische nach links oder rechts, um dich von Element zu Element zu bewegen</translation>
 <translation id="3070245424257836917">Mit drei Fingern nach oben wischen</translation>
 <translation id="307516670110542567">Kurzanleitung</translation>
+<translation id="3077734595579995578">Umschalttaste</translation>
 <translation id="3078345202707391975">Nächste Überschrift der Ebene 2</translation>
 <translation id="3078740164268491126">Tabelle</translation>
 <translation id="3082249673510793544">Zurückscrollen</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">Vorherige Überschrift der Ebene 1</translation>
 <translation id="3323447499041942178">Textfeld</translation>
 <translation id="3324983252691184275">Purpur</translation>
+<translation id="334252345105450327">Screenshot erstellen</translation>
 <translation id="335581015389089642">Sprachausgabe</translation>
 <translation id="3356951775008366684">Phonetische Aussprache eines Worts ansagen</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Schneeweiß</translation>
 <translation id="3781428340399460090">Dunkelrosa</translation>
+<translation id="3783640748446814672">Alt</translation>
 <translation id="3783725005098956899">Protokoll anzeigen</translation>
 <translation id="3801735343383419236">Liste der Autovervollständigungen</translation>
 <translation id="3806327402890551732">Zum nächsten oder vorherigen Element wechseln</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4294967782363273192">Aufsteigend sortiert</translation>
 <translation id="4300318234632215983">URL hinter einem Link ansagen</translation>
+<translation id="4321179778687042513">Strg</translation>
 <translation id="4322625298640984693">Ocker</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{Punkt}=3{Auslassungspunkte}other{# Punkte}}</translation>
 <translation id="4352022650330571548">„<ph name="PHRASE" />“ eingeben</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Tiefes Himmelblau</translation>
 <translation id="4406249099130339147">Satzzeichenecho:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Indischrot</translation>
 <translation id="4432896207833262240">Markierte Inhalte</translation>
 <translation id="4437615272777527928">Gib etwas ein, um die Menüs zu durchsuchen. Verwende die Nach-oben- und die Nach-unten-Taste, um die Ergebnisse durchzugehen. Verwende die Nach-links- und die Nach-rechts-Taste, um den Textcursor zu bewegen und zwischen Menüs zu wechseln.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">Header-Element</translation>
 <translation id="4597532268155981612">Formular</translation>
 <translation id="4601367666219428522">Tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Benutzerdefinierte Tastenkombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Nächster Tastenanschlag wird ignoriert.</translation>
 <translation id="4617384941327705512">Intelligenter fixierter Modus deaktiviert</translation>
 <translation id="4623097797855662355">Kolophon</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">Als Nächstes erfährst du, wie du mit dem Bildschirm interagierst. Du kannst mit einem Finger von links nach rechts wischen, um zum nächsten Element zu wechseln. Probiere es aus, um mit dem nächsten Schritt fortzufahren.</translation>
 <translation id="6609828810966525877">Mehr Bewegungen kannst du im Lernmodus und in der Chromebook-Hilfe entdecken</translation>
 <translation id="6628427060004938651">Teil</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Statusanzeige</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">Vorheriges Medium</translation>
 <translation id="7096668131290451939">Drücke noch einmal die Esc‑Taste, um den Lernmodus zu beenden</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">Wortecho</translation>
 <translation id="7137397390322864165">Lachs</translation>
 <translation id="7140168702531682811">Hochgestellt</translation>

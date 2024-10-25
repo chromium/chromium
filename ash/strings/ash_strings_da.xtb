@@ -1540,7 +1540,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6166852626429024716">Søg på din enhed, i dine apps, i indstillingerne, på nettet...</translation>
 <translation id="6168318496333165060">Åbn appen Diagnostik</translation>
 <translation id="6168622430237609329">Dine installerede apps</translation>
-<translation id="6173151025443907148">Det er ikke muligt at logge ind med en yderligere bruger, hvis Lacros er aktiveret. Du skal i stedet bruge en yderligere browserprofil i Lacros, eller du kan deaktivere Lacros og prøve igen.</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
 <translation id="6180193585172850042">Knappen Tilbage</translation>
 <translation id="6180651297859206670">Knappen Frem</translation>
@@ -1693,7 +1692,6 @@ Installeret for nylig</translation>
 <translation id="6682029141988159141">Indsæt indhold fra udklipsholder</translation>
 <translation id="6683022854667115063">Høretelefoner</translation>
 <translation id="6686023075541098243">Konfigurer visning af din telefons notifikationer</translation>
-<translation id="6688019813898140556">Esc 5 gange</translation>
 <translation id="6694462491298752106">Den indbyggede touchplade er deaktiveret</translation>
 <translation id="6694973220096431421">Søg i Google Drev</translation>
 <translation id="6696025732084565524">Dit aftagelige tastatur kræver en vigtig opdatering</translation>

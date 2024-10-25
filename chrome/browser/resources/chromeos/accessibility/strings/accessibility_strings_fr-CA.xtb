@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">touche mnémonique : <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Aucun texte proposé pour cet élément</translation>
 <translation id="2127747486437921899">Italique</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="KEY" /></translation>
 <translation id="2152179395627233441">Fermer la zone d'exercice</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Cliquer sur l'élément actuel</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Balayez l'écran vers la gauche ou la droite pour passer d'un élément à l'autre</translation>
 <translation id="3070245424257836917">Faites glisser trois doigts vers le haut</translation>
 <translation id="307516670110542567">Orientation rapide</translation>
+<translation id="3077734595579995578">majuscule</translation>
 <translation id="3078345202707391975">En-tête de niveau 2 suivant</translation>
 <translation id="3078740164268491126">Tableau</translation>
 <translation id="3082249673510793544">Faire défiler vers l'arrière</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">En-tête de niveau 1 précédent</translation>
 <translation id="3323447499041942178">Zone de texte</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
+<translation id="334252345105450327">Prendre une capture d'écran</translation>
 <translation id="335581015389089642">Parole</translation>
 <translation id="3356951775008366684">Annoncer la prononciation phonétique du mot</translation>
 <translation id="3359142382821736686">séparateur</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Neige</translation>
 <translation id="3781428340399460090">Rose indien</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Afficher le journal</translation>
 <translation id="3801735343383419236">Remplissage automatique de liste</translation>
 <translation id="3806327402890551732">Passer à l'élément suivant ou précédent</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="4294967782363273192">Tri par ordre croissant</translation>
 <translation id="4300318234632215983">Lire à voix haute l'adresse l'URL d'un lien</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Terre de Sienne</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{point}=3{points de suspension}one{# point}other{# points}}</translation>
 <translation id="4352022650330571548">taper <ph name="PHRASE" /></translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">info contenu</translation>
 <translation id="4402014469255336455">Bleu ciel foncé</translation>
 <translation id="4406249099130339147">Énonciation de la ponctuation :</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY" /></translation>
 <translation id="4432457053224379116">Rouge indien</translation>
 <translation id="4432896207833262240">Contenu marqué</translation>
 <translation id="4437615272777527928">Tapez pour effectuer une recherche dans les menus. Servez-vous des flèches vers le haut et vers le bas pour naviguer dans les résultats. Servez-vous des flèches de gauche et de droite pour ajuster le point d'insertion de texte et pour vous déplacer entre les menus.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">En-tête</translation>
 <translation id="4597532268155981612">formulaire</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Combinaison de touches personnalisée : <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">La prochaine touche actionnée ne sera pas utilisée.</translation>
 <translation id="4617384941327705512">Mode rémanent intelligent désactivé</translation>
 <translation id="4623097797855662355">Colophon</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">Vous apprendrez maintenant comment vous déplacer sur l'écran. Pour passer à l'élément suivant, vous pouvez balayer l'écran de gauche à droite avec un doigt. Essayez ce geste maintenant pour passer à la prochaine étape.</translation>
 <translation id="6609828810966525877">Découvrez plus de gestes dans le mode apprentissage et dans le Centre d'aide de Chromebook</translation>
 <translation id="6628427060004938651">Partie</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6637586476836377253">Journal</translation>
 <translation id="6657128831881431364">Barre de progression</translation>
 <translation id="667999046851023355">Document</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">Contenu multimédia précédent</translation>
 <translation id="7096668131290451939">Appuyez à nouveau sur Échap. pour quitter le mode d'apprentissage</translation>
 <translation id="7116595520562830928">multiligne</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="MODIFIER_FOUR" />+<ph name="KEY" /></translation>
 <translation id="712735679809149106">Écho de caractères</translation>
 <translation id="7137397390322864165">Saumon</translation>
 <translation id="7140168702531682811">Exposant</translation>

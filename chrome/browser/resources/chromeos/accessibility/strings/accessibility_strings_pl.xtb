@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">klawisz dostępu:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Brak tekstu dla tego elementu</translation>
 <translation id="2127747486437921899">Kursywa</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Zamknij obszar ćwiczenia</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Kliknij bieżący element</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Przesuwaj palcem w lewo lub w prawo, by przechodzić między elementami</translation>
 <translation id="3070245424257836917">Przesuń trzema palcami w górę</translation>
 <translation id="307516670110542567">Szybkie wprowadzenie</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Następny nagłówek poziomu 2</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3082249673510793544">Przewiń do tyłu</translation>
@@ -334,6 +336,7 @@
 <translation id="311015743332597320">Przesuń 4 palcami w prawo</translation>
 <translation id="3112457281078985179">Aby włączyć lub wyłączyć czytnik ChromeVox, naciśnij Ctrl + Alt + Z.</translation>
 <translation id="3115800313647508384">Wyłączyć ekran?</translation>
+<translation id="3127625407966660979">Dyktowanie jest aktywne</translation>
 <translation id="3131002934070407451">Odczytuj numery jako:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Oliwkowy</translation>
@@ -374,6 +377,7 @@
 <translation id="3322936298410871309">Poprzedni nagłówek poziomu 1</translation>
 <translation id="3323447499041942178">Pole tekstowe</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
+<translation id="334252345105450327">Zrób zrzut ekranu</translation>
 <translation id="335581015389089642">Mowa</translation>
 <translation id="3356951775008366684">Przedstawiaj fonetyczną wymowę słowa</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +441,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Śnieg</translation>
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Pokaż dziennik</translation>
 <translation id="3801735343383419236">Autouzupełnianie list</translation>
 <translation id="3806327402890551732">Przejdź do następnego lub poprzedniego elementu</translation>
@@ -490,6 +495,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekunda}few{sekundy}many{sekund}other{sekundy}}</translation>
 <translation id="4161663686871496107">Czytnik ChromeVox jest gotowy</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
+<translation id="4176677444195790114">Trwa przeciąganie i upuszczanie</translation>
 <translation id="4187322598335821254">Przesuwaj palcem w górę lub w dół, by przechodzić z wiersza do wiersza</translation>
 <translation id="4188530942454211480">Poprzednie zdanie</translation>
 <translation id="4191918948604314587">Przycisk</translation>
@@ -519,6 +525,7 @@
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4294967782363273192">Sortowanie rosnąco</translation>
 <translation id="4300318234632215983">Przeczytaj URL linku</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sjena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{kropka}=3{wielokropek}few{# kropki}many{# kropek}other{# dots}}</translation>
 <translation id="4352022650330571548">wpisz <ph name="PHRASE" /></translation>
@@ -532,6 +539,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Głęboki błękit nieba</translation>
 <translation id="4406249099130339147">Czytanie znaków interpunkcyjnych:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Indiański czerwony</translation>
 <translation id="4432896207833262240">Oznaczona treść</translation>
 <translation id="4437615272777527928">Zacznij pisać, by wyszukiwać w menu. Użyj strzałek w górę i w dół, by przeglądać wyniki. Używaj strzałek w lewo i w prawo, by ustawić kursor tekstu i poruszać się między różnymi menu.</translation>
@@ -552,6 +560,7 @@
 <translation id="4562381607973973258">Nagłówek</translation>
 <translation id="4597532268155981612">formularz</translation>
 <translation id="4601367666219428522">tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Niestandardowa kombinacja klawiszy: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Ignorowanie następnego naciśnięcia klawisza</translation>
 <translation id="4617384941327705512">Inteligentny tryb klawiszy trwałych jest wyłączony</translation>
 <translation id="4623097797855662355">Kolofon</translation>
@@ -843,6 +852,7 @@
 <translation id="6584162722998608255">Teraz dowiesz się, jak poruszać się po ekranie. Możesz przesunąć jednym palcem z lewej do prawej, aby przejść do następnego elementu. Zrób to teraz, aby przejść do następnego kroku.</translation>
 <translation id="6609828810966525877">Więcej gestów możesz poznać w Trybie informacyjnym i w Centrum pomocy Chromebooków</translation>
 <translation id="6628427060004938651">Część</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">dziennik</translation>
 <translation id="6657128831881431364">Pasek postępu</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -907,6 +917,7 @@
 <translation id="7096001299300236431">Poprzedni plik multimedialny</translation>
 <translation id="7096668131290451939">Aby wyjść z trybu uczenia, naciśnij ponownie klawisz Escape</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">odczytywanie słów</translation>
 <translation id="7137397390322864165">Łososiowy</translation>
 <translation id="7140168702531682811">Indeks górny</translation>

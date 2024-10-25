@@ -168,7 +168,6 @@
 <translation id="2045055672832940894">मागील नियंत्रण नाही</translation>
 <translation id="2045606329038304310">फॉर्म भाग नियंत्रण</translation>
 <translation id="2063539687800151747">बोधवाक्य</translation>
-<translation id="2067158561093481039">कस्टम की कॉंबिनेशन तयार करा</translation>
 <translation id="2086961585857038472">पुढील शब्द</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
@@ -179,6 +178,7 @@
 <translation id="2121067395472282800">ॲक्सेस की:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">या आयटमसाठी कोणताही मजकूर उपलब्ध नाही</translation>
 <translation id="2127747486437921899">तिरपे</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">सराव क्षेत्र बंद करा</translation>
 <translation id="2163782704988363449">शुद्धिपत्रक</translation>
 <translation id="2169714232367507776">वर्तमान आयटमवर क्लिक करा</translation>
@@ -323,6 +323,7 @@
 <translation id="3060880924447482063">आयटमनुसार हलवण्यासाठी डावीकडे किंवा उजवीकडे स्वाइप करा</translation>
 <translation id="3070245424257836917">तीन बोटांनी वरच्या दिशेला स्वाइप करा</translation>
 <translation id="307516670110542567">क्विक ओरिएंटेशन</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">पुढील स्तर 2 शीर्षक</translation>
 <translation id="3078740164268491126">सारणी</translation>
 <translation id="3082249673510793544">मागे स्क्रोल करा</translation>
@@ -380,6 +381,7 @@
 <translation id="3322936298410871309">मागील स्तर 1 मथळा</translation>
 <translation id="3323447499041942178">मजकूर बॉक्स</translation>
 <translation id="3324983252691184275">किरमिजी</translation>
+<translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
 <translation id="335581015389089642">भाषण</translation>
 <translation id="3356951775008366684">शब्दाचा अक्षरानुसार उच्चार सूचित करा</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">पांढरा शुभ्र</translation>
 <translation id="3781428340399460090">गडद गुलाबी</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">लॉग दाखवा</translation>
 <translation id="3801735343383419236">ऑटोकंप्लीशन सूची</translation>
 <translation id="3806327402890551732">पुढील किंवा मागील आयटमवर जा</translation>
@@ -496,6 +499,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{सेकंद}other{सेकंद}}</translation>
 <translation id="4161663686871496107">ChromeVox वाचिक अभिप्राय तयार आहे</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
+<translation id="4176677444195790114">ड्रॅग करून ड्रॉप करणे प्रगतीपथावर आहे</translation>
 <translation id="4187322598335821254">ओळीनुसार हलवण्यासाठी वर किंवा खाली स्वाइप करा</translation>
 <translation id="4188530942454211480">मागील वाक्य</translation>
 <translation id="4191918948604314587">एक बटण</translation>
@@ -525,6 +529,7 @@
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4294967782363273192">चढत्या क्रमाने लावा</translation>
 <translation id="4300318234632215983">लिंकमागील URL घोषित करा</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">लालसर तपकिरी</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{टिंब}=3{पदलोप}other{# टिंब}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> असे टाइप कर</translation>
@@ -538,6 +543,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">गडद आकाशी निळा</translation>
 <translation id="4406249099130339147">विरामचिन्हाचा इको:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">लाल</translation>
 <translation id="4432896207833262240">मार्क केलेला आशय</translation>
 <translation id="4437615272777527928">मेनू शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी अप आणि डाउन ॲरो वापरा. मजकूर कॅरेट ॲडजस्ट करण्यासाठी आणि मेनूदरम्यान हलवण्यासाठी डावा आणि उजवा ॲरो वापरा.</translation>
@@ -559,6 +565,7 @@
 <translation id="4562381607973973258">शीर्षलेख</translation>
 <translation id="4597532268155981612">फॉर्म</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">कस्टम की कॉंबिनेशन: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">पुढील की दाबणे दुर्लक्षित करत आहे</translation>
 <translation id="4617384941327705512">स्‍मार्ट स्टिकी मोड बंद आहे</translation>
 <translation id="4623097797855662355">बोधचिन्ह</translation>
@@ -851,6 +858,7 @@
 <translation id="6584162722998608255">पुढे, तुम्ही स्क्रीनभोवती कसे हलवावे याविषयी जाणून घ्याल. पुढील आयटमवर जाण्यासाठी तुम्ही एका बोटाने डावीकडून उजवीकडे स्वाइप करू शकता. पुढील पायरीवर जाण्यासाठी ते आता वापरून पहा.</translation>
 <translation id="6609828810966525877">जाणून घ्या मोड आणि Chromebook मदत केंद्रामधील आणखी जेश्चर एक्सप्लोर करा</translation>
 <translation id="6628427060004938651">भाग</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">लॉग</translation>
 <translation id="6657128831881431364">प्रगती बार</translation>
 <translation id="667999046851023355">दस्तऐवज</translation>
@@ -915,6 +923,7 @@
 <translation id="7096001299300236431">मागील माध्यम</translation>
 <translation id="7096668131290451939">जाणून घ्या मोड मधून बाहेर पाडण्यासाठी पुन्हा एस्केप प्रेस करा</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">शब्द प्रतिध्वनी</translation>
 <translation id="7137397390322864165">तांबूस पिवळा</translation>
 <translation id="7140168702531682811">सुपरस्क्रिप्ट</translation>

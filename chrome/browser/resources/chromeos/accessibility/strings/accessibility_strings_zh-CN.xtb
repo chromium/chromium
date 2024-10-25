@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">快捷键：<ph name="KEY" /></translation>
 <translation id="2126597928985245619">此项的值为空</translation>
 <translation id="2127747486437921899">斜体</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">关闭练习区</translation>
 <translation id="2163782704988363449">勘误表</translation>
 <translation id="2169714232367507776">点击当前项</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">用 1 根手指向左或向右滑动即可逐项移动</translation>
 <translation id="3070245424257836917">向上滑动三根手指</translation>
 <translation id="307516670110542567">快速入门</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">下一个 2 级标题</translation>
 <translation id="3078740164268491126">表格</translation>
 <translation id="3082249673510793544">向后滚动</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">上一个 1 级标题</translation>
 <translation id="3323447499041942178">文本框</translation>
 <translation id="3324983252691184275">深红色</translation>
+<translation id="334252345105450327">截屏</translation>
 <translation id="335581015389089642">语音</translation>
 <translation id="3356951775008366684">播报字词的拼音</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">1级标题标记</translation>
 <translation id="3777742246909257041">雪白</translation>
 <translation id="3781428340399460090">艳粉色</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">显示日志</translation>
 <translation id="3801735343383419236">自动填充列表</translation>
 <translation id="3806327402890551732">移至下一项或上一项</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">概述</translation>
 <translation id="4294967782363273192">升序排列</translation>
 <translation id="4300318234632215983">读出链接网址</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">赭色</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{1个点}=3{3个点}other{#个点}}</translation>
 <translation id="4352022650330571548">输入“<ph name="PHRASE" />”</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">深天蓝色</translation>
 <translation id="4406249099130339147">标点符号语音提示：</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">印度红色</translation>
 <translation id="4432896207833262240">已标记的内容</translation>
 <translation id="4437615272777527928">输入文字即可在菜单中搜索。使用向上和向下箭头键可上下浏览结果。使用向左和向右箭头键可调整文本插入符号以及切换菜单。</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">标头标记</translation>
 <translation id="4597532268155981612">表单</translation>
 <translation id="4601367666219428522">表格“<ph name="TABLENAME" />”<ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">自定义组合键：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">将忽略下一次按键</translation>
 <translation id="4617384941327705512">智能粘滞模式处于关闭状态</translation>
 <translation id="4623097797855662355">版权页</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">接下来，您将学习如何在屏幕上四处移动。您只需用 1 根手指从左向右滑动屏幕即可移至下一项。请立即尝试此手势以进入下一步。</translation>
 <translation id="6609828810966525877">若想探索更多手势，请开启学习模式或前往 Chromebook 帮助中心</translation>
 <translation id="6628427060004938651">部分</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6637586476836377253">日志</translation>
 <translation id="6657128831881431364">进度条</translation>
 <translation id="667999046851023355">文档</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">上一个媒体内容</translation>
 <translation id="7096668131290451939">再次按 Esc 键即可退出学习模式</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">字词回显</translation>
 <translation id="7137397390322864165">橙红</translation>
 <translation id="7140168702531682811">上标</translation>

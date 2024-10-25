@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">অ্যাক্সেস কী:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">এই আইটেমের কোনও নাম দেওয়া নেই</translation>
 <translation id="2127747486437921899">তির্যক টেক্সট</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">অনুশীলন ক্ষেত্রটি বন্ধ করুন</translation>
 <translation id="2163782704988363449">ত্রুটি-বিচ্যুতি</translation>
 <translation id="2169714232367507776">বর্তমান আইটেমে ক্লিক করুন</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">একটি আইটেম থেকে অন্য আইটেমে যেতে বাঁ অথবা ডানদিকে সোয়াইপ করুন</translation>
 <translation id="3070245424257836917">তিন আঙ্গুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="307516670110542567">'দ্রুত জ্ঞান অর্জন'</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">পরবর্তী স্তর ২ শিরোনাম</translation>
 <translation id="3078740164268491126">সারণী</translation>
 <translation id="3082249673510793544">স্ক্রল করে ফিরে যান</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">পূর্ববর্তী স্তর ১ শিরোনাম</translation>
 <translation id="3323447499041942178">পাঠ্য  বাক্স</translation>
 <translation id="3324983252691184275">টকটকে লাল</translation>
+<translation id="334252345105450327">একটি স্ক্রিনশট নিন</translation>
 <translation id="335581015389089642">স্পিচ</translation>
 <translation id="3356951775008366684">ধ্বনি-অনুযায়ী শব্দ উচ্চারণ করুন</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">তুষার</translation>
 <translation id="3781428340399460090">হট গোলাপী</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">লগ দেখুন</translation>
 <translation id="3801735343383419236">স্বতসম্পূর্ণ তালিকা</translation>
 <translation id="3806327402890551732">পরের বা আগের আইটেমে নেভিগেট করুন</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="4294967782363273192">'ছোট থেকে বড়' ক্রমানুসারে সাজানো হয়েছে</translation>
 <translation id="4300318234632215983">একটি লিঙ্কের পিছনের URL ঘোষণা করুন</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">পোড়া লাল</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{বিন্দু}=3{এলিপসিস}one{#টি বিন্দু}other{# বিন্দু}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> টাইপ করুন</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">গাঢ় আকাশী</translation>
 <translation id="4406249099130339147">যতিচিহ্ন ইকো:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">ভারতীয় লাল</translation>
 <translation id="4432896207833262240">চিহ্নিত করা কন্টেন্ট</translation>
 <translation id="4437615272777527928">মেনু সার্চ করতে টাইপ করুন। ফলাফলের মধ্যে অদল বদল করে দেখতে উপরের এবং নিচের তীরচিহ্নে প্রেস করুন। টেক্সটের কার্সার অ্যাডজাস্ট করতে এবং এক মেনু থেকে অন্য মেনুতে যেতে উপরের এবং নিচের তীরচিহ্নে প্রেস করুন।</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">শিরোনাম</translation>
 <translation id="4597532268155981612">ফর্ম</translation>
 <translation id="4601367666219428522">সারণী <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">কাস্টম 'কী'-এর কম্বিনেশন: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">পরবর্তী কি টেপা উপেক্ষা করা হচ্ছে</translation>
 <translation id="4617384941327705512">স্মার্ট স্টিকি মোড বন্ধ আছে</translation>
 <translation id="4623097797855662355">বইটির সম্পর্কে</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">এরপর, আপনি শিখবেন কীভাবে স্ক্রিনের নানা দিকে নেভিগেট করতে হয়। আপনি পরের আইটেমে নেভিগেট করতে এক আঙুল দিয়ে বাঁদিক থেকে ডানদিকে সোয়াইপ করতে পারেন। পরবর্তী ধাপে যেতে এখনই এটা করে দেখুন।</translation>
 <translation id="6609828810966525877">লার্ন মোড এবং Chromebook সহায়তা কেন্দ্র থেকে আরও অনেক অঙ্গভঙ্গির বিষয়ে জানুন</translation>
 <translation id="6628427060004938651">অংশ</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">লগ</translation>
 <translation id="6657128831881431364">প্রগতি দণ্ড</translation>
 <translation id="667999046851023355">দস্তাবেজ</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">পূর্ববর্তী মিডিয়া</translation>
 <translation id="7096668131290451939">শেখার মোড থেকে বেরিয়ে আসতে আবার Escape প্রেস করুন</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">শব্দ ইকো</translation>
 <translation id="7137397390322864165">স্যালমন</translation>
 <translation id="7140168702531682811">সুপারস্ক্রিপ্ট</translation>

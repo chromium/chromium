@@ -3432,7 +3432,6 @@
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> ներդիրը հեռարձակվում է «<ph name="DEVICE_NAME" />» սարքին</translation>
 <translation id="3448492834076427715">Թարմացնել հաշիվը</translation>
 <translation id="3449393517661170867">Նոր ներդիրով պատուհան</translation>
-<translation id="3449839693241009168"><ph name="EXTENSION_NAME" />-ին հրամաններ ուղարկելու համար սեղմեք <ph name="SEARCH_KEY" /></translation>
 <translation id="3450056559545492516">Ցույց տալ Chrome-ի գործառույթների և խորհուրդների մասին համակարգի ծանուցումները</translation>
 <translation id="3450157232394774192">Անգործուն վիճակի տևողությունը տոկոսներով</translation>
 <translation id="3450180775417907283">Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ այժմ անհրաժեշտ է միանալ Wi-Fi-ին և ներբեռնել թարմացումը։</translation>
@@ -6601,7 +6600,6 @@
 <translation id="5780973441651030252">Գործընթացների առաջնահերթություն</translation>
 <translation id="5781092003150880845">Համաժամացնել <ph name="ACCOUNT_FULL_NAME" /> օգտատիրոջ հաշվով</translation>
 <translation id="5781120434102258025">Տեղափոխեք ձեր ուսումնական հաշվի տվյալները անձնական հաշիվ</translation>
-<translation id="5781865261247219930">Ուղարկել հրամաններ «<ph name="EXTENSION_NAME" />»-ին</translation>
 <translation id="5782227691023083829">Թարգմանվում է...</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
 <translation id="5784291589716625675">Հավելվածի լեզվի փոփոխում</translation>
@@ -7106,7 +7104,6 @@
 <translation id="6150116777338468525">Ձայնի որակը</translation>
 <translation id="6150278227694566734">Որոշ կոնտակտներ</translation>
 <translation id="6150961653851236686">Այս լեզուն օգտագործվում է էջերը թարգմանելիս</translation>
-<translation id="6151323131516309312"><ph name="SITE_NAME" />-ը որոնելու համար սեղմեք <ph name="SEARCH_KEY" /></translation>
 <translation id="6151771661215463137">Ֆայլն արդեն առկա է ներբեռնումների պանակում։</translation>
 <translation id="6152918902620844577">Սպասում է հաջորդ գործողությանը</translation>
 <translation id="6153439704237222699">Իմանալ ավելին Do Not Track հատկանիշի մասին</translation>
@@ -7780,7 +7777,6 @@
 <translation id="6657240842932274095">Թույլատրե՞լ համակարգային ծառայություններին օգտագործել ձեր տեղադրության տվյալները</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6659213950629089752">Այս էջի չափերը փոփոխել է <ph name="NAME" /> ընդլայնումը</translation>
-<translation id="6659594942844771486">Ներդիր</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Տեսախցիկով տեսագրում</translation>
 <translation id="6660301751798595791">Ձայնի ընտրություն</translation>
 <translation id="6660819301598582123">Մուկը մատը մատին կտա, տան կարասը պատին կտա։</translation>

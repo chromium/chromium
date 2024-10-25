@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="100421257800558142">Apasă tasta săgeată spre dreapta</translation>
 <translation id="100506692671054486">nu există o comandă anterioară</translation>
 <translation id="1009046985747440431">Apasă săgeata în sus sau săgeata în jos pentru a naviga sau pe Enter pentru activare</translation>
 <translation id="1011903154582639569">Găsește o tastă, apoi ridică degetul ca să o selectezi</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Buton de comutare</translation>
 <translation id="1299774449519412690">Albastru deschis ca cerul</translation>
 <translation id="1303806948938513162">Atingeți cu patru degete ca să intrați în meniurile ChromeVox</translation>
+<translation id="1304162325618937178">Apasă pe bara de spațiu</translation>
 <translation id="1313373992684326101">Treci la secțiunea anterioară. Printre exemple se numără Bara de stare și Lansatorul.</translation>
 <translation id="1315077335264761176">Orientarea pentru gesturile de atingere</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, butonul radio al elementului de meniu este deselectat</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Grâu</translation>
 <translation id="1618597272655350600">Anunță o descriere completă a poziției curente</translation>
 <translation id="1627222324347828322">Alb zincat</translation>
+<translation id="1632810692616643246">Intră sau ieși din modul de derulare</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{semn mai mare}few{# semne mai mare}other{# de semne mai mare}}</translation>
 <translation id="1653266918374749391">Titlul de nivel 3 anterior</translation>
 <translation id="1657616855184033958">Afișează filtrele pentru fluxul de evenimente</translation>
@@ -175,6 +178,7 @@
 <translation id="2121067395472282800">tastă de acces: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Nu există text disponibil pentru acest element</translation>
 <translation id="2127747486437921899">Cursiv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Închide zona pentru exersare</translation>
 <translation id="2163782704988363449">Erată</translation>
 <translation id="2169714232367507776">Dați clic pe elementul curent</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Maro șa</translation>
 <translation id="2199994615414171367">Expresia matematică anterioară</translation>
 <translation id="2203046366315513658">Redu valoarea</translation>
+<translation id="2206580811360135054">Afișează sau ascunde prezentarea generală a ferestrelor</translation>
 <translation id="2216790501338699346">Adresa URL a linkului: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Mută înapoi cu un caracter</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
+<translation id="2239819015858077439">Apasă tasta săgeată în jos</translation>
 <translation id="2243633977138166243">Apasă pe săgeata spre stânga sau spre dreapta pentru a naviga și pe Enter pentru a activa</translation>
 <translation id="224426591676115802">Nicio voce disponibilă pentru limba <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Se oprește modul de învățare</translation>
@@ -317,6 +323,7 @@
 <translation id="3060880924447482063">Glisați la stânga sau la dreapta pentru a trece de la un element la altul</translation>
 <translation id="3070245424257836917">Glisează cu trei degete în sus</translation>
 <translation id="307516670110542567">Orientare rapidă</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Titlul de nivel 2 următor</translation>
 <translation id="3078740164268491126">tabel</translation>
 <translation id="3082249673510793544">Derulează înapoi</translation>
@@ -374,6 +381,7 @@
 <translation id="3322936298410871309">Titlul de nivel 1 anterior</translation>
 <translation id="3323447499041942178">Casetă de text</translation>
 <translation id="3324983252691184275">Roșu aprins</translation>
+<translation id="334252345105450327">Fă o captură de ecran</translation>
 <translation id="335581015389089642">Voce</translation>
 <translation id="3356951775008366684">Anunță transcrierea fonetică a cuvântului</translation>
 <translation id="3359142382821736686">separator</translation>
@@ -437,6 +445,7 @@
 <translation id="3777255250339039212">titlu 1</translation>
 <translation id="3777742246909257041">Zăpadă</translation>
 <translation id="3781428340399460090">Roz aprins</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Afișează jurnalul</translation>
 <translation id="3801735343383419236">Completare automată listă</translation>
 <translation id="3806327402890551732">Treci la elementul următor sau la cel anterior</translation>
@@ -519,6 +528,7 @@
 <translation id="4289540628985791613">Prezentare generală</translation>
 <translation id="4294967782363273192">Sortare în ordine crescătoare</translation>
 <translation id="4300318234632215983">Anunță adresa URL la care trimite un link</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punct}=3{puncte de suspensie}few{# puncte}other{# de puncte}}</translation>
 <translation id="4352022650330571548">introdu <ph name="PHRASE" /></translation>
@@ -532,9 +542,11 @@
 <translation id="4391478986194775161">informații conținut</translation>
 <translation id="4402014469255336455">Albastru celest</translation>
 <translation id="4406249099130339147">Redare vocală a punctuației:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Roșu indian</translation>
 <translation id="4432896207833262240">Conținut marcat</translation>
 <translation id="4437615272777527928">Tastează pentru a căuta în meniuri. Folosește săgețile în sus și în jos pentru a răsfoi rezultatele. Folosește săgețile spre dreapta și spre stânga pentru a ajusta cursorul pentru text și pentru a trece de la un meniu la altul.</translation>
+<translation id="4441677939526091190">Apasă pe tasta săgeată în sus</translation>
 <translation id="4453530046591759283">Pentru a trece la alte părți ale ecranului, cum ar fi bare de instrumente sau bara de sistem, apasă pe Control + F1. F1 este prima tastă din dreapta tastei escape.</translation>
 <translation id="4457472090507035117">Selectează vocea actuală:</translation>
 <translation id="4476183483923481720">rând nou</translation>
@@ -552,6 +564,7 @@
 <translation id="4562381607973973258">Antet</translation>
 <translation id="4597532268155981612">formular</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Combinație de taste personalizată: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Se ignoră următoarea apăsare de tastă</translation>
 <translation id="4617384941327705512">Modul persistent inteligent este dezactivat</translation>
 <translation id="4623097797855662355">Colofon</translation>
@@ -713,6 +726,7 @@
 <translation id="5653397561111110475">Folosește funcțiile de accesibilitate pentru ecranul tactil al Chromebookului</translation>
 <translation id="5655682562155942719">Comenzi de accesare</translation>
 <translation id="56637627897541303">Zonă de text</translation>
+<translation id="5666746275818170484">Apasă tasta săgeată spre stânga</translation>
 <translation id="5669637233317991674">Apasă tasta de căutare + săgeată spre dreapta sau tasta de căutare + săgeată spre stânga pentru a naviga în această lecție</translation>
 <translation id="5677240841070992068">Locația actuală</translation>
 <translation id="5678161956734658133">zonă text</translation>
@@ -843,6 +857,7 @@
 <translation id="6584162722998608255">În continuare vei afla cum să te deplasezi pe ecran. Poți glisa cu un deget de la stânga la dreapta pentru a trece la elementul următor. Încearcă acum pentru a trece la următorul pas.</translation>
 <translation id="6609828810966525877">Explorați mai multe gesturi în Modul de învățare și în Centrul de ajutor Chromebook</translation>
 <translation id="6628427060004938651">Parte</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">jurnal</translation>
 <translation id="6657128831881431364">Bara de progres</translation>
 <translation id="667999046851023355">Document</translation>
@@ -907,6 +922,7 @@
 <translation id="7096001299300236431">Conținut media anterior</translation>
 <translation id="7096668131290451939">Apasă din nou Escape pentru a ieși din Modul de învățare</translation>
 <translation id="7116595520562830928">linii multiple</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">ecou cuvânt</translation>
 <translation id="7137397390322864165">Roz portocaliu</translation>
 <translation id="7140168702531682811">Exponent</translation>
@@ -917,6 +933,7 @@
 <translation id="7161771961008409533">Buton pop-up</translation>
 <translation id="7167657087543110">ecou caracter</translation>
 <translation id="7173102181852295013">Albastru noapte</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Extins</translation>
 <translation id="7209751026933045237">Nu există un glisor următor</translation>
 <translation id="7218782500591078391">Galben auriu</translation>
@@ -1090,6 +1107,7 @@
 <translation id="8378855320830505539">Regiune</translation>
 <translation id="8382679411218029383">Completare automată inline și listă</translation>
 <translation id="8394908167088220973">Redați/întrerupeți conținutul media</translation>
+<translation id="8409502156784390079">Modul de derulare este activ</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8428603554127842284">nivelul <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">bară meniu</translation>
@@ -1167,6 +1185,7 @@
 <translation id="8986362086234534611">Șterge</translation>
 <translation id="8989104346085848538">Pentru a opri citirea cu ChromeVox, apasă tasta Control.</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
+<translation id="9034592733577768445">Comenzile faciale au fost întrerupte</translation>
 <translation id="9040132695316389094">Titlu 1</translation>
 <translation id="9061884144798498064">Selectează un tabel Braille cu 8 puncte:</translation>
 <translation id="9063946545000394379">treci la caracterul anterior</translation>

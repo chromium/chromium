@@ -175,6 +175,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2121067395472282800">çelësi i qasjes:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Nuk ka tekst për këtë artikull</translation>
 <translation id="2127747486437921899">Kursive</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Mbyll zonën e praktikës</translation>
 <translation id="2163782704988363449">Gabime shtypi</translation>
 <translation id="2169714232367507776">Kliko mbi artikullin aktual</translation>
@@ -317,6 +318,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3060880924447482063">Rrëshqit shpejt majtas ose djathtas për të lëvizur sipas artikujve</translation>
 <translation id="3070245424257836917">Rrëshqit shpejt tre gishta lart</translation>
 <translation id="307516670110542567">Orientim i shpejtë</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Titulli tjetër i nivelit 2</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3082249673510793544">Lëviz prapa</translation>
@@ -374,6 +376,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3322936298410871309">Titulli i mëparshëm i nivelit 1</translation>
 <translation id="3323447499041942178">Kutia e tekstit</translation>
 <translation id="3324983252691184275">E kuqe e fortë</translation>
+<translation id="334252345105450327">Nxirr një pamje të ekranit</translation>
 <translation id="335581015389089642">Ligjërimi</translation>
 <translation id="3356951775008366684">Njofto për shqiptimin fonetik për fjalën</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Borë</translation>
 <translation id="3781428340399460090">Rozë e ndezur</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Shfaq evidencën</translation>
 <translation id="3801735343383419236">Lista e plotësimit automatik</translation>
 <translation id="3806327402890551732">Kalo tek artikulli tjetër ose i mëparshëm</translation>
@@ -519,6 +523,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4294967782363273192">Në rend rritës</translation>
 <translation id="4300318234632215983">Njofto URL-në prapa një lidhjeje</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{pikë}=3{heqje teksti}other{# pika}}</translation>
 <translation id="4352022650330571548">shkruaj "<ph name="PHRASE" />"</translation>
@@ -532,6 +537,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Blu qielli e thellë</translation>
 <translation id="4406249099130339147">Jehona e pikësimit:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">E kuqe indiane</translation>
 <translation id="4432896207833262240">Përmbajtje e shënuar</translation>
 <translation id="4437615272777527928">Shkruaj për të kërkuar në meny. Përdor shigjetat lart dhe poshtë për të kaluar në cikël mes rezultateve. Përdor shigjetat majtas dhe djathtas për të rregulluar kursorin e tekstit dhe për të lëvizur mes menyve.</translation>
@@ -843,6 +849,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="6584162722998608255">Më pas do të mësosh se si të lëvizësh nëpër ekran. Mund të rrëshqasësh shpejt një gisht nga e majta në të djathtë për të kaluar tek artikulli tjetër. Provoje tani për të kaluar te hapi tjetër.</translation>
 <translation id="6609828810966525877">Eksploro më shumë gjeste në "Modalitetin e të mësuarit" dhe në "Qendrën e ndihmës së Chromebook"</translation>
 <translation id="6628427060004938651">Pjesë</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">ditari</translation>
 <translation id="6657128831881431364">Shiriti i progresit</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -907,6 +914,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="7096001299300236431">Media e mëparshme</translation>
 <translation id="7096668131290451939">Shtyp përsëri tastin "Escape" për të dalë nga "Modaliteti mësimor"</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">jehona e fjalës</translation>
 <translation id="7137397390322864165">Ngjyrë salmoni</translation>
 <translation id="7140168702531682811">Shkrim i sipërm</translation>

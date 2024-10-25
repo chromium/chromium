@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
 <translation id="2531025035050312891">төхөөрөмж удаан</translation>
 <translation id="2531107890083353124">Табыг чирэх үедээ <ph name="KEY_ONE" />-г дарна уу</translation>
+<translation id="2545334090614121435">Home-г ашиглахаар оролдож байна уу? Ашиглах</translation>
 <translation id="254900897760075745">Сонгосон контентыг түр санах ойд хуулах</translation>
 <translation id="2549711466868162843">Гэрэлтүүлэг сайжруулах</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
@@ -560,6 +561,7 @@
 <translation id="2985148236010982088">Бүх аппыг харах</translation>
 <translation id="2992272421330787632">Медиагийн бүх зөвлөмжийг нуух</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
+<translation id="2993956882370897557">End-г ашиглахаар оролдож байна уу? Ашиглах</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Дэлгэцийн хэмжээг засах</translation>
 <translation id="3009178788565917040">Гаралт</translation>
@@ -612,6 +614,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
 <translation id="316798519864381606">Google Слайд</translation>
 <translation id="3171170659304083361">Оруулах аргын тохиргоо</translation>
+<translation id="3174897399179348329">Page Up-г ашиглахаар оролдож байна уу? Ашиглах</translation>
 <translation id="3176221688814061633">Таны Chromebook эсвэл Bluetooth төхөөрөмж Bluetooth-н хуучин хувилбарыг ашиглаж байна. Аудионы чанарыг илүү сайжруулахын тулд Bluetooth-н супер нягтралыг асаах эсвэл дотоод микрофоныг ашиглана уу.</translation>
 <translation id="3181441307743005334">Дахин эхлүүлэхэд хэдэн хором шаардлагатай байж болзошгүй</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Төхөөрөмжид холбогдсон}other{# төхөөрөмжид холбогдсон}}</translation>
@@ -1260,6 +1263,7 @@
 <translation id="5297704307811127955">Унтраалттай</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5302048478445481009">Хэл</translation>
+<translation id="5302531370473608800">YouTube Music-г ашиглахын тулд өөрийн <ph name="DEVICE_TYPE" />-г шинэчилнэ үү</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% батарей үлдсэн.
 Зарим онцлогийг батарейн ажиллах хугацааг ихэсгэхээр хязгаарласан.</translation>
 <translation id="5308380583665731573">Холбо</translation>
@@ -1537,7 +1541,6 @@
 <translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вебээс хайх...</translation>
 <translation id="6168318496333165060">Оношилгооны аппыг нээх</translation>
 <translation id="6168622430237609329">Таны суулгасан аппууд</translation>
-<translation id="6173151025443907148">Lacros-г идэвхжүүлсэн бол хоёр дахь хэрэглэгчийг нэвтрэхийг дэмждэггүй. Оронд нь Lacros-н хоёр дахь хөтчийн профайл ашиглах эсвэл Lacros-г идэвхгүй болгоод дахин оролдоно уу.</translation>
 <translation id="6179832488876878285">Та чухал файлуудаа энд бэхлэх боломжтой. Эхлүүлэхийн тулд Файлс аппыг нээнэ үү.</translation>
 <translation id="6180193585172850042">Буцах товчлуур</translation>
 <translation id="6180651297859206670">Урагшлах товчлуур</translation>
@@ -1690,7 +1693,6 @@
 <translation id="6682029141988159141">Түр санах ойгоос контент буулгах</translation>
 <translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6686023075541098243">Утасныхаа мэдэгдлүүдийг харахыг тохируулах</translation>
-<translation id="6688019813898140556">Esc-г 5 удаа дарна уу</translation>
 <translation id="6694462491298752106">Бүрэлдэхүүн мэдрэгч самбарыг идэвхгүй болгосон</translation>
 <translation id="6694973220096431421">Google Драйваас хайх</translation>
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
@@ -1820,6 +1822,7 @@
 <translation id="7144942256906679589">Батарейн төлөв</translation>
 <translation id="7145639536026937076">Батарей <ph name="PERCENTAGE" />%-тай байгаа бөгөөд цэнэглэж байна. Батарей хэмнэгч асаалттай байна.</translation>
 <translation id="7147587499155271409">Хөтчийн ямар ч түүх байхгүй</translation>
+<translation id="7147657298465433425">F товчнуудад хандахын тулд fn товч + дээд мөрийн товчнууд дээр дарна уу</translation>
 <translation id="7149149900052329230">Дотоод файл, Google Драйвын файлаа бүгдийг нь Файлс аппад удирдана уу.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1926,6 +1929,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> одоогоор таны микрофоныг ашиглаж байна</translation>
 <translation id="7561982940498449837">Цэсийг хаах</translation>
 <translation id="7564874036684306347">Цонхыг өөр дэлгэцэд зөөснөөр гэнэтийн асуудал үүсэж болзошгүй. Дараагийн мэдэгдэл, цонх болон харилцах цонх нь дэлгэцийн хооронд хуваагдаж болзошгүй.</translation>
+<translation id="7568154670718626683">Устгахаар оролдож байна уу? Ашиглах</translation>
 <translation id="7568790562536448087">Шинэчилж байна</translation>
 <translation id="7569509451529460200">Брайль болон ChromeVox-г идэвхжүүлсэн</translation>
 <translation id="7569886975397378678">Утасныхаа мэдэгдэл болон аппуудыг харахыг тохируулахыг үл хэрэгсэх</translation>
@@ -2128,6 +2132,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Та сая <ph name="FOCUSED_TIME" />-н турш төвлөрлөө. Дахин төвлөрөхийн тулд Шуурхай тохиргоог нээнэ үү.</translation>
 <translation id="8203224998425013577">Илүү олон эможи болон GIF харуулах</translation>
 <translation id="8203795194971602413">Баруун талыг товших</translation>
+<translation id="8205469348819768313">Page Down-г ашиглахаар оролдож байна уу? Ашиглах</translation>
 <translation id="8214996719228530800">Канар суваг</translation>
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> нэмэх</translation>
@@ -2321,6 +2326,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google туслах энэ хэлээр ярьдаггүй.</translation>
 <translation id="8926951137623668982">Shelf-г тогтмол нууна</translation>
+<translation id="8929566928381252430">Caps Lock-г ашиглахаар оролдож байна уу? Ашиглах</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">идэвхгүй болгосон</translation>
 <translation id="8938800817013097409">USB-C төхөөрөмж (ард талын баруун порт)</translation>

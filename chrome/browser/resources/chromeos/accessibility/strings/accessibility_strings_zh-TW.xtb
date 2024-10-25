@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">快捷鍵：<ph name="KEY" /></translation>
 <translation id="2126597928985245619">這個項目沒有可用的文字</translation>
 <translation id="2127747486437921899">斜體</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="2152179395627233441">關閉練習區</translation>
 <translation id="2163782704988363449">勘誤表</translation>
 <translation id="2169714232367507776">按一下目前的項目</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">向左或向右滑動即可逐項瀏覽</translation>
 <translation id="3070245424257836917">以三指向上滑動</translation>
 <translation id="307516670110542567">快速導覽</translation>
+<translation id="3077734595579995578">Shift</translation>
 <translation id="3078345202707391975">下一個第 2 階標題</translation>
 <translation id="3078740164268491126">表格</translation>
 <translation id="3082249673510793544">向後捲動</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">上一個第 1 階標題</translation>
 <translation id="3323447499041942178">文字方塊</translation>
 <translation id="3324983252691184275">深紅色</translation>
+<translation id="334252345105450327">擷取螢幕畫面</translation>
 <translation id="335581015389089642">語音</translation>
 <translation id="3356951775008366684">朗讀字詞的拼音發音</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">第 1 階</translation>
 <translation id="3777742246909257041">雪白</translation>
 <translation id="3781428340399460090">亮粉色</translation>
+<translation id="3783640748446814672">Alt</translation>
 <translation id="3783725005098956899">顯示記錄</translation>
 <translation id="3801735343383419236">自動即時查詢清單</translation>
 <translation id="3806327402890551732">移至下一個或上一個項目</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">總覽</translation>
 <translation id="4294967782363273192">遞增排序</translation>
 <translation id="4300318234632215983">朗讀連結的網址</translation>
+<translation id="4321179778687042513">Ctrl</translation>
 <translation id="4322625298640984693">赭黃</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{點}=3{刪節號}other{# 個點}}</translation>
 <translation id="4352022650330571548">輸入「<ph name="PHRASE" />」</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">深天藍</translation>
 <translation id="4406249099130339147">標點符號語音提示：</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="4432457053224379116">印度紅</translation>
 <translation id="4432896207833262240">已標示的內容</translation>
 <translation id="4437615272777527928">輸入要在選單中搜尋的字詞。使用向上/向下箭頭可切換搜尋結果，使用向左/向右箭頭可調整文字插入點，並在選單間移動。</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">頁首</translation>
 <translation id="4597532268155981612">表單</translation>
 <translation id="4601367666219428522">「<ph name="TABLENAME" />」表格 <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">自訂按鍵組合：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">忽略下一個按鍵</translation>
 <translation id="4617384941327705512">智慧型固定模式已關閉</translation>
 <translation id="4623097797855662355">版權頁標記</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">接下來將介紹在螢幕畫面上移動的方式。只要用單指由左往右滑動，即可移至下一個項目。馬上試試看，繼續進行下一步吧！</translation>
 <translation id="6609828810966525877">想探索更多手勢，請開啟學習模式或前往 Chromebook 說明中心</translation>
 <translation id="6628427060004938651">分輯</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="6637586476836377253">記錄</translation>
 <translation id="6657128831881431364">進度列</translation>
 <translation id="667999046851023355">文件</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">上一個媒體元素</translation>
 <translation id="7096668131290451939">再次按下 Escape 鍵即可退出學習模式</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="712735679809149106">字詞語音回應</translation>
 <translation id="7137397390322864165">鮭紅</translation>
 <translation id="7140168702531682811">上標</translation>

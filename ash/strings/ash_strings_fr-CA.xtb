@@ -1535,7 +1535,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6166852626429024716">Rechercher sur votre appareil, dans vos applications, dans vos paramètres, sur le Web…</translation>
 <translation id="6168318496333165060">Ouvrir l'application Diagnostics</translation>
 <translation id="6168622430237609329">Vos applications installées</translation>
-<translation id="6173151025443907148">Il est impossible pour un deuxième utilisateur de se connecter si Lacros est activé. Veuillez utiliser un deuxième profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Ouvrez l'application Fichiers pour commencer.</translation>
 <translation id="6180193585172850042">Bouton Précédent</translation>
 <translation id="6180651297859206670">Bouton Suivant</translation>
@@ -1688,7 +1687,6 @@ Nouvelle installation</translation>
 <translation id="6682029141988159141">Coller le contenu du presse-papiers</translation>
 <translation id="6683022854667115063">Écouteurs</translation>
 <translation id="6686023075541098243">Configurer l'affichage des notifications de votre téléphone</translation>
-<translation id="6688019813898140556">Échap cinq fois</translation>
 <translation id="6694462491298752106">Le pavé tactile intégré est désactivé</translation>
 <translation id="6694973220096431421">Rechercher dans Google Disque</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>

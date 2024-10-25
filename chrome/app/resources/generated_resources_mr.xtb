@@ -3470,7 +3470,6 @@
 <translation id="3447797901512053632"><ph name="DEVICE_NAME" /> वर <ph name="TAB_NAME" /> कास्ट करत आहे</translation>
 <translation id="3448492834076427715">खाते अपडेट करा</translation>
 <translation id="3449393517661170867">नवीन टॅब असलेल्या विंडोमध्ये उघडा</translation>
-<translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> कडे कमांड पाठविण्यासाठी <ph name="SEARCH_KEY" /> प्रेस करा</translation>
 <translation id="3450056559545492516">Chrome ची वैशिष्ट्ये आणि टिपा यांबद्दल सिस्टीम नोटिफिकेशन दाखवा</translation>
 <translation id="3450157232394774192">निष्क्रिय स्थिती कब्जा टक्केवारी</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे.</translation>
@@ -4530,6 +4529,7 @@
 <translation id="4195378859392041564">तुमचा माउस वापरून कोणतीही की प्रेस करा, त्यानंतर कस्टमाइझ करण्यासाठी कीबोर्ड की प्रेस करा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4195814663415092787">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
+<translation id="4196350776737072374">कोणतेही प्रश्न उपलब्ध नाहीत. “या पेजचा सारांश द्या” किंवा तुमचा स्वतःचा प्रश्न यांसारख्या गोष्टी विचारून पहा.</translation>
 <translation id="4198268995694216131">अतिरिक्त साइट</translation>
 <translation id="4200609364258658652">व्हिडिओ फ्रेम कॉपी करा</translation>
 <translation id="4200689466366162458">कस्टम शब्द</translation>
@@ -6664,7 +6664,6 @@
 <translation id="5780973441651030252">प्रक्रिया प्राधान्य</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> म्हणून सिंक करा</translation>
 <translation id="5781120434102258025">तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवा</translation>
-<translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> ला आदेश पाठवा</translation>
 <translation id="5782227691023083829">भाषांतर करीत आहे...</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784291589716625675">अ‍ॅपची भाषा बदला</translation>
@@ -6964,6 +6963,7 @@
 <translation id="5992225669837656567">सर्व माउस डिस्कनेक्ट केले गेले आहेत</translation>
 <translation id="5992652489368666106">बॉर्डर नाही</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{एका साइटसाठी पुनरावलोकन पूर्ण झाले}other{{NUM_SITES} साइटसाठी पुनरावलोकन पूर्ण झाले}}</translation>
+<translation id="5996490984199062729">तुमची प्रोफाइल सेट केलेली नाही</translation>
 <translation id="5997337190805127100">साइट ॲक्सेसबद्दल अधिक जाणून घ्या</translation>
 <translation id="5998458948782718639">ऑटोफिलमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="5998976983953384016">कन्फर्म करून सुरू करा</translation>
@@ -7173,7 +7173,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6150116777338468525">ऑडिओची गुणवत्ता</translation>
 <translation id="6150278227694566734">काही संपर्क</translation>
 <translation id="6150961653851236686">ही भाषा पेज भाषांतरित करताना वापरली जाते</translation>
-<translation id="6151323131516309312"><ph name="SITE_NAME" /> शोधण्यासाठी <ph name="SEARCH_KEY" /> दाबा</translation>
 <translation id="6151771661215463137">फाइल तुमच्या डाउनलोड फोल्डरमध्ये आधीपासून आहे.</translation>
 <translation id="6152918902620844577">पुढील ऑपरेशनची प्रतीक्षा करत आहे</translation>
 <translation id="6153439704237222699">Do Not Track बद्दल अधिक जाणून घ्या</translation>
@@ -7850,7 +7849,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6657240842932274095">सिस्टीम सेवांना तुमचे स्थान वापरण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659213950629089752">हे पेज "<ph name="NAME" />" एक्स्टेंशनद्वारे झूम केले होते</translation>
-<translation id="6659594942844771486">ब्राउझर टॅब</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - कॅमेरा रेकॉर्डिंग</translation>
 <translation id="6660301751798595791">आवाजाची निवड</translation>
 <translation id="6660819301598582123">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावरून उडी मारली.</translation>

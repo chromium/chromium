@@ -373,6 +373,7 @@
 <translation id="2779651927720337254">ვერ მოხერხდა</translation>
 <translation id="2781151931089541271">დარჩენილია 1 წმ</translation>
 <translation id="2789486458103222910">კარგი</translation>
+<translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome-მა იპოვა ხელახლა გამოყენებული პაროლი, რაც უნდა გამოასწოროთ}other{Chrome-მა იპოვა ხელახლა გამოყენებული # პაროლი, რაც უნდა გამოასწოროთ}}</translation>
 <translation id="2800066122460699237">ჩანართი „<ph name="TAB_TITLE" />“ დაიხურება</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="281504910091592009">ნახეთ და მართეთ შენახული პაროლები თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" /></translation>
@@ -427,6 +428,7 @@
 <translation id="2981364137500752533">დაშვებულია მაქსიმუმ 5 ფანჯარა.</translation>
 <translation id="2983102365694924129">ეფუძნება თქვენს აქტივობას საიტზე. ეს პარამეტრი გამორთულია.</translation>
 <translation id="2984978667043170458">გარშემო ტექსტის დართვა Google ძიებებში</translation>
+<translation id="2988638966064514052">გააძლიერეთ პაროლები</translation>
 <translation id="2989523299700148168">ახლახან მონახულებული</translation>
 <translation id="2992473221983447149">სურათების აღწერილობები</translation>
 <translation id="2996291259634659425">საიდუმლო ფრაზის შექმნა</translation>
@@ -1197,7 +1199,6 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}other{<ph name="CONTACT_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}}</translation>
 <translation id="6649642165559792194">სურათის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">პაროლი</translation>
-<translation id="6659594942844771486">ჩანართი</translation>
 <translation id="666731172850799929">გახსნა <ph name="APP_NAME" />-ში</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6672697278890207089">შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
@@ -1685,6 +1686,7 @@
 <translation id="8754448020583829686">ბმულის გარეშე კოპირება</translation>
 <translation id="8756969031206844760">გსურთ პაროლის განახლება?</translation>
 <translation id="8765470054473112089">მისამართთა ზოლში ან საძიებო ველში ტექსტის აკრეფისას უკეთესი შემოთავაზებების მისაღებად Chrome თქვენ მიერ აკრეფილ ტექსტს გაუგზავნის თქვენს ნაგულისხმევ საძიებო სისტემას. აღნიშნული ფუნქცია გამორთულია ინკოგნიტო რეჟიმში.</translation>
+<translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome-მა იპოვა სუსტი პაროლი, რომელიც უნდა გააძლიეროთ}other{Chrome-მა იპოვა # სუსტი პაროლი, რომელიც უნდა გააძლიეროთ}}</translation>
 <translation id="8766529642647037772">გსურთ, შექმნათ ამის მსგავსი გამოყოფილი ბმული?</translation>
 <translation id="8788265440806329501">ნავიგაციის ისტორია დახურულია</translation>
 <translation id="8788968922598763114">ბოლოს დახურული ჩანართის ხელახლა გახსნა</translation>

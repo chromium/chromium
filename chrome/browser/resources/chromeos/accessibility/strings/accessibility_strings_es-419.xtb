@@ -168,7 +168,6 @@
 <translation id="2045055672832940894">No hay controles anteriores</translation>
 <translation id="2045606329038304310">Control de los campos del formulario</translation>
 <translation id="2063539687800151747">Epígrafe</translation>
-<translation id="2067158561093481039">Usa una combinación de teclas personalizada</translation>
 <translation id="2086961585857038472">Palabra siguiente</translation>
 <translation id="2087981446621639008">det listadesc</translation>
 <translation id="2089387485033699258">es-419</translation>
@@ -179,6 +178,7 @@
 <translation id="2121067395472282800">tecla de acceso: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">No hay texto disponible para este elemento</translation>
 <translation id="2127747486437921899">Cursiva</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Cerrar área de práctica</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Hacer clic en el elemento actual</translation>
@@ -323,6 +323,7 @@
 <translation id="3060880924447482063">Desliza hacia la izquierda o derecha para desplazarte entre los elementos</translation>
 <translation id="3070245424257836917">Deslizar tres dedos hacia arriba</translation>
 <translation id="307516670110542567">Orientación rápida</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Siguiente encabezado de nivel 2</translation>
 <translation id="3078740164268491126">tabla</translation>
 <translation id="3082249673510793544">Desplazarse hacia atrás</translation>
@@ -380,6 +381,7 @@
 <translation id="3322936298410871309">Encabezado anterior de nivel 1</translation>
 <translation id="3323447499041942178">Cuadro de texto</translation>
 <translation id="3324983252691184275">Carmesí</translation>
+<translation id="334252345105450327">Toma una captura de pantalla</translation>
 <translation id="335581015389089642">Voz</translation>
 <translation id="3356951775008366684">Anuncia la pronunciación fonética de las palabras</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Nieve</translation>
 <translation id="3781428340399460090">Fucsia</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Mostrar registro</translation>
 <translation id="3801735343383419236">Lista de autocompletados</translation>
 <translation id="3806327402890551732">Muévete al elemento siguiente o anterior</translation>
@@ -525,6 +528,7 @@
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4294967782363273192">Orden ascendente</translation>
 <translation id="4300318234632215983">Indicar URL de un vínculo</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punto}=3{puntos suspensivos}other{# puntos}}</translation>
 <translation id="4352022650330571548">escribir <ph name="PHRASE" /></translation>
@@ -538,6 +542,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Azul cielo oscuro</translation>
 <translation id="4406249099130339147">Eco de los signos de puntuación:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Rojo indio</translation>
 <translation id="4432896207833262240">Contenido marcado</translation>
 <translation id="4437615272777527928">Escribe para realizar una búsqueda en los menús. Usa las flechas hacia arriba y abajo para moverte entre los resultados. Usa las flechas hacia la izquierda y la derecha para ajustar el símbolo de intercalación de texto y para moverte entre los menús.</translation>
@@ -559,6 +564,7 @@
 <translation id="4562381607973973258">Encabezado</translation>
 <translation id="4597532268155981612">formulario</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Combinación de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Se ignorará la siguiente pulsación de tecla.</translation>
 <translation id="4617384941327705512">Modo permanente inteligente desactivado</translation>
 <translation id="4623097797855662355">Colofón</translation>
@@ -851,6 +857,7 @@
 <translation id="6584162722998608255">A continuación, aprenderás a moverte por la pantalla. Puedes deslizar un dedo de izquierda a derecha para moverte hacia el próximo elemento. Pruébalo ahora para moverte hacia el próximo paso.</translation>
 <translation id="6609828810966525877">Explora más gestos en el modo de aprendizaje y el Centro de ayuda de Chromebook</translation>
 <translation id="6628427060004938651">Parte</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">rgstr</translation>
 <translation id="6657128831881431364">Barra de progreso</translation>
 <translation id="667999046851023355">Documento</translation>
@@ -915,6 +922,7 @@
 <translation id="7096001299300236431">Archivo multimedia anterior</translation>
 <translation id="7096668131290451939">Vuelve a presionar Escape para salir del Modo de aprendizaje</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">reproducción oral de palabras</translation>
 <translation id="7137397390322864165">Salmón</translation>
 <translation id="7140168702531682811">Superíndice</translation>

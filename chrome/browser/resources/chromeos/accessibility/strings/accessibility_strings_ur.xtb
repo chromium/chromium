@@ -176,6 +176,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="2121067395472282800">رسائی کلید:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">اس آئٹم کیلئے کوئی دستیاب متن نہیں ہے</translation>
 <translation id="2127747486437921899">ترچھا</translation>
+<translation id="2148212683005708350">‎<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" />‎</translation>
 <translation id="2152179395627233441">پریکٹس کرنے کی جگہ کو بند کریں</translation>
 <translation id="2163782704988363449">غلط نامہ</translation>
 <translation id="2169714232367507776">موجودہ آئٹم پر کلک کریں</translation>
@@ -318,6 +319,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3060880924447482063">آئٹم کے لحاظ سے حرکت کرنے کے لیے بائیں یا دائیں سوائپ کریں</translation>
 <translation id="3070245424257836917">تین انگلیوں سے اوپر کی طرف سوائپ کریں</translation>
 <translation id="307516670110542567">فوری سمت بندی</translation>
+<translation id="3077734595579995578">شفٹ</translation>
 <translation id="3078345202707391975">اگلی سطح 2 کی سرخی</translation>
 <translation id="3078740164268491126">ٹیبل</translation>
 <translation id="3082249673510793544">پیچھے سکرول کریں</translation>
@@ -375,6 +377,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3322936298410871309">پچھلی سطح 1 کی سرخی</translation>
 <translation id="3323447499041942178">متنی باکس</translation>
 <translation id="3324983252691184275">قرمزی</translation>
+<translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
 <translation id="335581015389089642">اسپیچ</translation>
 <translation id="3356951775008366684">لفظ کیلئے صوتیاتی تلفظ پڑھیں</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -438,6 +441,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">برفیلا</translation>
 <translation id="3781428340399460090">گہرا گلابی</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">لاگ دکھائیں</translation>
 <translation id="3801735343383419236">خود کار تکمیل کی فہرست</translation>
 <translation id="3806327402890551732">اگلے یا گزشتہ آئٹم پر جائیں</translation>
@@ -520,6 +524,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4294967782363273192">صعودی ترتیب</translation>
 <translation id="4300318234632215983">‏لنک کے پیچھے URL کا اعلان کریں</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">زردی مائل بھورا</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ڈاٹ}=3{ایلپسیس}other{# ڈاٹس}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> ٹائپ کریں</translation>
@@ -533,6 +538,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">گہرا آسمانی نیلا</translation>
 <translation id="4406249099130339147">رموز اوقاف کی بازگشت:</translation>
+<translation id="441418754432585599">‎<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" />‎</translation>
 <translation id="4432457053224379116">انڈین سرخ</translation>
 <translation id="4432896207833262240">نشان زد کردہ مواد</translation>
 <translation id="4437615272777527928">مینوز میں تلاش کے لیے ٹائپ کریں۔ ایک نتیجے سے دوسرے نتیجے پر جانے کیلئے اوپر اور نیچے کے تیروں کا استعمال کریں۔ ٹیکسٹ کیرٹ کو ایڈجسٹ اور مینوز کے درمیان کرسر کو حرکت دینے کے لیے دائیں اور بائیں والے تیروں کا استعمال کریں۔</translation>
@@ -553,6 +559,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4562381607973973258">ہیڈر</translation>
 <translation id="4597532268155981612">فارم</translation>
 <translation id="4601367666219428522">‏ٹیبل <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">حسب ضرورت کلید کا مجموعہ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">اگلی کلید دبانے کو نظر انداز کیا جا رہا ہے</translation>
 <translation id="4617384941327705512">اسمارٹ چپکنے والی وضع آف ہے</translation>
 <translation id="4623097797855662355">خاتمہ کتاب</translation>
@@ -844,6 +851,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="6584162722998608255">اس کے بعد، آپ اسکرین پر ایک جگہ سے دوسری جگہ جانے کا طریقہ جانیں گے۔ اگلے آئٹم پر جانے کے لیے آپ ایک انگلی کو بائیں سے دائیں تک سوائپ کر سکتے ہیں۔ اگلے مرحلے پر جانے کے لیے ابھی اسے آزمائیں۔</translation>
 <translation id="6609828810966525877">‏'جاننے کی وضع' اور Chromebook ہیلپ سینٹر میں مزید اشارے دریافت کریں</translation>
 <translation id="6628427060004938651">حصہ</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">لاگ</translation>
 <translation id="6657128831881431364">پیشرفت بار</translation>
 <translation id="667999046851023355">دستاویز</translation>
@@ -908,6 +916,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7096001299300236431">پچھلی میڈیا</translation>
 <translation id="7096668131290451939">‏سیکھنے کے موڈ سے باہر نکلنے کیلئے دوبارہ Escape دبائیں</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645">‎<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" />‎</translation>
 <translation id="712735679809149106">لفظ کی ایکو</translation>
 <translation id="7137397390322864165">سرخی مائل نارنجی</translation>
 <translation id="7140168702531682811">سُپر اسکرپٹ</translation>

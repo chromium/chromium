@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">clau d'accés: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">No hi ha text disponible per a aquest element</translation>
 <translation id="2127747486437921899">Cursiva</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Tanca la zona de pràctiques</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Feu clic a l'element actual.</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Llisca cap a l'esquerra o cap a la dreta per moure't d'un element a un altre</translation>
 <translation id="3070245424257836917">Fes lliscar tres dits cap amunt</translation>
 <translation id="307516670110542567">Orientació ràpida</translation>
+<translation id="3077734595579995578">maj</translation>
 <translation id="3078345202707391975">Capçalera del nivell 2 següent</translation>
 <translation id="3078740164268491126">taula</translation>
 <translation id="3082249673510793544">Desplaça cap enrere</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">Capçalera del nivell 1 anterior</translation>
 <translation id="3323447499041942178">Quadre de text</translation>
 <translation id="3324983252691184275">Carmesí</translation>
+<translation id="334252345105450327">Fes una captura de pantalla</translation>
 <translation id="335581015389089642">Veu</translation>
 <translation id="3356951775008366684">Anuncia la pronunciació fonètica de la paraula</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Neu</translation>
 <translation id="3781428340399460090">Rosa fúcsia</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Mostra el registre</translation>
 <translation id="3801735343383419236">Llista de compleció automàtica</translation>
 <translation id="3806327402890551732">Ves a l'element següent o anterior</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4294967782363273192">Ordre ascendent</translation>
 <translation id="4300318234632215983">Presenta l'URL darrere d'un enllaç.</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punt}=3{punts suspensius}other{# punts}}</translation>
 <translation id="4352022650330571548">escriu "<ph name="PHRASE" />"</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Blau cel intens</translation>
 <translation id="4406249099130339147">Lectura de la puntuació:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Vermell indi</translation>
 <translation id="4432896207833262240">Contingut marcat</translation>
 <translation id="4437615272777527928">Escriu per cercar als menús. Fes servir les fletxes amunt i cp avall per moure't entre els resultats. Fes servir les tecles de fletxa esquerra i dreta per ajustar la marca d'inserció de text i per moure't entre els menús.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">Capçalera</translation>
 <translation id="4597532268155981612">formulari</translation>
 <translation id="4601367666219428522">taula <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Combinació de tecles personalitzada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">S'ignorarà la propera tecla que premeu.</translation>
 <translation id="4617384941327705512">El mode permanent intel·ligent està desactivat</translation>
 <translation id="4623097797855662355">Colofó</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">A continuació, obtindràs informació sobre com moure't per la pantalla. Pots fer lliscar un dit d'esquerra a dreta per anar a l'element següent. Prova-ho ara per anar al pas següent.</translation>
 <translation id="6609828810966525877">Descobreix més gestos al mode d'aprenentatge i al Centre d'ajuda de Chromebook</translation>
 <translation id="6628427060004938651">Part</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6637586476836377253">registre</translation>
 <translation id="6657128831881431364">Barra de progrés</translation>
 <translation id="667999046851023355">Document</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">Fitxer multimèdia anterior</translation>
 <translation id="7096668131290451939">Torna a prémer Escapada per sortir del mode d'aprenentatge</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">retorn de paraules</translation>
 <translation id="7137397390322864165">Salmó</translation>
 <translation id="7140168702531682811">Superíndex</translation>

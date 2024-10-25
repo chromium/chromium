@@ -3426,7 +3426,6 @@
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> を <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="3448492834076427715">アカウントを更新</translation>
 <translation id="3449393517661170867">新規タブ付きウィンドウ</translation>
-<translation id="3449839693241009168"><ph name="SEARCH_KEY" /> を押すと <ph name="EXTENSION_NAME" /> にコマンドが送信されます</translation>
 <translation id="3450056559545492516">Chrome の機能やヒントに関するシステム通知を表示する</translation>
 <translation id="3450157232394774192">アイドル状態の占有率（%）</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> が、Wi-Fi に接続して、今すぐアップデートをダウンロードするよう求めています。</translation>
@@ -6591,7 +6590,6 @@
 <translation id="5780973441651030252">プロセスの優先値</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> として同期</translation>
 <translation id="5781120434102258025">学校用アカウントのデータを個人アカウントに移動します</translation>
-<translation id="5781865261247219930">コマンドを <ph name="EXTENSION_NAME" /> に送信します</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784291589716625675">アプリの言語を変更</translation>
@@ -7097,7 +7095,6 @@
 <translation id="6150116777338468525">音質</translation>
 <translation id="6150278227694566734">一部の連絡先</translation>
 <translation id="6150961653851236686">この言語がページを翻訳する場合に使用されます</translation>
-<translation id="6151323131516309312"><ph name="SEARCH_KEY" /> を押して <ph name="SITE_NAME" /> を検索</translation>
 <translation id="6151771661215463137">このファイルはダウンロード フォルダにすでにあります。</translation>
 <translation id="6152918902620844577">次の処理を待機しています</translation>
 <translation id="6153439704237222699">トラッキング拒否の詳細</translation>
@@ -7768,7 +7765,6 @@
 <translation id="6657240842932274095">システム サービスによる位置情報の使用を許可しますか？</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659213950629089752">このページには「<ph name="NAME" />」拡張機能によるズームが適用されています</translation>
-<translation id="6659594942844771486">タブ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - カメラ録画</translation>
 <translation id="6660301751798595791">音声の選択</translation>
 <translation id="6660819301598582123">あいうえおアイウエオABCabc123漢字</translation>

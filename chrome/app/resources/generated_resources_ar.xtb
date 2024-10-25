@@ -3439,7 +3439,6 @@
 <translation id="3447797901512053632">جارٍ بث <ph name="TAB_NAME" /> على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">تعديل الحساب</translation>
 <translation id="3449393517661170867">نافذة ذات علامات تبويب جديدة</translation>
-<translation id="3449839693241009168">اضغط على <ph name="SEARCH_KEY" /> لإرسال الأوامر إلى <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">‏عرض إشعارات النظام حول ميزات Chrome ونصائح استخدامه</translation>
 <translation id="3450157232394774192">نسبة الإشغال لحالة الخمول</translation>
 <translation id="3450180775417907283">‏يتطلّب <ph name="MANAGER" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث.</translation>
@@ -6609,7 +6608,6 @@
 <translation id="5780973441651030252">أولوية المعالجة</translation>
 <translation id="5781092003150880845">المزامنة باسم <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">يمكنك نقل بيانات حسابك الذي تديره المؤسسة التعليمية إلى حسابك الشخصي</translation>
-<translation id="5781865261247219930">إرسال الأوامر إلى <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5784291589716625675">تغيير لغة التطبيق</translation>
@@ -7115,7 +7113,6 @@
 <translation id="6150116777338468525">جودة الصوت</translation>
 <translation id="6150278227694566734">بعض جهات الاتصال</translation>
 <translation id="6150961653851236686">يتم استخدام هذه اللغة عند ترجمة الصفحات</translation>
-<translation id="6151323131516309312">اضغط على <ph name="SEARCH_KEY" /> للبحث في الموقع <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">الملف موجود فعلاً في مجلد التنزيل.</translation>
 <translation id="6152918902620844577">في انتظار العملية التالية</translation>
 <translation id="6153439704237222699">‏مزيد من المعلومات حول ميزة Do Not Track</translation>
@@ -7795,7 +7792,6 @@
 <translation id="6657240842932274095">هل تريد السماح لخدمات النظام باستخدام موقعك الجغرافي؟</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659213950629089752">تم تكبير/تصغير هذه الصفحة عبر إضافة "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">‏مفتاح Tab</translation>
 <translation id="6660099350750552197">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الكاميرا.</translation>
 <translation id="6660301751798595791">اختيار الصوت</translation>
 <translation id="6660819301598582123">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>

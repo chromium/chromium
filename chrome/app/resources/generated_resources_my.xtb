@@ -3446,7 +3446,6 @@
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်နေသည်</translation>
 <translation id="3448492834076427715">အကောင့်ကို အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="3449393517661170867">တဘ်ဝင်းဒိုး အသစ်</translation>
-<translation id="3449839693241009168"><ph name="EXTENSION_NAME" />ထံ ညွှန်ကြားချက်များ ပေးရန် <ph name="SEARCH_KEY" /> ကို နှိပ်ပါ</translation>
 <translation id="3450056559545492516">Chrome တူးလ်နှင့် အကြံပြုချက်များဆိုင်ရာ စနစ်အကြောင်းကြားချက်များကို ပြရန်</translation>
 <translation id="3450157232394774192">မလှုပ်မရှား နေထိုင်မှု ရာခိုင်နှုန်း</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> က Wi-Fi သို့ ယခုချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်စေလိုသည်။</translation>
@@ -6618,7 +6617,6 @@
 <translation id="5780973441651030252">စီမံဆောင်ရွက်မှု ဦးစားပေးမှု</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> အဖြစ် စင့်ခ်လုပ်ရန်</translation>
 <translation id="5781120434102258025">ကျောင်းအကောင့်ဒေတာကို ကိုယ်ပိုင်အကောင့်သို့ ရွှေ့နိုင်သည်</translation>
-<translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> ထံသို့ ညွှန်ကြားချက်များ ပို့ရန်</translation>
 <translation id="5782227691023083829">ဘာသာပြန်နေသည်...</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
 <translation id="5784291589716625675">အက်ပ်ဘာသာစကား ပြောင်းရန်</translation>
@@ -7122,7 +7120,6 @@
 <translation id="6150116777338468525">အသံ အရည်အသွေး</translation>
 <translation id="6150278227694566734">အဆက်အသွယ် အချို့</translation>
 <translation id="6150961653851236686">စာမျက်နှာများ ပြန်ဆိုသည့်အခါ ဤဘာသာစကားကို အသုံးပြုသည်</translation>
-<translation id="6151323131516309312"><ph name="SITE_NAME" /> ကိုရှာရန် <ph name="SEARCH_KEY" /> ကိုနှိပ်ပါ</translation>
 <translation id="6151771661215463137">ဖိုင်သည် သင်၏ဒေါင်းလုဒ်အကန့်တွင် ရှိနှင့်ပြီးသား ဖြစ်ပါသည်။</translation>
 <translation id="6152918902620844577">လာမည့်လုပ်ငန်းစဉ်ကို စောင့်နေသည်</translation>
 <translation id="6153439704237222699">Do Not Track အကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -7793,7 +7790,6 @@
 <translation id="6657240842932274095">သင့်တည်နေရာသုံးရန် စနစ်ဝန်ဆောင်မှုများကို ခွင့်ပြုမလား။</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6659213950629089752">ဒီစာမျက်နှာကို "<ph name="NAME" />" တိုးချဲ့မှုကို ချဲ့ပေးခဲ့</translation>
-<translation id="6659594942844771486">တဘ်</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ကင်မရာ ရိုက်ကူးနေသည်</translation>
 <translation id="6660301751798595791">အသံရွေးချယ်မှု</translation>
 <translation id="6660819301598582123">သီဟိုဠ်မှ ဉာဏ်ကြီးရှင်သည် အာယုဝဍ္ဎနဆေးညွှန်းစာကို ဇလွန်ဈေးဘေး ဗာဒံပင်ထက် အဓိဋ္ဌာန်လျက် ဂဃနဏဖတ်ခဲ့သည်။</translation>

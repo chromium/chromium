@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="100421257800558142">Press the right arrow key</translation>
 <translation id="100506692671054486">no previous command</translation>
 <translation id="1009046985747440431">Press up or down arrow to navigate; enter to activate</translation>
 <translation id="1011903154582639569">Find a key, then lift to type</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Toggle button</translation>
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Tap with 4 fingers to enter the ChromeVox menus</translation>
+<translation id="1304162325618937178">Press the space key</translation>
 <translation id="1313373992684326101">Move to previous section. Examples include the Status Tray and Launcher.</translation>
 <translation id="1315077335264761176">Touch orientation</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menu item radio button unselected</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Wheat</translation>
 <translation id="1618597272655350600">Announces a complete description of the current position</translation>
 <translation id="1627222324347828322">Ghost White</translation>
+<translation id="1632810692616643246">Enter or exit scroll mode</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{greater than}other{# greater than signs}}</translation>
 <translation id="1653266918374749391">Previous level 3 heading</translation>
 <translation id="1657616855184033958">Show event stream filters</translation>
@@ -175,6 +178,7 @@
 <translation id="2121067395472282800">access key:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">No available text for this item</translation>
 <translation id="2127747486437921899">Italic</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Close practice area</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Click on current item</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Saddle Brown</translation>
 <translation id="2199994615414171367">Previous math</translation>
 <translation id="2203046366315513658">Decrease value</translation>
+<translation id="2206580811360135054">Show or hide overview of windows</translation>
 <translation id="2216790501338699346">Link URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Move backward one char</translation>
 <translation id="2220529011494928058">Report an issue</translation>
+<translation id="2239819015858077439">Press the down arrow key</translation>
 <translation id="2243633977138166243">Press Left or Right Arrow to navigate; Enter to activate</translation>
 <translation id="224426591676115802">No voice available for language: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Stopping learn mode</translation>
@@ -317,6 +323,7 @@
 <translation id="3060880924447482063">Swipe left or right to move by item</translation>
 <translation id="3070245424257836917">Swipe three fingers up</translation>
 <translation id="307516670110542567">Quick orientation</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Next level 2 heading</translation>
 <translation id="3078740164268491126">table</translation>
 <translation id="3082249673510793544">Scroll back</translation>
@@ -374,6 +381,7 @@
 <translation id="3322936298410871309">Previous level 1 heading</translation>
 <translation id="3323447499041942178">Text box</translation>
 <translation id="3324983252691184275">Crimson</translation>
+<translation id="334252345105450327">Take a screenshot</translation>
 <translation id="335581015389089642">Speech</translation>
 <translation id="3356951775008366684">Announce phonetic pronunciation for word</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Snow</translation>
 <translation id="3781428340399460090">Hot pink</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Show log</translation>
 <translation id="3801735343383419236">Auto-completion list</translation>
 <translation id="3806327402890551732">Move to the next or previous item</translation>
@@ -519,6 +528,7 @@
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4294967782363273192">Ascending sort</translation>
 <translation id="4300318234632215983">Announce the URL behind a link</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{dot}=3{ellipsis}other{# dots}}</translation>
 <translation id="4352022650330571548">type <ph name="PHRASE" /></translation>
@@ -532,9 +542,11 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Deep Sky Blue</translation>
 <translation id="4406249099130339147">Punctuation echo:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Marked content</translation>
 <translation id="4437615272777527928">Type to search the menus. Use the up and down arrows to cycle through results. Use the left and right arrows to adjust the text caret, and to move between menus.</translation>
+<translation id="4441677939526091190">Press the up arrow key</translation>
 <translation id="4453530046591759283">To jump to other parts of the screen, like toolbars or the system tray, press Control + F1. F1 is the first key to the right of the Escape key.</translation>
 <translation id="4457472090507035117">Select current voice:</translation>
 <translation id="4476183483923481720">new line</translation>
@@ -552,6 +564,7 @@
 <translation id="4562381607973973258">Header</translation>
 <translation id="4597532268155981612">form</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Custom key combination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Ignoring next key press</translation>
 <translation id="4617384941327705512">Smart sticky mode off</translation>
 <translation id="4623097797855662355">Colophon</translation>
@@ -713,6 +726,7 @@
 <translation id="5653397561111110475">Use Chromebook touch screen accessibility features</translation>
 <translation id="5655682562155942719">Jump Commands</translation>
 <translation id="56637627897541303">Text area</translation>
+<translation id="5666746275818170484">Press the left arrow key</translation>
 <translation id="5669637233317991674">Press Search + right arrow or Search + left arrow to navigate this lesson</translation>
 <translation id="5677240841070992068">Current location</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -843,6 +857,7 @@
 <translation id="6584162722998608255">Next, you’ll learn how to move around the screen. You can swipe one finger from left to right to move to the next item. Try it now to move to the next step.</translation>
 <translation id="6609828810966525877">Explore more gestures in Learn Mode and the Chromebook Help Centre</translation>
 <translation id="6628427060004938651">Part</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Progress bar</translation>
 <translation id="667999046851023355">Document</translation>
@@ -907,6 +922,7 @@
 <translation id="7096001299300236431">Previous media</translation>
 <translation id="7096668131290451939">Press Escape again to exit learn mode</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">word echo</translation>
 <translation id="7137397390322864165">Salmon</translation>
 <translation id="7140168702531682811">Superscript</translation>
@@ -917,6 +933,7 @@
 <translation id="7161771961008409533">Pop-up button</translation>
 <translation id="7167657087543110">character echo</translation>
 <translation id="7173102181852295013">Midnight Blue</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Expanded</translation>
 <translation id="7209751026933045237">No next slider</translation>
 <translation id="7218782500591078391">Goldenrod</translation>
@@ -1090,6 +1107,7 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Auto-completion inline and list</translation>
 <translation id="8394908167088220973">Media Play/Pause</translation>
+<translation id="8409502156784390079">Scroll mode active</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428603554127842284">level <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1185,7 @@
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8989104346085848538">To stop any current ChromeVox speech, press the control key.</translation>
 <translation id="9014206344398081366">ChromeVox tutorial</translation>
+<translation id="9034592733577768445">Face control paused</translation>
 <translation id="9040132695316389094">Heading 1</translation>
 <translation id="9061884144798498064">Select an 8-dot braille table:</translation>
 <translation id="9063946545000394379">move to the previous character</translation>

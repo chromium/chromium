@@ -3448,7 +3448,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3447797901512053632">Transmitindo <ph name="TAB_NAME" /> para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Atualizar conta</translation>
 <translation id="3449393517661170867">Nova janela com guias</translation>
-<translation id="3449839693241009168">Pressione <ph name="SEARCH_KEY" /> para enviar comandos para <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Mostrar notificações do sistema sobre recursos e dicas do Chrome</translation>
 <translation id="3450157232394774192">Porcentagem de ocupação em estado de inatividade</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para baixar uma atualização.</translation>
@@ -6621,7 +6620,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5780973441651030252">Prioridade do processo</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Mover os dados da sua conta escolar para a pessoal</translation>
-<translation id="5781865261247219930">Enviar comandos para <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784291589716625675">Mudar idioma do app</translation>
@@ -7127,7 +7125,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6150116777338468525">Qualidade do áudio</translation>
 <translation id="6150278227694566734">Alguns contatos</translation>
 <translation id="6150961653851236686">Este idioma é usado ao traduzir as páginas</translation>
-<translation id="6151323131516309312">Pressione <ph name="SEARCH_KEY" /> para pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O arquivo já existe na sua pasta de download.</translation>
 <translation id="6152918902620844577">Aguardando a próxima operação</translation>
 <translation id="6153439704237222699">Saiba mais sobre o campo "Do Not Track"</translation>
@@ -7801,7 +7798,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6657240842932274095">Permitir que serviços do sistema usem sua localização?</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659213950629089752">Esta página foi ampliada pela extensão "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">Guia</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: gravação da câmera</translation>
 <translation id="6660301751798595791">Seleção da voz</translation>
 <translation id="6660819301598582123">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>

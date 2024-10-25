@@ -3430,7 +3430,6 @@
 <translation id="3447797901512053632"><ph name="DEVICE_NAME" />ରେ <ph name="TAB_NAME" /> କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="3448492834076427715">ଆକାଉଣ୍ଟ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="3449393517661170867">ନୂଆ ଟାବ୍ କରାଯାଇଥିବା ୱିଣ୍ଡୋ</translation>
-<translation id="3449839693241009168"><ph name="EXTENSION_NAME" />କୁ ନିର୍ଦ୍ଦେଶ ପଠାଇବାକୁ <ph name="SEARCH_KEY" /> ଦବାନ୍ତୁ</translation>
 <translation id="3450056559545492516">Chrome ଫିଚର ଏବଂ ଟିପ୍ସ ବିଷୟରେ ସିଷ୍ଟମ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="3450157232394774192">ନିଷ୍କ୍ରିୟ ସ୍ଥିତି ଦଖଲ ଶତକଡ଼ା</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ବର୍ତ୍ତମାନ ୱାଇ-ଫାଇ ସହ ସଂଯୋଗ କରି ଏକ ଅପଡେଟ ଡାଉନଲୋଡ କରିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
@@ -6598,7 +6597,6 @@
 <translation id="5780973441651030252">ପ୍ରକ୍ରିୟା ପ୍ରାଥମିକତା</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> ରୂପେ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="5781120434102258025">ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରନ୍ତୁ</translation>
-<translation id="5781865261247219930"><ph name="EXTENSION_NAME" />ଙ୍କୁ କମାଣ୍ଡ ପଠାନ୍ତୁ</translation>
 <translation id="5782227691023083829">ଅନୁବାଦ ହେଉଛି...</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784291589716625675">ଆପର ଭାଷା ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -7103,7 +7101,6 @@
 <translation id="6150116777338468525">ଅଡିଓ ଗୁଣବତ୍ତା</translation>
 <translation id="6150278227694566734">କିଛି ଯୋଗାଯୋଗ</translation>
 <translation id="6150961653851236686">ଯେତେବେଳେ ପୃଷ୍ଠାଗୁଡ଼ିକ ଅନୁଚାଦ କରୁଥାଏ, ସେତେବେଳେ ଏହି ଭାଷା ବ୍ୟବହାର କରାଯାଏ</translation>
-<translation id="6151323131516309312"><ph name="SITE_NAME" /> ସର୍ଚ୍ଚ କରିବା ଲାଗି <ph name="SEARCH_KEY" /> ଦବାନ୍ତୁ</translation>
 <translation id="6151771661215463137">ଆପଣଙ୍କର ଡାଉନ୍‌ଲୋଡ୍‌ ଫୋଲ୍ଡର୍‌ରେ ଫାଇଲ୍‌ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି।</translation>
 <translation id="6152918902620844577">ପରବର୍ତ୍ତୀ ଅପରେସନ ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି</translation>
 <translation id="6153439704237222699">Do Not Track ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -7777,7 +7774,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6657240842932274095">ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଲୋକେସନ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659213950629089752">ଏହି ପୃଷ୍ଠା "<ph name="NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍ ଦ୍ୱାରା ଜୁମ୍ କରାଯାଇଥିଲା</translation>
-<translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - କେମେରା ରେକର୍ଡିଂ</translation>
 <translation id="6660301751798595791">ଭଏସ ଚୟନ</translation>
 <translation id="6660819301598582123">The quick brown fox jumps over the lazy dog.</translation>

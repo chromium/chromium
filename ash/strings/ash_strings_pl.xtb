@@ -500,6 +500,9 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> klawisz od <ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Szukaj + S</translation>
 <translation id="2778650143428714839">Urządzenie <ph name="DEVICE_TYPE" /> zarządzane przez <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Wbudowany touchpad został wyłączony. Aby potwierdzić tę zmianę, użyj klawiatury lub innego urządzenia wskazującego.
+
+W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włączy.</translation>
 <translation id="2782591952652094792">Zamknij tryb przechwytywania</translation>
 <translation id="2785499565474703580">1 połączone urządzenie</translation>
 <translation id="2791421900609674576">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Aby je usunąć, naciśnij i przytrzymaj.</translation>
@@ -596,6 +599,9 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3113492864356515707">Podświetl poprzedni element na półce</translation>
 <translation id="311799651966070385">Zamknij ponaglenie</translation>
 <translation id="3120421559657122717">Wyłączyć urządzenie?</translation>
+<translation id="3121411970001795539">Wbudowany touchpad został wyłączony, ponieważ podłączono mysz. Aby potwierdzić tę zmianę, użyj myszy lub klawiatury.
+
+W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włączy.</translation>
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3125690294288312932">Typ zadania</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1138,6 +1144,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4902797682482387055">Sugerowane zadanie, na którym warto się skupić</translation>
 <translation id="490375751687810070">Pionowo</translation>
 <translation id="490788395437447240">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">Jest to eksperymentalna funkcja oparta na AI, która nie zawsze działa dobrze.</translation>
 <translation id="491504982845934899">Aktywuj po konfiguracji urządzenia – <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
@@ -1536,7 +1543,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6166852626429024716">Przeszukaj urządzenie, aplikacje, ustawienia, internet…</translation>
 <translation id="6168318496333165060">Otwórz aplikację diagnostyczną</translation>
 <translation id="6168622430237609329">Twoje zainstalowane aplikacje</translation>
-<translation id="6173151025443907148">Logowanie drugiego użytkownika nie jest obsługiwane, jeśli jest włączona aplikacja Lacros. Użyj 2 profilu przeglądarki w Lacros lub zamknij Lacros i spróbuj ponownie.</translation>
 <translation id="6179832488876878285">Tutaj możesz przypiąć ważne pliki. Aby rozpocząć, otwórz aplikację Pliki.</translation>
 <translation id="6180193585172850042">Przycisk Wstecz</translation>
 <translation id="6180651297859206670">Przycisk Dalej</translation>
@@ -1688,7 +1694,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6682029141988159141">Wklej zawartość schowka</translation>
 <translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6686023075541098243">Skonfiguruj wyświetlanie powiadomień z telefonu</translation>
-<translation id="6688019813898140556">Esc 5 razy</translation>
 <translation id="6694462491298752106">Wbudowany touchpad jest wyłączony</translation>
 <translation id="6694973220096431421">Szukaj na Dysku Google</translation>
 <translation id="6696025732084565524">Odłączana klawiatura wymaga krytycznej aktualizacji</translation>
@@ -1998,6 +2003,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Opcja Lubię spowoduje przesłanie opinii, że ta sugestia Ci się podoba</translation>
 <translation id="7825412704590278437">Z nadchodzącego wydarzenia w kalendarzu</translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7830453190047749513">Możesz dostosować działanie przycisków, szybkość kursora i inne ustawienia urządzenia <ph name="PERIPHERAL_NAME" /></translation>
@@ -2151,6 +2157,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock jest włączony.</translation>
 <translation id="8315514906653279104">Włączam…</translation>
+<translation id="8319634750346253957">Opcja Nie lubię spowoduje przesłanie opinii, że ta sugestia Ci się nie podoba</translation>
 <translation id="8331351032546853669">Pobieranie oczekuje</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>

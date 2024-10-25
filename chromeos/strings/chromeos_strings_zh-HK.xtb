@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1908394185991500139">向左鍵</translation>
+<translation id="1914144885717544695">星期五</translation>
 <translation id="1923388006036088459">強調色</translation>
 <translation id="1945403655450283000">錄音機</translation>
 <translation id="1947737735496445907">已列印</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">一飄而過</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="215206000155329774"><ph name="INTENT" />；<ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
 <translation id="2154460308960858308">清除搜尋</translation>
 <translation id="2157660087437850958">Emoji 點選器</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">白色</translation>
 <translation id="2715723665057727940">河流</translation>
 <translation id="2717139507051041123">啟用深色模式</translation>
+<translation id="2726755229438917165">星期一</translation>
 <translation id="2728460467788544679">清除所有列印記錄</translation>
 <translation id="2731700343119398978">請稍後…</translation>
 <translation id="2740531572673183784">確定</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">端點</translation>
 <translation id="3060579846059757016">概要</translation>
 <translation id="3061850252076394168">啟用揀選朗讀內容</translation>
+<translation id="3066772729299747758">星期二</translation>
 <translation id="3069085583900247081">未通過測試</translation>
 <translation id="3078740164268491126">表格</translation>
 <translation id="3081652522083185657">明亮</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">壽司</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />；<ph name="QUERY_TEXT" />；<ph name="SUBTEXT" />；<ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">地球動態桌布</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" />背景，當中有字母 <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">獨家</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
+<translation id="4137700675046373159">星期六</translation>
 <translation id="4143226836069425823">㩒一下要取代嘅其他鍵盤按鍵</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相片</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有進行中的列印工作</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">星期日</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4251839292699800785">優雅的辦公室</translation>
 <translation id="4258281355379922695">HTTP 延遲時間</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">草原</translation>
 <translation id="551689408806449779">裝置已解除連接。請嘗試重新連接以測試</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">麥克風選項</translation>
 <translation id="5534900277405737921">地形</translation>
 <translation id="554067135846762198">珊瑚色和棕褐色</translation>
 <translation id="5543701552415191873">鎖定咗</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
 <translation id="6535178685492749208">您已離線。意見將會在稍後傳送。</translation>
 <translation id="6543412779435705598">墨西哥煎玉米捲</translation>
+<translation id="6550369542114086980">星期四</translation>
 <translation id="6551839203326557324">蘋果</translation>
 <translation id="65526652485742171">而家啟用咗「確認」掣</translation>
 <translation id="6557784757915238407">APN 類型係「<ph name="ATTACH" />」。</translation>
@@ -1143,7 +1152,6 @@
 <translation id="6650062777702288430">假名/英數字元切換</translation>
 <translation id="6657240842932274095">要允許系統服務使用你的位置嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
-<translation id="6659594942844771486">分頁</translation>
 <translation id="66621959568103627">珊瑚粉紅色</translation>
 <translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
           <ph name="LINE_BREAK" />
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7182063559013288142">即時熱點</translation>
 <translation id="7184043045742675738">按一下任何鍵即可自訂按鈕。使用滑鼠或方向鍵以調整位置。</translation>
+<translation id="7187669805838282391">星期三</translation>
 <translation id="7206979415662233817">服務條款</translation>
 <translation id="7210635925306941239">青藍色</translation>
 <translation id="7212547870105584639">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">內置觸控板</translation>
 <translation id="7397270852490618635">關閉淺色主題背景</translation>
 <translation id="7401543881546089382">刪除捷徑</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" />已準備好更新</translation>
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7425037327577270384">幫我寫</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">允許「錄音機」偵測並標籤講者嗎？</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
+<translation id="7503342217608032738">無法使用裝置</translation>
 <translation id="7507061649493508884">閃閃發光的<ph name="FLOWER_COLOR" /><ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">底部</translation>
 <translation id="7514365320538308">下載</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">隨機播放</translation>
 <translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7551123448725492271">裝置類型係音響裝置。</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> 管理員已設定此 <ph name="DEVICE_TYPE" /> 的使用時間。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可於<ph name="DAY" /><ph name="TIME" />再次使用此裝置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">預覽螢幕截圖</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7561759921596375678">開啟音量</translation>
@@ -1398,6 +1411,7 @@
 <translation id="785170686607360576">鬱金香</translation>
 <translation id="7856267634822906833">藍牙觸控螢幕</translation>
 <translation id="7859006200041800233">仙人掌花</translation>
+<translation id="7865217133132122390">開啟麥克風</translation>
 <translation id="7869143217755017858">停用夜間模式</translation>
 <translation id="7878972877380405573">使用「幫我讀」撮要內容</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1426,6 +1440,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{系統已自動啟動「<ph name="APP_NAME_1" />」}other{系統已自動啟動 # 個應用程式}}</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
+<translation id="8010765388850538088">進一步瞭解生成式 AI</translation>
 <translation id="8017679124341497925">已編輯捷徑</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8028993641010258682">大小</translation>
@@ -1435,6 +1450,7 @@
 <translation id="8045012663542226664">將麥克風設定為靜音</translation>
 <translation id="8054112564438735763">米色</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" />的<ph name="CHARACTERS_SUBJECTS" />配搭<ph name="CHARACTERS_BACKGROUND" />背景</translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">連接咗 APN。</translation>
 <translation id="8067208048261192356">啡色</translation>
 <translation id="8067224607978179455">刪除<ph name="ACTION_NAME" /></translation>
@@ -1538,6 +1554,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" />必須重新啟動，才能完成安裝韌體版本 <ph name="VERSION" />。電腦可能會多次重新啟動，這是正常現象。</translation>
 <translation id="8593058461203131755">暫停媒體</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
 <translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他操作</translation>
@@ -1671,6 +1688,7 @@
 <translation id="917720651393141712">測試</translation>
 <translation id="9188992814426075118">鍵盤可自動與桌布配搭</translation>
 <translation id="9189000703457422362">無法透過自動偵測的 APN 連線至此網絡。請聯絡流動網絡供應商以瞭解詳情。</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />；<ph name="SUBTEXT" />；<ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">揀咗嘅搖桿按鍵係 <ph name="KEYS" />。㩒一下個掣就可以修改控制項</translation>
 <translation id="9204237731135241582">無法從 Android 應用程式連線至閘道</translation>
@@ -1691,5 +1709,6 @@
 <translation id="982713511914535780">執行放電測試</translation>
 <translation id="98515147261107953">橫向</translation>
 <translation id="987264212798334818">一般</translation>
+<translation id="994473081369871639">關閉麥克風</translation>
 <translation id="995062385528875723">無法使用重音字母、非拉丁字母或符號</translation>
 </translationbundle>

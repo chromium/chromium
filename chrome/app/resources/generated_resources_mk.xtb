@@ -3448,7 +3448,6 @@
 <translation id="3447797901512053632">Се емитува <ph name="TAB_NAME" /> на <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Ажурирајте ја сметката</translation>
 <translation id="3449393517661170867">Нов прозорец со картички</translation>
-<translation id="3449839693241009168">Притисни <ph name="SEARCH_KEY" /> за да испратиш команди на <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Прикажувај системски известувања за функции и совети на Chrome</translation>
 <translation id="3450157232394774192">Процент на зафаќање во состојба на неактивност</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање.</translation>
@@ -6620,7 +6619,6 @@
 <translation id="5780973441651030252">Приоритет на процес</translation>
 <translation id="5781092003150880845">Синхронизирај како <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Префрлете ги податоците од вашата училишна сметка во вашата лична сметка</translation>
-<translation id="5781865261247219930">Испратете наредби до <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Се преведува…</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5784291589716625675">Променување на јазикот на апликацијата</translation>
@@ -7126,7 +7124,6 @@
 <translation id="6150116777338468525">Квалитет на аудиото</translation>
 <translation id="6150278227694566734">Некои контакти</translation>
 <translation id="6150961653851236686">Овој јазик се користи при преведување страници</translation>
-<translation id="6151323131516309312">Притисни <ph name="SEARCH_KEY" /> за да ја побараш <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Датотеката веќе постои во папката со преземања.</translation>
 <translation id="6152918902620844577">Се чека следната операција</translation>
 <translation id="6153439704237222699">Дознајте повеќе за Do Not Track</translation>
@@ -7800,7 +7797,6 @@
 <translation id="6657240842932274095">Да се дозволи системските услуги да ја користат вашата локација?</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659213950629089752">Страницата ја зумираше наставката „<ph name="NAME" />“</translation>
-<translation id="6659594942844771486">Картичка</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - се снима со камерата</translation>
 <translation id="6660301751798595791">Избор на глас</translation>
 <translation id="6660819301598582123">Ѓакон Гоце и Љутфи Хоџа ноќе ѕвезди бројат. Постоиш ли боже? Молчење.</translation>

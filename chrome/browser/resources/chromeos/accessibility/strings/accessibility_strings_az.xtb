@@ -168,7 +168,6 @@
 <translation id="2045055672832940894">Öncəki nəzarət yoxdur</translation>
 <translation id="2045606329038304310">Forma sahəsinə nəzarət</translation>
 <translation id="2063539687800151747">Epiqraf</translation>
-<translation id="2067158561093481039">Fərdi düymə kombinasiyasını icra edin</translation>
 <translation id="2086961585857038472">Növbəti Söz</translation>
 <translation id="2087981446621639008">təsvir siyahısı təfsilatı</translation>
 <translation id="2089387485033699258">az</translation>
@@ -179,6 +178,7 @@
 <translation id="2121067395472282800">giriş düyməsi:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Bu element üçün əlçatan mətn yoxdur</translation>
 <translation id="2127747486437921899">Kursiv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Təcrübə sahəsini bağlayın</translation>
 <translation id="2163782704988363449">Çap səhvi</translation>
 <translation id="2169714232367507776">Cari elementə klikləyin</translation>
@@ -323,6 +323,7 @@
 <translation id="3060880924447482063">Element üzrə hərəkət etmək üçün sağa və ya sola sürüşdürün</translation>
 <translation id="3070245424257836917">Üç barmağınızla yuxarı çəkin</translation>
 <translation id="307516670110542567">Sürətli orientasiya</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Növbəti səviyyə 2 başlıq</translation>
 <translation id="3078740164268491126">cədvəl</translation>
 <translation id="3082249673510793544">Geri sürüşdürün</translation>
@@ -380,6 +381,7 @@
 <translation id="3322936298410871309">Öncəki mərhələ 1 başlıq</translation>
 <translation id="3323447499041942178">Mətn qutusu</translation>
 <translation id="3324983252691184275">Tünd-qırmızı</translation>
+<translation id="334252345105450327">Skrinşot çəkin</translation>
 <translation id="335581015389089642">Nitq</translation>
 <translation id="3356951775008366684">Sözün fonetik tələffüzünü elan edin</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Qar</translation>
 <translation id="3781428340399460090">Parlaq Çəhrayı</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Girişi göstərin</translation>
 <translation id="3801735343383419236">Avtomatik tamamlama siyahısı</translation>
 <translation id="3806327402890551732">Növbəti və ya əvvəlki elementə keçin</translation>
@@ -525,6 +528,7 @@
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4294967782363273192">Artan sıra ilə çeşidləmə</translation>
 <translation id="4300318234632215983">Link arxasında URL-i elan edin</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Tünd-qəhvəyi</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{nöqtə}=3{ellips}other{# nöqtə}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> yazın</translation>
@@ -538,6 +542,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Tünd səma mavisi</translation>
 <translation id="4406249099130339147">Punktsuasiya exosu:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Hindu Qırmızısı</translation>
 <translation id="4432896207833262240">İşarələnmiş məzmun</translation>
 <translation id="4437615272777527928">Menyularda axtarış etmək üçün yazın. Nəticələri gözdən keçirmək üçün yuxarı və aşağı ox düymələrini basın. Mətn kursorunu tənzimləmək və menyular arasında keçid etmək üçün sol və sağ ox düymələrini basın.</translation>
@@ -559,6 +564,7 @@
 <translation id="4562381607973973258">Başlıq</translation>
 <translation id="4597532268155981612">forma</translation>
 <translation id="4601367666219428522"><ph name="TABLEROWS" />x<ph name="TABLECOLS" /> <ph name="TABLENAME" /></translation>
+<translation id="4606933160360542263">Fərdi düymə kombinasiyası: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Növbəti düymə basımı ləğv edilir</translation>
 <translation id="4617384941327705512">Ağıllı yapışqan rejim deaktivdir</translation>
 <translation id="4623097797855662355">Kolofon</translation>
@@ -851,6 +857,7 @@
 <translation id="6584162722998608255">Bundan sonra, ekranda necə hərəkət edəcəyinizi öyrənəcəksiniz. Növbəti elementə keçmək üçün bir barmağınızı soldan sağa sürüşdürə bilərsiniz. Növbəti mərhələyə keçmək üçün indi sınayın.</translation>
 <translation id="6609828810966525877">Öyrənmə Rejimi və Chromebook Yardım Mərkəzindən daha çox jest kəşf edin</translation>
 <translation id="6628427060004938651">Hissə</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Proqres paneli</translation>
 <translation id="667999046851023355">Sənəd</translation>
@@ -915,6 +922,7 @@
 <translation id="7096001299300236431">Əvvəlki media</translation>
 <translation id="7096668131290451939">Öyrənmə rejimindən çıxmaq üçün yenidən escape üstünə basın</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">söz exosu</translation>
 <translation id="7137397390322864165">Qırmızımtıl narıncı</translation>
 <translation id="7140168702531682811">Yuxarı indeks</translation>

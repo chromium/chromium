@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">ઍક્સેસ કી:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">આ આઇટમ માટે કોઈ ટેક્સ્ટ ઉપલબ્ધ નથી</translation>
 <translation id="2127747486437921899">ઇટાલિક</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">અભ્યાસ ક્ષેત્ર બંધ કરો</translation>
 <translation id="2163782704988363449">ભૂલ સુધારાની સૂચિ</translation>
 <translation id="2169714232367507776">ચાલુ આઇટમ પર ક્લિક કરો</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">આઇટમ મુજબ ખસેડવા માટે ડાબે અથવા જમણે સ્વાઇપ કરો</translation>
 <translation id="3070245424257836917">ત્રણ આંગળી ઉપરની બાજુ સ્વાઇપ કરો</translation>
 <translation id="307516670110542567">ઝડપી ઓરિએન્ટેશન</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">આગલા સ્તર 2 નું મથાળું</translation>
 <translation id="3078740164268491126">કોષ્ટક</translation>
 <translation id="3082249673510793544">પાછળ સ્ક્રોલ કરો</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">પાછલું લેવલ 1 શીર્ષક</translation>
 <translation id="3323447499041942178">ટેક્સ્ટ બૉક્સ</translation>
 <translation id="3324983252691184275">કિરમજી</translation>
+<translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="335581015389089642">ભાષા</translation>
 <translation id="3356951775008366684">શબ્દ માટે ફોનેટિક ઉચ્ચારણ ઉચ્ચારો</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">હિમવર્ષા</translation>
 <translation id="3781428340399460090">ચળકતો ગુલાબી</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">લૉગ બતાવો</translation>
 <translation id="3801735343383419236">સ્વતઃપૂર્ણ સૂચિ</translation>
 <translation id="3806327402890551732">આગળની કે પાછળની આઇટમ પર જાઓ</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4294967782363273192">ચઢતા ક્રમમાં</translation>
 <translation id="4300318234632215983">લિંકની પાછળનાં URL ની ઘોષણા કરો</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">સિયેના</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ટપકું }=3{પદલોપ}one{# ટપકાં}other{# ટપકાં}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> ટાઇપ કરો</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ઘેરો આસમાની ભૂરો</translation>
 <translation id="4406249099130339147">વિરામચિહ્નનો પડઘો:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">ભારતીય લાલ</translation>
 <translation id="4432896207833262240">માર્ક કરેલું કન્ટેન્ટ</translation>
 <translation id="4437615272777527928">મેનૂ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે ઍરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા ઍરોનો ઉપયોગ કરો.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">હેડર</translation>
 <translation id="4597532268155981612">ફોર્મ</translation>
 <translation id="4601367666219428522">કોષ્ટક <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">કસ્ટમ કીનું સંયોજન: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">આગલા કી દબાણને અવગણે છે</translation>
 <translation id="4617384941327705512">સ્માર્ટ સ્ટીકી મોડ બંધ છે</translation>
 <translation id="4623097797855662355">પુષ્પિકા</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">આગળ, તમે સ્ક્રીન પર કોઈપણ જગ્યાએ કેવી રીતે જવું તેના વિશે જાણકારી મેળવશો. આગલી આઇટમ પર જવા માટે, તમે ડાબેથી જમણે એક આંગળી સ્વાઇપ કરી શકો છો. આગળના પગલાં પર જવા માટે હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="6609828810966525877">'જાણો' મોડમાં અને Chromebook સહાયતા કેન્દ્રમાં સંકેતો વિશે વધુ શોધખોળ કરો</translation>
 <translation id="6628427060004938651">ભાગ</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">લૉગ</translation>
 <translation id="6657128831881431364">પ્રોગ્રેસ બાર</translation>
 <translation id="667999046851023355">દસ્તાવેજ</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">પાછલું મીડિયા</translation>
 <translation id="7096668131290451939">શીખવાના મોડમાંથી બહાર નીકળવા માટે ફરીથી Escape કી દબાવો</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">શબ્દ પડઘો</translation>
 <translation id="7137397390322864165">સૅમન</translation>
 <translation id="7140168702531682811">સુપરસ્ક્રિપ્ટ</translation>

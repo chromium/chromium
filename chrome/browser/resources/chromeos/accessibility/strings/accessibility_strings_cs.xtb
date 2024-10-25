@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">přístupový klíč:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">U této položky není k dispozici žádný text</translation>
 <translation id="2127747486437921899">Kurzíva</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Zavřít cvičnou oblast</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Kliknout na aktuální položku</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Přejetím prstem vlevo nebo vpravo můžete přecházet mezi položkami</translation>
 <translation id="3070245424257836917">Přejeďte třemi prsty nahoru</translation>
 <translation id="307516670110542567">Rychlá instruktáž</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Další nadpis 2. úrovně</translation>
 <translation id="3078740164268491126">tabulka</translation>
 <translation id="3082249673510793544">Posunout zpět</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">Předchozí nadpis 1. úrovně</translation>
 <translation id="3323447499041942178">Textové pole</translation>
 <translation id="3324983252691184275">Karmínová</translation>
+<translation id="334252345105450327">Pořídit snímek obrazovky</translation>
 <translation id="335581015389089642">Řeč</translation>
 <translation id="3356951775008366684">Oznamovat fonetickou výslovnost slova</translation>
 <translation id="3359142382821736686">oddělovač</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">nadp 1</translation>
 <translation id="3777742246909257041">Sněhobílá</translation>
 <translation id="3781428340399460090">Jasně růžová</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Zobrazit protokol</translation>
 <translation id="3801735343383419236">Seznam automatického doplňování</translation>
 <translation id="3806327402890551732">Přechod na předchozí nebo další položku</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="4294967782363273192">Seřazeno vzestupně</translation>
 <translation id="4300318234632215983">Oznámit adresu URL za odkazem</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{tečka}=3{trojtečka}few{# tečky}many{# dots}other{# teček}}</translation>
 <translation id="4352022650330571548">napište <ph name="PHRASE" /></translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">info o obsahu</translation>
 <translation id="4402014469255336455">Sytá nebeská modrá</translation>
 <translation id="4406249099130339147">Hlasová odezva interpunkce:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Indiánská červená</translation>
 <translation id="4432896207833262240">Označený obsah</translation>
 <translation id="4437615272777527928">Zadejte, co chcete v nabídkách vyhledat. K procházení výsledků můžete použít šipky nahoru a dolů. Pomocí šipek vlevo a vpravo můžete upravit textový kurzor a přecházet mezi nabídkami.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">Nadpis</translation>
 <translation id="4597532268155981612">formulář</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Vlastní kombinace kláves: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Další stisknutí klávesy bude ignorováno</translation>
 <translation id="4617384941327705512">Chytrý režim Jedním prstem je vypnutý</translation>
 <translation id="4623097797855662355">Kolofon</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">Dále se naučíte pohybovat po obrazovce. Přejetím prstem zleva doprava přejdete na další položku. Vyzkoušejte to a přejděte tak na další krok.</translation>
 <translation id="6609828810966525877">Další gesta najdete v režimu výuky a v centru nápovědy pro Chromebooky</translation>
 <translation id="6628427060004938651">Část</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">protokol</translation>
 <translation id="6657128831881431364">Indikátor průběhu</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">Předchozí mediální objekt</translation>
 <translation id="7096668131290451939">Dalším stisknutím klávesy Escape režim učení ukončíte</translation>
 <translation id="7116595520562830928">více řádků</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">vyslovovat slova</translation>
 <translation id="7137397390322864165">Lososová</translation>
 <translation id="7140168702531682811">Horní index</translation>

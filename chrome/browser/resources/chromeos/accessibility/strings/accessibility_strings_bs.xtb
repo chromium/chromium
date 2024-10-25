@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">pristupni ključ:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Nema dostupnog teksta za ovu stavku</translation>
 <translation id="2127747486437921899">Kurziv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Zatvori područje za vježbanje</translation>
 <translation id="2163782704988363449">Štamparska greška</translation>
 <translation id="2169714232367507776">Kliknite na trenutnu stavku</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Prevucite lijevo ili desno da pomaknete stavku</translation>
 <translation id="3070245424257836917">Prevucite s tri prsta prema gore</translation>
 <translation id="307516670110542567">Brza orijentacija</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Sljedeći naslov 2. nivoa</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3082249673510793544">Pomjeranje unazad</translation>
@@ -334,6 +336,7 @@
 <translation id="311015743332597320">Prevucite s četiri prsta udesno</translation>
 <translation id="3112457281078985179">Uključite ili isključite ChromeVox koristeći Control + Alt + Z.</translation>
 <translation id="3115800313647508384">Isključiti ekran?</translation>
+<translation id="3127625407966660979">Diktiranje je aktivno</translation>
 <translation id="3131002934070407451">Čitaj brojeve kao:</translation>
 <translation id="3134461040845705080">szčit</translation>
 <translation id="3137663468179739624">Maslinasta</translation>
@@ -374,6 +377,7 @@
 <translation id="3322936298410871309">Prethodni naslov 1. nivoa</translation>
 <translation id="3323447499041942178">Okvir za tekst</translation>
 <translation id="3324983252691184275">Grimizna</translation>
+<translation id="334252345105450327">Snimi ekran</translation>
 <translation id="335581015389089642">Govor</translation>
 <translation id="3356951775008366684">Najava fonetskog izgovora za riječ</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +441,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Snijeg</translation>
 <translation id="3781428340399460090">Vatreno ružičasta</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Prikaži zapisnik</translation>
 <translation id="3801735343383419236">Lista automatskog popunjavanja</translation>
 <translation id="3806327402890551732">Pređite na sljedeću ili prethodnu stavku</translation>
@@ -520,6 +525,7 @@
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4294967782363273192">Sortiranje uzlazno</translation>
 <translation id="4300318234632215983">Najava URL-a iza linka</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sijena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{tačka}=3{tri tačke}one{# tačka}few{# tačke}other{# tačaka}}</translation>
 <translation id="4352022650330571548">napiši <ph name="PHRASE" /></translation>
@@ -533,6 +539,7 @@
 <translation id="4391478986194775161">infsdrž</translation>
 <translation id="4402014469255336455">Tamna nebesko plava</translation>
 <translation id="4406249099130339147">Eho interpunkcije:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Indijska crvena</translation>
 <translation id="4432896207833262240">Označeni sadržaj</translation>
 <translation id="4437615272777527928">Pišite da pretražite menije. Koristite strelice nagore i nadolje da se krećete po rezultatima. Koristite strelice nalijevo i nadesno da podesite znak za umetanje i da se prebacujete između menija.</translation>
@@ -553,6 +560,7 @@
 <translation id="4562381607973973258">Zaglavlje</translation>
 <translation id="4597532268155981612">obrazac</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Prilagođena kombinacija tipki: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Zanemarivanje pritiska sljedeće tipke</translation>
 <translation id="4617384941327705512">Pametni ljepljivi način rada je isključen</translation>
 <translation id="4623097797855662355">Kolofon</translation>
@@ -844,6 +852,7 @@
 <translation id="6584162722998608255">Dalje ćete naučiti kako se kretati po ekranu. Možete prevući jednim prstom slijeva udesno da pređete na sljedeću stavku. Isprobajte sada da pređete na sljedeći korak.</translation>
 <translation id="6609828810966525877">Istražite više pokreta u načinu rada za učenje i Centru za pomoć Chromebooka</translation>
 <translation id="6628427060004938651">Dio</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">zapis</translation>
 <translation id="6657128831881431364">Traka napretka</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -908,6 +917,7 @@
 <translation id="7096001299300236431">Prethodna medijska stavka</translation>
 <translation id="7096668131290451939">Ponovo pritisnite Esc da izađete iz Načina rada za učenje</translation>
 <translation id="7116595520562830928">višered</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">eho riječi</translation>
 <translation id="7137397390322864165">boja lososa</translation>
 <translation id="7140168702531682811">Eksponent</translation>

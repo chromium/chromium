@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="100421257800558142">Pwyswch y saeth dde</translation>
 <translation id="100506692671054486">dim gorchymyn blaenorol</translation>
 <translation id="1009046985747440431">Pwyswch y saeth i fyny neu i lawr i lywio; y fysell Enter i weithredu</translation>
 <translation id="1011903154582639569">Dewch o hyd i fysell, a chodwch eich bys i deipio</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Botwm Toglo</translation>
 <translation id="1299774449519412690">Glas Golau</translation>
 <translation id="1303806948938513162">Tapiwch gyda 4 bys i gael mynediad at y dewislenni ChromeVox</translation>
+<translation id="1304162325618937178">Pwyswch y fysell Space</translation>
 <translation id="1313373992684326101">Symud i'r adran flaenorol. Ymhlith yr enghreifftiau mae'r Hambwrdd Statws a'r Lansiwr.</translation>
 <translation id="1315077335264761176">Cyfeiriadedd cyffwrdd</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, botwm radio eitem dewislen heb ei ddewis</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Gwenith</translation>
 <translation id="1618597272655350600">Yn cyhoeddi disgrifiad cyflawn o'r safle presennol</translation>
 <translation id="1627222324347828322">Gwyn Ysbryd</translation>
+<translation id="1632810692616643246">Dechrau neu adael y modd sgrolio</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{mwy na}zero{# symbol mwy na}two{# symbol mwy na}few{# symbol mwy na}many{# symbol mwy na}other{# symbol mwy na}}</translation>
 <translation id="1653266918374749391">Pennawd lefel 3 blaenorol</translation>
 <translation id="1657616855184033958">Dangos hidlyddion ffrwd digwyddiadau</translation>
@@ -175,6 +178,7 @@
 <translation id="2121067395472282800">allwedd fynediad:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Nid oes testun ar gael ar gyfer yr eitem hon</translation>
 <translation id="2127747486437921899">Italig</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Cau'r ardal ymarfer</translation>
 <translation id="2163782704988363449">Rhestr gwallau</translation>
 <translation id="2169714232367507776">Cliciwch ar yr eitem bresennol</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Brown Cyfrwy</translation>
 <translation id="2199994615414171367">Mathemateg flaenorol</translation>
 <translation id="2203046366315513658">Gostwng gwerth</translation>
+<translation id="2206580811360135054">Dangos neu guddio trosolwg o ffenestri</translation>
 <translation id="2216790501338699346">URL Dolen: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Symud yn ôl un nod</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
+<translation id="2239819015858077439">Pwyswch y saeth i lawr</translation>
 <translation id="2243633977138166243">Pwyswch y bysellau saeth chwith neu dde i lywio; y fysell Enter i weithredu</translation>
 <translation id="224426591676115802">Nid oes llais ar gael ar gyfer yr iaith: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Stopio'r Modd Dysgu</translation>
@@ -317,6 +323,7 @@
 <translation id="3060880924447482063">Sweipiwch i'r chwith neu'r dde i symud wrth yr eitem</translation>
 <translation id="3070245424257836917">Sweipiwch i fyny gyda thri bys</translation>
 <translation id="307516670110542567">Cyfeiriadedd cyflym</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Pennawd lefel 2 nesaf</translation>
 <translation id="3078740164268491126">tabl</translation>
 <translation id="3082249673510793544">Sgrolio yn ôl</translation>
@@ -374,6 +381,7 @@
 <translation id="3322936298410871309">Pennawd lefel 1 blaenorol</translation>
 <translation id="3323447499041942178">Blwch testun</translation>
 <translation id="3324983252691184275">Rhuddgoch</translation>
+<translation id="334252345105450327">Tynnu sgrinlun</translation>
 <translation id="335581015389089642">Llefarydd</translation>
 <translation id="3356951775008366684">Cyhoeddi ynganiad seinegol am air</translation>
 <translation id="3359142382821736686">ghydd</translation>
@@ -437,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Eira</translation>
 <translation id="3781428340399460090">Pinc Llachar</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Dangos y Log</translation>
 <translation id="3801735343383419236">Rhestr awtogwblhau</translation>
 <translation id="3806327402890551732">Symud i'r eitem nesaf neu flaenorol</translation>
@@ -519,6 +528,7 @@
 <translation id="4289540628985791613">Trosolwg</translation>
 <translation id="4294967782363273192">Trefn esgynnol</translation>
 <translation id="4300318234632215983">Cyhoeddi'r URL y tu ôl i ddolen</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{dot}=3{ellipsis}zero{# dot}two{# ddot}many{# dot}other{# dot}}</translation>
 <translation id="4352022650330571548">math <ph name="PHRASE" /></translation>
@@ -532,9 +542,11 @@
 <translation id="4391478986194775161">gwybcynn</translation>
 <translation id="4402014469255336455">Glas Golau Dwys</translation>
 <translation id="4406249099130339147">Adleisio atalnodi:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Coch Indiaidd</translation>
 <translation id="4432896207833262240">Cynnwys sydd wedi'i farcio</translation>
 <translation id="4437615272777527928">Teipiwch i chwilio'r dewislenni. Defnyddiwch y saethau i fyny ac i lawr i fynd drwy'r canlyniadau. Defnyddiwch y saethau chwith a de i addasu'r caret testun, ac i symud rhwng dewislenni.</translation>
+<translation id="4441677939526091190">Pwyswch y saeth i fyny</translation>
 <translation id="4453530046591759283">I neidio i rannau eraill o'r sgrîn, megis bariau offer neu hambwrdd y system, pwyswch Control+F1. F1 yw'r fysell gyntaf i'r dde o'r fysell Escape.</translation>
 <translation id="4457472090507035117">Dewis y llais presennol:</translation>
 <translation id="4476183483923481720">llinell newydd</translation>
@@ -552,6 +564,7 @@
 <translation id="4562381607973973258">Pennawd</translation>
 <translation id="4597532268155981612">ffurflen</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Cyfuniad allwedd personol: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Bydd y fysell nesaf i gael ei phwyso'n cael ei hanwybyddu</translation>
 <translation id="4617384941327705512">Mae'r modd gludiog clyfar wedi'i ddiffodd</translation>
 <translation id="4623097797855662355">Coloffon</translation>
@@ -713,6 +726,7 @@
 <translation id="5653397561111110475">Defnyddio nodweddion hygyrchedd sgrîn gyffwrdd Chromebook</translation>
 <translation id="5655682562155942719">Neidio Gorchmynion</translation>
 <translation id="56637627897541303">Ardal testun</translation>
+<translation id="5666746275818170484">Pwyswch y saeth chwith</translation>
 <translation id="5669637233317991674">Pwyswch Search + Saeth Dde, neu Search + Saeth Chwith i lywio'r wers hon</translation>
 <translation id="5677240841070992068">Lleoliad presennol</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -843,6 +857,7 @@
 <translation id="6584162722998608255">Nesaf, byddwch yn dysgu sut i symud o gwmpas y sgrîn. Gallwch sweipio un bys o'r chwith i'r dde i symud i'r eitem nesaf. Rhowch gynnig arni nawr i symud i'r cam nesaf.</translation>
 <translation id="6609828810966525877">Archwilio rhagor o ystumiau yn y Modd Dysgu a'r Ganolfan Gymorth Chromebook</translation>
 <translation id="6628427060004938651">Rhan</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Bar cynnydd</translation>
 <translation id="667999046851023355">Dogfen</translation>
@@ -907,6 +922,7 @@
 <translation id="7096001299300236431">Cyfryngau blaenorol</translation>
 <translation id="7096668131290451939">Pwyswch Escape eto i adael y Modd Dysgu</translation>
 <translation id="7116595520562830928">amllnell</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">adleisio geiriau</translation>
 <translation id="7137397390322864165">Pinc Eog</translation>
 <translation id="7140168702531682811">Uwchysgrif</translation>
@@ -917,6 +933,7 @@
 <translation id="7161771961008409533">Botwm ffenestr naid</translation>
 <translation id="7167657087543110">adleisio nodau</translation>
 <translation id="7173102181852295013">Dulas</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Wedi'i ehangu</translation>
 <translation id="7209751026933045237">Dim llithrydd nesaf</translation>
 <translation id="7218782500591078391">Ffon Aur</translation>
@@ -1090,6 +1107,7 @@
 <translation id="8378855320830505539">Ardal</translation>
 <translation id="8382679411218029383">Awtogwblhau wedi'i alinio a rhestr</translation>
 <translation id="8394908167088220973">Chwarae/Seibio Cyfryngau</translation>
+<translation id="8409502156784390079">Mae'r modd sgrolio yn weithredol</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8428603554127842284">lefel <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">brdwlsen</translation>
@@ -1167,6 +1185,7 @@
 <translation id="8986362086234534611">Anghofio</translation>
 <translation id="8989104346085848538">I atal unrhyw lefarydd ChromeVox presennol, pwyswch y fysell Control.</translation>
 <translation id="9014206344398081366">Tiwtorial ChromeVox</translation>
+<translation id="9034592733577768445">Mae rheoli ag wyneb wedi'i seibio</translation>
 <translation id="9040132695316389094">Pennawd 1</translation>
 <translation id="9061884144798498064">Dewis bwrdd braille 8-dot:</translation>
 <translation id="9063946545000394379">symud i'r nod blaenorol</translation>

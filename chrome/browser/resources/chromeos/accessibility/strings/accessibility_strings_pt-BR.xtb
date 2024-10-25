@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">access key:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Nenhum texto disponível para esse item</translation>
 <translation id="2127747486437921899">Itálico</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Fechar área para prática</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Clicar no item atual</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Deslize para a esquerda ou direita para mover por item</translation>
 <translation id="3070245424257836917">Deslize para cima usando três dedos</translation>
 <translation id="307516670110542567">Orientação rápida</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Próximo cabeçalho de nível 2</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3082249673510793544">Rolar para trás</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">Cabeçalho de nível 1 anterior</translation>
 <translation id="3323447499041942178">Caixa de texto</translation>
 <translation id="3324983252691184275">Carmim</translation>
+<translation id="334252345105450327">Fazer uma captura de tela</translation>
 <translation id="335581015389089642">Voz</translation>
 <translation id="3356951775008366684">Ler em voz alta a pronúncia fonética da palavra</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Neve</translation>
 <translation id="3781428340399460090">Rosa-escuro</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Mostrar registro</translation>
 <translation id="3801735343383419236">Lista de preenchimento automático</translation>
 <translation id="3806327402890551732">Navegar para o próximo item ou para o item anterior</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4294967782363273192">Classificação crescente</translation>
 <translation id="4300318234632215983">Anunciar o URL associado a um link</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Castanho-avermelhado</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ponto}=3{reticências}one{# pontos}other{# pontos}}</translation>
 <translation id="4352022650330571548">digite <ph name="PHRASE" /></translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Azul-celeste-escuro</translation>
 <translation id="4406249099130339147">Pontuação falada:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Vermelho-indiano</translation>
 <translation id="4432896207833262240">Conteúdo marcado</translation>
 <translation id="4437615272777527928">Digite para pesquisar nos menus. Use as setas para cima e para baixo para percorrer os resultados. Use as setas para a esquerda e direita para ajustar o cursor de texto e navegar entre os menus.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">Cabeçalho</translation>
 <translation id="4597532268155981612">formulário</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" />: <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Combinação de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Ignorando o uso da tecla "Próximo"</translation>
 <translation id="4617384941327705512">Modo tecla fixa inteligente desativado</translation>
 <translation id="4623097797855662355">Colofão</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">Agora, você aprenderá a se mover pela tela. Deslize da esquerda para a direita com um dedo para avançar para o próximo item. Faça um teste para acessar a próxima etapa.</translation>
 <translation id="6609828810966525877">Aprenda mais gestos no Modo de aprendizado e na Central de Ajuda do Chromebook</translation>
 <translation id="6628427060004938651">Parte</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Barra de progresso</translation>
 <translation id="667999046851023355">Documento</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">Mídia anterior</translation>
 <translation id="7096668131290451939">Pressione Esc de novo para sair do modo de aprendizado</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">eco de palavra</translation>
 <translation id="7137397390322864165">Salmão</translation>
 <translation id="7140168702531682811">Sobrescrito</translation>

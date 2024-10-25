@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="100421257800558142">Vajutage paremnooleklahvi</translation>
 <translation id="100506692671054486">eelnevat käsku pole</translation>
 <translation id="1009046985747440431">Navigeerimiseks vajutage üles- või allanoolt, aktiveerimiseks vajutage sisestusklahvi</translation>
 <translation id="1011903154582639569">Leidke soovitud klahv ja tõstke sisestamiseks sõrm ekraanilt</translation>
@@ -59,6 +60,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="1291286136605998134">Lülitusnupp</translation>
 <translation id="1299774449519412690">Hele taevasinine</translation>
 <translation id="1303806948938513162">ChromeVoxi menüüdesse sisenemiseks puudutage nelja sõrmega</translation>
+<translation id="1304162325618937178">Vajutage tühikuklahvi</translation>
 <translation id="1313373992684326101">Eelmise jaotise juurde liikumine. Näiteks olekusalv ja käivitaja.</translation>
 <translation id="1315077335264761176">Puudutustega navigeerimine</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menüü-üksuse raadionupp on valimata</translation>
@@ -112,6 +114,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="1616111909442424068">Nisukollane</translation>
 <translation id="1618597272655350600">Esitab praeguse asukoha täpse kirjelduse</translation>
 <translation id="1627222324347828322">Kahvatuvalge</translation>
+<translation id="1632810692616643246">Kerimisrežiimi sisenemine või sealt väljumine</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{suurem kui}other{# märki „suurem kui”}}</translation>
 <translation id="1653266918374749391">Eelmine 3. taseme pealkiri</translation>
 <translation id="1657616855184033958">Sündmuste voo filtrite kuvamine</translation>
@@ -175,6 +178,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2121067395472282800">pääsuklahv:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Selle üksuse jaoks tekst puudub</translation>
 <translation id="2127747486437921899">Kursiiv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Sulge harjutusala</translation>
 <translation id="2163782704988363449">Veaparandused</translation>
 <translation id="2169714232367507776">Klõpsa aktiivsel elemendil</translation>
@@ -184,9 +188,11 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2197863150503783129">Sadulapruun</translation>
 <translation id="2199994615414171367">Eelmine valem</translation>
 <translation id="2203046366315513658">Väärtuse vähendamine</translation>
+<translation id="2206580811360135054">Akende ülevaate kuvamine või peitmine</translation>
 <translation id="2216790501338699346">Lingi URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Liigu ühe tähemärgi võrra tagasi</translation>
 <translation id="2220529011494928058">Probleemist teatamine</translation>
+<translation id="2239819015858077439">Vajutage allanooleklahvi</translation>
 <translation id="2243633977138166243">Vajutage navigeerimiseks vasak- või paremnoolt, aktiveerimiseks sisestusklahvi</translation>
 <translation id="224426591676115802"><ph name="LANGUAGE" /> keele jaoks pole häält saadaval</translation>
 <translation id="2247700577781885251">Õppimisrežiimi peatamine</translation>
@@ -317,6 +323,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3060880924447482063">Üksuste kaupa liikumiseks pühkige vasakule või paremale</translation>
 <translation id="3070245424257836917">Pühkige kolme sõrmega üles</translation>
 <translation id="307516670110542567">Kiirtutvustus</translation>
+<translation id="3077734595579995578">tõstuklahv</translation>
 <translation id="3078345202707391975">Järgmine 2. taseme pealkiri</translation>
 <translation id="3078740164268491126">tabel</translation>
 <translation id="3082249673510793544">Tagasikerimine</translation>
@@ -374,6 +381,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3322936298410871309">Eelmine 1. taseme pealkiri</translation>
 <translation id="3323447499041942178">Tekstiväli</translation>
 <translation id="3324983252691184275">Tulipunane</translation>
+<translation id="334252345105450327">Jäädvusta ekraanipilt</translation>
 <translation id="335581015389089642">Kõne</translation>
 <translation id="3356951775008366684">Sõna foneetilise häälduse ütlemine</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +445,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Lumivalge</translation>
 <translation id="3781428340399460090">Erkroosa</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Kuva logi</translation>
 <translation id="3801735343383419236">Loendi automaatne täitmine</translation>
 <translation id="3806327402890551732">Järgmise või eelmise üksuse juurde liikumine</translation>
@@ -519,6 +528,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4289540628985791613">Ülevaade</translation>
 <translation id="4294967782363273192">Kasvav sortimine</translation>
 <translation id="4300318234632215983">Esita liURL</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sieena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punkt}=3{ellips}other{# punkti}}</translation>
 <translation id="4352022650330571548">sisesta <ph name="PHRASE" /></translation>
@@ -532,9 +542,11 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Sügav taevasinine</translation>
 <translation id="4406249099130339147">Kirjavahemärkide kordamine:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Indiaanipunane</translation>
 <translation id="4432896207833262240">Märgitud sisu</translation>
 <translation id="4437615272777527928">Sisestage menüüdest otsimiseks. Tulemustes liikumiseks kasutage üles- ja allanoolt. Teksti sisestusmärgi kohandamiseks ning menüüde vahel liikumiseks kasutage vasak- ja paremnoolt.</translation>
+<translation id="4441677939526091190">Vajutage ülesnooleklahvi</translation>
 <translation id="4453530046591759283">Ekraani muude osade, näiteks tööriistariba või süsteemisalve juurde liikumiseks vajutage klahvikombinatsiooni Control + F1. F1 on paoklahvist paremal esimene klahv.</translation>
 <translation id="4457472090507035117">Valige praegune hääl:</translation>
 <translation id="4476183483923481720">uus rida</translation>
@@ -552,6 +564,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4562381607973973258">Päis</translation>
 <translation id="4597532268155981612">vorm</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" /> korda <ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Kohandatud klahvikombinatsioon: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Järgmist klahvivajutust ignoreeritakse</translation>
 <translation id="4617384941327705512">Nutikas nakkerežiim on väljas</translation>
 <translation id="4623097797855662355">Kolofoon</translation>
@@ -713,6 +726,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="5653397561111110475">Chromebooki puuteekraani juurdepääsetavuse funktsioonide kasutamine</translation>
 <translation id="5655682562155942719">Siirdekäsud</translation>
 <translation id="56637627897541303">Tekstiala</translation>
+<translation id="5666746275818170484">Vajutage vasaknooleklahvi</translation>
 <translation id="5669637233317991674">Õppetunnis navigeerimiseks vajutage otsinguklahvi + paremnooleklahvi või otsinguklahvi + vasaknooleklahvi</translation>
 <translation id="5677240841070992068">Praegune asukoht</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -843,6 +857,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="6584162722998608255">Järgmisena õpite, kuidas ekraanikuval ringi liikuda. Saate ühe sõrmega vasakult paremale pühkida, et järgmise üksuse juurde liikuda. Proovige seda kohe, et järgmise toimingu juurde liikuda.</translation>
 <translation id="6609828810966525877">Avastage rohkem liigutusi õpperežiimis ja Chromebooki abikeskuses</translation>
 <translation id="6628427060004938651">Osa</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">logi</translation>
 <translation id="6657128831881431364">Edenemisriba</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -907,6 +922,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7096001299300236431">Eelmine meediaüksus</translation>
 <translation id="7096668131290451939">Õpperežiimist väljumiseks vajutage uuesti paoklahvi</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">sõnade kaja</translation>
 <translation id="7137397390322864165">Lõheroosa</translation>
 <translation id="7140168702531682811">Ülaindeks</translation>
@@ -917,6 +933,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7161771961008409533">Hüpikunupp</translation>
 <translation id="7167657087543110">tähemärkide kaja</translation>
 <translation id="7173102181852295013">Öösinine</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Laiendatud</translation>
 <translation id="7209751026933045237">Järgmist liugurit ei ole</translation>
 <translation id="7218782500591078391">Kuldkollane</translation>
@@ -1090,6 +1107,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8378855320830505539">Piirkond</translation>
 <translation id="8382679411218029383">Rea ja loendi automaatne täitmine</translation>
 <translation id="8394908167088220973">Meediumi esitamine/peatamine</translation>
+<translation id="8409502156784390079">Kerimisrežiim on aktiivne</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" />. tase</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1185,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8986362086234534611">Unusta</translation>
 <translation id="8989104346085848538">Praegu esitatava ChromeVoxi kõne peatamiseks vajutage klahvi Ctrl.</translation>
 <translation id="9014206344398081366">ChromeVoxi õpetused</translation>
+<translation id="9034592733577768445">Näoga juhtimine on peatatud</translation>
 <translation id="9040132695316389094">1. pealkiri</translation>
 <translation id="9061884144798498064">Valige 8-punktine punktkirja tabel:</translation>
 <translation id="9063946545000394379">liigu eelmise tähemärgi juurde</translation>

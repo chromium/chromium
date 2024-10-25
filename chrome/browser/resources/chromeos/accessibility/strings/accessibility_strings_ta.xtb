@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">அணுகல் விசை:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">இதன் பெயர் குறிப்பிடப்படவில்லை</translation>
 <translation id="2127747486437921899">இட்டாலிக்</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">பயிற்சிப் பகுதியை மூடுக</translation>
 <translation id="2163782704988363449">பிழைகள்</translation>
 <translation id="2169714232367507776">தற்போதைய உருப்படியில் கிளிக் செய்க</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">ஒவ்வொன்றாகப் பார்க்க, இடது அல்லது வலதுபுறம் ஸ்வைப் செய்யவும்</translation>
 <translation id="3070245424257836917">மூன்று விரல்களை மேலே ஸ்வைப் செய்யவும்</translation>
 <translation id="307516670110542567">விரைவுப் பயிற்சி</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">அடுத்த 2 ஆம் படிநிலை தலைப்பு</translation>
 <translation id="3078740164268491126">அட்டவணை</translation>
 <translation id="3082249673510793544">பின்செல்</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">முந்தைய 1 ஆம் படிநிலை தலைப்பு</translation>
 <translation id="3323447499041942178">உரை பெட்டி</translation>
 <translation id="3324983252691184275">அடர்சிவப்பு</translation>
+<translation id="334252345105450327">ஸ்கிரீன்ஷாட் எடு</translation>
 <translation id="335581015389089642">பேச்சு</translation>
 <translation id="3356951775008366684">வார்த்தையின் ஒலியியல் உச்சரிப்பைத் தெரிவிக்கும்</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">ஸ்நோ</translation>
 <translation id="3781428340399460090">ஹாட் பிங்க்</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">பதிவைக் காட்டு</translation>
 <translation id="3801735343383419236">தானே நிரப்புதல் பட்டியல்</translation>
 <translation id="3806327402890551732">அடுத்த/முந்தைய விருப்பத்திற்குச் செல்லுதல்</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4294967782363273192">ஏறுவரிசையில் உள்ளது</translation>
 <translation id="4300318234632215983">இணைப்புக்குப் பின் இருக்கும் URL ஐ அறிவிக்கவும்</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">சியன்னா</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{புள்ளி}=3{முப்புள்ளி}other{# புள்ளிகள்}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> என டைப் செய்க</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">டீப் ஸ்கை புளூ</translation>
 <translation id="4406249099130339147">நிறுத்தற்குறியை வாசிக்கும் முறை:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">இந்தியன் ரெட்</translation>
 <translation id="4432896207833262240">குறிக்கப்பட்ட உள்ளடக்கம்</translation>
 <translation id="4437615272777527928">மெனுக்களைத் தேட, தட்டச்சு செய்க. முடிவுகளை மாற்றி மாற்றி பார்க்க, மேல் மற்றும் கீழ் அம்புக்குறி விசைகளைப் பயன்படுத்துக. உரைச் சுட்டியைச் சரிசெய்யவும் ஒரு மெனுவிலிருந்து மற்றொரு மெனுவிற்கு மாறவும் இடது மற்றும் வலது அம்புக்குறி விசைகளைப் பயன்படுத்துக.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">தலைப்பு</translation>
 <translation id="4597532268155981612">படிவம்</translation>
 <translation id="4601367666219428522">அட்டவணை <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">பிரத்தியேக பட்டன் சேர்க்கை: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">அடுத்த விசை அழுத்தத்தைத் தவிர்க்கிறது</translation>
 <translation id="4617384941327705512">ஸ்மார்ட் ஒற்றை விசைப் பயன்முறையை முடக்கும்</translation>
 <translation id="4623097797855662355">முத்திரை</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">அடுத்து, திரையில் எங்கேனும் செல்வதற்கான வழிமுறையை அறிந்துகொள்வீர்கள். அடுத்த விருப்பத்திற்குச் செல்ல, ஒரு விரலால் இடதுபுறத்திலிருந்து வலதுபுறம் ஸ்வைப் செய்யலாம். அடுத்த படிக்குச் செல்ல, இதை இப்போதே செய்து பாருங்கள்.</translation>
 <translation id="6609828810966525877">‘கற்றல் பயன்முறையிலும்’ ‘Chromebook உதவி மையத்திலும்’ மேலும் சைகைகளைக் கண்டறியலாம்</translation>
 <translation id="6628427060004938651">பகுதி</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">பதிவு</translation>
 <translation id="6657128831881431364">செயல்நிலைப் பட்டி</translation>
 <translation id="667999046851023355">ஆவணம்</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">முந்தைய ஊடகம்</translation>
 <translation id="7096668131290451939">'அறிதல் பயன்முறையில்' இருந்து வெளியேற மீண்டும் Escape அழுத்தவும்</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">சொல் எதிரொலி</translation>
 <translation id="7137397390322864165">சால்மன்</translation>
 <translation id="7140168702531682811">சூப்பர்ஸ்கிரிப்ட்</translation>

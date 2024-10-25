@@ -415,6 +415,7 @@
 <translation id="2940075786175545812">വെബ്‌സൈറ്റ് അംഗീകരിക്കാനോ നിരസിക്കാനോ ഉള്ള ഓപ്ഷൻ</translation>
 <translation id="2942036813789421260">പ്രിവ്യു ടാബ് അടച്ചു</translation>
 <translation id="2951071800649516099">പിന്നീട് വായിക്കാൻ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് പേജുകൾ ചേർക്കുക</translation>
+<translation id="2954586176076923855">വിലാസ ബാർ ഏറ്റവും മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="2956070106555335453">സംഗ്രഹം</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> പേജ്}other{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> പേജുകൾ}}</translation>
 <translation id="2972109037780336501">അനുമതികൾ സ്വയമേവ നീക്കം ചെയ്യുക</translation>
@@ -639,6 +640,7 @@
 <translation id="4092709865241032354">സൈൻ ഇൻ വിവരങ്ങൾ സംരക്ഷിക്കാൻ, Google Password Manager-നെ സഹായിക്കുന്നതിന്, ഈ സൈറ്റിനായി നിങ്ങളുടെ ഉപയോക്തൃനാമം ചേർക്കുക</translation>
 <translation id="4095146165863963773">ആപ്പ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
 <translation id="4096227151372679484">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
+<translation id="4105527135143631701">Google Password Manager അപ്ഡേറ്റ് തുറന്നു</translation>
 <translation id="4108314971463891922">ഫോളോ ചെയ്യുക</translation>
 <translation id="4113030288477039509">നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്റർ നിയന്ത്രിക്കുന്നത്</translation>
 <translation id="4116038641877404294">ഓഫ്‌ലൈനായി ഉപയോഗിക്കാൻ പേജുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -666,6 +668,7 @@
 <translation id="4248098802131000011">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കുക</translation>
 <translation id="424864128008805179">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യണോ?</translation>
 <translation id="4249955472157341256">ഏറ്റവും പുതിയത് അനുസരിച്ച് അടുക്കുക</translation>
+<translation id="4255841059940367080">Google-ലേക്ക് അയയ്‌ക്കുന്ന നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റയെ അടിസ്ഥാനമാക്കി അപകടകരമായ സൈറ്റുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന്, AI ലഭ്യമാക്കുന്ന തത്സമയ പരിരക്ഷ</translation>
 <translation id="4256782883801055595">ഓപ്പൺ സോഴ്‌സ് ലൈസൻസുകൾ</translation>
 <translation id="4257230861809842349">Google Password Manager-ൽ നിന്ന് പാസ്‌വേഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="426652736638196239">ഈ ഉപകരണത്തിൽ മാത്രമേ ഈ IBAN സംരക്ഷിക്കൂ</translation>
@@ -1194,7 +1197,6 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
-<translation id="6659594942844771486">ബ്രൗസർ ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
@@ -1230,6 +1232,7 @@
 <translation id="6813446258015311409">Chrome-ലേക്ക് സെെൻ ഇൻ ചെയ്യുക, തുറന്നു.</translation>
 <translation id="6817747507826986771">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Google Password Manager അപ്ഡേറ്റ് അടച്ചു</translation>
 <translation id="6828070228333235514">നിരക്ക് ട്രാക്ക് ചെയ്യൽ നിർത്തുക</translation>
 <translation id="6830728435402077660">സുരക്ഷിതമല്ല</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
@@ -1425,6 +1428,7 @@
 <translation id="7612619742409846846">ഇനി പറയുന്നതിൽ നിന്നും Google-ലേക്ക് സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="7612989789287281429">നിങ്ങളെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു…</translation>
 <translation id="7619072057915878432">നെറ്റ്‌വർക്ക് പരാജയം കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
+<translation id="762537095495606755">ഈ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ പ്രവർത്തനം നിർത്തും</translation>
 <translation id="7626032353295482388">Chrome-ലേക്ക് സ്വാഗതം</translation>
 <translation id="7628417132421583481">Password Manager-ലേക്ക് പോകുക</translation>
 <translation id="7630202231528827509">ദാതാവിന്റെ URL</translation>
@@ -1513,6 +1517,7 @@
 <translation id="8015452622527143194">പേജിലുള്ളതെല്ലാം ഡിഫോൾട്ട് വലുപ്പത്തിലേക്ക് മാറ്റുക</translation>
 <translation id="8017431260099661477">ക്ഷണ ലിങ്ക് തുറക്കാനായില്ല</translation>
 <translation id="8026238112629815203">ഈ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്ന രീതിയിൽ ഞങ്ങൾ മാറ്റം വരുത്തി</translation>
+<translation id="8027395186860110042">പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം അവസാനിപ്പിച്ചേക്കും</translation>
 <translation id="8027863900915310177">ഡൗൺലോഡ് എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8030852056903932865">അംഗീകരിക്കുക</translation>
 <translation id="8032569120109842252">പിന്തുടരുന്നു</translation>
@@ -1582,7 +1587,9 @@
 <translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
 <translation id="8282297628636750033">സാധ്യമാകുമ്പോൾ, സൈറ്റിന് ഡാർക്ക് തീം ബാധകമാക്കൂ</translation>
 <translation id="8282950411412455249">സുരക്ഷാ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
+<translation id="8306751933352925837">ഈ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നത് തുടരാൻ, Google Play സേവനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />, “<ph name="TAB_NAME" />” ടാബ് നീക്കം ചെയ്തു</translation>
+<translation id="8310451567823644042">പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം അവസാനിപ്പിക്കും</translation>
 <translation id="831192587911042850">നിങ്ങൾ പിന്തുടരുന്ന വെബ് സൈറ്റുകളുടെ ലിസ്റ്റിലേക്ക് നിലവിലെ വെബ് സൈറ്റ് ചേർക്കുന്നു.</translation>
 <translation id="8342727528718219152">നിരവധി അറിയിപ്പുകൾ അയച്ചേക്കാവുന്ന സൈറ്റുകളെക്കുറിച്ച് Chrome നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="834313815369870491">സൈറ്റുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
@@ -1649,6 +1656,7 @@
 <translation id="8570677896027847510">ഫയൽ സുരക്ഷിതമായി ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="8571213806525832805">കഴിഞ്ഞ 4 ആഴ്ച</translation>
 <translation id="8582529315803410153">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
+<translation id="8585103689515290060">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങൾ</translation>
 <translation id="859046281437143747">കൂടുതൽ ഓപ്ഷനുകൾ ബട്ടണിൽ നിന്ന് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> ടാബ് ഗ്രൂപ്പ് ഇല്ലാതാക്കി</translation>
 <translation id="860043288473659153">കാർഡിന്റെ ഉടമയുടെ പേര്</translation>
@@ -1715,6 +1723,7 @@
 <translation id="8963117664422609631">സൈറ്റിന്റെ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8965591936373831584">തീർച്ചപ്പെടുത്താത്തവ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>
+<translation id="897061774231912216">Google Play സേവനങ്ങൾ ലഭ്യമല്ലാത്തതിനാൽ, പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ ഉപയോഗിക്കാൻ, മറ്റൊരു ഉപകരണം ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക അല്ലെങ്കിൽ passwords.google.com എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8972098258593396643">ഡിഫോൾട്ട് ഫോൾഡറിലേക്ക് ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="8982113230057126145">തംബ്‌സ് ഡൗൺ നൽകുന്നത് നിങ്ങൾക്ക് ഈ സംഗ്രഹം ഇഷ്ടമായില്ലെന്ന ഫീഡ്ബാക്ക് സമർപ്പിക്കുന്നു</translation>
@@ -1763,6 +1772,7 @@
 <translation id="9148126808321036104">വീണ്ടും പ്രവേശിക്കുക</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ തുടരാൻ ഒരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="9158770349521403363">ഉള്ളടക്കം മാത്രം പങ്കിടുക</translation>
+<translation id="9168847423516963845">വിലാസ ബാർ ഏറ്റവും താഴേക്ക് നീക്കുക</translation>
 <translation id="9169507124922466868">നാവിഗേഷൻ ചരിത്രം പകുതിയായി തുറന്നിരിക്കുന്നു</translation>
 <translation id="918419812064856259">Chrome ബീറ്റ</translation>
 <translation id="9190276265094487094">സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ചരിത്രം ഉണ്ടാകുമെന്നതിനാൽ ചെയ്തുകൊണ്ടിരുന്ന കാര്യങ്ങൾ നിങ്ങൾക്ക് തുടരാനാകും</translation>

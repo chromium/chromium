@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">مفتاح الدخول:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">لا يتوفّر نص لهذا العنصر.</translation>
 <translation id="2127747486437921899">مائل</translation>
+<translation id="2148212683005708350">‫<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">إغلاق التدريب العملي</translation>
 <translation id="2163782704988363449">قائمة بالأخطاء</translation>
 <translation id="2169714232367507776">النقر على العنصر الحالي</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">التمرير سريعًا جهة اليمين أو اليسار للانتقال حسب العنصر</translation>
 <translation id="3070245424257836917">التمرير السريع بثلاثة أصابع إلى الأعلى</translation>
 <translation id="307516670110542567">الإرشادات السريعة</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">عنوان المستوى الثاني التالي</translation>
 <translation id="3078740164268491126">جدول</translation>
 <translation id="3082249673510793544">التمرير للخلف</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">عنوان المستوى الأول السابق</translation>
 <translation id="3323447499041942178">مربع نص</translation>
 <translation id="3324983252691184275">قرمزي</translation>
+<translation id="334252345105450327">التقاط لقطة شاشة</translation>
 <translation id="335581015389089642">الحديث</translation>
 <translation id="3356951775008366684">الإعلان عن النطق الصوتي للكلمة</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">ثلجي</translation>
 <translation id="3781428340399460090">وردي برّاق</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">عرض السجلّ</translation>
 <translation id="3801735343383419236">إكمال تلقائي على هيئة قائمة</translation>
 <translation id="3806327402890551732">انتقِل إلى العنصر التالي أو السابق.</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4294967782363273192">ترتيب تصاعدي</translation>
 <translation id="4300318234632215983">‏الإعلان عن عنوان URL وراء رابط</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">بني غامق</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{نقطة واحدة}=3{علامة حذف}zero{# dots}two{نقطتان (#)}few{# نقاط}many{# نقطة}other{# من النقاط}}</translation>
 <translation id="4352022650330571548">كتابة "<ph name="PHRASE" />"</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">أزرق سماوي غامق</translation>
 <translation id="4406249099130339147">صدى علامات الترقيم</translation>
+<translation id="441418754432585599">‫<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">أحمر هندي</translation>
 <translation id="4432896207833262240">محتوى مميز</translation>
 <translation id="4437615272777527928">اكتب للبحث في القائمة. واستخدِم السهمَين المتّجِهين للأعلى وللأسفل للتنقّل بين النتائج. واستخدِم السهمَين الأيمن والأيسر لضبط علامة إقحام النص والتنقّل بين القوائم.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">رأس صفحة</translation>
 <translation id="4597532268155981612">نموذج</translation>
 <translation id="4601367666219428522">‏جدول <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">مجموعة مفاتيح مخصّصة: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">تجاهل الضغط على المفتاح التالي</translation>
 <translation id="4617384941327705512">"وضع التثبيت الذكي" غير مفعَّل</translation>
 <translation id="4623097797855662355">إشارة ناشر</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">ستتعرّف في الدرس التالي على كيفية التنقّل داخل الشاشة. يمكنك التمرير سريعًا بإصبع واحد من اليمين إلى اليسار للانتقال إلى العنصر التالي. جرِّب ذلك الآن للانتقال إلى الخطوة التالية.</translation>
 <translation id="6609828810966525877">‏استكشاف المزيد من الإيماءات في "وضع التعلّم" و"مركز مساعدة Chromebook"</translation>
 <translation id="6628427060004938651">جزء</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">شريط التقدم</translation>
 <translation id="667999046851023355">مستند</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">الوسائط السابقة</translation>
 <translation id="7096668131290451939">‏اضغط على مفتاح Escape مرة أخرى للخروج من "وضع التعلّم"</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645">‫<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">صدى الكلمة</translation>
 <translation id="7137397390322864165">برتقالي وردي</translation>
 <translation id="7140168702531682811">نص مرتفع</translation>

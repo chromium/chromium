@@ -3467,7 +3467,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> се предава към <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Актуализиране на профила</translation>
 <translation id="3449393517661170867">Нов прозорец с раздели</translation>
-<translation id="3449839693241009168">Натиснете <ph name="SEARCH_KEY" /> за да изпратите командите до <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Показване на системни известия за съвети и функции на Chrome</translation>
 <translation id="3450157232394774192">Процент на използване в състояние на неактивност</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
@@ -6665,7 +6664,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5780973441651030252">Приоритет на процесите</translation>
 <translation id="5781092003150880845">Синхронизиране като <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Преместете в личния си профил данните от училищния</translation>
-<translation id="5781865261247219930">Изпращане на команди до <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Превежда се...</translation>
 <translation id="57838592816432529">Заглушаване</translation>
 <translation id="5784291589716625675">Промяна на езика на приложението</translation>
@@ -7171,7 +7169,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6150116777338468525">Качество на звука</translation>
 <translation id="6150278227694566734">Някои контакти</translation>
 <translation id="6150961653851236686">Този език служи за превод на страници</translation>
-<translation id="6151323131516309312">Натиснете <ph name="SEARCH_KEY" />, за да търсите с <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Файлът вече съществува в папката ви с изтегляния.</translation>
 <translation id="6152918902620844577">Изчаква се следващата операция</translation>
 <translation id="6153439704237222699">Научете повече за Do Not Track</translation>
@@ -7848,7 +7845,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6657240842932274095">Да се разреши ли на системните услуги да използват местоположението ви?</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659213950629089752">Мащабът на тази страница бе променен от разширението <ph name="NAME" /></translation>
-<translation id="6659594942844771486">Раздел</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – записва чрез камерата</translation>
 <translation id="6660301751798595791">Избиране на глас</translation>
 <translation id="6660819301598582123">Ах, чудна българска земьо, полюшвай цъфтящи жита!</translation>

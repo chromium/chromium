@@ -1536,7 +1536,6 @@
 <translation id="6166852626429024716">デバイス、アプリ、設定、ウェブを検索...</translation>
 <translation id="6168318496333165060">診断アプリを開きます</translation>
 <translation id="6168622430237609329">インストール済みアプリ</translation>
-<translation id="6173151025443907148">Lacros が有効になっている場合は、2 つ目のユーザーにログインできません。代わりに Lacros で 2 つ目のブラウザ プロフィールを使用するか、Lacros を無効にしてログインしなおしてください。</translation>
 <translation id="6179832488876878285">重要なファイルをここに固定できます。この機能を使用するには、ファイルアプリを開いてください。</translation>
 <translation id="6180193585172850042">[戻る] ボタン</translation>
 <translation id="6180651297859206670">[進む] ボタン</translation>
@@ -1689,7 +1688,6 @@
 <translation id="6682029141988159141">クリップボードの内容を貼り付ける</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6686023075541098243">スマートフォンの通知の表示を設定</translation>
-<translation id="6688019813898140556">Esc キーを 5 回</translation>
 <translation id="6694462491298752106">内蔵タッチパッドがオフになりました</translation>
 <translation id="6694973220096431421">Google ドライブを検索</translation>
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>

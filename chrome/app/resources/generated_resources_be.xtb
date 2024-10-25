@@ -3435,7 +3435,6 @@
 <translation id="3447797901512053632">Ідзе трансляцыя ўкладкі "<ph name="TAB_NAME" />" на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">Абнавіць уліковы запіс</translation>
 <translation id="3449393517661170867">Новае акно ва ўкладцы</translation>
-<translation id="3449839693241009168">Націсніце <ph name="SEARCH_KEY" />, каб адправіць каманды ў пашырэнне <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Паказваць сістэмныя апавяшчэнні і парады пра функцыі Chrome</translation>
 <translation id="3450157232394774192">Працэнт выкарыстання зараду акумулятара ў стане бяздзейнасці</translation>
 <translation id="3450180775417907283">Выкарыстанне дамена "<ph name="MANAGER" />" патрабуе падключэння да сеткі Wi-Fi і спампоўвання абнаўлення.</translation>
@@ -6604,7 +6603,6 @@
 <translation id="5780973441651030252">Прыярытэт працэсу</translation>
 <translation id="5781092003150880845">Сінхранізаваць як <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Перанясіце даныя вучэбнага ўліковага запісу ў асабісты ўліковы запіс</translation>
-<translation id="5781865261247219930">Адправіць каманды ў пашырэнне <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5784291589716625675">Змяненне мовы праграмы</translation>
@@ -7110,7 +7108,6 @@
 <translation id="6150116777338468525">Якасць гуку</translation>
 <translation id="6150278227694566734">Некаторыя кантакты</translation>
 <translation id="6150961653851236686">На гэту мову перакладаюцца старонкі</translation>
-<translation id="6151323131516309312">Для пошуку на сайце <ph name="SITE_NAME" /> націсніце <ph name="SEARCH_KEY" /></translation>
 <translation id="6151771661215463137">Файл ужо існуе ў папцы спампоўвання.</translation>
 <translation id="6152918902620844577">Чакаецца наступная аперацыя</translation>
 <translation id="6153439704237222699">Даведацца больш пра Do Not Track</translation>
@@ -7788,7 +7785,6 @@
 <translation id="6657240842932274095">Дазволіць сістэмным службам выкарыстоўваць даныя пра ваша месцазнаходжанне?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659213950629089752">Маштаб старонкі быў зменены пашырэннем "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">Укладка</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – ідзе запіс на камеру</translation>
 <translation id="6660301751798595791">Выбар голасу</translation>
 <translation id="6660819301598582123">абвгдеёжзійклмнопрстуўфхцчшыьэюя</translation>

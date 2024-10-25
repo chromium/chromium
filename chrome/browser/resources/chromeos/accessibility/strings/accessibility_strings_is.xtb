@@ -168,7 +168,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2045055672832940894">Engin fyrri stýring</translation>
 <translation id="2045606329038304310">Reitastýring eyðublaðs</translation>
 <translation id="2063539687800151747">Upphafstilvitnun</translation>
-<translation id="2067158561093481039">Framkvæmdu sérsniðna lyklasamsetningu</translation>
 <translation id="2086961585857038472">Næsta orð</translation>
 <translation id="2087981446621639008">uppl á lýslista</translation>
 <translation id="2089387485033699258">is</translation>
@@ -179,6 +178,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2121067395472282800">aðgangslykill: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Enginn texti er til staðar fyrir þetta atriði</translation>
 <translation id="2127747486437921899">Skáletur</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Loka æfingasvæði</translation>
 <translation id="2163782704988363449">Leiðréttingar</translation>
 <translation id="2169714232367507776">Smella á valið atriði</translation>
@@ -323,6 +323,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="3060880924447482063">Strjúktu til vinstri eða hægri til að færa hvert atriði</translation>
 <translation id="3070245424257836917">Strjúktu þremur fingrum upp</translation>
 <translation id="307516670110542567">Flýtileiðsögn</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Næsta 2. stigs fyrirsögn</translation>
 <translation id="3078740164268491126">tafla</translation>
 <translation id="3082249673510793544">Fletta til baka</translation>
@@ -380,6 +381,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="3322936298410871309">Fyrri 1. stigs fyrirsögn</translation>
 <translation id="3323447499041942178">Textareitur</translation>
 <translation id="3324983252691184275">Fagurrauður</translation>
+<translation id="334252345105450327">Taka skjámynd</translation>
 <translation id="335581015389089642">Tal</translation>
 <translation id="3356951775008366684">Tilkynning um hljóðréttan framburð orðs</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Snjóhvítur</translation>
 <translation id="3781428340399460090">Dökkbleikur</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Sýna annál</translation>
 <translation id="3801735343383419236">Listi flýtiritunar</translation>
 <translation id="3806327402890551732">Fara í næsta eða fyrra atriði</translation>
@@ -525,6 +528,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="4294967782363273192">Hækkandi röð</translation>
 <translation id="4300318234632215983">Tilkynna vefslóðina á bak við tengil</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Dökkrauðbrúnn</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punktur}=3{þrípunktur}one{# punktur}other{# punktar}}</translation>
 <translation id="4352022650330571548">sláðu inn <ph name="PHRASE" /></translation>
@@ -538,6 +542,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Dökkhiminblár</translation>
 <translation id="4406249099130339147">Upplestur greinarmerkja:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Rauðbrúnn</translation>
 <translation id="4432896207833262240">Merkt efni</translation>
 <translation id="4437615272777527928">Skrifaðu til að leita í valmyndunum. Notaðu upp- og niðurörvarnar til að fletta í gegnum niðurstöður. Notaðu örvarnar til vinstri og hægri til að færa textabendilinn til og fara á milli valmynda.</translation>
@@ -559,6 +564,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4562381607973973258">Haus</translation>
 <translation id="4597532268155981612">eyðublað</translation>
 <translation id="4601367666219428522">ta. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Sérsniðin lyklasamsetning: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Hunsar næsta lyklaborðsinnslátt</translation>
 <translation id="4617384941327705512">Slökkt er á snjallri festistillingu</translation>
 <translation id="4623097797855662355">Baktitill</translation>
@@ -851,6 +857,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="6584162722998608255">Næst muntu læra að færa þig til á skjánum. Þú getur strokið einum fingri frá vinstri til hægri til að fara á næsta atriði. Prófaðu það núna til að fara í næsta skref.</translation>
 <translation id="6609828810966525877">Kynntu þér fleiri bendingar í fræðslustillingunni og hjálparmiðstöð Chromebook</translation>
 <translation id="6628427060004938651">Hluti</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">annáll</translation>
 <translation id="6657128831881431364">Framvindustika</translation>
 <translation id="667999046851023355">Skjal</translation>
@@ -915,6 +922,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="7096001299300236431">Fyrra efni</translation>
 <translation id="7096668131290451939">Ýttu aftur á escape til að loka námsstillingu</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">upplestur orða</translation>
 <translation id="7137397390322864165">Laxableikur</translation>
 <translation id="7140168702531682811">Brjóstletur</translation>

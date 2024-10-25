@@ -168,7 +168,6 @@
 <translation id="2045055672832940894">Der er ingen forrige styringselementer</translation>
 <translation id="2045606329038304310">Styring af formularfelt</translation>
 <translation id="2063539687800151747">Motto</translation>
-<translation id="2067158561093481039">Udfør en tilpasset tastekombination</translation>
 <translation id="2086961585857038472">Næste ord</translation>
 <translation id="2087981446621639008">oplysn i bskrvlst</translation>
 <translation id="2089387485033699258">da</translation>
@@ -179,6 +178,7 @@
 <translation id="2121067395472282800">hurtigtast:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Der er ingen tekst til dette element</translation>
 <translation id="2127747486437921899">Kursiv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Luk øveområde</translation>
 <translation id="2163782704988363449">Rettelser</translation>
 <translation id="2169714232367507776">Klik på aktuelt element</translation>
@@ -323,6 +323,7 @@
 <translation id="3060880924447482063">Stryg til venstre eller højre for at flytte ét element ad gangen</translation>
 <translation id="3070245424257836917">Stryg opad med tre fingre</translation>
 <translation id="307516670110542567">Hurtig orientering</translation>
+<translation id="3077734595579995578">Shift</translation>
 <translation id="3078345202707391975">Næste niveau 2-overskrift</translation>
 <translation id="3078740164268491126">tabel</translation>
 <translation id="3082249673510793544">Rul tilbage</translation>
@@ -380,6 +381,7 @@
 <translation id="3322936298410871309">Forrige niveau 1-overskrift</translation>
 <translation id="3323447499041942178">Tekstfelt</translation>
 <translation id="3324983252691184275">Højrød</translation>
+<translation id="334252345105450327">Tag et screenshot</translation>
 <translation id="335581015389089642">Tale</translation>
 <translation id="3356951775008366684">Oplæs fonetisk udtale af ord</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Snehvid</translation>
 <translation id="3781428340399460090">Varm lyserød</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Vis logfil</translation>
 <translation id="3801735343383419236">Autofuldførelsesliste</translation>
 <translation id="3806327402890551732">Gå til næste eller forrige element</translation>
@@ -525,6 +528,7 @@
 <translation id="4289540628985791613">Oversigt</translation>
 <translation id="4294967782363273192">Stigende sortering</translation>
 <translation id="4300318234632215983">Offentliggør webadressen bag et link</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Brændt orange</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punktum}=3{ellipse}one{# punktummer}other{# punktummer}}</translation>
 <translation id="4352022650330571548">skriv <ph name="PHRASE" /></translation>
@@ -538,6 +542,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Dyb himmelblå</translation>
 <translation id="4406249099130339147">Tegnsætningsekko</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Murstensrød</translation>
 <translation id="4432896207833262240">Markeret indhold</translation>
 <translation id="4437615272777527928">Skriv for at søge i menuerne. Brug pil op og pil ned for at gennemse resultaterne. Brug venstre- og højrepilen for at justere tekstmarkøren og vælge menuer.</translation>
@@ -559,6 +564,7 @@
 <translation id="4562381607973973258">Overskrift</translation>
 <translation id="4597532268155981612">formular</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Tilpasset tastekombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Ignorerer næste tastetryk</translation>
 <translation id="4617384941327705512">Avanceret træg tilstand er deaktiveret</translation>
 <translation id="4623097797855662355">Slutskrift</translation>
@@ -851,6 +857,7 @@
 <translation id="6584162722998608255">Nu skal du lære, hvordan du bevæger dig rundt på skærmen. Du kan stryge med én finger fra venstre mod højre for at gå til næste element. Prøv det nu for at gå videre til næste trin.</translation>
 <translation id="6609828810966525877">Find flere bevægelser i indlæringstilstanden og Hjælp til Chromebook</translation>
 <translation id="6628427060004938651">Del</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Statuslinje</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -915,6 +922,7 @@
 <translation id="7096001299300236431">Forrige medie</translation>
 <translation id="7096668131290451939">Tryk på Escape igen for at afslutte Indlæringstilstand</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">ordekko</translation>
 <translation id="7137397390322864165">Laksefarvet</translation>
 <translation id="7140168702531682811">Hævet skrift</translation>

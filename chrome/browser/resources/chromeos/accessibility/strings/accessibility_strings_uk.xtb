@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">клавіша доступу: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Цей елемент не містить тексту</translation>
 <translation id="2127747486437921899">Курсив</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Закрити</translation>
 <translation id="2163782704988363449">Перелік описок</translation>
 <translation id="2169714232367507776">Натиснути поточний елемент</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">Щоб переходити між елементами, проводьте пальцем ліворуч або праворуч</translation>
 <translation id="3070245424257836917">Проведіть трьома пальцями вгору</translation>
 <translation id="307516670110542567">Швидке ознайомлення</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Наступний заголовок рівня 2</translation>
 <translation id="3078740164268491126">таблиця</translation>
 <translation id="3082249673510793544">Прокрутити назад</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">Попередній заголовок рівня 1</translation>
 <translation id="3323447499041942178">Текстове поле</translation>
 <translation id="3324983252691184275">Малиновий</translation>
+<translation id="334252345105450327">Зробити знімок екрана</translation>
 <translation id="335581015389089642">Speech</translation>
 <translation id="3356951775008366684">Озвучувати вимову слова</translation>
 <translation id="3359142382821736686">розділювач</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">заголовок 1</translation>
 <translation id="3777742246909257041">Білосніжний</translation>
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Показати журнал</translation>
 <translation id="3801735343383419236">Список автозавершення</translation>
 <translation id="3806327402890551732">Перехід до наступного або попереднього елемента</translation>
@@ -519,6 +523,7 @@
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4294967782363273192">Посортовано за зростанням</translation>
 <translation id="4300318234632215983">Повідомити URL-адресу посилання</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Охра</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{крапка}=3{трикрапка}one{# крапка}few{# крапки}many{# крапок}other{# dots}}</translation>
 <translation id="4352022650330571548">ввести "<ph name="PHRASE" />"</translation>
@@ -532,6 +537,7 @@
 <translation id="4391478986194775161">інформація про вміст</translation>
 <translation id="4402014469255336455">Насичений небесно-голубий</translation>
 <translation id="4406249099130339147">Озвучення розділових знаків:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">Індійський червоний</translation>
 <translation id="4432896207833262240">Позначений контент</translation>
 <translation id="4437615272777527928">Щоб шукати параметри в меню, введіть текст. Щоб переходити між результатами, натискайте стрілки вгору та вниз. Щоб змінити місце введення тексту або переходити між меню, натискайте стрілки вліво та вправо.</translation>
@@ -552,6 +558,7 @@
 <translation id="4562381607973973258">Заголовок</translation>
 <translation id="4597532268155981612">форма</translation>
 <translation id="4601367666219428522">табл. "<ph name="TABLENAME" />", <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Власна комбінація клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Натискання наступної клавіші ігнорується</translation>
 <translation id="4617384941327705512">Розумний режим залипання клавіш вимкнено</translation>
 <translation id="4623097797855662355">Емблема видавництва</translation>
@@ -843,6 +850,7 @@
 <translation id="6584162722998608255">Тепер повчимося переміщатися по екрану. Можна переходити до наступного елемента, проводячи одним пальцем зліва направо. Спробуйте зараз, щоб перейти до наступного кроку.</translation>
 <translation id="6609828810966525877">Перегляньте більше жестів у розділі "Докладніше" та Довідковому центрі Chromebook</translation>
 <translation id="6628427060004938651">Частина</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">журнал</translation>
 <translation id="6657128831881431364">Індикатор перебігу</translation>
 <translation id="667999046851023355">Документ</translation>
@@ -907,6 +915,7 @@
 <translation id="7096001299300236431">Медіа – назад</translation>
 <translation id="7096668131290451939">Щоб вийти з режиму довідки, натисніть клавішу Escape знову</translation>
 <translation id="7116595520562830928">багаторядковий</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">озвучення слів</translation>
 <translation id="7137397390322864165">Лососевий</translation>
 <translation id="7140168702531682811">Надрядковий текст</translation>

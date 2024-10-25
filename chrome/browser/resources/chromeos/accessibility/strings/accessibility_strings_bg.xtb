@@ -168,7 +168,6 @@
 <translation id="2045055672832940894">Няма предишна контрола</translation>
 <translation id="2045606329038304310">Придвижване между полетата във формуляра</translation>
 <translation id="2063539687800151747">Епиграф</translation>
-<translation id="2067158561093481039">Изпълнение на персонализирана клавишна комбинация</translation>
 <translation id="2086961585857038472">Следващата дума</translation>
 <translation id="2087981446621639008">подр. в спис. с опис.</translation>
 <translation id="2089387485033699258">bg</translation>
@@ -179,6 +178,7 @@
 <translation id="2121067395472282800">клавиш за достъп: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Няма текст за този елемент</translation>
 <translation id="2127747486437921899">Курсив</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Затваряне на областта за упражнения</translation>
 <translation id="2163782704988363449">Списък с печатните грешки</translation>
 <translation id="2169714232367507776">Кликване върху текущия елемент</translation>
@@ -323,6 +323,7 @@
 <translation id="3060880924447482063">Плъзнете пръст наляво или надясно, за да се придвижите на ниво елемент</translation>
 <translation id="3070245424257836917">Прекарайте три пръста нагоре</translation>
 <translation id="307516670110542567">Кратко въведение</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Следващото заглавие от второ ниво</translation>
 <translation id="3078740164268491126">таблица</translation>
 <translation id="3082249673510793544">Превъртане назад</translation>
@@ -380,6 +381,7 @@
 <translation id="3322936298410871309">Предишното заглавие от първо ниво</translation>
 <translation id="3323447499041942178">Текстово поле</translation>
 <translation id="3324983252691184275">пурпурно</translation>
+<translation id="334252345105450327">Take a screenshot</translation>
 <translation id="335581015389089642">Speech</translation>
 <translation id="3356951775008366684">Съобщаване на фонетичното произношение на думата</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -443,6 +445,7 @@
 <translation id="3777255250339039212">заглавие от първо ниво</translation>
 <translation id="3777742246909257041">снежнобяло</translation>
 <translation id="3781428340399460090">ярко розово</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Показване на регистрационния файл</translation>
 <translation id="3801735343383419236">Автоматично довършване в списък</translation>
 <translation id="3806327402890551732">Придвижване към следващия или предишния елемент</translation>
@@ -525,6 +528,7 @@
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4294967782363273192">Сортиране по възходящ ред</translation>
 <translation id="4300318234632215983">Съобщаване на URL адреса зад връзката</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">сиена</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{точка}=3{многоточие}other{# точки}}</translation>
 <translation id="4352022650330571548">въвеждане на „<ph name="PHRASE" />“</translation>
@@ -538,6 +542,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">наситено небесносиньо</translation>
 <translation id="4406249099130339147">Ехо за препинателните знаци:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">индийско червено</translation>
 <translation id="4432896207833262240">Маркирано съдържание</translation>
 <translation id="4437615272777527928">Въведете текст, за да търсите в менютата. Използвайте стрелките нагоре и надолу, за да се придвижвате в резултатите. Коригирайте текстовия курсор и се придвижвайте между менютата със стрелките наляво и надясно.</translation>
@@ -559,6 +564,7 @@
 <translation id="4562381607973973258">Горен колонтитул</translation>
 <translation id="4597532268155981612">формуляр</translation>
 <translation id="4601367666219428522">табл. „<ph name="TABLENAME" />“, <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Персонализирана клавишна комбинация: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Следващото натискане на клавиш се пренебрегва</translation>
 <translation id="4617384941327705512">Интелигентният фиксиран режим е изключен</translation>
 <translation id="4623097797855662355">Колофон</translation>
@@ -851,6 +857,7 @@
 <translation id="6584162722998608255">Сега ще научите как да се придвижвате между елементите на екрана. Можете да прекарате пръст от ляво надясно, за да се придвижите към следващия елемент. Изпробвайте жеста, за да преминете към следващата стъпка.</translation>
 <translation id="6609828810966525877">Научете още жестове в режима за изговаряне на клавишите и Помощния център на Chromebook</translation>
 <translation id="6628427060004938651">Част</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">регистрационен файл</translation>
 <translation id="6657128831881431364">Лента за хода</translation>
 <translation id="667999046851023355">Документ</translation>
@@ -915,6 +922,7 @@
 <translation id="7096001299300236431">Предишният мултимедиен елемент</translation>
 <translation id="7096668131290451939">Натиснете Escape отново за изход от режима за изговаряне на клавишите</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">ехо за думите</translation>
 <translation id="7137397390322864165">розово-оранжево</translation>
 <translation id="7140168702531682811">Горен индекс</translation>

@@ -3431,7 +3431,6 @@
 <translation id="3447797901512053632">正在將「<ph name="TAB_NAME" />」分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3448492834076427715">更新帳戶</translation>
 <translation id="3449393517661170867">新分頁視窗</translation>
-<translation id="3449839693241009168">按下「<ph name="SEARCH_KEY" />」即可將指令傳送給 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">顯示 Chrome 功能和提示相關的系統通知</translation>
 <translation id="3450157232394774192">閒置狀態占用率</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
@@ -6598,7 +6597,6 @@
 <translation id="5780973441651030252">處理優先順序</translation>
 <translation id="5781092003150880845">和 <ph name="ACCOUNT_FULL_NAME" /> 同步</translation>
 <translation id="5781120434102258025">將學校帳戶資料移到個人帳戶</translation>
-<translation id="5781865261247219930">傳送指令給「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="57838592816432529">靜音</translation>
 <translation id="5784291589716625675">變更應用程式語言</translation>
@@ -7102,7 +7100,6 @@
 <translation id="6150116777338468525">音訊品質</translation>
 <translation id="6150278227694566734">部分聯絡人</translation>
 <translation id="6150961653851236686">這是翻譯網頁時使用的語言</translation>
-<translation id="6151323131516309312">按一下 <ph name="SEARCH_KEY" /> 以搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">下載資料夾中已有這個檔案。</translation>
 <translation id="6152918902620844577">正在等待下一次操作</translation>
 <translation id="6153439704237222699">進一步瞭解「Do Not Track」</translation>
@@ -7774,7 +7771,6 @@
 <translation id="6657240842932274095">要允許系統服務使用你的位置資訊嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659213950629089752">「<ph name="NAME" />」擴充功能已調整這個頁面的大小</translation>
-<translation id="6659594942844771486">分頁</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 攝影機正在錄影</translation>
 <translation id="6660301751798595791">語音選項</translation>
 <translation id="6660819301598582123">敏捷的棕色狐狸跳過一條懶狗。</translation>

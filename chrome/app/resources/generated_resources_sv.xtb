@@ -3471,7 +3471,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3447797901512053632">Castar <ph name="TAB_NAME" /> till <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Uppdatera kontot</translation>
 <translation id="3449393517661170867">Nytt fönster med flikar</translation>
-<translation id="3449839693241009168">Tryck på <ph name="SEARCH_KEY" /> om du vill skicka kommandon till <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Visa systemaviseringar om funktioner och tips i Chrome</translation>
 <translation id="3450157232394774192">Kapacitetsprocentsats för inaktivitet</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu.</translation>
@@ -6667,7 +6666,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5780973441651030252">Prioriteringsprocess</translation>
 <translation id="5781092003150880845">Synkronisera till <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Flytta data från ditt skolkonto till ditt personliga konto</translation>
-<translation id="5781865261247219930">Skicka kommandon till <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Översätter...</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5784291589716625675">Ändra appspråk</translation>
@@ -7173,7 +7171,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6150116777338468525">Ljudkvalitet</translation>
 <translation id="6150278227694566734">Vissa kontakter</translation>
 <translation id="6150961653851236686">Översättning av sidor görs till det här språket</translation>
-<translation id="6151323131516309312">Tryck på <ph name="SEARCH_KEY" /> för att söka i <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Filen finns redan i nedladdningsmappen.</translation>
 <translation id="6152918902620844577">Väntar på nästa åtgärd</translation>
 <translation id="6153439704237222699">Läs mer om Do Not Track</translation>
@@ -7850,7 +7847,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6657240842932274095">Vill du tillåta att systemtjänster använder din plats?</translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659213950629089752">Den här sidan har zoomats in med tillägget <ph name="NAME" /></translation>
-<translation id="6659594942844771486">Flik</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Kameran spelar in</translation>
 <translation id="6660301751798595791">Röstval</translation>
 <translation id="6660819301598582123">Den snabba röda räven hoppar över den lata hunden.</translation>

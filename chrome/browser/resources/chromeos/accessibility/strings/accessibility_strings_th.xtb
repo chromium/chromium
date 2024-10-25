@@ -175,6 +175,7 @@
 <translation id="2121067395472282800">รหัสการเข้าถึง: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">ไม่มีข้อความสำหรับรายการนี้</translation>
 <translation id="2127747486437921899">ตัวเอียง</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">ปิดพื้นที่ฝึกปฏิบัติ</translation>
 <translation id="2163782704988363449">ข้อผิดพลาด</translation>
 <translation id="2169714232367507776">คลิกรายการปัจจุบัน</translation>
@@ -317,6 +318,7 @@
 <translation id="3060880924447482063">เลื่อนไปทางซ้ายหรือขวาเพื่อย้ายทีละรายการ</translation>
 <translation id="3070245424257836917">เลื่อน 3 นิ้วขึ้น</translation>
 <translation id="307516670110542567">การแนะนำเบื้องต้นแบบด่วน</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">ส่วนหัวระดับถัดไป  2</translation>
 <translation id="3078740164268491126">ตาราง</translation>
 <translation id="3082249673510793544">เลื่อนกลับ</translation>
@@ -374,6 +376,7 @@
 <translation id="3322936298410871309">ส่วนหัวระดับ 1 ก่อนหน้า</translation>
 <translation id="3323447499041942178">ช่องข้อความ</translation>
 <translation id="3324983252691184275">แดงเข้ม</translation>
+<translation id="334252345105450327">จับภาพหน้าจอ</translation>
 <translation id="335581015389089642">คำพูด</translation>
 <translation id="3356951775008366684">ประกาศการออกเสียงคำ</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">สีขาวหิมะ</translation>
 <translation id="3781428340399460090">ชมพูเจิดจ้า</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">แสดงบันทึก</translation>
 <translation id="3801735343383419236">รายการเติมข้อความอัตโนมัติ</translation>
 <translation id="3806327402890551732">เลื่อนไปยังรายการถัดไปหรือก่อนหน้า</translation>
@@ -490,6 +494,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{วินาที}other{วินาที}}</translation>
 <translation id="4161663686871496107">การตอบสนองด้วยเสียงของ ChromeVox พร้อมใช้งาน</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
+<translation id="4176677444195790114">กำลังลากและวาง</translation>
 <translation id="4187322598335821254">เลื่อนขึ้นหรือลงเพื่อย้ายทีละบรรทัด</translation>
 <translation id="4188530942454211480">ประโยคก่อนหน้า</translation>
 <translation id="4191918948604314587">ปุ่ม</translation>
@@ -519,6 +524,7 @@
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4294967782363273192">จัดเรียงจากน้อยไปมาก</translation>
 <translation id="4300318234632215983">แจ้ง URL ของลิงก์</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">สีน้ำตาลดิน</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{จุด}=3{จุดไข่ปลา}other{# จุด}}</translation>
 <translation id="4352022650330571548">พิมพ์ <ph name="PHRASE" /></translation>
@@ -532,6 +538,7 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">สีฟ้าท้องฟ้าเข้ม</translation>
 <translation id="4406249099130339147">เสียงสะท้อนของเครื่องหมายวรรคตอน</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">สีแดงอินเดียนเรด</translation>
 <translation id="4432896207833262240">เนื้อหาที่มีการทำเครื่องหมาย</translation>
 <translation id="4437615272777527928">พิมพ์เพื่อค้นหาเมนู ใช้ลูกศรขึ้นและลงเพื่อวนดูผลการค้นหา ใช้แป้นลูกศรซ้ายและขวาเพื่อปรับเครื่องหมาย Caret ของข้อความและเพื่อย้ายระหว่างเมนู</translation>
@@ -552,6 +559,7 @@
 <translation id="4562381607973973258">ส่วนหัว</translation>
 <translation id="4597532268155981612">ฟอร์ม</translation>
 <translation id="4601367666219428522">ตร.<ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">ชุดแป้นที่กำหนดเอง: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">เพิกเฉยการกดแป้นครั้งถัดไป</translation>
 <translation id="4617384941327705512">โหมดกดค้างอัจฉริยะปิดอยู่</translation>
 <translation id="4623097797855662355">ข้อมูลทางบรรณานุกรม</translation>
@@ -843,6 +851,7 @@
 <translation id="6584162722998608255">ถัดไป คุณจะได้ดูวิธีไปยังส่วนต่างๆ ในหน้าจอ คุณใช้ 1 นิ้วปัดจากซ้ายไปขวาเพื่อย้ายไปยังรายการถัดไปได้ ลองทำตอนนี้เลยเพื่อไปยังขั้นตอนถัดไป</translation>
 <translation id="6609828810966525877">สำรวจท่าทางสัมผัสเพิ่มเติมในโหมดเรียนรู้และศูนย์ช่วยเหลือของ Chromebook</translation>
 <translation id="6628427060004938651">ภาค</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">บันทึก</translation>
 <translation id="6657128831881431364">แถบความคืบหน้า</translation>
 <translation id="667999046851023355">เอกสาร</translation>
@@ -907,6 +916,7 @@
 <translation id="7096001299300236431">สื่อก่อนหน้า</translation>
 <translation id="7096668131290451939">กด Escape อีกครั้งเพื่อออกจากโหมดเรียนรู้</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">พูดคำ</translation>
 <translation id="7137397390322864165">สีส้มแซลมอน</translation>
 <translation id="7140168702531682811">ตัวยก</translation>

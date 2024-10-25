@@ -175,6 +175,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2121067395472282800">एक्सेस कुंजी:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">इस आइटम के लिए कोई टेक्स्ट उपलब्ध नहीं है</translation>
 <translation id="2127747486437921899">इटैलिक</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">प्रैक्टिस करने की जगह बंद करें</translation>
 <translation id="2163782704988363449">गलतियां</translation>
 <translation id="2169714232367507776">मौजूदा आइटम पर क्लिक करें</translation>
@@ -317,6 +318,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3060880924447482063">आइटम एक-एक करके खिसकाने के लिए बाएं या दाएं स्वाइप करें</translation>
 <translation id="3070245424257836917">तीन उंगलियों से ऊपर स्वाइप करें</translation>
 <translation id="307516670110542567">क्विक ओरिएंटेशन</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">अगले लेवल 2 का टाइटल</translation>
 <translation id="3078740164268491126">टेबल</translation>
 <translation id="3082249673510793544">पीछे की ओर स्क्रोल करें</translation>
@@ -374,6 +376,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3322936298410871309">पिछला लेवल 1 टाइटल</translation>
 <translation id="3323447499041942178">टेक्स्ट बॉक्‍स</translation>
 <translation id="3324983252691184275">गहरा लाल</translation>
+<translation id="334252345105450327">स्क्रीनशॉट लो</translation>
 <translation id="335581015389089642">बोली</translation>
 <translation id="3356951775008366684">शब्द का फ़ोनेटिक में उच्चारण करें</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -437,6 +440,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">बर्फ़ीला</translation>
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">लॉग दिखाएं</translation>
 <translation id="3801735343383419236">अपने आप पूरा होने वालों की सूची</translation>
 <translation id="3806327402890551732">अगले या पिछले आइटम पर जाएं</translation>
@@ -519,6 +523,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4294967782363273192">बढ़ते क्रम में लगाएं</translation>
 <translation id="4300318234632215983">किसी लिंक के पीछे का URL प्रदर्शित करें</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">गेरुआ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{बिंदु}=3{पदलोप चिह्न}one{# बिंदु}other{# बिंदु}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> टाइप करें</translation>
@@ -532,6 +537,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">गहरा आसमानी नीला</translation>
 <translation id="4406249099130339147">विराम चिह्न इको:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="4432457053224379116">हल्का मरून</translation>
 <translation id="4432896207833262240">मार्क किया गया कॉन्टेंट</translation>
 <translation id="4437615272777527928">मेन्यू खोजने के लिए टाइप करें. नतीजों पर जाने के लिए अप और डाउन ऐरो का इस्तेमाल करें. टेक्स्ट कैरेट को व्यवस्थित करने और एक से दूसरे मेन्यू पर जाने के लिए, लेफ़्ट और राइट ऐरो का इस्तेमाल करें.</translation>
@@ -552,6 +558,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4562381607973973258">शीर्षलेख</translation>
 <translation id="4597532268155981612">फ़ॉर्म</translation>
 <translation id="4601367666219428522">ता <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">अपनी ज़रूरत के मुताबिक बटन का कॉम्बिनेशन: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">ध्यान न देते हुए अगला बटन दबाएं</translation>
 <translation id="4617384941327705512">स्मार्ट स्टिकी मोड बंद है</translation>
 <translation id="4623097797855662355">कॉलफ़न</translation>
@@ -843,6 +850,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6584162722998608255">यह करने के बाद, आप स्क्रीन पर एक से दूसरी जगह जाने का तरीका जानेंगे. आप अगले आइटम पर जाने के लिए, एक उंगली को बाईं से दाईं ओर स्वाइप कर सकते हैं. अगले चरण पर जाने के लिए इसे अभी आज़माएं.</translation>
 <translation id="6609828810966525877">'जानें मोड' और Chromebook सहायता केंद्र में हाथ के जेस्चर (स्पर्श) के बारे में ज़्यादा बेहतर जानें</translation>
 <translation id="6628427060004938651">भाग</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">लॉग</translation>
 <translation id="6657128831881431364">प्रगति बार</translation>
 <translation id="667999046851023355">दस्तावेज़</translation>
@@ -907,6 +915,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7096001299300236431">पिछला मीडिया</translation>
 <translation id="7096668131290451939">सीखने वाले मोड से बाहर निकलने के लिए, escape बटन फिर से दबाएं</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">शब्द इको</translation>
 <translation id="7137397390322864165">सामन जैसा रंग</translation>
 <translation id="7140168702531682811">सुपरस्क्रिप्ट</translation>

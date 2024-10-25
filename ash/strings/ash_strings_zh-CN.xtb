@@ -500,6 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 至 <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + 搜索键 + S</translation>
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
+<translation id="2781658180588759579">内置触控板已停用。请使用键盘或其他指控设备确认更改。
+
+否则，系统会在 <ph name="TIMEOUT_SECONDS" />后重新启用内置触控板。</translation>
 <translation id="2782591952652094792">退出截屏/录屏模式</translation>
 <translation id="2785499565474703580">已连接 1 部设备</translation>
 <translation id="2791421900609674576">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过轻触并按住建议项目将其移除。</translation>
@@ -596,6 +599,9 @@
 <translation id="3113492864356515707">突出显示任务栏上的前一项</translation>
 <translation id="311799651966070385">关闭智能推送</translation>
 <translation id="3120421559657122717">要关机吗？</translation>
+<translation id="3121411970001795539">由于已连接鼠标，内置触控板已停用。请使用鼠标或键盘确认更改。
+
+否则，系统会在 <ph name="TIMEOUT_SECONDS" />后重新启用内置触控板。</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">课业类型</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1534,7 +1540,6 @@
 <translation id="6166852626429024716">搜索您的设备、应用、设置、网站…</translation>
 <translation id="6168318496333165060">打开“诊断”应用</translation>
 <translation id="6168622430237609329">您已安装的应用</translation>
-<translation id="6173151025443907148">如果已启用 Lacros，则不支持多用户登录。请在 Lacros 中改用另一份浏览器个人资料，或者停用 Lacros 并重试。</translation>
 <translation id="6179832488876878285">您可将自己的重要文件固定在此处。打开“文件”应用即可开始操作。</translation>
 <translation id="6180193585172850042">返回按钮</translation>
 <translation id="6180651297859206670">前进按钮</translation>
@@ -1687,7 +1692,6 @@
 <translation id="6682029141988159141">粘贴剪贴板中的内容</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6686023075541098243">设置查看手机中的通知</translation>
-<translation id="6688019813898140556">Esc 键 5 次</translation>
 <translation id="6694462491298752106">内置触控板已停用</translation>
 <translation id="6694973220096431421">在 Google 云端硬盘中搜索</translation>
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>

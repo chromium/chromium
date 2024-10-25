@@ -3434,7 +3434,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3447797901512053632">Odesílání karty <ph name="TAB_NAME" /> do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Aktualizovat účet</translation>
 <translation id="3449393517661170867">Nové okno na kartě</translation>
-<translation id="3449839693241009168">Stiskem klávesy <ph name="SEARCH_KEY" /> odešlete příkazy pro rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450056559545492516">Zobrazovat systémová oznámení o funkcích Chromu a tipy</translation>
 <translation id="3450157232394774192">Procentuální zastoupení stavu nečinnosti</translation>
 <translation id="3450180775417907283">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci.</translation>
@@ -6601,7 +6600,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5780973441651030252">Priorita procesu</translation>
 <translation id="5781092003150880845">Synchronizovat jako <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Přesuňte si data ze školního účtu na osobní účet</translation>
-<translation id="5781865261247219930">Odeslat příkazy do rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Překládání...</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784291589716625675">Změnit jazyk aplikace</translation>
@@ -7106,7 +7104,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6150116777338468525">Kvalita zvuku</translation>
 <translation id="6150278227694566734">Některé kontakty</translation>
 <translation id="6150961653851236686">Tento jazyk se používá při překladu stránek</translation>
-<translation id="6151323131516309312">Stiskněte <ph name="SEARCH_KEY" /> pro vyhledávání <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Soubor již existuje ve složce staženého obsahu.</translation>
 <translation id="6152918902620844577">Čeká se na další operaci</translation>
 <translation id="6153439704237222699">Další informace o záhlaví Do Not Track</translation>
@@ -7782,7 +7779,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6657240842932274095">Povolit systémovým službám používat vaši polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659213950629089752">Obsah této stránky byl přiblížen pomocí rozšíření <ph name="NAME" /></translation>
-<translation id="6659594942844771486">Karta</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – zaznamenávání kamery</translation>
 <translation id="6660301751798595791">Výběr hlasu</translation>
 <translation id="6660819301598582123">Příliš žluťoučký kůň úpěl ďábelské ódy.</translation>

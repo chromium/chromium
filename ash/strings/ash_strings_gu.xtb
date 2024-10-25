@@ -500,6 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />થી <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="2781658180588759579">બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે. ફેરફાર કન્ફર્મ કરવા માટે, તમારા કીબોર્ડ કે કોઈ અન્ય પૉઇન્ટર ડિવાઇસનો ઉપયોગ કરો.
+
+અન્યથા, <ph name="TIMEOUT_SECONDS" />માં બિલ્ટ-ઇન ટચપૅડ ફરીથી ચાલુ કરવામાં આવશે.</translation>
 <translation id="2782591952652094792">કૅપ્ચર મોડમાંથી બહાર નીકળો</translation>
 <translation id="2785499565474703580">1 ડિવાઇસ કનેક્ટ કર્યું</translation>
 <translation id="2791421900609674576">તમને સુઝાવો દેખાશે જેથી તમે જ્યાંથી છોડી દીધું હતું ત્યાંથી ચાલુ રાખી શકો.  સુઝાવો કાઢી નાખવા માટે, તમે ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
@@ -596,6 +599,9 @@
 <translation id="3113492864356515707">શેલ્ફ પર પાછલી આઇટમ હાઇલાઇટ કરો</translation>
 <translation id="311799651966070385">સંકેત બંધ કરો</translation>
 <translation id="3120421559657122717">શું ડિવાઇસને શટ ડાઉન કરીએ?</translation>
+<translation id="3121411970001795539">કોઈ માઉસ કનેક્ટેડ હોવાને કારણે બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે. ફેરફાર કન્ફર્મ કરવા માટે, માઉસ કે કીબોર્ડનો ઉપયોગ કરો.
+
+અન્યથા, <ph name="TIMEOUT_SECONDS" />માં બિલ્ટ-ઇન ટચપૅડ ફરીથી ચાલુ કરવામાં આવશે.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ક્લાસવર્કનો પ્રકાર</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1536,7 +1542,6 @@
 <translation id="6166852626429024716">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો...</translation>
 <translation id="6168318496333165060">Diagnostics ઍપ ખોલો</translation>
 <translation id="6168622430237609329">તમારી ઇન્સ્ટૉલ કરેલી ઍપ</translation>
-<translation id="6173151025443907148">જો Lacros ચાલુ કરવામાં આવ્યું હોય, તો બીજા વપરાશકર્તા દ્વારા સાઇન ઇન કરવાને સપોર્ટ કરવામાં આવતો નથી. કૃપા કરીને તેના બદલે Lacrosમાં બીજી બ્રાઉઝર પ્રોફાઇલનો ઉપયોગ કરો અથવા Lacros બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6179832488876878285">તમે તમારી મહત્ત્વની ફાઇલો અહીં પિન કરી શકો છો. શરૂ કરવા માટે Files ઍપ ખોલો.</translation>
 <translation id="6180193585172850042">પાછળ બટન</translation>
 <translation id="6180651297859206670">ફૉરવર્ડ કરો બટન</translation>
@@ -1689,7 +1694,6 @@
 <translation id="6682029141988159141">ક્લિપબોર્ડમાંના કન્ટેન્ટને પેસ્ટ કરો</translation>
 <translation id="6683022854667115063">હૅડફોન</translation>
 <translation id="6686023075541098243">તમારા ફોનના નોટિફિકેશન જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
-<translation id="6688019813898140556">5 વખત Esc બટન દબાવો</translation>
 <translation id="6694462491298752106">બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે</translation>
 <translation id="6694973220096431421">Google Driveમાં શોધો</translation>
 <translation id="6696025732084565524">અલગ પાડી શકાય તેવા તમારા કીબોર્ડ માટે મહત્ત્વપૂર્ણ અપડેટ જરૂરી છે</translation>
