@@ -27220,7 +27220,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledThrottling0ms",
+                    "params": {
+                        "poll_interval_ms": "0"
+                    },
                     "enable_features": [
                         "YieldWithInputHint"
                     ]
