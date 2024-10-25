@@ -13,6 +13,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 // <if expr="not is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 // </if>
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -131,7 +132,7 @@ export class PromoCardElement extends PromoCardElementBase {
       case PromoCardId.MOVE_PASSWORDS:
         // <if expr="not is_chromeos">
         if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
-          PromoCardsProxyImpl.getInstance().openBatchUpload();
+          SyncBrowserProxyImpl.getInstance().openBatchUpload();
           return;
         }
         // </if>

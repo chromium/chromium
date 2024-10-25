@@ -16,6 +16,12 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#endif
+
 namespace password_manager {
 
 using password_manager::features_util::ShouldShowAccountStorageSettingToggle;
@@ -35,6 +41,12 @@ void SyncHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "GetSyncInfo", base::BindRepeating(&SyncHandler::HandleGetSyncInfo,
                                          base::Unretained(this)));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  web_ui()->RegisterMessageCallback(
+      "OpenBatchUpload",
+      base::BindRepeating(&SyncHandler::HandleOpenBatchUploadDialog,
+                          base::Unretained(this)));
+#endif
 }
 
 void SyncHandler::OnJavascriptAllowed() {
@@ -135,6 +147,15 @@ void SyncHandler::HandleGetAccountInfo(const base::Value::List& args) {
 
   ResolveJavascriptCallback(callback_id, GetAccountInfo());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void SyncHandler::HandleOpenBatchUploadDialog(const base::Value::List& args) {
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(profile_);
+  CHECK(batch_upload);
+  batch_upload->OpenBatchUpload(chrome::FindBrowserWithProfile(profile_));
+}
+#endif
 
 void SyncHandler::OnStateChanged(syncer::SyncService* sync_service) {
   FireWebUIListener("trusted-vault-banner-state-changed",

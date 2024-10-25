@@ -644,7 +644,7 @@ suite('SettingsSectionTest', function() {
         movePasswordsButton!.click();
         await flushTasks();
 
-        await promoCardsProxy.whenCalled('openBatchUpload');
+        await syncProxy.whenCalled('openBatchUpload');
       });
   // </if>
 

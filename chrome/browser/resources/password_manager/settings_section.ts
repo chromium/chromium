@@ -38,10 +38,6 @@ import {getTemplate} from './settings_section.html.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
-// <if expr="not is_chromeos">
-import {PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
-// </if>
-
 export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
@@ -391,9 +387,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     e.preventDefault();
     // <if expr="not is_chromeos">
     if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
-      // TODO(crbug.com/374742872): Use SyncHandler instead to open the batch
-      // upload dialog.
-      PromoCardsProxyImpl.getInstance().openBatchUpload();
+      SyncBrowserProxyImpl.getInstance().openBatchUpload();
       return;
     }
     // </if>

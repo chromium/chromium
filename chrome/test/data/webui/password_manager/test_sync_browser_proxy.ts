@@ -22,6 +22,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'getTrustedVaultBannerState',
       'getSyncInfo',
       'getAccountInfo',
+      'openBatchUpload',
     ]);
 
     this.trustedVaultState = TrustedVaultBannerState.NOT_SHOWN;
@@ -47,5 +48,9 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   getAccountInfo() {
     this.methodCalled('getAccountInfo');
     return Promise.resolve(this.accountInfo);
+  }
+
+  openBatchUpload(): void {
+    this.methodCalled('openBatchUpload');
   }
 }

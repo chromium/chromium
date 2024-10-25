@@ -41,6 +41,11 @@ export interface SyncBrowserProxy {
    * Gets the current account info.
    */
   getAccountInfo(): Promise<AccountInfo>;
+
+  /**
+   * Opens the batch upload dialog on top of the current page.
+   */
+  openBatchUpload(): void;
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
@@ -54,6 +59,10 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   getAccountInfo() {
     return sendWithPromise('GetAccountInfo');
+  }
+
+  openBatchUpload(): void {
+    chrome.send('OpenBatchUpload');
   }
 
   static getInstance(): SyncBrowserProxy {

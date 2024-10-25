@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/gfx/image/image.h"
 
@@ -42,9 +41,6 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   void RestartChrome(const base::Value::List& args);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void OpenBatchUpload(const base::Value::List& args);
-#endif
   void HandleGetAvailablePromoCard(const base::Value::List& args);
   void HandleRecordPromoDismissed(const base::Value::List& args);
 

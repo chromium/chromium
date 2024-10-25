@@ -293,7 +293,7 @@ suite('PasswordsSectionTest', function() {
     promoCardElement.$.actionButton.click();
     await flushTasks();
 
-    await promoCardsProxy.whenCalled('openBatchUpload');
+    await syncProxy.whenCalled('openBatchUpload');
   });
   // </if>
 
