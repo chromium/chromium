@@ -231,7 +231,7 @@ struct UnresolvedRunRequest final
 };
 
 class SelectURLResolutionSuccessCallback final
-    : public ScriptFunction::Callable {
+    : public ThenCallable<IDLAny, SelectURLResolutionSuccessCallback> {
  public:
   explicit SelectURLResolutionSuccessCallback(
       UnresolvedSelectURLRequest* request)
@@ -239,11 +239,10 @@ class SelectURLResolutionSuccessCallback final
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(request_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, SelectURLResolutionSuccessCallback>::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState* script_state, ScriptValue value) {
     ScriptState::Scope scope(script_state);
 
     v8::Local<v8::Context> context = value.GetIsolate()->GetCurrentContext();
@@ -267,15 +266,14 @@ class SelectURLResolutionSuccessCallback final
                  /*error_message=*/g_empty_string, result_index);
       }
     }
-
-    return value;
   }
 
+ private:
   Member<UnresolvedSelectURLRequest> request_;
 };
 
 class SelectURLResolutionFailureCallback final
-    : public ScriptFunction::Callable {
+    : public ThenCallable<IDLAny, SelectURLResolutionFailureCallback> {
  public:
   explicit SelectURLResolutionFailureCallback(
       UnresolvedSelectURLRequest* request)
@@ -283,68 +281,61 @@ class SelectURLResolutionFailureCallback final
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(request_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, SelectURLResolutionFailureCallback>::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState* script_state, ScriptValue value) {
     ScriptState::Scope scope(script_state);
-
     v8::Local<v8::Value> v8_value = value.V8Value();
-
     std::move(request_->callback)
         .Run(/*success=*/false, ExceptionToString(script_state, v8_value),
              /*index=*/0);
-
-    return value;
   }
 
+ private:
   Member<UnresolvedSelectURLRequest> request_;
 };
 
-class RunResolutionSuccessCallback final : public ScriptFunction::Callable {
+class RunResolutionSuccessCallback final
+    : public ThenCallable<IDLAny, RunResolutionSuccessCallback> {
  public:
   explicit RunResolutionSuccessCallback(UnresolvedRunRequest* request)
       : request_(request) {}
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(request_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, RunResolutionSuccessCallback>::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState*, ScriptValue) {
     std::move(request_->callback)
         .Run(/*success=*/true,
              /*error_message=*/g_empty_string);
-    return value;
   }
 
+ private:
   Member<UnresolvedRunRequest> request_;
 };
 
-class RunResolutionFailureCallback final : public ScriptFunction::Callable {
+class RunResolutionFailureCallback final
+    : public ThenCallable<IDLAny, RunResolutionFailureCallback> {
  public:
   explicit RunResolutionFailureCallback(UnresolvedRunRequest* request)
       : request_(request) {}
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(request_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, RunResolutionFailureCallback>::Trace(visitor);
+  }
+
+  void React(ScriptState* script_state, ScriptValue value) {
+    ScriptState::Scope scope(script_state);
+    v8::Local<v8::Value> v8_value = value.V8Value();
+    std::move(request_->callback)
+        .Run(/*success=*/false, ExceptionToString(script_state, v8_value));
   }
 
  private:
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    ScriptState::Scope scope(script_state);
-
-    v8::Local<v8::Value> v8_value = value.V8Value();
-
-    std::move(request_->callback)
-        .Run(/*success=*/false, ExceptionToString(script_state, v8_value));
-
-    return value;
-  }
-
   Member<UnresolvedRunRequest> request_;
 };
 
@@ -566,14 +557,14 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 
   ScriptPromise<IDLAny> promise = result.FromJust();
 
-  auto* success_callback = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<SelectURLResolutionSuccessCallback>(
-                        unresolved_request));
-  auto* failure_callback = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<SelectURLResolutionFailureCallback>(
-                        unresolved_request));
+  auto* success_callback =
+      MakeGarbageCollected<SelectURLResolutionSuccessCallback>(
+          unresolved_request);
+  auto* failure_callback =
+      MakeGarbageCollected<SelectURLResolutionFailureCallback>(
+          unresolved_request);
 
-  promise.Then(success_callback, failure_callback);
+  promise.React(script_state, success_callback, failure_callback);
 }
 
 void SharedStorageWorkletGlobalScope::RunOperation(
@@ -645,14 +636,12 @@ void SharedStorageWorkletGlobalScope::RunOperation(
 
   ScriptPromise<IDLAny> promise = result.FromJust();
 
-  auto* success_callback = MakeGarbageCollected<ScriptFunction>(
-      script_state,
-      MakeGarbageCollected<RunResolutionSuccessCallback>(unresolved_request));
-  auto* failure_callback = MakeGarbageCollected<ScriptFunction>(
-      script_state,
-      MakeGarbageCollected<RunResolutionFailureCallback>(unresolved_request));
+  auto* success_callback =
+      MakeGarbageCollected<RunResolutionSuccessCallback>(unresolved_request);
+  auto* failure_callback =
+      MakeGarbageCollected<RunResolutionFailureCallback>(unresolved_request);
 
-  promise.Then(success_callback, failure_callback);
+  promise.React(script_state, success_callback, failure_callback);
 }
 
 SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(

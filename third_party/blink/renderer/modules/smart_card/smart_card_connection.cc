@@ -89,61 +89,47 @@ std::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
   }
 }
 
-class TransactionFulfilledFunction : public ScriptFunction::Callable {
+class TransactionFulfilledFunction
+    : public ThenCallable<IDLNullable<V8SmartCardDisposition>,
+                          TransactionFulfilledFunction> {
  public:
   explicit TransactionFulfilledFunction(SmartCardConnection* connection)
-      : connection_(connection) {}
+      : connection_(connection) {
+    SetExceptionContext(ExceptionContext(v8::ExceptionContext::kOperation,
+                                         "SmartCardConnection",
+                                         "startTransaction"));
+  }
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    if (value.IsUndefined() || value.IsNull()) {
-      connection_->OnTransactionCallbackDone(SmartCardDisposition::kReset);
-      return ScriptValue();
-    }
-
-    v8::Isolate* isolate = script_state->GetIsolate();
-    v8::TryCatch try_catch(isolate);
-    V8SmartCardDisposition v8_disposition =
-        NativeValueTraits<V8SmartCardDisposition>::NativeValue(
-            isolate, value.V8Value(), PassThroughException(isolate));
-
-    if (try_catch.HasCaught()) {
-      auto exception = try_catch.Exception();
-      ApplyContextToException(
-          script_state, exception,
-          ExceptionContext(v8::ExceptionContext::kOperation,
-                           "SmartCardConnection", "startTransaction"));
-      connection_->OnTransactionCallbackFailed(ScriptValue(isolate, exception));
-      try_catch.ReThrow();
-      return ScriptValue();
-    }
-
-    connection_->OnTransactionCallbackDone(ToMojomDisposition(v8_disposition));
-
-    return ScriptValue();
+  void React(ScriptState*,
+             const std::optional<V8SmartCardDisposition>& disposition) {
+    connection_->OnTransactionCallbackDone(
+        disposition ? ToMojomDisposition(*disposition)
+                    : SmartCardDisposition::kReset);
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(connection_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLNullable<V8SmartCardDisposition>,
+                 TransactionFulfilledFunction>::Trace(visitor);
   }
 
  private:
   Member<SmartCardConnection> connection_;
 };
 
-class TransactionRejectedFunction : public ScriptFunction::Callable {
+class TransactionRejectedFunction
+    : public ThenCallable<IDLAny, TransactionRejectedFunction> {
  public:
   explicit TransactionRejectedFunction(SmartCardConnection* connection)
       : connection_(connection) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue value) override {
+  void React(ScriptState*, ScriptValue value) {
     connection_->OnTransactionCallbackFailed(value);
-    return ScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(connection_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, TransactionRejectedFunction>::Trace(visitor);
   }
 
  private:
@@ -702,12 +688,9 @@ void SmartCardConnection::OnBeginTransactionDone(
   }
 
   auto promise = transaction_result.FromJust();
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-                   script_state,
-                   MakeGarbageCollected<TransactionFulfilledFunction>(this)),
-               MakeGarbageCollected<ScriptFunction>(
-                   script_state,
-                   MakeGarbageCollected<TransactionRejectedFunction>(this)));
+  promise.React(script_state,
+                MakeGarbageCollected<TransactionFulfilledFunction>(this),
+                MakeGarbageCollected<TransactionRejectedFunction>(this));
 }
 
 void SmartCardConnection::OnEndTransactionDone(

@@ -40,17 +40,31 @@ void RunWithStack(base::RunLoop* run_loop) {
   run_loop->Run();
 }
 
-// Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
-// function that invokes |callback| when a ScriptPromiseUntyped is resolved.
-class ClosureRunnerCallable final : public ScriptFunction::Callable {
+// Helper classes for WaitForPromise{Fulfillment,Rejection}(). Provides a
+// function that invokes |callback| when a ScriptPromise is resolved/rejected.
+class ClosureOnResolve final
+    : public ThenCallable<WakeLockSentinel, ClosureOnResolve> {
  public:
-  explicit ClosureRunnerCallable(base::OnceClosure callback)
+  explicit ClosureOnResolve(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue) override {
-    if (callback_)
-      std::move(callback_).Run();
-    return ScriptValue();
+  void React(ScriptState*, WakeLockSentinel*) {
+    CHECK(callback_);
+    std::move(callback_).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+class ClosureOnReject final : public ThenCallable<IDLAny, ClosureOnReject> {
+ public:
+  explicit ClosureOnReject(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
+
+  void React(ScriptState*, ScriptValue) {
+    CHECK(callback_);
+    std::move(callback_).Run();
   }
 
  private:
@@ -317,11 +331,10 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
 }
 
 void WakeLockTestingContext::WaitForPromiseFulfillment(
-    ScriptPromiseUntyped promise) {
+    ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-      GetScriptState(),
-      MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.React(GetScriptState(),
+                MakeGarbageCollected<ClosureOnResolve>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
@@ -331,13 +344,10 @@ void WakeLockTestingContext::WaitForPromiseFulfillment(
 
 // Synchronously waits for |promise| to be rejected.
 void WakeLockTestingContext::WaitForPromiseRejection(
-    ScriptPromiseUntyped promise) {
+    ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.Then(
-      nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          GetScriptState(),
-          MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.Catch(GetScriptState(),
+                MakeGarbageCollected<ClosureOnReject>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(

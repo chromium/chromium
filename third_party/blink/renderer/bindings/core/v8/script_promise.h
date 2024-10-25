@@ -105,6 +105,10 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
     typing_failure_callable_ = callable;
   }
 
+  void SetExceptionContext(const ExceptionContext& context) {
+    context_ = context;
+  }
+
   void Trace(Visitor* visitor) const override {
     ScriptFunction::Callable::Trace(visitor);
     visitor->Trace(typing_failure_callable_);
@@ -123,6 +127,7 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
           isolate, value.V8Value(), PassThroughException(isolate));
       if (try_catch.HasCaught()) {
         DCHECK(typing_failure_callable_);
+        ApplyContextToException(script_state, try_catch.Exception(), context_);
         return typing_failure_callable_->Call(
             script_state, ScriptValue(isolate, try_catch.Exception()));
       }
@@ -142,6 +147,8 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
   }
 
   Member<ScriptFunction::Callable> typing_failure_callable_;
+  ExceptionContext context_ =
+      ExceptionContext(v8::ExceptionContext::kUnknown, nullptr, nullptr);
 };
 
 // ScriptPromise is the class for representing Promise values in C++

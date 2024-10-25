@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_availability_callback.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -113,50 +114,56 @@ class RemotePlaybackTest : public testing::Test,
 TEST_F(RemotePlaybackTest, PromptCancelledRejectsWithNotAllowedError) {
   V8TestingScope scope;
   RemotePlayback& remote_playback = get_remote_playback();
-  MockFunctionScope funcs(scope.GetScriptState());
 
   NotifyUserActivationTest();
-  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      remote_playback.prompt(scope.GetScriptState(),
+                             scope.GetExceptionState()));
   CancelPrompt(remote_playback);
 
   // Runs pending promises.
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST_F(RemotePlaybackTest, PromptConnectedRejectsWhenCancelled) {
   V8TestingScope scope;
   RemotePlayback& remote_playback = get_remote_playback();
-  MockFunctionScope funcs(scope.GetScriptState());
 
   SetState(remote_playback,
            mojom::blink::PresentationConnectionState::CONNECTED);
 
   NotifyUserActivationTest();
-  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      remote_playback.prompt(scope.GetScriptState(),
+                             scope.GetExceptionState()));
   CancelPrompt(remote_playback);
 
   // Runs pending promises.
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST_F(RemotePlaybackTest, PromptConnectedResolvesWhenDisconnected) {
   V8TestingScope scope;
   RemotePlayback& remote_playback = get_remote_playback();
-  MockFunctionScope funcs(scope.GetScriptState());
 
   SetState(remote_playback,
            mojom::blink::PresentationConnectionState::CONNECTED);
 
   NotifyUserActivationTest();
-  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      remote_playback.prompt(scope.GetScriptState(),
+                             scope.GetExceptionState()));
 
   SetState(remote_playback, mojom::blink::PresentationConnectionState::CLOSED);
 
   // Runs pending promises.
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST_F(RemotePlaybackTest, StateChangeEvents) {
@@ -227,15 +234,17 @@ TEST_F(RemotePlaybackTest,
        DisableRemotePlaybackRejectsPromptWithInvalidStateError) {
   V8TestingScope scope;
   RemotePlayback& remote_playback = get_remote_playback();
-  MockFunctionScope funcs(scope.GetScriptState());
 
   NotifyUserActivationTest();
-  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      remote_playback.prompt(scope.GetScriptState(),
+                             scope.GetExceptionState()));
   DisableRemotePlaybackAttr();
 
   // Runs pending promises.
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
 }
 
 TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
@@ -247,15 +256,16 @@ TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
       V8RemotePlaybackAvailabilityCallback::Create(
           funcs.ExpectNoCall()->V8Function());
 
-  remote_playback
-      .watchAvailability(scope.GetScriptState(), availability_callback,
-                         scope.GetExceptionState())
-      .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), remote_playback.watchAvailability(
+                                  scope.GetScriptState(), availability_callback,
+                                  scope.GetExceptionState()));
 
   DisableRemotePlaybackAttr();
 
   // Runs pending promises.
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
@@ -331,13 +341,14 @@ TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
       V8RemotePlaybackAvailabilityCallback::Create(
           funcs.ExpectNoCall()->V8Function());
 
-  remote_playback
-      .watchAvailability(scope.GetScriptState(), availability_callback,
-                         scope.GetExceptionState())
-      .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(), remote_playback.watchAvailability(
+                                  scope.GetScriptState(), availability_callback,
+                                  scope.GetExceptionState()));
 
   // Runs pending promises.
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
 TEST_F(RemotePlaybackTest, IsListening) {
