@@ -24,7 +24,9 @@ class AcknowledgeGroupedCredentialSheetController {
 
   ~AcknowledgeGroupedCredentialSheetController();
 
-  void ShowAcknowledgeSheet(base::OnceCallback<void(bool)> on_close_callback);
+  void ShowAcknowledgeSheet(std::string current_origin,
+                            std::string credential_origin,
+                            base::OnceCallback<void(bool)> on_close_callback);
 
  private:
   base::OnceCallback<void(bool)> on_close_callback_ = base::NullCallback();

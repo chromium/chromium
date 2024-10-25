@@ -27,11 +27,13 @@
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -54,6 +56,11 @@ CreateAcknowledgeGroupedCredentialSheetController(
       web_contents->GetTopLevelNativeWindow());
   return std::make_unique<AcknowledgeGroupedCredentialSheetController>(
       std::move(bridge));
+}
+
+std::string GetOrigin(const url::Origin& origin) {
+  return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+      origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
 }  // namespace
@@ -330,23 +337,27 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
 
   if (credential.match_type() ==
       password_manager_util::GetLoginMatchType::kGrouped) {
-    grouped_credential_sheet_controller_->ShowAcknowledgeSheet(base::BindOnce(
-        [](TouchToFillControllerAutofillDelegate* delegate,
-           const UiCredential& credential, bool accepted) {
-          if (!accepted) {
-            // TODO(crbug.com/372635361): Introduce new bucket to report grouped
-            // credential filling metric.
-            delegate->CleanUpFillerAndReportOutcome(
-                TouchToFillOutcome::kSheetDismissed,
-                /*show_virtual_keyboard=*/false);
-            std::move(delegate->action_complete_).Run();
-            return;
-          }
-          delegate->FillCredential(credential);
-        },
-        // Using `base::Unretained` is safe here because the callback is passed
-        // into the controller owned by this class.
-        base::Unretained(this), credential));
+    std::string current_origin = GetOrigin(url::Origin::Create(GetFrameUrl()));
+    std::string credential_origin = GetOrigin(credential.origin());
+    grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
+        std::move(current_origin), std::move(credential_origin),
+        base::BindOnce(
+            [](TouchToFillControllerAutofillDelegate* delegate,
+               const UiCredential& credential, bool accepted) {
+              if (!accepted) {
+                // TODO(crbug.com/372635361): Introduce new bucket to report
+                // grouped credential filling metric.
+                delegate->CleanUpFillerAndReportOutcome(
+                    TouchToFillOutcome::kSheetDismissed,
+                    /*show_virtual_keyboard=*/false);
+                std::move(delegate->action_complete_).Run();
+                return;
+              }
+              delegate->FillCredential(credential);
+            },
+            // Using `base::Unretained` is safe here because the callback is
+            // passed into the controller owned by this class.
+            base::Unretained(this), credential));
     return;
   }
   FillCredential(credential);

@@ -1019,6 +1019,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ACK_GROUPED_CRED_SHEET_TITLE" desc="The title of the bottom sheet verifying that user wants to use the password saved for another web site or app grouped with the current web site.">
         Use your <ph name="PROVIDER">%1$s<ex>example.com</ex></ph> password?
       </message>
+      <message name="IDS_ACK_GROUPED_CRED_SHEET_DESC" desc="The text in the bottom sheet verifying that user wants to use the password saved for another web site or app grouped with the current web site.">
+        <ph name="BEGIN_BOLD1">&lt;b1&gt;</ph><ph name="PROVIDER1">%1$s<ex>example.com</ex></ph><ph name="END_BOLD1">&lt;/b1&gt;</ph> and <ph name="BEGIN_BOLD2">&lt;b2&gt;</ph><ph name="PROVIDER2">%2$s<ex>example.com</ex></ph><ph name="END_BOLD2">&lt;/b2&gt;</ph> seem to be related. Make sure you trust <ph name="BEGIN_BOLD3">&lt;b3&gt;</ph><ph name="PROVIDER2">%2$s<ex>example.com</ex></ph><ph name="END_BOLD3">&lt;/b3&gt;</ph> before using your password.
+      </message>
       <message name="IDS_ACK_GROUPED_CRED_SHEET_ACCEPTED" desc="The accessibility string announced after accpting the bottom sheet verifying that user wants to use the password saved for another web site or app grouped with the current web site.">
         Password used.
       </message>

@@ -265,6 +265,7 @@ java_group("javatests") {
   testonly = true
   deps = [
     "account_storage_notice:javatests",
+    "grouped_affiliations:javatests",
     "pwd_migration:javatests",
   ]
 }

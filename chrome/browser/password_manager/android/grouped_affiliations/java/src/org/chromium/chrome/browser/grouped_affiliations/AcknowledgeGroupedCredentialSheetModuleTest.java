@@ -50,6 +50,8 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
     private final ArgumentCaptor<BottomSheetContent> mBottomSheetContentCaptor =
             ArgumentCaptor.forClass(BottomSheetContent.class);
     private static final long TEST_NATIVE_POINTER = 1;
+    private static final String CURRENT_DOMAIN = "current.com";
+    private static final String CREDENTIAL_DOMAIN = "credential.com";
 
     @Before
     public void setUp() {
@@ -76,7 +78,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
 
     @Test
     public void showsAndHidesBottomSheet() {
-        mBridge.show();
+        mBridge.show(CURRENT_DOMAIN, CREDENTIAL_DOMAIN);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
 

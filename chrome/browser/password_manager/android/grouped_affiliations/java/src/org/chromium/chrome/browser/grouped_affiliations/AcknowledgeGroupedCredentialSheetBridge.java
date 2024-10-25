@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -29,7 +30,9 @@ public class AcknowledgeGroupedCredentialSheetBridge {
     }
 
     @CalledByNative
-    public void show() {
+    public void show(
+            @JniType("std::string") String currentOrigin,
+            @JniType("std::string") String credentialOrigin) {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return;
 
@@ -38,7 +41,7 @@ public class AcknowledgeGroupedCredentialSheetBridge {
                         context,
                         BottomSheetControllerProvider.from(mWindowAndroid),
                         this::onDismissed);
-        mController.show();
+        mController.show(currentOrigin, credentialOrigin);
     }
 
     @CalledByNative

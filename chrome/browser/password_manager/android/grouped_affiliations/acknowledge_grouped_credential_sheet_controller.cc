@@ -13,6 +13,9 @@ AcknowledgeGroupedCredentialSheetController::
     ~AcknowledgeGroupedCredentialSheetController() = default;
 
 void AcknowledgeGroupedCredentialSheetController::ShowAcknowledgeSheet(
+    std::string current_origin,
+    std::string credential_origin,
     base::OnceCallback<void(bool)> on_close_callback) {
-  bridge_->Show(std::move(on_close_callback));
+  bridge_->Show(std::move(current_origin), std::move(credential_origin),
+                std::move(on_close_callback));
 }

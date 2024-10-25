@@ -118,7 +118,10 @@ class MockAckGroupedCredentialJniDelegate
               (const gfx::NativeWindow,
                AcknowledgeGroupedCredentialSheetBridge*),
               (override));
-  MOCK_METHOD((void), Show, (), (override));
+  MOCK_METHOD((void),
+              Show,
+              (std::string current_origin, std::string credential_origin),
+              (override));
   MOCK_METHOD((void), Dismiss, (), (override));
 };
 

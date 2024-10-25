@@ -16,6 +16,9 @@
 #include "ui/android/window_android.h"
 
 namespace {
+const char kCurrentOrigin[] = "current.com";
+const char kCredentialOrigin[] = "credential.com";
+
 class MockJniDelegate
     : public AcknowledgeGroupedCredentialSheetBridge::JniDelegate {
  public:
@@ -27,7 +30,10 @@ class MockJniDelegate
               (const gfx::NativeWindow,
                AcknowledgeGroupedCredentialSheetBridge*),
               (override));
-  MOCK_METHOD((void), Show, (), (override));
+  MOCK_METHOD((void),
+              Show,
+              (std::string current_origin, std::string credential_origin),
+              (override));
   MOCK_METHOD((void), Dismiss, (), (override));
 };
 }  // namespace
@@ -63,8 +69,9 @@ TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
   // TODO(crbug.com/372635361): After implementing the bridge, expect the call
   // to show the actual sheet. Now only checks that the callback is called.
   base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
-  EXPECT_CALL(*mock_jni_bridge(), Show);
-  controller_->ShowAcknowledgeSheet(mock_reply.Get());
+  EXPECT_CALL(*mock_jni_bridge(), Show(kCurrentOrigin, kCredentialOrigin));
+  controller_->ShowAcknowledgeSheet(kCurrentOrigin, kCredentialOrigin,
+                                    mock_reply.Get());
 
   EXPECT_CALL(mock_reply, Run(false));
   bridge()->OnDismissed(jni_zero::AttachCurrentThread(),
@@ -77,7 +84,8 @@ TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
   // to show the actual sheet. Now only checks that the callback is called.
   base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
   EXPECT_CALL(*mock_jni_bridge(), Show);
-  controller_->ShowAcknowledgeSheet(mock_reply.Get());
+  controller_->ShowAcknowledgeSheet(kCurrentOrigin, kCurrentOrigin,
+                                    mock_reply.Get());
 
   EXPECT_CALL(mock_reply, Run).Times(0);
   EXPECT_CALL(*mock_jni_bridge(), Dismiss);

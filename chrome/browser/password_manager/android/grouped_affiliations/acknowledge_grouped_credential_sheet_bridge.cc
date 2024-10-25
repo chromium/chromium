@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/functional/callback_forward.h"
 #include "ui/android/window_android.h"
 
@@ -34,9 +35,11 @@ class JniDelegateImpl : public JniDelegate {
         reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
   }
 
-  void Show() override {
+  void Show(std::string current_origin,
+            std::string credential_origin) override {
     Java_AcknowledgeGroupedCredentialSheetBridge_show(
-        base::android::AttachCurrentThread(), java_bridge_);
+        base::android::AttachCurrentThread(), java_bridge_, current_origin,
+        credential_origin);
   }
 
   void Dismiss() override {
@@ -82,13 +85,15 @@ AcknowledgeGroupedCredentialSheetBridge::
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::Show(
+    std::string current_origin,
+    std::string credential_origin,
     base::OnceCallback<void(bool)> closure_callback) {
   if (!window_android_) {
     return;
   }
   closure_callback_ = std::move(closure_callback);
   jni_delegate_->Create(window_android_, this);
-  jni_delegate_->Show();
+  jni_delegate_->Show(std::move(current_origin), std::move(credential_origin));
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,

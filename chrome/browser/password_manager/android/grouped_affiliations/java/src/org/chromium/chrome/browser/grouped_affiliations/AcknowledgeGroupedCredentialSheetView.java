@@ -4,17 +4,68 @@
 
 package org.chromium.chrome.browser.grouped_affiliations;
 
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.text.SpanApplier;
 
 class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     private final View mContent;
+    private final String mCurrentOrigin;
+    private final String mCredentialOrigin;
 
-    public AcknowledgeGroupedCredentialSheetView(View content) {
+    public AcknowledgeGroupedCredentialSheetView(
+            View content, String currentOrigin, String credentialOrigin) {
         mContent = content;
+        mCurrentOrigin = currentOrigin;
+        mCredentialOrigin = credentialOrigin;
+        setHeaderIcon();
+        setTitle();
+        setDescription();
+    }
+
+    private void setHeaderIcon() {
+        ImageView sheetHeaderImage = mContent.findViewById(R.id.sheet_header_image);
+        sheetHeaderImage.setImageDrawable(
+                AppCompatResources.getDrawable(
+                        mContent.getContext(),
+                        PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
+    }
+
+    private void setTitle() {
+        TextView titleView = mContent.findViewById(R.id.sheet_title);
+        titleView.setText(
+                mContent.getResources()
+                        .getString(R.string.ack_grouped_cred_sheet_title, mCredentialOrigin));
+    }
+
+    private void setDescription() {
+        TextView descView = mContent.findViewById(R.id.sheet_text);
+        String fullString =
+                mContent.getResources()
+                        .getString(
+                                R.string.ack_grouped_cred_sheet_desc,
+                                mCredentialOrigin,
+                                mCurrentOrigin);
+        // There are 3 spans that should be bold, so applying it 3 times.
+        SpannableString formattedString =
+                SpanApplier.applySpans(
+                        fullString,
+                        new SpanApplier.SpanInfo(
+                                "<b1>", "</b1>", new StyleSpan(android.graphics.Typeface.BOLD)),
+                        new SpanApplier.SpanInfo(
+                                "<b2>", "</b2>", new StyleSpan(android.graphics.Typeface.BOLD)),
+                        new SpanApplier.SpanInfo(
+                                "<b3>", "</b3>", new StyleSpan(android.graphics.Typeface.BOLD)));
+        descView.setText(formattedString);
     }
 
     @Override

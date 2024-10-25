@@ -24,7 +24,8 @@ class AcknowledgeGroupedCredentialSheetBridge {
 
     virtual void Create(const gfx::NativeWindow window_android,
                         AcknowledgeGroupedCredentialSheetBridge* bridge) = 0;
-    virtual void Show() = 0;
+    virtual void Show(std::string current_origin,
+                      std::string credential_origin) = 0;
     virtual void Dismiss() = 0;
   };
   explicit AcknowledgeGroupedCredentialSheetBridge(
@@ -46,7 +47,9 @@ class AcknowledgeGroupedCredentialSheetBridge {
 
   ~AcknowledgeGroupedCredentialSheetBridge();
 
-  void Show(base::OnceCallback<void(bool)> closure_callback);
+  void Show(std::string current_origin,
+            std::string credential_origin,
+            base::OnceCallback<void(bool)> closure_callback);
   void OnDismissed(JNIEnv* env, bool accepted);
 
  private:
