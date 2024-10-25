@@ -14,6 +14,17 @@
 //
 // Support for other types of `logger` can be added by adding template
 // specializations of `LoggerTraits`.
+//
+// This macro works as follows:
+//   LOG_AF(logger) << foo();
+// expands to
+//   !active(logger) ? (void)0 : Voidify() & get_stream(logger) << foo();
+// Due to the operator precedence, this is equivalent to:
+//   !active(logger) ? (void)0 : (Voidify() & (get_stream(logger) << foo()));
+// If the logger is inactive, this is equivalent to the no-op
+//   (void)0;
+// and otherwise it is equivalent to
+//   get_stream(logger) << foo();
 #define LOG_AF(logger)                                                        \
   !::autofill::internal::LoggerTraits<decltype(logger)>::active(logger)       \
       ? (void)0                                                               \
@@ -40,7 +51,7 @@ struct LoggerTraits {
 // is not used" and "statement has no effect".
 class Voidify {
  public:
-  Voidify() = default;
+  constexpr Voidify() = default;
   // This has to be an operator with a precedence lower than << but
   // higher than ?:
   template <typename U>
