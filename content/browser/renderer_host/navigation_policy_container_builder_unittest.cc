@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
@@ -222,6 +223,43 @@ TEST_F(NavigationPolicyContainerBuilderTest,
                           /*is_credentialless=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), delivered_policies);
+}
+
+TEST_F(NavigationPolicyContainerBuilderTest, MHTMLSandboxFlags) {
+  NavigationPolicyContainerBuilder builder(
+      nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
+  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
+  builder.ComputePolicies(GURL("file:///my/page.mhtml"),
+                          /*is_inside_mhtml=*/true,
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*is_credentialless=*/false);
+
+  EXPECT_EQ(builder.FinalPolicies().sandbox_flags,
+            // MHTML archives receive all sandbox flags except these:
+            ~(network::mojom::WebSandboxFlags::kPopups |
+              network::mojom::WebSandboxFlags::
+                  kPropagatesToAuxiliaryBrowsingContexts));
+}
+
+// When kMHTML_Improvements is enabled, in mhtml, scripts are allowed.
+TEST_F(NavigationPolicyContainerBuilderTest,
+       MHTMLSandboxFlagsWithMHTMLImprovementsLocalFile) {
+  base::test::ScopedFeatureList features(blink::features::kMHTML_Improvements);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
+  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
+  builder.ComputePolicies(GURL("file:///my/page.mhtml"),
+                          /*is_inside_mhtml=*/true,
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*is_credentialless=*/false);
+
+  EXPECT_EQ(builder.FinalPolicies().sandbox_flags,
+            // When kMHTML_Improvements is enabled, MHTML archives receive all
+            // sandbox flags except these:
+            ~(network::mojom::WebSandboxFlags::kPopups |
+              network::mojom::WebSandboxFlags::
+                  kPropagatesToAuxiliaryBrowsingContexts |
+              network::mojom::WebSandboxFlags::kScripts));
 }
 
 // Verifies the final policies when the URL of the document to commit is

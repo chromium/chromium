@@ -53,6 +53,8 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
@@ -109,12 +111,18 @@ const char kShadowDelegatesFocusAttributeName[] = "shadowdelegatesfocus";
 
 using mojom::blink::FormControlType;
 
-KURL MakePseudoCSSUrl() {
+KURL MakePseudoUrl(StringView type) {
   StringBuilder pseudo_sheet_url_builder;
-  pseudo_sheet_url_builder.Append("cid:css-");
+  pseudo_sheet_url_builder.Append("cid:");
+  pseudo_sheet_url_builder.Append(type);
+  pseudo_sheet_url_builder.Append("-");
   pseudo_sheet_url_builder.Append(WTF::CreateCanonicalUUIDString());
   pseudo_sheet_url_builder.Append("@mhtml.blink");
   return KURL(pseudo_sheet_url_builder.ToString());
+}
+
+KURL MakePseudoCSSUrl() {
+  return MakePseudoUrl("css");
 }
 
 void AppendLinkElement(StringBuilder& markup, const KURL& url) {
@@ -156,7 +164,7 @@ String ReplaceAllCaseInsensitive(
 // first resource should be the frame's content (usually HTML).
 class MultiResourcePacker {
  public:
-  MultiResourcePacker(
+  explicit MultiResourcePacker(
       WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate)
       : web_delegate_(web_delegate) {}
 
@@ -170,6 +178,10 @@ class MultiResourcePacker {
     // The main resource must be first.
     // We do not call `ShouldAddURL()` for the main resource.
     resources_.push_front(SerializedResource(url, mime_type, std::move(data)));
+  }
+
+  void AddToResources(SerializedResource serialized_resource) {
+    resources_.push_back(std::move(serialized_resource));
   }
 
   void AddToResources(const String& mime_type,
@@ -396,8 +408,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
       return false;
     }
 
-    WebString content_id = FrameSerializer::GetContentID(frame);
-    KURL cid_uri = MHTMLParser::ConvertContentIDToURI(content_id);
+    KURL cid_uri = MHTMLParser::ConvertContentIDToURI(
+        FrameSerializer::GetContentID(frame));
     DCHECK(cid_uri.IsValid());
     rewritten_link = cid_uri.GetString();
     return true;
@@ -609,6 +621,99 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     if (!MHTMLImprovementsEnabled()) {
       AppendStylesheets(document_->StyleSheets(), true /*style_element_only*/);
     }
+
+    if (MHTMLImprovementsEnabled()) {
+      markup_.Append("<script src=\"");
+      KURL script_url = MakePseudoUrl("js");
+      markup_.Append(script_url.GetString());
+      markup_.Append("\"></script>");
+      AddScriptResource(*document_, script_url);
+    }
+  }
+
+  // Adds a script resource to restore some functionality to the serialized
+  // HTML. We're including this self-contained blob of JS in the MHTML file
+  // instead of compiling it into Chromium because it requires additional
+  // information about custom elements, and packaging the metadata in another
+  // format would require versioning, whereas JS allows it to be all
+  // encapsulated.
+  void AddScriptResource(Document& document, const KURL& script_url) {
+    // Currently, the embedded JS here has one job. It restores the custom
+    // element registry when loading the saved page, to enough fidelity to
+    // ensure the CSS 'defined' selector works.
+    // https://html.spec.whatwg.org/multipage/semantics-other.html#selector-defined.
+    // Note that we do not need to actually restore any other functionality to
+    // the custom elements because we are already saving a snapshot of the
+    // element's shadow DOM, and our goal is to save a static snapshot of the
+    // page.
+    auto metadata = std::make_unique<JSONObject>();
+    auto custom_elements = std::make_unique<JSONArray>();
+    CustomElementRegistry* custom_registry = CustomElement::Registry(document);
+    if (custom_registry) {
+      for (const AtomicString& name : custom_registry->DefinedNames()) {
+        CustomElementDefinition* definition =
+            custom_registry->DefinitionForName(name);
+        auto saved_definition = std::make_unique<JSONObject>();
+        // There are two types of custom elements.
+        // 1. autonomous elements, which always extend HTMLElement.
+        // 2. customized built-in elements, which can extend standard HTML
+        // elements. Here, "local_name" is the name of the extended element,
+        // i.e. HTMLParagraphElement.
+        saved_definition->SetString("name", name);
+        saved_definition->SetBoolean("is_autonomous",
+                                     definition->Descriptor().IsAutonomous());
+        if (!definition->Descriptor().IsAutonomous()) {
+          saved_definition->SetString("local_name",
+                                      definition->Descriptor().LocalName());
+        }
+        custom_elements->PushObject(std::move(saved_definition));
+      }
+    }
+    metadata->SetArray("custom_elements", std::move(custom_elements));
+
+    // Note that we try/catch for addCustomElement below because it's possible
+    // but not expected for it to fail, i.e. if standard HTML element type is
+    // removed.
+    StringView main_script = R"js(
+function addCustomElement(def) {
+  if (def.is_autonomous) {
+      window.customElements.define(def.name, class extends HTMLElement{});
+  } else {
+    const templateElement = document.createElement(def.local_name);
+    const baseName = Object.getPrototypeOf(templateElement).constructor.name;
+    const ElementBase = window[baseName];
+    window.customElements.define(def.name, class extends ElementBase {},
+      {extends: def.local_name});
+  }
+}
+
+function addCustomElements(metadata) {
+  for (const def of metadata.custom_elements) {
+    try {
+      addCustomElement(def);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
+
+function main(metadata) {
+  addCustomElements(metadata);
+}
+)js";
+
+    StringBuilder builder;
+    builder.Append("(()=>{");
+    {
+      builder.Append(main_script);
+      builder.Append("main(");
+      metadata->WriteJSON(&builder);
+      builder.Append(");");
+    }
+    builder.Append("})();");
+    resource_serializer_->AddToResources(SerializedResource(
+        script_url, "text/javascript",
+        SharedBuffer::Create(builder.ToString().RawByteSpan())));
   }
 
   // Add `sheet` as a new resource and emit a <link> element to load it.
@@ -1019,6 +1124,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
   //   was sometimes wrong.
   // * Serialize <style> nodes as <style> nodes instead of <link> nodes.
   // * Leave <style> nodes alone if their stylesheet is unmodified.
+  // * Injects a script into the serialized HTML to define custom elements to
+  //   ensure the same custom element names are defined.
   bool MHTMLImprovementsEnabled() const {
     return base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements);
   }
@@ -1079,6 +1186,7 @@ void FrameSerializer::SerializeFrame(
     resource_serializer.AddMainResource(
         document.SuggestedMIMEType(),
         SharedBuffer::Create(frame_html.c_str(), frame_html.length()), url);
+
     // TODO(crbug.com/363289333): Add async fetching of fonts.
     std::move(done_callback)
         .Run(std::move(resource_serializer).FinishAndTakeResources());

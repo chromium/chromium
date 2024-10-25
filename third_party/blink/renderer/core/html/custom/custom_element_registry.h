@@ -49,9 +49,13 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                                   const ElementDefinitionOptions*,
                                   ExceptionState&);
 
+  // Access to custom element definitions. Name here refers to the
+  // https://whatwg.org/C/#concept-custom-element-definition-name.
+
   ScriptValue get(const AtomicString& name);
   const AtomicString& getName(V8CustomElementConstructor* constructor);
   bool NameIsDefined(const AtomicString& name) const;
+  Vector<AtomicString> DefinedNames() const;
   CustomElementDefinition* DefinitionForName(const AtomicString& name) const;
   CustomElementDefinition* DefinitionForConstructor(
       V8CustomElementConstructor*) const;

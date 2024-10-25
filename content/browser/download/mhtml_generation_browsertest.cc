@@ -942,15 +942,17 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElement) {
 
   CompareOptions options;
   options.expected_number_of_frames = 1;
-  options.expected_substrings = {
-      // If this isn't show, the custom element is either not created, or
-      // not defined through customElements.define.
-      "Inside Custom Element",
-  };
+  options.expected_substrings =
+      {
+          // If this isn't show, the custom element is either not created, or
+          // not defined through customElements.define.
+          "Inside an Autonomous Custom Element",
+          "This is a defined built-in custom element",
+          "This is an undefined built-in custom element",
+      },
   options.forbidden_substrings = {
       "Hidden with adopted stylesheet on shadowRoot",
-      // TODO(crbug.com/363289333): Fix and uncomment.
-      // "Hidden because undefined-test-element is not defined.",
+      "Hidden because undefined-test-element is not defined.",
       "Hidden with adopted stylesheet on document",
       "Hidden with stylesheet on shadowRoot",
   };
@@ -969,12 +971,13 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElementInFrame) {
   CompareOptions options;
   options.expected_number_of_frames = 2;
   options.expected_substrings = {
-      "Inside Custom Element",
+      "Inside an Autonomous Custom Element",
+      "This is a defined built-in custom element",
+      "This is an undefined built-in custom element",
   };
   options.forbidden_substrings = {
       "Hidden with adopted stylesheet on shadowRoot",
-      // TODO(crbug.com/363289333): Fix and uncomment.
-      // "Hidden because undefined-test-element is not defined.",
+      "Hidden because undefined-test-element is not defined.",
       "Hidden with adopted stylesheet on document",
       "Hidden with stylesheet on shadowRoot",
 
