@@ -243,7 +243,7 @@ bool ProcessSingleton::EscapeVirtualization(
     HWND hwnd = 0;
     ::Sleep(90);
     for (int tries = 200; tries; --tries) {
-      hwnd = chrome::FindRunningChromeWindow(user_data_dir);
+      hwnd = FindRunningChromeWindow(user_data_dir);
       if (hwnd) {
         ::SetForegroundWindow(hwnd);
         break;
@@ -283,15 +283,15 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
     return PROCESS_NONE;
   }
 
-  switch (chrome::AttemptToNotifyRunningChrome(remote_window_)) {
-    case chrome::NOTIFY_SUCCESS:
+  switch (AttemptToNotifyRunningChrome(remote_window_)) {
+    case NotifyChromeResult::NOTIFY_SUCCESS:
       return PROCESS_NOTIFIED;
-    case chrome::NOTIFY_FAILED:
+    case NotifyChromeResult::NOTIFY_FAILED:
       remote_window_ = NULL;
       internal::SendRemoteProcessInteractionResultHistogram(
           RUNNING_PROCESS_NOTIFY_ERROR);
       return PROCESS_NONE;
-    case chrome::NOTIFY_WINDOW_HUNG:
+    case NotifyChromeResult::NOTIFY_WINDOW_HUNG:
       // Fall through and potentially terminate the hung browser.
       break;
   }
@@ -383,7 +383,7 @@ bool ProcessSingleton::Create() {
 
   static const wchar_t kMutexName[] = L"Local\\ChromeProcessSingletonStartup!";
 
-  remote_window_ = chrome::FindRunningChromeWindow(user_data_dir_);
+  remote_window_ = FindRunningChromeWindow(user_data_dir_);
   if (!remote_window_ && !EscapeVirtualization(user_data_dir_)) {
     // Make sure we will be the one and only process creating the window.
     // We use a named Mutex since we are protecting against multi-process
@@ -402,7 +402,7 @@ bool ProcessSingleton::Create() {
     // window at this time, but we must still check if someone created it
     // between the time where we looked for it above and the time the mutex
     // was given to us.
-    remote_window_ = chrome::FindRunningChromeWindow(user_data_dir_);
+    remote_window_ = FindRunningChromeWindow(user_data_dir_);
 
     if (!remote_window_) {
       // We have to make sure there is no Chrome instance running on another
