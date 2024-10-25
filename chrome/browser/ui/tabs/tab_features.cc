@@ -32,8 +32,6 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_metrics.h"
-#include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -154,11 +152,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (web_app::AreWebAppsEnabled(profile)) {
     web_app::WebAppTabHelper::Create(&tab, tab.GetContents());
   }
-
-  // Note WebAppMetricsTabHelper must be created after AppBannerManager.
-  if (web_app::WebAppMetricsTabHelper::IsEnabled(tab.GetContents())) {
-    web_app::WebAppMetricsTabHelper::CreateForWebContents(tab.GetContents());
-  }
 }
 
 TabFeatures::TabFeatures() = default;
@@ -229,11 +222,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (web_app::AreWebAppsEnabled(
           tab->GetBrowserWindowInterface()->GetProfile())) {
     web_app::WebAppTabHelper::Create(tab, new_contents);
-  }
-
-  // Note WebAppMetricsTabHelper must be created after AppBannerManager.
-  if (web_app::WebAppMetricsTabHelper::IsEnabled(new_contents)) {
-    web_app::WebAppMetricsTabHelper::CreateForWebContents(new_contents);
   }
 }
 

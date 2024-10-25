@@ -5407,8 +5407,6 @@ static_library("ui") {
       "web_applications/web_app_metrics.h",
       "web_applications/web_app_metrics_factory.cc",
       "web_applications/web_app_metrics_factory.h",
-      "web_applications/web_app_metrics_tab_helper.cc",
-      "web_applications/web_app_metrics_tab_helper.h",
       "web_applications/web_app_tabbed_utils.cc",
       "web_applications/web_app_tabbed_utils.h",
       "web_applications/web_app_ui_manager_impl.cc",

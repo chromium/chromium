@@ -82,10 +82,6 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   bool IsInAppWindow(content::WebContents* web_contents) const override;
   const webapps::AppId* GetAppIdForWindow(
       const content::WebContents* web_contents) const override;
-  void NotifyOnAssociatedAppChanged(
-      content::WebContents* web_contents,
-      const std::optional<webapps::AppId>& previous_app_id,
-      const std::optional<webapps::AppId>& new_app_id) const override;
   bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                  bool shortcut_created) const override;
   Browser* ReparentAppTabToWindow(content::WebContents* contents,

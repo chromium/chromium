@@ -257,9 +257,6 @@ void WebAppTabHelper::ResetTabSubscriptions(tabs::TabInterface* tab) {
 void WebAppTabHelper::OnAssociatedAppChanged(
     const std::optional<webapps::AppId>& previous_app_id,
     const std::optional<webapps::AppId>& new_app_id) {
-  provider_->ui_manager().NotifyOnAssociatedAppChanged(
-      web_contents(), previous_app_id, new_app_id);
-
   // Tag WebContents for Task Manager.
   // cases to consider:
   // 1. non-app -> app (association added)

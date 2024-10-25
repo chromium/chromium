@@ -282,19 +282,6 @@ const webapps::AppId* WebAppUiManagerImpl::GetAppIdForWindow(
   return nullptr;
 }
 
-void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
-    content::WebContents* web_contents,
-    const std::optional<webapps::AppId>& previous_app_id,
-    const std::optional<webapps::AppId>& new_app_id) const {
-  WebAppMetrics* web_app_metrics = WebAppMetrics::Get(profile_);
-  // Unavailable in guest sessions.
-  if (!web_app_metrics) {
-    return;
-  }
-  web_app_metrics->NotifyOnAssociatedAppChanged(web_contents, previous_app_id,
-                                                new_app_id);
-}
-
 bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
     const webapps::AppId& app_id,
     bool shortcut_created) const {
