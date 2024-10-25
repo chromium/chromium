@@ -852,7 +852,14 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   SetSearchboxInputText(query.search_query_text_);
   SetSearchboxThumbnail(query.selected_region_thumbnail_uri_);
 
-  if (query.selected_region_ || !query.selected_region_bitmap_.drawsNothing()) {
+  const bool is_contextual_query =
+      GetPageClassification() ==
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  const bool query_has_image =
+      query.selected_region_ || !query.selected_region_bitmap_.drawsNothing();
+  const bool should_send_interaction = query_has_image || is_contextual_query;
+
+  if (should_send_interaction) {
     // If the current query has a region or image bytes, we need to send a new
     // interaction request in order to to keep our request IDs in sync with the
     // server. If not, we will receive broken results. Because of this, we also
@@ -865,7 +872,9 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
       initialization_data_->search_query_history_stack_.pop_back();
       initialization_data_->currently_loaded_search_query_ = previous_query;
     }
+  }
 
+  if (query_has_image) {
     std::optional<SkBitmap> selected_region_bitmap =
         query.selected_region_bitmap_.drawsNothing()
             ? std::nullopt
@@ -882,6 +891,15 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
           initialization_data_->additional_search_query_params_,
           selected_region_bitmap);
     }
+    return;
+  }
+
+  // The query is text only. If we are in the contextual flow, resend the
+  // contextual query.
+  if (is_contextual_query) {
+    lens_overlay_query_controller_->SendContextualTextQuery(
+        query.search_query_text_, query.lens_selection_type_,
+        initialization_data_->additional_search_query_params_);
     return;
   }
 

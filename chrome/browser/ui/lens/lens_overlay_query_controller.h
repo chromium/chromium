@@ -135,7 +135,7 @@ class LensOverlayQueryController {
 
   // Sends a text query interaction contextualized to the current page. Expected
   // to be called multiple times.
-  void SendContextualTextQuery(
+  virtual void SendContextualTextQuery(
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
