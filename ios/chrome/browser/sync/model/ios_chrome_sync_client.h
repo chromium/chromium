@@ -9,11 +9,8 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
+#import "components/browser_sync/sync_engine_factory_impl.h"
 #import "components/sync/service/sync_client.h"
-
-namespace browser_sync {
-class SyncEngineFactoryImpl;
-}  // namespace browser_sync
 
 namespace supervised_user {
 class SupervisedUserSettingsService;
@@ -68,7 +65,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
   const raw_ptr<supervised_user::SupervisedUserSettingsService>
       supervised_user_settings_service_;
-  const std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
+  browser_sync::SyncEngineFactoryImpl engine_factory_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__

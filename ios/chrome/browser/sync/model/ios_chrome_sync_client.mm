@@ -48,10 +48,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(
       trusted_vault_service_(trusted_vault_service),
       sync_invalidations_service_(sync_invalidations_service),
       supervised_user_settings_service_(supervised_user_settings_service),
-      engine_factory_(std::make_unique<browser_sync::SyncEngineFactoryImpl>(
-          this,
-          device_info_sync_service->GetDeviceInfoTracker(),
-          data_type_store_service->GetSyncDataPath())) {}
+      engine_factory_(this,
+                      device_info_sync_service->GetDeviceInfoTracker(),
+                      data_type_store_service->GetSyncDataPath()) {}
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
 
@@ -86,7 +85,7 @@ IOSChromeSyncClient::GetExtensionsActivity() {
 }
 
 syncer::SyncEngineFactory* IOSChromeSyncClient::GetSyncEngineFactory() {
-  return engine_factory_.get();
+  return &engine_factory_;
 }
 
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
