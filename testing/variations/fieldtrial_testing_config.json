@@ -18499,40 +18499,6 @@
             ]
         }
     ],
-    "PrivacySandboxV4": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Notice_GA_Stable",
-                    "params": {
-                        "notice-required": "true",
-                        "restricted-notice": "true"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxSettings4"
-                    ]
-                },
-                {
-                    "name": "Enabled_Consent_GA_Stable",
-                    "params": {
-                        "consent-required": "true",
-                        "restricted-notice": "true"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxSettings4"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivateAggregationApiFilteringIds": [
         {
             "platforms": [
