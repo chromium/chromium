@@ -1810,8 +1810,9 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
 
 void BackForwardTransitionAnimator::MaybeCloneOldSurfaceLayer(
     RenderWidgetHostViewBase* old_main_frame_view) {
-  // The old View must be still alive (and its renderer).
-  CHECK(old_main_frame_view);
+  if (!old_main_frame_view) {
+    return;
+  }
 
   CHECK(!old_surface_clone_);
 
