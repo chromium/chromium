@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
@@ -16,10 +17,12 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/screen_ai/public/test/fake_optical_character_recognizer.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -151,4 +154,30 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
       SkBitmap(), detected_text_future.GetCallback());
 
   EXPECT_EQ(detected_text_future.Get(), "");
+}
+
+// Simulates successful text detection using a fake OCR backend.
+IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
+                       DetectsTextWhenOCRSupported) {
+  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
+  scoped_refptr<screen_ai::FakeOpticalCharacterRecognizer>
+      optical_character_recognizer =
+          screen_ai::FakeOpticalCharacterRecognizer::Create(
+              /*empty_ax_tree_update_result=*/false);
+  auto visual_annotation = screen_ai::mojom::VisualAnnotation::New();
+  auto line1 = screen_ai::mojom::LineBox::New();
+  line1->text_line = "Text";
+  visual_annotation->lines.push_back(std::move(line1));
+  auto line2 = screen_ai::mojom::LineBox::New();
+  line2->text_line = "😊";
+  visual_annotation->lines.push_back(std::move(line2));
+  optical_character_recognizer->set_visual_annotation_result(
+      std::move(visual_annotation));
+  delegate->set_optical_character_recognizer_for_testing(
+      std::move(optical_character_recognizer));
+  base::test::TestFuture<std::string> detected_text_future;
+
+  delegate->DetectTextInImage(SkBitmap(), detected_text_future.GetCallback());
+
+  EXPECT_EQ(detected_text_future.Get(), "Text\n😊");
 }

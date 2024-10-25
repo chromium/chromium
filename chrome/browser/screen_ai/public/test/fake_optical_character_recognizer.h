@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_SCREEN_AI_PUBLIC_TEST_FAKE_OPTICAL_CHARACTER_RECOGNIZER_H_
 #define CHROME_BROWSER_SCREEN_AI_PUBLIC_TEST_FAKE_OPTICAL_CHARACTER_RECOGNIZER_H_
 
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace screen_ai {
 
 class FakeOpticalCharacterRecognizer : public OpticalCharacterRecognizer {
  public:
-  static scoped_refptr<screen_ai::OpticalCharacterRecognizer> Create(
-      bool return_empty);
+  static scoped_refptr<screen_ai::FakeOpticalCharacterRecognizer> Create(
+      bool empty_ax_tree_update_result);
 
   void PerformOCR(
       const SkBitmap& image,
@@ -24,6 +27,11 @@ class FakeOpticalCharacterRecognizer : public OpticalCharacterRecognizer {
                       callback) override;
 
   void FlushForTesting() override;
+
+  void set_visual_annotation_result(
+      mojom::VisualAnnotationPtr visual_annotation_result) {
+    visual_annotation_result_ = std::move(visual_annotation_result);
+  }
 
  private:
   template <typename T, typename... Args>
@@ -36,7 +44,11 @@ class FakeOpticalCharacterRecognizer : public OpticalCharacterRecognizer {
   // node id is still incorrectly treated as invalid.
   ui::AXNodeID next_node_id_ = -2;
 
-  bool return_empty_;
+  // True if the AX tree update result for `PerformOCR` should be empty.
+  bool empty_ax_tree_update_result_;
+
+  // Used to set a fake visual annotation result for `PerformOCR`.
+  mojom::VisualAnnotationPtr visual_annotation_result_;
 };
 
 }  // namespace screen_ai
