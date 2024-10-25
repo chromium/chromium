@@ -51,7 +51,7 @@ void TachyonAuthedClientImpl::StartAuthedRequest(
   auto serialize_cb =
       base::BindOnce(SerializeProtoToString, std::move(request_proto));
   auto reply_post_cb =
-      base::BindOnce(&TachyonAuthedClientImpl::OnRequestProtoSerialized,
+      base::BindOnce(&TachyonAuthedClientImpl::OnRequestSerialized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request_data));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, std::move(serialize_cb), std::move(reply_post_cb));
@@ -60,10 +60,10 @@ void TachyonAuthedClientImpl::StartAuthedRequest(
 void TachyonAuthedClientImpl::StartAuthedRequestString(
     std::unique_ptr<RequestDataWrapper> request_data,
     std::string request_string) {
-  OnRequestProtoSerialized(std::move(request_data), request_string);
+  OnRequestSerialized(std::move(request_data), request_string);
 }
 
-void TachyonAuthedClientImpl::OnRequestProtoSerialized(
+void TachyonAuthedClientImpl::OnRequestSerialized(
     std::unique_ptr<RequestDataWrapper> request_data,
     std::optional<std::string> request_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

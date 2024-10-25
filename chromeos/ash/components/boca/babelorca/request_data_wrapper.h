@@ -22,7 +22,8 @@ struct RequestDataWrapper {
       const net::NetworkTrafficAnnotationTag& annotation_tag_param,
       std::string_view url_param,
       int max_retries_param,
-      ResponseCallback response_cb_param);
+      ResponseCallback response_cb_param,
+      std::string content_type_param = "application/x-protobuf");
 
   ~RequestDataWrapper();
 
@@ -33,6 +34,7 @@ struct RequestDataWrapper {
   int oauth_version = 0;
   int oauth_retry_num = 0;
   std::string content_data;
+  const std::string content_type;
 };
 
 }  // namespace ash::babelorca

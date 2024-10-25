@@ -16,11 +16,13 @@ RequestDataWrapper::RequestDataWrapper(
     const net::NetworkTrafficAnnotationTag& annotation_tag_param,
     std::string_view url_param,
     int max_retries_param,
-    ResponseCallback response_cb_param)
+    ResponseCallback response_cb_param,
+    std::string content_type_param)
     : annotation_tag(annotation_tag_param),
       url(std::move(url_param)),
       max_retries(max_retries_param),
-      response_cb(std::move(response_cb_param)) {}
+      response_cb(std::move(response_cb_param)),
+      content_type(content_type_param) {}
 
 RequestDataWrapper::~RequestDataWrapper() = default;
 

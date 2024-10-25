@@ -27,6 +27,8 @@ constexpr char kOAuthToken1[] = "oauth-token1";
 constexpr char kOAuthToken2[] = "oauth-token2";
 constexpr int kMaxRetries = 2;
 constexpr char kUrl[] = "https:://test.com";
+const std::string kProtoContentType = "application/x-protobuf";
+const std::string kJsonContentType = "application/json";
 
 class TachyonAuthedClientImplTest : public testing::Test {
  protected:
@@ -55,10 +57,11 @@ class TachyonAuthedClientImplTest : public testing::Test {
 
   const std::string& request_string() { return request_string_; }
 
-  std::unique_ptr<RequestDataWrapper> request_data_wrapper() {
-    return std::make_unique<RequestDataWrapper>(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                                kUrl, kMaxRetries,
-                                                test_future_.GetCallback());
+  std::unique_ptr<RequestDataWrapper> request_data_wrapper(
+      std::string content_type = kProtoContentType) {
+    return std::make_unique<RequestDataWrapper>(
+        TRAFFIC_ANNOTATION_FOR_TESTS, kUrl, kMaxRetries,
+        test_future_.GetCallback(), content_type);
   }
 
   base::test::TestFuture<TachyonResponse>* test_future() {
@@ -95,6 +98,7 @@ TEST_F(TachyonAuthedClientImplTest, InitiallyAuthed) {
   EXPECT_EQ(request_data->oauth_version, 1);
   EXPECT_THAT(request_data->url, testing::StrEq(kUrl));
   EXPECT_EQ(request_data->content_data, request_string());
+  EXPECT_EQ(request_data->content_type, kProtoContentType);
 }
 
 TEST_F(TachyonAuthedClientImplTest, InitiallyAuthedRequestString) {
@@ -104,7 +108,8 @@ TEST_F(TachyonAuthedClientImplTest, InitiallyAuthedRequestString) {
 
   CreateAuthedClient();
   authed_client()->StartAuthedRequestString(
-      request_data_wrapper(), request_message()->SerializeAsString());
+      request_data_wrapper(kJsonContentType),
+      request_message()->SerializeAsString());
   fake_client_ptr()->WaitForRequest();
 
   EXPECT_THAT(fake_client_ptr()->GetOAuthToken(), testing::StrEq(kOAuthToken1));
@@ -116,6 +121,7 @@ TEST_F(TachyonAuthedClientImplTest, InitiallyAuthedRequestString) {
   EXPECT_EQ(request_data->oauth_version, 1);
   EXPECT_THAT(request_data->url, testing::StrEq(kUrl));
   EXPECT_EQ(request_data->content_data, request_string());
+  EXPECT_EQ(request_data->content_type, kJsonContentType);
 }
 
 TEST_F(TachyonAuthedClientImplTest, NotInitiallyAuthed) {
