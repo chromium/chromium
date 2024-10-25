@@ -109,6 +109,7 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   bool IsLoggedInAsGuest() const override;
   bool IsLoggedInAsKioskApp() const override;
   bool IsLoggedInAsWebKioskApp() const override;
+  bool IsLoggedInAsKioskIWA() const override;
   bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(

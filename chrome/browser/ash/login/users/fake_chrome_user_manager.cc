@@ -429,6 +429,13 @@ bool FakeChromeUserManager::IsLoggedInAsWebKioskApp() const {
              : false;
 }
 
+bool FakeChromeUserManager::IsLoggedInAsKioskIWA() const {
+  const user_manager::User* active_user = GetActiveUser();
+  return active_user
+             ? active_user->GetType() == user_manager::UserType::kKioskIWA
+             : false;
+}
+
 bool FakeChromeUserManager::IsLoggedInAsAnyKioskApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user && active_user->IsKioskType();
