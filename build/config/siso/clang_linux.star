@@ -10,7 +10,6 @@ load("./android.star", "android")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
-load("./cros.star", "cros")
 load("./gn_logs.star", "gn_logs")
 load("./win_sdk.star", "win_sdk")
 
@@ -156,6 +155,14 @@ def __step_config(ctx, step_config):
             # It might be better to add them only for sanitizer builds if there is a performance issue.
             "third_party/llvm-build/Release+Asserts/lib/clang:libs",
         ],
+        "build/toolchain/gcc_solink_wrapper.py": [
+            "build/toolchain/whole_archive.py",
+            "build/toolchain/wrapper_utils.py",
+        ],
+        "build/toolchain/gcc_link_wrapper.py": [
+            "build/toolchain/whole_archive.py",
+            "build/toolchain/wrapper_utils.py",
+        ],
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
@@ -233,6 +240,73 @@ def __step_config(ctx, step_config):
             "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
+        {
+            "name": "clang/alink/llvm-ar",
+            "action": "(.*_)?alink",
+            "inputs": [
+                # TODO: b/316267242 - Add inputs to GN config.
+                "third_party/llvm-build/Release+Asserts/bin/llvm-ar",
+            ],
+            "exclude_input_patterns": [
+                "*.cc",
+                "*.h",
+                "*.js",
+                "*.pak",
+                "*.py",
+                "*.stamp",
+            ],
+            "remote": config.get(ctx, "remote-link"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+            "platform_ref": "large",
+            "accumulate": True,
+        },
+        {
+            "name": "clang/solink/gcc_solink_wrapper",
+            "action": "(.*_)?solink",
+            "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
+            "handler": "clang_link",
+            "inputs": [
+                # TODO: b/316267242 - Add inputs to GN config.
+                "build/toolchain/gcc_solink_wrapper.py",
+                "build/linux/debian_bullseye_amd64-sysroot:link",
+            ],
+            "exclude_input_patterns": [
+                "*.cc",
+                "*.h",
+                "*.js",
+                "*.pak",
+                "*.py",
+                "*.stamp",
+            ],
+            "remote": config.get(ctx, "remote-link"),
+            "canonicalize_dir": True,
+            "platform_ref": "large",
+            "timeout": "2m",
+        },
+        {
+            "name": "clang/link/gcc_link_wrapper",
+            "action": "(.*_)?link",
+            "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
+            "handler": "clang_link",
+            "inputs": [
+                # TODO: b/316267242 - Add inputs to GN config.
+                "build/toolchain/gcc_link_wrapper.py",
+                "build/linux/debian_bullseye_amd64-sysroot:link",
+            ],
+            "exclude_input_patterns": [
+                "*.cc",
+                "*.h",
+                "*.js",
+                "*.pak",
+                "*.py",
+                "*.stamp",
+            ],
+            "remote": config.get(ctx, "remote-link"),
+            "canonicalize_dir": True,
+            "platform_ref": "large",
+            "timeout": "10m",
+        },
     ])
     if win_sdk.enabled(ctx):
         step_config["rules"].extend([
@@ -264,82 +338,6 @@ def __step_config(ctx, step_config):
             },
         ])
         win_sdk.step_config(ctx, step_config)
-
-    # TODO: crbug.com/372355740 - Enable remote links for CrOS toolchain builds.
-    if not (cros.custom_toolchain(ctx) or cros.custom_sysroot(ctx)):
-        step_config["rules"].extend([
-            {
-                "name": "clang/alink/llvm-ar",
-                "action": "(.*_)?alink",
-                "inputs": [
-                    # TODO: b/316267242 - Add inputs to GN config.
-                    "third_party/llvm-build/Release+Asserts/bin/llvm-ar",
-                ],
-                "exclude_input_patterns": [
-                    "*.cc",
-                    "*.h",
-                    "*.js",
-                    "*.pak",
-                    "*.py",
-                    "*.stamp",
-                ],
-                "remote": config.get(ctx, "remote-link"),
-                "canonicalize_dir": True,
-                "timeout": "2m",
-                "platform_ref": "large",
-                "accumulate": True,
-            },
-            {
-                "name": "clang/solink/gcc_solink_wrapper",
-                "action": "(.*_)?solink",
-                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
-                "handler": "clang_link",
-                "inputs": [
-                    # TODO: b/316267242 - Add inputs to GN config.
-                    "build/toolchain/gcc_solink_wrapper.py",
-                    "build/toolchain/whole_archive.py",
-                    "build/toolchain/wrapper_utils.py",
-                    "build/linux/debian_bullseye_amd64-sysroot:link",
-                ],
-                "exclude_input_patterns": [
-                    "*.cc",
-                    "*.h",
-                    "*.js",
-                    "*.pak",
-                    "*.py",
-                    "*.stamp",
-                ],
-                "remote": config.get(ctx, "remote-link"),
-                "canonicalize_dir": True,
-                "platform_ref": "large",
-                "timeout": "2m",
-            },
-            {
-                "name": "clang/link/gcc_link_wrapper",
-                "action": "(.*_)?link",
-                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
-                "handler": "clang_link",
-                "inputs": [
-                    # TODO: b/316267242 - Add inputs to GN config.
-                    "build/toolchain/gcc_link_wrapper.py",
-                    "build/toolchain/whole_archive.py",
-                    "build/toolchain/wrapper_utils.py",
-                    "build/linux/debian_bullseye_amd64-sysroot:link",
-                ],
-                "exclude_input_patterns": [
-                    "*.cc",
-                    "*.h",
-                    "*.js",
-                    "*.pak",
-                    "*.py",
-                    "*.stamp",
-                ],
-                "remote": config.get(ctx, "remote-link"),
-                "canonicalize_dir": True,
-                "platform_ref": "large",
-                "timeout": "10m",
-            },
-        ])
     return step_config
 
 clang = module(

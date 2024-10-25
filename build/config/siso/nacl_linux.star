@@ -205,6 +205,12 @@ def __step_config(ctx, step_config):
             "action": "(.*_)?irt_x64_link",
             "remote": False,
         },
+        # nacl bootstrap
+        {
+            "name": "nacl/bootstrap/alink",
+            "action": "nacl_bootstrap_alink",
+            "remote": False,
+        },
     ])
 
     step_config["input_deps"].update({
