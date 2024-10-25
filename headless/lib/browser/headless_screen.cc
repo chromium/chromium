@@ -4,13 +4,6 @@
 
 #include "headless/lib/browser/headless_screen.h"
 
-#include <stdint.h>
-
-#include "ui/base/ime/input_method.h"
-#include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/native_widget_types.h"
-
 namespace headless {
 
 // static
@@ -48,7 +41,45 @@ HeadlessScreen::HeadlessScreen(const gfx::Rect& screen_bounds) {
   static int64_t synthesized_display_id = 2000;
   display::Display display(synthesized_display_id++);
   display.SetScaleAndBounds(1.0f, screen_bounds);
-  ProcessDisplayChanged(display, true /* is_primary */);
+  ProcessDisplayChanged(display, /*is_primary=*/true);
+}
+
+// static
+void HeadlessScreen::UpdateScreenSizeForScreenOrientation(
+    display::mojom::ScreenOrientation screen_orientation) {
+  auto* headless_screen = static_cast<HeadlessScreen*>(GetScreen());
+  headless_screen->UpdateScreenSizeForScreenOrientationImpl(screen_orientation);
+}
+
+void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
+    display::mojom::ScreenOrientation screen_orientation) {
+  display::Display display = GetPrimaryDisplay();
+
+  bool needs_swap = false;
+  switch (screen_orientation) {
+    case display::mojom::ScreenOrientation::kUndefined:
+    case display::mojom::ScreenOrientation::kPortraitSecondary:
+    case display::mojom::ScreenOrientation::kLandscapeSecondary:
+      break;
+    case display::mojom::ScreenOrientation::kPortraitPrimary:
+      needs_swap = display.is_landscape();
+      break;
+    case display::mojom::ScreenOrientation::kLandscapePrimary:
+      needs_swap = !display.is_landscape();
+      break;
+  }
+
+  // Swap display width and height to change its orientation.
+  if (needs_swap) {
+    gfx::Rect bounds = display.bounds();
+    int old_width = bounds.width();
+    bounds.set_width(bounds.height());
+    bounds.set_height(old_width);
+    display.set_bounds(bounds);
+  }
+
+  // Update display even if there was no swap.
+  ProcessDisplayChanged(display, /*is_primary=*/true);
 }
 
 }  // namespace headless

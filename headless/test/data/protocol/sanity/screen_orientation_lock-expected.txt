@@ -1,0 +1,5 @@
+Tests screen orientation lock.
+Current screen orientation: landscape-primary
+Locking screen orientation to 'portrait'
+Locked screen orientation: portrait-primary
+PASS

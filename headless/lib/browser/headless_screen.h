@@ -5,14 +5,9 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 
-#include "base/compiler_specific.h"
-#include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
+#include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
-
-namespace gfx {
-class Rect;
-}
 
 namespace headless {
 
@@ -26,7 +21,10 @@ class HeadlessScreen : public display::ScreenBase {
 
   ~HeadlessScreen() override;
 
- protected:
+  // Updates screen size given the screen orientation.
+  static void UpdateScreenSizeForScreenOrientation(
+      display::mojom::ScreenOrientation screen_orientation);
+
   // display::Screen overrides:
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
@@ -39,6 +37,9 @@ class HeadlessScreen : public display::ScreenBase {
 
  private:
   explicit HeadlessScreen(const gfx::Rect& screen_bounds);
+
+  void UpdateScreenSizeForScreenOrientationImpl(
+      display::mojom::ScreenOrientation screen_orientation);
 };
 
 }  // namespace headless
