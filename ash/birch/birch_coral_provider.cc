@@ -11,6 +11,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/birch/coral_item_remover.h"
 #include "ash/birch/coral_util.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
@@ -29,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/wm/core/window_util.h"
 
@@ -440,7 +442,10 @@ void BirchCoralProvider::FilterCoralContentItems(
 
 void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
   // Only cache tab embeddings for the primary user.
-  if (Shell::Get()->session_controller()->IsUserPrimary() &&
+  auto* session_controller = Shell::Get()->session_controller();
+  if (session_controller->IsUserPrimary() &&
+      session_controller->GetPrimaryUserPrefService()->GetBoolean(
+          prefs::kBirchUseCoral) &&
       IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {
     CacheTabEmbedding(tab_item);
   }
