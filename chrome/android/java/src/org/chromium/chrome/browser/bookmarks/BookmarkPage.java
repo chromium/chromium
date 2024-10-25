@@ -43,7 +43,7 @@ public class BookmarkPage extends BasicNativePage {
                         profile,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
         mBookmarkManagerCoordinator.setBasicNativePage(this);
-        mTitle = host.getContext().getResources().getString(R.string.bookmarks);
+        mTitle = host.getContext().getString(R.string.bookmarks);
 
         initWithView(mBookmarkManagerCoordinator.getView());
     }

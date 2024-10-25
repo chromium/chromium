@@ -31,7 +31,7 @@ class FooterItemViewBinder {
                     view.findViewById(R.id.fast_checkout_add_new_item_label);
             newItemTextView.setText(model.get(LABEL));
             newItemTextView.setContentDescription(
-                    view.getContext().getResources().getString(model.get(LABEL))
+                    view.getContext().getString(model.get(LABEL))
                             + ", "
                             + view.getContext()
                                     .getResources()

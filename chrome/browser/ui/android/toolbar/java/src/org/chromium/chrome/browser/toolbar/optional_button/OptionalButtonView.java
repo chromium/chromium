@@ -223,8 +223,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (buttonSpec.getActionChipLabelResId() == Resources.ID_NULL) {
             mActionChipLabelString = null;
         } else {
-            mActionChipLabelString =
-                    getContext().getResources().getString(buttonSpec.getActionChipLabelResId());
+            mActionChipLabelString = getContext().getString(buttonSpec.getActionChipLabelResId());
         }
 
         mClickListener = buttonSpec.getOnClickListener();

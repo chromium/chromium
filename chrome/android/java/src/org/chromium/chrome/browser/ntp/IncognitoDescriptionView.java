@@ -378,7 +378,7 @@ public class IncognitoDescriptionView extends LinearLayout {
         if (!learnMoreInSubtitle) {
             // Format the "Learn more" link.
             SpannableString learnMoreLink =
-                    new SpannableString(getContext().getResources().getString(R.string.learn_more));
+                    new SpannableString(getContext().getString(R.string.learn_more));
             learnMoreLink.setSpan(learnMoreSpan, 0, learnMoreLink.length(), /* flags= */ 0);
             mLearnMore.setText(learnMoreLink);
 
@@ -392,7 +392,7 @@ public class IncognitoDescriptionView extends LinearLayout {
         StringBuilder concatenatedText = new StringBuilder();
         concatenatedText.append(subtitleText);
         concatenatedText.append(" ");
-        concatenatedText.append(getContext().getResources().getString(R.string.learn_more));
+        concatenatedText.append(getContext().getString(R.string.learn_more));
         SpannableString textWithLearnMoreLink = new SpannableString(concatenatedText.toString());
 
         textWithLearnMoreLink.setSpan(

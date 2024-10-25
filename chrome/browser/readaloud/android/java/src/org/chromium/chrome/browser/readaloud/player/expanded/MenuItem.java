@@ -231,13 +231,13 @@ public class MenuItem extends FrameLayout {
     void setPlayButtonStopped() {
         mPlayButton.setImageResource(R.drawable.mini_play_button);
         mPlayButton.setContentDescription(
-                getContext().getResources().getString(R.string.readaloud_play) + " " + mLabel);
+                getContext().getString(R.string.readaloud_play) + " " + mLabel);
     }
 
     void setPlayButtonPlaying() {
         mPlayButton.setImageResource(R.drawable.mini_pause_button);
         mPlayButton.setContentDescription(
-                getContext().getResources().getString(R.string.readaloud_pause) + " " + mLabel);
+                getContext().getString(R.string.readaloud_pause) + " " + mLabel);
     }
 
     void setSecondLine(String text) {

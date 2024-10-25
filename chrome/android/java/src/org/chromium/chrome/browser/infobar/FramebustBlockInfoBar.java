@@ -81,8 +81,7 @@ public class FramebustBlockInfoBar extends InfoBar {
         ellipsizerView.setOnClickListener(view -> onLinkClicked());
 
         control.addView(ellipsizerView);
-        layout.setButtons(
-                getContext().getResources().getString(R.string.always_allow_redirects), null);
+        layout.setButtons(getContext().getString(R.string.always_allow_redirects), null);
     }
 
     @Override

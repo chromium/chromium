@@ -890,7 +890,7 @@ public class AndroidShareSheetControllerUnitTest {
         for (Parcelable parcelable : actions) {
             Bundle bundle = (Bundle) parcelable;
             if (TextUtils.equals(
-                    ContextUtils.getApplicationContext().getResources().getString(iconLabel),
+                    ContextUtils.getApplicationContext().getString(iconLabel),
                     bundle.getString(KEY_CHOOSER_ACTION_NAME))) {
                 expectAction = bundle;
                 break;

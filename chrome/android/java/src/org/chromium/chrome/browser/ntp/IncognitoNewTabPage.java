@@ -83,7 +83,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         mIncognitoNewTabPageManager = createIncognitoNewTabPageManager();
 
-        mTitle = host.getContext().getResources().getString(R.string.new_incognito_tab_title);
+        mTitle = host.getContext().getString(R.string.new_incognito_tab_title);
 
         LayoutInflater inflater = LayoutInflater.from(host.getContext());
         mIncognitoNewTabPageView =
