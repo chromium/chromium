@@ -4704,32 +4704,43 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ZeroRttReasonGoogle"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2023-06-04">
-  <owner>renjietang@chromium.org</owner>
+    enum="SSLHandshakeEarlyDataReason" expires_after="2025-01-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Indicates whether a QUIC handshake attempted or used 0-RTT on the
     connection, and if 0-RTT was not used, it provides reasons why. Only records
     connections with Google hosted servers.
+
+    Warning: this histogram was expired from 2023-06-04 to 2024-10-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.QuicSession.ZeroRttReasonNonGoogle"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2023-03-19">
-  <owner>renjietang@chromium.org</owner>
+    enum="SSLHandshakeEarlyDataReason" expires_after="2025-01-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Indicates whether a QUIC handshake attempted or used 0-RTT on the
     connection, and if 0-RTT was not used, it provides reasons why. Only records
     connections with non-Google servers.
+
+    Warning: this histogram was expired from 2023-03-19 to 2024-10-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.QuicSession.ZeroRttState" enum="ZeroRttState"
-    expires_after="2024-05-19">
-  <owner>renjietang@chromium.org</owner>
+    expires_after="2025-01-24">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
-  <summary>Whether 0-RTT was successfully used in the connection.</summary>
+  <summary>
+    Whether 0-RTT was successfully used in the connection.
+
+    Warning: this histogram was expired from 2024-05-19 to 2024-10-25; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake"
