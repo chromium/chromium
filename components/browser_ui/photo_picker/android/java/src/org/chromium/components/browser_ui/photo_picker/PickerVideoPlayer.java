@@ -789,13 +789,13 @@ public class PickerVideoPlayer extends FrameLayout
     private void switchToPlayButton() {
         mLargePlayButton.setImageResource(R.drawable.ic_play_circle_filled_white_24dp);
         mLargePlayButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_play_video));
+                mContext.getString(R.string.accessibility_play_video));
     }
 
     private void switchToPauseButton() {
         mLargePlayButton.setImageResource(R.drawable.ic_pause_circle_outline_white_24dp);
         mLargePlayButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_pause_video));
+                mContext.getString(R.string.accessibility_pause_video));
     }
 
     private void toggleMute() {
@@ -804,12 +804,12 @@ public class PickerVideoPlayer extends FrameLayout
             mMediaPlayer.setVolume(1f, 1f);
             mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
             mMuteButton.setContentDescription(
-                    mContext.getResources().getString(R.string.accessibility_mute_video));
+                    mContext.getString(R.string.accessibility_mute_video));
         } else {
             mMediaPlayer.setVolume(0f, 0f);
             mMuteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
             mMuteButton.setContentDescription(
-                    mContext.getResources().getString(R.string.accessibility_unmute_video));
+                    mContext.getString(R.string.accessibility_unmute_video));
         }
     }
 
@@ -817,7 +817,7 @@ public class PickerVideoPlayer extends FrameLayout
         assert !mFullScreenEnabled;
         mFullscreenButton.setImageResource(R.drawable.ic_full_screen_exit_white_24dp);
         mFullscreenButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_exit_full_screen));
+                mContext.getString(R.string.accessibility_exit_full_screen));
         mFullScreenEnabled = true;
     }
 
@@ -825,7 +825,7 @@ public class PickerVideoPlayer extends FrameLayout
         assert mFullScreenEnabled;
         mFullscreenButton.setImageResource(R.drawable.ic_full_screen_white_24dp);
         mFullscreenButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_full_screen));
+                mContext.getString(R.string.accessibility_full_screen));
         mFullScreenEnabled = false;
     }
 

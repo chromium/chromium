@@ -65,13 +65,14 @@ public class DownloadUtils {
             bytesInCorrectUnits = bytes / (float) ConversionUtils.BYTES_PER_GIGABYTE;
         }
 
-        return context.getResources().getString(resourceId, bytesInCorrectUnits);
+        return context.getString(resourceId, bytesInCorrectUnits);
     }
 
     /**
      * Adds a download to the Android DownloadManager.
+     *
      * @see android.app.DownloadManager#addCompletedDownload(String, String, boolean, String,
-     * String, long, boolean)
+     *     String, long, boolean)
      */
     public static long addCompletedDownload(
             String fileName,

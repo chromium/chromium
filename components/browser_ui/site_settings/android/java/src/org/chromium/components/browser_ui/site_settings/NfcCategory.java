@@ -25,7 +25,7 @@ public class NfcCategory extends SiteSettingsCategory {
 
     @Override
     protected String getMessageIfNotSupported(Context context) {
-        return context.getResources().getString(R.string.android_nfc_unsupported);
+        return context.getString(R.string.android_nfc_unsupported);
     }
 
     @Override
@@ -40,6 +40,6 @@ public class NfcCategory extends SiteSettingsCategory {
 
     @Override
     protected String getMessageForEnablingOsGlobalPermission(Context context) {
-        return context.getResources().getString(R.string.android_nfc_off_globally);
+        return context.getString(R.string.android_nfc_off_globally);
     }
 }

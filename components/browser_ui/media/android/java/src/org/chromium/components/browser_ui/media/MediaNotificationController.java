@@ -967,7 +967,7 @@ public class MediaNotificationController {
             MediaButtonInfo buttonInfo = mActionToButtonInfo.get(action);
             builder.addAction(
                     buttonInfo.iconResId,
-                    getContext().getResources().getString(buttonInfo.descriptionResId),
+                    getContext().getString(buttonInfo.descriptionResId),
                     createPendingIntent(buttonInfo.intentString),
                     buttonInfo.buttonId);
         }
@@ -982,10 +982,8 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.isPrivate) {
             // Notifications in incognito shouldn't show what is playing to avoid leaking
             // information.
-            builder.setContentTitle(
-                    getContext().getResources().getString(R.string.media_notification_incognito));
-            builder.setSubText(
-                    getContext().getResources().getString(R.string.notification_incognito_tab));
+            builder.setContentTitle(getContext().getString(R.string.media_notification_incognito));
+            builder.setSubText(getContext().getString(R.string.notification_incognito_tab));
             return;
         }
 

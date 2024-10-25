@@ -69,6 +69,6 @@ public class AwContextMenuItem {
 
     /** Transforms the id of the item into a string. */
     public static CharSequence getTitle(Context context, @Item int item) {
-        return context.getResources().getString(getStringId(item));
+        return context.getString(getStringId(item));
     }
 }

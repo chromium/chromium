@@ -57,7 +57,7 @@ public class SelectableListUtils {
         }
         view.setContentDescription(
                 missingContext
-                        ? context.getResources().getString(accessibilityResource)
+                        ? context.getString(accessibilityResource)
                         : context.getResources()
                                 .getString(accessibilityResource, accessibilityContext));
     }

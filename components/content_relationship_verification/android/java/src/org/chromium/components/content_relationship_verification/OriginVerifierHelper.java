@@ -45,7 +45,7 @@ public class OriginVerifierHelper {
             }
 
             // Application context cannot access hosting apps resources.
-            String assetStatement = context.getResources().getString(statementsStringId);
+            String assetStatement = context.getString(statementsStringId);
             JSONArray statements = new JSONArray(assetStatement);
 
             if (statements == null) {

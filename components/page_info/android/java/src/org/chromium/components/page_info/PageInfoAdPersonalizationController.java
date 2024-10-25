@@ -58,7 +58,7 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     @NonNull
     @Override
     public String getSubpageTitle() {
-        return mRowView.getContext().getResources().getString(R.string.page_info_ad_privacy_header);
+        return mRowView.getContext().getString(R.string.page_info_ad_privacy_header);
     }
 
     @Override

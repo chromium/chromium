@@ -878,7 +878,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 setting == ContentSettingValues.ALLOW
                         ? R.string.website_settings_site_allowed
                         : R.string.website_settings_site_blocked;
-        return getContext().getResources().getString(id, embeddedHost);
+        return getContext().getString(id, embeddedHost);
     }
 
     private void setUpEmbeddedContentSettingPreferences() {
