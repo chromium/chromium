@@ -59,7 +59,7 @@
         credential.federation_origin.IsValid()) {
       _credentialType = CredentialTypeFederation;
     }
-    if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+    if (syncer::IsWebauthnCredentialSyncEnabled() &&
         !credential.passkey_credential_id.empty()) {
       _credentialType = CredentialTypePasskey;
     }

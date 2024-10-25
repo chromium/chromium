@@ -105,7 +105,7 @@ PasskeySyncBridge::PasskeySyncBridge(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEBAUTHN_CREDENTIAL,
               /*dump_stack=*/base::DoNothing())) {
-  DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
+  DCHECK(syncer::IsWebauthnCredentialSyncEnabled());
   std::move(store_factory)
       .Run(syncer::WEBAUTHN_CREDENTIAL,
            base::BindOnce(&PasskeySyncBridge::OnCreateStore,

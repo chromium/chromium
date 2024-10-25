@@ -85,14 +85,9 @@ Suggestion CreateGenerationEntry() {
 
 // Entry for opting in to password account storage and then filling.
 Suggestion CreateEntryToOptInToAccountStorageThenFill() {
-  bool has_passkey_sync = false;
-#if !BUILDFLAG(IS_ANDROID)
-  has_passkey_sync =
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
-#endif
   return Suggestion(
       l10n_util::GetStringUTF8(
-          has_passkey_sync
+          syncer::IsWebauthnCredentialSyncEnabled()
               ? IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS
               : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE),
       /*label=*/"", Suggestion::Icon::kGoogle,

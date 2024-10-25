@@ -576,11 +576,6 @@ const char kIOSProactivePasswordGenerationBottomSheetDescription[] =
     "Enables the display of the proactive password generation bottom sheet on "
     "IOS.";
 
-const char kSyncWebauthnCredentialsName[] = "Sync WebAuthn credentials";
-const char kSyncWebauthnCredentialsDescription[] =
-    "Allow syncing, managing, and displaying Google Password Manager WebAuthn "
-    "credential ('passkey') metadata";
-
 const char kIOSQuickDeleteName[] = "Quick Delete for iOS";
 const char kIOSQuickDeleteDescription[] =
     "Enables a new way for users to more easily delete their browsing data in "

@@ -72,10 +72,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   ModelLoadComplete,
 };
 
-bool SyncingWebauthnCredentialsEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
-}
-
 }  // namespace
 
 @interface PasswordSettingsViewController () {
@@ -248,7 +244,7 @@ bool SyncingWebauthnCredentialsEnabled() {
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
-  if (SyncingWebauthnCredentialsEnabled()) {
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
     // TODO(crbug.com/358343061): Add item for the policy enforced toggle.
     [model addSectionWithIdentifier:
                SectionIdentifierAutomaticPasskeyUpgradesSwitch];
@@ -946,7 +942,7 @@ bool SyncingWebauthnCredentialsEnabled() {
 // Returns section index for the change GPM Pin button.
 - (NSInteger)computeGPMPinSectionIndex {
   NSInteger previousSection =
-      SyncingWebauthnCredentialsEnabled()
+      syncer::IsWebauthnCredentialSyncEnabled()
           ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
           : SectionIdentifierPasswordsInOtherApps;
   return [self.tableViewModel sectionForSectionIdentifier:previousSection] + 1;
@@ -960,7 +956,7 @@ bool SyncingWebauthnCredentialsEnabled() {
   TableViewModel* tableViewModel = self.tableViewModel;
   NSInteger previousSection = SectionIdentifierPasswordsInOtherApps;
 
-  if (SyncingWebauthnCredentialsEnabled()) {
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
     BOOL hasGPMPinSection =
         [tableViewModel hasSectionForSectionIdentifier:
                             SectionIdentifierGooglePasswordManagerPin];

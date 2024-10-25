@@ -111,10 +111,9 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   builder.SetDataTypeStoreService(
       DataTypeStoreServiceFactory::GetForProfile(profile));
-  builder.SetPasskeyModel(
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-          ? IOSPasskeyModelFactory::GetForProfile(profile)
-          : nullptr);
+  builder.SetPasskeyModel(syncer::IsWebauthnCredentialSyncEnabled()
+                              ? IOSPasskeyModelFactory::GetForProfile(profile)
+                              : nullptr);
   builder.SetPasswordReceiverService(
       IOSChromePasswordReceiverServiceFactory::GetForProfile(profile));
   builder.SetPasswordSenderService(
@@ -316,7 +315,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSChromePasswordReceiverServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordSenderServiceFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
     DependsOn(IOSPasskeyModelFactory::GetInstance());
   }
   if (base::FeatureList::IsEnabled(

@@ -20,7 +20,7 @@
 // static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
     ProfileIOS* profile) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
     return nullptr;
   }
   return static_cast<webauthn::PasskeyModel*>(

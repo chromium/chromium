@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/sync/base/features.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
@@ -26,8 +25,6 @@
 class CredentialProviderBrowserAgentTest : public PlatformTest {
  public:
   CredentialProviderBrowserAgentTest() {
-    feature_list_.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
@@ -84,7 +81,6 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
     return inserted_web_state;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
@@ -96,6 +92,10 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
 };
 
 TEST_F(CredentialProviderBrowserAgentTest, TestAddPasskey) {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
+
   SetUpBrowserAgent(/*incognito=*/false);
 
   web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
@@ -112,6 +112,10 @@ TEST_F(CredentialProviderBrowserAgentTest, TestAddPasskey) {
 }
 
 TEST_F(CredentialProviderBrowserAgentTest, TestAddPasskeyIncognito) {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
+
   SetUpBrowserAgent(/*incognito=*/true);
 
   web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));

@@ -185,7 +185,7 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
   [self updateShowBulkMovePasswordsToAccount];
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
     [self checkUserCanChangeGPMPin];
   }
 }

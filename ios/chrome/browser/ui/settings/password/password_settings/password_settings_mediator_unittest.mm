@@ -254,9 +254,9 @@ TEST_F(PasswordSettingsMediatorTest,
 // created (has non-degraded recoverability status) and with a bootstrapped
 // device (keys being returned from the passkey trusted vault).
 TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -275,9 +275,9 @@ TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
 // GPM Pin created (is in degraded recoverability).
 TEST_F(PasswordSettingsMediatorTest,
        DoesNotShowChangeGPMPinButtonWithNoGPMPinCreated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(
@@ -291,9 +291,9 @@ TEST_F(PasswordSettingsMediatorTest,
 // bootstrapped their device (no keys returned from the passkey trusted vault).
 TEST_F(PasswordSettingsMediatorTest,
        DoesNotShowChangeGPMPinButtonWhenNotBootstrapped) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
   EXPECT_CALL(*trusted_vault_backend_, GetDegradedRecoverabilityStatus(
                                            fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>(

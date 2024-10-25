@@ -8,6 +8,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "components/sync/base/ios_cpe_passkey_buildflag.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace syncer {
 
 // Customizes the delay of a deferred sync startup.
@@ -73,12 +77,27 @@ BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers);
 // have any effect for signed-in non-syncing users!)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS)
+// On iOS, Webauthn Credential Sync is controlled by a build-time flag, because
+// these capabilities are linked to the Credential Provider Extension and must
+// be declared in its Info.plist (manifest).
+constexpr bool IsWebauthnCredentialSyncEnabled() {
+#if BUILDFLAG(IOS_PASSKEYS_ENABLED)
+  return true;
+#else
+  return false;
+#endif  // !BUILDFLAG(IOS_PASSKEYS_ENABLED)
+}
+#elif BUILDFLAG(IS_ANDROID)
+constexpr bool IsWebauthnCredentialSyncEnabled() {
+  return false;
+}
+#else  // Not iOS or Android
 // Enables syncing the WEBAUTHN_CREDENTIAL data type.
-// Enabled by default on M123. Remove on or after M126 on all platforms,
-// except on iOS, where it has not been enabled by default yet.
+// Enabled by default on M123.
 BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
-#endif  // !BUILDFLAG(IS_ANDROID)
+bool IsWebauthnCredentialSyncEnabled();
+#endif
 
 // If enabled, ignore GetUpdates retry delay command from the server.
 BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);

@@ -84,16 +84,16 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
 #endif
 );
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSyncWebauthnCredentials,
              "SyncWebauthnCredentials",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+bool IsWebauthnCredentialSyncEnabled() {
+  return base::FeatureList::IsEnabled(kSyncWebauthnCredentials);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
              "SyncIgnoreGetUpdatesRetryDelay",

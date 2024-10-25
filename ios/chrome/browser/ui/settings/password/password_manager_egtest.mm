@@ -606,6 +606,12 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   CheckPasswordManagerWidgetPromoInstructionScreenVisible();
 }
 
+#define REQUIRE_PASSKEYS                                         \
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {              \
+    EARL_GREY_TEST_DISABLED(                                     \
+        @"This build configuration does not support passkeys."); \
+  }
+
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -715,12 +721,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           (testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth)] ||
       [self isRunningTest:@selector(testDeletingLastAffiliatedGroup)]) {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
-  }
-
-  if ([self isRunningTest:@selector(testEditPasskeyUsername)] ||
-      [self isRunningTest:@selector(testEditPasskeyUserDisplayName)] ||
-      [self isRunningTest:@selector(testDeletePasskey)]) {
-    config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
   }
 
   return config;
@@ -2164,6 +2164,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testEditPasskeyUsername {
+  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -2210,6 +2211,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testEditPasskeyUserDisplayName {
+  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -2256,6 +2258,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testDeletePasskey {
+  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();

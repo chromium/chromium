@@ -96,7 +96,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
       datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
     }
-    if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+    if (syncer::IsWebauthnCredentialSyncEnabled()) {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     }
     return datatypes;

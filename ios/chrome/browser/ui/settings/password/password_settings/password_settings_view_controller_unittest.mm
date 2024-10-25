@@ -116,8 +116,9 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysAutomaticPasskeyUpgradesSwitchWithFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();

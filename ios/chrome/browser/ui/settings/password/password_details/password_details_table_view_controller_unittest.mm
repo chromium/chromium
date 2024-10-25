@@ -216,7 +216,6 @@ class PasswordDetailsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   PasswordDetailsTableViewControllerTest() {
-    feature_list_.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
     reauthentication_module_ = [[MockReauthenticationModule alloc] init];
@@ -444,6 +443,10 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPassword) {
 
 // Tests that passkey is displayed properly.
 TEST_F(PasswordDetailsTableViewControllerTest, TestPasskey) {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
+
   base::Time creation_time = SetPasskey();
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(4, NumberOfItemsInSection(0));

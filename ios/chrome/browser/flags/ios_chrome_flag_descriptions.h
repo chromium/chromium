@@ -480,11 +480,6 @@ extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 extern const char kIOSProactivePasswordGenerationBottomSheetName[];
 extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
 
-// Title and description for the flag to allow syncing, managing, and displaying
-// Google Password Manager WebAuthn credential ('passkey') metadata.
-extern const char kSyncWebauthnCredentialsName[];
-extern const char kSyncWebauthnCredentialsDescription[];
-
 // Title and description for the flag to enable iOS Quick Delete feature.
 extern const char kIOSQuickDeleteName[];
 extern const char kIOSQuickDeleteDescription[];
