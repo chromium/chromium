@@ -817,12 +817,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Sets whether or not the layout manager need to respect the available space.
   //
-  // TODO(crbug.com/40232718): Remove this. When the vertical flexlayout with
-  // cross axis is stretched, it will be (width, GetHeightForWidth(width)) when
-  // calculating preferredsize, thus setting the width to an incorrect value.
-  // This will cause unexpected results in some client code. This problem also
-  // exists in BoxLayout. When we switch GetHeightForWidth in them to
-  // GetPreferredSize, this problem should be solved.
+  // TODO(crbug.com/363826230): Remove this. Modify the layout alignment
+  // properties or overload `CalculatePreferredSize(SizeBounds)`.
   void SetLayoutManagerUseConstrainedSpace(
       bool layout_manager_use_constrained_space);
 
