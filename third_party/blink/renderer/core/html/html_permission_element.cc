@@ -476,32 +476,34 @@ Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
     return kInsertionDone;
   }
 
-  if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
-    AddConsoleError(
-        String::Format("The permission '%s' is not allowed in fenced frame",
-                       GetType().Utf8().c_str()));
-    return kInsertionDone;
-  }
-
-  if (GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame() &&
-      !GetExecutionContext()
-           ->GetContentSecurityPolicy()
-           ->HasEnforceFrameAncestorsDirectives()) {
-    AddConsoleError(
-        String::Format("The permission '%s' is not allowed without the CSP "
-                       "'frame-ancestors' directive present.",
-                       GetType().Utf8().c_str()));
-    return kInsertionDone;
-  }
-
-  for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
-    if (!GetExecutionContext()->IsFeatureEnabled(
-            PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
-      AddConsoleError(String::Format(
-          "The permission '%s' is not allowed in the current context due to "
-          "PermissionsPolicy",
-          PermissionNameToString(descriptor->name).Utf8().c_str()));
+  if (LocalFrame* frame = GetDocument().GetFrame()) {
+    if (frame->IsInFencedFrameTree()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed in fenced frame",
+                         GetType().Utf8().c_str()));
       return kInsertionDone;
+    }
+
+    if (frame->IsCrossOriginToOutermostMainFrame() &&
+        !GetExecutionContext()
+             ->GetContentSecurityPolicy()
+             ->HasEnforceFrameAncestorsDirectives()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed without the CSP "
+                         "'frame-ancestors' directive present.",
+                         GetType().Utf8().c_str()));
+      return kInsertionDone;
+    }
+
+    for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
+      if (!GetExecutionContext()->IsFeatureEnabled(
+              PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
+        AddConsoleError(String::Format(
+            "The permission '%s' is not allowed in the current context due to "
+            "PermissionsPolicy",
+            PermissionNameToString(descriptor->name).Utf8().c_str()));
+        return kInsertionDone;
+      }
     }
   }
 
@@ -1209,12 +1211,12 @@ HTMLPermissionElement::GetClickingEnabledState() const {
              ->HasEnforceFrameAncestorsDirectives()) {
       return {false, AtomicString("illegal_subframe")};
     }
-  }
 
-  for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
-    if (!GetExecutionContext()->IsFeatureEnabled(
-            PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
-      return {false, AtomicString("illegal_subframe")};
+    for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
+      if (!GetExecutionContext()->IsFeatureEnabled(
+              PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
+        return {false, AtomicString("illegal_subframe")};
+      }
     }
   }
 
