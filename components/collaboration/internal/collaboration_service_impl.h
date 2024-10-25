@@ -41,6 +41,10 @@ class CollaborationServiceImpl : public CollaborationService {
                      const GURL& url) override;
   void StartShareFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                       tab_groups::EitherGroupID group_id) override;
+  ServiceStatus GetServiceStatus() override;
+
+ private:
+  ServiceStatus current_status_;
 };
 
 }  // namespace collaboration

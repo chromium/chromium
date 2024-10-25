@@ -4,6 +4,7 @@
 
 package org.chromium.components.collaboration;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 /**
@@ -20,4 +21,8 @@ public interface CollaborationService {
      */
     @VisibleForTesting
     boolean isEmptyService();
+
+    /** Returns the current {@link ServiceStatus} of the service. */
+    @NonNull
+    ServiceStatus getServiceStatus();
 }

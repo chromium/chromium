@@ -59,8 +59,12 @@ DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 
 KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kDataSharingFeature) ||
-      context->IsOffTheRecord()) {
+  bool isFeatureEnabled = base::FeatureList::IsEnabled(
+                              data_sharing::features::kDataSharingFeature) ||
+                          base::FeatureList::IsEnabled(
+                              data_sharing::features::kDataSharingJoinOnly);
+
+  if (!isFeatureEnabled || context->IsOffTheRecord()) {
     return new EmptyDataSharingService();
   }
 

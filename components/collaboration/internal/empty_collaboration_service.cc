@@ -22,4 +22,8 @@ void EmptyCollaborationService::StartShareFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     tab_groups::EitherGroupID group_id) {}
 
+ServiceStatus EmptyCollaborationService::GetServiceStatus() {
+  return ServiceStatus();
+}
+
 }  // namespace collaboration

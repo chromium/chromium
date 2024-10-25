@@ -8,6 +8,7 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/service_status.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "url/gurl.h"
@@ -52,6 +53,9 @@ class CollaborationService : public KeyedService,
   virtual void StartShareFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       tab_groups::EitherGroupID group_id) = 0;
+
+  // Get the current ServiceStatus.
+  virtual ServiceStatus GetServiceStatus() = 0;
 };
 
 }  // namespace collaboration

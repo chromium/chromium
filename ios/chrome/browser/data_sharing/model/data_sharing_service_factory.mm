@@ -33,8 +33,11 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
     return nullptr;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kDataSharingFeature) ||
-      browser_state->IsOffTheRecord()) {
+  bool isFeatureEnabled =
+      base::FeatureList::IsEnabled(features::kDataSharingFeature) ||
+      base::FeatureList::IsEnabled(features::kDataSharingJoinOnly);
+
+  if (!isFeatureEnabled || browser_state->IsOffTheRecord()) {
     return std::make_unique<EmptyDataSharingService>();
   }
 

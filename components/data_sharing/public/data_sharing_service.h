@@ -222,6 +222,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Get the current DataSharingUIDelegate instance.
   virtual DataSharingUIDelegate* GetUIDelegate() = 0;
 
+  // DEPRECATED: Use CollaborationService::GetServiceStatus instead.
   // Get the current ServiceStatus.
   virtual ServiceStatus GetServiceStatus() = 0;
 };

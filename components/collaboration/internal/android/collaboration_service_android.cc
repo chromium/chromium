@@ -10,6 +10,9 @@
 #include "components/collaboration/internal/jni_headers/CollaborationServiceImpl_jni.h"
 #include "components/collaboration/public/collaboration_service.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/collaboration/public/jni_headers/ServiceStatus_jni.h"
+
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
@@ -60,6 +63,16 @@ bool CollaborationServiceAndroid::IsEmptyService(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
   return collaboration_service_->IsEmptyService();
+}
+
+ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
+    JNIEnv* env) {
+  ServiceStatus status = collaboration_service_->GetServiceStatus();
+
+  return Java_ServiceStatus_createServiceStatus(
+      env, static_cast<int>(status.signin_status),
+      static_cast<int>(status.sync_status),
+      static_cast<int>(status.collaboration_status));
 }
 
 ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetJavaObject() {

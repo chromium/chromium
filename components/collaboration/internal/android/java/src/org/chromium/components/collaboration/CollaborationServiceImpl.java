@@ -30,6 +30,11 @@ public class CollaborationServiceImpl implements CollaborationService {
         return CollaborationServiceImplJni.get().isEmptyService(mNativePtr, this);
     }
 
+    @Override
+    public ServiceStatus getServiceStatus() {
+        return CollaborationServiceImplJni.get().getServiceStatus(mNativePtr);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -39,5 +44,7 @@ public class CollaborationServiceImpl implements CollaborationService {
     interface Natives {
         boolean isEmptyService(
                 long nativeCollaborationServiceAndroid, CollaborationServiceImpl caller);
+
+        ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
     }
 }

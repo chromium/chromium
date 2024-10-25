@@ -5,12 +5,15 @@
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("public") {
   sources = [
     "collaboration_controller_delegate.h",
     "collaboration_service.h",
+    "service_status.cc",
+    "service_status.h",
   ]
 
   public_deps = [
@@ -23,8 +26,29 @@ source_set("public") {
 
 if (is_android) {
   android_library("java") {
-    sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationService.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/CollaborationService.java",
+      "android/java/src/org/chromium/components/collaboration/ServiceStatus.java",
+    ]
 
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    deps = [
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+
+    srcjar_deps = [ ":enums_java" ]
+  }
+
+  java_cpp_enum("enums_java") {
+    sources = [ "service_status.h" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//components/collaboration/internal",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/collaboration/ServiceStatus.java" ]
   }
 }

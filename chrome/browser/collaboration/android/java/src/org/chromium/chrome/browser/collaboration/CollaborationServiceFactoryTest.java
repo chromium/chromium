@@ -25,6 +25,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationStatus;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.collaboration.SigninStatus;
+import org.chromium.components.collaboration.SyncStatus;
 
 import java.util.concurrent.TimeoutException;
 
@@ -43,6 +47,14 @@ public class CollaborationServiceFactoryTest {
                     @Override
                     public boolean isEmptyService() {
                         return true;
+                    }
+
+                    @Override
+                    public ServiceStatus getServiceStatus() {
+                        return new ServiceStatus(
+                                SigninStatus.NOT_SIGNED_IN,
+                                SyncStatus.NOT_SYNCING,
+                                CollaborationStatus.DISABLED);
                     }
                 };
 

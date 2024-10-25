@@ -20,9 +20,12 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
   explicit CollaborationServiceAndroid(CollaborationService* service);
   ~CollaborationServiceAndroid() override;
 
+  // CollaborationService Java API methods, implemented by native service:
   bool IsEmptyService(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& j_caller);
+  jni_zero::ScopedJavaLocalRef<jobject> GetServiceStatus(JNIEnv* env);
 
+  // Returns the CollaborationServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:

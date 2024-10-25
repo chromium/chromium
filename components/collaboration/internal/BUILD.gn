@@ -29,6 +29,7 @@ static_library("internal") {
   public_deps = [
     "//base",
     "//components/collaboration/public",
+    "//components/data_sharing/public:features",
     "//components/keyed_service/core",
   ]
 
@@ -38,7 +39,10 @@ static_library("internal") {
       "android/collaboration_service_android.h",
     ]
 
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//components/collaboration/public:jni_headers",
+    ]
   }
 }
 
