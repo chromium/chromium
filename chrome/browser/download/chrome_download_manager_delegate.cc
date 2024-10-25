@@ -765,6 +765,33 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
     DownloadItem* item,
     base::OnceClosure internal_complete_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    // For obfuscated files, deobfuscate after validation.
+    enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
+        static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+            item->GetUserData(
+                enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+
+    if (obfuscation_data && obfuscation_data->is_obfuscated) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
+                         item->GetFullPath()),
+          base::BindOnce(
+              &ChromeDownloadManagerDelegate::OnDeobfuscationComplete,
+              weak_ptr_factory_.GetWeakPtr(),
+              std::move(internal_complete_callback)));
+
+      // Ensure that deobfuscation is ran only once.
+      // TODO(crbug.com/367259664): Move to `OnDeobfuscationComplete` after
+      // adding better error handling.
+      obfuscation_data->is_obfuscated = false;
+      return false;
+    }
+  }
+#endif
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // If this is a chrome triggered download, return true;
   if (!item->RequireSafetyChecks()) {
@@ -838,6 +865,21 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
 #endif
   return true;
 }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+void ChromeDownloadManagerDelegate::OnDeobfuscationComplete(
+    base::OnceClosure callback,
+    base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
+  if (!deobfuscation_result.has_value()) {
+    // TODO(crbug.com/367259664): Add better error handling for deobfuscation.
+    DVLOG(1) << "Failed to deobfuscate download file.";
+  }
+
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+#endif
 
 void ChromeDownloadManagerDelegate::ShouldCompleteDownloadInternal(
     uint32_t download_id,

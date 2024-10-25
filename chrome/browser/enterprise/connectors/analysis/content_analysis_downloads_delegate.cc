@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -15,33 +13,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace enterprise_connectors {
-
-namespace {
-
-// Deobfuscates the entire file. Placed here to allow the deobfuscation and file
-// opening to proceed independently of the delegate's lifecycle.
-void DeobfuscateAndOpen(base::FilePath file_path,
-                        base::OnceClosure open_file_callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
-                     std::move(file_path)),
-      base::BindOnce(
-          [](base::OnceClosure open_file_callback,
-             base::expected<void, enterprise_obfuscation::Error> result) {
-            if (!result.has_value()) {
-              // TODO(b/367259664): Add better error handling for deobfuscation.
-              DVLOG(1) << "Failed to deobfuscate file.";
-            }
-
-            if (open_file_callback) {
-              std::move(open_file_callback).Run();
-            }
-          },
-          std::move(open_file_callback)));
-}
-
-}  // namespace
 
 ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     const std::u16string& filename,
@@ -88,19 +59,6 @@ void ContentAnalysisDownloadsDelegate::BypassWarnings(
       download_item_->SetUserData(enterprise_connectors::ScanResult::kKey,
                                   std::move(scan_result));
     }
-  }
-
-  // For obfuscated download files, deobfuscate the file before opening.
-  enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
-      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
-          download_item_->GetUserData(
-              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
-
-  if (obfuscation_data && obfuscation_data->is_obfuscated) {
-    DeobfuscateAndOpen(download_item_->GetFullPath(),
-                       std::move(open_file_callback_));
-    ResetCallbacks();
-    return;
   }
 
   Open();
