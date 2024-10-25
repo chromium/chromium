@@ -24,8 +24,6 @@ public final class SafetyHubPasswordModuleHelper {
      */
     private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
 
-    // TODO(crbug.com/370419126): Add `UNAVAILABLE_COMPROMISED_AVAILABLE_WEAK_REUSED_PASSWORDS`
-    // type.
     // Represents the type of password module.
     @IntDef({
         ModuleType.SIGNED_OUT,
@@ -34,7 +32,8 @@ public final class SafetyHubPasswordModuleHelper {
         ModuleType.HAS_COMPROMISED_PASSWORDS,
         ModuleType.NO_COMPROMISED_PASSWORDS,
         ModuleType.HAS_WEAK_PASSWORDS,
-        ModuleType.HAS_REUSED_PASSWORDS
+        ModuleType.HAS_REUSED_PASSWORDS,
+        ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ModuleType {
@@ -45,6 +44,7 @@ public final class SafetyHubPasswordModuleHelper {
         int NO_COMPROMISED_PASSWORDS = 4;
         int HAS_WEAK_PASSWORDS = 5;
         int HAS_REUSED_PASSWORDS = 6;
+        int UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS = 7;
     };
 
     // Returns the password module type according to the `model` properties.
@@ -64,8 +64,12 @@ public final class SafetyHubPasswordModuleHelper {
             return ModuleType.SIGNED_OUT;
         }
         if (compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
-            // TODO(crbug.com/370419126): Add
-            // `UNAVAILABLE_COMPROMISED_AVAILABLE_WEAK_REUSED_PASSWORDS` type.
+            if (isWeakAndReusedFeatureEnabled
+                    && weakPasswordsCount == 0
+                    && reusedPasswordsCount == 0) {
+                return ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS;
+            }
+
             return ModuleType.UNAVAILABLE_PASSWORDS;
         }
         if (totalPasswordsCount == 0) {
@@ -104,7 +108,8 @@ public final class SafetyHubPasswordModuleHelper {
                 model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
     }
 
-    // Updates `preference` for the password module of type {@link ModuleType.UNAVAILABLE}.
+    // Updates `preference` for the password module of type {@link
+    // ModuleType.UNAVAILABLE_PASSWORDS}.
     private static void updatePreferenceForUnavailablePasswords(
             SafetyHubExpandablePreference preference, PropertyModel model) {
         Context context = preference.getContext();
@@ -223,6 +228,24 @@ public final class SafetyHubPasswordModuleHelper {
         preference.setSecondaryButtonClickListener(null);
     }
 
+    // Updates `preference` for the password module of type {@link
+    // ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS}.
+    private static void updatePreferenceForUnavailableCompromisedNoWeakReusePasswords(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
+        Context context = preference.getContext();
+        preference.setTitle(context.getString(R.string.safety_hub_no_reused_weak_passwords_title));
+        preference.setSummary(
+                context.getString(
+                        R.string
+                                .safety_hub_unavailable_compromised_no_reused_weak_passwords_summary));
+        preference.setPrimaryButtonText(null);
+        preference.setPrimaryButtonClickListener(null);
+        preference.setSecondaryButtonText(
+                context.getString(R.string.safety_hub_passwords_navigation_button));
+        preference.setSecondaryButtonClickListener(
+                model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER));
+    }
+
     // Overrides summary and primary button fields of `preference` if passwords are controlled by a
     // policy.
     private static void overridePreferenceForManaged(
@@ -270,6 +293,9 @@ public final class SafetyHubPasswordModuleHelper {
             case ModuleType.HAS_REUSED_PASSWORDS:
                 updatePreferenceForHasReusedPasswords(preference, model);
                 break;
+            case ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS:
+                updatePreferenceForUnavailableCompromisedNoWeakReusePasswords(preference, model);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
@@ -289,6 +315,7 @@ public final class SafetyHubPasswordModuleHelper {
                 return ModuleState.INFO;
             case ModuleType.SIGNED_OUT:
             case ModuleType.UNAVAILABLE_PASSWORDS:
+            case ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS:
                 return ModuleState.UNAVAILABLE;
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
                 return ModuleState.WARNING;

@@ -796,6 +796,52 @@ public final class SafetyHubTest {
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
     @RequiresRestart
+    public void testPasswordModule_CompromisedCountUnavailable_WeakAndReusedPasswords() {
+        // Set the passwords module to the unavailable state.
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(-1);
+        setWeakPasswordsCount(0);
+        setReusedPasswordsCount(0);
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that passwords module which is in the unavailable state is expanded by
+        // default.
+        String noWeakAndReusedPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_reused_weak_passwords_title);
+        scrollToExpandedPreference(noWeakAndReusedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(noWeakAndReusedPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Set weak and reused passwords to unavailable.
+        setWeakPasswordsCount(-1);
+        setReusedPasswordsCount(-1);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that the password module is still expanded, but now with the unavailable title.
+        String weakPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify that the other module in the information state is still expanded.
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    @RequiresRestart
     public void testPasswordModule_WeakAndReusedPasswords() {
         // Set the passwords module to the information state.
         int weakPasswordsCount = 5;
