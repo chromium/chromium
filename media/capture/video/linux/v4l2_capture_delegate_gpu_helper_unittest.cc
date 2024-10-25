@@ -151,6 +151,7 @@ class V4l2CaptureDelegateGpuHelperTest
 
   void SetUpNullSharedImageInterface() {
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(nullptr);
+    v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>();
   }
 
   std::unique_ptr<std::vector<uint8_t>> ReadSampleData(
