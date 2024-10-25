@@ -8,12 +8,14 @@
 
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
@@ -37,6 +39,11 @@ ui::TextInputClient* GetFocusedTextInputClient() {
   }
 
   return input_method->GetTextInputClient();
+}
+
+bool IsUrlAllowed(const GURL& url) {
+  return url.SchemeIs(url::kHttpsScheme) ||
+         url.spec().starts_with("chrome://os-settings/systemPreferences");
 }
 
 }  // namespace
@@ -142,6 +149,16 @@ void LobsterPageHandler::CloseUI() {
 
 void LobsterPageHandler::EmitMetricEvent(LobsterMetricState metric_event) {
   session_->RecordWebUIMetricEvent(metric_event);
+}
+
+void LobsterPageHandler::OpenUrlInNewWindow(const GURL& url) {
+  if (!IsUrlAllowed(url)) {
+    mojo::ReportBadMessage("Invalid URL scheme. Only HTTPS is allowed.");
+    return;
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUnspecified,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 }  // namespace ash

@@ -46,6 +46,7 @@ class LobsterPageHandler : public lobster::mojom::UntrustedLobsterPageHandler {
   void ShowUI() override;
   void CloseUI() override;
   void EmitMetricEvent(ash::LobsterMetricState metric_event) override;
+  void OpenUrlInNewWindow(const GURL& url) override;
 
  private:
   // Not owned by this class
