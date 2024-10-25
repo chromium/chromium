@@ -281,7 +281,7 @@ void DedicatedWorker::Start() {
 
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
     if (script_request_url_.ProtocolIs("blob")) {
-      GetExecutionContext()->GetPublicURLManager().Resolve(
+      GetExecutionContext()->GetPublicURLManager().ResolveForWorkerScriptFetch(
           script_request_url_, blob_url_token.InitWithNewPipeAndPassReceiver());
     }
 

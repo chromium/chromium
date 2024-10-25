@@ -39,4 +39,11 @@ void FakeBlobURLStore::ResolveForNavigation(
   NOTREACHED_IN_MIGRATION();
 }
 
+void FakeBlobURLStore::ResolveForWorkerScriptFetch(
+    const KURL&,
+    mojo::PendingReceiver<mojom::blink::BlobURLToken>,
+    ResolveForNavigationCallback callback) {
+  NOTREACHED_IN_MIGRATION();
+}
+
 }  // namespace blink

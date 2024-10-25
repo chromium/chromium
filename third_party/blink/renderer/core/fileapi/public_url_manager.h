@@ -73,6 +73,9 @@ class CORE_EXPORT PublicURLManager final
   // lookup what blob a URL used to refer to, even after the URL is revoked.
   // If the URL fails to resolve the request will simply be disconnected.
   void Resolve(const KURL&, mojo::PendingReceiver<mojom::blink::BlobURLToken>);
+  void ResolveForWorkerScriptFetch(
+      const KURL&,
+      mojo::PendingReceiver<mojom::blink::BlobURLToken>);
 
   // ExecutionContextLifecycleObserver interface.
   void ContextDestroyed() override;

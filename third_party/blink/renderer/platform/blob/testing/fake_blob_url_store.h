@@ -36,7 +36,10 @@ class FakeBlobURLStore : public mojom::blink::BlobURLStore {
   void ResolveForNavigation(const KURL&,
                             mojo::PendingReceiver<mojom::blink::BlobURLToken>,
                             ResolveForNavigationCallback) override;
-
+  void ResolveForWorkerScriptFetch(
+      const KURL& url,
+      mojo::PendingReceiver<mojom::blink::BlobURLToken> token,
+      ResolveForNavigationCallback callback) override;
   HashMap<KURL, mojo::Remote<mojom::blink::Blob>> registrations;
   HashMap<KURL, base::UnguessableToken> agent_registrations;
   Vector<KURL> revocations;

@@ -142,7 +142,7 @@ SharedWorker* SharedWorker::CreateImpl(
 
   mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   if (script_url.ProtocolIs("blob")) {
-    public_url_manager->Resolve(
+    public_url_manager->ResolveForWorkerScriptFetch(
         script_url, blob_url_token.InitWithNewPipeAndPassReceiver());
   }
 
