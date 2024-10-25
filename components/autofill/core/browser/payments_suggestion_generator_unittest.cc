@@ -468,6 +468,23 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
             nullptr);
 }
 
+// Checks that `feature_for_iph` is set to null when the card is not eligible
+// for the benefits.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionFeatureForIph_IsNullWhenCardNotEligibleForBenefits) {
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_EQ(CreateCreditCardSuggestionForTest(
+                card(), *autofill_client(), CREDIT_CARD_NUMBER,
+                /*virtual_card_option=*/false,
+                /*card_linked_offer_available=*/false)
+                .feature_for_iph,
+            nullptr);
+}
+
 // Checks that for virtual cards suggestion the benefit description is shown
 // with a virtual card label appended.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
