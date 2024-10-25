@@ -521,8 +521,12 @@ void ProxyImpl::RenewTreePriority() {
   bool precise_scrolling_in_progress =
       host_impl_->GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
 
-  bool avoid_entering_smoothness = precise_scrolling_in_progress &&
-                                   host_impl_->IsCurrentScrollMainRepainted();
+  bool avoid_entering_smoothness =
+      (base::FeatureList::IsEnabled(
+           features::kNewContentForCheckerboardedScrolls) &&
+       host_impl_->ScrollCheckerboardsIncompleteRecording()) ||
+      (precise_scrolling_in_progress &&
+       host_impl_->IsCurrentScrollMainRepainted());
 
   bool non_scroll_interaction_in_progress =
       host_impl_->IsPinchGestureActive() ||

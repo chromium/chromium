@@ -328,6 +328,7 @@ void LayerTreeHostImpl::DidStartScroll() {
 
 void LayerTreeHostImpl::DidEndScroll() {
   scroll_affects_scroll_handler_ = false;
+  scroll_checkerboards_incomplete_recording_ = false;
 
   if (!settings().single_thread_proxy_scheduler) {
     client_->SetHasActiveThreadedScroll(false);
@@ -2834,6 +2835,11 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   if (settings_.enable_compositing_based_throttling &&
       throttle_decider_.HasThrottlingChanged()) {
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
+  }
+
+  if (GetActivelyScrollingType() != ActivelyScrollingType::kNone) {
+    scroll_checkerboards_incomplete_recording_ =
+        frame->checkerboarded_needs_record;
   }
 
   return SubmitInfo{frame_token,

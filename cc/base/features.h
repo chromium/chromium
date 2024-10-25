@@ -218,6 +218,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleFrameRateOnManyDidNotProduceFrame);
 CC_BASE_EXPORT extern const base::FeatureParam<int>
     kNumDidNotProduceFrameBeforeThrottle;
 
+// When enabled, the CC tree priority will be switched to
+// NEW_CONTENT_TAKES_PRIORITY during long scroll that cause checkerboarding.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);
+
 // When enabled, impl-only scroll animations may execute concurrently.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMultipleImplOnlyScrollAnimations);
 CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();

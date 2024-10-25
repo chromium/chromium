@@ -540,6 +540,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void DidNotNeedBeginFrame();
 
+  bool ScrollCheckerboardsIncompleteRecording() const {
+    return scroll_checkerboards_incomplete_recording_;
+  }
+
   // TileManagerClient implementation.
   void NotifyReadyToActivate() override;
   void NotifyReadyToDraw() override;
@@ -1239,6 +1243,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // TODO(danakj): Delete the LayerTreeFrameSink and all resources when
   // it's lost instead of having this bool.
   bool has_valid_layer_tree_frame_sink_ = false;
+
+  bool scroll_checkerboards_incomplete_recording_ = false;
 
   // If it is enabled in the LayerTreeSettings, we can check damage in
   // WillBeginImplFrame and abort early if there is no damage. We only check
