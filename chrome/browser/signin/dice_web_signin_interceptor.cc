@@ -1367,8 +1367,16 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     }
   } else if (create == SigninInterceptionResult::kAcceptedWithExistingProfile) {
     state_->intercepted_account_management_accepted_ = true;
-    DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
-              account_info.account_id);
+    if (GetPrimaryAccountInfo(identity_manager_).IsEmpty()) {
+      identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_info.account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::
+              ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+    } else {
+      DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
+                account_info.account_id);
+    }
+
     enterprise_util::SetUserAcceptedAccountManagement(
         profile_, state_->intercepted_account_management_accepted_);
     Reset();

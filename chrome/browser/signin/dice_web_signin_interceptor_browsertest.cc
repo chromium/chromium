@@ -1818,6 +1818,59 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 // Tests the complete interception flow including profile and browser creation.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorBrowserTest,
+    ForcedEnterpriseInterceptionTestAccountLevelPolicyMergeData) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
+
+  // Enforce enterprise profile sepatation.
+  GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                      "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(GetProfile())
+      ->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+          policy::ProfileSeparationPolicies("primary_account"));
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+
+  // Do the signin interception.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  source_interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  source_interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kAcceptedWithExistingProfile);
+
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+  // Wait for the interception to be complete.
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  EXPECT_TRUE(
+      identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      account_info.account_id);
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+// Tests the complete interception flow including profile and browser creation.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionTestAccountLevelPolicyDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
