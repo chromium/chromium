@@ -1034,6 +1034,38 @@ _SUPPORTED_IN_PLATFORM_MODE = [
 ]
 
 
+def UploadExceptions(result_sink_client, exc_recorder):
+  if not result_sink_client or not exc_recorder.size():
+    return
+
+  try_count_max = 3
+  for try_count in range(1, try_count_max + 1):
+    logging.info('Uploading exception records to RDB. (TRY %d/%d)', try_count,
+                 try_count_max)
+    try:
+      record_dict = exc_recorder.to_dict()
+      result_sink_client.UpdateInvocationExtendedProperties(
+          {exc_recorder.EXCEPTION_OCCURRENCES_KEY: record_dict})
+      exc_recorder.clear()
+      break
+    except Exception as e:  # pylint: disable=W0703
+      logging.error("Got error %s when uploading exception records.", e)
+      # Upload can fail due to record size being too big.
+      # In this case, let's try to reduce the size.
+      if try_count == try_count_max - 2:
+        # Clear all the stackstrace to reduce size.
+        exc_recorder.clear_stacktrace()
+      elif try_count == try_count_max - 1:
+        # Clear all the records and just report the upload failure.
+        exc_recorder.clear()
+        exc_recorder.register(e)
+      elif try_count == try_count_max:
+        # Swallow the exception if the upload fails again and hit the max
+        # try so that it won't fail the test task (and it shouldn't).
+        exc_recorder.clear()
+        logging.error("Hit max retry. Skip uploading exception records.")
+
+
 def RunTestsInPlatformMode(args, result_sink_client=None):
 
   def infra_error(message):
@@ -1163,39 +1195,10 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
 
   @contextlib.contextmanager
   def exceptions_uploader():
-
-    def _upload_exceptions():
-      if not result_sink_client or not exception_recorder.size():
-        return
-
-      try_count = 0
-      try_count_max = 2
-      while try_count < try_count_max:
-        try_count += 1
-        logging.info('Uploading exception records to RDB. (TRY %d/%d)',
-                     try_count, try_count_max)
-        try:
-          record_dict = exception_recorder.to_dict()
-          exception_recorder.clear()
-          result_sink_client.UpdateInvocationExtendedProperties(
-              {exception_recorder.EXCEPTION_OCCURRENCES_KEY: record_dict})
-          break
-        except Exception as e:  # pylint: disable=W0703
-          logging.error("Got error %s when uploading exception records:\n%r", e,
-                        record_dict)
-          if try_count < try_count_max:
-            # Upload can fail due to record size being too big. In this case,
-            # report just the upload failure.
-            exception_recorder.register(e)
-          else:
-            # Swallow the exception if the upload fails again and hit the max
-            # try so that it won't fail the test task (and it shouldn't).
-            logging.error("Hit max retry. Skip uploading exception records.")
-
     try:
       yield
     finally:
-      _upload_exceptions()
+      UploadExceptions(result_sink_client, exception_recorder)
 
   ### Set up test objects.
 
