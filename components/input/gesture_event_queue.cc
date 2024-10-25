@@ -21,7 +21,7 @@ GestureEventQueue::GestureEventWithLatencyInfoAckState::
         const GestureEventWithLatencyInfo& event)
     : GestureEventWithLatencyInfo(event) {}
 
-GestureEventQueue::Config::Config() {}
+GestureEventQueue::Config::Config() = default;
 
 GestureEventQueue::GestureEventQueue(
     GestureEventQueueClient* client,

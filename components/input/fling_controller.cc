@@ -36,7 +36,7 @@ const char* kFlingTraceName = "FlingController::HandlingGestureFling";
 
 namespace input {
 
-FlingController::Config::Config() {}
+FlingController::Config::Config() = default;
 
 FlingController::FlingController(
     FlingControllerEventSenderClient* event_sender_client,
