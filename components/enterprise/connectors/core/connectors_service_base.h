@@ -34,7 +34,6 @@ class ConnectorsServiceBase {
 
   // Returns whether the Connectors are enabled.
   virtual bool IsConnectorEnabled(AnalysisConnector connector) const = 0;
-  bool IsConnectorEnabled(ReportingConnector connector) const;
 
   std::vector<std::string> GetReportingServiceProviderNames(
       ReportingConnector connector);

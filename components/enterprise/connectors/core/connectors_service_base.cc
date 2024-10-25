@@ -52,15 +52,6 @@ ConnectorsServiceBase::GetAppliedRealTimeUrlCheck() const {
       GetPrefs()->GetInteger(kEnterpriseRealTimeUrlCheckMode));
 }
 
-bool ConnectorsServiceBase::IsConnectorEnabled(
-    ReportingConnector connector) const {
-  if (!ConnectorsEnabled()) {
-    return false;
-  }
-
-  return GetConnectorsManagerBase()->IsReportingConnectorEnabled(connector);
-}
-
 std::vector<std::string>
 ConnectorsServiceBase::GetReportingServiceProviderNames(
     ReportingConnector connector) {
