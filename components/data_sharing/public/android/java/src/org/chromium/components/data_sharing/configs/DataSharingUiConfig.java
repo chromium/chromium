@@ -4,6 +4,7 @@
 
 package org.chromium.components.data_sharing.configs;
 
+import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.url.GURL;
@@ -19,6 +20,7 @@ public class DataSharingUiConfig {
 
     // --- Usage Config ---
     private Context mContext;
+    private Activity mActivity;
     private GURL mLearnMoreHyperLink;
     private DataSharingCallback mDataSharingCallback;
 
@@ -30,6 +32,7 @@ public class DataSharingUiConfig {
     private DataSharingUiConfig(Builder builder) {
         this.mIsTablet = builder.mIsTablet;
         this.mContext = builder.mContext;
+        this.mActivity = builder.mActivity;
         this.mTabGroupName = builder.mTabGroupName;
         this.mLearnMoreHyperLink = builder.mLearnMoreHyperLink;
         this.mDataSharingCallback = builder.mDataSharingCallback;
@@ -41,6 +44,10 @@ public class DataSharingUiConfig {
 
     public Context getContext() {
         return mContext;
+    }
+
+    public Activity getActivity() {
+        return mActivity;
     }
 
     public String getTabGroupName() {
@@ -59,6 +66,7 @@ public class DataSharingUiConfig {
     public static class Builder {
         private boolean mIsTablet;
         private Context mContext;
+        private Activity mActivity;
         private String mTabGroupName;
         private GURL mLearnMoreHyperLink;
         private DataSharingCallback mDataSharingCallback;
@@ -80,6 +88,16 @@ public class DataSharingUiConfig {
          */
         public Builder setContext(Context context) {
             this.mContext = context;
+            return this;
+        }
+
+        /**
+         * Sets the current android activity.
+         *
+         * @param activity The current android activity.
+         */
+        public Builder setActivity(Activity activity) {
+            this.mActivity = activity;
             return this;
         }
 
