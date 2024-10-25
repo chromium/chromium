@@ -579,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.NotificationsListCount"
-    units="suggestions" expires_after="2024-11-03">
+    units="suggestions" expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -688,7 +688,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
-    expires_after="2024-11-03">
+    expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -700,7 +700,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.All"
-    units="days" expires_after="2024-12-01">
+    units="days" expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -719,7 +719,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.{PermissionType}"
-    units="days" expires_after="2024-12-01">
+    units="days" expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.DashboardWarning"
-    enum="SafetyHubModuleType" expires_after="2025-01-12">
+    enum="SafetyHubModuleType" expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.Impression" enum="SafetyHubSurfaces"
-    expires_after="2024-11-11">
+    expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -939,7 +939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2"
-    enum="ContentType" expires_after="2024-11-14">
+    enum="ContentType" expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -976,7 +976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-02-23">
+    enum="SafetyHubCardState" expires_after="2025-03-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
