@@ -734,6 +734,15 @@ template("mojom") {
   if (defined(invoker.parser_deps)) {
     parser_deps += invoker.parser_deps
   }
+
+  config("${parser_target_name}_inputs") {
+    inputs = sources_list
+  }
+  group("${parser_target_name}_deps") {
+    public_configs = [ ":${parser_target_name}_inputs" ]
+    public_deps = parser_deps
+  }
+
   if (sources_list == []) {
     # Even without sources we generate a parser target to at least forward
     # other parser dependencies.
