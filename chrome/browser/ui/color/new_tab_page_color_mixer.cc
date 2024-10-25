@@ -157,6 +157,10 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   const ui::ColorTransform select_topmost_element_foreground_color =
       GetColorWithMaxContrast(select_topmost_element_background_color);
 
+  // When adding a new color ID to this mixer, ensure it is ALSO added
+  // to the GM3 color mixer. When removing a color ID, remove it from the
+  // GM3 mixer if it already exists there.
+  // LINT.IfChange
   mixer[kColorNewTabPageActionButtonBackground] =
       select_topmost_element_background_color;
   mixer[kColorNewTabPageActionButtonForeground] =
@@ -512,6 +516,7 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageTagBackground] =
       ui::SetAlpha(kColorNewTabPageBackgroundOverride,
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
+  // LINT.ThenChange(chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 
   AddNewTabPageDialogColors(mixer, dark_mode);
 }
