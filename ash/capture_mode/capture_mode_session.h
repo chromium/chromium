@@ -180,6 +180,7 @@ class ASH_EXPORT CaptureModeSession
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
   void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
+  void OnSearchUrlFetched(const GURL& url) override;
   void AddActionButton(views::Button::PressedCallback callback,
                        std::u16string text,
                        const gfx::VectorIcon* icon,
@@ -417,6 +418,9 @@ class ASH_EXPORT CaptureModeSession
   // Removes any existing action buttons from `action_container_view_` if the
   // `action_container_widget_` exists,
   void RemoveAllActionButtons();
+
+  // Creates `search_results_panel_widget_` if it doesn't exist already.
+  void MaybeCreateSearchResultsPanel();
 
   // BaseCaptureModeSession:
   void InitInternal() override;

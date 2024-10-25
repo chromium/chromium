@@ -143,6 +143,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   std::unique_ptr<AshWebView> CreateSearchResultsView() const override;
   void DetectTextInImage(const SkBitmap& image,
                          OnTextDetectionComplete callback) override;
+  void SendRegionSearch(const SkBitmap& image,
+                        const gfx::Rect& region) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

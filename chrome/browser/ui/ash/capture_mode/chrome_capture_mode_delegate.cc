@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
@@ -515,6 +517,70 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
+
+void ChromeCaptureModeDelegate::SendRegionSearch(const SkBitmap& image,
+                                                 const gfx::Rect& region) {
+  DCHECK(ash::features::IsSunfishFeatureEnabled());
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    return;
+  }
+  if (!gen204_controller_) {
+    gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
+  }
+  if (!lens_overlay_query_controller_) {
+    lens_overlay_query_controller_ =
+        std::make_unique<lens::LensOverlayQueryController>(
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleStartQueryResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleInteractionURLResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleSuggestInputsResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleThumbnailCreated,
+                weak_ptr_factory_.GetWeakPtr()),
+            profile->GetVariationsClient(), /*identity_manager=*/nullptr,
+            profile, lens::LensOverlayInvocationSource(),
+            /*use_dark_mode=*/false,
+            /*gen204_controller=*/gen204_controller_.get());
+  }
+  lens_overlay_query_controller_->StartQueryFlow(
+      /*screenshot=*/image,
+      /*page_url=*/GURL(),
+      /*page_title=*/std::nullopt, /*significant_region_boxes=*/
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/base::span<const uint8_t>(),
+      /*underlying_content_type=*/lens::PageContentMimeType(),
+      /*ui_scale_factor=*/1.f);
+  lens_overlay_query_controller_->SendRegionSearch(
+      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+          /*tab_bounds=*/region, /*view_bounds=*/region,
+          /*image_bounds=*/region),
+      lens::LensOverlaySelectionType::UNKNOWN_SELECTION_TYPE,
+      /*additional_search_query_params=*/std::map<std::string, std::string>(),
+      /*region_bytes=*/image);
+}
+
+void ChromeCaptureModeDelegate::HandleStartQueryResponse(
+    std::vector<lens::mojom::OverlayObjectPtr> objects,
+    lens::mojom::TextPtr text,
+    bool is_error) {}
+
+void ChromeCaptureModeDelegate::HandleInteractionURLResponse(
+    lens::proto::LensOverlayUrlResponse response) {
+  auto* controller = ash::CaptureModeController::Get();
+  controller->OnSearchUrlFetched(GURL(response.url()));
+}
+
+void ChromeCaptureModeDelegate::HandleSuggestInputsResponse(
+    lens::proto::LensOverlaySuggestInputs suggest_inputs) {}
+
+void ChromeCaptureModeDelegate::HandleThumbnailCreated(
+    const std::string& thumbnail_bytes) {}
 
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
     ash::OnGotDriveFsFreeSpace callback,

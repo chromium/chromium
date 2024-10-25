@@ -18,6 +18,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
@@ -115,6 +116,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
   void DetectTextInImage(const SkBitmap& image,
                          ash::OnTextDetectionComplete callback) override;
+  void SendRegionSearch(const SkBitmap& image,
+                        const gfx::Rect& region) override;
 
   void set_optical_character_recognizer_for_testing(
       scoped_refptr<screen_ai::OpticalCharacterRecognizer>
@@ -126,12 +129,12 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void HandleStartQueryResponse(
       std::vector<lens::mojom::OverlayObjectPtr> objects,
       lens::mojom::TextPtr text,
-      bool is_error) {}
+      bool is_error);
   void HandleInteractionURLResponse(
-      lens::proto::LensOverlayUrlResponse response) {}
+      lens::proto::LensOverlayUrlResponse response);
   void HandleSuggestInputsResponse(
-      lens::proto::LensOverlaySuggestInputs suggest_inputs) {}
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes) {}
+      lens::proto::LensOverlaySuggestInputs suggest_inputs);
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
   // Called back by the Drive integration service when the quota usage is
   // retrieved.
@@ -191,8 +194,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // TODO(crbug.com/375491451): Remove this.
   std::unique_ptr<lens::LensOverlayQueryController>
       lens_overlay_query_controller_;
+
+  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };

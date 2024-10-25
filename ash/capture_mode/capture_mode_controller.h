@@ -335,6 +335,10 @@ class ASH_EXPORT CaptureModeController
   // behavior.
   bool IsAnnotatingSupported() const;
 
+  // Called by `CaptureModeDelegate` when the search result is fetched.
+  // Navigates to `url`, if active.
+  void OnSearchUrlFetched(const GURL& url);
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;

@@ -63,6 +63,10 @@ using OnGotDriveFsFreeSpace =
 using OnTextDetectionComplete =
     base::OnceCallback<void(std::string detected_text)>;
 
+// Defines the type of the callback that will be invoked when the search backend
+// result is fetched.
+using OnSearchUrlFetchedCallback = base::OnceCallback<void(GURL url)>;
+
 // Defines the interface for the delegate of CaptureModeController, that can be
 // implemented by an ash client (e.g. Chrome). The CaptureModeController owns
 // the instance of this delegate.
@@ -240,6 +244,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // involved with an empty string.
   virtual void DetectTextInImage(const SkBitmap& image,
                                  OnTextDetectionComplete callback) = 0;
+
+  // Sends the captured `region` and `image` to the backend.
+  virtual void SendRegionSearch(const SkBitmap& image,
+                                const gfx::Rect& region) = 0;
 };
 
 }  // namespace ash

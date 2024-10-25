@@ -230,4 +230,7 @@ void TestCaptureModeDelegate::DetectTextInImage(
   std::move(callback).Run("detected text");
 }
 
+void TestCaptureModeDelegate::SendRegionSearch(const SkBitmap& image,
+                                               const gfx::Rect& region) {}
+
 }  // namespace ash

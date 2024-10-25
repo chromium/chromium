@@ -116,6 +116,8 @@ NullCaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 void NullCaptureModeSession::ShowSearchResultsPanel(
     const gfx::ImageSkia& image) {}
 
+void NullCaptureModeSession::OnSearchUrlFetched(const GURL& url) {}
+
 void NullCaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,

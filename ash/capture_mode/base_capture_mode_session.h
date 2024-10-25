@@ -156,6 +156,12 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // the captured region as `image`.
   virtual void ShowSearchResultsPanel(const gfx::ImageSkia& image) = 0;
 
+  // TODO(crbug.com/375491451): Combine these into 1 function and callback.
+
+  // Called by CaptureModeDelegate when the search result is fetched. Navigates
+  // to `url`, if supported.
+  virtual void OnSearchUrlFetched(const GURL& url) = 0;
+
   // Adds an action button below the selected region during an active session.
   virtual void AddActionButton(views::Button::PressedCallback callback,
                                std::u16string text,

@@ -1701,12 +1701,12 @@ void CaptureModeController::OnImageCapturedForSearch(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  // TODO(b/356878705): This currently shows the results panel immediately for
-  // debugging purposes. After the backend interface is implemented, we might
-  // want to wait for the backend response before showing the results panel.
   if (features::IsSunfishFeatureEnabled()) {
     SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
     const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    // TODO(crbug.com/375491451): Bind these into 1 callback instead of
+    // immediately calling `ShowSearchResultsPanel()`.
+    delegate_->SendRegionSearch(bitmap, user_capture_region_);
     capture_mode_session_->ShowSearchResultsPanel(image);
   }
 
@@ -1729,6 +1729,12 @@ void CaptureModeController::OnScannerActionsFetched(
             /*action_finished_callback=*/base::DoNothing()),
         std::move(text), &icon,
         ActionButtonRank{ActionButtonType::kScanner, i});
+  }
+}
+
+void CaptureModeController::OnSearchUrlFetched(const GURL& url) {
+  if (IsActive()) {
+    capture_mode_session_->OnSearchUrlFetched(url);
   }
 }
 

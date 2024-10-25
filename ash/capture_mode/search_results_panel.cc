@@ -31,8 +31,6 @@ namespace {
 // TODO(sophiewen): Remove hardcoded values when we get UX specs.
 inline constexpr int kPanelCornerRadius = 16;
 inline constexpr int kSearchResultsPanelWidth = 600;
-constexpr char kValidSearchUrl[] =
-    "https://www.google.com/search?q=cat&gsc=1&masfc=c";
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 
@@ -110,10 +108,6 @@ SearchResultsPanel::SearchResultsPanel() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
-
-  // TODO(b/356878705): Replace this when the backend is hooked up. Currently
-  // used for UI debugging.
-  search_results_view_->Navigate(GURL(kValidSearchUrl));
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
