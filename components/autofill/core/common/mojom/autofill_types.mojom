@@ -443,6 +443,7 @@ struct FormFieldDataPredictions {
   string html_type;
   string overall_type;
   string parseable_name;
+  string parseable_label;
   string section;
   // See AutofillField for information on the ranks.
   uint32 rank;

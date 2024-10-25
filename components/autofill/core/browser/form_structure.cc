@@ -302,6 +302,8 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
       annotated_field.overall_type = std::string(field->Type().ToStringView());
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
+      annotated_field.parseable_label =
+          base::UTF16ToUTF8(field->parseable_label());
       annotated_field.section = field->section().ToString();
       annotated_field.rank = field->rank();
       annotated_field.rank_in_signature_group =

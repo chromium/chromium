@@ -136,13 +136,15 @@ bool ShowPredictions(const WebDocument& document,
 
     // If the flag is enabled, attach the prediction to the field.
     constexpr size_t kMaxLabelSize = 100;
-    // TODO(crbug.com/40741721): Use `parseable_label()` once the feature is
-    // launched.
-    std::u16string truncated_label =
-        field_data.label().substr(0, kMaxLabelSize);
+    std::string label =
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForParsingWithSharedLabels)
+            ? field.parseable_label
+            : base::UTF16ToUTF8(field_data.label());
+    std::string truncated_label = label.substr(0, kMaxLabelSize);
     // The label may be derived from the placeholder attribute and may contain
     // line wraps which are normalized here.
-    base::ReplaceChars(truncated_label, u"\n", u"|", &truncated_label);
+    base::ReplaceChars(truncated_label, "\n", "|", &truncated_label);
 
     std::string form_id = base::NumberToString(form.data.renderer_id().value());
     std::string field_id_str =
@@ -164,7 +166,7 @@ bool ShowPredictions(const WebDocument& document,
         "\nheuristic type: ",
         field.heuristic_type,
         "\nlabel: ",
-        base::UTF16ToUTF8(truncated_label),
+        truncated_label,
         "\nparseable name: ",
         field.parseable_name,
         "\nsection: ",

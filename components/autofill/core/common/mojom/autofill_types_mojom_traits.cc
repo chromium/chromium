@@ -493,23 +493,33 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
                   autofill::FormFieldDataPredictions>::
     Read(autofill::mojom::FormFieldDataPredictionsDataView data,
          autofill::FormFieldDataPredictions* out) {
-  if (!data.ReadHostFormSignature(&out->host_form_signature))
+  if (!data.ReadHostFormSignature(&out->host_form_signature)) {
     return false;
-  if (!data.ReadSignature(&out->signature))
+  }
+  if (!data.ReadSignature(&out->signature)) {
     return false;
-  if (!data.ReadHeuristicType(&out->heuristic_type))
+  }
+  if (!data.ReadHeuristicType(&out->heuristic_type)) {
     return false;
-  if (!data.ReadServerType(&out->server_type))
+  }
+  if (!data.ReadServerType(&out->server_type)) {
     return false;
+  }
   if (!data.ReadHtmlType(&out->html_type)) {
     return false;
   }
-  if (!data.ReadOverallType(&out->overall_type))
+  if (!data.ReadOverallType(&out->overall_type)) {
     return false;
-  if (!data.ReadParseableName(&out->parseable_name))
+  }
+  if (!data.ReadParseableName(&out->parseable_name)) {
     return false;
-  if (!data.ReadSection(&out->section))
+  }
+  if (!data.ReadParseableLabel(&out->parseable_label)) {
     return false;
+  }
+  if (!data.ReadSection(&out->section)) {
+    return false;
+  }
   out->rank = data.rank();
   out->rank_in_signature_group = data.rank_in_signature_group();
   out->rank_in_host_form = data.rank_in_host_form();
