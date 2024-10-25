@@ -98,6 +98,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     public static final String PREF_OS_PERMISSIONS_WARNING_EXTRA = "os_permissions_warning_extra";
     public static final String PREF_OS_PERMISSIONS_WARNING_DIVIDER =
             "os_permissions_warning_divider";
+    public static final String PREF_FILE_EDITING_GRANTS = "file_editing_grants";
     public static final String PREF_INTRUSIVE_ADS_INFO = "intrusive_ads_info";
     public static final String PREF_INTRUSIVE_ADS_INFO_DIVIDER = "intrusive_ads_info_divider";
     // Actions at the top (if adding new, see hasUsagePreferences below):
@@ -475,6 +476,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
                 merged.setRWSCookieInfo(other.getRWSCookieInfo());
             }
+            if (merged.getFileEditingInfo() == null
+                    && other.getFileEditingInfo() != null
+                    && origin.equals(other.getFileEditingInfo().getOrigin())) {
+                merged.setFileEditingInfo(other.getFileEditingInfo());
+            }
             for (ChosenObjectInfo objectInfo : other.getChosenObjectInfo()) {
                 if (origin.equals(objectInfo.getOrigin())) {
                     merged.addChosenObjectInfo(objectInfo);
@@ -530,6 +536,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         setupContentSettingsPreferences();
         setUpEmbeddedContentSettingPreferences();
         setUpChosenObjectPreferences();
+        setupFileEditingGrants(/* setOrder= */ true);
         setupResetSitePreference();
         setUpClearDataPreference();
         setUpOsWarningPreferences();
@@ -1007,6 +1014,37 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     relatedSitesHeader.addPreference(preference);
                 }
             }
+        }
+    }
+
+    private void setupFileEditingGrants(boolean setOrder) {
+        FileEditingInfo info = mSite.getFileEditingInfo();
+        if (info == null || info.getGrants() == null || info.getGrants().isEmpty()) {
+            removePreferenceSafely(PREF_FILE_EDITING_GRANTS);
+            return;
+        }
+
+        PreferenceCategory header = findPreference(PREF_FILE_EDITING_GRANTS);
+        if (setOrder) {
+            header.setOrder(++mMaxPermissionOrder);
+        }
+        header.removeAll();
+        for (FileEditingInfo.Grant grant : info.getGrants()) {
+            ChromeImageViewPreference row = new ChromeImageViewPreference(getContext());
+            row.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_file_type_24));
+            row.setTitle(grant.getDisplayName());
+            row.setImageView(
+                    R.drawable.ic_delete_white_24dp,
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.website_settings_file_editing_grant_revoke,
+                                    grant.getDisplayName()),
+                    (View view) -> {
+                        info.revokeGrant(getSiteSettingsDelegate(), grant);
+                        setupFileEditingGrants(/* setOrder= */ false);
+                    });
+            header.addPreference(row);
         }
     }
 

@@ -9,12 +9,14 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import android.os.Build;
 
@@ -22,10 +24,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -45,7 +50,9 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
+import org.chromium.components.browser_ui.site_settings.FileEditingInfo;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
@@ -75,6 +82,8 @@ public class SingleWebsiteSettingsTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sCTATestRule, false);
 
+    @Mock private SiteSettingsDelegate mSiteSettingsDelegate;
+
     /** A provider supplying params for {@link #testExceptionToggleShowing}. */
     public static class SingleWebsiteSettingsParams implements ParameterProvider {
         @Override
@@ -89,6 +98,11 @@ public class SingleWebsiteSettingsTest {
             }
             return testCases;
         }
+    }
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -189,6 +203,29 @@ public class SingleWebsiteSettingsTest {
         onView(withText("Delete & reset")).perform(click());
         onView(withText("Some device")).check(doesNotExist());
         onView(withText("A managed device")).check(matches(isDisplayed()));
+        activity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testFileEditingGrants() {
+        when(mSiteSettingsDelegate.getFileSystemAccessGrants(EXAMPLE_ADDRESS))
+                .thenReturn(new String[][] {{"path1"}, {"display1"}});
+        WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
+        Website website = new Website(address, address);
+        website.setFileEditingInfo(new FileEditingInfo(mSiteSettingsDelegate, EXAMPLE_ADDRESS));
+
+        // Open site settings and check that the file edit grant is shown.
+        SettingsActivity activity = SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        onView(withText("Files this site can view or edit")).check(matches(isDisplayed()));
+        onView(withText("display1")).check(matches(isDisplayed()));
+
+        // Click trash icon to remove grant and check grant and header are removed.
+        when(mSiteSettingsDelegate.getFileSystemAccessGrants(EXAMPLE_ADDRESS))
+                .thenReturn(new String[][] {{}, {}});
+        onView(withContentDescription("Delete file editing grant? display1")).perform(click());
+        onView(withText("Files this site can view or edit")).check(doesNotExist());
+        onView(withText("display1")).check(doesNotExist());
         activity.finish();
     }
 

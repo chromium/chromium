@@ -43,6 +43,7 @@ public final class Website implements WebsiteEntry {
     private LocalStorageInfo mLocalStorageInfo;
     private RWSCookieInfo mRWSCookieInfo;
     private CookiesInfo mCookiesInfo;
+    private FileEditingInfo mFileEditingInfo;
     private double mZoomFactor;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
     private final List<SharedDictionaryInfo> mSharedDictionaryInfo = new ArrayList<>();
@@ -415,6 +416,14 @@ public final class Website implements WebsiteEntry {
 
     public CookiesInfo getCookiesInfo() {
         return mCookiesInfo;
+    }
+
+    public void setFileEditingInfo(FileEditingInfo info) {
+        mFileEditingInfo = info;
+    }
+
+    public FileEditingInfo getFileEditingInfo() {
+        return mFileEditingInfo;
     }
 
     public void clearAllStoredData(

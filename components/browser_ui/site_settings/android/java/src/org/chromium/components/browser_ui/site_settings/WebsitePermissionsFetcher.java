@@ -223,6 +223,7 @@ public class WebsitePermissionsFetcher {
 
         private void addAllFetchers(TaskQueue queue) {
             addFetcherForStorage(queue);
+            queue.add(new FileEditingInfoFetcher());
             if (!mSiteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
                 queue.add(new CookiesInfoFetcher());
             }
@@ -492,17 +493,6 @@ public class WebsitePermissionsFetcher {
                     Website site = findOrCreateSite(origin, embedder);
                     site.setPermissionInfo(info);
                 }
-
-                for (String origin : mSiteSettingsDelegate.getOriginsWithFileSystemAccessGrants()) {
-                    Website site = findOrCreateSite(origin, null);
-                    site.setPermissionInfo(
-                            new PermissionInfo(
-                                    ContentSettingsType.FILE_SYSTEM_WRITE_GUARD,
-                                    origin,
-                                    null,
-                                    /* isEmbargoed= */ false,
-                                    SessionModel.USER_SESSION));
-                }
             }
         }
 
@@ -561,6 +551,23 @@ public class WebsitePermissionsFetcher {
                             }
                         },
                         mFetchSiteImportantInfo);
+            }
+        }
+
+        private class FileEditingInfoFetcher extends Task {
+            @Override
+            public void run() {
+                for (String origin : mSiteSettingsDelegate.getOriginsWithFileSystemAccessGrants()) {
+                    Website site = findOrCreateSite(origin, null);
+                    site.setPermissionInfo(
+                            new PermissionInfo(
+                                    ContentSettingsType.FILE_SYSTEM_WRITE_GUARD,
+                                    origin,
+                                    null,
+                                    /* isEmbargoed= */ false,
+                                    SessionModel.USER_SESSION));
+                    site.setFileEditingInfo(new FileEditingInfo(mSiteSettingsDelegate, origin));
+                }
             }
         }
 

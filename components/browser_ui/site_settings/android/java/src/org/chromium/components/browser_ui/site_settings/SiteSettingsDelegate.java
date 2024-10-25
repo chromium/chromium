@@ -137,6 +137,15 @@ public interface SiteSettingsDelegate {
     List<String> getOriginsWithFileSystemAccessGrants();
 
     /**
+     * @return The list of file editing grants. result[0] contains paths, result[1] contains display
+     *     names.
+     */
+    String[][] getFileSystemAccessGrants(String origin);
+
+    /** Revoke the specified file system access grant. */
+    void revokeFileSystemAccessGrant(String origin, String file);
+
+    /**
      * Displays a snackbar, informing the user about the Privacy Sandbox settings page, when the
      * corresponding flag is enabled.
      */

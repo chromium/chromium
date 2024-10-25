@@ -659,6 +659,13 @@
     When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.
   </message>
 
+  <!-- File editing -->
+  <message name="IDS_WEBSITE_SETTINGS_FILE_EDITING_GRANTS_CATEGORY" desc="The headline above the list of files that a website can view or edit.">
+    Files this site can view or edit
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_FILE_EDITING_GRANT_REVOKE" desc="Content description for the button that revokes a file editing grant.">
+    Delete file editing grant? <ph name="FILE">%1$s<ex>file.txt</ex></ph>
+  </message>
 
   <!-- Hand Tracking -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_ASK" desc="Summary text explaining that sites need to ask for permission before using hand tracking and that it is the recommended setting.">

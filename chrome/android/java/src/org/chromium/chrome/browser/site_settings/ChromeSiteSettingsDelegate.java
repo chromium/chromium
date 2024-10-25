@@ -288,6 +288,16 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public String[][] getFileSystemAccessGrants(String origin) {
+        return ChromeSiteSettingsDelegateJni.get().getFileSystemAccessGrants(mProfile, origin);
+    }
+
+    @Override
+    public void revokeFileSystemAccessGrant(String origin, String file) {
+        ChromeSiteSettingsDelegateJni.get().revokeFileSystemAccessGrant(mProfile, origin, file);
+    }
+
+    @Override
     public void maybeDisplayPrivacySandboxSnackbar() {
         if (mPrivacySandboxController == null) return;
 
@@ -439,5 +449,13 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public interface Natives {
         @JniType("std::vector<std::string>")
         List<String> getOriginsWithFileSystemAccessGrants(Profile profile);
+
+        String[][] getFileSystemAccessGrants(
+                Profile profile, @JniType("std::string") String origin);
+
+        void revokeFileSystemAccessGrant(
+                Profile profile,
+                @JniType("std::string") String origin,
+                @JniType("std::string") String file);
     }
 }
