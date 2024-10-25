@@ -198,10 +198,10 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
       "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kBlock, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime2",
       base::TimeDelta(), 1);
   histogram_tester.ExpectTotalCount(
-      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlist) {
@@ -224,10 +224,10 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlist) {
       "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kProceed, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime2",
       base::TimeDelta(), 1);
   histogram_tester.ExpectTotalCount(
-      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
@@ -251,9 +251,9 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
       "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kDefer, 1);
   histogram_tester.ExpectTotalCount(
-      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime", 1);
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime2", 1);
   histogram_tester.ExpectTotalCount(
-      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Porn) {
@@ -277,9 +277,9 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Porn) {
       "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kDefer, 1);
   histogram_tester.ExpectTotalCount(
-      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime", 1);
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime2", 1);
   histogram_tester.ExpectTotalCount(
-      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime", 0);
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2", 0);
 }
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Allowlisted) {
