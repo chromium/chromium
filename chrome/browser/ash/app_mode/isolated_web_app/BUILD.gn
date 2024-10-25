@@ -44,3 +44,16 @@ static_library("trust_check") {
     "//components/web_package",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "kiosk_iwa_data_unittest.cc" ]
+  deps = [
+    ":isolated_web_app",
+    "//base/test:test_support",
+    "//chrome/browser/web_applications",
+    "//components/policy/core/common",
+    "//testing/gtest",
+    "//url",
+  ]
+}

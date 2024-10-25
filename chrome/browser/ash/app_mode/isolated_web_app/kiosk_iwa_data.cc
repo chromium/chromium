@@ -24,8 +24,14 @@ std::unique_ptr<KioskIwaData> KioskIwaData::Create(
     const GURL& update_manifest_url) {
   auto parsed_id = web_package::SignedWebBundleId::Create(web_bundle_id);
   if (!parsed_id.has_value()) {
-    LOG(ERROR) << "Cannot create kiosk iwa data for id " << web_bundle_id
-               << ": " << parsed_id.error();
+    LOG(ERROR) << "Cannot create kiosk IWA data. Invalid bundle id: "
+               << web_bundle_id << ": " << parsed_id.error();
+    return nullptr;
+  }
+
+  if (!update_manifest_url.is_valid()) {
+    LOG(ERROR) << "Cannot create kiosk IWA data. Invalid url: "
+               << update_manifest_url;
     return nullptr;
   }
 
