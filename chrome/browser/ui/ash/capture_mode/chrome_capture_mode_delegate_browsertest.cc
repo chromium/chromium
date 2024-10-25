@@ -181,3 +181,18 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
 
   EXPECT_EQ(detected_text_future.Get(), "Text\n😊");
 }
+
+IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
+                       SessionClosedDuringTextDetection) {
+  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
+  delegate->set_optical_character_recognizer_for_testing(
+      screen_ai::FakeOpticalCharacterRecognizer::Create(
+          /*empty_ax_tree_update_result=*/false));
+  base::test::TestFuture<std::string> detected_text_future;
+
+  // Close the session immediately after a text detection request.
+  delegate->DetectTextInImage(SkBitmap(), detected_text_future.GetCallback());
+  delegate->OnSessionStateChanged(/*started=*/false);
+
+  EXPECT_EQ(detected_text_future.Get(), "");
+}

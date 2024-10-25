@@ -527,8 +527,16 @@ void ChromeCaptureModeDelegate::PerformOcrOnPendingRequest() {
 void ChromeCaptureModeDelegate::PerformOcr(
     const SkBitmap& image,
     ash::OnTextDetectionComplete callback) {
-  CHECK(optical_character_recognizer_);
-  CHECK(optical_character_recognizer_->is_ready());
+  // Since `PerformOcr` is called asynchronously, it's possible that OCR becomes
+  // unavailable before this point, e.g. if the capture mode session is closed
+  // before OCR finishes initialization or if the OCR service is disconnected.
+  if (!optical_character_recognizer_ ||
+      !optical_character_recognizer_->is_ready()) {
+    std::move(callback).Run("");
+    ResetOcr();
+    return;
+  }
+
   optical_character_recognizer_->PerformOCR(
       image,
       base::BindOnce(&ChromeCaptureModeDelegate::OnOcrPerformed,
@@ -557,5 +565,4 @@ void ChromeCaptureModeDelegate::ResetOcr() {
   if (!pending_ocr_request_callback_.is_null()) {
     std::move(pending_ocr_request_callback_).Run("");
   }
-  pending_ocr_request_callback_.Reset();
 }
