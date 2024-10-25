@@ -15,6 +15,9 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -43,9 +46,11 @@ bool IsA11ySelected(const views::View& view) {
 }  // namespace
 
 using ::testing::InSequence;
+using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Ref;
+using ::testing::Return;
 using ::testing::VariantWith;
 
 class PopupRowPredictionImprovementsFeedbackViewTest
@@ -146,6 +151,32 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   generator().MoveMouseTo(
       view().GetThumbsDownButtonForTest()->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       MouseSelectionIsSuppressed) {
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  CreateFeedbackRowAndGetButtons();
+
+  EXPECT_CALL(selection_delegate(),
+              SetSelectedCell(std::make_optional(PopupViewViews::CellIndex{
+                                  0, PopupRowView::CellType::kContent}),
+                              PopupCellSelectionSource::kMouse))
+      .Times(0);
+  generator().MoveMouseTo(
+      view().GetContentView().GetBoundsInScreen().CenterPoint());
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       FocusTriggersSelectionDelegate) {
+  CreateFeedbackRowAndGetButtons();
+
+  EXPECT_CALL(selection_delegate(),
+              SetSelectedCell(std::make_optional(PopupViewViews::CellIndex{
+                                  0, PopupRowView::CellType::kContent}),
+                              PopupCellSelectionSource::kKeyboard));
+  view().OnViewFocused(&view().GetContentView());
 }
 
 TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,

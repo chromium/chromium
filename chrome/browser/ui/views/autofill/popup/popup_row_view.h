@@ -139,6 +139,12 @@ class PopupRowView : public views::View, public views::ViewObserver {
     return a11y_selection_delegate_.get();
   }
 
+  // Calls `selection_delegate_` when an event leading to selection is
+  // triggered on the view, e.g. `ui::EventType::kMouseEntered` or the root
+  // view is focused. `type` == `std::nullopt` means deselection.
+  virtual void OnCellSelected(std::optional<CellType> type,
+                              PopupCellSelectionSource source);
+
  private:
   // Updates all UI parts that may have changed based on the current state,
   // for now they are the background and expand control visibility.

@@ -59,6 +59,17 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
     return focused_control_;
   }
 
+ protected:
+  // PopupRowView:
+  // Suppresses mouse selection to avoid confusing UX: when selected, the manage
+  // predictions link area is highlighted and pressing ENTER opens the link in
+  // a new tab. This is supported for accessibility. When a mouse (or other
+  // pointing device) is used, there is no need in such highlighting - the link
+  // can be just clicked, highlighting the area looks weird.
+  // Calls the parent's method unless the selection was triggered by mouse.
+  void OnCellSelected(std::optional<CellType> type,
+                      PopupCellSelectionSource source) override;
+
  private:
   views::View& GetFocusableControlView(FocusableControl focused_control);
   void UpdateFocusedControl(std::optional<FocusableControl> focused_control);

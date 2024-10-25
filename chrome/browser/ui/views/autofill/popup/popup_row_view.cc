@@ -238,15 +238,12 @@ PopupRowView::PopupRowView(
                   view->mouse_observed_outside_item_bounds_ ||
                   view->should_ignore_mouse_observed_outside_item_bounds_check_;
               if (can_select_suggestion) {
-                view->selection_delegate_->SetSelectedCell(
-                    PopupViewViews::CellIndex{view->line_number_, type},
-                    PopupCellSelectionSource::kMouse);
+                view->OnCellSelected(type, PopupCellSelectionSource::kMouse);
               }
             },
             this, type),
         /*exit_callback=*/base::BindRepeating(
-            &SelectionDelegate::SetSelectedCell,
-            base::Unretained(&selection_delegate), std::nullopt,
+            &PopupRowView::OnCellSelected, base::Unretained(this), std::nullopt,
             PopupCellSelectionSource::kMouse));
     // Setting this handler on the cell view removes its original event handler
     // (i.e. overridden methods like OnMouse*). Make sure the root view doesn't
@@ -386,9 +383,7 @@ void PopupRowView::OnViewFocused(views::View* view) {
   // Focus may come not only from the keyboard (e.g. from devices used for
   // a11y), but for selection purposes these non-mouse sources are similar
   // enough to treat them equally as a keyboard.
-  selection_delegate_->SetSelectedCell(
-      PopupViewViews::CellIndex{line_number_, type},
-      PopupCellSelectionSource::kKeyboard);
+  OnCellSelected(type, PopupCellSelectionSource::kKeyboard);
 }
 
 void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
@@ -486,6 +481,14 @@ bool PopupRowView::HandleKeyPressEvent(
 bool PopupRowView::IsSelectable() const {
   return controller_ && line_number_ < controller_->GetLineCount() &&
          !controller_->GetSuggestionAt(line_number_).HasDeactivatedStyle();
+}
+
+void PopupRowView::OnCellSelected(std::optional<CellType> type,
+                                  PopupCellSelectionSource source) {
+  selection_delegate_->SetSelectedCell(
+      type ? std::make_optional(PopupViewViews::CellIndex{line_number_, *type})
+           : std::nullopt,
+      source);
 }
 
 void PopupRowView::UpdateUI() {

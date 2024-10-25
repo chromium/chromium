@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -286,6 +288,16 @@ bool PopupRowPredictionImprovementsFeedbackView::HandleKeyPressEvent(
   }
 
   return PopupRowView::HandleKeyPressEvent(event);
+}
+
+void PopupRowPredictionImprovementsFeedbackView::OnCellSelected(
+    std::optional<CellType> type,
+    PopupCellSelectionSource source) {
+  if (source == PopupCellSelectionSource::kMouse) {
+    return;
+  }
+
+  PopupRowView::OnCellSelected(type, source);
 }
 
 views::View&
