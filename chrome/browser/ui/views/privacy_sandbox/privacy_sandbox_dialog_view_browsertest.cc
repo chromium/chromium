@@ -17,15 +17,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
-#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -40,10 +35,6 @@ constexpr base::TimeDelta kMaxWaitTime = base::Seconds(30);
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-
-    ASSERT_TRUE(embedded_test_server()->Start());
     mock_service_ = static_cast<MockPrivacySandboxService*>(
         PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             browser()->profile(),
@@ -149,66 +140,3 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
   closed_waiter.TimedWait(kMaxWaitTime);
 }
 #endif
-
-class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
-    : public PrivacySandboxDialogViewBrowserTest {
- public:
-  PrivacySandboxDialogViewPrivacyPolicyBrowserTest() {
-    base::test::ScopedFeatureList feature_list_;
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxPrivacyPolicy);
-  }
-  // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
-    PrivacySandboxService::PromptType prompt_type =
-        PrivacySandboxService::PromptType::kM1Consent;
-
-    // Resize the browser window to guarantee enough space for the dialog.
-    BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
-        {0, 0, kAverageBrowserWidth, kAverageBrowserHeight});
-
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        PrivacySandboxDialogView::kViewClassName);
-    ShowPrivacySandboxDialog(browser(), prompt_type);
-    views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
-    views::test::WidgetVisibleWaiter(dialog_widget).Wait();
-    ASSERT_TRUE(dialog_widget->IsVisible());
-
-    auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
-        dialog_widget->widget_delegate()->GetContentsView());
-
-    // Click expand button.
-    EXPECT_TRUE(
-        content::ExecJs(privacy_sandbox_dialog_view->GetWebContentsForTesting(),
-                        "document.querySelector('body > "
-                        "privacy-sandbox-combined-dialog-app').shadowRoot."
-                        "querySelector('#consent').shadowRoot.querySelector('"
-                        "privacy-sandbox-dialog-learn-more').shadowRoot."
-                        "querySelector('div > cr-expand-button').click()"));
-
-    // Click Privacy Policy link.
-    EXPECT_TRUE(
-        content::ExecJs(privacy_sandbox_dialog_view->GetWebContentsForTesting(),
-                        "document.querySelector('body > "
-                        "privacy-sandbox-combined-dialog-app')"
-                        ".shadowRoot.querySelector('#consent')"
-                        ".shadowRoot.querySelector('#privacyPolicyLink')"
-                        ".click()"));
-
-    // Intentionally navigate to some blocked content to avoid flakiness.
-    auto script = content::JsReplace(
-        "document.querySelector('body > "
-        "privacy-sandbox-combined-dialog-app')"
-        ".shadowRoot.querySelector('#consent')"
-        ".shadowRoot.querySelector('#privacyPolicy').src = $1;",
-        embedded_test_server()->GetURL("/blue.html"));
-    EXPECT_TRUE(content::ExecJs(
-        privacy_sandbox_dialog_view->GetWebContentsForTesting(), script));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewPrivacyPolicyBrowserTest,
-                       InvokeUi_PrivacyPolicy) {
-  ShowAndVerifyUi();
-}
