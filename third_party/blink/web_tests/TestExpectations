@@ -7913,6 +7913,9 @@ crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-anima
 crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-transitions.js [ Failure Skip ]
 crbug.com/349554230 http/tests/devtools/animation/animation-group-matching.js [ Failure Skip ]
 
+# Skipped to land crrev.com/c/5961996
+crbug.com/375562183 http/tests/devtools/animation/animation-empty-web-animations.js [ Failure Skip ]
+
 crbug.com/342438266 external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/342438266 external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 
