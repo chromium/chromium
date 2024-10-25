@@ -6,29 +6,19 @@
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_DETENTS_MANAGER_H_
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 
-// Indicates the state of the bottom sheet
-typedef NS_ENUM(NSUInteger, SheetDetentState) {
-  // The bottom sheet is locked in large detent.
-  SheetStateLockedInLargeDetent,
-  // The bottom sheet is free to oscillate between medium and large.
-  SheetStateUnrestrictedMovement,
-  // The bottom sheet is presenting the consent dialog sheet.
-  SheetStateConsentDialog,
-  // The bottom sheet is in the peak state;
-  SheetStatePeakEnabled,
-};
+@protocol LensOverlayDetentsChangeObserver;
 
 // Manages the detents for a given bottom sheet.
 @interface LensOverlayDetentsManager
     : NSObject <LensOverlayBottomSheetPresentationDelegate>
 
-// Whether the sheet is in the largest detents.
-@property(nonatomic, readonly) BOOL isInLargestDetent;
+@property(nonatomic, weak) id<LensOverlayDetentsChangeObserver> observer;
 
-// Whether the sheet is in the peaking state.
-@property(nonatomic, readonly) BOOL isPeaking;
+// Current sheet dimension.
+@property(nonatomic, readonly) SheetDimensionState sheetDimension;
 
 // Creates a new detents manager scoped to the sheet instance.
 - (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet;
@@ -44,6 +34,17 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 
 // Minimize the bottom sheet to the medium detent.
 - (void)requestMinimizeBottomSheet;
+@end
+
+// Observes changes in the detents and dimension states.
+@protocol LensOverlayDetentsChangeObserver <NSObject>
+
+// Called when the dimension state changes. Does not report the initial value,
+// only publishes changes recorded after the subscription.
+- (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state;
+
+// Called before dismissing the bottom sheet.
+- (BOOL)bottomSheetShouldDismissFromState:(SheetDimensionState)state;
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_DETENTS_MANAGER_H_

@@ -15,6 +15,7 @@ source_set("model") {
     "snapshot_cover_view_controller.mm",
   ]
   deps = [
+    ":detent_state_header",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/ntp/model",
@@ -27,7 +28,10 @@ source_set("model") {
     "//ios/web/public",
     "//ui/base",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":detent_state_header",
+    "//base",
+  ]
 }
 
 source_set("detents_manager") {
@@ -36,10 +40,16 @@ source_set("detents_manager") {
     "lens_overlay_detents_manager.mm",
   ]
   deps = [
+    ":detent_state_header",
     "//base",
     "//ios/chrome/browser/lens_overlay/ui:protocols",
     "//ui/base",
   ]
+  public_deps = [ ":detent_state_header" ]
+}
+
+source_set("detent_state_header") {
+  sources = [ "lens_overlay_sheet_detent_state.h" ]
 }
 
 source_set("entrypoint") {

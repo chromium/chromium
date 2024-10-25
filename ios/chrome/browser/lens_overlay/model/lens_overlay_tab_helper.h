@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -51,13 +52,31 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
     return is_updating_tab_switcher_snapshot_;
   }
 
-  UIImage* CaptureSnapshotOfBaseWindowSafeArea();
+  // Get the recorded bottom sheet detent state associate with this tab helper.
+  SheetDimensionState GetRecordedSheetDimensionState() {
+    return sheet_dimension_state_;
+  }
+
+  // Records the detent state of the bottom sheet.
+  void RecordSheetDimensionState(SheetDimensionState sheet_dimension_state) {
+    sheet_dimension_state_ = sheet_dimension_state;
+  }
+
+  // Returns the in memory viewport snapshot.
+  UIImage* GetViewportSnapshot() { return viewport_snapshot_; }
+
+  // Clears the in memory viewport snapshot.
+  void ClearViewportSnapshot() { viewport_snapshot_ = nil; }
+
+  // Records a volatile snapshot of the viewport window.
+  void RecordViewportSnaphot();
 
   // Updates the lens overlay web state tab switcher snapshot.
   void UpdateSnapshot();
 
-  // Updates the lens overlay web state tab switcher snapshot.
-  void UpdateSnapshotStorageWithImage(UIImage* snapshot);
+  // If present, commits the window snapshot to the permanent storage, updating
+  // the tab switcher snapshot as a consequence.
+  void UpdateSnapshotStorage();
 
   // Sets the Lens Overlay commands handler.
   void SetLensOverlayCommandsHandler(id<LensOverlayCommands> commands_handler) {
@@ -101,9 +120,14 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // Tracks whether there is a snapshot capture in progress.
   bool is_capturing_lens_overlay_snapshot_ = false;
 
-  // Tracksa whether there is a tab switcher snapshot update in progress.
+  // Tracks whether there is a tab switcher snapshot update in progress.
   bool is_updating_tab_switcher_snapshot_ = false;
 
+  // Tracks the state of the bottom sheet associated with this web state.
+  // Should remain in sync with the actual dimension of the bottom sheet.
+  SheetDimensionState sheet_dimension_state_ = SheetDimensionStateHidden;
+
+  UIImage* viewport_snapshot_;
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;

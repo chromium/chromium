@@ -13,10 +13,18 @@
 
 - (instancetype)initWithImage:(UIImage*)image
                 onFirstAppear:(ProceduralBlock)onFirstAppear {
-  self = [super init];
+  self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _image = image;
     _onFirstAppear = onFirstAppear;
+  }
+  return self;
+}
+
+- (instancetype)initWithImage:(UIImage*)image {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _image = image;
   }
   return self;
 }

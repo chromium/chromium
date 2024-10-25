@@ -15,7 +15,16 @@
 // Creates a new instance with the given image and an action to be run when
 // the view controller first appears.
 - (instancetype)initWithImage:(UIImage*)image
-                onFirstAppear:(ProceduralBlock)onAppear;
+                onFirstAppear:(ProceduralBlock)onAppear
+    NS_DESIGNATED_INITIALIZER;
+
+// Creates a new instance with the given image.
+- (instancetype)initWithImage:(UIImage*)image NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)name
+                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_SNAPSHOT_COVER_VIEW_CONTROLLER_H_

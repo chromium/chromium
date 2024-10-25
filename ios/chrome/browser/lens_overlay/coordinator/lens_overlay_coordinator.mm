@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/model/snapshot_cover_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
@@ -101,9 +102,9 @@ const CGFloat kMenuSymbolSize = 18;
 }  // namespace
 
 @interface LensOverlayCoordinator () <LensOverlayCommands,
-                                      UISheetPresentationControllerDelegate,
                                       LensOverlayMediatorDelegate,
                                       LensOverlayResultConsumer,
+                                      LensOverlayDetentsChangeObserver,
                                       LensOverlayConsentViewControllerDelegate,
                                       LensOverlayPanTrackerDelegate>
 
@@ -161,10 +162,12 @@ const CGFloat kMenuSymbolSize = 18;
   /// Used to monitor the results sheet position relative to the container.
   CADisplayLink* _displayLink;
 
+  /// Orchestrates the change in detents of the associated bottom sheet.
   LensOverlayDetentsManager* _detentsManager;
 
-  // The snapshot that is due to be updated in the tab switcher.
-  UIImage* _pendingTabSwitcherSnapshot;
+  /// This auxiliary window is used while restoring the sheet state when
+  /// returning to the tab where Lens Overlay is active.
+  UIWindow* _restorationWindow;
 }
 
 #pragma mark - public
@@ -356,6 +359,8 @@ const CGFloat kMenuSymbolSize = 18;
   _foregroundTime = base::TimeTicks::Now();
 
   __weak __typeof(self) weakSelf = self;
+
+  [self showRestorationWindowIfNeeded];
   [self.baseViewController
       presentViewController:_containerViewController
                    animated:animated
@@ -410,11 +415,7 @@ const CGFloat kMenuSymbolSize = 18;
       _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
   _foregroundTime = base::TimeTicks();
 
-  if (_pendingTabSwitcherSnapshot) {
-    _associatedTabHelper->UpdateSnapshotStorageWithImage(
-        _pendingTabSwitcherSnapshot);
-    _pendingTabSwitcherSnapshot = nil;
-  }
+  _associatedTabHelper->UpdateSnapshotStorage();
 
   [_containerViewController.presentingViewController
       dismissViewControllerAnimated:animated
@@ -441,6 +442,8 @@ const CGFloat kMenuSymbolSize = 18;
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
     _associatedTabHelper->SetLensOverlayShown(false);
+    _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
+    _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
     _associatedTabHelper = nil;
   }
@@ -560,52 +563,57 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)onPanGestureEnded:(LensOverlayPanTracker*)tracker {
   if (tracker == _windowPanTracker) {
-    if (_detentsManager.isPeaking) {
-      [_detentsManager adjustDetentsForState:SheetStateUnrestrictedMovement];
+    // Keep peaking only for the duration of the gesture.
+    if (_detentsManager.sheetDimension == SheetDimensionStatePeaking) {
+      [_detentsManager
+          adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
     }
   }
 }
 
-#pragma mark - UISheetPresentationControllerDelegate
+#pragma mark - LensOverlayDetentsChangeObserver
 
-- (BOOL)presentationControllerShouldDismiss:
-    (UIPresentationController*)presentationController {
-  UIViewController* presentedViewController =
-      presentationController.presentedViewController;
-
-  if (presentedViewController == _consentViewController) {
-    return YES;
+- (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state {
+  if (_associatedTabHelper) {
+    _associatedTabHelper->RecordSheetDimensionState(state);
   }
 
-  // If the user is actively adjusting a selection (by moving the selection
-  // frame), it means the sheet dismissal was incidental and shouldn't be
-  // processed. Only when the sheet is directly dragged downwards should the
-  // dismissal intent be considered.
-  BOOL isSelecting = _selectionViewController.isPanningSelectionUI;
-  if (isSelecting) {
-    // Instead, when a touch collision is detected, go into the peak state.
-    [_detentsManager adjustDetentsForState:SheetStatePeakEnabled];
-    return NO;
+  switch (state) {
+    case SheetDimensionStateHidden:
+      [self destroyLensUI:YES
+                   reason:lens::LensOverlayDismissalSource::
+                              kBottomSheetDismissed];
+      break;
+    case SheetDimensionStateLarge:
+      [self disableSelectionInteraction:YES];
+      break;
+    default:
+      [self disableSelectionInteraction:NO];
+      break;
   }
-
-  // Only allow swiping down to dismiss when not at the largest detent.
-  return ![_detentsManager isInLargestDetent];
 }
 
-- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
-    (UISheetPresentationController*)presentationController {
-  [self disableSelectionInteraction:[_detentsManager isInLargestDetent]];
-}
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  UIViewController* presentedViewController =
-      presentationController.presentedViewController;
-
-  CHECK(presentedViewController == _resultViewController ||
-        presentedViewController == _consentViewController);
-  [self destroyLensUI:YES
-               reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
+- (BOOL)bottomSheetShouldDismissFromState:(SheetDimensionState)state {
+  switch (state) {
+    case SheetDimensionStateConsent:
+    case SheetDimensionStateHidden:
+      return YES;
+    case SheetDimensionStatePeaking:
+    case SheetDimensionStateLarge:
+      return NO;
+    case SheetDimensionStateMedium:
+      // If the user is actively adjusting a selection (by moving the selection
+      // frame), it means the sheet dismissal was incidental and shouldn't be
+      // processed. Only when the sheet is directly dragged downwards should the
+      // dismissal intent be considered.
+      BOOL isSelecting = _selectionViewController.isPanningSelectionUI;
+      if (isSelecting) {
+        // Instead, when a touch collision is detected, go into the peak state.
+        [_detentsManager adjustDetentsForState:SheetDetentStatePeakEnabled];
+        return NO;
+      }
+      return YES;
+  }
 }
 
 - (void)adjustSelectionOcclusionInsets {
@@ -639,8 +647,9 @@ const CGFloat kMenuSymbolSize = 18;
   // bottom sheet in the view hierarchy. Refrain from commiting it to
   // the storage until the web state is marked hidden, as by that point all
   // other updates should be issued.
-  _pendingTabSwitcherSnapshot =
-      _associatedTabHelper->CaptureSnapshotOfBaseWindowSafeArea();
+  _associatedTabHelper->RecordViewportSnaphot();
+  _associatedTabHelper->RecordSheetDimensionState(
+      _detentsManager.sheetDimension);
   [self openURLInNewTab:URL];
 }
 
@@ -1005,11 +1014,11 @@ const CGFloat kMenuSymbolSize = 18;
   // Configure sheet presentation
   UISheetPresentationController* sheet =
       _consentViewController.sheetPresentationController;
-  sheet.delegate = self;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   _detentsManager =
       [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
-  [_detentsManager adjustDetentsForState:SheetStateConsentDialog];
+  _detentsManager.observer = self;
+  [_detentsManager adjustDetentsForState:SheetDetentStateConsentDialog];
 
   [_containerViewController presentViewController:_consentViewController
                                          animated:YES
@@ -1049,15 +1058,26 @@ const CGFloat kMenuSymbolSize = 18;
 - (void)showResultsBottomSheet {
   UISheetPresentationController* sheet =
       _resultViewController.sheetPresentationController;
-  sheet.delegate = self;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = 14;
+
+  // Extract the restored state before showing the sheet to avoid having it
+  // overwritten.
+  SheetDimensionState restoredState =
+      _associatedTabHelper->GetRecordedSheetDimensionState();
+
   _detentsManager =
       [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
-  [_detentsManager adjustDetentsForState:SheetStateUnrestrictedMovement];
+  _detentsManager.observer = self;
+  [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
   _resultMediator.presentationDelegate = _detentsManager;
   _mediator.presentationDelegate = _detentsManager;
+
+  BOOL isStateRestoration = restoredState != SheetDimensionStateHidden;
+  if (restoredState == SheetDimensionStateLarge) {
+    [self->_detentsManager requestMaximizeBottomSheet];
+  }
 
   // Adjust the occlusion insets so that selections in the bottom half of the
   // screen are repositioned, to avoid being hidden by the bottom sheet.
@@ -1077,12 +1097,43 @@ const CGFloat kMenuSymbolSize = 18;
   __weak __typeof(self) weakSelf = self;
   [_containerViewController
       presentViewController:_resultViewController
-                   animated:YES
+                   animated:!isStateRestoration
                  completion:^{
-                   [weakSelf monitorResultsBottomSheetPosition];
+                   [weakSelf resultsBottomSheetPresented];
                    [weakSelf handlePanRecognizersAddedAfter:
                                  panRecognizersBeforePresenting];
                  }];
+}
+
+- (void)showRestorationWindowIfNeeded {
+  // If there is a pending snapshot, show it in a separate fullscreen window to
+  // ease the transition.
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  if (!_associatedTabHelper || !sceneWindow) {
+    return;
+  }
+  UIImage* viewportSnapshot = _associatedTabHelper->GetViewportSnapshot();
+  // If no snapshot was stored, it means that a restoration of state is not
+  // needed.
+  if (!viewportSnapshot) {
+    return;
+  }
+  _restorationWindow =
+      [[UIWindow alloc] initWithWindowScene:sceneWindow.windowScene];
+  _restorationWindow.rootViewController =
+      [[SnapshotCoverViewController alloc] initWithImage:viewportSnapshot];
+  _restorationWindow.windowLevel = sceneWindow.windowLevel + 1;
+  _restorationWindow.hidden = NO;
+}
+
+- (void)resultsBottomSheetPresented {
+  _restorationWindow.hidden = YES;
+  _restorationWindow = nil;
+  if (_associatedTabHelper) {
+    _associatedTabHelper->ClearViewportSnapshot();
+  }
+
+  [self monitorResultsBottomSheetPosition];
 }
 
 - (void)monitorResultsBottomSheetPosition {

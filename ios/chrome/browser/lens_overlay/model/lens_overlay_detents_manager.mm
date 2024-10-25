@@ -15,7 +15,8 @@ NSString* const kCustomPeakSheetDetentIdentifier =
 const CGFloat kPeakDetentHeight = 100;
 }  // namespace
 
-@interface LensOverlayDetentsManager (Private)
+@interface LensOverlayDetentsManager (Private) <
+    UISheetPresentationControllerDelegate>
 
 @property(nonatomic, readonly) UISheetPresentationControllerDetent* largeDetent;
 @property(nonatomic, readonly)
@@ -28,12 +29,15 @@ const CGFloat kPeakDetentHeight = 100;
 
 @implementation LensOverlayDetentsManager {
   __weak UISheetPresentationController* _sheet;
+  SheetDimensionState _latestReportedDimension;
 }
 
 - (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet {
   self = [super init];
   if (self) {
     _sheet = sheet;
+    _latestReportedDimension = SheetDimensionStateHidden;
+    _sheet.delegate = self;
   }
 
   return self;
@@ -41,14 +45,27 @@ const CGFloat kPeakDetentHeight = 100;
 
 #pragma mark - Public
 
-- (BOOL)isInLargestDetent {
-  return [_sheet.selectedDetentIdentifier
+- (SheetDimensionState)sheetDimension {
+  NSString* identifier = _sheet.selectedDetentIdentifier;
+  BOOL isInMediumDetent = [identifier
+      isEqualToString:UISheetPresentationControllerDetentIdentifierMedium];
+  BOOL isInLargestDetent = [identifier
       isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
-}
-
-- (BOOL)isPeaking {
-  return [_sheet.selectedDetentIdentifier
-      isEqualToString:kCustomPeakSheetDetentIdentifier];
+  BOOL isPeaking =
+      [identifier isEqualToString:kCustomPeakSheetDetentIdentifier];
+  BOOL isConsent =
+      [identifier isEqualToString:kCustomConsentSheetDetentIdentifier];
+  if (isInLargestDetent) {
+    return SheetDimensionStateLarge;
+  } else if (isInMediumDetent) {
+    return SheetDimensionStateMedium;
+  } else if (isPeaking) {
+    return SheetDimensionStatePeaking;
+  } else if (isConsent) {
+    return SheetDimensionStateConsent;
+  } else {
+    return SheetDimensionStateHidden;
+  }
 }
 
 - (void)adjustDetentsForState:(SheetDetentState)state {
@@ -59,11 +76,10 @@ const CGFloat kPeakDetentHeight = 100;
 }
 
 - (void)restrictSheetToLargeDetent:(BOOL)restrictToLargeDetent {
-  if (restrictToLargeDetent) {
-    [self adjustDetentsForState:SheetStateLockedInLargeDetent];
-  } else {
-    [self adjustDetentsForState:SheetStateUnrestrictedMovement];
-  }
+  SheetDetentState state = restrictToLargeDetent
+                               ? SheetDetentStateLockedInLargeDetent
+                               : SheetDetentStateUnrestrictedMovement;
+  [self adjustDetentsForState:state];
 }
 
 - (void)requestMaximizeBottomSheet {
@@ -80,27 +96,58 @@ const CGFloat kPeakDetentHeight = 100;
   }];
 }
 
+#pragma mark - UISheetPresentationControllerDelegate
+
+- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
+    (UISheetPresentationController*)sheetPresentationController {
+  [self reportDimensionChangeIfNeeded];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  if (!_observer) {
+    return YES;
+  }
+  return [_observer bottomSheetShouldDismissFromState:self.sheetDimension];
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  _sheet.selectedDetentIdentifier = nil;
+  [_observer onBottomSheetDimensionStateChanged:SheetDimensionStateHidden];
+}
+
 #pragma mark - Private
 - (void)setDetentsForState:(SheetDetentState)state {
   switch (state) {
-    case SheetStateUnrestrictedMovement:
+    case SheetDetentStateUnrestrictedMovement:
       _sheet.detents = @[ self.mediumDetent, self.largeDetent ];
       _sheet.largestUndimmedDetentIdentifier = self.largeDetent.identifier;
+      _sheet.selectedDetentIdentifier = self.mediumDetent.identifier;
       break;
-    case SheetStateLockedInLargeDetent:
+    case SheetDetentStateLockedInLargeDetent:
       _sheet.detents = @[ self.largeDetent ];
       _sheet.largestUndimmedDetentIdentifier = self.largeDetent.identifier;
       _sheet.selectedDetentIdentifier = self.largeDetent.identifier;
       break;
-    case SheetStatePeakEnabled:
+    case SheetDetentStatePeakEnabled:
       _sheet.detents = @[ self.peakDetent ];
       _sheet.largestUndimmedDetentIdentifier = self.peakDetent.identifier;
       _sheet.selectedDetentIdentifier = self.peakDetent.identifier;
       break;
-    case SheetStateConsentDialog:
+    case SheetDetentStateConsentDialog:
       _sheet.detents = @[ self.consentDetent ];
       _sheet.largestUndimmedDetentIdentifier = self.consentDetent.identifier;
       break;
+  }
+
+  [self reportDimensionChangeIfNeeded];
+}
+
+- (void)reportDimensionChangeIfNeeded {
+  if (self.sheetDimension != _latestReportedDimension) {
+    [_observer onBottomSheetDimensionStateChanged:self.sheetDimension];
+    _latestReportedDimension = self.sheetDimension;
   }
 }
 

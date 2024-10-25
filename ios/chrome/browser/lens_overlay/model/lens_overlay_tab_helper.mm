@@ -82,12 +82,10 @@ void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_ = nullptr;
 }
 
-UIImage* LensOverlayTabHelper::CaptureSnapshotOfBaseWindowSafeArea() {
+void LensOverlayTabHelper::RecordViewportSnaphot() {
   if (snapshot_controller_) {
-    return snapshot_controller_->CaptureSnapshotOfBaseWindowSafeArea();
+    viewport_snapshot_ = snapshot_controller_->CaptureSnapshotOfBaseWindow();
   }
-
-  return nil;
 }
 
 void LensOverlayTabHelper::UpdateSnapshot() {
@@ -107,9 +105,17 @@ void LensOverlayTabHelper::UpdateSnapshot() {
   });
 }
 
-void LensOverlayTabHelper::UpdateSnapshotStorageWithImage(UIImage* snapshot) {
-  if (SnapshotTabHelper* snapshotTabHelper =
-          SnapshotTabHelper::FromWebState(web_state_)) {
+void LensOverlayTabHelper::UpdateSnapshotStorage() {
+  SnapshotTabHelper* snapshotTabHelper =
+      SnapshotTabHelper::FromWebState(web_state_);
+
+  if (!snapshotTabHelper || !viewport_snapshot_ || !snapshot_controller_) {
+    return;
+  }
+
+  UIImage* snapshot =
+      snapshot_controller_->CropSnapshotToWindowSafeArea(viewport_snapshot_);
+  if (snapshot) {
     snapshotTabHelper->UpdateSnapshotStorageWithImage(snapshot);
   }
 }

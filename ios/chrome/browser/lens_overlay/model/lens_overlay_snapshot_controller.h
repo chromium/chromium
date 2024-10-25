@@ -53,7 +53,8 @@ class LensOverlaySnapshotController final
   void ReleaseAuxiliaryWindows();
 
   // Captures a snapshot of the base `UIWindow`.
-  UIImage* CaptureSnapshotOfBaseWindowSafeArea();
+  UIImage* CaptureSnapshotOfBaseWindow();
+  UIImage* CropSnapshotToWindowSafeArea(UIImage* snapshot);
 
   // Sets whether the current web state is of a PDF document or not.
   void SetIsPDFDocument(bool is_pdf_document) {
