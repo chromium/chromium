@@ -251,13 +251,6 @@ void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
 }
 
 void BackForwardTransitionAnimationManagerAndroid::
-    OnPostNavigationFirstFrameTimeout() {
-  CHECK(animator_);
-  CHECK(animator_->IsTerminalState());
-  DestroyAnimator();
-}
-
-void BackForwardTransitionAnimationManagerAndroid::
     OnPhysicalBackingSizeChanged() {
   if (!animator_) {
     return;

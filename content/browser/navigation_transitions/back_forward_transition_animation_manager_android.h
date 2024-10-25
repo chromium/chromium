@@ -122,11 +122,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // Called upon ignoring an input event.
   void MaybeRecordIgnoredInput(const blink::WebInputEvent& event);
 
-  // Called from the animator when a stable screenshot is not dismissed. This
-  // can happen to a very busy renderer when it couldn't submit a new frame
-  // after the navigation.
-  void OnPostNavigationFirstFrameTimeout();
-
   void OnPhysicalBackingSizeChanged();
 
   void OnBeforeUnloadDialogShown(int64_t navigation_id);

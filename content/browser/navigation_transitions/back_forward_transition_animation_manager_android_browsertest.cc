@@ -1735,7 +1735,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
   EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
@@ -2134,8 +2134,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
+  TestFuture<void> invoke_played;
   TestFuture<bool> did_finish_navigation;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
   GetAnimator()->set_did_finish_navigation_callback(
       did_finish_navigation.GetCallback());
 
@@ -2160,8 +2162,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   }
 
+  GetAnimator()->UnpauseAnimation();
+  EXPECT_TRUE(invoke_played.Wait());
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
   EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
@@ -2209,9 +2213,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   }
 
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-  EXPECT_FALSE(did_cross_fade.IsReady());
+  EXPECT_TRUE(did_cross_fade.Wait());
+  EXPECT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
   EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
@@ -2995,9 +2999,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_TRUE(did_invoke.Wait());
   EXPECT_STATE_EQ(kDisplayingCrossFadeAnimation, GetAnimator()->state());
 
+  GetAnimator()->UnpauseAnimation();
   ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
   ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(0)->GetURL(),
@@ -3460,7 +3465,7 @@ class BackForwardTransitionAnimationManagerWithRedirectBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
-    AbortedOnCrossOriginRedirect) {
+    CrossOriginRedirect) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -3489,9 +3494,9 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimationManager()->OnGestureInvoked();
 
   ASSERT_TRUE(redirect_nav.WaitForNavigationFinished());
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-  ASSERT_FALSE(did_invoke.IsReady());
+  EXPECT_TRUE(did_invoke.Wait());
+  EXPECT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   // [empty.html*, green&]
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
@@ -4380,7 +4385,7 @@ IN_PROC_BROWSER_TEST_F(
       kFloatTolerance));
   GetAnimator()->dismiss_screenshot_timer_for_testing()->FireNow();
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 }
 
 // Test that the timer to dismiss the screenshot is stopped once the renderer

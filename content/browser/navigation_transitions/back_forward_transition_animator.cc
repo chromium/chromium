@@ -100,6 +100,31 @@ const char* IgnoringInputReasonToString(IgnoringInputReason reason) {
   NOTREACHED();
 }
 
+bool HasCrossOriginRedirect(NavigationRequest* request) {
+  const auto& original_url = request->GetOriginalRequestURL();
+  const auto& committed_url = request->GetURL();
+
+  if (original_url == committed_url) {
+    return false;
+  }
+
+  // The origin comparison is tricky because we do not know the precise
+  // origin of the initial `NavigationRequest` (which depends on response
+  // headers like CSP sandbox). It is reasonable to allow the animation to
+  // proceed if the origins derived from the URL remains same-origin at
+  // the end of the navigation, even if there is a sandboxing difference
+  // that leads to an opaque origin. Also, URLs that can inherit origins
+  // (e.g., about:blank) do not generally redirect, so it should be safe
+  // to ignore inherited origins. Thus, we compare origins derived from
+  // the URLs, after first checking whether the URL itself remains
+  // unchanged (to account for URLs with opaque origins that won't appear
+  // equal to each other, like data: URLs). This addresses concerns about
+  // converting between URLs and origins (see
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md).
+  return !url::Origin::Create(original_url)
+              .IsSameOriginWith(url::Origin::Create(committed_url));
+}
+
 const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
   switch (abort_reason) {
     case AnimationAbortReason::kRenderWidgetHostDestroyed:
@@ -108,27 +133,12 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
       return "kMainCommitOnSubframeTransition";
     case AnimationAbortReason::kNewCommitInPrimaryMainFrame:
       return "kNewCommitInPrimaryMainFrame";
-    case AnimationAbortReason::kCrossOriginRedirect:
-      return "kCrossOriginRedirect";
-    case AnimationAbortReason::kNewCommitWhileDisplayingInvokeAnimation:
-      return "kNewCommitWhileDisplayingInvokeAnimation";
     case AnimationAbortReason::kNewCommitWhileDisplayingCanceledAnimation:
       return "kNewCommitWhileDisplayingCanceledAnimation";
-    case AnimationAbortReason::kNewCommitWhileWaitingForNewRendererToDraw:
-      return "kNewCommitWhileWaitingForNewRendererToDraw";
-    case AnimationAbortReason::
-        kNewCommitWhileWaitingForContentForNavigationEntryShown:
-      return "kNewCommitWhileWaitingForContentForNavigationEntryShown";
-    case AnimationAbortReason::kNewCommitWhileDisplayingCrossFadeAnimation:
-      return "kNewCommitWhileDisplayingCrossFadeAnimation";
-    case AnimationAbortReason::kNewCommitWhileWaitingForBeforeUnloadResponse:
-      return "kNewCommitWhileWaitingForBeforeUnloadResponse";
     case AnimationAbortReason::kMultipleNavigationRequestsCreated:
       return "kMultipleNavigationRequestsCreated";
     case AnimationAbortReason::kNavigationEntryDeletedBeforeCommit:
       return "kNavigationEntryDeletedBeforeCommit";
-    case AnimationAbortReason::kPostNavigationFirstFrameTimeout:
-      return "kPostNavigationFirstFrameTimeout";
     case AnimationAbortReason::kChainedBack:
       return "kChainedBack";
     case AnimationAbortReason::kDetachedFromWindow:
@@ -404,9 +414,8 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
     }
   }
 
-  // This can happen if the navigation started for this gesture was committed
-  // but another navigation or gesture started before the destination renderer
-  // produced its first frame.
+  // This can happen if the animation is forced to abort before Viz activates
+  // the first frame post-navigation.
   if (new_render_widget_host_) {
     CHECK_EQ(state_, State::kAnimationAborted) << StateToString(state_);
     UnregisterNewFrameActivationObserver();
@@ -683,17 +692,7 @@ void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
     return;
   }
 
-  viz_has_activated_first_frame_ = true;
-
-  // No longer interested in any other compositor frame submission
-  // notifications. We can safely dismiss the previewed screenshot now.
-  UnregisterNewFrameActivationObserver();
-
-  if (state_ == State::kWaitingForNewRendererToDraw) {
-    // Only display the crossfade animation if the old page is completely out of
-    // the viewport.
-    AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
-  }
+  PostNavigationFirstFrameActivated();
 }
 
 // We only use `DidStartNavigation()` for signalling that the renderer has acked
@@ -904,45 +903,23 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
 
         // Before we display the crossfade animation to show the new page, we
         // need to check if the new page matches the origin of the screenshot.
-        // We are not allowed to cross-fade from a screenshot of A.com to a page
-        // of B.com.
-        bool land_on_error_page = navigation_request->DidEncounterError();
-        bool different_commit_origin = false;
-
-        const auto& original_url = navigation_request->GetOriginalRequestURL();
-        const auto& committed_url = navigation_request->GetURL();
-
-        // The origin comparison is tricky because we do not know the precise
-        // origin of the initial `NavigationRequest` (which depends on response
-        // headers like CSP sandbox). It is reasonable to allow the animation to
-        // proceed if the origins derived from the URL remains same-origin at
-        // the end of the navigation, even if there is a sandboxing difference
-        // that leads to an opaque origin. Also, URLs that can inherit origins
-        // (e.g., about:blank) do not generally redirect, so it should be safe
-        // to ignore inherited origins. Thus, we compare origins derived from
-        // the URLs, after first checking whether the URL itself remains
-        // unchanged (to account for URLs with opaque origins that won't appear
-        // equal to each other, like data: URLs). This addresses concerns about
-        // converting between URLs and origins (see
-        // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md).
-        if (original_url != committed_url) {
-          different_commit_origin =
-              !url::Origin::Create(original_url)
-                   .IsSameOriginWith(url::Origin::Create(committed_url));
-        }
-
-        if (!land_on_error_page && different_commit_origin) {
-          abort_reason = AnimationAbortReason::kCrossOriginRedirect;
-          break;
-        }
+        bool error_or_cross_origin_redirect =
+            navigation_request->DidEncounterError() ||
+            HasCrossOriginRedirect(navigation_request);
 
         // Our gesture navigation has committed.
         navigation_state_ = NavigationState::kCommitted;
         physics_model_.OnNavigationFinished(/*navigation_committed=*/true);
-        if (land_on_error_page) {
-          // TODO(crbug.com/41482489): Implement a different UX if we
-          // decide not show the animation at all (i.e. abort animation early
-          // when we receive the response header).
+
+        if (error_or_cross_origin_redirect) {
+          // If we encountered a cross-origin redirect, start cross-fading as
+          // soon as the invoke animation has finished playing. Do not wait for
+          // Viz to activate the first frame.
+          PostNavigationFirstFrameActivated();
+        } else {
+          // This is a same-doc navigation (where redirect cannot happen), or
+          // a cross-doc navigation with a same-origin redirect, or no redirect
+          // at all. Proceed the animation.
         }
         // We need to check if hosts have changed, since they could have stayed
         // the same if the old page was early-swapped out, which can happen in
@@ -965,8 +942,12 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // commit-pending invoke animation to bring B.com's screenshot to the
         // center of the viewport.
         CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-        abort_reason =
-            AnimationAbortReason::kNewCommitWhileDisplayingInvokeAnimation;
+        // TODO(https://crbug.com/375478872): Ideally, we only need to fake
+        // Viz's frame notification if the redirect is cross-origin. We
+        // shouldn't need to fake the frame notification for same-doc
+        // navigations or same-origin redirects (A.com --nav--> B.com/foo
+        // --redirect--> B.com/bar).
+        PostNavigationFirstFrameActivated();
       }
       break;
     }
@@ -988,16 +969,14 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // redirects to C.com, before B.com's renderer even submits a new frame.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      abort_reason =
-          AnimationAbortReason::kNewCommitWhileWaitingForNewRendererToDraw;
+      PostNavigationFirstFrameActivated();
       break;
     case State::kWaitingForContentForNavigationEntryShown:
       // Our navigation has already committed while waiting for a native
       // entry to be finished drawing by the embedder.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      abort_reason = AnimationAbortReason::
-          kNewCommitWhileWaitingForContentForNavigationEntryShown;
+      OnContentForNavigationEntryShown();
       break;
     case State::kDisplayingCrossFadeAnimation: {
       // Our navigation has already committed while a second navigation commits.
@@ -1006,8 +985,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      abort_reason =
-          AnimationAbortReason::kNewCommitWhileDisplayingCrossFadeAnimation;
       break;
     }
     case State::kWaitingForBeforeUnloadUserInteraction: {
@@ -2067,8 +2044,27 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
 void BackForwardTransitionAnimator::OnPostNavigationFirstFrameTimeout() {
   CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
   CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-  AbortAnimation(AnimationAbortReason::kPostNavigationFirstFrameTimeout);
-  animation_manager_->OnPostNavigationFirstFrameTimeout();
+  PostNavigationFirstFrameActivated();
+}
+
+void BackForwardTransitionAnimator::PostNavigationFirstFrameActivated() {
+  if (viz_has_activated_first_frame_) {
+    // Viz has already activated the first frame post-navigation and has already
+    // notified the browser.
+    return;
+  }
+
+  viz_has_activated_first_frame_ = true;
+
+  // No longer interested in any other compositor frame submission
+  // notifications. We can safely dismiss the previewed screenshot now.
+  UnregisterNewFrameActivationObserver();
+
+  if (state_ == State::kWaitingForNewRendererToDraw) {
+    // Only display the crossfade animation if the old page is completely out of
+    // the viewport.
+    AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
+  }
 }
 
 void BackForwardTransitionAnimator::ResetLiveOverlayLayer() {

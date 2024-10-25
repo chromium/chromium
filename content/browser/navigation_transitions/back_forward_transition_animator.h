@@ -132,22 +132,27 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // The subscribed `RenderWidgetHost` was destroyed.
     kRenderWidgetHostDestroyed = 0,
 
+    // http://crbug.com/360888470: We don't abort the transition for redirect or
+    // when a new navigation commits. When those happens we let the invoke or
+    // cross-fade to finish. We also do not wait for Viz to activate a new
+    // frame before cross-fading.
     kMainCommitOnSubframeTransition = 1,
     kNewCommitInPrimaryMainFrame = 2,
-    kCrossOriginRedirect = 3,
-    kNewCommitWhileDisplayingInvokeAnimation = 4,
+    // Deprecated kCrossOriginRedirect = 3,
+    // Deprecated kNewCommitWhileDisplayingInvokeAnimation = 4,
     kNewCommitWhileDisplayingCanceledAnimation = 5,
-    kNewCommitWhileWaitingForNewRendererToDraw = 6,
-    kNewCommitWhileWaitingForContentForNavigationEntryShown = 7,
-    kNewCommitWhileDisplayingCrossFadeAnimation = 8,
-    kNewCommitWhileWaitingForBeforeUnloadResponse = 9,
+    // Deprecated kNewCommitWhileWaitingForNewRendererToDraw = 6,
+    // Deprecated kNewCommitWhileWaitingForContentForNavigationEntryShown = 7,
+    // Deprecated kNewCommitWhileDisplayingCrossFadeAnimation = 8,
+    // Deprecated kNewCommitWhileWaitingForBeforeUnloadResponse = 9,
+
     kMultipleNavigationRequestsCreated = 10,
 
     // The navigation entry was deleted when the navigation was ready to commit.
     kNavigationEntryDeletedBeforeCommit = 11,
 
-    // The new frame is not activated in time.
-    kPostNavigationFirstFrameTimeout = 12,
+    // [Deprecated] The new frame is not activated in time.
+    // kPostNavigationFirstFrameTimeout = 12,
 
     // The user started a new gesture while the first one is still on-going.
     kChainedBack = 13,
@@ -403,6 +408,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // screenshot after the screenshot is fully centered because the new Document
   // hasn't produced a frame yet.
   void OnPostNavigationFirstFrameTimeout();
+
+  void PostNavigationFirstFrameActivated();
 
   void ResetLiveOverlayLayer();
 
