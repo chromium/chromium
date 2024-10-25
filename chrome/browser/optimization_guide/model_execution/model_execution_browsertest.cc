@@ -507,6 +507,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionSuccess) {
   EnableSignin();
+  // TODO(335033244): Verify if this addresses flakes. If it does, we should
+  // try to understand why the metrics consent is sometimes on for flakes.
+  SetMetricsConsent(false);
   SetExpectedBearerAccessToken("Bearer access_token");
 
   proto::ComposeRequest request;
