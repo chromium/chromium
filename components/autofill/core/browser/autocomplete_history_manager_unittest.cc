@@ -21,11 +21,9 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -83,7 +81,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
                        CHROME_VERSION_MAJOR);
 
     // Set time to some arbitrary date.
-    test_clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(1546889367));
+    task_environment_.AdvanceClock(
+        base::Time::FromSecondsSinceUnixEpoch(1546889367) - base::Time::Now());
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
@@ -126,13 +125,14 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   AutocompleteEntry GetAutocompleteEntry(
       const std::u16string& name,
       const std::u16string& value,
-      base::Time date_created = AutofillClock::Now(),
-      base::Time date_last_used = AutofillClock::Now()) {
+      base::Time date_created = base::Time::Now(),
+      base::Time date_last_used = base::Time::Now()) {
     return AutocompleteEntry(AutocompleteKey(name, value), date_created,
                              date_last_used);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
@@ -140,7 +140,6 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   std::unique_ptr<PrefService> prefs_;
   FormFieldData test_field_;
   FormFieldData second_test_field_;
-  TestAutofillClock test_clock;
 };
 
 // Tests that credit card numbers are not sent to the WebDatabase to be saved.
@@ -706,13 +705,13 @@ TEST_F(AutocompleteHistoryManagerTest,
   int days_since_last_use = 10;
 
   std::vector<AutocompleteEntry> expected_values = {
-      GetAutocompleteEntry(
-          test_field_.name(), test_value, AutofillClock::Now() - base::Days(30),
-          AutofillClock::Now() - base::Days(days_since_last_use)),
+      GetAutocompleteEntry(test_field_.name(), test_value,
+                           base::Time::Now() - base::Days(30),
+                           base::Time::Now() - base::Days(days_since_last_use)),
       GetAutocompleteEntry(
           test_field_.name(), other_test_value,
-          AutofillClock::Now() - base::Days(30),
-          AutofillClock::Now() - base::Days(days_since_last_use))};
+          base::Time::Now() - base::Days(30),
+          base::Time::Now() - base::Days(days_since_last_use))};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);

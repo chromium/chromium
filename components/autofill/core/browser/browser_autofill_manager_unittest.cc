@@ -74,7 +74,6 @@
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -88,7 +87,6 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -824,7 +822,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     // Advance the mock clock to a fixed, arbitrary, somewhat recent date.
     base::Time year2020;
     ASSERT_TRUE(base::Time::FromString("01/01/20", &year2020));
-    task_environment_.FastForwardBy(year2020 - AutofillClock::Now());
+    task_environment_.FastForwardBy(year2020 - base::Time::Now());
 
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     test_api(personal_data().address_data_manager())
@@ -1382,7 +1380,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     AutofillProfile profile1 =
         FillDataToAutofillProfile(GetElvisAddressFillData());
     profile1.set_guid(kElvisProfileGuid);
-    profile1.set_use_date(AutofillClock::Now() - base::Days(2));
+    profile1.set_use_date(base::Time::Now() - base::Days(2));
     personal_data().address_data_manager().AddProfile(profile1);
 
     AutofillProfile profile2(
@@ -1391,7 +1389,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                          "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                          "Lubbock", "Texas", "79401", "US", "23456789012");
     profile2.set_guid(MakeGuid(2));
-    profile2.set_use_date(AutofillClock::Now() - base::Days(1));
+    profile2.set_use_date(base::Time::Now() - base::Days(1));
     personal_data().address_data_manager().AddProfile(profile2);
 
     AutofillProfile profile3(
@@ -1399,7 +1397,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "",
                          "US", "");
     profile3.set_guid(MakeGuid(3));
-    profile3.set_use_date(AutofillClock::Now());
+    profile3.set_use_date(base::Time::Now());
     personal_data().address_data_manager().AddProfile(profile3);
   }
 
@@ -1410,7 +1408,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "04", "2999", "1");
     credit_card1.set_guid(MakeGuid(4));
     credit_card1.set_use_count(10);
-    credit_card1.set_use_date(AutofillClock::Now() - base::Days(5));
+    credit_card1.set_use_date(base::Time::Now() - base::Days(5));
     personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
     CreditCard credit_card2;
@@ -1419,7 +1417,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "10", "2998", "1");
     credit_card2.set_guid(MakeGuid(5));
     credit_card2.set_use_count(5);
-    credit_card2.set_use_date(AutofillClock::Now() - base::Days(4));
+    credit_card2.set_use_date(base::Time::Now() - base::Days(4));
     personal_data().payments_data_manager().AddCreditCard(credit_card2);
 
     CreditCard credit_card3;
@@ -2009,7 +2007,7 @@ TEST_P(SuggestionMatchingTest,
   // letter for last name.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.set_guid(MakeGuid(103));
-  profile1.set_use_date(AutofillClock::Now() - base::Days(2));
+  profile1.set_use_date(base::Time::Now() - base::Days(2));
   profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
@@ -2017,7 +2015,7 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.set_guid(MakeGuid(124));
-  profile2.set_use_date(AutofillClock::Now() - base::Days(1));
+  profile2.set_use_date(base::Time::Now() - base::Days(1));
   profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
@@ -2025,7 +2023,7 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.set_guid(MakeGuid(126));
-  profile3.set_use_date(AutofillClock::Now());
+  profile3.set_use_date(base::Time::Now());
   profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
   profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
@@ -2675,14 +2673,14 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "2010", "1");
   credit_card1.set_guid(MakeGuid(2));
   credit_card1.set_use_count(300);
-  credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
+  credit_card1.set_use_date(base::Time::Now() - base::Days(10));
   personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
   // Add an expired card with a lower ranking score.
   CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
   credit_card2.set_use_count(3);
-  credit_card2.set_use_date(AutofillClock::Now() - base::Days(1));
+  credit_card2.set_use_date(base::Time::Now() - base::Days(1));
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "4234567890123456" /* Visa */, "04", "2011", "1");
   credit_card2.set_guid(MakeGuid(3));
@@ -2725,7 +2723,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "1");
   personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
-  auto now = AutofillClock::Now();
+  auto now = base::Time::Now();
 
   // Add an expired local card last used 10 days ago
   CreditCard credit_card1(MakeGuid(1), test::kEmptyOrigin);
@@ -2835,7 +2833,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "378282246310005" /* American Express */, "04",
                           "2910", "1");
   credit_card0.set_guid(MakeGuid(1));
-  credit_card0.set_use_date(AutofillClock::Now() - base::Days(1));
+  credit_card0.set_use_date(base::Time::Now() - base::Days(1));
   personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
   CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -3647,7 +3645,6 @@ TEST_F(BrowserAutofillManagerTest,
        UserPerceptionOfAddressAutofillSurvey_MinFormSizeReached_TriggerSurvey) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillAddressUserPerceptionSurvey);
-  TestAutofillClock clock(AutofillClock::Now());
   // Set up a form with 4 fields (minimum form size to trigger a survey) and
   // fill them. The specific field types do not matter.
   const size_t n_fields = 4;
@@ -3693,7 +3690,6 @@ TEST_F(
     UserPerceptionOfAutofillSurvey_MinFormSizeNotReached_DoNotTriggerSurvey) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillAddressUserPerceptionSurvey);
-  TestAutofillClock clock(AutofillClock::Now());
   // Set up a form with only one field and fill it.
   FormData form =
       test::GetFormData({.fields = {{.role = NAME_FIRST,
@@ -3715,7 +3711,6 @@ TEST_F(BrowserAutofillManagerTest,
        UserPerceptionOfCreditCardAutofillSurvey_TriggerSurvey) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillCreditCardUserPerceptionSurvey);
-  TestAutofillClock clock(AutofillClock::Now());
   const size_t n_fields = 3;
   // Set up a CC form.
   FormData form;
@@ -3843,7 +3838,6 @@ class BrowserAutofillManagerWithLogEventsTest
 // Test that we record TriggerFillFieldLogEvent for the field we click to show
 // the autofill suggestion and FillFieldLogEvent for every field in the form.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
-  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -3882,7 +3876,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
           .data_type = FillDataType::kAutofillProfile,
           .associated_country_code = "US",
-          .timestamp = AutofillClock::Now()});
+          .timestamp = base::Time::Now()});
     }
     // All filled fields share the same expected FillFieldLogEvent.
     // The first TriggerFillFieldLogEvent determines the fill_event_id for
@@ -3905,7 +3899,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 // field has nothing to fill or the field contains a user typed value already.
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsFillPartlyManuallyFilledForm) {
-  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -3966,7 +3959,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           TriggerFillFieldLogEvent{.fill_event_id = fill_event_id,
                                    .data_type = FillDataType::kAutofillProfile,
                                    .associated_country_code = "US",
-                                   .timestamp = AutofillClock::Now()});
+                                   .timestamp = base::Time::Now()});
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
@@ -4117,7 +4110,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 // Test that we record FillFieldLogEvents after filling a form twice, the first
 // time some field values are missing when autofilling.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
-  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   std::vector<FormData> forms(1, form);
@@ -4189,13 +4181,13 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
           .fill_event_id = trigger_fill_field_log_event1->fill_event_id,
           .data_type = FillDataType::kAutofillProfile,
           .associated_country_code = "US",
-          .timestamp = AutofillClock::Now()});
+          .timestamp = base::Time::Now()});
       expected_events.push_back(expected_fill_field_log_event1);
       expected_events.push_back(TriggerFillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
           .data_type = FillDataType::kAutofillProfile,
           .associated_country_code = "US",
-          .timestamp = AutofillClock::Now()});
+          .timestamp = base::Time::Now()});
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
@@ -4245,7 +4237,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
 // Test that we record user typing log event correctly after autofill.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
-  TestAutofillClock clock(AutofillClock::Now());
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   std::vector<FormData> forms(1, form);
@@ -4304,7 +4295,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
           .data_type = FillDataType::kAutofillProfile,
           .associated_country_code = "US",
-          .timestamp = AutofillClock::Now()});
+          .timestamp = base::Time::Now()});
       expected_events.push_back(expected_fill_field_log_event);
       expected_events.push_back(TypingFieldLogEvent{
           .has_value_after_typing = OptionalBoolean::kTrue,
@@ -4321,7 +4312,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 // and fills the credit card form with a suggestion.
 TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsAutofillSuggestionsOrTouchToFill) {
-  TestAutofillClock clock(AutofillClock::Now());
   FormData form;
   CreateTestCreditCardFormData(&form, /*is_https=*/true,
                                /*use_month_type=*/false);
@@ -4385,7 +4375,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
           .data_type = FillDataType::kCreditCard,
           .associated_country_code = "",
-          .timestamp = AutofillClock::Now()});
+          .timestamp = base::Time::Now()});
       // The "Name on Card" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(expected_fill_field_log_event);
@@ -7636,7 +7626,7 @@ class BrowserAutofillManagerTestForSharingNickname
                             "378282246310005" /* American Express */, "04",
                             "2910", "1");
     local_card.set_use_count(3);
-    local_card.set_use_date(AutofillClock::Now() - base::Days(1));
+    local_card.set_use_date(base::Time::Now() - base::Days(1));
     local_card.SetNickname(base::UTF8ToUTF16(local_nickname_));
     local_card.set_guid(MakeGuid(1));
     return local_card;
@@ -8022,7 +8012,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   // Create a profile and add it to the PDM.
   personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
-  profile.set_use_date(AutofillClock::Now());
+  profile.set_use_date(base::Time::Now());
   profile.set_use_count(1u);
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =
@@ -8030,7 +8020,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   ASSERT_TRUE(pdm_profile);
 
   task_environment_.FastForwardBy(base::Hours(1));
-  const base::Time hour_later = AutofillClock::Now();
+  const base::Time hour_later = base::Time::Now();
 
   FillAutofillFormData(form, form.fields()[0], pdm_profile->guid());
   EXPECT_EQ(2U, pdm_profile->use_count());
