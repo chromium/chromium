@@ -232,7 +232,7 @@ void ForwardNotificationOperationOnUiThread(
       is_incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
-                     action_index, reply, by_user));
+                     action_index, reply, by_user, base::DoNothing()));
 }
 
 // Writes `data` to a new temporary file and returns the temporary file

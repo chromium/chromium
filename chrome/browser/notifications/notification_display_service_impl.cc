@@ -47,14 +47,6 @@
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 #endif
 
-namespace {
-
-void OperationCompleted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-}  // namespace
-
 // static
 NotificationDisplayServiceImpl* NotificationDisplayServiceImpl::GetForProfile(
     Profile* profile) {
@@ -144,28 +136,26 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     const std::string& notification_id,
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
-    const std::optional<bool>& by_user) {
+    const std::optional<bool>& by_user,
+    base::OnceClosure on_completed_cb) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   DCHECK(handler);
   if (!handler) {
     LOG(ERROR) << "Unable to find a handler for "
                << static_cast<int>(notification_type);
+    std::move(on_completed_cb).Run();
     return;
   }
-
-  // TODO(crbug.com/40540804): Plumb this through from the notification platform
-  // bridges so they can report completion of the operation as needed.
-  base::OnceClosure completed_closure = base::BindOnce(&OperationCompleted);
 
   switch (operation) {
     case NotificationOperation::kClick:
       handler->OnClick(profile_, origin, notification_id, action_index, reply,
-                       std::move(completed_closure));
+                       std::move(on_completed_cb));
       break;
     case NotificationOperation::kClose:
       DCHECK(by_user.has_value());
       handler->OnClose(profile_, origin, notification_id, by_user.value(),
-                       std::move(completed_closure));
+                       std::move(on_completed_cb));
       for (auto& observer : observers_)
         observer.OnNotificationClosed(notification_id);
       break;
@@ -299,19 +289,21 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     const std::optional<bool>& by_user,
+    base::OnceClosure on_completed_cb,
     Profile* profile) {
   base::UmaHistogramBoolean("Notifications.LoadProfileResult",
                             profile != nullptr);
   if (!profile) {
     LOG(WARNING) << "Profile not loaded correctly";
+    std::move(on_completed_cb).Run();
     return;
   }
 
   NotificationDisplayServiceImpl* display_service =
       NotificationDisplayServiceImpl::GetForProfile(profile);
-  display_service->ProcessNotificationOperation(operation, notification_type,
-                                                origin, notification_id,
-                                                action_index, reply, by_user);
+  display_service->ProcessNotificationOperation(
+      operation, notification_type, origin, notification_id, action_index,
+      reply, by_user, std::move(on_completed_cb));
 }
 
 void NotificationDisplayServiceImpl::SetBlockersForTesting(

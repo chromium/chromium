@@ -43,6 +43,8 @@ import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.BrowserStartupController;
 
+import java.util.UUID;
+
 /**
  * Class that spins up native when an interaction with a notification happens and passes the
  * relevant information on to native.
@@ -214,11 +216,14 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                                 BrowserStartupController.getInstance().isFullBrowserStarted(),
                                 IntentUtils.safeGetBooleanExtra(
                                         intent, EXTRA_IS_OFF_THE_RECORD, false));
-                        int jobId =
-                                TrampolineActivityTracker.getInstance()
-                                        .startProcessingNewIntent(10L);
+                        // Download notification Id is an integer, generate a UUID instead as the
+                        // job ID.
+                        String uuid = UUID.randomUUID().toString();
+                        TrampolineActivityTracker.getInstance()
+                                .startProcessingNewIntent(
+                                        uuid, TrampolineActivityTracker.JobDuration.IMMEDIATE);
                         propagateInteraction(intent);
-                        TrampolineActivityTracker.getInstance().onIntentCompleted(jobId);
+                        TrampolineActivityTracker.getInstance().onIntentCompleted(uuid);
                     }
 
                     @Override

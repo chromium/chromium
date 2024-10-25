@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +29,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrampolineActivityTrackerTest {
+    private static final String TEST_JOB_ID = "foo";
+    private static final String TEST_JOB_ID_2 = "foo2";
+
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @After
@@ -98,9 +100,11 @@ public class TrampolineActivityTrackerTest {
     public void testIntentProcessingWithoutTrackedActivity() {
         Handler mockHandler = mock(Handler.class);
         TrampolineActivityTracker.getInstance().setHandlerForTesting(mockHandler);
-        assertEquals(TrampolineActivityTracker.getInstance().startProcessingNewIntent(1000L), -1);
-        TrampolineActivityTracker.getInstance().onIntentCompleted(-1);
-        TrampolineActivityTracker.getInstance().onIntentCompleted(0);
+        TrampolineActivityTracker.getInstance()
+                .startProcessingNewIntent(
+                        TEST_JOB_ID, TrampolineActivityTracker.JobDuration.NORMAL);
+
+        TrampolineActivityTracker.getInstance().onIntentCompleted(TEST_JOB_ID);
         verify(mockHandler, times(0)).postDelayed(any(Runnable.class), anyLong());
     }
 
@@ -114,26 +118,29 @@ public class TrampolineActivityTrackerTest {
         verify(mockHandler, times(1)).removeCallbacks(any(Runnable.class));
         verify(mockHandler, times(1)).postDelayed(any(Runnable.class), eq(5000L));
 
-        // Adding a new job with 8 seconds of estimated process time.
-        assertEquals(TrampolineActivityTracker.getInstance().startProcessingNewIntent(8000L), 0);
+        // Adding a new long running job.
+        TrampolineActivityTracker.getInstance()
+                .startProcessingNewIntent(TEST_JOB_ID, TrampolineActivityTracker.JobDuration.LONG);
         verify(mockHandler, times(2)).removeCallbacks(any(Runnable.class));
         verify(mockHandler, times(1)).postDelayed(any(Runnable.class), eq(8000L));
 
-        // Advance the clock by 2 seconds, and add another job of 7 seconds.
+        // Advance the clock by 2 seconds, and add another long running job.
         mFakeTimeTestRule.advanceMillis(2000L);
-        assertEquals(TrampolineActivityTracker.getInstance().startProcessingNewIntent(7000L), 1);
+        TrampolineActivityTracker.getInstance()
+                .startProcessingNewIntent(
+                        TEST_JOB_ID_2, TrampolineActivityTracker.JobDuration.LONG);
         verify(mockHandler, times(3)).removeCallbacks(any(Runnable.class));
-        verify(mockHandler, times(1)).postDelayed(any(Runnable.class), eq(7000L));
+        verify(mockHandler, times(2)).postDelayed(any(Runnable.class), eq(8000L));
 
         // Advance the clock by 2 second, and finish the second job
         mFakeTimeTestRule.advanceMillis(2000L);
-        TrampolineActivityTracker.getInstance().onIntentCompleted(1);
+        TrampolineActivityTracker.getInstance().onIntentCompleted(TEST_JOB_ID_2);
         // Only 4 seconds remaining for the first job to finish.
         verify(mockHandler, times(4)).removeCallbacks(any(Runnable.class));
         verify(mockHandler, times(1)).postDelayed(any(Runnable.class), eq(4000L));
 
         assertFalse(activity.isFinishing());
-        TrampolineActivityTracker.getInstance().onIntentCompleted(0);
+        TrampolineActivityTracker.getInstance().onIntentCompleted(TEST_JOB_ID);
         verify(mockHandler, times(5)).removeCallbacks(any(Runnable.class));
         assertTrue(activity.isFinishing());
     }
@@ -148,9 +155,11 @@ public class TrampolineActivityTrackerTest {
         verify(mockHandler, times(1)).removeCallbacks(any(Runnable.class));
         verify(mockHandler, times(1)).postDelayed(any(Runnable.class), eq(5000L));
 
-        // Adding a new job with 4 seconds of estimated process time before native initialization.
+        // Adding a new immediate job before native initialization.
         // Since this is less than the default 5 seconds timeout, nothing will change.
-        assertEquals(TrampolineActivityTracker.getInstance().startProcessingNewIntent(4000L), 0);
+        TrampolineActivityTracker.getInstance()
+                .startProcessingNewIntent(
+                        TEST_JOB_ID, TrampolineActivityTracker.JobDuration.IMMEDIATE);
         verify(mockHandler, times(1)).removeCallbacks(any(Runnable.class));
 
         // Initialize native, it shouldn't impact the existing job's remaining time.
@@ -158,7 +167,7 @@ public class TrampolineActivityTrackerTest {
         verify(mockHandler, times(1)).removeCallbacks(any(Runnable.class));
 
         assertFalse(activity.isFinishing());
-        TrampolineActivityTracker.getInstance().onIntentCompleted(0);
+        TrampolineActivityTracker.getInstance().onIntentCompleted(TEST_JOB_ID);
         verify(mockHandler, times(2)).removeCallbacks(any(Runnable.class));
         assertTrue(activity.isFinishing());
     }

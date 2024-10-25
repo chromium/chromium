@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -102,6 +103,8 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
+  void OnNotificationProcessed(const std::string& notification_id);
+
   // Contains information necessary in order to enable closing notifications
   // that were not created by this instance of the manager. This list may not
   // contain the notifications that have not been interacted with since the last
@@ -133,6 +136,8 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       regenerated_notification_infos_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  base::WeakPtrFactory<NotificationPlatformBridgeAndroid> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_ANDROID_H_

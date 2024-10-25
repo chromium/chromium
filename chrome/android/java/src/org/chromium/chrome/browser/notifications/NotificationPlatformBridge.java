@@ -310,6 +310,7 @@ public class NotificationPlatformBridge {
             NotificationPlatformBridgeJni.get().initializeNotificationPlatformBridge();
             if (sInstance == null) {
                 Log.e(TAG, "Unable to initialize the native NotificationPlatformBridge.");
+                reportTrampolineTrackerJobCompleted(intent);
                 return false;
             }
         }
@@ -338,9 +339,13 @@ public class NotificationPlatformBridge {
             return true;
         } else if (NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE.equals(intent.getAction())) {
             sInstance.onNotificationCommitUnsubscribe(attributes);
+            // No activity needs to be launched when unsubscribing a notification, report the job
+            // as completed.
+            reportTrampolineTrackerJobCompleted(intent);
             return true;
         }
 
+        reportTrampolineTrackerJobCompleted(intent);
         Log.e(TAG, "Unrecognized Notification action: " + intent.getAction());
         return false;
     }
@@ -1269,6 +1274,7 @@ public class NotificationPlatformBridge {
         if (identifyingAttributes.origin != null
                 && sOriginsWithProvisionallyRevokedPermissions.containsKey(
                         identifyingAttributes.origin)) {
+            onNotificationProcessed(identifyingAttributes.notificationId);
             return;
         }
 
@@ -1545,6 +1551,16 @@ public class NotificationPlatformBridge {
             mTwaClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
         }
         return mTwaClient;
+    }
+
+    private static void reportTrampolineTrackerJobCompleted(Intent intent) {
+        String notificationid = intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_ID);
+        TrampolineActivityTracker.getInstance().onIntentCompleted(notificationid);
+    }
+
+    @CalledByNative
+    private void onNotificationProcessed(String notificationId) {
+        TrampolineActivityTracker.getInstance().onIntentCompleted(notificationId);
     }
 
     @NativeMethods

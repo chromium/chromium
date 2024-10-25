@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
+import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
@@ -153,6 +154,10 @@ public class ChromeCachedFlags {
                         TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE,
                         TabResumptionModuleUtils.TAB_RESUMPTION_V2,
                         TabStateFileManager.MIGRATE_STALE_TABS_CACHED_PARAM,
+                        TrampolineActivityTracker.IMMEDIATE_JOB_DURATION_VALUE,
+                        TrampolineActivityTracker.NORMAL_JOB_DURATION_VALUE,
+                        TrampolineActivityTracker.LONG_JOB_DURATION_VALUE,
+                        TrampolineActivityTracker.TIMEOUT_PRIOR_NATIVE_INIT_VALUE,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         WebappLauncherActivity.MIN_SHELL_APK_VERSION);
 
