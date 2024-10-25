@@ -151,9 +151,7 @@ void InitializeAndOverrideAPIKey(const std::string& api_key) {
   ApiKeyCache& cache = InitializeApiKeyCacheInstance();
   cache.set_api_key(api_key);
 }
-#endif  // BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 
-#if BUILDFLAG(IS_IOS)
 void InitializeAndOverrideAPIKeyAndOAuthClient(
     const std::string& api_key,
     const std::string& client_id,
@@ -167,7 +165,7 @@ void InitializeAndOverrideAPIKeyAndOAuthClient(
     cache.SetClientSecret(client, client_secret);
   }
 }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 
 base::ScopedClosureRunner SetScopedApiKeyCacheForTesting(
     ApiKeyCache* api_key_cache) {

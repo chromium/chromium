@@ -160,9 +160,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool IsGoogleChromeAPIKeyUsed();
 // or client IDS & client secrets.
 COMPONENT_EXPORT(GOOGLE_APIS)
 void InitializeAndOverrideAPIKey(const std::string& api_key);
-#endif
 
-#if BUILDFLAG(IS_IOS)
 // Initializes the API keys with default values and overrides the `APIKey` with
 // `api_key`, all the client IDs with `client_id` and all client secrets with
 // `client_secret`.

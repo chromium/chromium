@@ -287,24 +287,22 @@ const std::string& ApiKeyCache::GetClientID(OAuth2Client client) const {
   return client_ids_[client];
 }
 
-#if BUILDFLAG(IS_IOS)
-void ApiKeyCache::SetClientID(OAuth2Client client,
-                              const std::string& client_id) {
-  client_ids_[client] = client_id;
-}
-#endif
-
 const std::string& ApiKeyCache::GetClientSecret(OAuth2Client client) const {
   DCHECK_LT(client, CLIENT_NUM_ITEMS);
   return client_secrets_[client];
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
+void ApiKeyCache::SetClientID(OAuth2Client client,
+                              const std::string& client_id) {
+  client_ids_[client] = client_id;
+}
+
 void ApiKeyCache::SetClientSecret(OAuth2Client client,
                                   const std::string& client_secret) {
   client_secrets_[client] = client_secret;
 }
-#endif
+#endif  // BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 
 bool ApiKeyCache::HasAPIKeyConfigured() const {
   return api_key_ != DefaultApiKeys::kUnsetApiToken;

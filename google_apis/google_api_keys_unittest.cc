@@ -487,7 +487,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
 
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 // Override all keys using both preprocessor defines and setters.
 // Setters should win.
 namespace override_all_keys_setters {
@@ -549,7 +549,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
   EXPECT_EQ(client_secret, google_apis::GetOAuth2ClientSecret(
                                google_apis::CLIENT_REMOTING_HOST));
 }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 
 // Override all keys using both preprocessor defines and gaia config.
 // Config should win.
