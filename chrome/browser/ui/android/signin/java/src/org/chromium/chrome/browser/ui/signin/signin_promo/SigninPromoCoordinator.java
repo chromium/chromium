@@ -6,16 +6,16 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import android.content.Context;
 
-import androidx.annotation.StringRes;
-
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -25,34 +25,29 @@ import java.util.Set;
 /** Coordinator for the signin promo card. */
 public final class SigninPromoCoordinator {
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
-    private final SigninPromoMediator mMediator;
 
+    private final SigninPromoMediator mMediator;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     /**
-     * Creates and instance of the {@link SigninPromoCoordinator}.
+     * Creates an instance of the {@link SigninPromoCoordinator}.
      *
      * @param context The Android {@link Context}.
-     * @param titleStringId The resource id for the title string.
-     * @param descriptionStringId The resource id for the description string.
-     * @param shouldSuppressSecondaryButton Whether the secondary button should be suppressed.
-     * @param shouldHideDismissButton Whether the dismiss button fo the promo card should be hidden.
+     * @param profile A {@link Profile} object to access identity services.
+     * @param delegate A {@link SigninPromoDelegate} to customize the view.
      */
-    public SigninPromoCoordinator(
-            Context context,
-            @StringRes int titleStringId,
-            @StringRes int descriptionStringId,
-            boolean shouldSuppressSecondaryButton,
-            boolean shouldHideDismissButton) {
+    public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
         // TODO(crbug.com/327387704): Observe the AccountManagerFacade so that the promo gets
         // properly updated when the list of accounts changes.
-        mMediator =
-                new SigninPromoMediator(
-                        context,
-                        titleStringId,
-                        descriptionStringId,
-                        shouldSuppressSecondaryButton,
-                        shouldHideDismissButton);
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        mMediator = new SigninPromoMediator(identityManager, profileDataCache, delegate);
+    }
+
+    public void destroy() {
+        mMediator.destroy();
     }
 
     /** Sets the view that is controlled by this coordinator. */

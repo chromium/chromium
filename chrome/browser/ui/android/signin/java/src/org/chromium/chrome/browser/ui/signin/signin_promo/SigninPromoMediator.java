@@ -4,44 +4,76 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
-import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.StringRes;
+import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 final class SigninPromoMediator implements ProfileDataCache.Observer {
-    private final PropertyModel mModel;
+    private final IdentityManager mIdentityManager;
     private final ProfileDataCache mProfileDataCache;
+    private final SigninPromoDelegate mDelegate;
+    private final PropertyModel mModel;
 
     SigninPromoMediator(
-            Context context,
-            @StringRes int titleStringId,
-            @StringRes int descriptionStringId,
-            boolean shouldSuppressSecondaryButton,
-            boolean shouldHideDismissButton) {
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        // TODO(crbug.com/327387704): Fetch the account email and use it to update the
-        // ProfileDataCache.
+            IdentityManager identityManager,
+            ProfileDataCache profileDataCache,
+            SigninPromoDelegate delegate) {
+        mIdentityManager = identityManager;
+        mDelegate = delegate;
+        mProfileDataCache = profileDataCache;
+
+        @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
+        @Nullable
+        DisplayableProfileData profileData =
+                visibleAccount == null
+                        ? null
+                        : mProfileDataCache.getProfileDataOrDefault(visibleAccount.getEmail());
         mModel =
                 SigninPromoProperties.createModel(
-                        mProfileDataCache.getProfileDataOrDefault(""),
+                        profileData,
                         this::onAcceptClicked,
                         this::onDeclineClicked,
-                        titleStringId,
-                        descriptionStringId,
-                        shouldSuppressSecondaryButton,
-                        shouldHideDismissButton);
+                        delegate.getTitle(),
+                        delegate.getDescription(),
+                        delegate.getTextForPrimaryButton(profileData),
+                        delegate.getTextForSecondaryButton(),
+                        profileData == null || delegate.shouldHideSecondaryButton(),
+                        delegate.shouldHideDismissButton());
+
+        mProfileDataCache.addObserver(this);
+    }
+
+    public void destroy() {
+        mProfileDataCache.removeObserver(this);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
     public void onProfileDataUpdated(String accountEmail) {
+        @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
+        if (visibleAccount != null && !visibleAccount.getEmail().equals(accountEmail)) {
+            return;
+        }
+
+        @Nullable
+        DisplayableProfileData profileData =
+                visibleAccount == null
+                        ? null
+                        : mProfileDataCache.getProfileDataOrDefault(visibleAccount.getEmail());
+        mModel.set(SigninPromoProperties.PROFILE_DATA, profileData);
         mModel.set(
-                SigninPromoProperties.PROFILE_DATA,
-                mProfileDataCache.getProfileDataOrDefault(accountEmail));
+                SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON,
+                profileData == null || mDelegate.shouldHideDismissButton());
     }
 
     PropertyModel getModel() {
@@ -54,5 +86,19 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
 
     private void onDeclineClicked(View view) {
         // TODO(crbug.com/327387704): Implement this method
+    }
+
+    private @Nullable CoreAccountInfo getVisibleAccount() {
+        @Nullable
+        CoreAccountInfo visibleAccount =
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        if (visibleAccount == null) {
+            visibleAccount =
+                    AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
+                            accountManagerFacade.getCoreAccountInfos());
+        }
+        return visibleAccount;
     }
 }

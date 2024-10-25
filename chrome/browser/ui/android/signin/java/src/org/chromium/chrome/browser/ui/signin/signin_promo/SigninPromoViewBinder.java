@@ -14,7 +14,6 @@ import androidx.annotation.DimenRes;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -27,15 +26,10 @@ final class SigninPromoViewBinder {
             if (profileData == null) {
                 view.getImage().setImageResource(R.drawable.chrome_sync_logo);
                 setImageSize(context, view, R.dimen.signin_promo_cold_state_image_size);
-                view.getPrimaryButton()
-                        .setText(context.getResources().getString(R.string.signin_promo_signin));
-                view.getSecondaryButton().setVisibility(View.GONE);
             } else {
                 Drawable accountImage = profileData.getImage();
                 view.getImage().setImageDrawable(accountImage);
                 setImageSize(context, view, R.dimen.sync_promo_account_image_size);
-                view.getPrimaryButton()
-                        .setText(SigninUtils.getContinueAsButtonText(context, profileData));
             }
         } else if (key == SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED) {
             view.getPrimaryButton()
@@ -44,16 +38,20 @@ final class SigninPromoViewBinder {
             view.getSecondaryButton()
                     .setOnClickListener(
                             model.get(SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED));
-        } else if (key == SigninPromoProperties.TITLE_STRING_ID) {
-            view.getTitle().setText(model.get(SigninPromoProperties.TITLE_STRING_ID));
-        } else if (key == SigninPromoProperties.DESCRIPTION_STRING_ID) {
-            view.getDescription().setText(model.get(SigninPromoProperties.DESCRIPTION_STRING_ID));
+        } else if (key == SigninPromoProperties.TITLE_TEXT) {
+            view.getTitle().setText(model.get(SigninPromoProperties.TITLE_TEXT));
+        } else if (key == SigninPromoProperties.DESCRIPTION_TEXT) {
+            view.getDescription().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
+        } else if (key == SigninPromoProperties.PRIMARY_BUTTON_TEXT) {
+            view.getPrimaryButton().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
+        } else if (key == SigninPromoProperties.SECONDARY_BUTTON_TEXT) {
+            view.getSecondaryButton().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
         } else if (key == SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON) {
-            view.getSecondaryButton()
-                    .setVisibility(
-                            model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
-                                    ? View.GONE
-                                    : View.VISIBLE);
+            int visibility =
+                    model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
+                            ? View.GONE
+                            : View.VISIBLE;
+            view.getSecondaryButton().setVisibility(visibility);
         } else if (key == SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON) {
             view.getDismissButton()
                     .setVisibility(

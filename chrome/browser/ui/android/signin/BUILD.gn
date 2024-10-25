@@ -201,6 +201,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninAccountPickerCoordinatorTest.java",
