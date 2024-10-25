@@ -472,7 +472,6 @@ void OnListFamilyMembersResponse(
 
     _policyWatcherObserverBridge =
         std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
-
   }
   return self;
 }
@@ -501,11 +500,11 @@ void OnListFamilyMembersResponse(
   if (!_mainCoordinator) {
     // Lazily create the main coordinator.
     TabGridCoordinator* tabGridCoordinator = [[TabGridCoordinator alloc]
-                     initWithWindow:self.sceneState.window
-         applicationCommandEndpoint:self
-                     regularBrowser:self.mainInterface.browser
-                    inactiveBrowser:self.mainInterface.inactiveBrowser
-                   incognitoBrowser:self.incognitoInterface.browser];
+                    initWithWindow:self.sceneState.window
+        applicationCommandEndpoint:self
+                    regularBrowser:self.mainInterface.browser
+                   inactiveBrowser:self.mainInterface.inactiveBrowser
+                  incognitoBrowser:self.incognitoInterface.browser];
     tabGridCoordinator.delegate = self;
     _mainCoordinator = tabGridCoordinator;
   }
@@ -2045,8 +2044,19 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showPriceTrackingNotificationsSettings {
-  CHECK(!self.settingsNavigationController, base::NotFatalUntil::M134);
   CHECK(!self.signinCoordinator, base::NotFatalUntil::M134);
+  if (self.settingsNavigationController) {
+    __weak SceneController* weakSelf = self;
+    [self closePresentedViews:NO
+                   completion:^{
+                     [weakSelf openPriceTrackingNotificationsSettings];
+                   }];
+    return;
+  }
+  [self openPriceTrackingNotificationsSettings];
+}
+
+- (void)openPriceTrackingNotificationsSettings {
   Browser* browser = self.mainInterface.browser;
   self.settingsNavigationController = [SettingsNavigationController
       priceNotificationsControllerForBrowser:browser
