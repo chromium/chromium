@@ -18,8 +18,10 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +55,36 @@ class VideoAcceleratorUtil {
     // Encoders known to support temporal layers.
     private static final Set<String> TEMPORAL_SVC_SUPPORTING_ENCODERS =
             Set.of("c2.qti.avc.encoder", "c2.exynos.h264.encoder");
+
+    // Possible supported resolutions.
+    private static final Resolution[] SUPPORTED_RESOLUTIONS = {
+        new Resolution(320, 180),
+        new Resolution(640, 360),
+        new Resolution(1280, 720),
+        new Resolution(1920, 1080),
+        new Resolution(2560, 1440),
+        new Resolution(3840, 2160),
+        new Resolution(5120, 2880),
+        new Resolution(7680, 4320),
+    };
+
+    private static class Resolution {
+        private int mWidth;
+        private int mHeight;
+
+        public Resolution(int width, int height) {
+            mWidth = width;
+            mHeight = height;
+        }
+
+        public int getWidth() {
+            return mWidth;
+        }
+
+        public int getHeight() {
+            return mHeight;
+        }
+    }
 
     private static class SupportedProfileAdapter {
         public int profile;
@@ -247,29 +279,44 @@ class VideoAcceleratorUtil {
                 Range<Integer> supportedWidths = videoCapabilities.getSupportedWidths();
                 Range<Integer> supportedHeights =
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
+                int minWidth = supportedWidths.getLower();
+                int minHeight = supportedHeights.getLower();
 
-                // Some devices don't have their max supported level configured correctly, so they
-                // can return max resolutions like 7680x1714 which prevents both 4K and 8K content
-                // from being hardware decoded.
-                //
-                // In cases where supported area is > 4k, but width, height are less than standard
-                // and the standard resolution is supported, use the standard one instead so that at
-                // least 4k support works. See https://crbug.com/41481822.
-                if ((supportedWidths.getUpper() < 3840 || supportedHeights.getUpper() < 2160)
-                        && supportedWidths.getUpper() * supportedHeights.getUpper() >= 3840 * 2160
-                        && videoCapabilities.isSizeSupported(3840, 2160)) {
-                    supportedWidths = new Range<Integer>(supportedWidths.getLower(), 3840);
-                    supportedHeights = new Range<Integer>(supportedHeights.getLower(), 2160);
+                // Add the possible supported resolutions.
+                ArrayList<Resolution> supportedResolutions =
+                        new ArrayList<Resolution>(Arrays.asList(SUPPORTED_RESOLUTIONS));
+                // Add the max resolution.
+                supportedResolutions.add(
+                        new Resolution(supportedWidths.getUpper(), supportedHeights.getUpper()));
+                LinkedHashMap<Integer, Resolution> frameRateResolutionMap =
+                        new LinkedHashMap<Integer, Resolution>();
+                // Compute the final supported resolution and framerate combinations.
+                for (Resolution supportedResolution : supportedResolutions) {
+                    int supportedWidth = supportedResolution.getWidth();
+                    int supportedHeight = supportedResolution.getHeight();
+                    if (!videoCapabilities.isSizeSupported(supportedWidth, supportedHeight)) {
+                        continue;
+                    }
+                    // Each resolution may have different max supported framerate, so we must
+                    // query the framerate base on width and height.
+                    Range<Double> supportedFrameRates =
+                            videoCapabilities.getSupportedFrameRatesFor(
+                                    supportedWidth, supportedHeight);
+                    int supportedFrameRate =
+                            (int) Math.floor(supportedFrameRates.getUpper().doubleValue());
+                    if (!frameRateResolutionMap.containsKey(supportedFrameRate)) {
+                        frameRateResolutionMap.put(supportedFrameRate, supportedResolution);
+                    } else {
+                        Resolution resolution = frameRateResolutionMap.get(supportedFrameRate);
+                        // If the framerates of the two are the same, always use the higher
+                        // resolution to replace the lower resolution and make sure we won't push
+                        // useless result to the list.
+                        if (supportedWidth >= resolution.getWidth()
+                                && supportedHeight >= resolution.getHeight()) {
+                            frameRateResolutionMap.put(supportedFrameRate, supportedResolution);
+                        }
+                    }
                 }
-
-                boolean needsPortraitEntry =
-                        !supportedHeights.getUpper().equals(supportedWidths.getUpper())
-                                && videoCapabilities.isSizeSupported(
-                                        supportedHeights.getUpper(), supportedWidths.getUpper());
-
-                // The frame rate entry in the supported profile is independent of the resolution
-                // range, so we don't query based on the maximum resolution.
-                Range<Integer> supportedFrameRates = videoCapabilities.getSupportedFrameRates();
 
                 // Since the supported profiles interface doesn't support levels, we just attach
                 // the same min/max to every profile.
@@ -287,43 +334,59 @@ class VideoAcceleratorUtil {
                     }
                 }
 
+                String name = info.getName();
+                boolean isSoftwareCodec = info.isSoftwareOnly();
+
                 int maxNumberOfTemporalLayers =
-                        getNumberOfTemporalLayers(info.getName().toLowerCase(Locale.getDefault()));
+                        getNumberOfTemporalLayers(name.toLowerCase(Locale.getDefault()));
                 ArrayList<SupportedProfileAdapter> profiles =
                         info.isHardwareAccelerated() ? hardwareProfiles : softwareProfiles;
-                for (int mediaProfile : supportedProfiles) {
-                    SupportedProfileAdapter profile = new SupportedProfileAdapter();
 
-                    profile.profile = mediaProfile;
-                    profile.minWidth = supportedWidths.getLower();
-                    profile.minHeight = supportedHeights.getLower();
-                    profile.maxWidth = supportedWidths.getUpper();
-                    profile.maxHeight = supportedHeights.getUpper();
-                    profile.maxFramerateNumerator = supportedFrameRates.getUpper();
-                    profile.maxFramerateDenominator = 1;
-                    profile.supportsCbr = supportsCbr;
-                    profile.supportsVbr = supportsVbr;
-                    profile.name = info.getName();
-                    profile.isSoftwareCodec = info.isSoftwareOnly();
-                    profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
-                    profiles.add(profile);
+                for (Map.Entry<Integer, Resolution> frameRateResolution :
+                        frameRateResolutionMap.entrySet()) {
+                    int maxFrameRate = frameRateResolution.getKey();
+                    int maxWidth = frameRateResolution.getValue().getWidth();
+                    int maxHeight = frameRateResolution.getValue().getHeight();
 
-                    // Invert min/max height/width for a portrait mode entry if needed.
-                    if (needsPortraitEntry) {
-                        profile = new SupportedProfileAdapter();
+                    boolean needsPortraitEntry =
+                            maxHeight != maxWidth
+                                    && videoCapabilities.isSizeSupported(maxHeight, maxWidth);
+
+                    for (int mediaProfile : supportedProfiles) {
+                        SupportedProfileAdapter profile = new SupportedProfileAdapter();
 
                         profile.profile = mediaProfile;
-                        profile.minWidth = supportedHeights.getLower();
-                        profile.minHeight = supportedWidths.getLower();
-                        profile.maxWidth = supportedHeights.getUpper();
-                        profile.maxHeight = supportedWidths.getUpper();
-                        profile.maxFramerateNumerator = supportedFrameRates.getUpper();
+                        profile.minWidth = minWidth;
+                        profile.minHeight = minHeight;
+                        profile.maxWidth = maxWidth;
+                        profile.maxHeight = maxHeight;
+                        profile.maxFramerateNumerator = maxFrameRate;
                         profile.maxFramerateDenominator = 1;
                         profile.supportsCbr = supportsCbr;
                         profile.supportsVbr = supportsVbr;
-                        profile.name = info.getName();
-                        profile.isSoftwareCodec = info.isSoftwareOnly();
+                        profile.name = name;
+                        profile.isSoftwareCodec = isSoftwareCodec;
+                        profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
                         profiles.add(profile);
+
+                        // Invert min/max height/width for a portrait mode entry if needed.
+                        if (needsPortraitEntry) {
+                            profile = new SupportedProfileAdapter();
+
+                            profile.profile = mediaProfile;
+                            profile.minWidth = minHeight;
+                            profile.minHeight = minWidth;
+                            profile.maxWidth = maxHeight;
+                            profile.maxHeight = maxWidth;
+                            profile.maxFramerateNumerator = maxFrameRate;
+                            profile.maxFramerateDenominator = 1;
+                            profile.supportsCbr = supportsCbr;
+                            profile.supportsVbr = supportsVbr;
+                            profile.name = name;
+                            profile.isSoftwareCodec = isSoftwareCodec;
+                            profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
+                            profiles.add(profile);
+                        }
                     }
                 }
             }

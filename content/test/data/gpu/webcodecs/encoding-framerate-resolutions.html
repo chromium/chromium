@@ -33,7 +33,7 @@ Check that VideoEncoder can encode in different framerate and resolutions
         supported = (await VideoEncoder.isConfigSupported(encoder_config)).supported;
       } catch (e) {}
       if (!supported) {
-        TEST.skip('Unsupported codec: ' + arg.codec);
+        TEST.skip('Unsupported configs: ' + JSON.stringify(encoder_config, null, 2));
         return;
       }
 
