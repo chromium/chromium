@@ -378,8 +378,10 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   void TearDown() override {
     // Ensure we clean up the PDF accessibility tree before the page closes
     // since we directly set a plugin container.
-    pdf_accessibility_tree_->ForcePluginAXObjectForTesting(
-        blink::WebAXObject());
+    if (!IsSkipped()) {
+      pdf_accessibility_tree_->ForcePluginAXObjectForTesting(
+          blink::WebAXObject());
+    }
     content::RenderViewTest::TearDown();
   }
 
@@ -2480,6 +2482,7 @@ struct PdfOcrHelperTestBatchData {
   uint32_t expected_batch_size;
 };
 
+// TODO(crbug.com/360803943): Remove this test when PDF Searchify is launched.
 class PdfOcrHelperTest : public PdfAccessibilityTreeTest,
                          public testing::WithParamInterface<std::tuple<
                              /* is_ocr_helper_started_before_pdf_loads */ bool,
@@ -2581,6 +2584,11 @@ class PdfOcrHelperTest : public PdfAccessibilityTreeTest,
 };
 
 TEST_P(PdfOcrHelperTest, PageBatching) {
+  // When PDF Searchify is enabled, PDF OCR helper is not used.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   CreatePdfAccessibilityTree();
 
   const bool is_ocr_helper_started_before_pdf_loads =
@@ -2669,6 +2677,11 @@ TEST_P(PdfOcrHelperTest, PageBatching) {
 }
 
 TEST_P(PdfOcrHelperTest, UMAMetrics) {
+  // When PDF Searchify is enabled, PDF OCR helper is not used.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   CreatePdfAccessibilityTree();
 
   base::HistogramTester histograms;
@@ -2754,6 +2767,11 @@ TEST_P(PdfOcrHelperTest, UMAMetrics) {
 }
 
 TEST_P(PdfOcrHelperTest, EmptyOCRResults) {
+  // When PDF Searchify is enabled, PDF OCR helper is not used.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   CreatePdfAccessibilityTree();
 
   const bool is_ocr_helper_started_before_pdf_loads =
@@ -2834,6 +2852,11 @@ TEST_P(PdfOcrHelperTest, EmptyOCRResults) {
 }
 
 TEST_P(PdfOcrHelperTest, OCRCompleteNotification) {
+  // When PDF Searchify is enabled, PDF OCR helper is not used.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   CreatePdfAccessibilityTree();
 
   const bool is_ocr_helper_started_before_pdf_loads =
@@ -3123,6 +3146,7 @@ TEST_F(PdfOcrTest, NoFeatureNotificationOnAccessiblePdf) {
   ASSERT_EQ(1u, static_text_node->GetChildCount());
 }
 
+// TODO(crbug.com/360803943): Remove this test when PDF Searchify is launched.
 // Test param: image orientation.
 class PdfOcrRotationTest : public PdfOcrTest,
                            public testing::WithParamInterface<int> {
@@ -3136,6 +3160,11 @@ class PdfOcrRotationTest : public PdfOcrTest,
 INSTANTIATE_TEST_SUITE_P(All, PdfOcrRotationTest, testing::Range(0, 4));
 
 TEST_P(PdfOcrRotationTest, TestTransformFromOnOcrDataReceived) {
+  // When PDF Searchify is enabled, PDF OCR in renderer is not activated.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   // Assume `image` contains some text that will be extracted by OCR. `image`
   // will be passed to the function that creates a transform, which will be
   // then applied to the text paragraphs extracted by OCR.
