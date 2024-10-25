@@ -930,7 +930,7 @@ ClientBase::InitParams::InitParams() {
 #endif
 }
 
-ClientBase::InitParams::~InitParams() {}
+ClientBase::InitParams::~InitParams() = default;
 
 ClientBase::InitParams::InitParams(const InitParams& params) = default;
 
@@ -997,9 +997,9 @@ bool ClientBase::InitParams::FromCommandLine(
 ////////////////////////////////////////////////////////////////////////////////
 // ClientBase::Buffer, public:
 
-ClientBase::Buffer::Buffer() {}
+ClientBase::Buffer::Buffer() = default;
 
-ClientBase::Buffer::~Buffer() {}
+ClientBase::Buffer::~Buffer() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ClientBase, public:

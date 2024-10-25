@@ -142,7 +142,7 @@ ShellSurface::OcclusionObserver::OcclusionObserver(ShellSurface* shell_surface,
   window_observation_.Observe(window);
 }
 
-ShellSurface::OcclusionObserver::~OcclusionObserver() {}
+ShellSurface::OcclusionObserver::~OcclusionObserver() = default;
 
 void ShellSurface::OcclusionObserver::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();

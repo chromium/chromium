@@ -1464,7 +1464,7 @@ void Surface::SetSurfaceHierarchyContentBoundsForTest(
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, private:
 
-Surface::State::State() {}
+Surface::State::State() = default;
 
 Surface::State::~State() = default;
 
