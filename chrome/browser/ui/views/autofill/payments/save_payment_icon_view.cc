@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
+#include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -69,8 +71,19 @@ void SavePaymentIconView::UpdateImpl() {
 
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsIconVisible());
-  const bool should_show =
+  bool should_show =
       command_enabled && !delegate()->ShouldHidePageActionIcon(this);
+
+  // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Show the icon if the Desktop to iOS payment promo is currently being shown,
+  // and check the command_id_ to only show for one of the instances of
+  // SavePaymentIconView.
+  should_show = should_show ||
+                (command_id_ == IDC_SAVE_CREDIT_CARD_FOR_PAGE &&
+                 IOSPromoBubble::IsPromoTypeVisible(IOSPromoType::kPayment));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   SetVisible(should_show);
 
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());

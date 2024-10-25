@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 
+#include <memory>
+
 namespace views {
+class BubbleDialogDelegate;
 class View;
 }  // namespace views
 
@@ -26,6 +29,15 @@ class IOSPromoBubble {
   static IOSPromoConstants::IOSPromoTypeConfigs SetUpBubble(
       IOSPromoType promo_type);
 
+  static views::BubbleDialogDelegate* ios_promo_delegate_;
+  static IOSPromoType current_promo_type_;
+
+  class IOSPromoBubbleDelegate;
+
+  static std::unique_ptr<views::View> CreateFooter(
+      IOSPromoBubble::IOSPromoBubbleDelegate* bubble_delegate,
+      const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config);
+
  public:
   IOSPromoBubble(const IOSPromoBubble&) = delete;
   IOSPromoBubble& operator=(const IOSPromoBubble&) = delete;
@@ -39,6 +51,10 @@ class IOSPromoBubble {
 
   // Hide closes the bubble.
   static void Hide();
+
+  // Returns true if the bubble is currently being shown and is of type
+  // `promo_type`.
+  static bool IsPromoTypeVisible(IOSPromoType promo_type);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
