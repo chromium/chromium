@@ -58,6 +58,12 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
       (base::span<const autofill::BankAccount> bank_account_suggestions,
        base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
       (override));
+  MOCK_METHOD(
+      void,
+      ShowForEwallet,
+      (base::span<const autofill::Ewallet> ewallet_suggestions,
+       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
+      (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
@@ -152,4 +158,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, IsInLandscapeMode) {
   EXPECT_CALL(controller(), IsInLandscapeMode);
 
   base_client().IsInLandscapeMode();
+}
+
+// Test that the client forwards call to show eWallet FOP selector to the
+// controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       ShowEwalletPaymentPrompt_ControllerInvoked) {
+  EXPECT_CALL(controller(), ShowForEwallet);
+  base_client().ShowEwalletPaymentPrompt({}, base::DoNothing());
 }

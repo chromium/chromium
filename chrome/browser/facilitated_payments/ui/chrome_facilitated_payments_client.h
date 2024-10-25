@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
@@ -69,7 +70,9 @@ class ChromeFacilitatedPaymentsClient
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
       override;
   void ShowEwalletPaymentPrompt(
-      base::span<const autofill::Ewallet> ewallet_suggestions) override;
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
+      override;
   void ShowProgressScreen() override;
   void ShowErrorScreen() override;
   void DismissPrompt() override;

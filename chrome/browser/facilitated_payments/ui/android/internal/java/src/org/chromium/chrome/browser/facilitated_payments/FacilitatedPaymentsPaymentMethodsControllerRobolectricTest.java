@@ -25,10 +25,13 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties.PRIMARY_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
@@ -60,6 +63,7 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -106,6 +110,30 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                     .setAccountNumberSuffix("2222")
                     .setAccountType(AccountType.SAVINGS)
                     .build();
+    private static final Ewallet EWALLET_1 =
+            new Ewallet.Builder()
+                    .setEwalletName("ewallet name 1")
+                    .setAccountDisplayName("account display name 1")
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100)
+                                    .setNickname("nickname 3")
+                                    .setSupportedPaymentRails(new int[] {2})
+                                    .setIsFidoEnrolled(true)
+                                    .build())
+                    .build();
+    private static final Ewallet EWALLET_2 =
+            new Ewallet.Builder()
+                    .setEwalletName("ewallet name 2")
+                    .setAccountDisplayName("account display name 2")
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100)
+                                    .setNickname("nickname 4")
+                                    .setSupportedPaymentRails(new int[] {2})
+                                    .setIsFidoEnrolled(true)
+                                    .build())
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -145,8 +173,23 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    public void testCreatesModelForFopSelectorScreen() {
+    public void testCreatesModelForFopSelectorScreen_BankAccountFopSelector() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        // Verify that the bottom sheet model is updated to show the FOP selector.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(FOP_SELECTOR));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        // Verify the FOP selector screen model contains the required properties.
+        assertTrue(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .containsKey(SCREEN_ITEMS));
+    }
+
+    @Test
+    public void testCreatesModelForFopSelectorScreen_EwalletFopSelector() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
 
         // Verify that the bottom sheet model is updated to show the FOP selector.
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -175,6 +218,20 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testEwalletsShown() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1, EWALLET_2));
+
+        // Verify the screen contents set in the model when 2 eWallets exist.
+        // TODO(crbug.com/40280186): Modify the assertions when other items of eWallet FOP selector
+        // are implemented.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        assertThat(itemList.size(), is(2));
+        assertEquals(itemList.get(0).type, EWALLET);
+        assertEquals(itemList.get(1).type, EWALLET);
+    }
+
+    @Test
     public void testSingleBankAccountShown() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
 
@@ -187,6 +244,20 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertEquals(itemList.get(2).type, ADDITIONAL_INFO);
         assertEquals(itemList.get(3).type, CONTINUE_BUTTON);
         assertEquals(itemList.get(4).type, FOOTER);
+    }
+
+    @Test
+    public void testSingleEwalletShown() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+
+        // Verify the screen contents set in the model when only 1 eWallet account exists.
+        // TODO(crbug.com/40280186): Modify the assertions when other items of eWallet FOP selector
+        // are implemented.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        assertThat(itemList.size(), is(2));
+        assertEquals(itemList.get(0).type, EWALLET);
+        assertEquals(itemList.get(1).type, CONTINUE_BUTTON);
     }
 
     @Test
@@ -230,8 +301,26 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testShowsContinueButtonWhenOneEwallet() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 1);
+    }
+
+    @Test
     public void testNoContinueButtonWhenManyBankAccounts() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
+
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 0);
+    }
+
+    @Test
+    public void testNoContinueButtonWhenManyEwallets() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1, EWALLET_2));
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
@@ -248,6 +337,18 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         getModelsOfType(itemList, CONTINUE_BUTTON).get(0).get(ON_BANK_ACCOUNT_CLICK_ACTION).run();
 
         verify(mDelegateMock).onBankAccountSelected(BANK_ACCOUNT_1.getInstrumentId());
+    }
+
+    @Test
+    public void testContinueButtonClickForEwallet() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        getModelsOfType(itemList, CONTINUE_BUTTON).get(0).get(ON_EWALLET_CLICK_ACTION).run();
+
+        verify(mDelegateMock).onEwalletSelected(EWALLET_1.getInstrumentId());
     }
 
     @Test
@@ -291,6 +392,24 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testCallbackIsCalledWhenEwalletIsSelected() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+
+        Optional<PropertyModel> eWalletModel =
+                getEwalletModelByEwalletName(
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS),
+                        EWALLET_1);
+        assertNotNull(eWalletModel.get().get(ON_EWALLET_CLICK_ACTION));
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        eWalletModel.get().get(ON_EWALLET_CLICK_ACTION).run();
+        verify(mDelegateMock).onEwalletSelected(EWALLET_1.getInstrumentId());
+    }
+
+    @Test
     public void testNoCallbackForSelectedBankAccountBeforeInputTime() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -313,6 +432,31 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mClock.advanceCurrentTimeMillis(200);
         bankAccountModel.get().get(ON_BANK_ACCOUNT_CLICK_ACTION).run();
         verify(mDelegateMock, times(1)).onBankAccountSelected(BANK_ACCOUNT_1.getInstrumentId());
+    }
+
+    @Test
+    public void testNoCallbackForSelectedEwalletBeforeInputTime() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+
+        Optional<PropertyModel> eWalletModel =
+                getEwalletModelByEwalletName(
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS),
+                        EWALLET_1);
+        assertNotNull(eWalletModel.get().get(ON_EWALLET_CLICK_ACTION));
+
+        // Clicking after an interval less than the threshold should be a no-op.
+        mClock.advanceCurrentTimeMillis(
+                InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100);
+        eWalletModel.get().get(ON_EWALLET_CLICK_ACTION).run();
+        verify(mDelegateMock, times(0)).onEwalletSelected(EWALLET_1.getInstrumentId());
+
+        // Clicking after the threshold should work.
+        mClock.advanceCurrentTimeMillis(200);
+        eWalletModel.get().get(ON_EWALLET_CLICK_ACTION).run();
+        verify(mDelegateMock, times(1)).onEwalletSelected(EWALLET_1.getInstrumentId());
     }
 
     @Test
@@ -456,6 +600,19 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                         && item.model
                                                 .get(BANK_NAME)
                                                 .equals(bankAccount.getBankName()))
+                .findFirst()
+                .map(item -> item.model);
+    }
+
+    private static Optional<PropertyModel> getEwalletModelByEwalletName(
+            ModelList items, Ewallet eWallet) {
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(
+                        item ->
+                                item.type == EWALLET
+                                        && item.model
+                                                .get(EWALLET_NAME)
+                                                .equals(eWallet.getEwalletName()))
                 .findFirst()
                 .map(item -> item.model);
     }

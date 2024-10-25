@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
@@ -39,7 +40,8 @@ class FacilitatedPaymentsController {
 
   // Shows the eWallet FOP selector.
   virtual void ShowForEwallet(
-      base::span<const autofill::Ewallet> ewallet_suggestions);
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in
   // tests.
@@ -56,6 +58,8 @@ class FacilitatedPaymentsController {
   virtual void OnDismissed(JNIEnv* env);
 
   void OnBankAccountSelected(JNIEnv* env, jlong instrument_id);
+
+  void OnEwalletSelected(JNIEnv* env, jlong instrument_id);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

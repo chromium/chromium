@@ -29,6 +29,9 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
         /** Called whenever a bank account is selected. */
         void onBankAccountSelected(long instrumentId);
 
+        /** Called whenever a bank account is selected. */
+        void onEwalletSelected(long instrumentId);
+
         /** Called whenever the payment settings text is clicked on the bottom sheet. */
         boolean showFinancialAccountsManagementSettings(Context context);
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,8 +89,10 @@ void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
 }
 
 void ChromeFacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
-    base::span<const autofill::Ewallet> ewallet_suggestions) {
-  facilitated_payments_controller_->ShowForEwallet(ewallet_suggestions);
+    base::span<const autofill::Ewallet> ewallet_suggestions,
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+  facilitated_payments_controller_->ShowForEwallet(
+      ewallet_suggestions, std::move(on_user_decision_callback));
 }
 
 void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {

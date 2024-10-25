@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 
@@ -46,12 +47,15 @@ void FacilitatedPaymentsController::Show(
 }
 
 void FacilitatedPaymentsController::ShowForEwallet(
-    base::span<const autofill::Ewallet> ewallet_suggestions) {
+    base::span<const autofill::Ewallet> ewallet_suggestions,
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+  // Abort if there are no eWallets.
   if (ewallet_suggestions.empty()) {
     return;
   }
 
-  view_->RequestShowContentForEwallet(ewallet_suggestions);
+  view_->RequestShowContentForEwallet(std::move(ewallet_suggestions));
+  on_user_decision_callback_ = std::move(on_user_decision_callback);
 }
 
 void FacilitatedPaymentsController::ShowProgressScreen() {
@@ -70,7 +74,8 @@ void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
   ClearJavaViewComponents();
 
   if (on_user_decision_callback_) {
-    std::move(on_user_decision_callback_).Run(false, kFakeInstrumentId);
+    std::move(on_user_decision_callback_)
+        .Run(/*is_fop_selected=*/false, kFakeInstrumentId);
   }
 }
 
@@ -78,6 +83,14 @@ void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
                                                           jlong instrument_id) {
   if (on_user_decision_callback_) {
     std::move(on_user_decision_callback_).Run(true, instrument_id);
+  }
+}
+
+void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
+                                                      jlong instrument_id) {
+  if (on_user_decision_callback_) {
+    std::move(on_user_decision_callback_)
+        .Run(/*is_ewallet_selected=*/true, instrument_id);
   }
 }
 

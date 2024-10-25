@@ -174,7 +174,7 @@ TEST_F(FacilitatedPaymentsControllerTest,
   EXPECT_CALL(*mock_view_, RequestShowContentForEwallet(
                                testing::ElementsAreArray(ewallets_)));
 
-  controller_->ShowForEwallet(ewallets_);
+  controller_->ShowForEwallet(ewallets_, base::DoNothing());
 }
 
 // Test controller does not forward call for showing the eWallet FOP selector to
@@ -183,5 +183,41 @@ TEST_F(FacilitatedPaymentsControllerTest,
        ShowForEwallet_UserHasNoEwalletAccounts) {
   EXPECT_CALL(*mock_view_, RequestShowContentForEwallet).Times(0);
 
-  controller_->ShowForEwallet({});
+  controller_->ShowForEwallet({}, base::DoNothing());
+}
+
+// Test OnDismissed method for eWallet.
+TEST_F(FacilitatedPaymentsControllerTest, ShowForEwallet_OnDismissed) {
+  // Show the bottom sheet and set the user decision callback.
+  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
+      mock_on_user_decision_callback;
+  controller_->ShowForEwallet(ewallets_, mock_on_user_decision_callback.Get());
+
+  // Verify that dismissal event is forwarded to the view. Also verify that the
+  // manager is informed of the diamissal via the callback. The second
+  // OnDismissed call is triggered when the test fixture destroys the
+  // `controller`.
+  EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
+  EXPECT_CALL(mock_on_user_decision_callback,
+              Run(/*is_ewallet_selected=*/false,
+                  /*selected_ewallet_instrument_id=*/-1L));
+
+  controller_->OnDismissed(nullptr);
+}
+
+// Test OnEwalletSelected method.
+TEST_F(FacilitatedPaymentsControllerTest, OnEwalletSelected) {
+  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
+      mock_on_user_decision_callback;
+
+  // view_ is assigned when the bottom sheet is shown.
+  controller_->ShowForEwallet(ewallets_, mock_on_user_decision_callback.Get());
+
+  // When an eWallet is selected, call back should be called with true and
+  // instrument id from selected eWallet.
+  EXPECT_CALL(
+      mock_on_user_decision_callback,
+      Run(/*is_selected=*/true, /*selected_ewallet_instrument_id=*/100L));
+
+  controller_->OnEwalletSelected(nullptr, 100L);
 }

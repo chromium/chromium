@@ -54,6 +54,14 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
+    public void onEwalletSelected(long instrumentId) {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onEwalletSelected(mNativeFacilitatedPaymentsController, instrumentId);
+        }
+    }
+
+    @Override
     public boolean showFinancialAccountsManagementSettings(Context context) {
         if (context == null) {
             return false;
@@ -78,5 +86,7 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         void onDismissed(long nativeFacilitatedPaymentsController);
 
         void onBankAccountSelected(long nativeFacilitatedPaymentsController, long instrumentId);
+
+        void onEwalletSelected(long nativeFacilitatedPaymentsController, long instrumentId);
     }
 }

@@ -12,6 +12,11 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ACCOUNT_DISPLAY_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_ICON_BITMAP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
@@ -206,11 +211,20 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             TextView buttonTitleText =
                     view.findViewById(R.id.facilitated_payments_continue_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
+        } else if (propertyKey == ON_EWALLET_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_EWALLET_CLICK_ACTION).run());
+            TextView buttonTitleText =
+                    view.findViewById(R.id.facilitated_payments_continue_button_title);
+            buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == BANK_NAME
                 || propertyKey == BANK_ACCOUNT_SUMMARY
                 || propertyKey == BANK_ACCOUNT_TRANSACTION_LIMIT
                 || propertyKey == BANK_ACCOUNT_DRAWABLE_ID
-                || propertyKey == BANK_ACCOUNT_ICON_BITMAP) {
+                || propertyKey == BANK_ACCOUNT_ICON_BITMAP
+                || propertyKey == ACCOUNT_DISPLAY_NAME
+                || propertyKey == EWALLET_ICON_BITMAP
+                || propertyKey == EWALLET_NAME
+                || propertyKey == EWALLET_DRAWABLE_ID) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

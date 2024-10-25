@@ -12,12 +12,18 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties.PRIMARY_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ACCOUNT_DISPLAY_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_ICON_BITMAP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
@@ -40,6 +46,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,6 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -109,15 +117,27 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mInputProtector.markShowTime();
     }
 
+    // TODO(crbug.com/40280186): Implement the content of eWallet FOP selector.
     void showSheetForEwallet(List<Ewallet> eWallets) {
+        mInputProtector.markShowTime();
         if (eWallets == null || eWallets.isEmpty()) {
             return;
         }
 
-        // TODO(crbug.com/40280186): Implement the content of eWallet FOP selector.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, FOP_SELECTOR);
+        ModelList screenItems = mModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        screenItems.clear();
+
+        for (Ewallet ewallet : eWallets) {
+            final PropertyModel model = createEwalletModel(mContext, ewallet);
+            screenItems.add(new ListItem(EWALLET, model));
+        }
+
+        maybeShowContinueButtonForEwallet(screenItems);
+
         mModel.set(VISIBLE_STATE, SHOWN);
+        mInputProtector.markShowTime();
     }
 
     void showProgressScreen() {
@@ -220,9 +240,38 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         return bankAccountModelBuilder.build();
     }
 
+    @VisibleForTesting
+    PropertyModel createEwalletModel(Context context, Ewallet eWallet) {
+        PropertyModel.Builder eWalletModelBuilder =
+                new PropertyModel.Builder(EwalletProperties.NON_TRANSFORMING_KEYS)
+                        .with(EWALLET_NAME, eWallet.getEwalletName())
+                        .with(ACCOUNT_DISPLAY_NAME, eWallet.getAccountDisplayName())
+                        .with(ON_EWALLET_CLICK_ACTION, () -> this.onEwalletSelected(eWallet));
+        Optional<Bitmap> eWalletIconOptional = Optional.empty();
+        if (eWallet.getDisplayIconUrl() != null && eWallet.getDisplayIconUrl().isValid()) {
+            eWalletIconOptional =
+                    PersonalDataManagerFactory.getForProfile(mProfile)
+                            .getCustomImageForAutofillSuggestionIfAvailable(
+                                    eWallet.getDisplayIconUrl(),
+                                    AutofillUiUtils.CardIconSpecs.create(
+                                            context, ImageSize.SQUARE));
+        }
+        if (eWalletIconOptional.isPresent()) {
+            eWalletModelBuilder.with(EWALLET_ICON_BITMAP, eWalletIconOptional.get());
+        } else {
+            eWalletModelBuilder.with(EWALLET_DRAWABLE_ID, R.drawable.ic_account_balance);
+        }
+        return eWalletModelBuilder.build();
+    }
+
     public void onBankAccountSelected(BankAccount bankAccount) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.onBankAccountSelected(bankAccount.getInstrumentId());
+    }
+
+    public void onEwalletSelected(Ewallet eWallet) {
+        if (!mInputProtector.shouldInputBeProcessed()) return;
+        mDelegate.onEwalletSelected(eWallet.getInstrumentId());
     }
 
     @VisibleForTesting
@@ -273,6 +322,20 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .findFirst()
                         .get()
                         .model;
+        screenItems.add(new ListItem(CONTINUE_BUTTON, model));
+    }
+
+    private void maybeShowContinueButtonForEwallet(ModelList screenItems) {
+        List<ListItem> ewalletItems =
+                StreamSupport.stream(screenItems.spliterator(), false)
+                        .filter(item -> item.type == EWALLET)
+                        .collect(Collectors.toList());
+
+        if (ewalletItems.size() != 1) {
+            return;
+        }
+
+        PropertyModel model = ewalletItems.get(0).model;
         screenItems.add(new ListItem(CONTINUE_BUTTON, model));
     }
 
