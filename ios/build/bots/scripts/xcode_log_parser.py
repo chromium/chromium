@@ -130,13 +130,15 @@ def test_crashed(root):
   # In case of test crash both numbers of run and failed tests are equal to 0.
   actionResultMetricsMissing = (
       actionResultMetrics.get('testsCount', {}).get('_value', 0) == 0 and
-      actionResultMetrics.get('testsFailedCount', {}).get('_value', 0) == 0)
+      actionResultMetrics.get('testsFailedCount', {}).get('_value', 0) == 0 and
+      actionResultMetrics.get('errorCount', {}).get('_value', 0) == 0)
   # After certain types of test failures action results metrics might be missing
   # but root metrics may still be present, indicating that some tests still
   # ran successfully and the entire test suite should not be considered crashed
   rootMetricsMissing = (
       root.get('metrics', {}).get('testsCount', {}).get('_value', 0) == 0 and
-      root.get('metrics', {}).get('testsFailedCount', {}).get('_value', 0) == 0)
+      root.get('metrics', {}).get('testsFailedCount', {}).get('_value', 0) == 0
+      and root.get('metrics', {}).get('errorCount', {}).get('_value', 0) == 0)
   # if both metrics are missing then consider the test app to have crashed
   return actionResultMetricsMissing and rootMetricsMissing
 

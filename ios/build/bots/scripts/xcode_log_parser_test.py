@@ -63,7 +63,7 @@ XCRESULT_ROOT = """
               },
               "_value" : "2"
             },
-            "testsFailedCount" : {
+            "errorCount" : {
               "_type" : {
                 "_name" : "Int"
               },
@@ -97,7 +97,7 @@ XCRESULT_ROOT = """
     "testsCount" : {
       "_value" : "2"
     },
-    "testsFailedCount" : {
+    "errorCount" : {
       "_value" : "1"
     }
   }
