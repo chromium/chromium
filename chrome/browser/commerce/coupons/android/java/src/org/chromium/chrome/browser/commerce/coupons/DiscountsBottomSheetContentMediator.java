@@ -97,7 +97,7 @@ public class DiscountsBottomSheetContentMediator {
             resetCopiedButtonText();
             propertyModel.set(
                     COPY_BUTTON_TEXT,
-                    mContext.getResources().getString(R.string.discount_code_copied_button_text));
+                    mContext.getString(R.string.discount_code_copied_button_text));
         };
     }
 

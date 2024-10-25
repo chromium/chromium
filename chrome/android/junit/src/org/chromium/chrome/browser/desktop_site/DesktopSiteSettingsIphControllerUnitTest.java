@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -83,7 +82,6 @@ public class DesktopSiteSettingsIphControllerUnitTest {
     @Mock private View mToolbarMenuButton;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private Context mContext;
     @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
@@ -96,17 +94,16 @@ public class DesktopSiteSettingsIphControllerUnitTest {
 
     private DesktopSiteSettingsIphController mController;
     private GURL mTabUrl;
+    private Context mContext;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
 
-        Resources resources = ApplicationProvider.getApplicationContext().getResources();
-
+        mContext = ApplicationProvider.getApplicationContext();
         doReturn(mWeakReferenceContext).when(mWindowAndroid).getContext();
         doReturn(mContext).when(mWeakReferenceContext).get();
-        doReturn(resources).when(mContext).getResources();
         doReturn(mContext).when(mToolbarMenuButton).getContext();
 
         TrackerFactory.setTrackerForTests(mTracker);
@@ -271,11 +268,11 @@ public class DesktopSiteSettingsIphControllerUnitTest {
                 message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
         Assert.assertEquals(
                 "Message title should match.",
-                mContext.getResources().getString(R.string.rds_window_setting_message_title),
+                mContext.getString(R.string.rds_window_setting_message_title),
                 message.getValue().get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
                 "Message primary button text should match.",
-                mContext.getResources().getString(R.string.rds_window_setting_message_button),
+                mContext.getString(R.string.rds_window_setting_message_button),
                 message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
                 "Message icon resource ID should match.",

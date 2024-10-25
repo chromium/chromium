@@ -104,7 +104,7 @@ public class ModuleInstallUi {
         String text =
                 String.format(
                         context.getString(R.string.module_install_failure_text),
-                        context.getResources().getString(mModuleTitleStringId));
+                        context.getString(mModuleTitleStringId));
         Snackbar snackbar =
                 Snackbar.make(
                         text,

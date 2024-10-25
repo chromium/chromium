@@ -129,7 +129,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mMockResources).when(mMockContext).getResources();
-        doReturn("").when(mMockResources).getString(anyInt());
+        doReturn("").when(mMockContext).getString(anyInt());
         doReturn("").when(mMockResources).getQuantityString(anyInt(), anyInt(), any());
         doReturn(FAKE_HOST).when(mMockGurl).getHost();
         doReturn(FAKE_HOST).when(mMockGurl).getSpec();

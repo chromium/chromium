@@ -712,8 +712,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
         Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
         ChipView chipView = (ChipView) tile1.findViewById(R.id.tile_app_chip);
-        var chipText =
-                mContext.getResources().getString(R.string.history_app_attribution, appLabel);
+        var chipText = mContext.getString(R.string.history_app_attribution, appLabel);
         Assert.assertEquals("ChipView is not visible", View.VISIBLE, chipView.getVisibility());
         Assert.assertEquals(chipText, chipView.getPrimaryTextView().getText());
         Assert.assertEquals(

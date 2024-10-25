@@ -66,7 +66,7 @@ public class OmniboxResourceProvider {
         ThreadUtils.assertOnUiThread();
         String string = sStringCache.get(res, null);
         if (string == null) {
-            string = context.getResources().getString(res);
+            string = context.getString(res);
             sStringCache.put(res, string);
         }
 

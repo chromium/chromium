@@ -317,7 +317,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     @VisibleForTesting
     public static CustomButtonParams createShareButton(Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
-        String description = context.getResources().getString(R.string.share);
+        String description = context.getString(R.string.share);
         Intent shareIntent = new Intent(context, CustomTabsShareBroadcastReceiver.class);
         PendingIntent pendingIntent =
                 PendingIntent.getBroadcast(
@@ -347,8 +347,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     public static CustomButtonParams createOpenInBrowserButton(
             Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
-        String description =
-                context.getResources().getString(R.string.menu_open_in_product_default);
+        String description = context.getString(R.string.menu_open_in_product_default);
 
         TintedDrawable drawable =
                 TintedDrawable.constructTintedDrawable(

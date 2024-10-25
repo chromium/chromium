@@ -71,12 +71,12 @@ public class Menu extends LinearLayout {
     public void setTitle(int titleStringId) {
         final var titleView = (TextView) findViewById(R.id.readaloud_menu_title);
         if (titleView != null) {
-            titleView.setText(mContext.getResources().getString(titleStringId));
+            titleView.setText(mContext.getString(titleStringId));
         }
     }
 
     public void setContentDescription(int descriptionStringId) {
-        setContentDescription(mContext.getResources().getString(descriptionStringId));
+        setContentDescription(mContext.getString(descriptionStringId));
     }
 
     public void setBackPressHandler(Runnable backPressHandler) {

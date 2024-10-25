@@ -175,7 +175,7 @@ public class CustomTabIntentDataProviderTest {
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         assertEquals(
-                mContext.getResources().getString(R.string.share),
+                mContext.getString(R.string.share),
                 dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
     }
 

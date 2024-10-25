@@ -26,13 +26,11 @@ public class IncognitoNotificationManager {
     /** Shows the close all incognito notification. */
     public static void showIncognitoNotification() {
         Context context = ContextUtils.getApplicationContext();
-        String actionMessage =
-                context.getResources().getString(R.string.close_all_incognito_notification);
+        String actionMessage = context.getString(R.string.close_all_incognito_notification);
 
         // From Android N, notification by default has the app name and title should not be the same
         // as app name.
-        String title =
-                context.getResources().getString(R.string.close_all_incognito_notification_title);
+        String title = context.getString(R.string.close_all_incognito_notification_title);
 
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(

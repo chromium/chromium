@@ -150,8 +150,7 @@ public class PriceInsightsBottomSheetMediator {
                         ? SemanticColorUtils.getDefaultBgColor(mContext)
                         : SemanticColorUtils.getColorPrimaryContainer(mContext);
 
-        mPropertyModel.set(
-                PRICE_TRACKING_BUTTON_TEXT, mContext.getResources().getString(buttonTextResId));
+        mPropertyModel.set(PRICE_TRACKING_BUTTON_TEXT, mContext.getString(buttonTextResId));
         mPropertyModel.set(PRICE_TRACKING_BUTTON_ICON, buttonIconResId);
         mPropertyModel.set(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR, buttonForegroundColor);
         mPropertyModel.set(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR, buttonBackgroundColor);
@@ -206,8 +205,7 @@ public class PriceInsightsBottomSheetMediator {
             priceHistoryTitleResId = R.string.price_history_multiple_catalogs_title;
             mPropertyModel.set(PRICE_HISTORY_DESCRIPTION, info.catalogAttributes.get());
         }
-        mPropertyModel.set(
-                PRICE_HISTORY_TITLE, mContext.getResources().getString(priceHistoryTitleResId));
+        mPropertyModel.set(PRICE_HISTORY_TITLE, mContext.getString(priceHistoryTitleResId));
         mPropertyModel.set(
                 PRICE_HISTORY_CHART,
                 mPriceInsightsDelegate.getPriceHistoryChartForPriceInsightsInfo(info));

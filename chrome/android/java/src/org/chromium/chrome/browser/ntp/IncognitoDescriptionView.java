@@ -177,7 +177,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     @NonNull
     static SpannableString getSpannedBulletText(Context context, @StringRes int content) {
-        String text = context.getResources().getString(content);
+        String text = context.getString(content);
         // Some translations don't have a line break between list entries.
         text = text.replaceAll("([^\n ]) *(<li>|</?ul>)", "$1\n$2");
 
@@ -200,7 +200,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                 "Format error. Locale: "
                         + context.getResources().getConfiguration().getLocales()
                         + " \nstring: "
-                        + context.getResources().getString(content);
+                        + context.getString(content);
         assert text.contains("<li1>") : error;
         assert text.contains("<li2>") : error;
         assert text.contains("<li3>") : error;

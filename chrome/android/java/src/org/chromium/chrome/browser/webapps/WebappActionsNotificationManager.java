@@ -130,12 +130,12 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
                 .setContentIntent(focusIntent)
                 .addAction(
                         R.drawable.ic_share_white_24dp,
-                        appContext.getResources().getString(R.string.share),
+                        appContext.getString(R.string.share),
                         shareIntent,
                         NotificationUmaTracker.ActionType.WEB_APP_ACTION_SHARE)
                 .addAction(
                         R.drawable.ic_exit_to_app_white_24dp,
-                        appContext.getResources().getString(R.string.menu_open_in_chrome),
+                        appContext.getString(R.string.menu_open_in_chrome),
                         openInChromeIntent,
                         NotificationUmaTracker.ActionType.WEB_APP_ACTION_OPEN_IN_CHROME)
                 .buildNotificationWrapper();

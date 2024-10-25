@@ -161,7 +161,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private void bindRevokedPermissionsView(@NonNull String title) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(SafetyHubMagicStackViewProperties.TITLE, title);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
@@ -186,7 +186,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private void bindNotificationReviewView(@NonNull String summary) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(
                 SafetyHubMagicStackViewProperties.TITLE,
                 mContext.getResources()
@@ -216,7 +216,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private void bindSafeBrowsingView(@NonNull String summary) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(
                 SafetyHubMagicStackViewProperties.TITLE,
                 mContext.getResources()
@@ -248,7 +248,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private void bindCompromisedPasswordsView(String summary) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(
                 SafetyHubMagicStackViewProperties.TITLE,
                 mContext.getResources()

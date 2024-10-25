@@ -186,7 +186,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                             MAX_REFRESH_ANIMATION_DURATION_MS);
                     if (mAccessibilityRefreshString == null) {
                         int resId = R.string.accessibility_swipe_refresh;
-                        mAccessibilityRefreshString = context.getResources().getString(resId);
+                        mAccessibilityRefreshString = context.getString(resId);
                     }
                     mSwipeRefreshLayout.announceForAccessibility(mAccessibilityRefreshString);
                     if (VERSION.SDK_INT >= VERSION_CODES.R) {

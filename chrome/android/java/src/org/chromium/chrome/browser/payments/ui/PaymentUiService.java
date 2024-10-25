@@ -575,7 +575,7 @@ public class PaymentUiService
             mPaymentRequestUI.setRetryErrorMessage(errors.error);
         } else {
             mPaymentRequestUI.setRetryErrorMessage(
-                    context.getResources().getString(R.string.payments_error_message));
+                    context.getString(R.string.payments_error_message));
         }
 
         if (shouldShowShippingSection() && hasShippingAddressError(errors.shippingAddress)) {

@@ -123,7 +123,7 @@ public class SafetyHubMagicStackMediatorTest {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.HEADER),
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getResources()
@@ -158,7 +158,7 @@ public class SafetyHubMagicStackMediatorTest {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.HEADER),
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(mModel.get(SafetyHubMagicStackViewProperties.TITLE), DESCRIPTION);
         assertNull(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
         assertEquals(
@@ -188,7 +188,7 @@ public class SafetyHubMagicStackMediatorTest {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.HEADER),
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getResources()
@@ -220,7 +220,7 @@ public class SafetyHubMagicStackMediatorTest {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.HEADER),
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+                mContext.getString(R.string.safety_hub_magic_stack_module_name));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getResources()

@@ -264,7 +264,7 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
     static SpannableString getSpannableStringWithClickableSpansToOpenLinks(
             Context context, int stringResourceId, Runnable callback) {
         return SpanApplier.applySpans(
-                context.getResources().getString(stringResourceId),
+                context.getString(stringResourceId),
                 new SpanApplier.SpanInfo(
                         "<link1>",
                         "</link1>",

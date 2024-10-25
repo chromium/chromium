@@ -547,7 +547,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         populateMatchesForHorizontalRenderGroup(0, new TileData("", SEARCH_URL, true));
 
         assertEquals(
-                mContext.getResources().getString(R.string.accessibility_omnibox_most_visited_list),
+                mContext.getString(R.string.accessibility_omnibox_most_visited_list),
                 mPropertyModel.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
     }
 }

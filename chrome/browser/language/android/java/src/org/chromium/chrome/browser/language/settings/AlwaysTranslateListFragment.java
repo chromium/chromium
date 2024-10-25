@@ -24,7 +24,7 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected String getLanguageListTitle(Context context) {
-        return context.getResources().getString(R.string.languages_settings_automatic_title);
+        return context.getString(R.string.languages_settings_automatic_title);
     }
 
     @Override

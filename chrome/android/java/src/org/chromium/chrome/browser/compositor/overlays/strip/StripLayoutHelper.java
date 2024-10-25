@@ -4730,7 +4730,7 @@ public class StripLayoutHelper
             builder.append(title);
             builder.append(contentDescriptionSeparator);
         }
-        builder.append(mContext.getResources().getString(resId));
+        builder.append(mContext.getString(resId));
         stripTab.setAccessibilityDescription(builder.toString(), title, resId);
     }
 

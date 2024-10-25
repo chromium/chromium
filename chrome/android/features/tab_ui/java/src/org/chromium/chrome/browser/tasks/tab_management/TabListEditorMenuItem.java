@@ -94,7 +94,7 @@ public class TabListEditorMenuItem {
                     mContext.getResources()
                             .getQuantityString(titleResourceId, itemCount, itemCount);
         } else {
-            title = mContext.getResources().getString(titleResourceId);
+            title = mContext.getString(titleResourceId);
         }
         mListItem.model.set(TabListEditorActionProperties.TITLE, title);
         if (mActionView != null) {

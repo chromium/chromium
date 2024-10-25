@@ -73,8 +73,8 @@ public class FeedManagementMediator {
 
     private PropertyModel generateListItem(
             int titleResource, int descriptionResource, OnClickListener listener) {
-        String title = mContext.getResources().getString(titleResource);
-        String description = mContext.getResources().getString(descriptionResource);
+        String title = mContext.getString(titleResource);
+        String description = mContext.getString(descriptionResource);
         return new PropertyModel.Builder(FeedManagementItemProperties.ALL_KEYS)
                 .with(FeedManagementItemProperties.TITLE_KEY, title)
                 .with(FeedManagementItemProperties.DESCRIPTION_KEY, description)

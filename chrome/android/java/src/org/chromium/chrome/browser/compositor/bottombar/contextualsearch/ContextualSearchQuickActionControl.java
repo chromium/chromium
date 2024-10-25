@@ -319,12 +319,10 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
                     DrawableCompat.setTint(iconDrawable, mToolbarBackgroundColor);
                 }
             }
-            mCaption =
-                    mContext.getResources().getString(getFallbackCaptionId(mQuickActionCategory));
+            mCaption = mContext.getString(getFallbackCaptionId(mQuickActionCategory));
         } else {
             iconResId = getIconResId(mQuickActionCategory);
-            mCaption =
-                    mContext.getResources().getString(getFallbackCaptionId(mQuickActionCategory));
+            mCaption = mContext.getString(getFallbackCaptionId(mQuickActionCategory));
         }
 
         inflate();

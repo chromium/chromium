@@ -768,16 +768,16 @@ public class SyncPromoController {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             return profileData == null
-                    ? context.getResources().getString(R.string.signin_promo_signin)
+                    ? context.getString(R.string.signin_promo_signin)
                     : SigninUtils.getContinueAsButtonText(context, profileData);
         }
 
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN) || profileData == null) {
-            return context.getResources().getString(R.string.sync_promo_turn_on_sync);
+            return context.getString(R.string.sync_promo_turn_on_sync);
         }
 
         return profileData == null
-                ? context.getResources().getString(R.string.signin_promo_turn_on)
+                ? context.getString(R.string.signin_promo_turn_on)
                 : SigninUtils.getContinueAsButtonText(context, profileData);
     }
 

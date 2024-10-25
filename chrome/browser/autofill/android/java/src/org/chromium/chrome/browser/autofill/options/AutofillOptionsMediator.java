@@ -226,6 +226,6 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     }
 
     private String getString(@StringRes int stringRes) {
-        return mContext.getResources().getString(stringRes);
+        return mContext.getString(stringRes);
     }
 }

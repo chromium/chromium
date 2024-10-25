@@ -1069,7 +1069,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (SyncSettingsUtils.getIdentityError(profile) != SyncSettingsUtils.SyncError.NO_ERROR
                     || SyncSettingsUtils.getSyncError(profile)
                             != SyncSettingsUtils.SyncError.NO_ERROR) {
-                return mContext.getResources().getString(R.string.menu_settings_account_error);
+                return mContext.getString(R.string.menu_settings_account_error);
             }
         }
         return null;

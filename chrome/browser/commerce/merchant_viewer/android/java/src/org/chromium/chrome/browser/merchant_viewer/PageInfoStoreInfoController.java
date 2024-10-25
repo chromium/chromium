@@ -73,8 +73,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
             rowParams.visible = false;
         } else {
             rowParams.visible = true;
-            rowParams.title =
-                    mContext.getResources().getString(R.string.page_info_store_info_title);
+            rowParams.title = mContext.getString(R.string.page_info_store_info_title);
             rowParams.subtitle = getRowSubtitle(merchantInfo);
             // The icons in PageInfo are tinted automatically.
             rowParams.iconResId = R.drawable.ic_storefront_blue;

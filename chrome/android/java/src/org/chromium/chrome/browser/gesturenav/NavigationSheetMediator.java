@@ -94,12 +94,13 @@ class NavigationSheetMediator {
         mIncognitoIcon =
                 UiUtils.getTintedDrawable(
                         context, R.drawable.incognito_small, R.color.default_icon_color_tint_list);
-        mNewTabText = context.getResources().getString(R.string.menu_new_tab);
-        mNewIncognitoTabText = context.getResources().getString(R.string.menu_new_incognito_tab);
+        mNewTabText = context.getString(R.string.menu_new_tab);
+        mNewIncognitoTabText = context.getString(R.string.menu_new_incognito_tab);
     }
 
     /**
      * Populate the sheet with the navigation history.
+     *
      * @param history {@link NavigationHistory} object.
      */
     void populateEntries(NavigationHistory history) {

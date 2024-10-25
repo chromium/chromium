@@ -477,7 +477,7 @@ public class BookmarkUtils {
         } else {
             // Use "New tab" as title for both incognito and regular NTP.
             if (url.getSpec().equals(UrlConstants.NTP_URL)) {
-                title = context.getResources().getString(R.string.new_tab_title);
+                title = context.getString(R.string.new_tab_title);
             }
 
             bookmarkId =

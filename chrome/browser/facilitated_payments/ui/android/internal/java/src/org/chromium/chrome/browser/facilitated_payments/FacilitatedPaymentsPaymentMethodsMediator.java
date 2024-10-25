@@ -294,15 +294,15 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     static String getBankAccountTypeString(Context context, @AccountType int bankAccountType) {
         switch (bankAccountType) {
             case AccountType.CHECKING:
-                return context.getResources().getString(R.string.bank_account_type_checking);
+                return context.getString(R.string.bank_account_type_checking);
             case AccountType.SAVINGS:
-                return context.getResources().getString(R.string.bank_account_type_savings);
+                return context.getString(R.string.bank_account_type_savings);
             case AccountType.CURRENT:
-                return context.getResources().getString(R.string.bank_account_type_current);
+                return context.getString(R.string.bank_account_type_current);
             case AccountType.SALARY:
-                return context.getResources().getString(R.string.bank_account_type_salary);
+                return context.getString(R.string.bank_account_type_salary);
             case AccountType.TRANSACTING_ACCOUNT:
-                return context.getResources().getString(R.string.bank_account_type_transacting);
+                return context.getString(R.string.bank_account_type_transacting);
             case AccountType.UNKNOWN:
             default:
                 return "";

@@ -87,7 +87,7 @@ public class SigninPromoDelegate {
     private static String primaryButtonTextForBookmarkAndNtp(
             Context context, @Nullable DisplayableProfileData profileData) {
         return profileData == null
-                ? context.getResources().getString(R.string.signin_promo_signin)
+                ? context.getString(R.string.signin_promo_signin)
                 : SigninUtils.getContinueAsButtonText(context, profileData);
     }
 

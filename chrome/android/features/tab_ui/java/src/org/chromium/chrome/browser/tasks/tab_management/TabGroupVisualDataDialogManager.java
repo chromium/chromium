@@ -247,7 +247,7 @@ public class TabGroupVisualDataDialogManager {
                         syncingTabGroups
                                 ? R.string.tab_group_creation_dialog_description_text_sync_on
                                 : R.string.tab_group_creation_dialog_description_text_sync_off;
-                String descriptionText = mContext.getResources().getString(descriptionId);
+                String descriptionText = mContext.getString(descriptionId);
                 descriptionView.setText(descriptionText);
 
                 tracker.notifyEvent(EventConstants.TAB_GROUP_CREATION_DIALOG_SHOWN);

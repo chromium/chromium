@@ -74,8 +74,7 @@ public class DetailScreenViewBinder {
             view.mToolbarSettingsImageButton.setOnClickListener(
                     (v) -> model.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).run());
         } else if (propertyKey == DETAIL_SCREEN_TITLE) {
-            String titleText =
-                    view.mContext.getResources().getString(model.get(DETAIL_SCREEN_TITLE));
+            String titleText = view.mContext.getString(model.get(DETAIL_SCREEN_TITLE));
             view.mToolbarTitleTextView.setText(titleText);
         } else if (propertyKey == DETAIL_SCREEN_TITLE_DESCRIPTION) {
             String titleContentDescription =

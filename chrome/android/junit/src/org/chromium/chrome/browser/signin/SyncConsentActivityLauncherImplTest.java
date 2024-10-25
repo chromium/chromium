@@ -92,7 +92,7 @@ public class SyncConsentActivityLauncherImplTest {
                                 mContext, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO));
         Assert.assertTrue(
                 ShadowToast.showedCustomToast(
-                        mContext.getResources().getString(R.string.managed_by_your_organization),
+                        mContext.getString(R.string.managed_by_your_organization),
                         R.id.toast_text));
         watchSigninDisabledToastShownHistogram.assertExpected();
     }

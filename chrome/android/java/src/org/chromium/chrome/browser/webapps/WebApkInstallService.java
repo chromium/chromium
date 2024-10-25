@@ -70,7 +70,7 @@ public class WebApkInstallService {
                 shortName,
                 url,
                 icon,
-                context.getResources().getString(R.string.notification_webapk_installed),
+                context.getString(R.string.notification_webapk_installed),
                 clickPendingIntent);
     }
 
@@ -179,7 +179,7 @@ public class WebApkInstallService {
         if (type == SystemNotificationType.WEBAPK_INSTALL_FAILED) {
             notificationBuilder.addAction(
                     0 /* no icon */,
-                    context.getResources().getString(R.string.webapk_install_failed_action_open),
+                    context.getString(R.string.webapk_install_failed_action_open),
                     clickPendingIntent,
                     NotificationUmaTracker.ActionType.WEB_APK_ACTION_BACK_TO_SITE);
         }

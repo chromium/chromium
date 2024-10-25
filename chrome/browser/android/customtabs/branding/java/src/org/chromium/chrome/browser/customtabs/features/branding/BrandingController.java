@@ -185,7 +185,7 @@ public class BrandingController {
             return;
         }
 
-        String toastText = mContext.getResources().getString(mToastTemplateId, mBrowserName);
+        String toastText = mContext.getString(mToastTemplateId, mBrowserName);
         TextView runInChromeTextView =
                 (TextView)
                         LayoutInflater.from(mContext)

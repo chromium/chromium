@@ -47,7 +47,7 @@ public class SectionTitleViewHolder extends ListItemViewHolder {
             case SectionHeaderType.DATE:
                 return StringUtils.dateToHeaderString(sectionItem.date);
             case SectionHeaderType.JUST_NOW:
-                return context.getResources().getString(R.string.download_manager_just_now);
+                return context.getString(R.string.download_manager_just_now);
         }
         assert false : "Unknown section header type.";
         return null;

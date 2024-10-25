@@ -516,7 +516,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                                 R.string.accessible_find_in_page_count,
                                 activeMatchOrdinal,
                                 numberOfMatches)
-                : context.getResources().getString(R.string.accessible_find_in_page_no_results);
+                : context.getString(R.string.accessible_find_in_page_no_results);
     }
 
     /** The find toolbar's container must provide access to its TabModel. */

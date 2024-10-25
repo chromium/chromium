@@ -378,9 +378,7 @@ public class StatusView extends LinearLayout {
                         if (mAccessibilityToast == 0) return false;
                         Context context = getContext();
                         return Toast.showAnchoredToast(
-                                context,
-                                view,
-                                context.getResources().getString(mAccessibilityToast));
+                                context, view, context.getString(mAccessibilityToast));
                     }
                 };
         setOnLongClickListener(listener);

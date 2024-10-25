@@ -284,7 +284,7 @@ public class PersonalDataManager implements Destroyable {
         public String getFormattedExpirationDate(Context context) {
             String twoDigityear = getYear().substring(2);
             return getMonth()
-                    + context.getResources().getString(R.string.autofill_expiration_date_separator)
+                    + context.getString(R.string.autofill_expiration_date_separator)
                     + twoDigityear;
         }
 

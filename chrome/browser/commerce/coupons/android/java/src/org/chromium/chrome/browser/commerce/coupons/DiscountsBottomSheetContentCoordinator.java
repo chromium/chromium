@@ -95,7 +95,7 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(TYPE, ContentType.DISCOUNTS)
                 .with(HAS_TITLE, true)
-                .with(TITLE, mContext.getResources().getString(R.string.discount_container_title))
+                .with(TITLE, mContext.getString(R.string.discount_container_title))
                 .with(CUSTOM_VIEW, mDiscountsContentContainer)
                 .build();
     }

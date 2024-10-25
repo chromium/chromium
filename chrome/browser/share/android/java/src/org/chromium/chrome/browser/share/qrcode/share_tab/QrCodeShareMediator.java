@@ -82,7 +82,7 @@ class QrCodeShareMediator {
         if (TextUtils.isEmpty(data)) {
             mPropertyModel.set(
                     QrCodeShareViewProperties.ERROR_STRING,
-                    mContext.getResources().getString(R.string.qr_code_error_unknown));
+                    mContext.getString(R.string.qr_code_error_unknown));
             return;
         }
 
@@ -97,7 +97,7 @@ class QrCodeShareMediator {
                     mContext.getResources()
                             .getString(R.string.qr_code_error_too_long, MAX_URL_LENGTH);
         } else {
-            errorMessage = mContext.getResources().getString(R.string.qr_code_error_unknown);
+            errorMessage = mContext.getString(R.string.qr_code_error_unknown);
         }
         mPropertyModel.set(QrCodeShareViewProperties.ERROR_STRING, errorMessage);
     }

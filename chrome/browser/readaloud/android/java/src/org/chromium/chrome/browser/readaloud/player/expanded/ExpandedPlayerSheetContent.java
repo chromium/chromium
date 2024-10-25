@@ -208,8 +208,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     public void setSpeed(float speed) {
         mModel.set(PlayerProperties.SPEED, speed);
         String speedString = SpeedMenuSheetContent.speedFormatter(speed);
-        mSpeedButton.setText(
-                mContext.getResources().getString(R.string.readaloud_speed, speedString));
+        mSpeedButton.setText(mContext.getString(R.string.readaloud_speed, speedString));
         mSpeedButton.setContentDescription(
                 mContext.getResources()
                         .getString(R.string.readaloud_speed_menu_button, speedString));
@@ -229,12 +228,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         // If playing, update to show the pause button.
         if (playing) {
             playButton.setImageResource(R.drawable.pause_button);
-            playButton.setContentDescription(
-                    mContext.getResources().getString(R.string.readaloud_pause));
+            playButton.setContentDescription(mContext.getString(R.string.readaloud_pause));
         } else {
             playButton.setImageResource(R.drawable.play_button);
-            playButton.setContentDescription(
-                    mContext.getResources().getString(R.string.readaloud_play));
+            playButton.setContentDescription(mContext.getString(R.string.readaloud_play));
         }
     }
 

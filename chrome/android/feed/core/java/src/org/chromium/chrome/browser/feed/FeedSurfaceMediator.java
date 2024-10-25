@@ -663,7 +663,7 @@ public class FeedSurfaceMediator
         if (hasWebFeedTab == shouldHaveWebFeedTab) return;
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(
-                    mContext.getResources().getString(R.string.ntp_following),
+                    mContext.getString(R.string.ntp_following),
                     mCoordinator.createFeedStream(StreamKind.FOLLOWING, new StreamsMediatorImpl()));
             if (FeedFeatures.shouldUseNewIndicator(mProfile)) {
                 PropertyModel followingHeaderModel =
@@ -672,7 +672,7 @@ public class FeedSurfaceMediator
                                 .get(getTabIdForSection(StreamKind.FOLLOWING));
                 followingHeaderModel.set(
                         SectionHeaderProperties.BADGE_TEXT_KEY,
-                        mContext.getResources().getString(R.string.ntp_new));
+                        mContext.getString(R.string.ntp_new));
 
                 // Set up a content changed listener on the main feed to start animation
                 // after main feed loads more than 1 feed card.
