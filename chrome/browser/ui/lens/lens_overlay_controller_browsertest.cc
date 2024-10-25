@@ -122,6 +122,9 @@ constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
 
 constexpr char kPdfDocument12KbFileName[] = "pdf/test-title.pdf";
 
+constexpr char kHelloWorldDataUri[] =
+    "data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E";
+
 using ::testing::_;
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
@@ -3799,6 +3802,32 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
   // Tab contents web view should be enabled.
   ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayClosesIfRendererNavigates) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the Overlay
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Force the renderer to navigate cross-origin to change the renderer process.
+  // This was previously known to cause a crash (crbug.com/371643466).
+  controller->GetOverlayWebViewForTesting()
+      ->GetWebContents()
+      ->GetController()
+      .LoadURL(GURL(kHelloWorldDataUri), content::Referrer(),
+               ui::PAGE_TRANSITION_LINK, std::string());
+
+  // Overlay should close
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

@@ -2156,13 +2156,21 @@ void LensOverlayController::RenderProcessExited(
   if (IsOverlayClosing()) {
     return;
   }
-  // The renderer has exited. Close the overlay so the user does not get into a
-  // broken state.
-  CloseUISync(
-      info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
-          ? lens::LensOverlayDismissalSource::kOverlayRendererClosedNormally
-          : lens::LensOverlayDismissalSource::
-                kOverlayRendererClosedUnexpectedly);
+
+  // The overlay's primary main frame process has exited, either cleanly or
+  // unexpectedly. Close the overlay so that the user does not get into a broken
+  // state where the overlay cannot be dismissed. Note that RenderProcessExited
+  // can be called during the destruction of a frame in the overlay, so it is
+  // important to post a task to close the overlay to avoid double-freeing the
+  // overlay's frames. See https://crbug.com/371643466.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LensOverlayController::CloseUISync, weak_factory_.GetWeakPtr(),
+          info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+              ? lens::LensOverlayDismissalSource::kOverlayRendererClosedNormally
+              : lens::LensOverlayDismissalSource::
+                    kOverlayRendererClosedUnexpectedly));
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
