@@ -1023,10 +1023,10 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="7"
       label=":-X Unknown password typed, no saved credentials existed and
-             site was explicitly blacklisted"/>
+             site was explicitly blocklisted"/>
   <int value="8"
       label=":-X Unknown password typed, no saved credentials existed and
-             site is blacklisted by the smart bubble"/>
+             site is blocklisted by the smart bubble"/>
 </enum>
 
 <enum name="PasswordManagerFillingSource">
@@ -1621,10 +1621,10 @@ chromium-metrics-reviews@google.com.
       label=":-X Unknown username typed, no saved credentials existed"/>
   <int value="5"
       label=":-X Unknown username typed, no saved credentials existed and
-             site was explicitly blacklisted"/>
+             site was explicitly blocklisted"/>
   <int value="6"
       label=":-X Unknown username typed, no saved credentials existed and
-             site is blacklisted by the smart bubble"/>
+             site is blocklisted by the smart bubble"/>
   <int value="7" label="%-) Neither filling nor user input">
     For example, it might be because of 3rd party password managers.
   </int>
