@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -251,10 +252,13 @@ class MODULES_EXPORT RTCDataChannel final
     void Trace(Visitor*) const override;
 
    private:
+    void Dispose();
+
     Member<FileReaderLoader> loader_;
     Member<RTCDataChannel> data_channel_;
     Member<PendingMessage> message_;
 
+    SelfKeepAlive<BlobReader> keep_alive_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
