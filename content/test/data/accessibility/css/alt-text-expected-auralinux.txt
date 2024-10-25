@@ -20,7 +20,6 @@
 ++++[section]
 ++++++[static] name='Some Text'
 ++[section]
-++++[image]
 ++++[static] name=' '
 ++++[section]
 ++++++[static] name='Some Text'
@@ -30,7 +29,6 @@
 ++++[section]
 ++++++[static] name='Some Text'
 ++[section]
-++++[image]
 ++++[static] name=' '
 ++++[section]
 ++++++[static] name='Some Text'

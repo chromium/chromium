@@ -811,12 +811,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
   }
 
-  // Anything with CSS alt should be included.
-  // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
-  std::optional<String> alt_text = GetCSSAltText(GetElement());
-  if (alt_text && !alt_text->empty())
-    return kIncludeObject;
-
   // Anything that is an editable root should not be ignored. However, one
   // cannot just call `AXObject::IsEditable()` since that will include the
   // contents of an editable region too. Only the editable root should always be
@@ -981,6 +975,18 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
         GetLayoutObject()->IsInline() &&
         GetLayoutObject()->IsAtomicInlineLevel() &&
         node->parentNode()->childElementCount() > 1) {
+      return kIncludeObject;
+    }
+  }
+
+  // Anything with non empty CSS alt should be included.
+  // https://drafts.csswg.org/css-content/#alt
+  // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
+  std::optional<String> alt_text = GetCSSAltText(GetElement());
+  if (alt_text) {
+    if (alt_text->empty()) {
+      return kIgnoreObject;
+    } else {
       return kIncludeObject;
     }
   }

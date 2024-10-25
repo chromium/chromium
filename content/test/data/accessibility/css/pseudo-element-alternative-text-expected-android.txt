@@ -4,4 +4,3 @@ android.webkit.WebView focusable focused
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name='DOM text'
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic'
