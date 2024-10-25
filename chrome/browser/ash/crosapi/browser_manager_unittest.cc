@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "components/account_id/account_id.h"
@@ -289,10 +288,6 @@ class BrowserManagerTest : public testing::Test {
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
     fake_user_manager_->SimulateUserProfileLoad(account_id);
-
-    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-        local_state_.Get(), user->username_hash(),
-        ash::standalone_browser::migrator_util::MigrationMode::kCopy);
 
     AddKnownUser(/*lacros_enabled=*/true);
 
