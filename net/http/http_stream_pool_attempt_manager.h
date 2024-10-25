@@ -194,7 +194,7 @@ class HttpStreamPool::AttemptManager
 
   const SpdySessionKey& spdy_session_key() const;
 
-  const QuicSessionKey& quic_session_key() const;
+  const QuicSessionAliasKey& quic_session_alias_key() const;
 
   HttpNetworkSession* http_network_session();
   SpdySessionPool* spdy_session_pool();

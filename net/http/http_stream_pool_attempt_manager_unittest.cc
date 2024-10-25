@@ -2050,7 +2050,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequireHttp11AfterSpdySessionCreated) {
   RunUntilIdle();
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   // Disable HTTP/2.
   http_server_properties()->SetHTTP11Required(
@@ -2058,7 +2058,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequireHttp11AfterSpdySessionCreated) {
   // At this point, the SPDY session is still available because it becomes
   // unavailable after the next request is made.
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   // Request a stream again. The second request fails because the first request
   // is still alive and the corresponding attempt manager is still alive. The
@@ -2068,7 +2068,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequireHttp11AfterSpdySessionCreated) {
   RunUntilIdle();
   EXPECT_THAT(requester2.result(), Optional(IsError(ERR_HTTP_1_1_REQUIRED)));
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -2092,7 +2092,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   RunUntilIdle();
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   // Disable HTTP/2.
   http_server_properties()->SetHTTP11Required(
@@ -2100,7 +2100,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // At this point, the SPDY session is still available because it becomes
   // unavailable after the next request is made.
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   // Destroy the first request.
   requester1.ResetRequest();
@@ -2122,7 +2122,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   RunUntilIdle();
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, DoNotUseSpdySessionForHttpRequest) {
@@ -2149,7 +2149,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DoNotUseSpdySessionForHttpRequest) {
   EXPECT_THAT(requester_https.result(), Optional(IsOk()));
   EXPECT_EQ(requester_https.negotiated_protocol(), NextProto::kProtoHTTP2);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   // Request a stream for http (not https). The second request should use
   // HTTP/1.1 and should not use the existing SPDY session.
@@ -2183,7 +2183,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CloseIdleSpdySessionWhenPoolStalled) {
       StreamKeyBuilder().set_destination(kDestinationA).Build();
   CreateFakeSpdySession(stream_key_a);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key_a.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key_a.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   resolver()
       ->AddFakeRequest()
@@ -2204,9 +2204,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CloseIdleSpdySessionWhenPoolStalled) {
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
   EXPECT_EQ(requester_b.negotiated_protocol(), NextProto::kProtoHTTP2);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      requester_b.GetStreamKey().ToSpdySessionKey(), /*is_websocket=*/false));
+      requester_b.GetStreamKey().CalculateSpdySessionKey(),
+      /*is_websocket=*/false));
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key_a.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key_a.CalculateSpdySessionKey(), /*is_websocket=*/false));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -2230,7 +2231,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   RunUntilIdle();
   EXPECT_THAT(preconnector1.result(), Optional(IsOk()));
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
   // Disable HTTP/2.
   http_server_properties()->SetHTTP11Required(
@@ -2253,7 +2254,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(rv, IsError(ERR_HTTP_1_1_REQUIRED));
   RunUntilIdle();
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+      stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyReachedPoolLimit) {
@@ -2413,7 +2414,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   requester_b.WaitForResult();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
   ASSERT_TRUE(spdy_session_pool()->FindAvailableSession(
-      requester_b.GetStreamKey().ToSpdySessionKey(),
+      requester_b.GetStreamKey().CalculateSpdySessionKey(),
       /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
       NetLogWithSource()));
 }
@@ -2861,7 +2862,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleStreamsHttp2) {
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), false));
+      stream_key.CalculateSpdySessionKey(), false));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectRequireHttp1) {
@@ -2902,7 +2903,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectRequireHttp1) {
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
   ASSERT_EQ(group.IdleStreamSocketCount(), 2u);
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
-      stream_key.ToSpdySessionKey(), false));
+      stream_key.CalculateSpdySessionKey(), false));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleStreamsOkAndFail) {
@@ -3902,12 +3903,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSession) {
       .RequestStream(pool());
   RunUntilIdle();
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
-  ASSERT_EQ(quic_session_pool()->FindExistingSession(
-                requester1.GetStreamKey().ToQuicSessionKey(),
-                requester1.GetStreamKey().destination()),
-            quic_session_pool()->FindExistingSession(
-                requester2.GetStreamKey().ToQuicSessionKey(),
-                requester2.GetStreamKey().destination()));
+  QuicSessionAliasKey quic_key1 =
+      requester1.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicSessionAliasKey quic_key2 =
+      requester2.GetStreamKey().CalculateQuicSessionAliasKey();
+  ASSERT_EQ(quic_session_pool()->FindExistingSession(quic_key1.session_key(),
+                                                     quic_key1.destination()),
+            quic_session_pool()->FindExistingSession(quic_key2.session_key(),
+                                                     quic_key2.destination()));
 }
 
 // The same as above test, but the ServiceEndpointRequest provides two IP
@@ -3964,12 +3967,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
-  EXPECT_EQ(quic_session_pool()->FindExistingSession(
-                requester1.GetStreamKey().ToQuicSessionKey(),
-                requester1.GetStreamKey().destination()),
-            quic_session_pool()->FindExistingSession(
-                requester2.GetStreamKey().ToQuicSessionKey(),
-                requester2.GetStreamKey().destination()));
+  QuicSessionAliasKey quic_key1 =
+      requester1.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicSessionAliasKey quic_key2 =
+      requester2.GetStreamKey().CalculateQuicSessionAliasKey();
+  EXPECT_EQ(quic_session_pool()->FindExistingSession(quic_key1.session_key(),
+                                                     quic_key1.destination()),
+            quic_session_pool()->FindExistingSession(quic_key2.session_key(),
+                                                     quic_key2.destination()));
 }
 
 // Tests that preconnect completes when there is a QUIC session of which IP
@@ -4008,12 +4013,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnectMatchingIpSession) {
   preconnector2.set_quic_version(quic_version()).Preconnect(pool());
   RunUntilIdle();
   EXPECT_THAT(preconnector2.result(), Optional(IsOk()));
-  EXPECT_EQ(quic_session_pool()->FindExistingSession(
-                requester1.GetStreamKey().ToQuicSessionKey(),
-                requester1.GetStreamKey().destination()),
-            quic_session_pool()->FindExistingSession(
-                preconnector2.GetStreamKey().ToQuicSessionKey(),
-                preconnector2.GetStreamKey().destination()));
+  QuicSessionAliasKey quic_key1 =
+      requester1.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicSessionAliasKey quic_key2 =
+      preconnector2.GetStreamKey().CalculateQuicSessionAliasKey();
+  EXPECT_EQ(quic_session_pool()->FindExistingSession(quic_key1.session_key(),
+                                                     quic_key1.destination()),
+            quic_session_pool()->FindExistingSession(quic_key2.session_key(),
+                                                     quic_key2.destination()));
 }
 
 // Tests that when disabled IP-based pooling, QUIC attempts are also disabled.

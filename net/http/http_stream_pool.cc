@@ -220,21 +220,24 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     delegate_for_testing_->OnRequestStream(stream_key);
   }
 
-  QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
-  if (CanUseExistingQuicSession(stream_key, quic_session_key,
+  QuicSessionAliasKey quic_session_alias_key =
+      stream_key.CalculateQuicSessionAliasKey();
+  if (CanUseExistingQuicSession(stream_key, quic_session_alias_key,
                                 enable_ip_based_pooling,
                                 enable_alternative_services)) {
     QuicChromiumClientSession* quic_session =
         http_network_session()->quic_session_pool()->FindExistingSession(
-            quic_session_key, stream_key.destination());
+            quic_session_alias_key.session_key(),
+            quic_session_alias_key.destination());
     auto http_stream = std::make_unique<QuicHttpStream>(
         quic_session->CreateHandle(stream_key.destination()),
-        quic_session->GetDnsAliasesForSessionKey(quic_session_key));
+        quic_session->GetDnsAliasesForSessionKey(
+            quic_session_alias_key.session_key()));
     return CreatePooledStreamRequest(delegate, std::move(http_stream),
                                      NextProto::kProtoQUIC, net_log);
   }
 
-  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+  SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
   base::WeakPtr<SpdySession> spdy_session = FindAvailableSpdySession(
       stream_key, spdy_session_key, enable_ip_based_pooling, net_log);
   if (spdy_session) {
@@ -269,14 +272,15 @@ int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
     return ERR_UNSAFE_PORT;
   }
 
-  QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
+  QuicSessionAliasKey quic_session_key =
+      stream_key.CalculateQuicSessionAliasKey();
   if (CanUseExistingQuicSession(stream_key, quic_session_key,
                                 /*enable_ip_based_pooling=*/true,
                                 /*enable_alternative_services=*/true)) {
     return OK;
   }
 
-  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+  SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
   bool had_spdy_session =
       http_network_session()->spdy_session_pool()->HasAvailableSession(
           spdy_session_key, /*is_websocket=*/false);
@@ -302,7 +306,7 @@ int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
 
   quic::ParsedQuicVersion quic_version =
       SelectQuicVersion(switching_info.alternative_service_info);
-  return GetOrCreateGroup(stream_key)
+  return GetOrCreateGroup(stream_key, stream_key.destination())
       .Preconnect(num_streams, quic_version, std::move(callback));
 }
 
@@ -458,13 +462,14 @@ quic::ParsedQuicVersion HttpStreamPool::SelectQuicVersion(
 
 bool HttpStreamPool::CanUseExistingQuicSession(
     const HttpStreamKey& stream_key,
-    const QuicSessionKey& quic_session_key,
+    const QuicSessionAliasKey& quic_session_alias_key,
     bool enable_ip_based_pooling,
     bool enable_alternative_services) {
   return CanUseQuic(stream_key, enable_ip_based_pooling,
                     enable_alternative_services) &&
          http_network_session()->quic_session_pool()->CanUseExistingSession(
-             quic_session_key, stream_key.destination());
+             quic_session_alias_key.session_key(),
+             quic_session_alias_key.destination());
 }
 
 void HttpStreamPool::SetDelegateForTesting(
@@ -497,17 +502,18 @@ base::Value::Dict HttpStreamPool::GetInfoAsValue() const {
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
-  return GetOrCreateGroup(stream_key);
+  return GetOrCreateGroup(stream_key, stream_key.destination());
 }
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
-    const HttpStreamKey& stream_key) {
+    const HttpStreamKey& stream_key,
+    const url::SchemeHostPort& origin_destination) {
   auto it = groups_.find(stream_key);
   if (it == groups_.end()) {
-    SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+    SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
     it = groups_.try_emplace(
         it, stream_key,
-        std::make_unique<Group>(this, stream_key, std::move(spdy_session_key)));
+        std::make_unique<Group>(this, stream_key, origin_destination));
   }
   return *it->second;
 }

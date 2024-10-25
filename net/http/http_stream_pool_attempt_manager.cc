@@ -403,8 +403,9 @@ const SpdySessionKey& HttpStreamPool::AttemptManager::spdy_session_key() const {
   return group_->spdy_session_key();
 }
 
-const QuicSessionKey& HttpStreamPool::AttemptManager::quic_session_key() const {
-  return group_->quic_session_key();
+const QuicSessionAliasKey&
+HttpStreamPool::AttemptManager::quic_session_alias_key() const {
+  return group_->quic_session_alias_key();
 }
 
 HttpNetworkSession* HttpStreamPool::AttemptManager::http_network_session() {
@@ -634,12 +635,10 @@ bool HttpStreamPool::AttemptManager::
   }
 
   if (CanUseQuic()) {
-    QuicSessionAliasKey quic_session_alias_key(stream_key().destination(),
-                                               quic_session_key());
     for (const auto& endpoint :
          service_endpoint_request_->GetEndpointResults()) {
       if (quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
-              quic_session_alias_key, endpoint,
+              quic_session_alias_key(), endpoint,
               service_endpoint_request_->GetDnsAliasResults(), true)) {
         if (quic_task_) {
           quic_task_result_ = OK;
@@ -1192,8 +1191,9 @@ void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
 
 void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
   QuicChromiumClientSession* quic_session =
-      quic_session_pool()->FindExistingSession(quic_session_key(),
-                                               stream_key().destination());
+      quic_session_pool()->FindExistingSession(
+          quic_session_alias_key().session_key(),
+          quic_session_alias_key().destination());
   CHECK(quic_session);
 
   // If there are more than one remaining job, post a task to create
@@ -1204,8 +1204,8 @@ void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 
-  std::set<std::string> dns_aliases =
-      quic_session->GetDnsAliasesForSessionKey(quic_session_key());
+  std::set<std::string> dns_aliases = quic_session->GetDnsAliasesForSessionKey(
+      quic_session_alias_key().session_key());
   auto http_stream = std::make_unique<QuicHttpStream>(
       quic_session->CreateHandle(stream_key().destination()),
       std::move(dns_aliases));
@@ -1431,7 +1431,8 @@ base::TimeDelta HttpStreamPool::AttemptManager::GetStreamAttemptDelay() {
     return base::TimeDelta();
   }
 
-  return quic_session_pool()->GetTimeDelayForWaitingJob(quic_session_key());
+  return quic_session_pool()->GetTimeDelayForWaitingJob(
+      quic_session_alias_key().session_key());
 }
 
 void HttpStreamPool::AttemptManager::UpdateStreamAttemptState() {
@@ -1467,9 +1468,9 @@ bool HttpStreamPool::AttemptManager::CanUseQuic() {
 }
 
 bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() {
-  return pool()->CanUseExistingQuicSession(stream_key(), quic_session_key(),
-                                           enable_ip_based_pooling_,
-                                           enable_alternative_services_);
+  return pool()->CanUseExistingQuicSession(
+      stream_key(), quic_session_alias_key(), enable_ip_based_pooling_,
+      enable_alternative_services_);
 }
 
 bool HttpStreamPool::AttemptManager::IsEchEnabled() const {

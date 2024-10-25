@@ -31,8 +31,6 @@ namespace net {
 HttpStreamPool::QuicTask::QuicTask(AttemptManager* manager,
                                    quic::ParsedQuicVersion quic_version)
     : manager_(manager),
-      quic_session_alias_key_(manager_->group()->stream_key().destination(),
-                              quic_session_key()),
       quic_version_(quic_version),
       net_log_(NetLogWithSource::Make(
           manager->net_log().net_log(),
@@ -57,8 +55,8 @@ HttpStreamPool::QuicTask::~QuicTask() {
 }
 
 void HttpStreamPool::QuicTask::MaybeAttempt() {
-  CHECK(!quic_session_pool()->CanUseExistingSession(
-      quic_session_key(), stream_key().destination()));
+  CHECK(!quic_session_pool()->CanUseExistingSession(GetKey().session_key(),
+                                                    GetKey().destination()));
 
   if (session_attempt_) {
     // TODO(crbug.com/346835898): Support multiple attempts.
@@ -101,8 +99,8 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
                     [&] { return quic_endpoint->ToValue(); });
 
   session_attempt_ = quic_session_pool()->CreateSessionAttempt(
-      this, quic_session_key(), std::move(*quic_endpoint), cert_verify_flags,
-      dns_resolution_start_time, dns_resolution_end_time,
+      this, GetKey().session_key(), std::move(*quic_endpoint),
+      cert_verify_flags, dns_resolution_start_time, dns_resolution_end_time,
       /*use_dns_aliases=*/true, std::move(dns_aliases));
 
   int rv = session_attempt_->Start(base::BindOnce(
@@ -117,7 +115,7 @@ QuicSessionPool* HttpStreamPool::QuicTask::GetQuicSessionPool() {
 }
 
 const QuicSessionAliasKey& HttpStreamPool::QuicTask::GetKey() {
-  return quic_session_alias_key_;
+  return manager_->group()->quic_session_alias_key();
 }
 
 const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
@@ -126,10 +124,6 @@ const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
 
 const HttpStreamKey& HttpStreamPool::QuicTask::stream_key() const {
   return manager_->group()->stream_key();
-}
-
-const QuicSessionKey& HttpStreamPool::QuicTask::quic_session_key() const {
-  return manager_->group()->quic_session_key();
 }
 
 QuicSessionPool* HttpStreamPool::QuicTask::quic_session_pool() {
@@ -190,8 +184,8 @@ std::optional<IPEndPoint> HttpStreamPool::QuicTask::GetPreferredIPEndPoint(
 void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
   if (rv == OK) {
     QuicChromiumClientSession* session =
-        quic_session_pool()->FindExistingSession(quic_session_key(),
-                                                 stream_key().destination());
+        quic_session_pool()->FindExistingSession(GetKey().session_key(),
+                                                 GetKey().destination());
     if (!session) {
       // QUIC session is closed before stream can be created.
       rv = ERR_CONNECTION_CLOSED;

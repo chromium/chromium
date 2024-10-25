@@ -73,11 +73,12 @@ HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 
 HttpStreamPool::Group::Group(HttpStreamPool* pool,
                              HttpStreamKey stream_key,
-                             SpdySessionKey spdy_session_key)
+                             const url::SchemeHostPort& origin_destination)
     : pool_(pool),
       stream_key_(std::move(stream_key)),
-      spdy_session_key_(std::move(spdy_session_key)),
-      quic_session_key_(stream_key_.ToQuicSessionKey()),
+      spdy_session_key_(stream_key_.CalculateSpdySessionKey()),
+      quic_session_alias_key_(
+          stream_key_.CalculateQuicSessionAliasKey(origin_destination)),
       net_log_(
           NetLogWithSource::Make(http_network_session()->net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_GROUP)),

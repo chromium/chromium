@@ -214,10 +214,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // Returns true when there is an existing QUIC session for `stream_key` and
   // `quic_session_key`.
-  bool CanUseExistingQuicSession(const HttpStreamKey& stream_key,
-                                 const QuicSessionKey& quic_session_key,
-                                 bool enable_ip_based_pooling,
-                                 bool enable_alternative_services);
+  bool CanUseExistingQuicSession(
+      const HttpStreamKey& stream_key,
+      const QuicSessionAliasKey& quic_session_alias_key,
+      bool enable_ip_based_pooling,
+      bool enable_alternative_services);
 
   // Retrieves information on the current state of the pool as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
@@ -252,7 +253,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     max_stream_sockets_per_group_ = max_stream_sockets_per_group;
   }
 
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
+                          const url::SchemeHostPort& origin_destination);
 
   size_t JobControllerCountForTesting() const {
     return job_controllers_.size();

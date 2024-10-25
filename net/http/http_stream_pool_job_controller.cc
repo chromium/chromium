@@ -48,6 +48,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   CHECK(!request_);
 
   const HttpStreamKey& stream_key = switching_info.stream_key;
+  const url::SchemeHostPort& origin_destination = stream_key.destination();
 
   network_anonymization_key_ = stream_key.network_anonymization_key();
 
@@ -75,11 +76,10 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
         stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
         stream_key.disable_cert_network_fetches());
 
-    alternative_service_info_ =
-        std::move(switching_info.alternative_service_info);
+    alternative_service_info_ = switching_info.alternative_service_info;
 
     alternative_job_ =
-        pool_->GetOrCreateGroup(alt_stream_key)
+        pool_->GetOrCreateGroup(alt_stream_key, origin_destination)
             .CreateJob(this, alternative_service_info_.protocol(),
                        switching_info.is_http1_allowed,
                        switching_info.proxy_info);
@@ -93,7 +93,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
 
   quic::ParsedQuicVersion quic_version =
       pool_->SelectQuicVersion(switching_info.alternative_service_info);
-  origin_job_ = pool_->GetOrCreateGroup(stream_key)
+  origin_job_ = pool_->GetOrCreateGroup(stream_key, origin_destination)
                     .CreateJob(this, NextProto::kProtoUnknown,
                                switching_info.is_http1_allowed,
                                switching_info.proxy_info);

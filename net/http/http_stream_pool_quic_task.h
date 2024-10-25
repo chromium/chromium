@@ -13,7 +13,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_stream_pool.h"
-#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -21,7 +20,7 @@
 namespace net {
 
 class HttpStreamKey;
-class QuicSessionKey;
+class QuicSessionAliasKey;
 
 // Handles QUIC session attempts for HttpStreamPool::AttemptManager. Owned by an
 // AttemptManager.
@@ -51,8 +50,6 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
  private:
   const HttpStreamKey& stream_key() const;
 
-  const QuicSessionKey& quic_session_key() const;
-
   HostResolver::ServiceEndpointRequest* service_endpoint_request();
 
   QuicSessionPool* quic_session_pool();
@@ -70,7 +67,6 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   void OnSessionAttemptComplete(int rv);
 
   const raw_ptr<AttemptManager> manager_;
-  const QuicSessionAliasKey quic_session_alias_key_;
   const quic::ParsedQuicVersion quic_version_;
   const NetLogWithSource net_log_;
 

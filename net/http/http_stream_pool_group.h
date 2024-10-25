@@ -20,9 +20,11 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -45,7 +47,7 @@ class HttpStreamPool::Group {
 
   Group(HttpStreamPool* pool,
         HttpStreamKey stream_key,
-        SpdySessionKey spdy_session_key);
+        const url::SchemeHostPort& origin_destination);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;
@@ -56,7 +58,9 @@ class HttpStreamPool::Group {
 
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
-  const QuicSessionKey& quic_session_key() const { return quic_session_key_; }
+  const QuicSessionAliasKey& quic_session_alias_key() const {
+    return quic_session_alias_key_;
+  }
 
   HttpStreamPool* pool() { return pool_; }
   const HttpStreamPool* pool() const { return pool_; }
@@ -216,7 +220,7 @@ class HttpStreamPool::Group {
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
   const SpdySessionKey spdy_session_key_;
-  const QuicSessionKey quic_session_key_;
+  const QuicSessionAliasKey quic_session_alias_key_;
   const NetLogWithSource net_log_;
   const bool force_quic_;
 
