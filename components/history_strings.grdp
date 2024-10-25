@@ -220,6 +220,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE" desc="Error message for when history embeddings answerer determines a question cannot be answered." translateable="false">
     Sorry, I can't help you with that.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE" desc="Error message for when the files necessary for the history embeddings answerer to generate answers to questions are not yet available. User should be encouraged to try again later" translateable="false">
+    Preparing AI-powered summary...check back in a few minutes.
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN" desc="Error message for when history embeddings answerer fails and the user can try again later." translateable="false">
     Something went wrong. Please try again later.
   </message>

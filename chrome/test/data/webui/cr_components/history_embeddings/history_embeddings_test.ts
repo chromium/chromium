@@ -723,6 +723,24 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertFalse(
           isVisible(answerSectionElement),
           'A new query should hide the previous answer.');
+
+      element.searchResultChangedForTesting({
+        query: 'new query',
+        answerStatus: AnswerStatus.kUnanswerable,
+        answer: '',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertFalse(isVisible(answerSectionElement));
+
+      element.searchResultChangedForTesting({
+        query: 'new query',
+        answerStatus: AnswerStatus.kFiltered,
+        answer: '',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertFalse(isVisible(answerSectionElement));
     });
 
     test('ShowsAnswer', async () => {
@@ -859,6 +877,11 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         return;
       }
 
+      loadTimeData.overrideValues({
+        historyEmbeddingsAnswererErrorModelUnavailable: 'model not available',
+        historyEmbeddingsAnswererErrorTryAgain: 'try again',
+      });
+
       async function updateAnswerStatus(status: AnswerStatus) {
         element.searchResultChangedForTesting({
           query: 'some query',
@@ -869,17 +892,16 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         return flushTasks();
       }
 
-      await updateAnswerStatus(AnswerStatus.kUnanswerable);
+      await updateAnswerStatus(AnswerStatus.kModelUnavailable);
       const errorEl = element.shadowRoot!.querySelector<HTMLElement>('.answer');
       assertTrue(!!errorEl);
       assertTrue(isVisible(errorEl));
       assertTrue(errorEl.hasAttribute('is-error'));
-      assertEquals('Sorry, I can\'t help you with that.', errorEl.innerText);
+      assertEquals('model not available', errorEl.innerText);
 
       await updateAnswerStatus(AnswerStatus.kExecutionFailure);
       assertTrue(isVisible(errorEl));
-      assertEquals(
-          'Something went wrong. Please try again later.', errorEl.innerText);
+      assertEquals('try again', errorEl.innerText);
     });
   });
 });
