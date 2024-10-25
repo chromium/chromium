@@ -62,6 +62,8 @@ FS_MATRIX CalculateWordMoveMatrixForTesting(
     const SearchifyBoundingBoxOrigin& origin,
     int word_bounding_box_width,
     bool word_is_rtl);
+gfx::Rect GetSpaceRectForTesting(const gfx::Rect& rect1,
+                                 const gfx::Rect& rect2);
 
 }  // namespace chrome_pdf
 
