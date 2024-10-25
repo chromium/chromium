@@ -6399,6 +6399,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="OnDeviceModel.Embedding.LoadDlcStatus"
+    enum="EmbeddingModelLoadDlcStatus" expires_after="2025-10-15">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>yich@google.com</owner>
+  <owner>zuan@chromium.org</owner>
+  <summary>
+    Records any failure reason (or success) when attempting to load the
+    embedding model DLC, this is the first part of the process during
+    LoadEmbeddingModel().
+  </summary>
+</histogram>
+
+<histogram name="OnDeviceModel.Embedding.LoadEmbeddingStatus"
+    enum="EmbeddingModelLoadEmbeddingStatus" expires_after="2025-10-15">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>yich@google.com</owner>
+  <owner>zuan@chromium.org</owner>
+  <summary>
+    Records any failure reason (or success) that results from the mojo call
+    LoadEmbeddingModel().
+  </summary>
+</histogram>
+
+<histogram name="OnDeviceModel.Embedding.TfliteRunnerLoadStatus"
+    enum="EmbeddingModelTfliteRunnerLoadStatus" expires_after="2025-10-15">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>yich@google.com</owner>
+  <owner>zuan@chromium.org</owner>
+  <summary>
+    Records any failure reason (or success) when attempting to load the
+    embedding model into memory so that it can run, this is the second part of
+    the process during LoadEmbeddingModel().
+  </summary>
+</histogram>
+
+<histogram name="OnDeviceModel.Embedding.TfliteRunnerRunStatus"
+    enum="EmbeddingModelTfliteRunnerRunStatus" expires_after="2025-10-15">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>yich@google.com</owner>
+  <owner>zuan@chromium.org</owner>
+  <summary>
+    Records any failure reason (or success) when attempting to run the embedding
+    model.
+  </summary>
+</histogram>
+
 <histogram name="OnDeviceModel.GpuBlockedReason" enum="GpuBlockedReason"
     expires_after="2025-04-20">
   <owner>cduvall@chromium.org</owner>
