@@ -35,7 +35,6 @@
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -54,8 +53,6 @@ namespace {
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 using SaveCreditCardOptions =
     payments::PaymentsAutofillClient::SaveCreditCardOptions;
-
-const base::Time kArbitraryTime = base::Time::FromTimeT(1234567890);
 
 std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
@@ -213,7 +210,6 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
     TestSaveCardBubbleControllerImpl::CreateForTesting(active_web_contents());
-    test_clock_.SetNow(kArbitraryTime);
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
         TrustSafetySentimentServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -332,7 +328,6 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
         PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
-  TestAutofillClock test_clock_;
   raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_ = nullptr;
   bool did_on_confirmation_closed_callback_run_ = false;
 
