@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
@@ -37,24 +38,16 @@ bool SavePasswordsEphemeralModule::IsModuleLabel(std::string_view label) {
 
 // static
 bool SavePasswordsEphemeralModule::IsEnabled(int impression_count) {
-  // Check if a SavePasswords tip variation is being forced via a Finch
-  // feature param.
-  std::string force_show_param = base::GetFieldTrialParamByFeatureAsString(
-      features::kSegmentationPlatformEphemeralCardRanker,
-      features::kEphemeralCardRankerForceShowCardParam, "");
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
 
-  if (SavePasswordsEphemeralModule::IsModuleLabel(force_show_param)) {
-    // Force enabled if the param matches this module.
-    return true;
-  }
-
-  std::string force_hide_param = base::GetFieldTrialParamByFeatureAsString(
-      features::kSegmentationPlatformEphemeralCardRanker,
-      features::kEphemeralCardRankerForceHideCardParam, "");
-
-  if (SavePasswordsEphemeralModule::IsModuleLabel(force_hide_param)) {
-    // Force disabled if the param matches this module.
-    return false;
+  // If forced to show/hide and the module label matches the current module,
+  // return true/false accordingly.
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      SavePasswordsEphemeralModule::IsModuleLabel(
+          forced_result.value().result_label.value())) {
+    return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
   int max_impression_count =
@@ -77,6 +70,17 @@ std::map<SignalKey, FeatureQuery> SavePasswordsEphemeralModule::GetInputs() {
 
 CardSelectionInfo::ShowResult SavePasswordsEphemeralModule::ComputeCardResult(
     const CardSelectionSignals& signals) const {
+  // Check for a forced `ShowResult`.
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      SavePasswordsEphemeralModule::IsModuleLabel(
+          forced_result.value().result_label.value())) {
+    return forced_result.value();
+  }
+
   bool has_been_interacted_with =
       profile_prefs_->GetBoolean(kSavePasswordsEphemeralModuleInteractedPref);
 

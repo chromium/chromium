@@ -12,6 +12,8 @@ static_library("home_modules") {
     "card_selection_signals.h",
     "ephemeral_home_module_backend.cc",
     "ephemeral_home_module_backend.h",
+    "ephemeral_module_utils.cc",
+    "ephemeral_module_utils.h",
     "home_modules_card_registry.cc",
     "home_modules_card_registry.h",
     "price_tracking_notification_promo.cc",

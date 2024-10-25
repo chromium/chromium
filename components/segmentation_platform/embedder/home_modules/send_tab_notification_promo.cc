@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/internal/metadata/feature_query.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -43,21 +44,19 @@ std::map<SignalKey, FeatureQuery> SendTabNotificationPromo::GetInputs() {
 
 CardSelectionInfo::ShowResult SendTabNotificationPromo::ComputeCardResult(
     const CardSelectionSignals& signals) const {
+  // Check for a forced `ShowResult`.
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kSendTabNotificationPromo == forced_result.value().result_label.value()) {
+    return forced_result.value();
+  }
+
   CardSelectionInfo::ShowResult result;
   result.result_label = kSendTabNotificationPromo;
-  if (base::GetFieldTrialParamByFeatureAsString(
-          features::kSegmentationPlatformEphemeralCardRanker,
-          features::kEphemeralCardRankerForceShowCardParam,
-          "") == features::kSendTabPromoForceOverride) {
-    result.position = EphemeralHomeModuleRank::kTop;
-    return result;
-  } else if (base::GetFieldTrialParamByFeatureAsString(
-                 features::kSegmentationPlatformEphemeralCardRanker,
-                 features::kEphemeralCardRankerForceHideCardParam,
-                 "") == features::kSendTabPromoForceOverride) {
-    result.position = EphemeralHomeModuleRank::kNotShown;
-    return result;
-  }
+
   if (*signals.GetSignal(kSendTabInfobarReceivedInLastSessionSignalKey)) {
     result.position = EphemeralHomeModuleRank::kTop;
     return result;
@@ -75,22 +74,19 @@ bool SendTabNotificationPromo::IsEnabled(int impression_count) {
   }
 #endif  // BUILDFLAG(IS_IOS)
 
-  // Mark that the card shouldn't be shown if:
-  // 1) the force hide feature param is set.
-  // 2) the card has reached its max impression count and the force show
-  // feature param is not set.
-  if (base::GetFieldTrialParamByFeatureAsString(
-          features::kSegmentationPlatformEphemeralCardRanker,
-          features::kEphemeralCardRankerForceHideCardParam,
-          "") == features::kSendTabPromoForceOverride) {
-    return false;
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  // If forced to show/hide and the module label matches the current module,
+  // return true/false accordingly.
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kSendTabNotificationPromo == forced_result.value().result_label.value()) {
+    return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
-  if (impression_count > kMaxSendTabNotificationCardImpressions &&
-      base::GetFieldTrialParamByFeatureAsString(
-          features::kSegmentationPlatformEphemeralCardRanker,
-          features::kEphemeralCardRankerForceShowCardParam,
-          "") != features::kSendTabPromoForceOverride) {
-    return true;
+
+  if (impression_count > kMaxSendTabNotificationCardImpressions) {
+    return false;
   }
 
   return true;
