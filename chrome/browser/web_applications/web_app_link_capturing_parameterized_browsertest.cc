@@ -845,6 +845,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return contents;
   }
 
+  content::WebContents* LaunchPageInTab(const GURL& url) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WaitForLoadStop(contents);
+    return contents;
+  }
+
   // Prevent the creation of obviously invalid test expectation during
   // re-baselining.
   virtual void AssertValidTestConfiguration() {
@@ -1348,10 +1356,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
                      << last_committed_url.possibly_invalid_spec();
           chrome::NewTab(browser());
         }
-        ASSERT_TRUE(ui_test_utils::NavigateToURL(
-            browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
-        contents_a = browser()->tab_strip_model()->GetActiveWebContents();
-        content::WaitForLoadStop(contents_a);
+        GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
+        contents_a = LaunchPageInTab(url_a);
       }
 
       std::string message;
@@ -2113,11 +2119,9 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
                  << last_committed_url.possibly_invalid_spec();
       chrome::NewTab(browser());
     }
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(kDestinationPageScopeB)));
-    content::WebContents* contents_b =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::WaitForLoadStop(contents_b);
+
+    GURL url_b_dest = embedded_test_server()->GetURL(kDestinationPageScopeB);
+    LaunchPageInTab(url_b_dest);
 
     // Launching a web app should listen to a single navigation message.
     WaitForNavigationFinishedMessages(&message_queue);
