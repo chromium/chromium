@@ -309,7 +309,7 @@ const Browser* FakeBaseTabStripController::GetBrowser() const {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool FakeBaseTabStripController::IsLockedForOnTask() {
   return on_task_locked_;
 }

@@ -455,7 +455,7 @@ TEST_F(TabTest, CloseButtonFocus) {
             tab_close_button->GetFocusManager()->GetFocusedView());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabTest, CloseButtonHiddenWhenLockedForOnTask) {
   const auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
   tab_slot_controller->SetLockedForOnTask(true);

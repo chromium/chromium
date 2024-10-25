@@ -25,7 +25,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -84,12 +83,9 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/window_properties.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -415,7 +411,7 @@ TabDragController::Liveness TabDragController::Init(
   //     synchronous on desktop Linux, so use that.
   // - ChromeOS Ash
   //     Releasing capture on Ash cancels gestures so avoid it.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ref->can_release_capture_ = false;
 #endif
   ref->start_point_in_screen_ =
@@ -444,11 +440,11 @@ TabDragController::Liveness TabDragController::Init(
   Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
                                 source_context->GetWidget()->GetNativeWindow())
                                 ->browser();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (source_browser->IsLockedForOnTask()) {
     ref->detach_behavior_ = NOT_DETACHABLE;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (source_browser->app_controller() &&
       source_browser->app_controller()->has_tab_strip() &&
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
@@ -1007,10 +1003,10 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     // ReleaseCapture() is going to result in calling back to us (because it
     // results in a move). That'll cause all sorts of problems.  Reset the
     // observer so we don't get notified and process the event.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     widget_observation_.Reset();
     move_loop_widget_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     views::Widget* browser_widget = GetAttachedBrowserWidget();
     // Disable animations so that we don't see a close animation on aero.
     browser_widget->SetVisibilityChangedAnimationsEnabled(false);
@@ -1624,7 +1620,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   dragged_widget->SetCanAppearInExistingFullscreenSpaces(true);
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, Detach should release capture; |can_release_capture_| is
   // false on ChromeOS because it can cancel touches, but for this cases
   // the touches are already transferred, so releasing is fine. Without
@@ -2172,7 +2168,7 @@ void TabDragController::MaximizeAttachedWindow() {
   if (was_source_fullscreen_)
     GetAttachedBrowserWidget()->SetFullscreen(true);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (was_source_fullscreen_) {
     // In fullscreen mode it is only possible to get here if the source
     // was in "immersive fullscreen" mode, so toggle it back on.
@@ -2542,7 +2538,7 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
 }
 
 void TabDragController::SetTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TabDragContext* dragged_context =
       attached_context_ ? attached_context_ : source_context_;
   DCHECK(dragged_context->IsDragSessionActive() &&
@@ -2555,7 +2551,7 @@ void TabDragController::SetTabDraggingInfo() {
 }
 
 void TabDragController::ClearTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TabDragContext* dragged_context =
       attached_context_ ? attached_context_ : source_context_;
   DCHECK(!dragged_context->IsDragSessionActive() ||

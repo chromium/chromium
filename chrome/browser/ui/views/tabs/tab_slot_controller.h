@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -242,7 +242,7 @@ class TabSlotController {
   // See BrowserNonClientFrameView::IsFrameCondensed().
   virtual bool IsFrameCondensed() const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only
   // relevant for non-web browser scenarios.
   virtual bool IsLockedForOnTask() = 0;

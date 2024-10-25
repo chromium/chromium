@@ -258,7 +258,7 @@ Tab::Tab(TabSlotController* controller)
                           base::Unretained(controller_))));
   close_button_->SetHasInkDropActionOnClick(true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   showing_close_button_ = !controller_->IsLockedForOnTask();
   close_button_->SetVisible(showing_close_button_);
 #endif
@@ -1106,14 +1106,14 @@ void Tab::UpdateIconVisibility() {
                                    : kMinimumContentsWidthForCloseButtons);
 
   if (IsActive()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Hide tab close button for OnTask if locked. Only applicable for non-web
     // browser scenarios.
     showing_close_button_ = !controller_->IsLockedForOnTask();
 #else
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     available_width -= close_button_width;
 
     showing_alert_indicator_ =
@@ -1139,7 +1139,7 @@ void Tab::UpdateIconVisibility() {
     }
 
     showing_close_button_ =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         !controller_->IsLockedForOnTask() &&
 #endif
         large_enough_for_close_button;

@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -79,9 +78,9 @@
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -148,7 +147,7 @@ class BrowserTabStripController::TabContextMenuContents
 
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto* browser = controller_->browser_view_->browser();
     auto* system_app = browser->app_controller()
                            ? browser->app_controller()->system_app()
@@ -157,7 +156,7 @@ class BrowserTabStripController::TabContextMenuContents
                           browser->profile(), command_id)) {
       return false;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     int browser_cmd;
     return TabStripModel::ContextMenuCommandToBrowserCommand(command_id,
@@ -334,7 +333,7 @@ void BrowserTabStripController::OnCloseTab(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
   // non-web browser scenarios.
   if (browser_view_->browser()->IsLockedForOnTask()) {
@@ -646,11 +645,12 @@ const Browser* BrowserTabStripController::GetBrowser() const {
   return browser();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool BrowserTabStripController::IsLockedForOnTask() {
   return browser_view_->browser()->IsLockedForOnTask();
 }
 #endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripController, TabStripModelObserver implementation:
 

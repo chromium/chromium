@@ -119,7 +119,7 @@ base::TimeDelta GetShowDelay(int tab_width) {
 }
 
 bool IsBrowserForSystemWebApp(const Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const auto* const app_controller = browser->app_controller();
   if (app_controller && app_controller->system_app()) {
     return true;

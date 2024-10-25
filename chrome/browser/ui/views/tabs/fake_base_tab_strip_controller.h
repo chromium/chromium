@@ -98,7 +98,7 @@ class FakeBaseTabStripController : public TabStripController {
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   Profile* GetProfile() const override;
   const Browser* GetBrowser() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 
   // Sets OnTask locked for testing purposes. Only relevant for non-web browser
@@ -115,7 +115,7 @@ class FakeBaseTabStripController : public TabStripController {
   int num_tabs_ = 0;
   int num_pinned_tabs_ = 0;
   std::optional<int> active_index_ = std::nullopt;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool on_task_locked_ = false;
 #endif
 

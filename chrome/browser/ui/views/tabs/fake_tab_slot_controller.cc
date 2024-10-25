@@ -150,7 +150,7 @@ bool FakeTabSlotController::IsFrameCondensed() const {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool FakeTabSlotController::IsLockedForOnTask() {
   return on_task_locked_;
 }

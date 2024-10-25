@@ -45,7 +45,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -1288,11 +1287,11 @@ bool TabStrip::ShouldDrawStrokes() const {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsJellyrollEnabled()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The tabstrip normally avoids strokes and relies on the active tab
   // contrasting sufficiently with the frame background.  When there isn't
@@ -1943,7 +1942,7 @@ bool TabStrip::IsFrameCondensed() const {
   return controller_->IsFrameCondensed();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool TabStrip::IsLockedForOnTask() {
   return controller_->IsLockedForOnTask();
 }

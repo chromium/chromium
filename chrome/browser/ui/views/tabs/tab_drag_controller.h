@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"

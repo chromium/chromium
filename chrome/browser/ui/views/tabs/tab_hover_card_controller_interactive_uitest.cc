@@ -61,7 +61,7 @@
 #include "ui/views/test/widget_test.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #endif
 
@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(hover_card_size.height(), total_children_height);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TabHoverCardSystemWebAppTest : public InteractiveBrowserTest {
  public:
   TabHoverCardSystemWebAppTest()

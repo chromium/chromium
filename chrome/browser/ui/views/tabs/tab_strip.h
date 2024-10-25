@@ -313,7 +313,7 @@ class TabStrip : public views::View,
   const Browser* GetBrowser() const override;
   int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 #endif
 

@@ -420,7 +420,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   EXPECT_FALSE(tab4->showing_close_button_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_P(TabStripTest, CloseButtonHiddenWhenLockedForOnTask) {
   controller_->SetLockedForOnTask(true);
 

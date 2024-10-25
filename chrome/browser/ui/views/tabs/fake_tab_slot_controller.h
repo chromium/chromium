@@ -98,7 +98,7 @@ class FakeTabSlotController : public TabSlotController {
   int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 
   // Sets OnTask locked for testing purposes. Only relevant for non-web browser
@@ -119,7 +119,7 @@ class FakeTabSlotController : public TabSlotController {
   ui::ListSelectionModel selection_model_;
   raw_ptr<Tab, DanglingUntriaged> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool on_task_locked_ = false;
 #endif
 
