@@ -4,6 +4,8 @@
 
 source_set("connectors") {
   sources = [
+    "connectors_manager.h",
+    "connectors_manager.mm",
     "connectors_service.h",
     "connectors_service.mm",
     "connectors_service_factory.h",
@@ -46,6 +48,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "connectors_manager_unittest.mm",
     "connectors_service_unittest.mm",
     "ios_enterprise_interstitial_unittest.mm",
   ]
