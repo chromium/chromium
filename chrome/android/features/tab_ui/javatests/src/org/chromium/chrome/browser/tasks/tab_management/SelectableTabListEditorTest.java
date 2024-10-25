@@ -122,16 +122,10 @@ import java.util.Map;
 
 /** End-to-end test for the selectable TabListEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:enable_launch_polish/true"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DisableFeatures({TAB_GROUP_PARITY_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class SelectableTabListEditorTest {
-    private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_launch_polish/true";
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_https_canonical.html";
     private static final String PAGE_WITH_HTTP_CANONICAL_URL =

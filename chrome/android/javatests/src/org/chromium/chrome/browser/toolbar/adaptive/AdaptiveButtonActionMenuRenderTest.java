@@ -41,11 +41,7 @@ import java.util.List;
 /** Render tests for adaptive test long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:mode/always-share"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class AdaptiveButtonActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =

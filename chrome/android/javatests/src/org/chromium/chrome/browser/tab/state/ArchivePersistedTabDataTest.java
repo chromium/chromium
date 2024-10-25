@@ -26,10 +26,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
 @RunWith(BaseJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
 public class ArchivePersistedTabDataTest {
     @ClassRule
