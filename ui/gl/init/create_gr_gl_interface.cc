@@ -431,7 +431,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetFloatv);
   BIND(GetIntegerv);
   BIND(GetMultisamplefv);
-  BIND(GetQueryObjectiv);
   BIND(GetQueryObjectuiv);
   BIND(GetQueryObjecti64v);
   BIND(GetQueryObjectui64v);
