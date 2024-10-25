@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -58,6 +59,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface AccountMenuCoordinator () <AccountMenuMediatorDelegate,
+                                      ManageAccountsCoordinatorDelegate,
                                       UIAdaptivePresentationControllerDelegate>
 
 // The view controller.
@@ -209,10 +211,12 @@
 }
 
 - (void)didTapEditAccountList {
+  CHECK(!_manageAccountsCoordinator, base::NotFatalUntil::M133);
   _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
        closeSettingsOnAddAccount:NO];
+  _manageAccountsCoordinator.delegate = self;
   _manageAccountsCoordinator.showAddAccountButton = NO;
   _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
   [_manageAccountsCoordinator start];
@@ -416,6 +420,14 @@
   };
   [self stopChildrenAndViewControllerWithAction:action
                                      completion:childrenCompletion];
+}
+
+#pragma mark - ManageAccountsCoordinator
+
+- (void)manageAccountsCoordinatorWantsToBeStopped:
+    (ManageAccountsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _manageAccountsCoordinator, base::NotFatalUntil::M133);
+  [self stopManageAccountsCoordinator];
 }
 
 #pragma mark - Private

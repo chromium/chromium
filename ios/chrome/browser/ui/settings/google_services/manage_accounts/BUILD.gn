@@ -6,6 +6,7 @@ source_set("manage_accounts") {
   sources = [
     "manage_accounts_coordinator.h",
     "manage_accounts_coordinator.mm",
+    "manage_accounts_coordinator_delegate.h",
     "manage_accounts_mediator.h",
     "manage_accounts_mediator.mm",
     "manage_accounts_mediator_delegate.h",

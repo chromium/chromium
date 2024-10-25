@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/legacy_accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller.h"
@@ -192,11 +193,11 @@ using signin_metrics::PromoAction;
     [_viewController.navigationController dismissViewControllerAnimated:YES
                                                              completion:nil];
   }
-  [self stop];
+  [self requestStop];
 }
 
 - (void)settingsWasDismissed {
-  [self stop];
+  [self requestStop];
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate
@@ -285,6 +286,19 @@ using signin_metrics::PromoAction;
 }
 
 #pragma mark - Private
+
+// Requests the delegate to stop the coordinator, if set. Otherwise stop itself.
+- (void)requestStop {
+  if (self.delegate) {
+    [self.delegate manageAccountsCoordinatorWantsToBeStopped:self];
+  } else {
+    // This is the case when the manage view controller is displayed in the
+    // settings’ navigation controller.
+    // TODO(crbug.com/375378864): request the owner to stop the current
+    // coordinator.
+    [self stop];
+  }
+}
 
 // Asks the user to confirm whether they want to delete `identity` from the
 // device. If the user confirms, delete the identity. Does nothing if the

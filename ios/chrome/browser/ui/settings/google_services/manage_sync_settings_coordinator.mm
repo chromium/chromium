@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
@@ -67,6 +68,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 @interface ManageSyncSettingsCoordinator () <
     BulkUploadCoordinatorDelegate,
+    ManageAccountsCoordinatorDelegate,
     ManageSyncSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     PersonalizeGoogleServicesCoordinatorDelegate,
@@ -215,8 +217,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [super stop];
   [self.mediator disconnect];
   [self stopBulkUpload];
-  [_manageAccountsCoordinator stop];
-  _manageAccountsCoordinator = nil;
+  [self stopManageAccountsCoordinator];
   self.mediator = nil;
   self.viewController = nil;
   // Unblock any sync data type changes.
@@ -253,6 +254,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 #pragma mark - Private
+
+- (void)stopManageAccountsCoordinator {
+  [_manageAccountsCoordinator stop];
+  _manageAccountsCoordinator = nil;
+}
 
 - (void)resetDismissAccountDetailsController {
   _accountDetailsControllerDismissCallback.Reset();
@@ -347,6 +353,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     (PersonalizeGoogleServicesCoordinator*)coordinator {
   CHECK_EQ(_personalizeGoogleServicesCoordinator, coordinator);
   [self stopPersonalizedGoogleServicesCoordinator];
+}
+
+#pragma mark - ManageAccountsCoordinator
+
+- (void)manageAccountsCoordinatorWantsToBeStopped:
+    (ManageAccountsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _manageAccountsCoordinator, base::NotFatalUntil::M133);
+  [self stopManageAccountsCoordinator];
 }
 
 #pragma mark - ManageSyncSettingsCommandHandler
@@ -457,10 +471,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showAccountsPage {
+  CHECK(!_manageAccountsCoordinator, base::NotFatalUntil::M133);
   _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
        closeSettingsOnAddAccount:NO];
+  _manageAccountsCoordinator.delegate = self;
   _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
   [_manageAccountsCoordinator start];
 }

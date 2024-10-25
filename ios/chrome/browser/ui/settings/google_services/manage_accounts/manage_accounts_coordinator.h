@@ -9,7 +9,7 @@
 
 @protocol ApplicationCommands;
 class Browser;
-@class ManageAccountsCoordinator;
+@protocol ManageAccountsCoordinatorDelegate;
 
 // Coordinator for the Accounts TableView Controller.
 @interface ManageAccountsCoordinator : ChromeCoordinator
@@ -24,6 +24,9 @@ class Browser;
 
 // If YES, the view will offer a sign-out button. Default to YES.
 @property(nonatomic, assign) BOOL showAddAccountButton;
+
+// The delegate for the coordinator.
+@property(nonatomic, weak) id<ManageAccountsCoordinatorDelegate> delegate;
 
 // Initializes ManageAccountsCoordinator to present its controller modally.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
