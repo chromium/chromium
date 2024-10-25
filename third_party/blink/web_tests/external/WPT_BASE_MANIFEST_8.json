@@ -398856,8 +398856,12 @@
      []
     ],
     "resources": {
+     "cookie-helpers.js": [
+      "1cea1c3fb7cd16bc8825e48ad2db73a99e5e7193",
+      []
+     ],
      "get_cookies.py": [
-      "78c3f0c2433400d1765eee3ffa14af4ead511ccd",
+      "91176e835c0eaf0dc249af5447794aa5ac4e4056",
       []
      ],
      "partitioned-popins.close.html": [
@@ -398869,15 +398873,19 @@
       []
      ],
      "partitioned-popins.cookies-iframe.html": [
-      "04d95e6c6e92e37f60c7c7396501da133fd4f2a4",
+      "575036cef3d49b121b0c091dff5b68b46e6e9096",
       []
      ],
-     "partitioned-popins.cookies-popin.py": [
-      "503164028dffcf54c1e0ec174c98274fbf724299",
+     "partitioned-popins.cookies-popin-iframe.html": [
+      "5a2fa1c83db513d11170415d0c94e8f04646f774",
+      []
+     ],
+     "partitioned-popins.cookies-popin.sub.py": [
+      "cebcb411062692aa6c53327404ab88e610dfa65b",
       []
      ],
      "partitioned-popins.cookies-window.html": [
-      "908ad75622df47bc9270f1aa1c3f941f1879e073",
+      "5023e9e044961890016b6ea3d6b19e25afcfc604",
       []
      ],
      "partitioned-popins.localStorage-iframe.html": [
@@ -405938,7 +405946,7 @@
        []
       ],
       "local-url-inherit-controller-frame.html": [
-       "3a5d9b51e7574de7e1a63ff47cfc62e32eff5550",
+       "e7214827a4cf7dddf37794f283e68ff1afdd505a",
        []
       ],
       "local-url-inherit-controller-worker.js": [
@@ -466070,7 +466078,7 @@
       ]
      ],
      "scope-proximity.html": [
-      "0d62aa303aa75749b2c958ae04c1b41756bedcaf",
+      "7a2d6d562c36ba82d6265e6dda361371bb2da451",
       [
        null,
        {}
@@ -637903,7 +637911,7 @@
    },
    "partitioned-popins": {
     "partitioned-popins.cookies-allowed.tentative.sub.https.window.js": [
-     "93b6aa57ef90ac798bf094b2e511bbfb22a285dd",
+     "be4b066373b2e92ebb95fd8bd9366729f4c75c5b",
      [
       "partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html",
       {
@@ -637925,7 +637933,7 @@
      ]
     ],
     "partitioned-popins.cookies-blocked.tentative.sub.https.window.js": [
-     "2e76570c25e293fe8b6ab2c6f128daec64471385",
+     "e6ed94adae9344e163b7a917306920151c282200",
      [
       "partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html",
       {
@@ -707942,7 +707950,7 @@
       ]
      ],
      "cast.https.any.js": [
-      "b73cf3c41bb002745c8d22d5759ed6f3ce73dc61",
+      "3f2ef698146ec9b86727f6e2aa2ebb3e1ad9c2ae",
       [
        "webnn/conformance_tests/cast.https.any.html?cpu",
        {
