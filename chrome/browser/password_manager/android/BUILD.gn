@@ -177,6 +177,7 @@ android_library("java") {
 
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/CctPasswordSavingMetricsRecorderBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordAccessLossDialogHelper.java",
@@ -231,6 +232,7 @@ generate_jni("jni_headers") {
     "//chrome/browser",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/CctPasswordSavingMetricsRecorderBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerUtilBridge.java",
@@ -271,6 +273,7 @@ robolectric_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/CctPasswordSavingMetricsRecorderBridgeTest.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordAccessLossDialogHelperTest.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportFlowCoordinatorTest.java",
@@ -505,6 +508,8 @@ java_cpp_enum("java_enum_srcjar") {
 
 source_set("utils") {
   sources = [
+    "cct_password_saving_metrics_recorder_bridge.cc",
+    "cct_password_saving_metrics_recorder_bridge.h",
     "first_cct_page_load_marker.cc",
     "first_cct_page_load_marker.h",
     "password_generation_element_data.cc",
@@ -531,6 +536,7 @@ source_set("utils") {
     "//components/prefs:prefs",
     "//components/version_info/android:channel_getter",
     "//content/public/browser",
+    "//ui/android:android",
   ]
 }
 

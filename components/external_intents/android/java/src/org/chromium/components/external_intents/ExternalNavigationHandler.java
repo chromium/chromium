@@ -1646,6 +1646,7 @@ public class ExternalNavigationHandler {
         }
 
         if (shouldReturnAsResult) {
+            mDelegate.notifyCctPasswordSavingRecorderOfExternalNavigation();
             mDelegate.returnAsActivityResult(intentTargetUrl);
             return OverrideUrlLoadingResult.forClosingAfterAuth();
         }
@@ -1729,7 +1730,6 @@ public class ExternalNavigationHandler {
                         params);
             }
         }
-
         return startActivity(
                 targetIntent,
                 params,
@@ -2140,6 +2140,7 @@ public class ExternalNavigationHandler {
                         params,
                         context);
             }
+            mDelegate.notifyCctPasswordSavingRecorderOfExternalNavigation();
             return doStartActivity(intent, context);
         } catch (SecurityException e) {
             // https://crbug.com/808494: Handle the URL internally if dispatching to another

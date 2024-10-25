@@ -44,6 +44,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
+#include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
@@ -265,6 +266,7 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   password_manager::FirstCctPageLoadPasswordsUkmRecorder*
   GetFirstCctPageLoadUkmRecorder() override;
+  void PotentialSaveFormSubmitted() override;
 #endif
   password_manager::PasswordRequirementsService*
   GetPasswordRequirementsService() override;
@@ -541,6 +543,11 @@ class ChromePasswordManagerClient
   // metrics on destruction, which happens on navigation.
   std::unique_ptr<password_manager::FirstCctPageLoadPasswordsUkmRecorder>
       first_cct_page_load_metrics_recorder_;
+
+  // Used for recording metrics related to password saving in CCTs, such as
+  // time elapsed between form submission and CCt closure.
+  std::unique_ptr<CctPasswordSavingMetricsRecorderBridge>
+      cct_saving_metrics_recorder_bridge_;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

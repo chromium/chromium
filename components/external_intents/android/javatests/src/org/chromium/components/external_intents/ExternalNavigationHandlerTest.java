@@ -3405,6 +3405,9 @@ public class ExternalNavigationHandlerTest {
         public void maybeRecordExternalNavigationSchemeHistogram(GURL url) {}
 
         @Override
+        public void notifyCctPasswordSavingRecorderOfExternalNavigation() {}
+
+        @Override
         public void reportIntentToSafeBrowsing(Intent intent) {
             mSafeBrowsingIntent = intent;
         }

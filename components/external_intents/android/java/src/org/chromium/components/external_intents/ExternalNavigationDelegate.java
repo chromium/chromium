@@ -159,5 +159,11 @@ public interface ExternalNavigationDelegate {
      */
     void maybeRecordExternalNavigationSchemeHistogram(GURL url);
 
+    /**
+     * Records metrics relevant to password saving in CCTs if the recorder exists. A recorder might
+     * not exist if there was no form submission preceding the external navigation.
+     */
+    void notifyCctPasswordSavingRecorderOfExternalNavigation();
+
     void reportIntentToSafeBrowsing(Intent intent);
 }
