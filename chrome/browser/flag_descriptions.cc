@@ -2236,12 +2236,6 @@ const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
     "this makes the intervention deterministic. Defaults to enabled.";
 
-const char kHideIncognitoMediaMetadataName[] =
-    "Hide media metadata when in Incognito";
-const char kHideIncognitoMediaMetadataDescription[] =
-    "When enabled, media metadata will be hidden from your OS' media player "
-    "if you are in an Incognito session.";
-
 const char kHistoryEmbeddingsName[] = "History Embeddings";
 const char kHistoryEmbeddingsDescription[] =
     "When enabled, the history embeddings feature may operate.";

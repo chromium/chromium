@@ -1579,12 +1579,6 @@ BASE_FEATURE(kAudioFocusLossSuspendMediaSession,
              "AudioFocusMediaSession",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Hides the media metadata from the OS' media player if running in an Incognito
-// session.
-BASE_FEATURE(kHideIncognitoMediaMetadata,
-             "HideIncognitoMediaMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the internal Media Session logic without enabling the Media Session
 // service.
 BASE_FEATURE(kInternalMediaSession,

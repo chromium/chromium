@@ -1272,9 +1272,6 @@ extern const char kPwaRestoreUiAtStartupDescription[];
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 
-extern const char kHideIncognitoMediaMetadataName[];
-extern const char kHideIncognitoMediaMetadataDescription[];
-
 extern const char kHistoryEmbeddingsName[];
 extern const char kHistoryEmbeddingsDescription[];
 

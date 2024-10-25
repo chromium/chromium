@@ -196,7 +196,8 @@ struct MediaSessionInfo {
   // If true then the session is considered to be sensitive (e.g. from an
   // off the record profile). This may result in it being hidden from certain
   // UIs (e.g. lock screen media controls).
-  [MinVersion=6] bool is_sensitive;
+  // DEPRECATED, use |hide_metadata| instead.
+  [MinVersion=6] bool deprecated_is_sensitive;
 
   // The picture-in-picture state tells the client whether the media is
   // currently in a picture-in-picture window.

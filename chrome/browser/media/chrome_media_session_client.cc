@@ -7,7 +7,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "media/base/media_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -20,8 +19,7 @@ ChromeMediaSessionClient* ChromeMediaSessionClient::GetInstance() {
 
 bool ChromeMediaSessionClient::ShouldHideMetadata(
     content::BrowserContext* browser_context) const {
-  return base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata) &&
-         Profile::FromBrowserContext(browser_context)->IsIncognitoProfile();
+  return Profile::FromBrowserContext(browser_context)->IsIncognitoProfile();
 }
 
 std::u16string ChromeMediaSessionClient::GetTitlePlaceholder() const {

@@ -10376,11 +10376,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kReadAloudTapToSeek)},
 #endif
 
-    {"hide-incognito-media-metadata",
-     flag_descriptions::kHideIncognitoMediaMetadataName,
-     flag_descriptions::kHideIncognitoMediaMetadataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kHideIncognitoMediaMetadata)},
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"third-party-profile-management",
      flag_descriptions::kThirdPartyProfileManagementName,

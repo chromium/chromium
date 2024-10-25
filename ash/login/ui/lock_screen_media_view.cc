@@ -162,12 +162,10 @@ void LockScreenMediaView::MediaSessionInfoChanged(
     return;
   }
 
-  // If the session is marked as sensitive, or it is not controllable, or it
-  // already has a presentation of another cast media session, do not show the
-  // media view.
+  // If the session is not controllable, or it already has a presentation of
+  // another cast media session, do not show the media view.
   if (!media_controls_enabled_callback_.Run() || !session_info ||
-      session_info->is_sensitive || !session_info->is_controllable ||
-      session_info->has_presentation) {
+      !session_info->is_controllable || session_info->has_presentation) {
     Hide();
     return;
   }
