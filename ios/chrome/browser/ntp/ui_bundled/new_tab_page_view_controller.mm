@@ -648,7 +648,9 @@ const CGFloat kFeedContainerExtraHeight = 500;
     }
   }
   if (!IsHomeCustomizationEnabled()) {
-    heightAboveFeed += kBottomMagicStackPadding;
+    if (self.feedHeaderViewController) {
+      heightAboveFeed += kBottomMagicStackPadding;
+    }
     if (!self.contentSuggestionsViewController) {
       heightAboveFeed += content_suggestions::HeaderBottomPadding();
     }
