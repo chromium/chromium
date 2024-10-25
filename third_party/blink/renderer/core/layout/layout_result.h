@@ -112,14 +112,13 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ ? rare_data_->lines_until_clamp : 0;
   }
 
-  // Returns true if the block-start/-end is trimmed by the `text-box-trim`
-  // property. Set not only for inline nodes, but also for block nodes when
-  // propagating.
-  bool IsBlockStartTrimmed() const {
-    return rare_data_ && rare_data_->is_block_start_trimmed();
-  }
-  bool IsBlockEndTrimmed() const {
-    return rare_data_ && rare_data_->is_block_end_trimmed();
+  // Returns true if the block-end of this line box is trimmable by the
+  // `text-box-trim` property. If it's true, it means that this is the line box
+  // that was the candidate for block-end trimming, but this doesn't necessarily
+  // mean that trimming actually took place. Trimming may be prevented by
+  // non-zero trailing border / padding, for instance.
+  bool IsBlockEndTrimmableLine() const {
+    return rare_data_ && rare_data_->is_block_end_trimmable_line();
   }
 
   // Return true if this is an orthogonal writing-mode root that depends on the
@@ -657,10 +656,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         NeedsAnchorPositionScrollAdjustmentInXFlag::DefineNextValue<bool, 1>;
     using DataUnionTypeValue =
         NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<uint8_t, 3>;
-    using IsBlockStartTrimmedFlag =
+    using IsBlockEndTrimmableLineFlag =
         DataUnionTypeValue::DefineNextValue<bool, 1>;
-    using IsBlockEndTrimmedFlag =
-        IsBlockStartTrimmedFlag::DefineNextValue<bool, 1>;
 
     struct FlexData {
       FlexData() = default;
@@ -759,19 +756,11 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return bit_field.set<DataUnionTypeValue>(static_cast<uint8_t>(data_type));
     }
 
-    bool is_block_start_trimmed() const {
-      return bit_field.get<IsBlockStartTrimmedFlag>();
+    bool is_block_end_trimmable_line() const {
+      return bit_field.get<IsBlockEndTrimmableLineFlag>();
     }
-
-    void set_is_block_start_trimmed() {
-      bit_field.set<IsBlockStartTrimmedFlag>(true);
-    }
-
-    bool is_block_end_trimmed() const {
-      return bit_field.get<IsBlockEndTrimmedFlag>();
-    }
-    void set_is_block_end_trimmed() {
-      bit_field.set<IsBlockEndTrimmedFlag>(true);
+    void set_is_block_end_trimmable_line() {
+      bit_field.set<IsBlockEndTrimmableLineFlag>(true);
     }
 
     template <typename DataType>

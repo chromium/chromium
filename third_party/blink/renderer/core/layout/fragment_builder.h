@@ -144,10 +144,8 @@ class CORE_EXPORT FragmentBuilder {
     lines_until_clamp_ = value;
   }
 
-  bool IsBlockStartTrimmed() const { return is_block_start_trimmed_; }
-  void SetIsBlockStartTrimmed() { is_block_start_trimmed_ = true; }
-  bool IsBlockEndTrimmed() const { return is_block_end_trimmed_; }
-  void SetIsBlockEndTrimmed() { is_block_end_trimmed_ = true; }
+  bool IsBlockEndTrimmableLine() const { return is_block_end_trimmable_line_; }
+  void SetIsBlockEndTrimmableLine() { is_block_end_trimmable_line_ = true; }
 
   const UnpositionedListMarker& GetUnpositionedListMarker() const {
     return unpositioned_list_marker_;
@@ -636,8 +634,7 @@ class CORE_EXPORT FragmentBuilder {
   bool requires_content_before_breaking_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
-  bool is_block_start_trimmed_ = false;
-  bool is_block_end_trimmed_ = false;
+  bool is_block_end_trimmable_line_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;
   bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
