@@ -27,10 +27,13 @@ message ScannerAction {
   oneof action {
     NewEventAction new_event = 1;
     NewContactAction new_contact = 2;
+    NewGoogleDocAction new_google_doc = 3;
+    NewGoogleSheetAction new_google_sheet = 4;
+    CopyToClipboardAction copy_to_clipboard = 5;
   }
 }
 
-// Details on how to create a new Google Calendar event.
+// Details on creating a new Google Calendar event.
 message NewEventAction {
   string title = 1;
   string description = 2;
@@ -41,11 +44,39 @@ message NewEventAction {
   string location = 4;
 }
 
-// Details on how to create a new Google contact.
+// Details on creating a new Google contact.
 message NewContactAction {
   // At least one of the following fields must be specified.
   string given_name = 1;
   string family_name = 2;
   string email = 3;
   string phone = 4;
+}
+
+// Details on creating a new Google Doc with some initial rich text content.
+message NewGoogleDocAction {
+  // The title of the Google Doc, i.e. the document's filename.
+  string title = 1;
+  // The initial content for the document as a HTML string (rich text). Can
+  // contain simple text, headings, images, tables, lists, etc.
+  string html_contents = 2;
+}
+
+// Details on creating a new Google Sheet with some initial CSV content.
+message NewGoogleSheetAction {
+  // The title of the Google Sheet, i.e. the sheet's filename.
+  string title = 1;
+  // The initial content for the sheet which will form a table. This will be a
+  // string (probably multiline) with comma-separated values.
+  string csv_contents = 2;
+}
+
+// Content that can be copied to the system clipboard, which allows users to
+// paste into any input region.
+message CopyToClipboardAction {
+  // Simple plain text to be copied to the clipboard.
+  string plain_text = 1;
+  // A HTML string (rich text) to be copied to the clipboard. Can contain simple
+  // text, headings, images, tables, lists, etc.
+  string html_text = 2;
 }
