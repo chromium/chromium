@@ -1056,8 +1056,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   }
 
   Element* element = To<Element>(Node().EnclosingDOMNode());
-  bool create_column_pseudo =
-      element->CachedStyleForPseudoElement(kPseudoIdColumn);
+  StyleEngine::AttachScrollMarkersScope scope(
+      Node().GetDocument().GetStyleEngine());
 
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
@@ -1065,19 +1065,19 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     container_builder_.AddChild(column, result_with_offset.offset);
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
 
-    if (create_column_pseudo) {
-      // Create a ::column pseudo element, and, if needed, also a
-      // ::column::scroll-marker pseudo element child of ::column.
-      LogicalRect column_logical_rect(result_with_offset.offset, column_size);
-      const WritingModeConverter converter(
-          GetConstraintSpace().GetWritingDirection(),
-          LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
-      ColumnPseudoElement* column_pseudo = element->CreateColumnPseudoElement(
-          converter.ToPhysical(column_logical_rect));
-      if (column_pseudo->GetComputedStyle()->GetScrollSnapAlign() !=
-          cc::ScrollSnapAlign()) {
-        container_builder_.AddSnapAreaForColumn(column_pseudo);
-      }
+    // Create a ::column pseudo element, and, if needed, also a
+    // ::column::scroll-marker pseudo element child of ::column.
+    LogicalRect column_logical_rect(result_with_offset.offset, column_size);
+    const WritingModeConverter converter(
+        GetConstraintSpace().GetWritingDirection(),
+        LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
+    ColumnPseudoElement* column_pseudo =
+        element->CreateColumnPseudoElementIfNeeded(
+            converter.ToPhysical(column_logical_rect));
+    if (column_pseudo &&
+        column_pseudo->GetComputedStyle()->GetScrollSnapAlign() !=
+            cc::ScrollSnapAlign()) {
+      container_builder_.AddSnapAreaForColumn(column_pseudo);
     }
   }
 

@@ -229,7 +229,8 @@ TEST_P(ScopeProximityTest, All) {
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   StyleScopeFrame style_scope_frame(*target, /* parent */ nullptr);
-  SelectorChecker::SelectorCheckingContext context(target);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*target)};
   context.selector = style_rule->FirstSelector();
   context.style_scope = scope;
   context.style_scope_frame = &style_scope_frame;
@@ -321,7 +322,8 @@ TEST_P(MatchFlagsTest, All) {
   ASSERT_TRUE(selector_list->HasOneSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(element);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*element)};
   context.selector = selector_list->First();
 
   SelectorChecker::MatchResult result;
@@ -371,7 +373,8 @@ class ImpactTest : public PageTestBase {
     DCHECK(selector_list->HasOneSelector());
 
     SelectorChecker checker(SelectorChecker::kResolvingStyle);
-    SelectorChecker::SelectorCheckingContext context(&element);
+    SelectorChecker::SelectorCheckingContext context{
+        ElementResolveContext(element)};
     context.selector = selector_list->First();
     context.impact = impact;
 
@@ -688,7 +691,8 @@ TEST_P(MatchFlagsShadowTest, Host) {
   ASSERT_TRUE(selector_list->HasOneSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(host);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*host)};
   context.selector = selector_list->First();
   context.scope = host->GetShadowRoot();
 
@@ -918,7 +922,7 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
   ASSERT_TRUE(foo);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
+  SelectorChecker::SelectorCheckingContext context{ElementResolveContext(*foo)};
   context.selector = selector_list->First();
   // We have a selector with :scope, but no context.scope:
   context.scope = nullptr;
@@ -941,7 +945,7 @@ TEST_F(SelectorCheckerTest, PseudoTrue) {
   ASSERT_TRUE(foo);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
+  SelectorChecker::SelectorCheckingContext context{ElementResolveContext(*foo)};
   context.selector = &selector;
 
   SelectorChecker::MatchResult result;
@@ -967,41 +971,13 @@ TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
   ASSERT_TRUE(shadow);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(host);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*host)};
   context.selector = &selector;
   context.scope = shadow;
 
   SelectorChecker::MatchResult result;
   EXPECT_TRUE(checker.Match(context, result));
-}
-
-TEST_F(SelectorCheckerTest, ColumnWithScrollMarker) {
-  GetDocument().body()->setInnerHTML(
-      "<style>"
-      "#test::column { snap-alignment: center; }"
-      "#test::column::scroll-marker { content: '*'; opacity: 0.5; }"
-      "</style>"
-      "<div id='test'></div>");
-  UpdateAllLifecyclePhasesForTest();
-
-  const CSSSelector* selector =
-      css_test_helpers::ParseSelectorList("#test::column::scroll-marker")
-          ->First();
-  ASSERT_TRUE(selector);
-
-  Element* foo = GetDocument().getElementById(AtomicString("test"));
-  ASSERT_TRUE(foo);
-
-  SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
-  context.selector = selector;
-
-  SelectorChecker::MatchResult result;
-  EXPECT_TRUE(checker.Match(context, result));
-  ASSERT_TRUE(foo->CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker));
-  EXPECT_EQ(
-      foo->CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker)->Opacity(),
-      0.5);
 }
 
 }  // namespace blink

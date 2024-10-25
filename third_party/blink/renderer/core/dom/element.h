@@ -1397,7 +1397,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // ::scroll-marker per ::column pseudo element. ClearColumnPseudoElements()
   // needs to be called before each layout pass that generate these pseudo
   // elements.
-  ColumnPseudoElement* CreateColumnPseudoElement(
+  ColumnPseudoElement* CreateColumnPseudoElementIfNeeded(
       const PhysicalRect& column_rect);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
   void ClearColumnPseudoElements();

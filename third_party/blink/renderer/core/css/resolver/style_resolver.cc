@@ -158,7 +158,8 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   return (style_recalc_context.container ||
           state.StyleBuilder().HasAnchorFunctions() ||
           state.StyleBuilder().PositionAnchor() ||
-          (state.IsForPseudoElement() &&
+          ((state.GetElement().IsPseudoElement() ||
+            state.IsForPseudoElement()) &&
            (state.ParentStyle()->HasAnchorFunctions() ||
             state.ParentStyle()->PositionAnchor())) ||
           state.StyleBuilder().GetPositionTryFallbacks() != nullptr) &&
@@ -207,6 +208,13 @@ ElementAnimations* GetElementAnimations(const StyleResolverState& state) {
     return nullptr;
   }
   return state.GetAnimatingElement()->GetElementAnimations();
+}
+
+const Element& UltimateOriginatingElementOrSelf(const Element& element) {
+  if (!element.IsPseudoElement()) {
+    return element;
+  }
+  return *To<PseudoElement>(element).UltimateOriginatingElement();
 }
 
 bool HasAnimationsOrTransitions(const StyleResolverState& state) {
@@ -1009,13 +1017,15 @@ void StyleResolver::MatchPositionTryRules(ElementRuleCollector& collector) {
 
 void StyleResolver::MatchAuthorRules(const Element& element,
                                      ElementRuleCollector& collector) {
-  MatchHostRules(element, collector, tracker_);
-  MatchSlottedRules(element, collector, tracker_);
+  const Element& originating_element =
+      UltimateOriginatingElementOrSelf(element);
+  MatchHostRules(originating_element, collector, tracker_);
+  MatchSlottedRules(originating_element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
   if (RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled()) {
-    MatchOuterScopeRules(element, collector, tracker_);
+    MatchOuterScopeRules(originating_element, collector, tracker_);
   } else {
-    MatchPseudoPartRules(element, collector);
+    MatchPseudoPartRules(originating_element, collector);
   }
   MatchVTTRules(element, collector, tracker_);
   MatchPositionTryRules(collector);
@@ -1031,7 +1041,8 @@ void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {
 namespace {
 
 bool IsInMediaUAShadow(const Element& element) {
-  ShadowRoot* root = element.ContainingShadowRoot();
+  ShadowRoot* root =
+      UltimateOriginatingElementOrSelf(element).ContainingShadowRoot();
   if (!root || !root->IsUserAgent()) {
     return false;
   }
@@ -1052,7 +1063,8 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
   if (!print_media_type_) {
-    if (element.IsHTMLElement() || element.IsVTTElement()) [[likely]] {
+    if (element.IsHTMLElement() || element.IsPseudoElement() ||
+        element.IsVTTElement()) [[likely]] {
       func(default_style_sheets.DefaultHtmlStyle());
     } else if (element.IsSVGElement()) {
       func(default_style_sheets.DefaultSVGStyle());
@@ -1095,7 +1107,9 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   auto* rule_set =
       IsTransitionPseudoElement(pseudo_id)
           ? GetDocument().GetStyleEngine().DefaultViewTransitionStyle()
-          : default_style_sheets.DefaultPseudoElementStyleOrNull();
+          : (pseudo_id == kPseudoIdMarker
+                 ? default_style_sheets.DefaultPseudoElementStyleOrNull()
+                 : nullptr);
   if (rule_set) {
     func(rule_set);
   }
@@ -1286,7 +1300,8 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     state.StyleBuilder().SetIsEnsuredInDisplayNone();
   }
 
-  if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties()) {
+  if ((element->IsPseudoElement() || style_request.IsPseudoStyleRequest()) &&
+      state.HadNoMatchedProperties()) {
     DCHECK(!cascade.InlineStyleLost());
     return state.TakeStyle();
   }
@@ -1295,7 +1310,10 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   styles_animated, 1);
     StyleAdjuster::AdjustComputedStyle(
-        state, style_request.IsPseudoStyleRequest() ? nullptr : element);
+        state,
+        (element->IsPseudoElement() || style_request.IsPseudoStyleRequest())
+            ? nullptr
+            : element);
   }
 
   ApplyAnchorData(state);
@@ -1387,7 +1405,8 @@ void StyleResolver::InitStyle(Element& element,
 
     // contenteditable attribute (implemented by -webkit-user-modify) should
     // be propagated from shadow host to distributed node.
-    if (!style_request.IsPseudoStyleRequest() && element.AssignedSlot()) {
+    if (!element.IsPseudoElement() && !style_request.IsPseudoStyleRequest() &&
+        element.AssignedSlot()) {
       if (Element* parent = element.parentElement()) {
         if (!RuntimeEnabledFeatures::
                 InheritUserModifyWithoutContenteditableEnabled() ||
@@ -1400,7 +1419,11 @@ void StyleResolver::InitStyle(Element& element,
       }
     }
   }
-  state.StyleBuilder().SetStyleType(style_request.pseudo_id);
+  if (element.IsPseudoElement()) {
+    state.StyleBuilder().SetStyleType(element.GetPseudoIdForStyling());
+  } else {
+    state.StyleBuilder().SetStyleType(style_request.pseudo_id);
+  }
   state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
   // For highlight inheritance, propagate link visitedness, forced-colors
@@ -1648,16 +1671,22 @@ void StyleResolver::ApplyBaseStyleNoCache(
                                  selector_filter_, cascade.MutableMatchResult(),
                                  state.InsideLink());
 
-  if (style_request.IsPseudoStyleRequest()) {
-    if (style_request.pseudo_id == kPseudoIdScrollMarkerGroup) {
+  if (element->IsPseudoElement() || style_request.IsPseudoStyleRequest()) {
+    if (element->IsScrollMarkerGroupPseudoElement() ||
+        style_request.pseudo_id == kPseudoIdScrollMarkerGroup) {
       cascade.MutableMatchResult().AddMatchedProperties(
           ScrollMarkerGroupUserAgentDeclaration(),
           {.origin = CascadeOrigin::kUserAgent});
     }
 
     collector.SetPseudoElementStyleRequest(style_request);
-    GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
-        style_request.pseudo_id);
+    if (element->IsPseudoElement()) {
+      GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
+          element->GetPseudoIdForStyling());
+    } else {
+      GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
+          style_request.pseudo_id);
+    }
   }
 
   if (!state.ParentStyle()) {
@@ -1680,9 +1709,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  // TODO(obrufau): support styling nested pseudo-elements
-  if (style_request.rules_to_include == StyleRequest::kUAOnly ||
-      (style_request.IsPseudoStyleRequest() && element->IsPseudoElement())) {
+  if (style_request.rules_to_include == StyleRequest::kUAOnly) {
     MatchUARules(*element, collector);
   } else {
     MatchAllRules(
@@ -1692,7 +1719,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   const MatchResult& match_result = collector.MatchedResult();
 
-  if (style_request.IsPseudoStyleRequest()) {
+  if (element->IsPseudoElement() || style_request.IsPseudoStyleRequest()) {
     if (!match_result.HasMatchedProperties()) {
       InitStyle(*element, style_request, *initial_style_, state.ParentStyle(),
                 state);
@@ -1773,6 +1800,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
       state.HasAttrFunction()) {
     builder.SetHasAttrFunction();
   }
+  if (element->IsPseudoElement()) {
+    state.StyleBuilder().SetStyleType(element->GetPseudoIdForStyling());
+  }
 
   // Now we're done with all operations that may overwrite InsideLink,
   // so we can set it once and for all.
@@ -1835,7 +1865,11 @@ void StyleResolver::ApplyBaseStyle(
 
     state.SetStyle(*animation_base_computed_style);
     state.StyleBuilder().SetBaseData(GetBaseData(state));
-    state.StyleBuilder().SetStyleType(style_request.pseudo_id);
+    if (element->IsPseudoElement()) {
+      state.StyleBuilder().SetStyleType(element->GetPseudoIdForStyling());
+    } else {
+      state.StyleBuilder().SetStyleType(style_request.pseudo_id);
+    }
     if (!state.ParentStyle()) {
       state.SetParentStyle(InitialStyleForElement());
       state.SetLayoutParentStyle(state.ParentStyle());
@@ -2254,11 +2288,8 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
                                  selector_filter_, match_result,
                                  state.ElementLinkState());
   collector.SetMode(SelectorChecker::kCollectingCSSRules);
-  // TODO(obrufau): support collecting rules for nested ::marker
-  if (!element->IsPseudoElement()) {
     CollectPseudoRulesForElement(*element, collector, pseudo_id,
                                  view_transition_name, rules_to_include);
-  }
 
   if (tracker_) {
     AddMatchedRulesToTracker(collector);
@@ -2303,7 +2334,7 @@ void StyleResolver::CollectPseudoRulesForElement(
 
 bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
                                        StyleCascade& cascade) {
-  Element& element = state.GetElement();
+  Element& element = state.GetUltimateOriginatingElementOrSelf();
 
   // The animating element may be this element, the pseudo element we are
   // resolving style for, or null if we are resolving style for a pseudo
@@ -2340,7 +2371,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   }
 
   CSSAnimations::CalculateAnimationUpdate(
-      state.AnimationUpdate(), *animating_element, state.GetElement(),
+      state.AnimationUpdate(), *animating_element, element,
       state.StyleBuilder(), state.ParentStyle(), this,
       state.CanTriggerAnimations());
   CSSAnimations::CalculateTransitionUpdate(
@@ -2360,7 +2391,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     // Note: this applies the same filter to pseudo elements as its originating
     // element since state.GetElement() returns the originating element when
     // resolving style for pseudo elements.
-    CascadeFilter filter = state.GetElement().GetCascadeFilter();
+    CascadeFilter filter =
+        UltimateOriginatingElementOrSelf(state.GetElement()).GetCascadeFilter();
     if (state.StyleBuilder().StyleType() == kPseudoIdMarker) {
       filter = filter.Add(CSSProperty::kValidForMarker, false);
     }

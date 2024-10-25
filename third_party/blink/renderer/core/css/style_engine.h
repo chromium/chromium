@@ -152,6 +152,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     base::AutoReset<bool> in_detach_scope_;
   };
 
+  class AttachScrollMarkersScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AttachScrollMarkersScope(StyleEngine& engine)
+        : in_scroll_markers_attachment_scope_(
+              &engine.in_scroll_markers_attachment_,
+              true) {}
+
+   private:
+    base::AutoReset<bool> in_scroll_markers_attachment_scope_;
+  };
+
   // There are a few instances where we are marking nodes style dirty from
   // within style recalc. That is generally not allowed, and if allowed we must
   // make sure we mark inside the subtree we are currently traversing, be sure

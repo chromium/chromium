@@ -2753,7 +2753,8 @@ String GetStringFromAttributeOrStringValue(const CSSValue& value,
     // TODO: Can a namespace be specified for an attr(foo)?
     QualifiedName attr(
         To<CSSCustomIdentValue>(function_value->Item(0)).Value());
-    const AtomicString& attr_value = state.GetElement().getAttribute(attr);
+    const AtomicString& attr_value =
+        state.GetUltimateOriginatingElementOrSelf().getAttribute(attr);
     string = attr_value.IsNull() ? g_empty_string : attr_value.GetString();
   } else {
     // We should be able to assume at this point that `value` is a

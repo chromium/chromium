@@ -190,7 +190,7 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
 
   if (marker_style_sheet_) {
     default_pseudo_element_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 1u);
+    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 3u);
   }
 #endif
 }

@@ -79,6 +79,9 @@ class CORE_EXPORT StyleResolverState {
   Element* GetStyledElement() const { return styled_element_; }
   // These are all just pass-through methods to ElementResolveContext.
   Element& GetElement() const { return element_context_.GetElement(); }
+  Element& GetUltimateOriginatingElementOrSelf() const {
+    return element_context_.GetUltimateOriginatingElementOrSelf();
+  }
   const Element* ParentElement() const {
     return element_context_.ParentElement();
   }

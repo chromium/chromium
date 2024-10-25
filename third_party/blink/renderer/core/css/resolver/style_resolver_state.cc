@@ -70,7 +70,8 @@ StyleResolverState::StyleResolverState(
       element_style_resources_(
           GetStyledElement() ? *GetStyledElement() : GetElement(),
           document.DevicePixelRatio()),
-      element_type_(style_request.IsPseudoStyleRequest()
+      element_type_(style_request.IsPseudoStyleRequest() ||
+                            element.IsPseudoElement()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
       container_unit_context_(

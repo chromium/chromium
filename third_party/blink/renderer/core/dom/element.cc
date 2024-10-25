@@ -6942,27 +6942,39 @@ void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
 }
 
-ColumnPseudoElement* Element::CreateColumnPseudoElement(
+ColumnPseudoElement* Element::CreateColumnPseudoElementIfNeeded(
     const PhysicalRect& column_rect) {
-  const ComputedStyle* style = CachedStyleForPseudoElement(kPseudoIdColumn);
-  if (!style) {
+  if (const ComputedStyle* style = GetComputedStyle();
+      !style || !style->HasPseudoElementStyle(kPseudoIdColumn)) {
     return nullptr;
   }
   auto* column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
       /*originating_element=*/this, column_rect);
+  const ComputedStyle* style =
+      column_pseudo_element->CustomStyleForLayoutObject(
+          StyleRecalcContext::FromInclusiveAncestors(*this));
+  if (!style) {
+    style = &GetDocument().GetStyleResolver().InitialStyle();
+  }
   column_pseudo_element->SetComputedStyle(style);
   ElementRareDataVector& data = EnsureElementRareData();
   data.AddColumnPseudoElement(*column_pseudo_element);
   column_pseudo_element->InsertedInto(*this);
   probe::PseudoElementCreated(column_pseudo_element);
-
-  const ComputedStyle* scroll_marker_style =
-      CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker);
-  if (!scroll_marker_style) {
+  if (!style->CanGeneratePseudoElement(kPseudoIdScrollMarker)) {
     return column_pseudo_element;
   }
+
   auto* scroll_marker =
       MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
+  const ComputedStyle* scroll_marker_style =
+      scroll_marker->CustomStyleForLayoutObject(
+          StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
+  if (!scroll_marker_style) {
+    scroll_marker->Dispose();
+    return column_pseudo_element;
+  }
+
   scroll_marker->SetComputedStyle(scroll_marker_style);
   column_pseudo_element->EnsureElementRareData().SetPseudoElement(
       kPseudoIdScrollMarker, scroll_marker);
@@ -8402,15 +8414,6 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
   }
   if (pseudo_id <= kLastTrackedPublicPseudoId &&
       !style->HasPseudoElementStyle(pseudo_id)) {
-    if (pseudo_id == kPseudoIdColumn) {
-      if (CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker)) {
-        // If there is a ::column::scroll-marker, but no ::column declarations,
-        // we still want a ::column pseudo element. It doesn't really matter all
-        // that much what style it has, although one could argue that it should
-        // inherit from its originating element rather than using initial style.
-        return &GetDocument().GetStyleResolver().InitialStyle();
-      }
-    }
     return nullptr;
   }
 
@@ -8445,9 +8448,13 @@ const ComputedStyle* Element::StyleForPseudoElement(
     const StyleRequest& request) {
   GetDocument().GetStyleEngine().UpdateViewportSize();
 
-  const bool is_before_or_after_like = request.pseudo_id == kPseudoIdCheck ||
-                                       request.pseudo_id == kPseudoIdBefore ||
-                                       request.pseudo_id == kPseudoIdAfter;
+  PseudoId pseudo_id = IsPseudoElement() && request.pseudo_id == kPseudoIdNone
+                           ? GetPseudoIdForStyling()
+                           : request.pseudo_id;
+
+  const bool is_before_or_after_like = pseudo_id == kPseudoIdCheck ||
+                                       pseudo_id == kPseudoIdBefore ||
+                                       pseudo_id == kPseudoIdAfter;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -8472,7 +8479,12 @@ const ComputedStyle* Element::StyleForPseudoElement(
       if (result->GetCounterDirectives()) {
         SetPseudoElementStylesChangeCounters(true);
       }
-      if (auto* quote = DynamicTo<HTMLQuoteElement>(this)) {
+      Element* originating_element_or_self =
+          IsPseudoElement()
+              ? To<PseudoElement>(this)->UltimateOriginatingElement()
+              : this;
+      if (auto* quote =
+              DynamicTo<HTMLQuoteElement>(originating_element_or_self)) {
         ComputedStyleBuilder builder(*result);
         quote->AdjustPseudoStyleLocale(builder);
         result = builder.TakeStyle();
@@ -8481,7 +8493,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
     return result;
   }
 
-  if (request.pseudo_id == kPseudoIdFirstLineInherited) {
+  if (pseudo_id == kPseudoIdFirstLineInherited) {
     StyleRequest first_line_inherited_request = request;
     first_line_inherited_request.pseudo_id =
         IsPseudoElement() ? To<PseudoElement>(this)->GetPseudoIdForStyling()

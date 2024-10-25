@@ -1093,6 +1093,10 @@
       status: "stable",
     },
     {
+      name: "CSSNestedPseudoElements",
+      status: "experimental",
+    },
+    {
       name: "CSSOverflowContainerQueries",
       status: "experimental",
     },

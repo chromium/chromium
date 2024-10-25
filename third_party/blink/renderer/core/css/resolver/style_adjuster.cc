@@ -449,14 +449,18 @@ static void AdjustStyleForFirstLetter(ComputedStyleBuilder& builder) {
 
 static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
                                  const ComputedStyle& parent_style,
-                                 const Element& parent_element) {
+                                 const Element* parent_element) {
   if (builder.StyleType() != kPseudoIdMarker) {
     return;
   }
 
-  if (parent_style.MarkerShouldBeInside(parent_element,
+  if (parent_element->IsPseudoElement()) {
+    parent_element = parent_element->parentElement();
+  }
+
+  if (parent_style.MarkerShouldBeInside(*parent_element,
                                         builder.GetDisplayStyle())) {
-    Document& document = parent_element.GetDocument();
+    Document& document = parent_element->GetDocument();
     auto margins =
         ListMarker::InlineMarginsForInside(document, builder, parent_style);
     LogicalToPhysicalSetter setter(builder.GetWritingDirection(), builder,
@@ -1073,7 +1077,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // We don't adjust the first letter style earlier because we may change the
     // display setting in AdjustStyleForHTMLElement() above.
     AdjustStyleForFirstLetter(builder);
-    AdjustStyleForMarker(builder, parent_style, state.GetElement());
+    AdjustStyleForMarker(builder, parent_style, &state.GetElement());
 
     AdjustStyleForDisplay(builder, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);

@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -277,9 +279,16 @@ const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
   // originating element.
   DCHECK(!IsHighlightPseudoElement(pseudo_id_));
   Element* parent = ParentOrShadowHostElement();
-  return parent->StyleForPseudoElement(
+  if (!RuntimeEnabledFeatures::CSSNestedPseudoElementsEnabled()) {
+    return parent->StyleForPseudoElement(
+        style_recalc_context,
+        StyleRequest(GetPseudoIdForStyling(), parent->GetComputedStyle(),
+                     /* originating_element_style */ nullptr,
+                     view_transition_name_));
+  }
+  return StyleForPseudoElement(
       style_recalc_context,
-      StyleRequest(GetPseudoIdForStyling(), parent->GetComputedStyle(),
+      StyleRequest(kPseudoIdNone, parent->GetComputedStyle(),
                    /* originating_element_style */ nullptr,
                    view_transition_name_));
 }
@@ -520,6 +529,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
+    case kPseudoIdColumn:
       return true;
     case kPseudoIdCheck:
     case kPseudoIdBefore:

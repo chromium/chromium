@@ -1752,7 +1752,7 @@ bool StyleCascade::ResolveAppearanceAutoBaseSelectInto(
   // The UA stylesheet only uses -internal-appearance-auto-base-select(),
   // on select elements, which is currently the only element which supports
   // appearance:base-select.
-  CHECK(IsA<HTMLSelectElement>(state_.GetElement()));
+  CHECK(IsA<HTMLSelectElement>(state_.GetUltimateOriginatingElementOrSelf()));
   bool has_base_appearance = state_.StyleBuilder().HasBaseSelectAppearance();
   if (state_.IsForPseudoElement()) {
     CHECK_EQ(state_.GetPseudoElement()->GetPseudoId(), kPseudoIdAfter)

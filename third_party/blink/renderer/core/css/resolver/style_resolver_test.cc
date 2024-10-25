@@ -857,6 +857,9 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
       #marker ::marker {
         color: blue;
       }
+      #before-marker ::before::marker {
+        color: blue;
+      }
     </style>
     <ul>
       <li style="list-style: decimal outside"><b></b></li>
@@ -886,6 +889,9 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     const ComputedStyle* li_style = li->GetComputedStyle();
     EXPECT_FALSE(li_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(li_style->HasAnyPseudoElementStyles());
+    // Check that UA's ::before::marker rule doesn't set HasPseudoElementStyle.
+    // For performance reason we do not SetHasPseudoElementStyle() for ::marker
+    // pseudo element selectors from UA stylesheets for now.
     const ComputedStyle* before_style = before->GetComputedStyle();
     EXPECT_FALSE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(before_style->HasAnyPseudoElementStyles());
@@ -917,11 +923,21 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     EXPECT_TRUE(li_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_TRUE(li_style->HasAnyPseudoElementStyles());
 
-    // But ::marker styles don't match a ::before::marker
+    // But #marker ::marker styles don't match a ::before::marker
     const ComputedStyle* before_style = before->GetComputedStyle();
     EXPECT_FALSE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(before_style->HasAnyPseudoElementStyles());
   }
+
+  GetDocument().body()->SetIdAttribute(AtomicString("before-marker"));
+  UpdateAllLifecyclePhasesForTest();
+  Element* li = lis->item(0);
+  PseudoElement* before =
+      li->QuerySelector(AtomicString("b"))->GetPseudoElement(kPseudoIdBefore);
+  // And #before-marker ::before::marker styles match a ::before::marker
+  const ComputedStyle* before_style = before->GetComputedStyle();
+  EXPECT_TRUE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
+  EXPECT_TRUE(before_style->HasAnyPseudoElementStyles());
 }
 
 TEST_F(StyleResolverTest, ApplyInheritedOnlyCustomPropertyChange) {

@@ -29,11 +29,51 @@
 
 namespace blink {
 
+// Builds pseudo element ancestors for rule matching:
+// - For regular elements just returns empty array.
+// - For pseudo elements (including nested pseudo elements) returns
+// array of every pseudo element ancestor, including
+// pseudo element for which rule matching is performed.
+// This array is later used to check rules by simultaneously going
+// through the array and rules sub selectors.
+// E.g.: <li> element with ::after and ::marker inside that ::after:
+// -- the rule li::after::marker, the array would be [after, marker],
+// matching starts with originating element <li>, so the rule will be matched
+// as <li> - li, after (from array) - ::after, marker (from array) - ::marker
+// -- the rule li::before::marker, the array would still be [after, marker],
+// so matching would fail at after (from array) - ::before.
+ElementResolveContext::PseudoElementAncestors
+ElementResolveContext::BuildPseudoElementAncestors(Element* element) {
+  PseudoElementAncestors pseudo_element_ancestors;
+  if (!element->IsPseudoElement()) {
+    return pseudo_element_ancestors;
+  }
+  while (element->IsPseudoElement()) {
+    CHECK_GE(pseudo_element_ancestors_size_, 0u);
+    pseudo_element_ancestors[--pseudo_element_ancestors_size_] = element;
+    element = element->parentElement();
+  }
+  DCHECK(element);
+  DCHECK(!element->IsPseudoElement());
+
+  return pseudo_element_ancestors;
+}
+
 ElementResolveContext::ElementResolveContext(Element& element)
     : element_(&element),
+      ultimate_originating_element_(
+          element_->IsPseudoElement()
+              ? To<PseudoElement>(element_)->UltimateOriginatingElement()
+              : element_),
+      pseudo_element_(element_->IsPseudoElement() ? element_ : nullptr),
       element_link_state_(
-          element.GetDocument().GetVisitedLinkState().DetermineLinkState(
-              element)) {
+          element.GetDocument()
+                  .IsActive()  // When requested from SelectorQuery, element can
+                               // be in inactive document.
+              ? element.GetDocument().GetVisitedLinkState().DetermineLinkState(
+                    element)
+              : EInsideLink::kNotInsideLink),
+      pseudo_element_ancestors_(BuildPseudoElementAncestors(&element)) {
   parent_element_ = LayoutTreeBuilderTraversal::ParentElement(element);
   layout_parent_ = LayoutTreeBuilderTraversal::LayoutParentElement(element);
 
