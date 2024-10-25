@@ -834,6 +834,20 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
+  content::WebContents* LaunchStartPageAsApp(const webapps::AppId& app_id,
+                                             const GURL& url) {
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        launch_future;
+    provider().scheduler().LaunchApp(app_id, url, launch_future.GetCallback());
+    EXPECT_TRUE(launch_future.Wait());
+    content::WebContents* contents =
+        launch_future.Get<base::WeakPtr<content::WebContents>>().get();
+    content::WaitForLoadStop(contents);
+    return contents;
+  }
+
   // Prevent the creation of obviously invalid test expectation during
   // re-baselining.
   virtual void AssertValidTestConfiguration() {
@@ -1321,17 +1335,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
       content::DOMMessageQueue message_queue;
 
       if (StartInAppWindow()) {
-        base::test::TestFuture<base::WeakPtr<Browser>,
-                               base::WeakPtr<content::WebContents>,
-                               apps::LaunchContainer>
-            launch_future;
-        provider().scheduler().LaunchApp(
-            app_a, embedded_test_server()->GetURL(kStartPageScopeA),
-            launch_future.GetCallback());
-        ASSERT_TRUE(launch_future.Wait());
-        contents_a =
-            launch_future.Get<base::WeakPtr<content::WebContents>>().get();
-        content::WaitForLoadStop(contents_a);
+        GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
+        contents_a = LaunchStartPageAsApp(app_a, url_a);
       } else {
         // Ensure that if a fixture ended up loading a different page in the
         // starting tab, create a new tab for the navigation.
