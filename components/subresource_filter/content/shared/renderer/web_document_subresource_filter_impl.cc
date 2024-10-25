@@ -120,7 +120,7 @@ WebDocumentSubresourceFilterImpl::BuilderImpl::BuilderImpl(
       first_disallowed_load_callback_(
           std::move(first_disallowed_load_callback)),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
-WebDocumentSubresourceFilterImpl::BuilderImpl::~BuilderImpl() {}
+WebDocumentSubresourceFilterImpl::BuilderImpl::~BuilderImpl() = default;
 
 std::unique_ptr<blink::WebDocumentSubresourceFilter>
 WebDocumentSubresourceFilterImpl::BuilderImpl::Build() {
