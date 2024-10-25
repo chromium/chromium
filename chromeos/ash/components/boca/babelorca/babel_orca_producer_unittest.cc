@@ -371,5 +371,47 @@ TEST_F(BabelOrcaProducerTest, SessionEndWillStopRecognition) {
   producer.OnSessionEnded();
 }
 
+TEST_F(BabelOrcaProducerTest, DisableLocalWhileSessionCaptionsEnabled) {
+  media::SpeechRecognitionResult transcript("transcript", /*is_final=*/true);
+  FakeTachyonRequestDataProvider data_provider("session-id", "tachyon-token",
+                                               "group-id", "sender@email.com");
+  MockSpeechRecognizer* speech_recognizer_ptr = speech_recognizer_.get();
+  MockLiveCaptionControllerWrapper* caption_controller_wrapper_ptr =
+      caption_controller_wrapper_.get();
+  FakeTachyonAuthedClient* authed_client_ptr = authed_client_.get();
+  TranscriptionResultCallback transcript_cb;
+  BabelOrcaProducer producer(url_loader_factory_.GetSafeWeakWrapper(),
+                             std::move(speech_recognizer_),
+                             std::move(caption_controller_wrapper_),
+                             std::move(authed_client_), &data_provider);
+
+  producer.OnSessionStarted();
+  EXPECT_CALL(*speech_recognizer_ptr, ObserveTranscriptionResult)
+      .WillOnce(
+          [&transcript_cb](TranscriptionResultCallback transcript_cb_param) {
+            transcript_cb = std::move(transcript_cb_param);
+          });
+  EXPECT_CALL(*speech_recognizer_ptr, Start).Times(1);
+  producer.OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
+  producer.OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+
+  EXPECT_CALL(*caption_controller_wrapper_ptr, OnAudioStreamEnd).Times(1);
+  producer.OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/false);
+
+  ASSERT_TRUE(transcript_cb);
+  // Verify that transcription is not dispatched to the bubble.
+  EXPECT_CALL(*caption_controller_wrapper_ptr,
+              DispatchTranscription(transcript))
+      .Times(0);
+  transcript_cb.Run(transcript, kLanguage);
+  authed_client_ptr->WaitForRequest();
+  media::SpeechRecognitionResult sent_transcript =
+      GetTranscriptFromRequest(authed_client_ptr->GetRequestString());
+  EXPECT_EQ(sent_transcript, transcript);
+
+  // Called on destruction.
+  EXPECT_CALL(*caption_controller_wrapper_ptr, OnAudioStreamEnd).Times(1);
+}
+
 }  // namespace
 }  // namespace ash::babelorca

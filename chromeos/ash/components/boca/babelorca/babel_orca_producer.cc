@@ -83,6 +83,7 @@ void BabelOrcaProducer::OnSessionCaptionConfigUpdated(
   session_captions_enabled_ = session_captions_enabled;
   if (!session_captions_enabled_ && !local_captions_enabled_) {
     StopRecognition();
+    return;
   }
   if (!session_captions_enabled_) {
     rate_limited_sender_.reset();
@@ -103,8 +104,11 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
   local_captions_enabled_ = local_captions_enabled;
   if (!session_captions_enabled_ && !local_captions_enabled_) {
     StopRecognition();
+    return;
   }
   if (!local_captions_enabled_) {
+    // Close the bubble.
+    caption_controller_wrapper_->OnAudioStreamEnd();
     return;
   }
   // If session captions enabled and sender is initialized, this means that
@@ -177,6 +181,7 @@ void BabelOrcaProducer::StopRecognition() {
   caption_controller_wrapper_->OnAudioStreamEnd();
   // This should be a no-op if not currently observing.
   speech_recognizer_->RemoveTranscriptionResultObservation();
+  rate_limited_sender_.reset();
 }
 
 }  // namespace ash::babelorca
