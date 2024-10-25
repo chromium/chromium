@@ -5509,6 +5509,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.LoginPerf.ManualRestore.{UIFlow}.TotalDuration" units="ms"
+    expires_after="2025-02-23">
+  <owner>junis@google.com</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from the moment sign in authentication is started until the post login
+    animation finishes. (Chrome OS).
+
+    Different UI flows can have longer expected times due to extra compositor
+    animations. For this flow, {UIFlow}.
+  </summary>
+  <token key="UIFlow">
+    <variant name="GlanceablesHidden"
+        summary="the post login UI is shown and animated, but the glanceables
+                 bar is hidden due to user pref"/>
+    <variant name="GlanceablesShown"
+        summary="the post login UI is shown and animated, and the glanceables
+                 bar is shown. There is a loading animation on the bar that
+                 may take up to 3s"/>
+    <variant name="NoLoginUI"
+        summary="no post login UI is shown. The user has full restore turned
+                 set to always or never, or there were no windows from the
+                 previous session"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.LoginPerf.{RestoreMode}.AllShelfIconsLoaded" units="ms"
     expires_after="2025-02-01">
   <owner>xiyuan@chromium.org</owner>

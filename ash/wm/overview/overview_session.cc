@@ -215,6 +215,19 @@ void OverviewSession::Init(
     birch_bar_controller_ = std::make_unique<BirchBarController>(
         /*is_informed_restore=*/enter_exit_overview_type_ ==
         OverviewEnterExitType::kInformedRestore);
+    if (enter_exit_overview_type_ == OverviewEnterExitType::kInformedRestore) {
+      PostLoginMetricsRecorder* post_login_metrics_recorder =
+          Shell::Get()
+              ->login_unlock_throughput_recorder()
+              ->post_login_metrics_recorder();
+      if (birch_bar_controller_->GetShowBirchSuggestions()) {
+        post_login_metrics_recorder->set_post_login_ui_status(
+            PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithBirchBar);
+      } else {
+        post_login_metrics_recorder->set_post_login_ui_status(
+            PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithoutBirchBar);
+      }
+    }
   }
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
