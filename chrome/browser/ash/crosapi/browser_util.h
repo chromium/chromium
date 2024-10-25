@@ -162,12 +162,6 @@ bool IsLacrosAllowedToLaunch();
 // Returns true if chrome apps should be routed through Lacros instead of ash.
 bool IsLacrosChromeAppsEnabled();
 
-// Returns true if Lacros is used in the web Kiosk session.
-bool IsLacrosEnabledInWebKioskSession();
-
-// Returns true if Lacros is used in the Chrome App Kiosk session.
-bool IsLacrosEnabledInChromeKioskSession();
-
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
 bool IsLacrosWindow(const aura::Window* window);
