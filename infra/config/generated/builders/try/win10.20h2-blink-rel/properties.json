@@ -39,7 +39,8 @@
           "project": "chromium"
         }
       ],
-      "retry_failed_shards": false
+      "retry_failed_shards": false,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win10.20h2-blink-rel/targets"
     }
   },
   "$build/reclient": {

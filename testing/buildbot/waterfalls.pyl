@@ -33,6 +33,7 @@
   # The following builder groups have been migrated to set their targets in the
   # builders' declarations in
   # //infra/config/subprojects/try/<builder-group>.star
+  #   tryserver.blink
   #   tryserver.chromium.android
   #   tryserver.chromium.linux
   #   tryserver.chromium.mac
@@ -1686,137 +1687,6 @@
            'gtest_tests': 'optimization_guide_gpu_gtests',
         },
         'os_type': 'win',
-      },
-    },
-  },
-  {
-    'name': 'tryserver.blink',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      # Should be kept in sync with v8_linux_blink_rel in tryserver.v8
-      'linux-blink-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_linux_blink_rel_isolated_scripts',
-        },
-      },
-      'mac11.0-blink-rel': {
-        'mixins': [
-          'mac_11_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac11.0.arm64-blink-rel': {
-        'mixins': [
-          'mac_11_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac12.0-blink-rel': {
-        'mixins': [
-          'mac_12_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac12.0.arm64-blink-rel': {
-        'mixins': [
-          'mac_12_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac13-blink-rel': {
-        'mixins': [
-          'mac_13_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac13.arm64-blink-rel': {
-        'mixins': [
-          'mac_13_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac14-blink-rel': {
-        'mixins': [
-          'mac_14_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac14.arm64-blink-rel': {
-        'mixins': [
-          'mac_14_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac15-blink-rel': {
-        'mixins': [
-          'mac_15_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'mac15.arm64-blink-rel': {
-        'mixins': [
-          'mac_15_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'win10.20h2-blink-rel': {
-        'mixins': [
-            'win10',
-        ],
-        'swarming': {
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'win11-arm64-blink-rel': {
-        'mixins': [
-            'arm64'
-        ],
-        'swarming': {
-          'hard_timeout': 900,
-          'dimensions': {
-            'os': 'Windows-11',
-          },
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      'win11-blink-rel': {
-        'mixins': [
-            'win11',
-        ],
-        'swarming': {
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
       },
     },
   },

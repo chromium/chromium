@@ -315,6 +315,8 @@ targets.mixin(
 
 targets.mixin(
     name = "arm64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1230,6 +1232,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_11_arm64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1240,6 +1244,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_11_x64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1250,6 +1256,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_12_arm64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1260,6 +1268,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_12_x64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1270,6 +1280,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_13_arm64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1280,6 +1292,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_13_x64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1290,6 +1304,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_14_arm64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1321,6 +1337,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_15_arm64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
@@ -1331,6 +1349,8 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_15_x64",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -2147,6 +2167,8 @@ targets.mixin(
 
 targets.mixin(
     name = "win11",
+    # All references have been moved to starlark
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Windows-11-22000",

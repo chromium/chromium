@@ -48,48 +48,6 @@
           'shards': 2,
         },
       },
-      'linux-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'mac11.0-blink-rel': {
-        'swarming': {
-          'shards': 5,
-          'hard_timeout': 2400,
-        },
-      },
-      'mac11.0.arm64-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'mac12.0-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'mac12.0.arm64-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'win10.20h2-blink-rel': {
-        'swarming': {
-          'shards': 6,
-          'hard_timeout': 2400,
-        },
-      },
-      'win11-arm64-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'win11-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
     },
   },
   'blink_wpt_tests': {
@@ -102,48 +60,6 @@
         'args': [
           '--flag-specific=future-js',
         ],
-      },
-      'linux-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'mac11.0-blink-rel': {
-        'swarming': {
-          'shards': 7,
-          'hard_timeout': 2400,
-        },
-      },
-      'mac11.0.arm64-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'mac12.0-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'mac12.0.arm64-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'win10.20h2-blink-rel': {
-        'swarming': {
-          'shards': 9,
-          'hard_timeout': 2400,
-        },
-      },
-      'win11-arm64-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
-      },
-      'win11-blink-rel': {
-        'swarming': {
-          'hard_timeout': 2400,
-        },
       },
     },
   },

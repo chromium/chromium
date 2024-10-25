@@ -41,13 +41,6 @@
       },
     },
   },
-  'arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-      },
-    },
-  },
   'blink_tests_write_run_histories': {
     'args': [
       '--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json',
@@ -422,83 +415,11 @@
   'long_skylab_timeout': {
     'timeout_sec': 10800,
   },
-  'mac_11_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-11',
-      },
-    },
-  },
-  'mac_11_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-11|Mac-10.16',
-      },
-    },
-  },
-  'mac_12_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-12',
-      },
-    },
-  },
-  'mac_12_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-12',
-      },
-    },
-  },
-  'mac_13_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-13',
-      },
-    },
-  },
-  'mac_13_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-13',
-      },
-    },
-  },
-  'mac_14_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-14',
-      },
-    },
-  },
   'mac_14_x64': {
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-14',
-      },
-    },
-  },
-  'mac_15_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-15',
-      },
-    },
-  },
-  'mac_15_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-15',
       },
     },
   },
@@ -851,13 +772,6 @@
         'gpu': '10de:2783',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu.experimental',
-      },
-    },
-  },
-  'win11': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-11-22000',
       },
     },
   },
