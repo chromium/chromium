@@ -9,8 +9,6 @@
 
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 
-class GURL;
-
 /// ChromeLensOverlayResult test object.
 @interface FakeChromeLensOverlayResult : NSObject <ChromeLensOverlayResult>
 

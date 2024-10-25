@@ -284,8 +284,10 @@ TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
 
 // Tests simulating web navigation.
 TEST_F(LensOverlayMediatorTest, WebNavigation) {
-  SimulateWebNavigation(/*URL=*/GURL("https://some-url.com"),
-                        /*expectCanGoBack=*/NO);
+  UpdateLensSelection(/*resultURL=*/GURL("https://some-url.com/1"),
+                      /*expectCanGoBack=*/NO);
+  SimulateWebNavigation(/*URL=*/GURL("https://some-url.com/2"),
+                        /*expectCanGoBack=*/YES);
 }
 
 // Tests simulating omnibox navigation.

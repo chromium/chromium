@@ -53,10 +53,14 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
     explicit LensResultItem(id<ChromeLensOverlayResult> lens_result);
     LensResultItem(const LensResultItem& result_item) = delete;
     LensResultItem& operator=(const LensResultItem&) = delete;
-    ~LensResultItem() = default;
+    ~LensResultItem();
 
     id<ChromeLensOverlayResult> lens_result() const { return lens_result_; }
     const std::string& comparison_key() const { return comparison_key_; }
+    std::vector<GURL>& sub_navigations() { return sub_navigations_; }
+    const std::vector<GURL>& sub_navigations() const {
+      return sub_navigations_;
+    }
 
     bool operator==(const LensResultItem& rhs) {
       return this->lens_result_.isTextSelection ==
@@ -71,13 +75,20 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
     id<ChromeLensOverlayResult> lens_result_;
     /// Key to compare two lens results when reloading.
     std::string comparison_key_;
+    /// Sub navigations that originate from the same lens result.
+    std::vector<GURL> sub_navigations_;
   };  // class LensResultItem
 
   /// Called when the navigation list has changed.
   void OnNavigationListUpdate() const;
 
+  /// Go back to the previous sub navigation within the same lens navigation.
+  void GoToPreviousSubNavigation();
+  /// Go back to the previous lens navigation.
+  void GoToPreviousLensNavigation();
+
   /// List of Lens navigation. Going back will load the previous Lens
-  /// navigation.
+  /// navigation or the previous sub-navigation if available.
   std::vector<std::unique_ptr<LensResultItem>> lens_navigation_items_;
   /// Map of reloaded navigation. Maps LensResultItem::comparison_key to the
   /// reloaded index in `lens_navigation_items_`.

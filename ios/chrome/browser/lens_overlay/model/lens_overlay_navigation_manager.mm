@@ -18,12 +18,14 @@ LensOverlayNavigationManager::LensResultItem::LensResultItem(
     id<ChromeLensOverlayResult> lens_result)
     : lens_result_(lens_result) {
   // Use `isTextSelection`, `selectionRect` and `queryText` to verify that two
-  // lens result are similar.
+  // lens result refer to the same selection query.
   comparison_key_ = base::SysNSStringToUTF8(
       [NSString stringWithFormat:@"%d%@%@", lens_result.isTextSelection,
                                  NSStringFromCGRect(lens_result.selectionRect),
                                  lens_result.queryText]);
 }
+
+LensOverlayNavigationManager::LensResultItem::~LensResultItem() {}
 
 #pragma mark - LensOverlayNavigationManager
 
@@ -76,6 +78,12 @@ void LensOverlayNavigationManager::LensOverlayDidGenerateResult(
 }
 
 bool LensOverlayNavigationManager::CanGoBack() const {
+  // Sub navigation back.
+  if (!lens_navigation_items_.empty() &&
+      lens_navigation_items_.back()->sub_navigations().size() > 1) {
+    return true;
+  }
+  // Lens navigation back.
   return lens_navigation_items_.size() > 1;
 }
 
@@ -85,13 +93,12 @@ void LensOverlayNavigationManager::GoBack() {
     return;
   }
 
-  // Lens navigation back.
-  lens_navigation_items_.pop_back();
-  const LensResultItem& previous_item = *lens_navigation_items_.back();
-  lens_reloaded_items_[previous_item.comparison_key()] =
-      lens_navigation_items_.size() - 1;
-  [mutator_ reloadLensResult:previous_item.lens_result()];
-  OnNavigationListUpdate();
+  // Sub navigation back.
+  if (lens_navigation_items_.back()->sub_navigations().size() > 1) {
+    GoToPreviousSubNavigation();
+  } else {  // Lens navigation back.
+    GoToPreviousLensNavigation();
+  }
 }
 
 #pragma mark - web::WebStateObserver
@@ -100,8 +107,20 @@ void LensOverlayNavigationManager::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (navigation_context && !navigation_context->IsSameDocument()) {
-    // TODO(crbug.com/372914204): Store sub navigations.
-    OnNavigationListUpdate();
+    const GURL& URL = navigation_context->GetUrl();
+
+    if (lens_navigation_items_.empty()) {
+      NOTREACHED(kLensOverlayNotFatalUntil)
+          << "Web navigation without lens result is not supported.";
+    }
+
+    // Add sub navigation if it's not a reload.
+    std::vector<GURL>& sub_navigation =
+        lens_navigation_items_.back()->sub_navigations();
+    if (sub_navigation.empty() || URL != sub_navigation.back()) {
+      sub_navigation.push_back(URL);
+      OnNavigationListUpdate();
+    }
   }
 }
 
@@ -113,4 +132,29 @@ void LensOverlayNavigationManager::WebStateDestroyed(web::WebState* web_state) {
 
 void LensOverlayNavigationManager::OnNavigationListUpdate() const {
   [mutator_ onBackNavigationAvailabilityMaybeChanged:CanGoBack()];
+}
+
+void LensOverlayNavigationManager::GoToPreviousSubNavigation() {
+  std::vector<GURL>& sub_navigation =
+      lens_navigation_items_.back()->sub_navigations();
+  // Removes current sub navigation.
+  sub_navigation.pop_back();
+  // Reloads previous sub navigation.
+  [mutator_ reloadURL:sub_navigation.back()];
+  OnNavigationListUpdate();
+}
+
+void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
+  // Remove the current lens navigation.
+  lens_navigation_items_.pop_back();
+  LensResultItem& previous_item = *lens_navigation_items_.back();
+  // Clear previous sub navigations as they become invalid after reload.
+  std::vector<GURL>& previous_sub_navigation = previous_item.sub_navigations();
+  previous_sub_navigation.erase(previous_sub_navigation.begin() + 1,
+                                previous_sub_navigation.end());
+  // Load the previous lens navigation.
+  lens_reloaded_items_[previous_item.comparison_key()] =
+      lens_navigation_items_.size() - 1;
+  [mutator_ reloadLensResult:previous_item.lens_result()];
+  OnNavigationListUpdate();
 }

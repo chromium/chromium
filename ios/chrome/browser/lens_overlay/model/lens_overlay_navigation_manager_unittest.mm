@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -19,14 +21,35 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
+
+@interface MockLensOverlayNavigationMutator
+    : NSObject <LensOverlayNavigationMutator>
+/// Last `URL` reloaded by calling `reloadURL:`.
+@property(nonatomic, assign) GURL lastReloadedURL;
+@end
+
+@implementation MockLensOverlayNavigationMutator
+- (void)reloadURL:(GURL)URL {
+  _lastReloadedURL = URL;
+}
+
+// Methods below are mocked with OCMock.
+- (void)loadLensResult:(id<ChromeLensOverlayResult>)result {
+}
+- (void)reloadLensResult:(id<ChromeLensOverlayResult>)result {
+}
+- (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack {
+}
+@end
 
 class LensOverlayNavigationManagerTest : public PlatformTest {
  protected:
   LensOverlayNavigationManagerTest() {
     fake_web_state_ = std::make_unique<web::FakeWebState>();
-    mock_mutator_ =
-        [OCMockObject mockForProtocol:@protocol(LensOverlayNavigationMutator)];
-    manager_ = std::make_unique<LensOverlayNavigationManager>(mock_mutator_);
+    mutator_ = [[MockLensOverlayNavigationMutator alloc] init];
+    mock_mutator_ = OCMPartialMock(mutator_);
+    manager_ = std::make_unique<LensOverlayNavigationManager>(mutator_);
     manager_->SetWebState(fake_web_state_.get());
   }
 
@@ -82,7 +105,18 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mock_mutator_);
   }
 
-  OCMockObject<LensOverlayNavigationMutator>* mock_mutator_;
+  /// Go back and expect `URL` to be reloaded.
+  void GoBackExpectingURLReload(const GURL& URL, BOOL expect_can_go_back) {
+    mutator_.lastReloadedURL = GURL();
+    OCMExpect([mock_mutator_
+        onBackNavigationAvailabilityMaybeChanged:expect_can_go_back]);
+    manager_->GoBack();
+    EXPECT_OCMOCK_VERIFY(mock_mutator_);
+    EXPECT_EQ(mutator_.lastReloadedURL, URL);
+  }
+
+  MockLensOverlayNavigationMutator* mutator_;
+  id mock_mutator_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<LensOverlayNavigationManager> manager_;
 };
@@ -167,4 +201,58 @@ TEST_F(LensOverlayNavigationManagerTest, LensNavigationBackNoLoad) {
   id<ChromeLensOverlayResult> result1b = GenerateResult(1);
   SimulateLensDidGenerateResult(result1b, /*expect_load=*/NO,
                                 /*expect_can_go_back=*/YES);
+}
+
+// Tests go back on a web navigation.
+TEST_F(LensOverlayNavigationManagerTest, WebNavigationBack) {
+  id<ChromeLensOverlayResult> result1 = GenerateResult(1);
+  SimulateLensDidGenerateResult(result1, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/NO);
+  // Lens navigation loads URL1.
+  GURL URL1 = result1.searchResultURL;
+
+  // Sub navigation to URL2.
+  GURL URL2 = GURL("https://url.com/2");
+  SimulateWebNavigation(URL2, /*expect_can_go_back=*/YES);
+  // Sub navigation to URL3.
+  SimulateWebNavigation(GURL("https://url.com/3"), /*expect_can_go_back=*/YES);
+
+  GoBackExpectingURLReload(URL2, /*expect_can_go_back=*/YES);
+  GoBackExpectingURLReload(URL1, /*expect_can_go_back=*/NO);
+}
+
+// Tests go back on a mix of Lens and sub navigations.
+TEST_F(LensOverlayNavigationManagerTest, MixNavigationBack) {
+  // Lens navigation generates result1 and loads URL1.
+  id<ChromeLensOverlayResult> result1 = GenerateResult(1);
+  SimulateLensDidGenerateResult(result1, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/NO);
+
+  // Sub navigation to URL2.
+  GURL URL2 = GURL("https://url.com/2");
+  SimulateWebNavigation(URL2, /*expect_can_go_back=*/YES);
+
+  // Lens navigation generates result2 and loads URL3.
+  id<ChromeLensOverlayResult> result2 = GenerateResult(2);
+  SimulateLensDidGenerateResult(result2, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/YES);
+  GURL URL3 = result2.searchResultURL;
+
+  // Sub navigation to URL4.
+  GURL URL4 = GURL("https://url.com/3");
+  SimulateWebNavigation(URL4, /*expect_can_go_back=*/YES);
+  // Sub navigation to URL5.
+  GURL URL5 = GURL("https://url.com/4");
+  SimulateWebNavigation(URL5, /*expect_can_go_back=*/YES);
+
+  // Go back on the sub navigations from `result2`.
+  GoBackExpectingURLReload(URL4, /*expect_can_go_back=*/YES);
+  GoBackExpectingURLReload(URL3, /*expect_can_go_back=*/YES);
+
+  // Go back on result1. (result1 sub navigations are invalid)
+  GoBackExpectingLensResultReload(result1, /*expect_can_go_back=*/NO);
+  // Lens did generate result for result1 reload.
+  id<ChromeLensOverlayResult> result1b = GenerateResult(1);
+  SimulateLensDidGenerateResult(result1b, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/NO);
 }

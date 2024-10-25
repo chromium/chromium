@@ -205,6 +205,10 @@
   [self.lensHandler reloadResult:result];
 }
 
+- (void)reloadURL:(GURL)URL {
+  [self.resultConsumer loadResultsURL:URL];
+}
+
 - (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack {
   [self.toolbarConsumer setCanGoBack:canGoBack];
 }

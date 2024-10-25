@@ -22,6 +22,9 @@
 /// be displayed by a later `loadLensResult:` call.
 - (void)reloadLensResult:(id<ChromeLensOverlayResult>)result;
 
+/// Loads `URL` in the overlay.
+- (void)reloadURL:(GURL)URL;
+
 /// Called when the navigation list has been updated. This function is triggered
 /// whenever the navigation history changes, potentially altering the
 /// availability of navigating to previous entry.
