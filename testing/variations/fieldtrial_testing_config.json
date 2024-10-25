@@ -8495,6 +8495,24 @@
             ]
         }
     ],
+    "DisableNonYUVOverlaysFromExo": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableNonYUVOverlaysFromExo"
+                    ],
+                    "hardware_classes": [
+                        "drallion"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableTrimmingWhileSuspended": [
         {
             "platforms": [
