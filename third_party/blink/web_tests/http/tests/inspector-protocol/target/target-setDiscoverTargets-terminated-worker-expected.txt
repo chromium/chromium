@@ -1,4 +1,0 @@
-Tests that browser.Target.setDiscoverTargets() does not report terminated workers.
-[
-]
-

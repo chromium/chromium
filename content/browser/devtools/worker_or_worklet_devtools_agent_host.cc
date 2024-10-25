@@ -33,9 +33,7 @@ WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
   // PlzDedicatedWorker is enabled and the code for non-PlzDedicatedWorker is
   // deleted. Worker agent hosts will be retained by the Worker DevTools manager
   // instead.
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    AddRef();  // Self keep-alive while the worker agent is alive.
-  }
+  AddRef();  // Self keep-alive while the worker agent is alive.
 }
 
 WorkerOrWorkletDevToolsAgentHost::~WorkerOrWorkletDevToolsAgentHost() = default;
@@ -71,9 +69,7 @@ void WorkerOrWorkletDevToolsAgentHost::Disconnected() {
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
   std::move(destroyed_callback_).Run(this);
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    Release();  // Matches AddRef() in constructor.
-  }
+  Release();  // Matches AddRef() in constructor.
 }
 
 BrowserContext* WorkerOrWorkletDevToolsAgentHost::GetBrowserContext() {
