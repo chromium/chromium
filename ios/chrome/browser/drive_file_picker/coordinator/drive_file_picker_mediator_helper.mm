@@ -55,8 +55,7 @@ const char kAnyVideoFileMimeType[] = "video/*";
 const char kAnyImageFileMimeType[] = "image/*";
 // extra_term parameter for the "Archives" filter.
 NSString* kOnlyShowArchivesExtraTerm =
-    @"(mimeType='application/vnd.google-apps.folder' or"
-     " mimeType='application/zip' or"
+    @"(mimeType='application/zip' or"
      " mimeType='application/x-7z-compressed' or"
      " mimeType='application/x-rar-compressed' or"
      " mimeType='application/vnd.rar' or"
@@ -67,21 +66,16 @@ NSString* kOnlyShowArchivesExtraTerm =
      " mimeType='application/java-archive' or"
      " mimeType='application/gzip')";
 // extra_term parameter for the "Audio" filter.
-NSString* kOnlyShowAudioExtraTerm =
-    @"(mimeType='application/vnd.google-apps.folder' or"
-     " mimeType contains 'audio/')";
+NSString* kOnlyShowAudioExtraTerm = @"mimeType contains 'audio/'";
 // extra_term parameter for the "Video" filter.
-NSString* kOnlyShowVideosExtraTerm =
-    @"(mimeType='application/vnd.google-apps.folder' or"
-     " mimeType contains 'video/')";
+NSString* kOnlyShowVideosExtraTerm = @"mimeType contains 'video/'";
 // extra_term parameter for the "Photos & Images" filter.
-NSString* kOnlyShowImagesExtraTerm =
-    @"(mimeType='application/vnd.google-apps.folder' or"
-     " mimeType contains 'image/')";
+NSString* kOnlyShowImagesExtraTerm = @"mimeType contains 'image/'";
 // extra_term parameter for the "PDFs" filter.
-NSString* kOnlyShowPDFsExtraTerm =
-    @"(mimeType='application/vnd.google-apps.folder' or"
-     " mimeType='application/pdf')";
+NSString* kOnlyShowPDFsExtraTerm = @"mimeType='application/pdf'";
+// extra_term parameter to add folders to a filter.
+NSString* kAlsoShowFoldersExtraTerm =
+    @"mimeType='application/vnd.google-apps.folder'";
 // Prefix of MIME types associated with Google apps.
 NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
 // MIME type for shortcut items.
@@ -162,6 +156,7 @@ void ApplySortToDriveListQuery(DriveItemsSortingType sorting_criteria,
 }
 
 void ApplyFilterToDriveListQuery(DriveFilePickerFilter filter,
+                                 bool include_folders,
                                  DriveListQuery& query) {
   NSString* filter_extra_term = nil;
   switch (filter) {
@@ -186,6 +181,11 @@ void ApplyFilterToDriveListQuery(DriveFilePickerFilter filter,
   }
   if (!filter_extra_term) {
     return;
+  }
+  if (include_folders) {
+    filter_extra_term =
+        [NSString stringWithFormat:@"(%@) or (%@)", filter_extra_term,
+                                   kAlsoShowFoldersExtraTerm];
   }
   if (query.extra_term) {
     query.extra_term = [NSString
@@ -220,7 +220,7 @@ DriveListQuery CreateDriveListQuery(
       query.filename_prefix = search_text;
       ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
                                 /* folders_first= */ false, query);
-      ApplyFilterToDriveListQuery(filter, query);
+      ApplyFilterToDriveListQuery(filter, /* include_folders= */ false, query);
     }
     return query;
   }
@@ -236,13 +236,13 @@ DriveListQuery CreateDriveListQuery(
       query.folder_identifier = folder_identifier;
       ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
                                 /* folders_first= */ true, query);
-      ApplyFilterToDriveListQuery(filter, query);
+      ApplyFilterToDriveListQuery(filter, /* include_folders= */ true, query);
       break;
     case DriveFilePickerCollectionType::kStarred:
       query.extra_term = kStarredExtraTerm;
       ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
                                 /* folders_first= */ false, query);
-      ApplyFilterToDriveListQuery(filter, query);
+      ApplyFilterToDriveListQuery(filter, /* include_folders= */ false, query);
       break;
     case DriveFilePickerCollectionType::kRecent:
       query.extra_term = kRecentExtraTerm;
@@ -251,7 +251,7 @@ DriveListQuery CreateDriveListQuery(
     case DriveFilePickerCollectionType::kSharedWithMe:
       query.extra_term = kSharedWithMeExtraTerm;
       query.order_by = kSharedWithMeOrderBy;
-      ApplyFilterToDriveListQuery(filter, query);
+      ApplyFilterToDriveListQuery(filter, /* include_folders= */ false, query);
       break;
   }
 

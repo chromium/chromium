@@ -31,6 +31,7 @@ void ApplySortToDriveListQuery(DriveItemsSortingType sorting_criteria,
 
 // Appends an extra term in `query` to account for `filter`.
 void ApplyFilterToDriveListQuery(DriveFilePickerFilter filter,
+                                 bool include_folders,
                                  DriveListQuery& query);
 
 // Creates a query accounting for `collection_type`, `folder_identifier`,
