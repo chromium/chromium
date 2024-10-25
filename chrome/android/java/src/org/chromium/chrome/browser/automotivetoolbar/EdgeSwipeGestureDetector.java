@@ -47,7 +47,6 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
                         @NonNull MotionEvent currentMotion,
                         float distanceX,
                         float distanceY) {
-                    // TODO(jtanaristy): Coordinate with NavigationHandler#onScroll
                     if (!mIsActive
                             && startMotion != null
                             && isValidSwipe(startMotion, currentMotion, distanceX, distanceY)) {

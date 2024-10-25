@@ -695,7 +695,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 }
                             }
                         },
-                        mCompositorViewHolderSupplier::get);
+                        mCompositorViewHolderSupplier::get,
+                        mFullscreenManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         // TODO(crbug.com/40946488): Consider register this drag listener to other views besides

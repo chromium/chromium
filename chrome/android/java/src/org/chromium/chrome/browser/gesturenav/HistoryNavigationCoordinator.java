@@ -10,8 +10,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -38,7 +42,11 @@ public class HistoryNavigationCoordinator
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private BackActionDelegate mBackActionDelegate;
     private Tab mTab;
+    @Nullable private FullscreenManager mFullscreenManager;
+    @Nullable private FullscreenManager.Observer mFullscreenObserver;
     private boolean mEnabled;
+    private boolean mIsAutomotiveFullscreenImprovementsEnabled;
+    private boolean mIsFullscreen;
 
     private NavigationHandler mNavigationHandler;
 
@@ -68,7 +76,8 @@ public class HistoryNavigationCoordinator
             ObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,
-            Supplier<TouchEventProvider> touchEventProvider) {
+            Supplier<TouchEventProvider> touchEventProvider,
+            FullscreenManager fullscreenManager) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(
                 lifecycleDispatcher,
@@ -76,7 +85,8 @@ public class HistoryNavigationCoordinator
                 tabSupplier,
                 insetObserver,
                 backActionDelegate,
-                touchEventProvider);
+                touchEventProvider,
+                fullscreenManager);
         return coordinator;
     }
 
@@ -87,7 +97,8 @@ public class HistoryNavigationCoordinator
             ObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,
-            Supplier<TouchEventProvider> touchEventProvider) {
+            Supplier<TouchEventProvider> touchEventProvider,
+            FullscreenManager fullscreenManager) {
         mNavigationLayout =
                 new HistoryNavigationLayout(
                         parentView.getContext(),
@@ -97,6 +108,7 @@ public class HistoryNavigationCoordinator
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mBackActionDelegate = backActionDelegate;
         mTouchEventProvider = touchEventProvider;
+        mFullscreenManager = fullscreenManager;
         lifecycleDispatcher.register(this);
 
         // TODO(crbug.com/40770763): Look into enforcing the z-order of the views.
@@ -136,6 +148,36 @@ public class HistoryNavigationCoordinator
             mInsetObserver = insetObserver;
             insetObserver.addObserver(this);
         }
+
+        mIsAutomotiveFullscreenImprovementsEnabled =
+                BuildInfo.getInstance().isAutomotive
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS);
+        if (mIsAutomotiveFullscreenImprovementsEnabled) {
+            mFullscreenObserver =
+                    new FullscreenManager.Observer() {
+                        @Override
+                        public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                            mIsFullscreen = true;
+                            if (mTouchEventProvider.get() != null) {
+                                mTouchEventProvider
+                                        .get()
+                                        .removeTouchEventObserver(mNavigationHandler);
+                            }
+                        }
+
+                        @Override
+                        public void onExitFullscreen(Tab tab) {
+                            mIsFullscreen = false;
+                            if (mTouchEventProvider.get() != null) {
+                                mTouchEventProvider.get().addTouchEventObserver(mNavigationHandler);
+                            }
+                        }
+                    };
+            if (mFullscreenManager != null) {
+                mFullscreenManager.addObserver(mFullscreenObserver);
+            }
+        }
         GestureNavMetrics.logGestureType(isFeatureEnabled());
     }
 
@@ -157,6 +199,10 @@ public class HistoryNavigationCoordinator
     private boolean isFeatureEnabled() {
         if (mForceFeatureEnabledForTesting) {
             return true;
+        }
+
+        if (mIsAutomotiveFullscreenImprovementsEnabled && mIsFullscreen) {
+            return false;
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -299,6 +345,10 @@ public class HistoryNavigationCoordinator
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
+        }
+        if (mFullscreenObserver != null) {
+            mFullscreenManager.removeObserver(mFullscreenObserver);
+            mFullscreenObserver = null;
         }
     }
 
