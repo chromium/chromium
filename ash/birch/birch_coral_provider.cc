@@ -427,8 +427,10 @@ void BirchCoralProvider::HandleCoralResponse(
   for (size_t i = 0; i < response_->groups().size(); ++i) {
     const auto& group = response_->groups()[i];
     // TODO(zxdan): Support nullopt title for async title generation.
+    // TODO(zxdan): Localize the strings.
     items.emplace_back(base::UTF8ToUTF16(group->title.value_or(std::string())),
-                       /*subtitle=*/std::u16string(), response_->source(),
+                       /*subtitle=*/u"Resume suggested group",
+                       response_->source(),
                        /*group_id=*/group->id);
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
