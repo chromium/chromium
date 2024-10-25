@@ -46,6 +46,7 @@ message ChromeUserMetricsExtension {
     // UMA metrics from Android WebLayer.
     ANDROID_WEBLAYER = 56;
   }
+
   // The product corresponding to this log. The field type is int32 instead of
   // Product so that downstream users of the Chromium metrics component can
   // introduce products without needing to make changes to the Chromium code
@@ -109,6 +110,7 @@ message ChromeUserMetricsExtension {
     // The source of the timestamp.
     enum TimeSource {
       UNSPECIFIED = 0;
+
       // The time on the local machine.
       CLIENT_CLOCK = 1;
 
@@ -166,6 +168,7 @@ message ChromeUserMetricsExtension {
 
   repeated TranslateEventProto translate_event = 15;
   repeated PrinterEventProto printer_event = 16;
+
   repeated ChromeOSAppListLaunchEventProto chrome_os_app_list_launch_event = 20;
 
   optional StructuredDataProto structured_data = 23;

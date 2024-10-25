@@ -65,6 +65,7 @@ message CoarseSystemInfo {
     PLATFORM_MACOS = 9;
     PLATFORM_LINUX = 10;
     PLATFORM_CHROMEOS = 11;
+    PLATFORM_ANDROID = 12;
   }
   optional Platform platform = 2;
 
