@@ -55,6 +55,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     DNS_CONFIGURATIONS = 1 << 10,
     PROXY_SETTINGS = 1 << 11,
+    KEYBOARD_SETTINGS = 1 << 12,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // This flag should be used for ResetProfile function, if you intend to add
@@ -67,7 +68,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
     // ResetSettingsHandler::SanitizeSettings, as they are not included by
     // default in a profile reset and DNS configs are not tied to a specific
     // user.
-    SANITIZE_RESETS = DNS_CONFIGURATIONS | PROXY_SETTINGS,
+    SANITIZE_RESETS = DNS_CONFIGURATIONS | PROXY_SETTINGS | KEYBOARD_SETTINGS,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Update ALL if you add new values and check whether the type of
@@ -106,6 +107,9 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   // Call to reset a users's setting, "Allow proxies for shared networks",
   // which is a network setting that affects all networks.
   virtual void ResetProxySettings();
+  // Call to reset a user's keyboard input settings to language and spell
+  // checker defaults using the local browser locale.
+  virtual void ResetKeyboardInputSettings();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ~ProfileResetter() override;

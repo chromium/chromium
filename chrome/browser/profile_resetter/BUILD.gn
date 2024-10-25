@@ -26,7 +26,10 @@ if (!is_android) {
       "//components/language/core/browser:browser",
     ]
     if (is_chromeos_ash) {
-      deps += [ "//chromeos/ash/components/network:network" ]
+      deps += [
+        "//chromeos/ash/components/dbus/shill:test_support",
+        "//chromeos/ash/components/network:network",
+      ]
     }
   }
 }

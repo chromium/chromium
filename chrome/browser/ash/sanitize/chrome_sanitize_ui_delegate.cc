@@ -30,7 +30,8 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
       ProfileResetter::EXTENSIONS | ProfileResetter::STARTUP_PAGES |
       ProfileResetter::PINNED_TABS | ProfileResetter::SHORTCUTS |
       ProfileResetter::NTP_CUSTOMIZATIONS | ProfileResetter::LANGUAGES |
-      ProfileResetter::DNS_CONFIGURATIONS | ProfileResetter::PROXY_SETTINGS;
+      ProfileResetter::DNS_CONFIGURATIONS | ProfileResetter::PROXY_SETTINGS |
+      ProfileResetter::KEYBOARD_SETTINGS;
 
   GetResetter()->ResetSettings(
       to_sanitize, nullptr,
