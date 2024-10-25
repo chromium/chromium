@@ -48,7 +48,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         // Calculation answers are specific in a way that these are basic suggestions, but processed
         // as answers, when new answer layout is enabled.
         return suggestion.getAnswerTemplate() != null
-                || suggestion.hasAnswer()
                 || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
     }
 
@@ -77,10 +76,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             AutocompleteInput input,
             AutocompleteMatch suggestion,
             int position) {
-        AnswerType answerType =
-                suggestion.getAnswer() == null
-                        ? suggestion.getAnswerType()
-                        : suggestion.getAnswer().getType();
+        AnswerType answerType = suggestion.getAnswerType();
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
         boolean shouldShowCardUi = false;
@@ -112,11 +108,10 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else {
             details =
-                    AnswerTextNewLayout.from(
+                    CalculatorAnswerTextLayout.from(
                             mContext,
                             suggestion,
-                            mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                            suggestionTextColorReversal);
+                            mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
         }
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].getText());
@@ -137,9 +132,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         } else {
             setTabSwitchOrRefineAction(model, input, suggestion, position);
         }
-        if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
-            fetchImage(model, new GURL(suggestion.getAnswer().getSecondLine().getImage()));
-        } else if (suggestion.getAnswerTemplate() != null) {
+        if (suggestion.getAnswerTemplate() != null) {
             GURL imageUrl =
                     suggestion.getAnswerTemplate().getAnswers(0).hasImage()
                             ? new GURL(
@@ -189,10 +182,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch suggestion) {
         int icon = 0;
 
-        AnswerType type =
-                suggestion.getAnswer() == null
-                        ? suggestion.getAnswerType()
-                        : suggestion.getAnswer().getType();
+        AnswerType type = suggestion.getAnswerType();
         if (type == null) {
             type = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         }

@@ -20,13 +20,6 @@
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_string.h"
-#include "components/omnibox/browser/jni_headers/SuggestionAnswer_jni.h"
-
-using base::android::ScopedJavaLocalRef;
-#endif
-
 namespace {
 
 // All of these are defined here (even though most are only used once each) so
@@ -545,56 +538,3 @@ bool SuggestionAnswer::IsExceptedFromLineReversal(
   return answer_type == omnibox::ANSWER_TYPE_DICTIONARY;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-namespace {
-
-ScopedJavaLocalRef<jobject> CreateJavaTextField(
-    JNIEnv* env,
-    const SuggestionAnswer::TextField& text_field) {
-  return Java_SuggestionAnswer_createTextField(
-      env, text_field.type(),
-      base::android::ConvertUTF16ToJavaString(env, text_field.text()),
-      static_cast<int>(text_field.style()), text_field.num_lines());
-}
-
-ScopedJavaLocalRef<jobject> CreateJavaImageLine(
-    JNIEnv* env,
-    const SuggestionAnswer::ImageLine* image_line) {
-  ScopedJavaLocalRef<jobject> jtext_fields =
-      Java_SuggestionAnswer_createTextFieldList(env);
-  for (const SuggestionAnswer::TextField& text_field :
-       image_line->text_fields()) {
-    Java_SuggestionAnswer_addTextFieldToList(
-        env, jtext_fields, CreateJavaTextField(env, text_field));
-  }
-
-  ScopedJavaLocalRef<jobject> jadditional_text;
-  if (image_line->additional_text()) {
-    jadditional_text = CreateJavaTextField(env, *image_line->additional_text());
-  }
-
-  ScopedJavaLocalRef<jobject> jstatus_text;
-  if (image_line->status_text()) {
-    jstatus_text = CreateJavaTextField(env, *image_line->status_text());
-  }
-
-  ScopedJavaLocalRef<jstring> jimage_url;
-  if (image_line->image_url().is_valid()) {
-    jimage_url = base::android::ConvertUTF8ToJavaString(
-        env, image_line->image_url().spec());
-  }
-
-  return Java_SuggestionAnswer_createImageLine(
-      env, jtext_fields, jadditional_text, jstatus_text, jimage_url);
-}
-
-}  // namespace
-
-ScopedJavaLocalRef<jobject> SuggestionAnswer::CreateJavaObject(
-    omnibox::AnswerType answer_type) const {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_SuggestionAnswer_createSuggestionAnswer(
-      env, answer_type, CreateJavaImageLine(env, &first_line_),
-      CreateJavaImageLine(env, &second_line_));
-}
-#endif  // BUILDFLAG(IS_ANDROID)

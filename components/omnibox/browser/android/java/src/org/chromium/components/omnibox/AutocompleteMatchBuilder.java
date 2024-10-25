@@ -30,7 +30,6 @@ public class AutocompleteMatchBuilder {
     private List<AutocompleteMatch.MatchClassification> mDisplayTextClassifications;
     private String mDescription;
     private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
-    private SuggestionAnswer mAnswer;
     private byte[] mSerializedAnswerTemplate;
     private AnswerType mAnswerType;
     private String mFillIntoEdit;
@@ -81,7 +80,6 @@ public class AutocompleteMatchBuilder {
         mDisplayTextClassifications = new ArrayList<>();
         mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
-        mAnswer = null;
         mSerializedAnswerTemplate = null;
         mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         mFillIntoEdit = null;
@@ -122,7 +120,6 @@ public class AutocompleteMatchBuilder {
                 mDisplayTextClassifications,
                 mDescription,
                 mDescriptionClassifications,
-                mAnswer,
                 mSerializedAnswerTemplate,
                 mAnswerType.getNumber(),
                 mFillIntoEdit,
@@ -228,15 +225,6 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setIsSearch(boolean isSearch) {
         mIsSearchType = isSearch;
-        return this;
-    }
-
-    /**
-     * @param answer The answer in the Omnibox suggestion.
-     * @return Omnibox suggestion builder.
-     */
-    public AutocompleteMatchBuilder setAnswer(SuggestionAnswer answer) {
-        mAnswer = answer;
         return this;
     }
 

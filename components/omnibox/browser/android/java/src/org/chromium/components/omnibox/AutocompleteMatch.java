@@ -72,7 +72,6 @@ public class AutocompleteMatch {
     private final List<MatchClassification> mDisplayTextClassifications;
     private String mDescription;
     private List<MatchClassification> mDescriptionClassifications;
-    private SuggestionAnswer mAnswer;
     private @Nullable RichAnswerTemplate mAnswerTemplate;
     private AnswerType mAnswerType;
     private final String mFillIntoEdit;
@@ -101,7 +100,6 @@ public class AutocompleteMatch {
             List<MatchClassification> displayTextClassifications,
             String description,
             List<MatchClassification> descriptionClassifications,
-            SuggestionAnswer answer,
             byte[] serializedAnswerTemplate,
             int answerType,
             String fillIntoEdit,
@@ -129,7 +127,6 @@ public class AutocompleteMatch {
         mDisplayTextClassifications = displayTextClassifications;
         mDescription = description;
         mDescriptionClassifications = descriptionClassifications;
-        mAnswer = answer;
         if (serializedAnswerTemplate != null) {
             try {
                 mAnswerTemplate = RichAnswerTemplate.parseFrom(serializedAnswerTemplate);
@@ -169,7 +166,6 @@ public class AutocompleteMatch {
             String description,
             int[] descriptionClassificationOffsets,
             int[] descriptionClassificationStyles,
-            SuggestionAnswer answer,
             byte[] serializedAnswerTemplate,
             int answerType,
             String fillIntoEdit,
@@ -209,7 +205,6 @@ public class AutocompleteMatch {
                         contentClassifications,
                         description,
                         new ArrayList<>(),
-                        answer,
                         serializedAnswerTemplate,
                         answerType,
                         fillIntoEdit,
@@ -278,11 +273,6 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
-    private void setAnswer(SuggestionAnswer answer) {
-        mAnswer = answer;
-    }
-
-    @CalledByNative
     private void setAnswerTemplate(byte[] serializedAnswerTemplate) {
         if (serializedAnswerTemplate != null) {
             try {
@@ -341,14 +331,6 @@ public class AutocompleteMatch {
 
     public List<MatchClassification> getDescriptionClassifications() {
         return mDescriptionClassifications;
-    }
-
-    public SuggestionAnswer getAnswer() {
-        return mAnswer;
-    }
-
-    public boolean hasAnswer() {
-        return mAnswer != null;
     }
 
     public @Nullable RichAnswerTemplate getAnswerTemplate() {
@@ -440,7 +422,6 @@ public class AutocompleteMatch {
                         + 2017 * displayTextHash
                         + 1901 * fillIntoEditHash
                         + (mIsDeletable ? 1 : 0);
-        if (mAnswer != null) hash = hash + mAnswer.hashCode();
         return hash;
     }
 
@@ -466,7 +447,6 @@ public class AutocompleteMatch {
                 && ObjectsCompat.equals(
                         mDescriptionClassifications, suggestion.mDescriptionClassifications)
                 && mIsDeletable == suggestion.mIsDeletable
-                && ObjectsCompat.equals(mAnswer, suggestion.mAnswer)
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
                 && Arrays.equals(mPostData, suggestion.mPostData)
                 && mGroupId == suggestion.mGroupId
@@ -573,7 +553,6 @@ public class AutocompleteMatch {
                 displayTextClassifications,
                 input.getDescription(),
                 descriptionClassifications,
-                /* answer= */ null,
                 /* serializedAnswerTemplate= */ null,
                 /* answerType= */ 0,
                 input.getFillIntoEdit(),
@@ -613,7 +592,6 @@ public class AutocompleteMatch {
                         "mGroupId=" + mGroupId,
                         "mDisplayTextClassifications=" + mDisplayTextClassifications,
                         "mDescriptionClassifications=" + mDescriptionClassifications,
-                        "mAnswer=" + mAnswer,
                         "mAnswerTemplate=" + mAnswerTemplate);
         return pieces.toString();
     }

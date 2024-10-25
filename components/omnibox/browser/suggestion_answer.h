@@ -19,10 +19,6 @@
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
-#endif
-
 namespace omnibox::answer_data_parser {
 // These values are named and numbered to match a specification at go/ais_api.
 // The values are only used for answer results.
@@ -236,11 +232,6 @@ class SuggestionAnswer {
   // Some types of matches (answers for dictionary definitions, e.g.) do not
   // follow the common rules for reversing lines.
   bool IsExceptedFromLineReversal(omnibox::AnswerType answer_type) const;
-
-#if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
-      omnibox::AnswerType answer_type) const;
-#endif
 
  private:
   static const char kAnswerUsedUmaHistogramName[];
