@@ -123,8 +123,8 @@ void CpuProbeManager::EnsureStarted() {
 void CpuProbeManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  timer_.AbandonAndStop();
-  randomization_timer_.AbandonAndStop();
+  timer_.Stop();
+  randomization_timer_.Stop();
   state_randomization_requested_ = false;
   // Drop the replies to any RequestSample calls that were posted before the
   // timer stopped.

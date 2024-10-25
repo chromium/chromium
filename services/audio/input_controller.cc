@@ -378,7 +378,7 @@ void InputController::Close() {
   if (!stream_)
     return;
 
-  check_muted_state_timer_.AbandonAndStop();
+  check_muted_state_timer_.Stop();
 
   std::string log_string;
   static const char kLogStringPrefix[] = "AIC::Close => ";
