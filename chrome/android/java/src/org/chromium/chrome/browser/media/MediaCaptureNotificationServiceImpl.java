@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
@@ -421,6 +422,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                 ContextUtils.getApplicationContext(),
                 notificationId,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 }
