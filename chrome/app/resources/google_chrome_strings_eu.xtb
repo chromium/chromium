@@ -30,6 +30,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1330562121671411446">Hauteman hizkuntza</translation>
 <translation id="1335640173511558774">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS Flex-en Baldintzak.</translation>
 <translation id="1341711321000856656">Chrome-ko beste profil bateko pasahitzak ikustera joan zaitezke</translation>
+<translation id="1356661055722410047">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak</translation>
 <translation id="1363996462118479832">Saioa hastean gertatu den errore bat dela eta, Chrome OS-k ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Ordenagailuak Google Chrome arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Google Chrome eta saiatu berriro.</translation>
@@ -51,6 +52,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Zure pribatutasuna babesteko, lau aste baino gehiago dituzten interesak automatikoki ezabatzen ditugu. Arakatzen jarraitu ahala, baliteke interes bat berriro agertzea zerrendan. Bestela, Chrome-k aintzat hartzea nahi ez duzun interesak ken ditzakezu.</translation>
 <translation id="1628000112320670027">Lortu Chrome erabiltzeko laguntza</translation>
 <translation id="1640672724030957280">Deskargatzen…</translation>
+<translation id="1651617469580841801">Google Lens erabiltzen duzunean, orriaren izena, URLa eta edukia, PDFak barne, Google-ri bidaltzen zaizkio. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-i buruz</translation>
 <translation id="1674870198290878346">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="1682634494516646069">Google Chrome-k ezin du irakurri bere datu-direktorioa eta ezin du idatzi bertan:
@@ -197,6 +199,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3261565993776444564">Probatu beste kolore bat arakatzailea pertsonalizatzeko</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3286538390144397061">Berrabiarazi orain</translation>
+<translation id="3289358082435924389">Aurrerago, gordetako informazioa inprimakiak automatikoki betetzeko erabili nahi duzun ala ez galdetuko dizu Chrome-k</translation>
 <translation id="3292333338048274092">Chrome berrabiarazi beharko duzu ondoren.</translation>
 <translation id="3360895254066713204">Chrome laguntzailea</translation>
 <translation id="3379938682270551431">{0,plural, =0{Orain exekutatuko da Chromium berriro}=1{1 segundo barru exekutatuko da Chromium berriro}other{# segundo barru exekutatuko da Chromium berriro}}</translation>
@@ -511,6 +514,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7308322188646931570">Chrome-k fitxategiak deskargatzearren memorian sartzeko baimena behar du</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7352881504289275361">Arakatze seguru hobetuak Chrome-ren sareko babesik sendoena eskaintzen dizu, arakatzen duzun bitartean seguru egon zaitezen</translation>
+<translation id="7386878009611068389">Gurasoen aukerekin sarean seguruago egoteko, aldatu zure Chrome-ko profilera, bertan <ph name="USER_EMAIL_ADDRESS" /> gisa saioa hasita baitaukazu jada</translation>
 <translation id="7394745511930161845">Sortu gai bat zuk zeuk AAren bidez, arakatzaileari itxura esklusiboa emateko</translation>
 <translation id="7398801000654795464">Chrome arakatzaileko saioa <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
 <translation id="7412494426921990001">Sakatu Chrome-ko menua</translation>
@@ -524,6 +528,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7477130805345743099">Chrome-k abisatu egingo dizu webgune bat konexio ez-seguru batekin kargatu aurretik</translation>
 <translation id="7481213027396403996">Lortu Chrome-ren segurtasun-aukerarik sendoena</translation>
 <translation id="749228101751499733">Saioa hasita daukazunean, Google-ko kontuko pasahitzak eta beste erabil ditzakezu Chrome-n. Google-ren zerbitzuen ezarpenak aldatzeko, erabili <ph name="SHORTCUT" />.</translation>
+<translation id="7512187482580860950">Chrome-k informazio mota gehiago uler ditzake, eta inprimakiak automatikoki bizkorrago bete. Lortu informazio gehiago <ph name="BEGIN_LINK" />Chrome-ren betetze automatikoari buruz<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google eguneratzeko zerbitzua</translation>
 <translation id="7515191208480168435">Google Lens erraz erabiltzeko, aingura ezazu</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -566,6 +571,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7886087451482920026">Hautatu testua Google Lens-ekin</translation>
 <translation id="7890208801193284374">Ordenagailua partekatzen baduzu, lagunek eta familiako kideek euren kontuak erabilita ibil daitezke Interneten, nahi duten moduan.</translation>
 <translation id="7896673875602241923">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chrome-n ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chrome erabiltzaile bat.</translation>
+<translation id="7917470403848199310">Inprimakiko informazioa gorde nahi duzun galdetuko dizu Chrome-k, hala nola urtebetetzea, adina eta pasaporte-zenbakia</translation>
 <translation id="7917876797003313048">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chrome arakatzaile, Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome-k deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
 <translation id="7947083960301164556">Ikusi berritasunak</translation>
@@ -622,6 +628,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8550334526674375523">Laneko profila eta profil pertsonala guztiz bereizita daude.</translation>
 <translation id="8555465886620020932">Zerbitzuaren errorea: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8571790202382503603">Chrome-ko profilekin, Chrome-n dituzun gauza guztiak bereiz ditzakezu. Hala, errazago edukiko dituzu bananduta gauza pertsonalak eta lanekoak.</translation>
+<translation id="8601359445272098721">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak, "itzuli pantaila" botoia hautatuta.</translation>
 <translation id="8614913330719544658">Google Chrome-k ez du erantzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="861702415419836452">Chrome-k kamera erabiltzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 minutu barru exekutatuko da Chrome berriro}other{# minutu barru exekutatuko da Chrome berriro}}</translation>

@@ -445,6 +445,7 @@ Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</t
 <translation id="2530896289327917474">Sisestusmärgiga sirvimise sisse- ja väljalülitamine</translation>
 <translation id="2531025035050312891">aeglane seade</translation>
 <translation id="2531107890083353124">Vahelehte lohistades vajutage klahvi <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Kas proovite kasutada klahvi Home? Kasutage</translation>
 <translation id="254900897760075745">Valitud sisu kopeerimine lõikelauale</translation>
 <translation id="2549711466868162843">Valgustuse parandamine</translation>
 <translation id="2549985041256363841">Alusta salvestamist</translation>
@@ -563,6 +564,7 @@ Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</t
 <translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
 <translation id="2992272421330787632">Peida kõik meediasoovitused</translation>
 <translation id="2992327365391326550">Seadme mikrofoninupp on välja lülitatud.</translation>
+<translation id="2993956882370897557">Kas proovite kasutada klahvi End? Kasutage</translation>
 <translation id="3000461861112256445">Monoheli</translation>
 <translation id="3001391739687111021">Muuda ekraani suurust</translation>
 <translation id="3009178788565917040">Väljund</translation>
@@ -615,6 +617,7 @@ Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</t
 <translation id="316356270129335934"><ph name="MANAGER" /> viib seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi vanemale versioonile. Seade lähtestatakse ja kõik andmed kustutatakse.</translation>
 <translation id="316798519864381606">Google’i esitlus</translation>
 <translation id="3171170659304083361">Sisestusmeetodi seaded</translation>
+<translation id="3174897399179348329">Kas proovite kasutada klahvi Page Up? Kasutage</translation>
 <translation id="3176221688814061633">Teie Chromebook või Bluetooth-seade kasutab Bluetoothi vanemat versiooni. Parema helikvaliteedi saavutamiseks lülitage sisse Bluetooth Super Resolution või kasutage sisemist mikrofoni.</translation>
 <translation id="3181441307743005334">Taaskäivitamine võib pisut aega võtta</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ühendatud ühe seadmega}other{Ühendatud # seadmega}}</translation>
@@ -1262,6 +1265,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5297704307811127955">Väljas</translation>
 <translation id="5300589172476337783">Kuva</translation>
 <translation id="5302048478445481009">Keel</translation>
+<translation id="5302531370473608800">YouTube Musicu kasutamiseks värskendage oma seadet <ph name="DEVICE_TYPE" /></translation>
 <translation id="5303319262469238330">Akut on jäänud <ph name="PERCENTAGE" />%.
 Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5308380583665731573">Ühendamine</translation>
@@ -1821,6 +1825,7 @@ Uus installimine</translation>
 <translation id="7144942256906679589">Aku olek</translation>
 <translation id="7145639536026937076">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse. Akusäästja on sisse lülitatud.</translation>
 <translation id="7147587499155271409">Sirvimisajalugu puudub</translation>
+<translation id="7147657298465433425">F-klahvidele juurdepääsuks vajutage klahvi fn + ülemise rea klahve</translation>
 <translation id="7149149900052329230">Hallake oma kõiki oma kohalikke faile ja Google Drive'i faile rakenduses Failid.</translation>
 <translation id="7165278925115064263">Alt + Tõstuklahv + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</t
 <translation id="7557816257942363084"><ph name="APP_NAME" /> kasutab praegu teie mikrofoni</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
+<translation id="7568154670718626683">Kas proovite kasutada klahvi Delete? Kasutage</translation>
 <translation id="7568790562536448087">Värskendamine</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
 <translation id="7569886975397378678">Teie telefoni märguannete ja rakenduste kuvamise seadistamisest loobumine</translation>
@@ -2132,6 +2138,7 @@ Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</t
 <translation id="820256110035940528"><ph name="TITLE" /> Keskendusite <ph name="FOCUSED_TIME" />. Uuesti keskendumiseks avage kiirseaded.</translation>
 <translation id="8203224998425013577">Kuva rohkem emotikone ja GIF-e</translation>
 <translation id="8203795194971602413">Paremklikk</translation>
+<translation id="8205469348819768313">Kas proovite kasutada klahvi Page Down? Kasutage</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Teie Chromebook peab sel ajal olema sisse lülitatud ja toiteallikaga ühendatud. Veenduge, et laadija või adapteri kaabel oleks korralikult ühendatud nii Chromebooki kui ka pistikupesaga. Ärge lülitage oma Chromebooki välja.</translation>
 <translation id="8220076512072059941">Lisa <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2324,6 +2331,7 @@ Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</t
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google'i assistent ei räägi selles keeles.</translation>
 <translation id="8926951137623668982">Riiul on alati peidetud</translation>
+<translation id="8929566928381252430">Kas proovite kasutada klahvi Caps Lock? Kasutage</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# faili}}</translation>
 <translation id="8936501819958976551">inaktiveeritud</translation>
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>

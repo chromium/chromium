@@ -30,6 +30,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1330562121671411446">I-detect ang wika</translation>
 <translation id="1335640173511558774">Hinihiling ng <ph name="MANAGER" /> na basahin at tanggapin mo ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago, o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puwede kang lumipat para makita ang mga password mula sa ibang profile sa Chrome</translation>
+<translation id="1356661055722410047">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen</translation>
 <translation id="1363996462118479832">Hindi ma-sync ng ChromeOS ang iyong data dahil sa isang error sa pag-sign in.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Mayroon nang mas bagong bersyon ng Google Chrome ang computer na ito. Kung hindi gumagana ang software, mangyaring i-uninstall ang Google Chrome at subukan ulit.</translation>
@@ -51,6 +52,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chrome.</translation>
 <translation id="1628000112320670027">Humingi ng tulong sa Chrome</translation>
 <translation id="1640672724030957280">Dina-download...</translation>
+<translation id="1651617469580841801">Kapag ginamit mo ang Google Lens, ipapadala sa Google ang pamagat ng page, URL, at content, pati ang mga PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tungkol sa ChromeOS Flex</translation>
 <translation id="1674870198290878346">Buksan ang link sa Inco&amp;gnito Window ng Chrome</translation>
 <translation id="1682634494516646069">Hindi makapagbasa at makapagsulat ang Google Chrome sa direktoryo nito ng data:
@@ -197,6 +199,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3261565993776444564">Sumubok ng bagong kulay para i-customize ang iyong browser</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
+<translation id="3289358082435924389">Itatanong sa iyo ng Chrome sa ibang pagkakataon kung gusto mong gamitin ang naka-save na impormasyon para awtomatikong punan ang mga form</translation>
 <translation id="3292333338048274092">Pagkatapos, kakailanganin mong i-restart ang Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Muli nang ilulunsad ang Chrome ngayon}=1{Muli nang ilulunsad ang Chrome sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chrome sa loob ng # segundo}other{Muli nang ilulunsad ang Chrome sa loob ng # na segundo}}</translation>
@@ -512,6 +515,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7352881504289275361">Iniaalok ng Pinahusay na Ligtas na Pag-browse ang pinakamalakas na proteksyon ng Chrome online para panatilihin kang ligtas habang nagba-browse ka</translation>
+<translation id="7386878009611068389">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, lumipat sa profile mo sa Chrome kung saan naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7394745511930161845">Gumawa ng sarili mong tema gamit ang AI para mabigyan ng natatanging hitsura ang iyong browser</translation>
 <translation id="7398801000654795464">Naka-sign in ka sa Chrome bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
 <translation id="7412494426921990001">I-click ang menu ng Chrome</translation>
@@ -525,6 +529,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7477130805345743099">Bibigyan ka ng babala ng Chrome bago nito i-load ang anumang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="7481213027396403996">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="749228101751499733">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chrome. Gamit ang <ph name="SHORTCUT" />, puwede mong baguhin ang iyong mga setting ng Mga serbisyo ng Google.</translation>
+<translation id="7512187482580860950">Mauunawaan ng Chrome ang higit pang uri ng impormasyon at mas mabilis nitong mao-autofill ang iyong mga form. Matuto pa tungkol sa <ph name="BEGIN_LINK" />Autofill ng Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Puwede mong i-pin ang Google Lens para sa madaling pag-access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -567,6 +572,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7886087451482920026">Pumili ng text gamit ang Google Lens</translation>
 <translation id="7890208801193284374">Kung nagpapahiram ka ng computer, ang mga kaibigan at kapamilya ay maaaring mag-browse nang hiwalay at i-set up ang Chrome sa paraang gusto nila.</translation>
 <translation id="7896673875602241923">May nag-sign in dati sa Chrome sa computer na ito bilang <ph name="ACCOUNT_EMAIL_LAST" />. Mangyaring gumawa ng bagong user ng Chrome upang ihiwalay ang iyong impormasyon.</translation>
+<translation id="7917470403848199310">Itatanong sa iyo ng Chrome kung gusto mong i-save ang impormasyon ng form, gaya ng iyong kaarawan, edad, at numero ng passport</translation>
 <translation id="7917876797003313048">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chrome browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Na-block ng Chrome ang pag-download na ito dahil mapanlinlang ang file at posible itong gumawa ng mga hindi inaasahang pagbabago sa iyong device</translation>
 <translation id="7947083960301164556">Tingnan kung Ano'ng Bago</translation>
@@ -623,6 +629,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8550334526674375523">Ang profile sa trabaho na ito ay ganap na hiwalay sa iyong personal na profile.</translation>
 <translation id="8555465886620020932">Error sa serbisyo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Pinapadali nitong mapaghiwalay ang trabaho at kasiyahan.</translation>
+<translation id="8601359445272098721">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen sa pamamagitan ng pagpili sa button na "isalin ang screen"</translation>
 <translation id="8614913330719544658">Hindi gumagana ang Google Chrome. Ilunsad muli ngayon?</translation>
 <translation id="861702415419836452">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para gumawa ng 3D na mapa ng kapaligiran mo</translation>
 <translation id="8625237574518804553">{0,plural, =1{Muling ilulunsad ang Chrome sa loob ng 1 minuto}one{Muling ilulunsad ang Chrome sa loob ng # minuto}other{Muling ilulunsad ang Chrome sa loob ng # na minuto}}</translation>

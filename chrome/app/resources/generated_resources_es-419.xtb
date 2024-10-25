@@ -6115,7 +6115,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5369491905435686894">Habilitar la aceleración del mouse</translation>
 <translation id="5369694795837229225">Configurar el entorno de desarrollo de Linux</translation>
 <translation id="5370819323174483825">&amp;Volver a cargar</translation>
-<translation id="5371801916084758849">Puedes buscar en la barra de direcciones con @historial, así como en la página Historial</translation>
 <translation id="5372529912055771682">El modo de inscripción proporcionado no es compatible con esta versión del sistema operativo. Asegúrate de que estás ejecutando la versión más reciente y vuelve a intentarlo.</translation>
 <translation id="5372579129492968947">Deja de fijar extensión</translation>
 <translation id="5372632722660566343">Continuar sin cuenta</translation>
@@ -9018,7 +9017,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7490683549040131791">Revisar las contraseñas restantes</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
-<translation id="7493244854553650478">Cuando buscas en el historial de navegación, los términos de búsqueda en el historial, el contenido de la página de las mejores coincidencias y los resultados del modelo generado se envían a Google.</translation>
 <translation id="7493386493263658176">Es posible que la extensión <ph name="EXTENSION_NAME" /> recopile todo el texto que escribas, lo que incluye datos personales como contraseñas y número de tarjetas de crédito. ¿Deseas usar esta extensión?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">App para Android</translation>

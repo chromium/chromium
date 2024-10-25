@@ -445,6 +445,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2530896289327917474">Vypnutie alebo zapnutie prehliadania Caret</translation>
 <translation id="2531025035050312891">zariadenie je pomalé</translation>
 <translation id="2531107890083353124">Pri presúvaní karty stlačte <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Pokúšate sa použiť kláves Home? Použite</translation>
 <translation id="254900897760075745">Skopírovanie vybraného obsahu do schránky</translation>
 <translation id="2549711466868162843">Zlepšenie osvetlenia</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
@@ -563,6 +564,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2985148236010982088">Zobraziť všetky aplikácie</translation>
 <translation id="2992272421330787632">Skryť všetky návrhy médií</translation>
 <translation id="2992327365391326550">Tlačidlo mikrofónu zariadenia je vypnuté.</translation>
+<translation id="2993956882370897557">Pokúšate sa použiť kláves End? Použite</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001391739687111021">Upraviť veľkosť obrazovky</translation>
 <translation id="3009178788565917040">Výstup</translation>
@@ -615,6 +617,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vracia predchádzajúcu verziu vo vašom zariadení <ph name="DEVICE_TYPE" />. Zariadenie bude resetované a všetky údaje odstránené.</translation>
 <translation id="316798519864381606">Prezentácia Google</translation>
 <translation id="3171170659304083361">Nastavenia metód vstupu</translation>
+<translation id="3174897399179348329">Pokúšate sa použiť kláves Page Up? Použite</translation>
 <translation id="3176221688814061633">Chromebook alebo zariadenie s rozhraním Bluetooth používa staršiu verziu rozhrania Bluetooth. Ak chcete zlepšiť kvalitu zvuku, zapnite superrozlíšenie cez Bluetooth alebo použite interný mikrofón.</translation>
 <translation id="3181441307743005334">Reštart môže chvíľu trvať</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Pripojené k zariadeniu}few{Pripojené k # zariadeniam}many{Connected to # devices}other{Pripojené k # zariadeniam}}</translation>
@@ -1261,6 +1264,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5297704307811127955">Vypnuté</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5302048478445481009">Jazyk</translation>
+<translation id="5302531370473608800">Ak chcete používať YouTube Music, aktualizujte zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="5303319262469238330">Zostávajúca batéria: <ph name="PERCENTAGE" /> %.
 Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
@@ -1820,6 +1824,7 @@ Nová inštalácia</translation>
 <translation id="7144942256906679589">Stav batérie</translation>
 <translation id="7145639536026937076">Batéria je nabitá na <ph name="PERCENTAGE" /> % a nabíja sa. Šetrič batérie je zapnutý.</translation>
 <translation id="7147587499155271409">Žiadna história prehliadania</translation>
+<translation id="7147657298465433425">Ak chcete získať prístup ku klávesom F, stlačte kláves Fn a klávesy horného radu</translation>
 <translation id="7149149900052329230">Spravujte svoje miestne súbory a súbory na Disku Google v aplikácii Súbory.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ V opačnom prípade sa vstavaný touchpad znova aktivuje o 30 sekúnd.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> momentálne používa mikrofón</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
+<translation id="7568154670718626683">Pokúšate sa použiť kláves Delete? Použite</translation>
 <translation id="7568790562536448087">Prebieha aktualizácia</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>
 <translation id="7569886975397378678">Zrušiť nastavovanie zobrazovania upozornení a aplikácií z telefónu</translation>
@@ -2131,6 +2137,7 @@ V opačnom prípade sa vstavaný touchpad znova aktivuje o 30 sekúnd.</trans
 <translation id="820256110035940528"><ph name="TITLE" /> Práve ste sa zamerali na <ph name="FOCUSED_TIME" />. Ak sa chcete zamerať znova, otvorte rýchle nastavenia.</translation>
 <translation id="8203224998425013577">Zobraziť ďalšie emodži a gify</translation>
 <translation id="8203795194971602413">Kliknutie pravým tlačidlom myši</translation>
+<translation id="8205469348819768313">Pokúšate sa použiť kláves Page Down? Použite</translation>
 <translation id="8214996719228530800">Kanál Canary</translation>
 <translation id="8219451629189078428">Chromebook musíte mať v tomto období zapnutý a pripojený k zásuvke. Uistite sa, či je kábel nabíjačky alebo adaptéra riadne pripojený do Chromebooku aj elektrickej zásuvky. Chromebook nevypínajte.</translation>
 <translation id="8220076512072059941">Pridať <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2322,6 +2329,7 @@ V opačnom prípade sa vstavaný touchpad znova aktivuje o 30 sekúnd.</trans
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asistent Google nehovorí týmto jazykom.</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
+<translation id="8929566928381252430">Pokúšate sa použiť kláves Caps Lock? Použite</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="8936501819958976551">deaktivované</translation>
 <translation id="8938800817013097409">Zariadenie USB-C (pravý port vzadu)</translation>

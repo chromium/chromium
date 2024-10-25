@@ -419,6 +419,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2942036813789421260">पूर्वावलोकन ट्याब बन्द छ</translation>
 <translation id="2946420957526726953">तपाईंको फोन अन्य डिभाइससँग कनेक्ट गर्न Chrome अपडेट गरिँदै छ</translation>
 <translation id="2951071800649516099">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा वेबपेजहरू हाल्नुहोस्</translation>
+<translation id="2954586176076923855">एड्रेस बार सारेर सिरानमा लैजानुहोस्</translation>
 <translation id="2956070106555335453">सारांश</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> वटा पेज पढ्न बाँकी छ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
 <translation id="2972109037780336501">अनुमतिहरू स्वतः रद्द गर्नुहोस्</translation>
@@ -653,6 +654,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4095425503313512126">अझ छिटो ब्राउज गर्न र खोज्न सकिन्छ</translation>
 <translation id="4096227151372679484">बुकमार्क सेभ गर्ने फ्लो स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="4101475238162928417">तपाईं आफूले चलाउने अन्य डिभाइसहरूमा आफ्ना पासवर्ड र बुकमार्कलगायतका कुरा प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
+<translation id="4105527135143631701">Google पासवर्ड म्यानेजरको अपडेट खोलिएको छ</translation>
 <translation id="4108314971463891922">फलो गर्नुहोस्</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
 <translation id="4116038641877404294">पृष्ठहरूलाई अफलाइन हेर्न तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
@@ -1256,6 +1258,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6813446258015311409">Chrome मा साइन इन गर्ने पेज खोलियो।</translation>
 <translation id="6817747507826986771">यो पेज छिटोछरितो रूपमा सेयर गर्नुहोस्। यो सर्टकट सम्पादन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Google पासवर्ड म्यानेजरको अपडेट बन्द गरिएको छ</translation>
 <translation id="6822587385560699678">यो सेटिङ अन हुँदा पासवर्डहरू <ph name="ACCOUNT" /> मा सेभ गरिन्छन्। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="6823561724060793716">तपाईं एड्रेस बारबाट पेजसम्बन्धी जानकारी खोलेर आफूले हेरिरहेको पेजसम्बन्धी थप जानकारी प्राप्त गर्न सक्नुहुन्छ</translation>
 <translation id="6828070228333235514">मूल्य ट्रयाक गर्ने सुविधा अफ गर्नुहोस्</translation>
@@ -1457,6 +1460,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>
 <translation id="7612989789287281429">साइन इन गरिँदै छ…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> डाउनलोड नेटवर्क असफलताका कारणले असफल भयो।</translation>
+<translation id="762537095495606755">पासवर्डहरूले यो डिभाइसमा चाँडै नै काम गर्न छाड्ने छन्</translation>
 <translation id="7626032353295482388">Chrome मा स्वागत छ</translation>
 <translation id="7628417132421583481">पासवर्ड म्यानेजरमा जानुहोस्</translation>
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
@@ -1549,6 +1553,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8015452622527143194">पृष्ठमा रहेको सबै कुरालाई डिफल्ट आकारमा ल्याउनुहोस्</translation>
 <translation id="8017431260099661477">निम्तोको लिंक खोल्न सकिएन</translation>
 <translation id="8026238112629815203">हामीले यो डिभाइसमा पासवर्डहरू सेभ गरिने तरिका परिवर्तन गरेका छौँ</translation>
+<translation id="8027395186860110042">पासवर्डहरूले चाँडै नै काम गर्न छाड्न सक्छन्</translation>
 <translation id="8027863900915310177">कहाँ डाउनलोड गर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="8030852056903932865">अनुमोदन गर्नुहोस्</translation>
 <translation id="8032569120109842252">फलो गरिरहेको</translation>
@@ -1619,7 +1624,9 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8282297628636750033">साइटहरूमा सकेसम्म अँध्यारो थिम लागू गर्नु…</translation>
 <translation id="8282950411412455249">सुरक्षासम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="829672787777123339">तपाईंको यन्त्रसँग कनेक्ट गरिँदै छ…</translation>
+<translation id="8306751933352925837">पासवर्डहरूले यो डिभाइसमा चाँडै नै काम गर्न छाड्ने छन्। आफ्ना पासवर्डहरू प्रयोग गरिरहन Google Play services अपडेट गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ले ट्याब “<ph name="TAB_NAME" />” हटाउनुभएको छ</translation>
+<translation id="8310451567823644042">पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्</translation>
 <translation id="831192587911042850">यसले तपाईंले फलो गरिरहेका वेबसाइटहरूको सूचीमा हालको वेबसाइट थप्छ।</translation>
 <translation id="8342727528718219152">Chrome ले तपाईंलाई अत्यन्तै धेरै नोटिफिकेसनहरू पठाउन सक्ने साइटहरूका बारेमा जानकारी गराउने छ</translation>
 <translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगर्नुहोस्</translation>
@@ -1686,6 +1693,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8570677896027847510">यो फाइल सुरक्षित रूपमा डाउनलोड गर्न सकिँदैन</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>
 <translation id="8582529315803410153">तपाईंका अन्य डिभाइसका ट्याबहरू यहाँ देखिने छन्</translation>
+<translation id="8585103689515290060">अटोफिल सेवाहरू</translation>
 <translation id="859046281437143747">"थप विकल्पहरू" बटनमा क्लिक गरी मूल्य ट्रयाक गर्नुहोस्</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> ट्याब समूह मेटाइयो</translation>
 <translation id="860043288473659153">कार्डवालाको नाम</translation>
@@ -1754,6 +1762,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
+<translation id="897061774231912216">Google Play services उपलब्ध नभएकाले पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्। आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू प्रयोग गर्न अर्कै डिभाइस प्रयोग गरी साइन इन गर्नुहोस् वा passwords.google.com मा जानुहोस्।</translation>
 <translation id="8970887620466824814">कुनै समस्या आयो।</translation>
 <translation id="8972098258593396643">डिफल्ट फोल्डरमा डाउनलोड गर्ने हो?</translation>
 <translation id="8982113230057126145">थम्ब्स डाउनले तपाईंलाई यो सारांश मन पर्दैन भन्ने प्रतिक्रिया पेस गर्छ</translation>
@@ -1803,6 +1812,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> मा जारी राख्नका निम्ति कुनै खाता छनौट गर्नुहोस्</translation>
 <translation id="9158770349521403363">सामग्री मात्र सेयर गर्नुहोस्</translation>
+<translation id="9168847423516963845">एड्रेस बार सारेर पुछारमा लैजानुहोस्</translation>
 <translation id="9169507124922466868">नेभिगेसनको इतिहास आधा खुला छ</translation>
 <translation id="918419812064856259">Chrome बिटा</translation>
 <translation id="9190276265094487094">तपाईंका सबै डिभाइसमा तपाईंको ब्राउजिङ इतिहास सिंक गरिने भएकाले तपाईं जुनसुकै डिभाइसबाट आफूले गर्दै गरेको कार्य जारी राख्न सक्नुहुन्छ</translation>
@@ -1811,7 +1821,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9204021776105550328">मेटाइँदै छ</translation>
 <translation id="9204836675896933765">१ फाइल बाँकी</translation>
 <translation id="9205933215779845960">उक्त पेज भेट्टाउन सकिएन। आफ्नो हिज्जे जाँच्नुहोस् वा <ph name="SEARCH_ENGINE" /> मा खोजी हेर्नुहोस्।</translation>
-<translation id="9206873250291191720">क</translation>
+<translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">कल गर्न सकिएन</translation>
 <translation id="9212845824145208577">योभन्दा तल जान मिल्दैन। यो पेजको अझै तल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
 <translation id="9218430445555521422">डिफल्टका रूपमा सेट गर्नुहोस्</translation>

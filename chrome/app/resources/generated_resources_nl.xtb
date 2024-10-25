@@ -6113,7 +6113,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5369491905435686894">Muisversnelling aanzetten</translation>
 <translation id="5369694795837229225">Linux-ontwikkelomgeving instellen</translation>
 <translation id="5370819323174483825">&amp;Opnieuw laden</translation>
-<translation id="5371801916084758849">Je kunt in de adresbalk zoeken met @history en op de pagina Geschiedenis</translation>
 <translation id="5372529912055771682">De geleverde inschrijvingsmodus wordt niet ondersteund door deze versie van het besturingssysteem. Zorg ervoor dat je de nieuwste versie gebruikt en probeer het opnieuw.</translation>
 <translation id="5372579129492968947">Extensie losmaken</translation>
 <translation id="5372632722660566343">Doorgaan zonder account</translation>
@@ -9012,7 +9011,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7490683549040131791">Resterende wachtwoorden checken</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
-<translation id="7493244854553650478">Als je zoekt in je browsegeschiedenis, worden je zoektermen in de geschiedenis, de paginacontent van de beste overeenkomsten en de gegenereerde modeluitvoer naar Google gestuurd</translation>
 <translation id="7493386493263658176">De extensie <ph name="EXTENSION_NAME" /> kan alle tekst verzamelen die je typt, waaronder persoonsgegevens zoals wachtwoorden en creditcardnummers. Wil je deze extensie gebruiken?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android-app</translation>

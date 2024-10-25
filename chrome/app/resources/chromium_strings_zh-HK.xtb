@@ -29,6 +29,7 @@
 <translation id="1330562121671411446">偵測語言</translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">已固定！你可以透過工具列嘅新按鈕用多次「圖片搜尋」</translation>
+<translation id="1356661055722410047">新功能！你可翻譯畫面上的文字和圖片</translation>
 <translation id="1414495520565016063">您已登入 Chromium！</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
 <translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
@@ -130,8 +131,10 @@
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
+<translation id="277338894894732084">日後，Chromium 就會詢問你是否要使用已儲存的資料來自動填入表格</translation>
 <translation id="2785438272836277133">此擴充程式含有惡意軟件且不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
+<translation id="2806241689335397269">Chromium 會詢問你是否要儲存表格資料，例如出生日期、年齡和護照號碼</translation>
 <translation id="2837693172913560447">此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="2841525013647267359">原文語言</translation>
 <translation id="2846251086934905009">安裝錯誤：安裝程式並未完成。安裝已取消。</translation>
@@ -232,6 +235,7 @@
 <translation id="4148957013307229264">安裝中…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網絡登入 - Chromium</translation>
 <translation id="421369550622382712">為您的 Chromium 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
+<translation id="4217972271355023382">如要按家長所選設定加強網上安全，請切換至你以 <ph name="USER_EMAIL_ADDRESS" /> 登入的 Chromium 設定檔</translation>
 <translation id="4222932583846282852">正在取消…</translation>
 <translation id="4224210481850767180">安裝已取消。</translation>
 <translation id="4230135487732243613">要將您的 Chromium 數據連結至這個帳戶嗎？</translation>
@@ -439,6 +443,7 @@
 <translation id="6843464627590537736">「圖片搜尋」搜尋對話氣泡</translation>
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
+<translation id="685279860330610299">Chromium 可理解更多類型的資料，更快自動填入表格。進一步瞭解「<ph name="BEGIN_LINK" />Chrome 自動填入<ph name="END_LINK" />」功能</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium 發現「<ph name="EXTENSION_NAME" />」含有惡意軟件</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -550,6 +555,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8397248745433792218">Chromium 建議你移除此擴充程式。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充程式<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
+<translation id="8438543370129609977">使用「圖片搜尋」時，網頁標題、網址和內容 (包括 PDF) 會傳送至伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 只支援 Windows 10 或以上版本的作業系統。</translation>
 <translation id="8463672209299734063">可選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chromium 作業系統的功能和效能。</translation>
@@ -561,6 +567,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8568283329061645092">Chromium 可在您使用 Google 帳戶登入時檢查密碼</translation>
 <translation id="8576826849825683917">Chromium 由多個機構管理</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
+<translation id="8601359445272098721">新功能！你可選取「翻譯畫面」按鈕，翻譯畫面上的文字和圖片</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />網站可將您的興趣相關資料儲存在 Chromium 中。例如，如果您瀏覽某個網站想購買適合馬拉松的跑步鞋，網站可能會判斷您的興趣為跑馬拉松。如果您日後瀏覽其他網站報名參加比賽，該網站就可以根據您的興趣向您顯示跑步鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>

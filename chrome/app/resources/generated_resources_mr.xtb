@@ -6128,7 +6128,6 @@
 <translation id="5369491905435686894">माउस अ‍ॅक्सिलरेशन सुरू करा</translation>
 <translation id="5369694795837229225">Linux डेव्हलपमेंट पद्धत सेट करा</translation>
 <translation id="5370819323174483825">&amp;रीलोड करा</translation>
-<translation id="5371801916084758849">तुम्ही @history वापरून ॲड्रेस बारमध्ये, त्याचप्रमाणे इतिहास पेजवरून शोधू शकता</translation>
 <translation id="5372529912055771682">प्रदान केलेला नोंदणी प्रकार ऑपरेटिंग सिस्टमच्या या आवृत्तीमध्‍येला सपोर्ट नाही. कृपया तुम्ही नवीनतम आवृत्ती चालवत असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5372579129492968947">एक्स्टेंशन अनपिन करा</translation>
 <translation id="5372632722660566343">खात्याशिवाय पुढे सुरू ठेवा</translation>
@@ -9034,7 +9033,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7490683549040131791">शिल्लक पासवर्ड तपासा</translation>
 <translation id="7491962110804786152">टॅब</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{एक कुकी}other{{NUM_COOKIES} कुकी}}</translation>
-<translation id="7493244854553650478">तुम्ही ब्राउझिंग इतिहास शोधता, तेव्हा तुमच्या इतिहास शोध संज्ञा, सर्वोत्तम जुळण्यांचा पेज आशय आणि जनरेट केलेली मॉडेल आउटपुट Google कडे पाठवली जातात</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> एक्स्टेंशन पासवर्ड आणि क्रेडिट कार्ड नंबर यासारख्या वैयक्तिक डेटासह तुम्ही टाइप करता तो सर्व मजकूर गोळा करू शकतो.</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android अ‍ॅप</translation>

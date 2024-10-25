@@ -419,6 +419,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2942036813789421260">Tab pratinjau ditutup</translation>
 <translation id="2946420957526726953">Mengupdate Chrome untuk terhubung ke perangkat lain</translation>
 <translation id="2951071800649516099">Tambahkan halaman ke daftar bacaan untuk dibaca nanti</translation>
+<translation id="2954586176076923855">Pindahkan kolom URL ke atas</translation>
 <translation id="2956070106555335453">Ringkasan</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> halaman belum dibaca}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> halaman belum dibaca}}</translation>
 <translation id="2972109037780336501">Otomatis hapus izin</translation>
@@ -653,6 +654,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4095425503313512126">Penjelajahan dan penelusuran lebih cepat</translation>
 <translation id="4096227151372679484">Alur penyimpanan bookmark terbuka setengah</translation>
 <translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark kamu serta data lain di perangkat lainnya</translation>
+<translation id="4105527135143631701">Update Pengelola Sandi Google dibuka</translation>
 <translation id="4108314971463891922">Ikuti</translation>
 <translation id="4113030288477039509">Dikelola oleh administrator</translation>
 <translation id="4116038641877404294">Download halaman untuk melihat secara offline</translation>
@@ -1257,6 +1259,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6813446258015311409">Login ke Chrome, dibuka.</translation>
 <translation id="6817747507826986771">Bagikan halaman ini dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Update Pengelola Sandi Google ditutup</translation>
 <translation id="6822587385560699678">Jika diaktifkan, sandi akan disimpan di <ph name="ACCOUNT" />. Jika dinonaktifkan, sandi hanya akan disimpan ke perangkat ini.</translation>
 <translation id="6823561724060793716">Dari kolom URL, Anda dapat membuka info halaman untuk melihat info tambahan tentang halaman yang sedang Anda kunjungi</translation>
 <translation id="6828070228333235514">Berhenti memantau harga</translation>
@@ -1458,6 +1461,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7612619742409846846">Login ke Google sebagai</translation>
 <translation id="7612989789287281429">Memproses login Anda…</translation>
 <translation id="7619072057915878432">Download <ph name="FILE_NAME" /> gagal karena kesalahan jaringan.</translation>
+<translation id="762537095495606755">Sandi akan berhenti berfungsi di perangkat ini</translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7628417132421583481">Buka Pengelola Sandi</translation>
 <translation id="7630202231528827509">URL Penyedia</translation>
@@ -1550,6 +1554,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8015452622527143194">Mengembalikan semua di halaman ke ukuran default</translation>
 <translation id="8017431260099661477">Link undangan tidak dapat dibuka</translation>
 <translation id="8026238112629815203">Kami mengubah cara sandi disimpan di perangkat ini</translation>
+<translation id="8027395186860110042">Sandi mungkin segera berhenti berfungsi</translation>
 <translation id="8027863900915310177">Pilih lokasi untuk mendownload</translation>
 <translation id="8030852056903932865">Setujui</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
@@ -1620,7 +1625,9 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8282297628636750033">Terapkan tema gelap ke situs, jika mungkin</translation>
 <translation id="8282950411412455249">Buka setelan keamanan</translation>
 <translation id="829672787777123339">Menghubungkan ke perangkat …</translation>
+<translation id="8306751933352925837">Sandi akan segera berhenti berfungsi di perangkat ini. Untuk tetap menggunakan sandi Anda, update layanan Google Play. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> menghapus tab “<ph name="TAB_NAME" />”</translation>
+<translation id="8310451567823644042">Sandi akan segera berhenti berfungsi</translation>
 <translation id="831192587911042850">Menambahkan situs saat ini ke daftar situs yang Anda ikuti.</translation>
 <translation id="8342727528718219152">Chrome akan memberi tahu Anda terkait situs yang mungkin mengirim terlalu banyak notifikasi</translation>
 <translation id="834313815369870491">Jangan pernah terjemahkan situs</translation>
@@ -1687,6 +1694,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8570677896027847510">File tidak dapat didownload dengan aman</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8582529315803410153">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
+<translation id="8585103689515290060">Layanan isi otomatis</translation>
 <translation id="859046281437143747">Pantau harga dari tombol opsi Lainnya</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> grup tab dihapus</translation>
 <translation id="860043288473659153">Nama pemegang kartu</translation>
@@ -1755,6 +1763,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8965591936373831584">ditunda</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> tab samaran dan <ph name="TAB_COUNT_ONE" /> tab lainnya akan ditutup}other{<ph name="INCOGNITO_TAB_COUNT" /> tab samaran dan <ph name="TAB_COUNT_MANY" /> tab lainnya akan ditutup}}</translation>
+<translation id="897061774231912216">Sandi akan segera berhenti berfungsi karena layanan Google Play tidak tersedia. Untuk menggunakan sandi yang disimpan di Akun Google Anda, login menggunakan perangkat lain, atau buka passwords.google.com.</translation>
 <translation id="8970887620466824814">Terjadi error.</translation>
 <translation id="8972098258593396643">Download ke folder default?</translation>
 <translation id="8982113230057126145">Memberi tanda Tidak suka akan mengirim masukan bahwa Anda tidak menyukai ringkasan ini</translation>
@@ -1804,6 +1813,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9157212632995922070">Pilih akun untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Hanya bagikan konten</translation>
+<translation id="9168847423516963845">Pindahkan kolom URL ke bawah</translation>
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>

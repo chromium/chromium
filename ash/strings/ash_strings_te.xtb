@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">క్యారెట్ బ్రౌజింగ్‌ను ఆన్ లేదా ఆఫ్ చేస్తుంది</translation>
 <translation id="2531025035050312891">పరికరం నెమ్మదిగా ఉంది</translation>
 <translation id="2531107890083353124">ట్యాబ్‌ను లాగే సమయంలో, <ph name="KEY_ONE" />ని నొక్కండి</translation>
+<translation id="2545334090614121435">Homeను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
 <translation id="254900897760075745">ఎంపిక చేసిన కంటెంట్‌ను క్లిప్‌బోర్డ్‌కు కాపీ చేయండి</translation>
 <translation id="2549711466868162843">మెరుగైన లైటింగ్</translation>
 <translation id="2549985041256363841">రికార్డింగ్‌ను ప్రారంభించండి</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="2992272421330787632">అన్ని మీడియా సూచనలను దాచండి</translation>
 <translation id="2992327365391326550">పరికర మైక్రోఫోన్ బటన్ ఆఫ్ చేయబడింది.</translation>
+<translation id="2993956882370897557">Endను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3001391739687111021">స్క్రీన్ సైజ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" />, మీ <ph name="DEVICE_TYPE" />ను దాని పాత వెర్షన్‌కు మారుస్తున్నారు. మీ పరికరం రీసెట్ చేయబడుతుంది, ఇంకా మొత్తం డేటా తొలగించబడుతుంది.</translation>
 <translation id="316798519864381606">Google స్లయిడ్</translation>
 <translation id="3171170659304083361">ఇన్‌పుట్ విధానాల సెట్టింగ్‌లు</translation>
+<translation id="3174897399179348329">Page Upను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
 <translation id="3176221688814061633">మీ Chromebook లేదా బ్లూటూత్ పరికరం, బ్లూటూత్ పాత వెర్షన్‌ను ఉపయోగిస్తున్నాయి. మెరుగైన ఆడియో క్వాలిటీ కోసం బ్లూటూత్ సూపర్ రిజల్యూషన్‌ను ఆన్ చేయండి లేదా అంతర్గత మైక్రోఫోన్‌ను ఉపయోగించండి.</translation>
 <translation id="3181441307743005334">రీస్టార్ట్ చేయడానికి కొంత సమయం పట్టవచ్చు</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{పరికరానికి కనెక్ట్ చేయబడింది}other{# పరికరాలకు కనెక్ట్ చేయబడింది}}</translation>
@@ -1262,6 +1265,7 @@
 <translation id="5297704307811127955">ఆఫ్</translation>
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5302048478445481009">భాష</translation>
+<translation id="5302531370473608800">YouTube Musicను ఉపయోగించడానికి మీ <ph name="DEVICE_TYPE" />‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది.
 కొన్ని ఫీచర్‌లు బ్యాటరీ లైఫ్‌ను పొడిగించడానికి పరిమితం చేయబడ్డాయి.</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
@@ -1821,6 +1825,7 @@
 <translation id="7144942256906679589">బ్యాటరీ స్టేటస్</translation>
 <translation id="7145639536026937076">బ్యాటరీ <ph name="PERCENTAGE" />% ఉంది, ఛార్జ్ అవుతోంది. బ్యాటరీ సేవర్ ఆన్‌లో ఉంది.</translation>
 <translation id="7147587499155271409">బ్రౌజింగ్ హిస్టరీ ఏదీ లేదు</translation>
+<translation id="7147657298465433425">F కీలను యాక్సెస్ చేయడానికి, fn కీ + పైన ఉండే అడ్డు వరుసలోని కీలను నొక్కండి</translation>
 <translation id="7149149900052329230">Files యాప్‌లో మీ లోకల్ ఫైల్స్, మీ Google Drive ఫైల్స్‌ను మేనేజ్ చేయండి.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ప్రస్తుతం మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="7561982940498449837">మెనూను మూసివేయండి</translation>
 <translation id="7564874036684306347">విండోలను మరొక డెస్క్‌టాప్‌కు తరలించడం వలన ఊహించని ప్రవర్తన చోటు చేసుకోవచ్చు. తర్వాత చూపబడే నోటిఫికేషన్‌లు, విండోలు మరియు డైలాగ్‌లు డెస్క్‌టాప్‌ల మధ్య విభజించబడవచ్చు.</translation>
+<translation id="7568154670718626683">Deleteను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
 <translation id="7568790562536448087">అప్‌డేట్ చేస్తోంది</translation>
 <translation id="7569509451529460200">బ్రెయిలీ మరియు ChromeVox ప్రారంభించబడ్డాయి</translation>
 <translation id="7569886975397378678">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
@@ -2132,6 +2138,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> మీరు కేవలం <ph name="FOCUSED_TIME" /> సమయం పాటు ఫోకస్ చేశారు. మళ్లీ ఫోకస్ చేయడానికి క్విక్ సెట్టింగ్‌లను తెరవండి.</translation>
 <translation id="8203224998425013577">మరిన్ని ఎమోజీలను, GIFలను చూడండి</translation>
 <translation id="8203795194971602413">కుడి క్లిక్</translation>
+<translation id="8205469348819768313">Page Downను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
 <translation id="8214996719228530800">కెనరీ ఛానెల్</translation>
 <translation id="8219451629189078428">ఈ సమయంలో మీ Chromebook ఆన్‌లో ఉండాలి, పవర్‌కు కనెక్ట్ అయ్యి ఉండాలి. మీ Chromebook, పవర్ అవుట్‌లెట్ రెండింటికీ ఛార్జర్ లేదా అడాప్టర్ కేబుల్‌లు పూర్తిగా ప్లగ్-ఇన్ అయ్యాయని నిర్ధారించుకోండి. మీ Chromebookను ఆఫ్ చేయవద్దు.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" />‌ను జోడించండి</translation>
@@ -2324,6 +2331,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google సహాయకం ఈ భాషను మాట్లాడదు.</translation>
 <translation id="8926951137623668982">అర ఎల్లప్పుడూ దాచబడుతుంది</translation>
+<translation id="8929566928381252430">Caps Lockను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>

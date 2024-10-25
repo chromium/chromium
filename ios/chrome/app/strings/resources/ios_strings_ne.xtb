@@ -38,6 +38,7 @@
 <translation id="1150989369772528668">पात्रो</translation>
 <translation id="1164891049599601209">भ्रामक साइटमा प्रविष्टि गरिएको</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
+<translation id="1172240852337942024">चयन हटाउनुहोस्</translation>
 <translation id="1172898394251786223">अर्को क्षेत्र</translation>
 <translation id="1179890706672152411">तपाईंको भण्डारण भरिएको छ</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
@@ -189,6 +190,7 @@
 <translation id="1854463785401910334">खुला ट्याबहरूमा खोज्नुहोस्</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} मध्ये {position} पासवर्ड}other{{count} मध्ये {position} पासवर्ड}}</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
+<translation id="1864266050569350424">तपाईंले पासवर्ड सेभ गर्नुभएको साइटमा "साइन इन पासवर्ड" फिल्डमा ट्याप गर्नुहोस्।</translation>
 <translation id="1872096359983322073">टर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
 <translation id="1881621406744213161">परिवारका सदस्यहरूलाई निम्तो गर्नुहोस्</translation>
@@ -199,6 +201,8 @@
 <translation id="1890237935065108104">यो सेटिङ उपलब्ध छैन।</translation>
 <translation id="1894023287452300670">यहाँ मूल्य ट्रयाक गर्नुहोस्</translation>
 <translation id="189531189292803889">तपाईंको iPad भर्खरै रिस्टोर गरिएको हुनाले तपाईंको डिफल्ट ब्राउजर परिवर्तन भएको हुन सक्छ।</translation>
+<translation id="1901366738768303267">म यो सुविधा कसरी प्रयोग गर्न सक्छु?</translation>
+<translation id="1901600657316773839">चयन नहटाउनुहोस्</translation>
 <translation id="1904580727789512086">तपाईंले खोल्ने URL हरू तपाईंको Google खातामा सेभ गरिन्छन्</translation>
 <translation id="1911619930368729126">Google ड्राइभमा अपलोड गर्नुहोस्</translation>
 <translation id="1923342640370224680">बितेको घन्टा</translation>
@@ -508,6 +512,8 @@
 <translation id="3443810440409579745">ट्याब प्राप्त गरियो।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="344589138074534176">Google लेन्सका बारेमा थप जान्नुहोस्</translation>
+<translation id="3447332786336558089">तपाईंले साइन आउट गरेपछि ट्याबहरू बन्द गरिने छन् र यो डिभाइसबाट खातामा सेभ नगरिएको जानकारी मेटाइने छ। उक्त जानकारीमा पासवर्ड र हिस्ट्रीलगायतका कुराहरू समावेश हुन सक्छन्।</translation>
+<translation id="3449016921756175697">अझ राम्ररी र सजिलैसँग ब्राउज गर्न सघाउने उपयोगी सुझावहरू।</translation>
 <translation id="345348365500626747">ठेगाना भेटिएको छ</translation>
 <translation id="3464194322481586217">मूल्य ट्रयाक गर्न सकिएन।</translation>
 <translation id="3469117812148449995">पासवर्ड सेभ गर्ने विकल्पहरू</translation>
@@ -688,6 +694,7 @@
 <translation id="4320848494125124980">हालसालैका</translation>
 <translation id="4322394346347055525">अन्य ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="4324735664183300693">नोटिफिकेसन प्राप्त गर्ने सुविधा अन गर्नुहोस्</translation>
+<translation id="4326912346867677256">सुरक्षित रूपमा साइन इन गर्न "पासवर्ड प्रयोग गर्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="4328843285884395590">मेरो ड्राइभ</translation>
 <translation id="4331177082088332784">तपाईं BEGIN_LINK सामग्रीसम्बन्धी सेटिङ END_LINKमा गई यो कुरा व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="4334428914252001502">१ वटा नपढिएको लेख।</translation>
@@ -975,6 +982,7 @@
 <translation id="5652623411397330904">तपाईंले ट्र्याक गर्ने उत्पादनहरू यहाँ देखाइने छन्।</translation>
 <translation id="5657156137487675418">सबै कुकीहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="5659593005791499971">इमेल</translation>
+<translation id="5666313630530585305">कुनै वेबसाइटमा साइन इन गर्नुहोस्।</translation>
 <translation id="5669335982068190158">तपाईंको iPhone रिसेट गरिएका कारण तपाईंलाई साइन आउट गरिएको थियो। साइन इन गर्न तल दिइएको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">संस्करण <ph name="PRODUCT_VERSION" /></translation>
@@ -1037,6 +1045,7 @@
 <translation id="594324569139756587">तेस्रो पक्षीय कुकीहरू ब्लक गर्नुहोस्</translation>
 <translation id="5944869793365969636">QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="5948291296578561264">यो एपले तपाईंलाई आफ्नो तस्बिरको लाइब्रेरीमा तस्बिरहरू सुरक्षित गर्न दिन्छ।</translation>
+<translation id="5952641243319721872">तपाईंले आफ्नो चयन हटाउन खोज्नुभएकै हो?</translation>
 <translation id="5956112131836209882">ट्याब समूहको ट्याब। <ph name="NUMBER_OF_TABS_IN_GROUP" /> मध्ये <ph name="TAB_INDEX_IN_GROUP" />।</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> मार्फत खोज्नुहोस्</translation>
 <translation id="5963939892571022323">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन।</translation>
@@ -1124,6 +1133,7 @@
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
 <translation id="6310451064941005489">पासवर्डका विकल्पहरू</translation>
+<translation id="6316141353357700666">तपाईंलाई देखाइने सूचीबाट आफूले प्रयोग गर्न चाहेको पासवर्ड छनौट गर्नुहोस्।</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>
 <translation id="633809752005859102">केही वास्तवमै गडबड भएको छ। हामी त्यसमा काम गर्नेछौ।</translation>
@@ -1543,6 +1553,7 @@
 <translation id="8173034266693057059">लम्बाइ</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} का लागि}=2{{website_2} र {website_1} का लागि}=3{{website_1}, {website_2} र थप एउटा वेबसाइटका लागि}other{{website_1}, {website_2} र थप {more_count} वटा वेबसाइटका लागि}}</translation>
+<translation id="8189615296021678665">अर्को पटक साइन इन गर्दा यो पासवर्ड सजिलैसँग एक्सेस गर्न "सेभ गर्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड थप्नुहोस्</translation>
 <translation id="8202744799033457229">हिस्ट्री देखाउनुहोस्</translation>
@@ -1556,12 +1567,14 @@
 <translation id="8219424187226230983">नयाँ ट्याबमा अफलाइन संस्करण हेर्नुहोस्</translation>
 <translation id="8230355548492839438">अघिल्लो स्ट्रिङ भेट्टाउनुहोस्</translation>
 <translation id="8232956427053453090">डेटा राख्नुहोस्</translation>
+<translation id="8242644458318193141">तपाईंको सङ्गठनको सुरक्षार्थ ट्याबहरू बन्द गरिने छन् र यो डिभाइसबाट खातामा सेभ नगरिएको जानकारी मेटाइने छ। उक्त जानकारीमा पासवर्ड र हिस्ट्रीलगायतका कुराहरू समावेश हुन सक्छन्।</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="82619448491672958">अन्य ट्याबहरू हेर्नुहोस्</translation>
 <translation id="8263809106706527890">तपाईंको डिफल्ट ब्राउजरसम्बन्धी सेटिङ परिवर्तन भएको हुन सक्छ। तपाईं सेटिङमा गई यो कुरा जाँच गर्न सक्नुहुन्छ।</translation>
 <translation id="8264966119170358612">तपाईंका सेभ गरिएका केही पासवर्डहरू तेस्रो पक्षले गरेको डेटा चोरीको घटनामा देखिएका थिए। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">तपाईंको iPad रिसेट गर्ने क्रममा तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। फेरि साइन इन गर्न तलको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="8273982424131314219">तपाईंले <ph name="URL" /> मा जानकारी भर्नु पर्ने हुन्छ</translation>
+<translation id="827464923811805683">यो लिंक हुने सबै जना सबै ट्याब सम्पादन गर्न सक्ने भएकाले लिंक सेयर गर्दा ख्याल गर्नुहोस्। यो लिंकको म्याद ४८ घण्टामा सकिन्छ। <ph name="BEGIN_LINK" />साझा ट्याब समूहका बारेमा जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">थप…</translation>
 <translation id="8278488584187265939">होम पेज कस्टमाइज गर्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1574,6 +1587,7 @@
 <translation id="8299613349954694191">गोप्य रूपमा वेब ब्राउज गर्न इन्कोग्निटो ट्याब खोल्नुहोस्।</translation>
 <translation id="8307481894409578819">यो फाइल अपलोड गर्न सकिएन</translation>
 <translation id="8319076807703933069">नयाँ खोज</translation>
+<translation id="8320212361750431956">हालसालैको क्रियाकलाप</translation>
 <translation id="8343993175958086504">आफ्नो डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्।</translation>
 <translation id="8349305172487531364">बुकमार्क पट्टी</translation>
 <translation id="8366466717204352506">कहिल्यै पनि जाँच गरिएको छैन</translation>
@@ -1754,6 +1768,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
 <translation id="9084367296493549256">{count,plural, =1{तपाईंको {count} पासवर्ड कमजोर छ। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यो समस्या समाधान गर्नुहोस्।}other{तपाईंका {count} वटा पासवर्ड कमजोर छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यी समस्या समाधान गर्नुहोस्।}}</translation>
+<translation id="9084369964545892485">समूहमा नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="9087339162317338348">सम्भव भएसम्म HTTPS प्रयोग गर्नुहोस् र HTTPS नचल्ने साइट लोड गर्नुअघि चेतावनी प्राप्त गर्नुहोस्।</translation>
 <translation id="9090979472668095374">फेरि जवाफ बोल्नुहोस्</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>

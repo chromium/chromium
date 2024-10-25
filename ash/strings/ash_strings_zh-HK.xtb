@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">開啟或關閉「鍵盤瀏覽」功能</translation>
 <translation id="2531025035050312891">裝置緩慢</translation>
 <translation id="2531107890083353124">在拖曳分頁時按 <ph name="KEY_ONE" /> 鍵</translation>
+<translation id="2545334090614121435">要使用 Home 鍵嗎？使用</translation>
 <translation id="254900897760075745">將選取的內容複製至剪貼簿</translation>
 <translation id="2549711466868162843">改善光線</translation>
 <translation id="2549985041256363841">開始錄影</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">查看所有應用程式</translation>
 <translation id="2992272421330787632">隱藏所有媒體建議</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
+<translation id="2993956882370897557">要使用 End 鍵嗎？使用</translation>
 <translation id="3000461861112256445">單聲道音效</translation>
 <translation id="3001391739687111021">修改畫面大細</translation>
 <translation id="3009178788565917040">輸出</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回復您的 <ph name="DEVICE_TYPE" />。您的裝置將會重設，且所有資料將會被刪除。</translation>
 <translation id="316798519864381606">Google 簡報</translation>
 <translation id="3171170659304083361">輸入方法設定</translation>
+<translation id="3174897399179348329">要使用 Page Up 鍵嗎？使用</translation>
 <translation id="3176221688814061633">Chromebook 或藍牙裝置正使用較舊版本的藍牙。請開啟「超解像度藍牙」或使用內置麥克風，以提高音效品質。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已連接 1 部裝置}other{已連接 # 部裝置}}</translation>
@@ -1260,6 +1263,7 @@
 <translation id="5297704307811127955">已關閉</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5302048478445481009">語言</translation>
+<translation id="5302531370473608800">需要更新 <ph name="DEVICE_TYPE" /> 才能使用 YouTube Music</translation>
 <translation id="5303319262469238330">剩餘 <ph name="PERCENTAGE" />% 電量。
 為延長電池壽命，部分功能會受限制。</translation>
 <translation id="5308380583665731573">連線</translation>
@@ -1818,6 +1822,7 @@
 <translation id="7144942256906679589">電池狀態</translation>
 <translation id="7145639536026937076">電量有 <ph name="PERCENTAGE" />%，宜家叉緊電。開咗「慳電模式」。</translation>
 <translation id="7147587499155271409">無瀏覽記錄</translation>
+<translation id="7147657298465433425">如要使用功能鍵，請按下 fn 鍵 + 最上排按鍵</translation>
 <translation id="7149149900052329230">只要使用「檔案」應用程式，就能管理本機檔案和「Google 雲端硬碟」檔案。</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
@@ -1927,6 +1932,7 @@
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」目前正在使用您的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
+<translation id="7568154670718626683">要使用 Delete 鍵嗎？使用</translation>
 <translation id="7568790562536448087">正在更新</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7569886975397378678">取消設定睇手機嘅通知同應用程式</translation>
@@ -2129,6 +2135,7 @@
 <translation id="820256110035940528"><ph name="TITLE" />你啱啱專心咗 <ph name="FOCUSED_TIME" />。打開「快速設定」就可以啟動多次專注模式。</translation>
 <translation id="8203224998425013577">顯示更多 Emoji 和 GIF</translation>
 <translation id="8203795194971602413">按一下右鍵</translation>
+<translation id="8205469348819768313">要使用 Page Down 鍵嗎？使用</translation>
 <translation id="8214996719228530800">Canary 版本</translation>
 <translation id="8219451629189078428">Chromebook 在這段期間需要保持開啟並接上電源。請確保充電器或適配器連接線完全插入 Chromebook 和電源插座。請勿關閉 Chromebook。</translation>
 <translation id="8220076512072059941">加 <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2321,6 +2328,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支援這種語言。</translation>
 <translation id="8926951137623668982">一律隱藏捷徑列</translation>
+<translation id="8929566928381252430">要使用 Caps Lock 鍵嗎？使用</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (後方右側連接埠)</translation>

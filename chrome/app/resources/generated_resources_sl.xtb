@@ -6134,7 +6134,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5369491905435686894">Omogočanje pospeševanja miške</translation>
 <translation id="5369694795837229225">Nastavitev razvojnega okolja Linux</translation>
 <translation id="5370819323174483825">&amp;Znova naloži</translation>
-<translation id="5371801916084758849">V naslovni vrstici lahko iščete s @history in na strani z zgodovino</translation>
 <translation id="5372529912055771682">Ta različica operacijskega sistema ne podpira navedenega načina včlanitve. Poskrbite, da imate nameščeno najnovejšo različico, in poskusite znova.</translation>
 <translation id="5372579129492968947">Odpenjanje razširitve</translation>
 <translation id="5372632722660566343">Nadaljuj brez računa</translation>
@@ -9045,7 +9044,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7490683549040131791">Preverite preostala gesla</translation>
 <translation id="7491962110804786152">tabulatorka</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 piškotek}one{{NUM_COOKIES} piškotek}two{{NUM_COOKIES} piškotka}few{{NUM_COOKIES} piškotki}other{{NUM_COOKIES} piškotkov}}</translation>
-<translation id="7493244854553650478">Ko iščete po zgodovini brskanja, so vaše iskalne poizvedbe iz zgodovine, vsebina strani z najboljšimi ujemanji in generirani izhodni rezultati modela poslani Googlu</translation>
 <translation id="7493386493263658176">Razširitev <ph name="EXTENSION_NAME" /> bo morda lahko beležila vse besedilo, ki ga vnesete, vključno z osebnimi podatki, kot so gesla in številke kreditnih kartic. Ali jo želite uporabiti?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Aplikacija za Android</translation>

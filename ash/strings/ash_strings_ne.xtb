@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">क्यारेट ब्राउजिङ अन वा अफ गर्नुहोस्</translation>
 <translation id="2531025035050312891">डिभाइस सुस्त चलिरहेको छ</translation>
 <translation id="2531107890083353124">ट्याब ड्र्याग गर्दै गर्दा <ph name="KEY_ONE" /> थिच्नुहोस्</translation>
+<translation id="2545334090614121435">होम की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="254900897760075745">चयन गरिएको सामग्री क्लिपबोर्डमा कपी गर्नुहोस्</translation>
 <translation id="2549711466868162843">सुधारिएको प्रकाश</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="2992272421330787632">मिडियासम्बन्धी सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="2992327365391326550">डिभाइसको माइक्रोफोन बटन अफ गरिएको छ।</translation>
+<translation id="2993956882370897557">इन्ड की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="3000461861112256445">मोनो अडियो</translation>
 <translation id="3001391739687111021">स्क्रिनको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="3009178788565917040">निर्गत</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> तपाईंको <ph name="DEVICE_TYPE" /> मा अघिल्लो संस्करण रिस्टोर गर्दै छ। तपाईंको डिभाइस रिसेट हुने छ र डिभाइसमा भएका सबै डेटा मेटाइने छ।</translation>
 <translation id="316798519864381606">Google स्लाइड</translation>
 <translation id="3171170659304083361">इनपुट विधिसम्बन्धी सेटिङ</translation>
+<translation id="3174897399179348329">पेज अप की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="3176221688814061633">तपाईंको Chromebook वा ब्लुटुथ डिभाइसमा ब्लुटुथको पुरानो संस्करण चलिरहेको छ। अझ गुणस्तरीय अडियोका लागि ब्लुटुथ सुपर रिजोल्युसन अन गर्नुहोस् वा आन्तरिक माइक्रोफोन प्रयोग गर्नुहोस्।</translation>
 <translation id="3181441307743005334">पुन: सुरु हुन केही बेर लाग्छ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{एउटा यन्त्रमा जोडियो}other{# यन्त्रहरूमा जोडियो}}</translation>
@@ -656,7 +659,7 @@
 <translation id="3339826665088060472">स्क्रिन क्याप्चर अर्थात् स्क्रिनसट र स्क्रिन रेकर्डिङ गर्ने टुल</translation>
 <translation id="3340978935015468852">सेटिङहरू</translation>
 <translation id="3341303451326249809">स्क्रिनसट खिचियो</translation>
-<translation id="334252345105450327">स्क्रिनसट खिच्नुहोस्</translation>
+<translation id="334252345105450327">स्क्रिनसट लिनुहोस्</translation>
 <translation id="3346728094401457853"><ph name="EMAIL" /> को डिभाइस पासवर्ड हाल्नुहोस्</translation>
 <translation id="334927402682780278">कर्सरबाट लाइनको अन्तिमसम्मको टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="3349345708646875009">टास्क म्यानेजर खोल्नुहोस्</translation>
@@ -1022,7 +1025,7 @@
 <translation id="4531536770443562276">फुल स्क्रिनमा मात्र उपलब्ध छ</translation>
 <translation id="4533343294786968049">ब्याट्री चार्ज गरिँदै छ। ब्याट्री <ph name="FULLY_CHARGE_TIME" /> सम्ममा फुल चार्ज हुने छ।</translation>
 <translation id="453661520163887813">पूर्ण हुन <ph name="TIME" /> बॉंकी छ</translation>
-<translation id="4538824937723742295">फुल स्क्रिनको स्क्रिनसट खिच्नुहोस्</translation>
+<translation id="4538824937723742295">फुल स्क्रिनको स्क्रिनसट लिनुहोस्</translation>
 <translation id="4539127209940689201">हालको पेज प्रिन्ट गर्नुहोस्</translation>
 <translation id="4541505619120536051">सधैँ खोल्नुहोस्</translation>
 <translation id="4541706525461326392">प्रोफाइल हटाइँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">अफ</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5302048478445481009">भाषा</translation>
+<translation id="5302531370473608800">YouTube Music प्रयोग गर्न आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।
 ब्याट्री अझ बढी टिकाउन केही सुविधाहरू सीमित पारिएका छन्।</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
@@ -1549,7 +1553,7 @@
 <translation id="6199775032047436064">हालको पृष्ठ फेरि लोड गर्नुहोस्</translation>
 <translation id="6200515304866777730">यो एपमा काम गर्दैन</translation>
 <translation id="6210042900243040400">यसअघि <ph name="EMAIL" /> मा सेभ गरिएको <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
-<translation id="6213808132343683860">आंशिक स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
+<translation id="6213808132343683860">आंशिक स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="621606890568890214">Google Classroom एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="6216759484154215561">ब्राउजरमा "थप जान्नुहोस्" लिंक खोलियो</translation>
 <translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">ब्याट्रीको स्थिति</translation>
 <translation id="7145639536026937076">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ। ब्याट्री सेभर अन छ।</translation>
 <translation id="7147587499155271409">ब्राउजिङ हिस्ट्री छैन</translation>
+<translation id="7147657298465433425">F कीहरू एक्सेस गर्न fn की + सिरानको रोमा भएका कीहरू थिच्नुहोस्</translation>
 <translation id="7149149900052329230">आफ्ना लोकल फाइल र Google Drive का फाइलहरू Files एपबाटै व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1875,7 +1880,7 @@
 <translation id="7384028040782072252">तपाईं आफ्ना एपहरूको क्रम पुनः मिलाउन चाहनुहुन्छ भने कुनै पनि ठाउँमा दायाँ क्लिक गर्नुहोस्</translation>
 <translation id="7386767620098596324">नेटवर्क कनेक्सन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="7392563512730092880">तपाईं पछि जुनसुकै बेला सेटिङमा गई सेट अप गर्न सक्नुहुन्छ।</translation>
-<translation id="7401222354741467707">पूर्ण स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
+<translation id="7401222354741467707">पूर्ण स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7401788553834047908">फोकस मोड अन हुँदा Do Not Disturb अन गर्नुहोस्</translation>
 <translation id="7405710164030118432">डिभाइस अनलक गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्‌</translation>
 <translation id="7406608787870898861">आफ्नो मोबाइल नेटवर्क सेटअप गर्ने कार्य पूरा गर्नुहोस्</translation>
@@ -1929,6 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ले हाल तपाईंको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>
 <translation id="7564874036684306347">विन्डोलाई अर्को डेस्कटपमा सार्नुले अनपेक्षित व्यवहार देखाउन सक्छ। यसपछि आउने सूचना, विन्डो र संवादहरू डेस्कटपहरूका बीचमा विभाजित हुन सक्छन्।</translation>
+<translation id="7568154670718626683">डिलिट की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="7568790562536448087">अपडेट गर्दै</translation>
 <translation id="7569509451529460200">Braille र ChromeVox सक्षम पारिएका छन्</translation>
 <translation id="7569886975397378678">आफ्नो फोनमा भएका सूचना तथा एपहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
@@ -1948,7 +1954,7 @@
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">प्रश्न सोध्नुहोस्</translation>
 <translation id="7634648064048557203">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो</translation>
-<translation id="7638572816805275740">विन्डोको स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
+<translation id="7638572816805275740">विन्डोको स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7642106959537987271">कलर इन्भर्सन मोड</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
@@ -2131,6 +2137,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> तपाईंले भर्खरै <ph name="FOCUSED_TIME" /> सम्म फोकस गर्नुभयो। फेरि फोकस गर्न द्रुत सेटिङ खोल्नुहोस्।</translation>
 <translation id="8203224998425013577">थप इमोजी र GIF देखाउनुहोस्</translation>
 <translation id="8203795194971602413">दायाँ क्लिक गर्नुहोस्</translation>
+<translation id="8205469348819768313">पेज डाउन की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="8214996719228530800">क्यानरी च्यानल</translation>
 <translation id="8219451629189078428">त्यतिन्जेल तपाईंको Chromebook खुला हुनु पर्छ र बिजुलीको स्रोतमा जोडिएको हुनु पर्छ। चार्जर वा एड्याप्टर केबल तपाईंको Chromebook र पावर सकेट दुवैतिर राम्ररी जोडिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्। आफ्नो Chromebook बन्द नगर्नुहोला।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> हाल्नुहोस्</translation>
@@ -2323,6 +2330,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google सहायकले यो भाषा बोल्दैन।</translation>
 <translation id="8926951137623668982">सेल्फ सधैँ लुकेको हुन्छ</translation>
+<translation id="8929566928381252430">क्याप्स लक की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>

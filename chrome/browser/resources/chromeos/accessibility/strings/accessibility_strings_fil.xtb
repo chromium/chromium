@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="100421257800558142">Pindutin ang pakanang arrow key</translation>
 <translation id="100506692671054486">walang nakaraang command</translation>
 <translation id="1009046985747440431">Pindutin ang pataas o pababang arrow para mag-navigate; pindutin ang enter para i-activate.</translation>
 <translation id="1011903154582639569">Maghanap ng key, pagkatapos ay iangat para mag-type</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Toggle Button</translation>
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Mag-tap gamit ang 4 na daliri para makapasok sa mga menu ng ChromeVox</translation>
+<translation id="1304162325618937178">Pindutin ang space key</translation>
 <translation id="1313373992684326101">Lumipat sa nakaraang seksyon. Kasama sa mga halimbawa ang Status Tray at Launcher.</translation>
 <translation id="1315077335264761176">Oryentasyon ng pagpindot</translation>
 <translation id="1325363694295259631">Na-unselect ang <ph name="NAME" />, isang radio button ng item sa menu</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Wheat</translation>
 <translation id="1618597272655350600">Nagpapahayag ng kumpletong paglalarawan sa kasalukuyang posisyon</translation>
 <translation id="1627222324347828322">Ghost White</translation>
+<translation id="1632810692616643246">Pumasok o lumabas sa scroll mode</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{greater than}one{# greater than sign}other{# na greater than sign}}</translation>
 <translation id="1653266918374749391">Nakaraang heading sa antas 3</translation>
 <translation id="1657616855184033958">Ipakita ang mga filter ng stream ng event</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Walang nakaraang kontrol</translation>
 <translation id="2045606329038304310">Kontrol ng field ng form</translation>
 <translation id="2063539687800151747">Epigraph</translation>
+<translation id="2067158561093481039">Magsagawa ng custom na kumbinasyon ng key</translation>
 <translation id="2086961585857038472">Susunod na Salita</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">fil</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Saddle Brown</translation>
 <translation id="2199994615414171367">Nakaraang math</translation>
 <translation id="2203046366315513658">Bawasan ang value</translation>
+<translation id="2206580811360135054">Ipakita o i-hide ang pangkalahatang-ideya ng mga window</translation>
 <translation id="2216790501338699346">URL ng link: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Bumalik nang isang char</translation>
 <translation id="2220529011494928058">Mag-ulat ng isyu</translation>
+<translation id="2239819015858077439">Pindutin ang pababang arrow key</translation>
 <translation id="2243633977138166243">Pindutin ang kaliwa o kanang arrow para mag- navigate; enter para i-activate</translation>
 <translation id="224426591676115802">Walang available na boses para sa wika: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Hinihinto ang Learn Mode</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Minarkahang content</translation>
 <translation id="4437615272777527928">Mag-type para maghanap sa mga menu. Gamitin ang mga pataas at pababang arrow para makita ang mga resulta. Gamitin ang mga pakaliwa at pakanang arrow para maisaayos ang text caret, at para magpalipat-lipat sa mga menu.</translation>
+<translation id="4441677939526091190">Pindutin ang pataas na arrow key</translation>
 <translation id="4453530046591759283">Para pumunta sa iba pang bahagi ng screen, tulad ng mga toolbar o system tray, pindutin ang Control+F1. Ang F1 ay ang unang key sa kanan ng escape key.</translation>
 <translation id="4457472090507035117">Piliin ang kasalukuyang boses:</translation>
 <translation id="4476183483923481720">bagong linya</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Gamitin ang mga feature sa accessibility ng touch screen ng Chromebook</translation>
 <translation id="5655682562155942719">Mga Command sa Paglaktaw</translation>
 <translation id="56637627897541303">Lugar ng text</translation>
+<translation id="5666746275818170484">Pindutin ang pakaliwang arrow key</translation>
 <translation id="5669637233317991674">Pindutin ang Search + Pakanang Arrow, o Search + Pakaliwang Arrow para mag-navigate sa araling ito</translation>
 <translation id="5677240841070992068">Kasalukuyang lokasyon</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Pop-up na button</translation>
 <translation id="7167657087543110">echo ng character</translation>
 <translation id="7173102181852295013">Midnight Blue</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Pinalawak</translation>
 <translation id="7209751026933045237">Walang susunod na slider</translation>
 <translation id="7218782500591078391">Golden Rod</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Rehiyon</translation>
 <translation id="8382679411218029383">Inline at listahan ng autocompletion</translation>
 <translation id="8394908167088220973">I-Play/I-Pause ang Media</translation>
+<translation id="8409502156784390079">Aktibo ang scroll mode</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8428603554127842284">antas <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Kalimutan</translation>
 <translation id="8989104346085848538">Para ihinto ang anumang kasalukuyang pagsasalita ng ChromeVox, pindutin ang Control key.</translation>
 <translation id="9014206344398081366">Tutorial sa ChromeVox</translation>
+<translation id="9034592733577768445">Na-pause ang pagkontrol gamit ang mukha</translation>
 <translation id="9040132695316389094">Heading 1</translation>
 <translation id="9061884144798498064">Pumili ng 8-dot braille table:</translation>
 <translation id="9063946545000394379">pumunta sa nakaraang character</translation>

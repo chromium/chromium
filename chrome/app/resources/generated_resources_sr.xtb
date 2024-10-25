@@ -6115,7 +6115,6 @@
 <translation id="5369491905435686894">Омогући убрзавање миша</translation>
 <translation id="5369694795837229225">Подесите Linux окружење за програмирање</translation>
 <translation id="5370819323174483825">&amp;Учитај поново</translation>
-<translation id="5371801916084758849">Можете да претражујете у траци за адресу користећи @history, као и са странице Историја</translation>
 <translation id="5372529912055771682">Ова верзија оперативног система не подржава наведени режим пријављивања. Проверите да ли користите најновију верзију и покушајте поново.</translation>
 <translation id="5372579129492968947">Откачите додатак</translation>
 <translation id="5372632722660566343">Настави без налога</translation>
@@ -9022,7 +9021,6 @@
 <translation id="7490683549040131791">Провери преостале лозинке</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 колачић}one{{NUM_COOKIES} колачић}few{{NUM_COOKIES} колачића}other{{NUM_COOKIES} колачића}}</translation>
-<translation id="7493244854553650478">Када претражујете историју прегледања, термини за претрагу историје, садржај странице са најбољим подударањима и генерисани излазни подаци модела се шаљу Google-у</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ће прикупљати сав текст који унесете, укључујући личне податке, попут лозинки и бројева кредитних картица. Да ли желите да користите овај додатак?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android апликација</translation>

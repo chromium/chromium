@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">ເປີດ ຫຼື ປິດການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ</translation>
 <translation id="2531025035050312891">ອຸປະກອນເຮັດວຽກຊ້າ</translation>
 <translation id="2531107890083353124">ໃນຂະນະທີ່ລາກແຖບ, ໃຫ້ກົດ <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">ພະຍາຍາມໃຊ້ຟັງຊັນ Home ບໍ? ໃຫ້ໃຊ້ປຸ່ມ</translation>
 <translation id="254900897760075745">ສຳເນົາເນື້ອຫາທີ່ເລືອກໃສ່ຄລິບບອດ</translation>
 <translation id="2549711466868162843">ປັບປຸງແສງ</translation>
 <translation id="2549985041256363841">ເລີ່ມການບັນທຶກ</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">ເບິ່ງແອັບທັງໝົດ</translation>
 <translation id="2992272421330787632">ເຊື່ອງການແນະນຳທັງໝົດຂອງສື່</translation>
 <translation id="2992327365391326550">ປຸ່ມໄມໂຄຣໂຟນຂອງອຸປະກອນຖືກປິດໄວ້ຢູ່.</translation>
+<translation id="2993956882370897557">ພະຍາຍາມໃຊ້ຟັງຊັນ End ຢູ່ບໍ? ໃຫ້ໃຊ້ປຸ່ມ</translation>
 <translation id="3000461861112256445">ສຽງໂມໂນ</translation>
 <translation id="3001391739687111021">ແກ້ໄຂຂະໜາດໜ້າຈໍ</translation>
 <translation id="3009178788565917040">ຜົນອອກມາ</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> ກຳລັງປ່ຽນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກັບໄປເປັນເວີຊັນເກົ່າ. ອຸປະກອນຂອງທ່ານຈະຣີເຊັດ ແລະ ຂໍ້ມູນທັງໝົດຈະຖືກລຶບອອກ.</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">ການຕັ້ງຄ່າວິທີການປ້ອນຂໍ້ມູນ</translation>
+<translation id="3174897399179348329">ພະຍາຍາມໃຊ້ຟັງຊັນ Page Up ຢູ່ບໍ? ໃຫ້ໃຊ້ປຸ່ມ</translation>
 <translation id="3176221688814061633">Chromebook ຫຼື ອຸປະກອນ Bluetooth ຂອງທ່ານກຳລັງໃຊ້ Bluetooth ເວີຊັນເກົ່າ. ເປີດໃຊ້ Bluetooth ຄວາມລະອຽດສູງສຸດ ຫຼື ໃຊ້ໄມໂຄຣໂຟນພາຍໃນເພື່ອຄຸນນະພາບສຽງທີ່ດີຂຶ້ນ.</translation>
 <translation id="3181441307743005334">ການຣິສະຕາດອາດຈະໃຊ້ເວລາຄາວໜຶ່ງ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ເຊື່ອມຕໍ່ກັບໜຶ່ງອຸປະກອນແລ້ວ}other{ເຊື່ອມຕໍ່ກັບ # ອຸປະກອນແລ້ວ}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">ປິດ</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
 <translation id="5302048478445481009">ພາ​ສາ</translation>
+<translation id="5302531370473608800">ອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານເພື່ອໃຊ້ YouTube Music</translation>
 <translation id="5303319262469238330">ແບັດເຕີຣີເຫຼືອຢູ່ <ph name="PERCENTAGE" />%.
 ລະບົບຈຳກັດຄຸນສົມບັດບາງຢ່າງເພື່ອເພີ່ມອາຍຸການໃຊ້ແບັດເຕີຣີ.</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="7145639536026937076">ແບັດເຕີຣີເຫຼືອ <ph name="PERCENTAGE" />% ແລະ ກຳລັງສາກ. ຕົວປະຢັດແບັດເຕີຣີເປີດຢູ່.</translation>
 <translation id="7147587499155271409">ບໍ່ມີປະຫວັດການທ່ອງເວັບ</translation>
+<translation id="7147657298465433425">ເພື່ອເຂົ້າເຖິງປຸ່ມ F, ໃຫ້ກົດປຸ່ມ fn + ປຸ່ມແຖວເທິງສຸດ</translation>
 <translation id="7149149900052329230">ຈັດການໄຟລ໌ໃນເຄື່ອງ ແລະ ໄຟລ໌ Google Drive ຂອງທ່ານ, ທັງໝົດໃນແອັບໄຟລ໌.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="7561982940498449837">ປິດເມນູ</translation>
 <translation id="7564874036684306347">ການຍ້າຍໜ້າຈໍໄປຫາເດັສທັອບອື່ນອາດຈະເຮັດໃຫ້ເກີດພຶດຕິກຳທີ່ບໍ່ຄາດຄິດ. ການແຈ້ງເຕືອນ, ໜ້າຈໍ ແລະ ກ່ອງໂຕ້ຕອບຕາມມາອາດຈະຖືກແຍກຈາກກັນລະຫວ່າງເດັສທັອບຕ່າງໆ.</translation>
+<translation id="7568154670718626683">ພະຍາຍາມໃຊ້ຟັງຊັນ Delete ຢູ່ບໍ? ໃຫ້ໃຊ້ປຸ່ມ</translation>
 <translation id="7568790562536448087">ການອັບເດດ</translation>
 <translation id="7569509451529460200">ເປີດນຳໃຊ້ Braille ແລະ ChromeVox ແລ້ວ</translation>
 <translation id="7569886975397378678">ປີດການຕັ້ງຄ່າການເບິ່ງການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
@@ -2131,6 +2137,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> ທ່ານຫາກໍໂຟກັສໄປ <ph name="FOCUSED_TIME" />. ເປີດການຕັ້ງຄ່າດ່ວນເພື່ອໂຟກັສອີກຄັ້ງ.</translation>
 <translation id="8203224998425013577">ສະແດງອີໂມຈິ ແລະ GIF ເພີ່ມເຕີມ</translation>
 <translation id="8203795194971602413">ຄລິກຂວາ</translation>
+<translation id="8205469348819768313">ພະຍາຍາມໃຊ້ຟັງຊັນ Page Down ບໍ? ໃຫ້ໃຊ້ປຸ່ມ</translation>
 <translation id="8214996719228530800">ຊ່ອງ Canary</translation>
 <translation id="8219451629189078428">ທ່ານຈຳເປັນຕ້ອງເປີດ Chromebook ຂອງທ່ານ ແລະ ສຽບປລັກໄວ້ຕະຫຼອດເວລາໃນລະຫວ່າງນີ້. ກວດໃຫ້ແນ່ໃຈວ່າໄດ້ສຽບສາຍສາກ ຫຼື ສາຍອະແດັບເຕີຄົບຖ້ວນແລ້ວ, ໃສ່ທັງ Chromebook ແລະ ເຕົ້າສຽບໄຟ. ຢ່າປິດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="8220076512072059941">ເພີ່ມ <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">ຜູ້ຊ່ວຍ Google ເວົ້າພາສານີ້ບໍ່ໄດ້.</translation>
 <translation id="8926951137623668982">ເຊື່ອງຊັ້ນວາງທຸກເທື່ອ</translation>
+<translation id="8929566928381252430">ພະຍາຍາມໃຊ້ຟັງຊັນ Caps Lock ຢູ່ບໍ? ໃຫ້ໃຊ້ປຸ່ມ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="8936501819958976551">ປິດນຳໃຊ້ແລ້ວ</translation>
 <translation id="8938800817013097409">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານ​ຂວາ​ຢູ່​ເບື້ອງ​ຫຼັງ)</translation>

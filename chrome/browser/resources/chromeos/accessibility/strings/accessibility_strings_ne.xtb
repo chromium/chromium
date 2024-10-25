@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="100421257800558142">राइट एरो की थिच्नुहोस्</translation>
 <translation id="100506692671054486">यसअघि कुनै पनि कमान्ड दिइएको छैन</translation>
 <translation id="1009046985747440431">नेभिगेसन गर्न माथि फर्केको वा तल फर्केको तीर कुञ्जी थिच्नुहोस्; सक्रिय गर्न Enter कुञ्जी थिच्नुहोस्</translation>
 <translation id="1011903154582639569">कुनै कुञ्जी फेला पारी टाइप गर्न औँला उठाउनुहोस्</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">टगल गर्ने बटन</translation>
 <translation id="1299774449519412690">हल्का आकासे निलो</translation>
 <translation id="1303806948938513162">ChromeVox का मेनुहरूमा प्रवेश गर्न ४ औँलाले ट्याप गर्नुहोस्</translation>
+<translation id="1304162325618937178">स्पेस की थिच्नुहोस्</translation>
 <translation id="1313373992684326101">अघिल्लो खण्डमा जानुहोस्। उदाहरणका लागि: स्ट्याटस ट्रे, लन्चर आदि।</translation>
 <translation id="1315077335264761176">टच ओरियन्टेसन</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, मेनु आइटम रेडियो बटनको चयन रद्द गरिएको छ।</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">गहुँगोरो</translation>
 <translation id="1618597272655350600">हालको स्थितिको पूरा विवरण घोषणा गर्छ</translation>
 <translation id="1627222324347828322">भूत जस्तो सेतो</translation>
+<translation id="1632810692616643246">स्क्रोल मोड अन वा अफ गर्नुहोस्</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ भन्दा ठुलो}other{ संकेतहरू # भन्दा सानो}}</translation>
 <translation id="1653266918374749391">अघिल्लो तह 3 शीर्षक</translation>
 <translation id="1657616855184033958">घटनाका स्ट्रिमसम्बन्धी फिल्टरहरू देखाउनुहोस्</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">अघिल्लो कुनै पनि नियन्त्रण छैन</translation>
 <translation id="2045606329038304310">फारमको क्षेत्र नियन्त्रण गर्ने क्षमता</translation>
 <translation id="2063539687800151747">शिलालेख</translation>
+<translation id="2067158561093481039">कस्टम की कम्बिनेसन सेट गर्नुहोस्</translation>
 <translation id="2086961585857038472">अर्को शब्द</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ने</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">स्याडल ब्राउन</translation>
 <translation id="2199994615414171367">अघिल्लो गणित</translation>
 <translation id="2203046366315513658">मान घटाउनुहोस्</translation>
+<translation id="2206580811360135054">विन्डोहरूको संक्षिप्त जानकारी देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="2216790501338699346">लिंक URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">एक वर्ण पछाडि सार्नुहोस्</translation>
 <translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
+<translation id="2239819015858077439">डाउन एरो की थिच्नुहोस्</translation>
 <translation id="2243633977138166243">नेभिगेसन गर्न लेफ्ट वा राइट एरो थिच्नुहोस्; अन गर्न enter थिच्नुहोस्</translation>
 <translation id="224426591676115802">यस भाषामा भ्वाइस उपलब्ध छैन: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">सिकाइ मोड बन्द गरिँदै</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">भारतीय रातो</translation>
 <translation id="4432896207833262240">चिन्ह लगाइएको सामग्री</translation>
 <translation id="4437615272777527928">मेनुहरूमा खोज्न टाइप गर्नुहोस् नतिजाहरूमा जान अप वा डाउन एरो प्रयोग गर्नुहोस्। पाठ क्यारेट समायोजन गर्न र एक मेनुबाट अर्को मेनुमा जान लेफ्ट र राइट एरो प्रयोग गर्नुहोस्।</translation>
+<translation id="4441677939526091190">अप एरो की थिच्नुहोस्</translation>
 <translation id="4453530046591759283">टुलबार वा सिस्टम ट्रेलगायतका स्क्रिनका अन्य भागमा जान Control+F1 थिच्नुहोस्। F1 भनेको इस्केप कीको दायाँपट्टि रहेको पहिलो की हो।</translation>
 <translation id="4457472090507035117">वर्तमान आवाज चयन गर्नुहोस्:</translation>
 <translation id="4476183483923481720">नयाँ र‍ेखा</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook टच स्क्रिनका पहुँच सम्बन्धी सुविधाहरूको प्रयोग गर्नुहोस्</translation>
 <translation id="5655682562155942719">जम्प आदेशहरू</translation>
 <translation id="56637627897541303">पाठ क्षेत्र</translation>
+<translation id="5666746275818170484">लेफ्ट एरो की थिच्नुहोस्</translation>
 <translation id="5669637233317991674">यो पाठमा जान Search + Right Arrow की वा Search + Left Arrow की थिच्नुहोस्</translation>
 <translation id="5677240841070992068">हालको स्थान</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">पप-अप बटन</translation>
 <translation id="7167657087543110">वर्ण एको</translation>
 <translation id="7173102181852295013">मध्यरात जस्तो निलो</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">विस्तारित</translation>
 <translation id="7209751026933045237">अर्को कुनै पनि स्लाइडर छैन</translation>
 <translation id="7218782500591078391">सुनौलो रड</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8382679411218029383">स्वत: पूर्णता रेखा र सूची</translation>
 <translation id="8394908167088220973">मिडिया प्ले/पज</translation>
+<translation id="8409502156784390079">स्क्रोल मोड अन छ</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428603554127842284">तह <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="8989104346085848538">ChromeVox मा अन रहेको जुनसुकै वाक् सुविधा अफ गर्न Control की थिच्नुहोस्।</translation>
 <translation id="9014206344398081366">ChromeVox को ट्युटोरियल</translation>
+<translation id="9034592733577768445">फेस कन्ट्रोल पज गरिएको छ</translation>
 <translation id="9040132695316389094">शीर्षक 1</translation>
 <translation id="9061884144798498064">८ डट भएको ब्रेल तालिका चयन गर्नुहोस्‌:</translation>
 <translation id="9063946545000394379">कर्सर सारेर अघिल्लो वर्णमा लगियोस्</translation>

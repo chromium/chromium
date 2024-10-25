@@ -445,6 +445,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2530896289327917474">Taustiņpārlūkošanas ieslēgšana vai izslēgšana</translation>
 <translation id="2531025035050312891">lēna ierīces darbība</translation>
 <translation id="2531107890083353124">Velkot cilni, nospiediet <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Vai mēģināt izmantot taustiņu Home? Izmantojiet</translation>
 <translation id="254900897760075745">Kopēt atlasīto saturu starpliktuvē</translation>
 <translation id="2549711466868162843">Apgaismojuma uzlabošana</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
@@ -563,6 +564,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2985148236010982088">Skatīt visas lietotnes</translation>
 <translation id="2992272421330787632">Paslēpt visus multivides ieteikumus</translation>
 <translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
+<translation id="2993956882370897557">Vai mēģināt izmantot taustiņu End? Izmantojiet</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">Rediģēt ekrāna lielumu</translation>
 <translation id="3009178788565917040">Izvade</translation>
@@ -615,6 +617,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ierīcē <ph name="DEVICE_TYPE" /> atjauno iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
 <translation id="316798519864381606">Google prezentācija</translation>
 <translation id="3171170659304083361">Ievades metožu iestatījumi</translation>
+<translation id="3174897399179348329">Vai mēģināt izmantot taustiņu Page Up? Izmantojiet</translation>
 <translation id="3176221688814061633">Jūsu Chromebook datorā vai Bluetooth ierīcē tiek izmantota vecāka Bluetooth versija. Lai uzlabotu audio kvalitāti, iespējojiet īpaši augstu Bluetooth izšķirtspēju vai izmantojiet iekšējo mikrofonu.</translation>
 <translation id="3181441307743005334">Restartēšana var ilgt kādu brīdi</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Savienots ar ierīci}zero{Savienots ar # ierīcēm}one{Savienots ar # ierīci}other{Savienots ar # ierīcēm}}</translation>
@@ -1261,6 +1264,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5297704307811127955">Izslēgta</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5302048478445481009">Valoda</translation>
+<translation id="5302531370473608800">Lai izmantotu pakalpojumu YouTube Music, atjauniniet savu ierīci (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5303319262469238330">Atlikušais akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%.
 Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.</translation>
 <translation id="5308380583665731573">Pievienot</translation>
@@ -1820,6 +1824,7 @@ Jauna instalācija</translation>
 <translation id="7144942256906679589">Akumulatora statuss</translation>
 <translation id="7145639536026937076">Akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%, un notiek uzlāde. Akumulatora enerģijas taupīšanas režīms ir ieslēgts.</translation>
 <translation id="7147587499155271409">Nav pārlūkošanas vēstures</translation>
+<translation id="7147657298465433425">Lai piekļūtu funkciju taustiņiem, nospiediet taustiņu fn un augšējās rindas taustiņus.</translation>
 <translation id="7149149900052329230">Pārvaldiet savus lokālos failus un Google diska failus lietotnē Faili.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />.
@@ -1929,6 +1934,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots p
 <translation id="7557816257942363084"><ph name="APP_NAME" /> pašlaik izmanto jūsu mikrofonu.</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
 <translation id="7564874036684306347">Logu pārvietošana uz citu darbvirsmu var izraisīt neparedzētu darbību. Turpmākie paziņojumi, logi un dialoglodziņi var tikt sadalīti pa darbvirsmām.</translation>
+<translation id="7568154670718626683">Vai mēģināt dzēst? Izmantojiet</translation>
 <translation id="7568790562536448087">Notiek atjaunināšana</translation>
 <translation id="7569509451529460200">Braila raksts un ChromeVox ir iespējoti</translation>
 <translation id="7569886975397378678">Nerādīt iespēju iestatīt tālruņa paziņojumu un lietotņu skatīšanu</translation>
@@ -2131,6 +2137,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots p
 <translation id="820256110035940528"><ph name="TITLE" />Jūs tikko lietojāt fokusa režīmu šādu laiku: <ph name="FOCUSED_TIME" />. Lai lietotu fokusa režīmu vēlreiz, atveriet ātros iestatījumus.</translation>
 <translation id="8203224998425013577">Rādīt citas emocijzīmes un GIF attēlus</translation>
 <translation id="8203795194971602413">Noklikšķināt ar peles labo pogu</translation>
+<translation id="8205469348819768313">Vai mēģināt izmantot taustiņu Page Down? Izmantojiet</translation>
 <translation id="8214996719228530800">Canary versija</translation>
 <translation id="8219451629189078428">Šajā laika periodā jūsu Chromebook datoram ir jābūt ieslēgtam un pievienotam strāvas avotam. Uzlādes ierīcei vai adaptera vadiem ir jābūt pilnībā pievienotiem gan Chromebook datoram, gan kontaktligzdai. Neizslēdziet Chromebook datoru.</translation>
 <translation id="8220076512072059941">Pievienot šādu laiku: <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots p
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google asistents nav pieejams šajā valodā.</translation>
 <translation id="8926951137623668982">Plaukts vienmēr tiek paslēpts</translation>
+<translation id="8929566928381252430">Vai mēģināt izmantot burtslēga taustiņu? Izmantojiet</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="8936501819958976551">deaktivizēta</translation>
 <translation id="8938800817013097409">USB-C ierīce (pieslēgvieta aizmugurē pa labi)</translation>

@@ -295,6 +295,7 @@
 <translation id="5553374991681107062">Nyeste</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> er blokkert</translation>
+<translation id="560980142378233747">Dette betyr at funksjoner på nettstedet skal fungere som forventet, men det kan hende at surfebeskyttelsen svekkes. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5649053991847567735">Automatiske nedlastinger</translation>
 <translation id="5668404140385795438">Overstyr nettstedets forespørsel om å forhindre zooming</translation>

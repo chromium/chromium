@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">Ενεργοποίηση ή απενεργοποίηση της περιήγησης με σύμβολα προσθήκης.</translation>
 <translation id="2531025035050312891">αργή συσκευή</translation>
 <translation id="2531107890083353124">Καθώς σέρνετε την καρτέλα, πατήστε <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Home; Χρήση</translation>
 <translation id="254900897760075745">Αντιγραφή επιλεγμένου περιεχομένου στο πρόχειρο</translation>
 <translation id="2549711466868162843">Βελτίωση φωτισμού</translation>
 <translation id="2549985041256363841">Έναρξη εγγραφής</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">Εμφάνιση όλων των εφαρμογών</translation>
 <translation id="2992272421330787632">Απόκρυψη όλων των προτάσεων μέσων</translation>
 <translation id="2992327365391326550">Το κουμπί μικροφώνου της συσκευής είναι απενεργοποιημένο.</translation>
+<translation id="2993956882370897557">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο End; Χρήση</translation>
 <translation id="3000461861112256445">Μονοφωνικός ήχος</translation>
 <translation id="3001391739687111021">Επεξεργασία μεγέθους οθόνης</translation>
 <translation id="3009178788565917040">Έξοδος</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934">Ο τομέας <ph name="MANAGER" /> επαναφέρει τη συσκευή <ph name="DEVICE_TYPE" /> σε προηγούμενη έκδοση. Θα γίνει επαναφορά της συσκευής σας και όλα τα δεδομένα θα διαγραφούν.</translation>
 <translation id="316798519864381606">Παρουσίαση Google</translation>
 <translation id="3171170659304083361">Ρυθμίσεις μεθόδων εισαγωγής</translation>
+<translation id="3174897399179348329">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Page Up; Χρήση</translation>
 <translation id="3176221688814061633">Το Chromebook ή η συσκευή Bluetooth χρησιμοποιεί μια παλαιότερη έκδοση του Bluetooth. Ενεργοποιήστε το Bluetooth Super Resolution ή χρησιμοποιήστε εσωτερικό μικρόφωνο για καλύτερη ποιότητα ήχου.</translation>
 <translation id="3181441307743005334">Η επανεκκίνηση μπορεί να διαρκέσει λίγη ώρα</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Συνδέθηκε σε κάποια συσκευή}other{Συνδέθηκε σε # συσκευές}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">Ανενεργό</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5302048478445481009">Γλώσσα</translation>
+<translation id="5302531370473608800">Ενημερώστε τη συσκευή <ph name="DEVICE_TYPE" />, για να χρησιμοποιήσετε το YouTube Music</translation>
 <translation id="5303319262469238330">Απομένει <ph name="PERCENTAGE" />% μπαταρία.
 Ορισμένες λειτουργίες έχουν περιοριστεί, προκειμένου να αυξηθεί η διάρκεια ζωής της μπαταρίας.</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">Κατάσταση μπαταρίας</translation>
 <translation id="7145639536026937076">Η μπαταρία είναι στο <ph name="PERCENTAGE" />% και φορτίζει. Η Εξοικονόμηση μπαταρίας είναι ενεργή.</translation>
 <translation id="7147587499155271409">Δεν υπάρχει ιστορικό περιήγησης</translation>
+<translation id="7147657298465433425">Για να αποκτήσετε πρόσβαση στα πλήκτρα F, πατήστε το πλήκτρο fn + τα πλήκτρα της επάνω σειράς</translation>
 <translation id="7149149900052329230">Με την εφαρμογή Αρχεία μπορείτε να διαχειρίζεστε από ένα σημείο τα τοπικά αρχεία σας και τα αρχεία που έχετε στο Google Drive.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@
 <translation id="7557816257942363084">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί το μικρόφωνό σας αυτήν τη στιγμή.</translation>
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
 <translation id="7564874036684306347">Η μετακίνηση των παραθύρων σε άλλη επιφάνεια εργασίας ενδέχεται να οδηγήσει σε μη αναμενόμενη συμπεριφορά. Ενδέχεται να γίνει διαχωρισμός μεταγενέστερων ειδοποιήσεων, παραθύρων και παραθύρων διαλόγου μεταξύ των επιφανειών εργασίας.</translation>
+<translation id="7568154670718626683">Προσπαθείτε να διαγράψετε; Χρήση</translation>
 <translation id="7568790562536448087">Ενημέρωση</translation>
 <translation id="7569509451529460200">Το Braille και το ChromeVox ενεργοποιήθηκαν</translation>
 <translation id="7569886975397378678">Παράβλεψη ρύθμισης προβολής των ειδοποιήσεων και εφαρμογών του τηλεφώνου σας</translation>
@@ -2131,6 +2137,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Συγκεντρωθήκατε για <ph name="FOCUSED_TIME" />. Ανοίξτε τις Γρήγορες ρυθμίσεις για να συγκεντρωθείτε ξανά.</translation>
 <translation id="8203224998425013577">Εμφάνιση περισσότερων emoji και GIF</translation>
 <translation id="8203795194971602413">Δεξί κλικ</translation>
+<translation id="8205469348819768313">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Page Down; Χρήση</translation>
 <translation id="8214996719228530800">Κανάλι Canary</translation>
 <translation id="8219451629189078428">Το Chromebook πρέπει να παραμείνει ενεργοποιημένο και συνδεδεμένο σε παροχή ρεύματος. Βεβαιωθείτε ότι τα καλώδια του φορτιστή ή του μετασχηματιστή είναι συνδεδεμένα σωστά, τόσο στο Chromebook όσο και στην πρίζα. Μην απενεργοποιήσετε το Chromebook.</translation>
 <translation id="8220076512072059941">Προσθήκη <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Ο Βοηθός Google δεν είναι διαθέσιμος σε αυτήν τη γλώσσα.</translation>
 <translation id="8926951137623668982">Το ράφι θα αποκρύπτεται πάντα</translation>
+<translation id="8929566928381252430">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Caps Lock; Χρήση</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 αρχείο}other{# αρχεία}}</translation>
 <translation id="8936501819958976551">απενεργοποιημένο</translation>
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>

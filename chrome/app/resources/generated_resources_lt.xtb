@@ -6134,7 +6134,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5369491905435686894">Įgalinti pelės spartinimą</translation>
 <translation id="5369694795837229225">Nustatyti „Linux“ kūrimo aplinką</translation>
 <translation id="5370819323174483825">&amp;Įkelti iš naujo</translation>
-<translation id="5371801916084758849">Galite ieškoti adreso juostoje naudodami @history, taip pat iš istorijos puslapio</translation>
 <translation id="5372529912055771682">Ši operacinė sistema nepalaiko teikiamo registracijos režimo. Įsitikinkite, kad naudojate naujausią versiją ir bandykite dar kartą.</translation>
 <translation id="5372579129492968947">Atsegti plėtinį</translation>
 <translation id="5372632722660566343">Tęsti be paskyros</translation>
@@ -9044,7 +9043,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7490683549040131791">Tikrinti likusius slaptažodžius</translation>
 <translation id="7491962110804786152">Tabuliavimo klavišas</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 slapukas}one{{NUM_COOKIES} slapukas}few{{NUM_COOKIES} slapukai}many{{NUM_COOKIES} slapuko}other{{NUM_COOKIES} slapukų}}</translation>
-<translation id="7493244854553650478">Kai ieškote naršymo istorijoje, istorijos paieškos terminai, geriausių atitikčių puslapio turinys ir sugeneruotos modelių išvestys siunčiami „Google“</translation>
 <translation id="7493386493263658176">Plėtinys „<ph name="EXTENSION_NAME" />“ gali rinkti visą įvedamą tekstą, įskaitant asmeninius duomenis, pvz., slaptažodžius ir kredito kortelės numerius. Ar norite naudoti šį plėtinį?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">„Android“ programa</translation>

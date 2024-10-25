@@ -6132,7 +6132,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5369491905435686894">Virkja vélbúnaðarhröðun músar</translation>
 <translation id="5369694795837229225">Setja upp Linux-forritunarumhverfi</translation>
 <translation id="5370819323174483825">Endu&amp;rhlaða</translation>
-<translation id="5371801916084758849">Þú getur leitað í veffangastikunni með því að nota @history, alveg eins og af ferilsíðunni</translation>
 <translation id="5372529912055771682">Tilgreind skráningaraðferð er ekki studd í þessari útgáfu stýrikerfisins. Gakktu úr skugga um að þú sért að nota nýjustu útgáfu og reyndu aftur.</translation>
 <translation id="5372579129492968947">Losa viðbót</translation>
 <translation id="5372632722660566343">Halda áfram án reiknings</translation>
@@ -9036,7 +9035,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7490683549040131791">Athuga aðgangsorð sem eru eftir</translation>
 <translation id="7491962110804786152">flipi</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 fótspor}one{{NUM_COOKIES} fótspor}other{{NUM_COOKIES} fótspor}}</translation>
-<translation id="7493244854553650478">Þegar þú leitar í vafraferli eru leitarfyrirspurnir frá ferlinum, efnið á síðunum með bestu samsvaranirnar og tilbúin frálagslíkön send til Google</translation>
 <translation id="7493386493263658176">Viðbótin <ph name="EXTENSION_NAME" /> má safna öllum texta sem þú slærð inn, þar á meðal persónugögnum á borð við aðgangsorð og greiðslukortanúmer. Viltu nota þessa viðbót?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android forrit</translation>

@@ -6132,7 +6132,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5369491905435686894">Aktivér acceleration af mus</translation>
 <translation id="5369694795837229225">Konfigurer Linux-udviklingsmiljø</translation>
 <translation id="5370819323174483825">&amp;Opdater</translation>
-<translation id="5371801916084758849">Du kan søge i adresselinjen ved at bruge @historik og via siden Historik</translation>
 <translation id="5372529912055771682">Den medfølgende tilstand for tilmelding understøttes ikke af denne version af operativsystemet. Sørg for, at du kører den nyeste version, og prøv igen.</translation>
 <translation id="5372579129492968947">Frigør udvidelse</translation>
 <translation id="5372632722660566343">Fortsæt uden en konto</translation>
@@ -9037,7 +9036,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7490683549040131791">Tjek resterende adgangskoder</translation>
 <translation id="7491962110804786152">fane</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookie}other{{NUM_COOKIES} cookies}}</translation>
-<translation id="7493244854553650478">Når du søger i browserhistorikken, sendes dine historiksøgetermer, dit sideindhold med bedste matches og genererede modeloutput til Google</translation>
 <translation id="7493386493263658176">Udvidelsen <ph name="EXTENSION_NAME" /> indsamler muligvis al den tekst, du indtaster, herunder personlige oplysninger såsom adgangskoder og kreditkortnumre. Vil du bruge denne udvidelse?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android-app</translation>

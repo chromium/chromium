@@ -6119,7 +6119,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5369491905435686894">Ativar aceleração do rato</translation>
 <translation id="5369694795837229225">Configure o ambiente de programação do Linux</translation>
 <translation id="5370819323174483825">&amp;Recarregar</translation>
-<translation id="5371801916084758849">Pode pesquisar na barra de endereço com @histórico, bem como a partir da página Histórico</translation>
 <translation id="5372529912055771682">O modo de inscrição fornecido não é suportado por esta versão do sistema operativo. Certifique-se de que está a executar a versão mais recente e tente novamente.</translation>
 <translation id="5372579129492968947">Soltar extensão</translation>
 <translation id="5372632722660566343">Continuar sem uma conta</translation>
@@ -9023,7 +9022,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7490683549040131791">Rever palavras-passe restantes</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
-<translation id="7493244854553650478">Quando pesquisa o histórico de navegação, os termos de pesquisa do histórico, o conteúdo da página com as melhores correspondências e os resultados dos modelos gerados são enviados para a Google</translation>
 <translation id="7493386493263658176">A extensão <ph name="EXTENSION_NAME" /> pode recolher todo o texto que escrever, incluindo dados pessoais como palavras-passe e números de cartões de crédito. Quer utilizar esta extensão?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">App Android</translation>

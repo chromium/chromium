@@ -6115,7 +6115,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5369491905435686894">Omogući ubrzavanje miša</translation>
 <translation id="5369694795837229225">Podesite Linux okruženje za programiranje</translation>
 <translation id="5370819323174483825">&amp;Učitaj ponovo</translation>
-<translation id="5371801916084758849">Možete da pretražujete u traci za adresu koristeći @history, kao i sa stranice Istorija</translation>
 <translation id="5372529912055771682">Ova verzija operativnog sistema ne podržava navedeni režim prijavljivanja. Proverite da li koristite najnoviju verziju i pokušajte ponovo.</translation>
 <translation id="5372579129492968947">Otkačite dodatak</translation>
 <translation id="5372632722660566343">Nastavi bez naloga</translation>
@@ -9022,7 +9021,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7490683549040131791">Proveri preostale lozinke</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 kolačić}one{{NUM_COOKIES} kolačić}few{{NUM_COOKIES} kolačića}other{{NUM_COOKIES} kolačića}}</translation>
-<translation id="7493244854553650478">Kada pretražujete istoriju pregledanja, termini za pretragu istorije, sadržaj stranice sa najboljim podudaranjima i generisani izlazni podaci modela se šalju Google-u</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> će prikupljati sav tekst koji unesete, uključujući lične podatke, poput lozinki i brojeva kreditnih kartica. Da li želite da koristite ovaj dodatak?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android aplikacija</translation>

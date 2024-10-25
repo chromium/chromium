@@ -29,6 +29,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1330562121671411446">Hauteman hizkuntza</translation>
 <translation id="1342274909142618978">Ezabatu datuak Chromium-etik ere bai (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Ainguratu da! Tresna-barrako botoi berriaren bidez erabil dezakezu berriro irudi-bilaketa.</translation>
+<translation id="1356661055722410047">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak</translation>
 <translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
 <translation id="1478370723027452770">Lortu Chrome for Testing-en inguruko laguntza</translation>
 <translation id="1497802159252041924">Instalazio-errorea: <ph name="INSTALL_ERROR" /></translation>
@@ -130,8 +131,10 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2770231113462710648">Ezarri hau arakatzaile lehenetsia gisa:</translation>
+<translation id="277338894894732084">Aurrerago, gordetako informazioa inprimakiak automatikoki betetzeko erabili nahi duzun ala ez galdetuko dizu Chromium-ek</translation>
 <translation id="2785438272836277133">Luzapenak malwarea dauka, eta ez da segurua. Ken ezazu Chromium-etik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
+<translation id="2806241689335397269">Inprimakiko informazioa gorde nahi duzun galdetuko dizu Chromium-ek, hala nola urtebetetzea, adina eta pasaporte-zenbakia</translation>
 <translation id="2837693172913560447">Chromium-eko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="2841525013647267359">Itzuli hizkuntza honetatik</translation>
 <translation id="2846251086934905009">Instalazio-errorea: instalatzailea ez da osatu. Instalazioa bertan behera utzi da.</translation>
@@ -232,6 +235,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4148957013307229264">Instalatzen…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chromium</translation>
 <translation id="421369550622382712">Ezagutu Chromium-erako aplikazio, joko, luzapen eta gai bikainak.</translation>
+<translation id="4217972271355023382">Gurasoen aukerekin sarean seguruago egoteko, aldatu zure Chromium-eko profilera, bertan <ph name="USER_EMAIL_ADDRESS" /> gisa saioa hasita baitaukazu jada</translation>
 <translation id="4222932583846282852">Bertan behera uzten…</translation>
 <translation id="4224210481850767180">Bertan behera utzi da instalazioa.</translation>
 <translation id="4230135487732243613">Chromium datuak kontu honekin lotu nahi dituzu?</translation>
@@ -439,6 +443,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6843464627590537736">Irudi-bilaketaren bilaketa-burbuila</translation>
 <translation id="6847869444787758381">Chromium-ek abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>
 <translation id="684888714667046800">Ezin da konektatu Internetera. Suebaki bat erabiltzen baduzu, ziurtatu <ph name="PRODUCT_EXE_NAME" /> baimendutakoen zerrendan dagoela.</translation>
+<translation id="685279860330610299">Chromium-ek informazio mota gehiago uler ditzake, eta inprimakiak automatikoki bizkorrago bete. Lortu informazio gehiago <ph name="BEGIN_LINK" />Chrome-ren betetze automatikoari buruz<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" elementuak malwarea duela hauteman du Chromium-ek</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
@@ -550,6 +555,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8397248745433792218">Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Garatzaileak luzapena desargitaratu du, eta agian ez da segurua. Ken ezazu Chromium-etik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Exekutatu Chromium berriro egun bateko epean}other{Exekutatu Chromium berriro # eguneko epean}}</translation>
+<translation id="8438543370129609977">Irudi-bilaketa erabiltzen duzunean, orriaren izena, URLa eta edukia, PDFak barne, zerbitzariari bidaltzen zaizkio. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
 <translation id="8458614432758743027">Windows 10 edo sistema berriagoa behar da Chromium erabiltzeko.</translation>
 <translation id="8463672209299734063">Aukerakoa: lagundu Chromium OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
@@ -561,6 +567,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8568283329061645092">Google-ko kontu batekin saioa hasten duzunean egiazta ditzake Chromium-ek pasahitzak</translation>
 <translation id="8576826849825683917">Erakunde batek baino gehiagok kudeatzen dute Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
+<translation id="8601359445272098721">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak, "itzuli pantaila" botoia hautatuta.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Webguneek zure interesei buruzko informazioa gorde dezakete Chromium-en; esaterako, webgune batera joaten bazara maratoi baterako oinetakoak erostera, baliteke webgune horrek "maratoiak" definitzea interes gisa. Ondorioz, beranduago beste webgune batera joaten bazara lasterketa batean izena emateko, litekeena da webgune horrek lasterketetarako oinetakoekin erlazionatutako iragarki bat erakustea zure interesetan oinarrituta.</translation>
 <translation id="8619360774459241877">Chromium abiarazten…</translation>
 <translation id="8621669128220841554">Instalazioak huts egin du zehaztu gabeko errore batengatik. Deskargatu Chromium berriro.</translation>

@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">Valodas noteikšana</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> pieprasa, lai pirms šīs ierīces lietošanas jūs izlasītu tālāk izklāstītos pakalpojumu sniegšanas noteikumus un piekristu tiem. Šie noteikumi nepaplašina, nepārveido un neierobežo operētājsistēmas Google Chrome OS Flex noteikumus.</translation>
 <translation id="1341711321000856656">Varat pārslēgties, lai skatītu paroles no cita Chrome profila.</translation>
+<translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="1363996462118479832">Chrome OS nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Šim datoram jau ir instalēta jaunākā Google Chrome versija. Ja programmatūra nedarbojas, atinstalējiet Google Chrome un mēģiniet vēlreiz.</translation>
@@ -49,6 +50,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Varat arī noņemt intereses, ja nevēlaties, lai Chrome tās apsvērtu.</translation>
 <translation id="1628000112320670027">Saņemt palīdzību par Chrome</translation>
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
+<translation id="1651617469580841801">Kad izmantojat Google Lens, lapas nosaukums, vietrādis URL un saturs, tostarp PDF faili, tiek nosūtīti Google serveriem. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Par Chrome OS Flex</translation>
 <translation id="1674870198290878346">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
 <translation id="1682634494516646069">Google Chrome nevar nolasīt savu datu direktoriju un ierakstīt tajā:
@@ -195,6 +197,7 @@
 <translation id="3261565993776444564">Izmēģiniet jaunas krāsas, lai pielāgotu pārlūku.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
+<translation id="3289358082435924389">Vēlāk pārlūkā Chrome tiks vaicāts, vai vēlaties izmantot saglabāto informāciju veidlapu automātiskai aizpildei.</translation>
 <translation id="3292333338048274092">Pēc tam jums būs jārestartē pārlūks Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Pārlūks Chrome tūlīt tiks restartēts}=1{Pārlūks Chrome pēc 1 sekundes tiks restartēts}zero{Pārlūks Chrome pēc # sekundēm tiks restartēts}one{Pārlūks Chrome pēc # sekundes tiks restartēts}other{Pārlūks Chrome pēc # sekundēm tiks restartēts}}</translation>
@@ -507,6 +510,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7308322188646931570">Pārlūkam Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7352881504289275361">Droša pārlūkošana ar papildu aizsardzību piedāvā visefektīvākos Chrome aizsardzības līdzekļus tiešsaistē, kas gādā par jūsu drošību pārlūkošanas laikā.</translation>
+<translation id="7386878009611068389">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pārslēdzieties uz Chrome profilu, kurā jau pierakstījāties ar kontu <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7394745511930161845">Izveidojiet savu motīvu, izmantojot MI, lai piešķirtu pārlūkam unikālu izskatu.</translation>
 <translation id="7398801000654795464">Pārlūkā Chrome iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
 <translation id="7412494426921990001">Noklikšķiniet uz Chrome izvēlnes.</translation>
@@ -520,6 +524,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7477130805345743099">Pārlūkā Chrome tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="7481213027396403996">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="749228101751499733">Kamēr esat pierakstījies, pārlūkā Chrome varat izmantot savas paroles un citu saturu no Google konta. <ph name="SHORTCUT" /> var mainīt jūsu Google pakalpojumu iestatījumus.</translation>
+<translation id="7512187482580860950">Chrome var saprast vairāk informācijas veidu un ātrāk automātiski aizpildīt veidlapas. Uzziniet vairāk par <ph name="BEGIN_LINK" />automātisko aizpildi pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="7514258452813684157">Google atjauninātāja pakalpojums</translation>
 <translation id="7515191208480168435">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -562,6 +567,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7886087451482920026">Atlasiet tekstu, izmantojot Google Lens.</translation>
 <translation id="7890208801193284374">Ja jūsu datoru izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chrome atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos kontos.</translation>
 <translation id="7896673875602241923">Kāds iepriekš pierakstījās pārlūkā Chrome šajā datorā, izmantojot e-pasta adresi <ph name="ACCOUNT_EMAIL_LAST" />. Lūdzu, izveidojiet jaunu Chrome lietotāju, lai nošķirtu savu informāciju.</translation>
+<translation id="7917470403848199310">Pārlūkā Chrome tiks vaicāts, vai vēlaties saglabāt veidlapā ievadīto informāciju, piemēram, dzimšanas datumu, vecumu un pases numuru.</translation>
 <translation id="7917876797003313048">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chrome, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="7936702483636872823">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo fails ir maldinošs un var veikt neparedzētas izmaiņas jūsu ierīcē.</translation>
 <translation id="7947083960301164556">Skatīt jaunumus</translation>
@@ -618,6 +624,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8550334526674375523">Šis darba profils ir pilnīgi nesaistīts ar jūsu personīgo profilu.</translation>
 <translation id="8555465886620020932">Pakalpojuma kļūda: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Izmantojot Chrome profilus, varat nodalīt visu savu Chrome saturu. Tādējādi tiek atvieglota darba un izklaides satura nodalīšana.</translation>
+<translation id="8601359445272098721">Jaunums! Atlasot pogu “Tulkot ekrānu”, varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="8614913330719544658">Google Chrome nereaģē. Vai restartēt to tūlīt?</translation>
 <translation id="861702415419836452">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
 <translation id="8625237574518804553">{0,plural, =1{Pārlūks Chrome pēc 1 minūtes tiks restartēts}zero{Pārlūks Chrome pēc # minūtēm tiks restartēts}one{Pārlūks Chrome pēc # minūtes tiks restartēts}other{Pārlūks Chrome pēc # minūtēm tiks restartēts}}</translation>

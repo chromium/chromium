@@ -6128,7 +6128,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5369491905435686894">Ota käyttöön hiiren nopeuttaminen</translation>
 <translation id="5369694795837229225">Ota käyttöön Linux-kehitysympäristö</translation>
 <translation id="5370819323174483825">&amp;Lataa uudelleen</translation>
-<translation id="5371801916084758849">Voit hakea osoitepalkista @history-komennolla tai Historia-sivulta</translation>
 <translation id="5372529912055771682">Tämä käyttöjärjestelmän versio ei tue annettua käyttöönottotilaa. Varmista, että käytössä on uusin versio, ja yritä uudelleen.</translation>
 <translation id="5372579129492968947">Irrota laajennus</translation>
 <translation id="5372632722660566343">Jatka ilman tiliä</translation>
@@ -9031,7 +9030,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7490683549040131791">Tarkista loput salasanat</translation>
 <translation id="7491962110804786152">sarkain</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 eväste}other{{NUM_COOKIES} evästettä}}</translation>
-<translation id="7493244854553650478">Kun haet selaushistoriaa, historian hakutermit, parhaiden vastaavuuksien sivusisältö ja luodut tekoälymallin tuotokset lähetetään Googlelle</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> voi kerätä kaiken kirjoittamasi tekstin, myös henkilökohtaiset tiedot, kuten salasanat ja luottokorttien numerot. Haluatko käyttää tätä laajennusta?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android-sovellus</translation>

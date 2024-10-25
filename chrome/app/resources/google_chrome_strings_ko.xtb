@@ -30,6 +30,7 @@
 <translation id="1330562121671411446">언어 감지</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" />에서는 기기를 사용하기 전에 다음 서비스 약관을 읽고 이에 동의하도록 하고 있습니다. 이 약관은 Google ChromeOS Flex 약관을 확대하거나 수정 또는 제한하지 않습니다.</translation>
 <translation id="1341711321000856656">다른 Chrome 프로필의 비밀번호를 보도록 전환할 수 있습니다.</translation>
+<translation id="1356661055722410047">New! 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
 <translation id="1363996462118479832">로그인 중 오류가 발생하여 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="137466361146087520">Chrome 베타</translation>
 <translation id="1399397803214730675">컴퓨터에 Chrome 최신 버전이 설치되어 있습니다. 실행되지 않는 경우 제거한 후 다시 시도하세요.</translation>
@@ -51,6 +52,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="1628000112320670027">Chrome 도움말 보기</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
+<translation id="1651617469580841801">Google 렌즈를 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 Google로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex 정보</translation>
 <translation id="1674870198290878346">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
@@ -197,6 +199,7 @@
 <translation id="3261565993776444564">새로운 색상으로 브라우저를 맞춤설정해 보세요.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
+<translation id="3289358082435924389">나중에 Chrome에서 저장된 정보를 사용하여 양식을 자동으로 작성할지 묻습니다.</translation>
 <translation id="3292333338048274092">그런 다음 Chrome을 다시 시작해야 합니다.</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
@@ -511,6 +514,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7352881504289275361">향상된 세이프 브라우징은 Chrome의 가장 강력한 온라인 보호 기능으로, 인터넷을 탐색 중인 사용자를 안전하게 보호합니다.</translation>
+<translation id="7386878009611068389">부모님의 선택을 통해 온라인에서 더 안전하게 보호하려면 이미 <ph name="USER_EMAIL_ADDRESS" />님으로 로그인되어 있는 Chrome 프로필로 전환하세요.</translation>
 <translation id="7394745511930161845">AI로 나만의 테마를 만들어 브라우저에 독특한 분위기를 더하세요.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7412494426921990001">Chrome 메뉴를 클릭합니다</translation>
@@ -524,6 +528,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7477130805345743099">Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="749228101751499733">로그인한 상태로 Chrome에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. <ph name="SHORTCUT" />에서 Google 서비스 설정을 변경할 수 있습니다.</translation>
+<translation id="7512187482580860950">Chrome이 더 많은 유형의 정보를 이해하고 양식을 더 빠르게 자동 완성할 수 있습니다. <ph name="BEGIN_LINK" />Chrome 자동 완성<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="7514258452813684157">Google 업데이터 서비스</translation>
 <translation id="7515191208480168435">Google 렌즈를 고정하여 쉽게 액세스할 수 있습니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
@@ -566,6 +571,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7886087451482920026">Google 렌즈로 텍스트 선택</translation>
 <translation id="7890208801193284374">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="7896673875602241923">다른 사용자가 이전에 이 컴퓨터에서 <ph name="ACCOUNT_EMAIL_LAST" />(으)로 Chrome에 로그인했습니다. 새 Chrome 사용자를 만들어 정보를 별도로 관리하세요.</translation>
+<translation id="7917470403848199310">Chrome에서 생일, 나이, 여권 번호와 같은 양식 정보를 저장할지 묻는 메시지가 표시됩니다.</translation>
 <translation id="7917876797003313048">로그인된 Google 계정을 관리할 수 있습니다. Google 계정은 Chrome 브라우저, Play 스토어, Gmail 등에서 사용됩니다. 가족 구성원 등 다른 사람을 위해 계정을 추가하고 싶다면 대신 <ph name="DEVICE_TYPE" />에 새 사용자를 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">사기성 파일이며 기기에 예기치 않은 변경사항이 발생할 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="7947083960301164556">새 소식 보기</translation>
@@ -622,6 +628,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8571790202382503603">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>
+<translation id="8601359445272098721">New! '화면 번역' 버튼을 선택하여 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="861702415419836452">Chrome에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>

@@ -6117,7 +6117,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5369491905435686894">Attiva l'accelerazione del mouse</translation>
 <translation id="5369694795837229225">Configura ambiente di sviluppo Linux</translation>
 <translation id="5370819323174483825">&amp;Ricarica</translation>
-<translation id="5371801916084758849">Puoi eseguire ricerche nella barra degli indirizzi usando @cronologia o dalla pagina Cronologia</translation>
 <translation id="5372529912055771682">La modalità di iscrizione specificata non è supportata da questa versione del sistema operativo. Assicurati che sia installata l'ultima versione e riprova.</translation>
 <translation id="5372579129492968947">Sblocca estensione</translation>
 <translation id="5372632722660566343">Continua senza un account</translation>
@@ -9017,7 +9016,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7490683549040131791">Controlla le password rimanenti</translation>
 <translation id="7491962110804786152">Tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookie}}</translation>
-<translation id="7493244854553650478">Quando esegui una ricerca nella cronologia di navigazione, i termini di ricerca della cronologia, i contenuti della pagina dei risultati più pertinenti e gli output del modello generati vengono inviati a Google</translation>
 <translation id="7493386493263658176">L'estensione <ph name="EXTENSION_NAME" /> potrebbe memorizzare tutto il testo digitato, inclusi dati personali quali password e numeri di carte di credito. Vuoi utilizzare l'estensione?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">App per Android</translation>

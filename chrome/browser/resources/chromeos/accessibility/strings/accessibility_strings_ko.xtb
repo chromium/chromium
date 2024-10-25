@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="100421257800558142">오른쪽 화살표 키를 누릅니다.</translation>
 <translation id="100506692671054486">이전 명령어 없음</translation>
 <translation id="1009046985747440431">이동하려면 위쪽 또는 아래쪽 화살표를 누르고, 활성화하려면 Enter를 누르세요.</translation>
 <translation id="1011903154582639569">키를 찾은 다음 손가락을 떼서 입력하세요.</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">전환 버튼</translation>
 <translation id="1299774449519412690">라이트 스카이 블루</translation>
 <translation id="1303806948938513162">ChromeVox 메뉴로 들어가려면 네 손가락으로 탭하세요.</translation>
+<translation id="1304162325618937178">스페이스바를 누릅니다.</translation>
 <translation id="1313373992684326101">이전 섹션으로 이동합니다. 섹션으로는 상태 표시줄, 런처 등이 있습니다.</translation>
 <translation id="1315077335264761176">터치 방향</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, 메뉴 항목 라디오 버튼 선택 해제됨</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">위트</translation>
 <translation id="1618597272655350600">현재 위치에 대한 자세한 설명을 들려줍니다.</translation>
 <translation id="1627222324347828322">고스트 화이트</translation>
+<translation id="1632810692616643246">스크롤 모드 시작 또는 종료</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{큼 부호}other{큼 부호 #개}}</translation>
 <translation id="1653266918374749391">이전 수준 3 제목</translation>
 <translation id="1657616855184033958">이벤트 스트림 필터 표시</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">이전 컨트롤이 없습니다</translation>
 <translation id="2045606329038304310">양식 입력란 컨트롤</translation>
 <translation id="2063539687800151747">제명</translation>
+<translation id="2067158561093481039">맞춤 키 조합 실행</translation>
 <translation id="2086961585857038472">다음 단어</translation>
 <translation id="2087981446621639008">설명목록 세부정보</translation>
 <translation id="2089387485033699258">ko</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">새들 브라운</translation>
 <translation id="2199994615414171367">이전 수식</translation>
 <translation id="2203046366315513658">값 줄이기</translation>
+<translation id="2206580811360135054">창의 개요 표시 또는 숨기기</translation>
 <translation id="2216790501338699346">링크 URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">한 글자 뒤로 이동</translation>
 <translation id="2220529011494928058">문제 신고</translation>
+<translation id="2239819015858077439">아래쪽 화살표 키를 누릅니다.</translation>
 <translation id="2243633977138166243">왼쪽 또는 오른쪽 화살표를 눌러서 이동, Enter 키를 눌러서 활성화</translation>
 <translation id="224426591676115802"><ph name="LANGUAGE" />에 사용 가능한 음성 없음</translation>
 <translation id="2247700577781885251">학습 모드 중지 중</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">인디언 레드</translation>
 <translation id="4432896207833262240">표시된 콘텐츠</translation>
 <translation id="4437615272777527928">입력하여 메뉴를 검색합니다. 위쪽 및 아래쪽 화살표를 사용하여 다른 결과로 이동합니다. 왼쪽 및 오른쪽 화살표를 사용하여 텍스트 캐럿을 조정하고 메뉴 간에 이동합니다.</translation>
+<translation id="4441677939526091190">위쪽 화살표 키를 누릅니다.</translation>
 <translation id="4453530046591759283">툴바나 작업 표시줄과 같은 화면의 다른 부분으로 이동하려면 Control+F1 키를 누릅니다. F1은 Esc 키 바로 오른쪽에 있는 키입니다.</translation>
 <translation id="4457472090507035117">현재 음성 선택:</translation>
 <translation id="4476183483923481720">새로운 줄</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook 터치스크린 접근성 기능 사용하기</translation>
 <translation id="5655682562155942719">이동 명령어</translation>
 <translation id="56637627897541303">텍스트 영역</translation>
+<translation id="5666746275818170484">왼쪽 화살표 키를 누릅니다.</translation>
 <translation id="5669637233317991674">검색 키 + 오른쪽 화살표 키 또는 검색 키 + 왼쪽 화살표 키를 눌러 이 과정을 탐색하세요.</translation>
 <translation id="5677240841070992068">현재 위치</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">팝업 버튼</translation>
 <translation id="7167657087543110">문자 에코</translation>
 <translation id="7173102181852295013">미드나이트 블루</translation>
+<translation id="7194194198490288773"><ph name="ACTION" />(<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">펼쳐짐</translation>
 <translation id="7209751026933045237">다음 슬라이더가 없습니다</translation>
 <translation id="7218782500591078391">골든 로드</translation>
@@ -1089,6 +1098,7 @@
 <translation id="8378855320830505539">지역</translation>
 <translation id="8382679411218029383">자동완성 본문 및 목록</translation>
 <translation id="8394908167088220973">미디어 재생/일시중지</translation>
+<translation id="8409502156784390079">스크롤 모드 활성화됨</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8428603554127842284">수준 <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1166,6 +1176,7 @@
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8989104346085848538">현재 ChromeVox의 음성 안내를 중지하려면 Ctrl 키를 누르세요.</translation>
 <translation id="9014206344398081366">ChromeVox 가이드</translation>
+<translation id="9034592733577768445">얼굴 제어 일시중지됨</translation>
 <translation id="9040132695316389094">제목 1</translation>
 <translation id="9061884144798498064">8점 점자표 선택:</translation>
 <translation id="9063946545000394379">이전 문자로 이동</translation>

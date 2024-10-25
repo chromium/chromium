@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
 <translation id="1908394185991500139">pakaliwang arrow</translation>
+<translation id="1914144885717544695">sa Biyernes</translation>
 <translation id="1923388006036088459">Mga kulay ng accent</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">Na-print</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> (na) larawan</translation>
 <translation id="2154460308960858308">I-clear ang paghahanap</translation>
 <translation id="2157660087437850958">picker ng emoji</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2715723665057727940">ilog</translation>
 <translation id="2717139507051041123">I-enable ang dark color mode</translation>
+<translation id="2726755229438917165">sa Lunes</translation>
 <translation id="2728460467788544679">I-clear ang lahat ng history ng pag-print</translation>
 <translation id="2731700343119398978">Mangyaring maghintay...</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Mga outline</translation>
 <translation id="3061850252076394168">i-enable ang select to speak</translation>
+<translation id="3066772729299747758">sa Martes</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
 <translation id="3078740164268491126">talahanayan</translation>
 <translation id="3081652522083185657">maliwanag</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Wallpaper na paggalaw ng mundo</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> na background na may titik <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusibo</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
 <translation id="4130750466177569591">Sumasang-ayon ako</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
+<translation id="4137700675046373159">sa Sabado</translation>
 <translation id="4143226836069425823">Mag-tap ng isa pang keyboard key para palitan</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">sa Linggo</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Stylish na opisina</translation>
 <translation id="4258281355379922695">Latency ng HTTP</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
 <translation id="6535178685492749208">Offline ka. Ipapadala ang feedback sa ibang pagkakataon.</translation>
 <translation id="6543412779435705598">mga taco</translation>
+<translation id="6550369542114086980">sa Huwebes</translation>
 <translation id="6551839203326557324">mga mansanas</translation>
 <translation id="65526652485742171">Naka-enable na ang button sa pagkumpirma</translation>
 <translation id="6557784757915238407"><ph name="ATTACH" /> ang uri ng APN.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">I-customize</translation>
 <translation id="7182063559013288142">Instant na hotspot</translation>
 <translation id="7184043045742675738">Mag-click sa anumang key para i-customize ang iyong button. Baguhin ang posisyon ng key gamit ang mouse o mga arrow key.</translation>
+<translation id="7187669805838282391">sa Miyerkoles</translation>
 <translation id="7206979415662233817">Mga tuntunin ng serbisyo</translation>
 <translation id="7210635925306941239">cyan</translation>
 <translation id="7212547870105584639">Pamahalaan ang mga setting ng APN ng network. Bumubuo ang mga APN ng koneksyon sa pagitan ng cellular network at internet. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7388959671917308825">Built-in na touchpad</translation>
 <translation id="7397270852490618635">I-off ang maliwanag na tema</translation>
 <translation id="7401543881546089382">Tanggalin ang shortcut</translation>
+<translation id="7405493795721832710">Handa nang i-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7425037327577270384">Tulungan akong magsulat</translation>
@@ -1325,6 +1335,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7500205272584643581">Payagan ang Recorder na ma-detect at malagyan ng label ang mga speaker?</translation>
 <translation id="7501957181231305652">o</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
+<translation id="7503342217608032738">Hindi magagamit ang device</translation>
 <translation id="7507061649493508884">Isang matingkad na <ph name="FLOWER_COLOR" /> na <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">ibaba</translation>
 <translation id="7514365320538308">I-download</translation>
@@ -1337,6 +1348,8 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7544853251252956727">I-shuffle</translation>
 <translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
 <translation id="7551123448725492271">Audio device ang device.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Itinakda ng administrator ng <ph name="MANAGER" /> kung kailan magagamit ang <ph name="DEVICE_TYPE" /> na ito.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Magagamit mo ulit ang device na ito <ph name="DAY" /> ng <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">I-preview ang Screenshot</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang "<ph name="APP_NAME_1" />"}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8010765388850538088">Matuto pa tungkol sa Generative AI</translation>
 <translation id="8017679124341497925">Na-edit ang shortcut</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8028993641010258682">Laki</translation>
@@ -1434,6 +1448,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8045012663542226664">Pang-mute ng mikropono</translation>
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> na <ph name="CHARACTERS_SUBJECTS" /> sa <ph name="CHARACTERS_BACKGROUND" /> na background</translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">Nakakonekta ang APN.</translation>
 <translation id="8067208048261192356">brown</translation>
 <translation id="8067224607978179455">I-delete ang <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Posibleng kailanganin ng iyong carrier ang opsyong ito para makakonekta sa network nito. Makipag-ugnayan sa iyong carrier para sa mga detalye.</translation>
 <translation id="8576249514688522074">Hindi Nasimulan</translation>
+<translation id="8584654835905316966">Nire-require na mag-restart para makumpleto ang pag-install ng firmware para sa <ph name="DEVICE_NAME" /> sa bersyon <ph name="VERSION" />. Posibleng magmukhang nagre-reboot nang ilang beses ang iyong computer. Inaasahan ang gawing ito.</translation>
 <translation id="8593058461203131755">mag-pause ng media</translation>
 <translation id="8620617069779373398">Status ng roaming</translation>
 <translation id="8626489604350149811">Higit pang pagkilos para sa <ph name="APN_NAME" /></translation>
@@ -1671,6 +1687,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Awtomatikong maitutugma ng iyong keyboard ang wallpaper mo</translation>
 <translation id="9189000703457422362">Hindi makakonekta sa network na ito gamit ang mga awtomatikong nade-detect na APN. Makipag-ugnayan sa iyong mobile carrier para sa higit pang impormasyon.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512"><ph name="KEYS" /> ang mga piniling joystick key. I-tap ang button para i-edit ang kontrol</translation>
 <translation id="9204237731135241582">Hindi makaugnayan ang gateway mula sa mga Android app</translation>

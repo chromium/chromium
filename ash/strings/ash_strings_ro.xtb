@@ -445,6 +445,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2530896289327917474">Activează sau dezactivează navigarea cu tastatura</translation>
 <translation id="2531025035050312891">dispozitiv lent</translation>
 <translation id="2531107890083353124">În timp ce tragi fila, apasă pe <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Încerci să folosești Home? Folosește</translation>
 <translation id="254900897760075745">Copiază conținutul selectat în clipboard</translation>
 <translation id="2549711466868162843">Iluminare îmbunătățită</translation>
 <translation id="2549985041256363841">Pornește înregistrarea</translation>
@@ -563,6 +564,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2985148236010982088">Vezi toate aplicațiile</translation>
 <translation id="2992272421330787632">Ascunde toate sugestiile media</translation>
 <translation id="2992327365391326550">Butonul pentru microfonul dispozitivului este dezactivat.</translation>
+<translation id="2993956882370897557">Încerci să folosești End? Folosește</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Editează dimensiunea ecranului</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
@@ -615,6 +617,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> aduce dispozitivul <ph name="DEVICE_TYPE" /> la starea anterioară. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
 <translation id="316798519864381606">Prezentare Google</translation>
 <translation id="3171170659304083361">Setări pentru metode de introducere a textului</translation>
+<translation id="3174897399179348329">Încerci să folosești Page Up? Folosește</translation>
 <translation id="3176221688814061633">Chromebookul sau dispozitivul Bluetooth folosește o versiune Bluetooth mai veche. Activează Super-rezoluția Bluetooth sau folosește microfonul intern pentru o calitate audio mai bună.</translation>
 <translation id="3181441307743005334">Repornirea poate dura un timp</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectat la un dispozitiv}few{Conectat la # dispozitive}other{Conectat la # de dispozitive}}</translation>
@@ -1261,6 +1264,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5297704307811127955">Dezactivată</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5302048478445481009">Limbă</translation>
+<translation id="5302531370473608800">Actualizează <ph name="DEVICE_TYPE" /> pentru a folosi YouTube Music</translation>
 <translation id="5303319262469238330">Baterie rămasă: <ph name="PERCENTAGE" /> %.
 Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
@@ -1820,6 +1824,7 @@ Instalare nouă</translation>
 <translation id="7144942256906679589">Starea bateriei</translation>
 <translation id="7145639536026937076">Nivelul bateriei este <ph name="PERCENTAGE" /> % și se încarcă. Economisirea bateriei este activată.</translation>
 <translation id="7147587499155271409">Nu există un istoric de navigare</translation>
+<translation id="7147657298465433425">Pentru a accesa tastele F, apasă tasta fn + tastele de pe rândul de sus</translation>
 <translation id="7149149900052329230">Gestionează fișierele locale și fișierele din Google Drive din aplicația Fișiere.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7557816257942363084"><ph name="APP_NAME" /> folosește momentan microfonul</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
 <translation id="7564874036684306347">Mutarea ferestrelor pe alt desktop poate duce la un comportament neașteptat. Notificările, ferestrele și casetele de dialog ulterioare ar putea fi împărțite între ecrane.</translation>
+<translation id="7568154670718626683">Încerci să ștergi? Folosește</translation>
 <translation id="7568790562536448087">Se actualizează</translation>
 <translation id="7569509451529460200">Braille și ChromeVox sunt activate</translation>
 <translation id="7569886975397378678">Renunță la configurarea afișării notificărilor și a aplicațiilor telefonului</translation>
@@ -2131,6 +2137,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="820256110035940528"><ph name="TITLE" /> Te-ai concentrat timp de <ph name="FOCUSED_TIME" />. Deschide Setările rapide pentru a te concentra din nou.</translation>
 <translation id="8203224998425013577">Afișează mai multe emojiuri și GIF-uri</translation>
 <translation id="8203795194971602413">Clic dreapta</translation>
+<translation id="8205469348819768313">Încerci să folosești Page Down? Folosește</translation>
 <translation id="8214996719228530800">Canalul Canary</translation>
 <translation id="8219451629189078428">În această perioadă, Chromebookul trebuie să rămână deschis și conectat la o sursă de alimentare. Asigură-te că ai conectat corect cablurile de la încărcător sau de la adaptor, atât la Chromebook, cât și la priza electrică. Nu opri Chromebookul.</translation>
 <translation id="8220076512072059941">Adaugă <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asistentul Google nu vorbește în această limbă.</translation>
 <translation id="8926951137623668982">Raftul este ascuns mereu</translation>
+<translation id="8929566928381252430">Încerci să folosești Caps Lock? Folosește</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="8936501819958976551">dezactivată</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>

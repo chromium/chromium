@@ -27,6 +27,7 @@
 <translation id="1330562121671411446">Valodas noteikšana</translation>
 <translation id="1342274909142618978">Dzēst arī datus no pārlūka Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Piesprausts! Varat atkal piekļūt funkcijai Attēlu meklēšana, izmantojot jauno pogu rīkjoslā.</translation>
+<translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="1414495520565016063">Esat pierakstījies operētājsistēmā Chromium!</translation>
 <translation id="1478370723027452770">Saņemt palīdzību saistībā ar Chrome for Testing</translation>
 <translation id="1497802159252041924">Instalēšanas kļūda: <ph name="INSTALL_ERROR" /></translation>
@@ -128,8 +129,10 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2738871930057338499">Nevar izveidot savienojumu ar internetu. HTTP 403 — aizliegts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
 <translation id="2753623023919742414">Noklikšķiniet, lai meklētu</translation>
 <translation id="2770231113462710648">Mainīt noklusējuma pārlūkprogrammu uz:</translation>
+<translation id="277338894894732084">Vēlāk pārlūkā Chromium tiks vaicāts, vai vēlaties izmantot saglabāto informāciju veidlapu automātiskai aizpildei.</translation>
 <translation id="2785438272836277133">Šis paplašinājums satur ļaunprātīgu programmatūru un nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="2799223571221894425">Restartēt</translation>
+<translation id="2806241689335397269">Pārlūkā Chromium tiks vaicāts, vai vēlaties saglabāt veidlapā ievadīto informāciju, piemēram, dzimšanas datumu, vecumu un pases numuru.</translation>
 <translation id="2837693172913560447">Tādējādi tiks izveidots jauns Chromium profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2841525013647267359">Tulkot no šādas valodas:</translation>
 <translation id="2846251086934905009">Instalēšanas kļūda: instalēšanas programma nepabeidza darbu. Instalēšana ir priekšlaikus pārtraukta.</translation>
@@ -230,6 +233,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="4148957013307229264">Notiek instalēšana...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> — pierakstīšanās tīklā — Chromium</translation>
 <translation id="421369550622382712">Atklājiet lieliskas lietotnes, spēles, paplašinājumus un motīvus, ko varat izmantot pārlūkā Chromium.</translation>
+<translation id="4217972271355023382">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pārslēdzieties uz Chromium profilu, kurā jau pierakstījāties ar kontu <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4222932583846282852">Notiek atcelšana...</translation>
 <translation id="4224210481850767180">Instalēšana ir atcelta.</translation>
 <translation id="4230135487732243613">Vai saistīt Chromium datus ar šo kontu?</translation>
@@ -437,6 +441,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6843464627590537736">Funkcijas Attēlu meklēšana meklēšanas burbulis</translation>
 <translation id="6847869444787758381">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chromium saņemsiet paziņojumu</translation>
 <translation id="684888714667046800">Nevar izveidot savienojumu ar internetu. Ja izmantojat ugunsmūri, failam <ph name="PRODUCT_EXE_NAME" /> noteikti ir jābūt iekļautam atļaušanas sarakstā.</translation>
+<translation id="685279860330610299">Chromium var saprast vairāk informācijas veidu un ātrāk automātiski aizpildīt veidlapas. Uzziniet vairāk par <ph name="BEGIN_LINK" />automātisko aizpildi pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="6857782730669500492">Chromium — <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Pārlūkā Chromium tika konstatēts, ka paplašinājums “<ph name="EXTENSION_NAME" />” satur ļaunprātīgu programmatūru.</translation>
 <translation id="6896758677409633944">Kopēt</translation>
@@ -546,6 +551,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8397248745433792218">Chromium iesaka to noņemt. <ph name="BEGIN_LINK" />Uzziniet vairāk par atbalstītajiem paplašinājumiem<ph name="END_LINK" />.</translation>
 <translation id="8401454788024434101">Šī paplašinājuma publicēšanu atcēla izstrādātājs, un paplašinājums, iespējams, nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Restartējiet pārlūku Chromium vienas dienas laikā}zero{Restartējiet pārlūku Chromium # dienu laikā}one{Restartējiet pārlūku Chromium # dienas laikā}other{Restartējiet pārlūku Chromium # dienu laikā}}</translation>
+<translation id="8438543370129609977">Kad izmantojat funkciju Attēlu meklēšana, serverim tiek nosūtīts lapas nosaukums, URL un saturs, tostarp PDF faili. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Instalēšanas programmas arhīvs ir bojāts vai nav derīgs. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="8458614432758743027">Pārlūka Chromium izmantošanai nepieciešama operētājsistēma Windows 10 vai jaunāka versija.</translation>
 <translation id="8463672209299734063">Neobligāti: palīdziet uzlabot Chromium OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
@@ -557,6 +563,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8568283329061645092">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="8576826849825683917">Pārlūku Chromium pārvalda vairākas organizācijas</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
+<translation id="8601359445272098721">Jaunums! Atlasot pogu “Tulkot ekrānu”, varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> vietnes pārlūkā Chromium var glabāt informāciju par jūsu interesēm. Piemēram, ja apmeklējat kādu vietni, lai iegādātos apavus maratona skriešanai, vietne var noteikt, ka interesējaties par maratonu skriešanu. Ja vēlāk apmeklēsiet citu vietni, lai reģistrētos sacensībām, šajā vietnē var tikt rādīta skriešanas apavu reklāma, pamatojoties uz jūsu interesēm.</translation>
 <translation id="8619360774459241877">Notiek Chromium palaišana...</translation>
 <translation id="8621669128220841554">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lejupielādējiet pārlūku Chromium vēlreiz.</translation>

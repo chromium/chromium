@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
 <translation id="1908394185991500139">왼쪽 화살표입니다</translation>
+<translation id="1914144885717544695">금요일</translation>
 <translation id="1923388006036088459">강조 색상</translation>
 <translation id="1945403655450283000">녹음기</translation>
 <translation id="1947737735496445907">인쇄됨</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">바다에 누워</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">오늘</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059">사진 <ph name="NUMBER" />장</translation>
 <translation id="2154460308960858308">검색 지우기</translation>
 <translation id="2157660087437850958">그림 이모티콘 선택 도구입니다</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2715723665057727940">강</translation>
 <translation id="2717139507051041123">어두운 색상 모드 사용</translation>
+<translation id="2726755229438917165">월요일</translation>
 <translation id="2728460467788544679">인쇄 기록 모두 삭제</translation>
 <translation id="2731700343119398978">잠시 기다려 주세요...</translation>
 <translation id="2740531572673183784">확인</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3060579846059757016">개요</translation>
 <translation id="3061850252076394168">텍스트 읽어주기 사용 설정</translation>
+<translation id="3066772729299747758">화요일</translation>
 <translation id="3069085583900247081">테스트 실패</translation>
 <translation id="3078740164268491126">표</translation>
 <translation id="3081652522083185657">밝은</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">초밥</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">지구 흐름 배경화면</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> 글자가 있는 <ph name="LETTERS_COLOR" /> 배경</translation>
 <translation id="3383623117265110236">전용</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
 <translation id="4130750466177569591">동의함</translation>
 <translation id="4131410914670010031">흑백</translation>
+<translation id="4137700675046373159">토요일</translation>
 <translation id="4143226836069425823">교체할 다른 키보드 키를 탭하세요.</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">일요일</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4251839292699800785">세련된 사무실</translation>
 <translation id="4258281355379922695">HTTP 지연 시간</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
 <translation id="6535178685492749208">오프라인 상태입니다. 의견은 나중에 전송됩니다.</translation>
 <translation id="6543412779435705598">타코</translation>
+<translation id="6550369542114086980">목요일</translation>
 <translation id="6551839203326557324">사과</translation>
 <translation id="65526652485742171">이제 확인 버튼이 사용 설정되었습니다.</translation>
 <translation id="6557784757915238407">APN은 <ph name="ATTACH" /> 유형입니다.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7182063559013288142">인스턴트 핫스팟</translation>
 <translation id="7184043045742675738">아무 키나 클릭하여 버튼을 맞춤설정합니다. 마우스 또는 화살표 키를 사용하여 키를 재배치합니다.</translation>
+<translation id="7187669805838282391">수요일</translation>
 <translation id="7206979415662233817">서비스 약관</translation>
 <translation id="7210635925306941239">비취색</translation>
 <translation id="7212547870105584639">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">내장 터치패드</translation>
 <translation id="7397270852490618635">밝은 테마 사용 중지</translation>
 <translation id="7401543881546089382">바로가기 삭제</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> 업데이트 준비 완료</translation>
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7425037327577270384">작성 지원 기능</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">녹음기가 발화자를 감지하고 라벨을 지정하도록 허용하시겠습니까?</translation>
 <translation id="7501957181231305652">또는</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
+<translation id="7503342217608032738">기기를 사용할 수 없음</translation>
 <translation id="7507061649493508884">선명한 <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">하단</translation>
 <translation id="7514365320538308">다운로드</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">셔플</translation>
 <translation id="7550715992156305117">진단 루틴</translation>
 <translation id="7551123448725492271">오디오 기기입니다.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /> <ph name="MANAGER" />관리자가 <ph name="DEVICE_TYPE" />을(를) 사용할 수 있는 시기를 설정했습니다.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" /><ph name="DAY" /> <ph name="TIME" />에 이 기기를 다시 사용할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">스크린샷 미리보기</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" 앱이 자동으로 시작되었습니다}other{#개 앱이 자동으로 시작되었습니다}}</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
 <translation id="8004582292198964060">브라우저</translation>
+<translation id="8010765388850538088">생성형 AI에 대해 자세히 알아보세요.</translation>
 <translation id="8017679124341497925">바로가기 수정됨</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8028993641010258682">크기</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">마이크 음소거</translation>
 <translation id="8054112564438735763">베이지색</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> 배경의 <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN이 연결되었습니다.</translation>
 <translation id="8067208048261192356">갈색</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> 삭제</translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" /> 버전 <ph name="VERSION" />의 펌웨어 설치를 완료하려면 기기를 다시 시작해야 합니다. 컴퓨터가 여러 번 재부팅되는 것처럼 보일 수 있습니다. 이는 예상되는 동작입니다.</translation>
 <translation id="8593058461203131755">미디어를 일시중지합니다</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />의 작업 더보기</translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">테스트</translation>
 <translation id="9188992814426075118">키보드 백라이트가 배경화면에 어울리게 자동으로 설정됩니다.</translation>
 <translation id="9189000703457422362">자동으로 감지된 APN을 사용하여 이 네트워크에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">선택된 조이스틱 키는 <ph name="KEYS" />입니다. 컨트롤을 수정하려면 버튼을 탭하세요.</translation>
 <translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>

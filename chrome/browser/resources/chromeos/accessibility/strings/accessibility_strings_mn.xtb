@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="100421257800558142">Баруун суман товчийг дарна уу</translation>
 <translation id="100506692671054486">ямар ч өмнөх тушаал байхгүй</translation>
 <translation id="1009046985747440431">Шилжихийн тулд дээш, доош чиглэлтэй сумыг, идэвхжүүлэхийн тулд enter товчлуурыг дарна уу</translation>
 <translation id="1011903154582639569">Түлхүүрийг олоод бичихийн тулд өргөнө үү</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Асаах/унтраах товч</translation>
 <translation id="1299774449519412690">Тод цэнхэр</translation>
 <translation id="1303806948938513162">ChromeVox-н цэсэд орохын тулд 4 хуруугаараа товшино уу</translation>
+<translation id="1304162325618937178">Зай авах товчийг дарна уу</translation>
 <translation id="1313373992684326101">Өмнөх хэсэгт шилжих. Жишээнд Статусын мэдээллийн хэсэг болон Эхлүүлэгч багтана.</translation>
 <translation id="1315077335264761176">Хүрэх чиглэл</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, цэсийн зүйл болох радио товчлуурын сонголтыг болиулсан</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Цайвар шаргал (Буудайн өнгө)</translation>
 <translation id="1618597272655350600">Одоогийн албан тушаалын ажил үүргийн тодорхойлолтыг унших</translation>
 <translation id="1627222324347828322">Бага зэргийн цэнхэр туяатай цагаан</translation>
+<translation id="1632810692616643246">Гүйлгэх горимд орох эсвэл гарна уу</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ихийг илэрхийлэх тэмдэг}other{# ихийг илэрхийлэх тэмдгүүд}}</translation>
 <translation id="1653266918374749391">Өмнөх 3-р түвшний гарчиг</translation>
 <translation id="1657616855184033958">Арга хэмжээ цацах шүүлтүүрийг харуулах</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Өмнөх хяналт алга байна</translation>
 <translation id="2045606329038304310">Маягтын талбарын хяналт</translation>
 <translation id="2063539687800151747">Эпиграф</translation>
+<translation id="2067158561093481039">Захиалгат товчийн хослолыг гүйцэтгэнэ үү</translation>
 <translation id="2086961585857038472">Дараагийн үг</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Хүрэн</translation>
 <translation id="2199994615414171367">Өмнөх math</translation>
 <translation id="2203046366315513658">Утгыг бууруулах</translation>
+<translation id="2206580811360135054">Цонхнуудын тоймыг харуулах эсвэл нууна уу</translation>
 <translation id="2216790501338699346">Холбоос URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Нэг тэмдэгтээр хойшоо зөөвөрлөх</translation>
 <translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
+<translation id="2239819015858077439">Доош суман товчийг дарна уу</translation>
 <translation id="2243633977138166243">Шилжихийн тулд зүүн эсвэл баруун сумыг, идэвхжүүлэхийн тулд enter-г дарна уу</translation>
 <translation id="224426591676115802">Хэлд зориулсан дуу алга байна: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Сургалтын горимыг зогсоож байна</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Гүн улаан</translation>
 <translation id="4432896207833262240">Тэмдэглэсэн контент</translation>
 <translation id="4437615272777527928">Цэсүүдийг хайхын тулд бичнэ үү. Илэрцүүдийн хооронд шилжихийн тулд дээш болон доош сумыг ашиглана уу. Текст оруулах тэмдгийг тохируулах болон цэс хооронд шилжихийн тулд зүүн болон баруун сумыг ашиглана уу.</translation>
+<translation id="4441677939526091190">Дээш суман товчийг дарна уу</translation>
 <translation id="4453530046591759283">Самбар эсвэл системийн жижиг тэмдэг бүхий хэсэг зэрэг дэлгэцийн бусад хэсэг рүү очихын тулд Control+F1-г дарна уу. F1 нь escape товчийн баруун талд байх эхний товч юм.</translation>
 <translation id="4457472090507035117">Одоогийн дуу хоолойг сонгоно уу:</translation>
 <translation id="4476183483923481720">шинэ шугам</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook-н мэдрэгчтэй дэлгэцийн хандалтын онцлогийг ашиглах</translation>
 <translation id="5655682562155942719">Комманд руу оч</translation>
 <translation id="56637627897541303">Бичих талбар</translation>
+<translation id="5666746275818170484">Зүүн суман товчийг дарна уу</translation>
 <translation id="5669637233317991674">Энэ хичээлийг шилжүүлэхийн тулд Хайлт + Баруун сум эсвэл Хайлт + Зүүн сумыг дарна уу</translation>
 <translation id="5677240841070992068">Одоогийн байршил</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Зар сурталчилгааны товч</translation>
 <translation id="7167657087543110">character echo</translation>
 <translation id="7173102181852295013">Хар хөх</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Өргөтгөсөн</translation>
 <translation id="7209751026933045237">Дараагийн слайдер алга байна</translation>
 <translation id="7218782500591078391">Алтан шаргал</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Хамрах бүс</translation>
 <translation id="8382679411218029383">Autocompletion-ны мөр ба жагсаалт</translation>
 <translation id="8394908167088220973">Медиа тоглуулах/түр зогсоох</translation>
+<translation id="8409502156784390079">Гүйлгэх горим идэвхтэй байна</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428603554127842284">Түвшин <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8989104346085848538">ChromeVox-н одоогийн аливаа яриаг зогсоохын тулд Control товчийг дарна уу.</translation>
 <translation id="9014206344398081366">ChromeVox-н практик хичээл</translation>
+<translation id="9034592733577768445">Нүүрний хяналтыг түр зогсоосон</translation>
 <translation id="9040132695316389094">Гарчиг 1</translation>
 <translation id="9061884144798498064">8 цэгт брайлийн хүснэгтийг сонгоно уу:</translation>
 <translation id="9063946545000394379">өмнөх тэмдэгт рүү очих</translation>

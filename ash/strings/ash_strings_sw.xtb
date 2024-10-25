@@ -445,6 +445,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2530896289327917474">Washa au uzime mipangilio ya kuvinjari kwa kibodi</translation>
 <translation id="2531025035050312891">kifaa kinafanya kazi polepole</translation>
 <translation id="2531107890083353124">Huku ukiburuta kichupo, bonyeza <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Je, unajaribu kutumia kitufe cha Home? Tumia</translation>
 <translation id="254900897760075745">Nakili maudhui yaliyochaguliwa kwenye ubao wa kunakili</translation>
 <translation id="2549711466868162843">Boresha mwangaza</translation>
 <translation id="2549985041256363841">Anza kurekodi</translation>
@@ -563,6 +564,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2985148236010982088">Angalia programu zote</translation>
 <translation id="2992272421330787632">Ficha mapendekezo yote ya maudhui</translation>
 <translation id="2992327365391326550">Kitufe cha maikrofoni ya kifaa kimezimwa.</translation>
+<translation id="2993956882370897557">Je, unajaribu kutumia kitufe cha End? Tumia</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3001391739687111021">Badilisha ukubwa wa skrini</translation>
 <translation id="3009178788565917040">Towe</translation>
@@ -615,6 +617,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> inarejesha toleo la awali kwenye <ph name="DEVICE_TYPE" /> yako. Mipangilio ya kifaa chako itawekwa upya na data yote itafutwa.</translation>
 <translation id="316798519864381606">Slaidi za Google</translation>
 <translation id="3171170659304083361">Mipangilio ya mbinu za kuingiza data</translation>
+<translation id="3174897399179348329">Je, unajaribu kutumia kitufe cha Page Up? Tumia</translation>
 <translation id="3176221688814061633">Chromebook yako au kifaa chako chenye Bluetooth kinatumia toleo la zamani la Bluetooth. Washa kipengele cha Ubora Thabiti wa Bluetooth au utumie maikrofoni ya ndani ili upate ubora wa sauti unaofaa.</translation>
 <translation id="3181441307743005334">Shughuli ya kuzima kisha uwashe inaweza kuchukua muda</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Imeunganishwa kwenye kifaa kimoja}other{Imeunganishwa kwenye vifaa #}}</translation>
@@ -1261,6 +1264,7 @@ Unaweza pia kutumia mikato ya kibodi. Kwanza, angazia maandishi, kisha ubonyeze 
 <translation id="5297704307811127955">Umezimwa</translation>
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5302048478445481009">Lugha</translation>
+<translation id="5302531370473608800">Sasisha <ph name="DEVICE_TYPE" /> yako ili utumie YouTube Music</translation>
 <translation id="5303319262469238330">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri.
 Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</translation>
 <translation id="5308380583665731573">Unganisha</translation>
@@ -1820,6 +1824,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7144942256906679589">Hali ya betri</translation>
 <translation id="7145639536026937076">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri na inaendelea kuchaji. Kiokoa Betri kimewashwa.</translation>
 <translation id="7147587499155271409">Hakuna historia ya kuvinjari</translation>
+<translation id="7147657298465433425">Ili kufikia vitufe vya F, bonyeza kitufe cha fn + vitufe vya safu mlalo ya juu</translation>
 <translation id="7149149900052329230">Dhibiti faili zilizo kwenye kifaa na faili zilizo kwenye Hifadhi ya Google, zote katika programu ya Faili.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Vinginevyo padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya se
 <translation id="7561982940498449837">Funga menyu</translation>
 <translation id="7564874036684306347">Hatua ya kuhamishia madirisha kwenye eneo-kazi lingine inaweza kusababisha utendaji usiotarajiwa. 
 Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</translation>
+<translation id="7568154670718626683">Je, unajaribu kutumia kitufe cha Delete? Tumia</translation>
 <translation id="7568790562536448087">Inasasisha</translation>
 <translation id="7569509451529460200">Breli na ChromeVox zimewashwa</translation>
 <translation id="7569886975397378678">Ondoa kidokezo cha kuweka mipangilio ya kuangalia arifa na programu za simu yako</translation>
@@ -2132,6 +2138,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="820256110035940528"><ph name="TITLE" /> Umeangazia kwa <ph name="FOCUSED_TIME" />. Fungua Mipangilio ya haraka ili ungazie tena.</translation>
 <translation id="8203224998425013577">Onyesha emoji na GIF zaidi</translation>
 <translation id="8203795194971602413">Mbofyo wa kulia</translation>
+<translation id="8205469348819768313">Je, unajaribu kutumia kitufe cha Page Down? Tumia</translation>
 <translation id="8214996719228530800">Kituo cha Toleo la Jaribio (Canary)</translation>
 <translation id="8219451629189078428">Chromebook yako inahitaji kubaki ikiwa imewashwa na kuunganishwa kwenye chaja wakati huu. Hakikisha kuwa kebo za adapta au chaja zimechomekwa kabisa kwenye Chromebook yako na soketi ya umeme. Usizime Chromebook yako.</translation>
 <translation id="8220076512072059941">Ongeza <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2324,6 +2331,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Programu ya Mratibu wa Google haina huduma ya lugha hii.</translation>
 <translation id="8926951137623668982">Rafu inafichwa kila wakati</translation>
+<translation id="8929566928381252430">Je, unajaribu kutumia kitufe cha Caps Lock? Tumia</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>

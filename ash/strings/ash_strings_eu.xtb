@@ -445,6 +445,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="2530896289327917474">Aktibatu edo desaktibatu testu-kurtsorearen bidez arakatzeko eginbidea</translation>
 <translation id="2531025035050312891">gailua motela</translation>
 <translation id="2531107890083353124">Fitxa arrastatu bitartean, sakatu <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">"Hasiera" erabili nahi duzu? Erabili</translation>
 <translation id="254900897760075745">Kopiatu hautatutako edukia arbelean</translation>
 <translation id="2549711466868162843">Hobetu argiztapena</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
@@ -563,6 +564,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="2985148236010982088">Ikusi aplikazio guztiak</translation>
 <translation id="2992272421330787632">Ezkutatu multimedia-edukiaren iradokizun guztiak</translation>
 <translation id="2992327365391326550">Gailuaren mikrofonoaren botoia desaktibatuta dago.</translation>
+<translation id="2993956882370897557">"Amaiera" erabili nahi duzu? Erabili</translation>
 <translation id="3000461861112256445">Audio monofonikoa</translation>
 <translation id="3001391739687111021">Editatu pantailaren tamaina</translation>
 <translation id="3009178788565917040">Irteera</translation>
@@ -615,6 +617,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="316356270129335934"><ph name="DEVICE_TYPE" /> gailua aurreko bertsiora itzuliko du <ph name="MANAGER" /> kudeatzaileak. Gailua berrezarri egingo da, eta datu guztiak ezabatuko dira.</translation>
 <translation id="316798519864381606">Google-ko aurkezpena</translation>
 <translation id="3171170659304083361">Idazketa-metodoen ezarpenak</translation>
+<translation id="3174897399179348329">"Orrian gora" erabili nahi duzu? Erabili</translation>
 <translation id="3176221688814061633">Chromebook-ak edo Bluetooth bidezko gailuak Bluetooth-bertsio zahar bat darabil. Audioaren kalitatea hobetzeko, aktibatu Bluetootharen superbereizmena edo erabili barneko mikrofonoa.</translation>
 <translation id="3181441307743005334">Baliteke berrabiarazteko prozesua zertxobait luzatzea</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Gailu batera konektatuta}other{# gailutara konektatuta}}</translation>
@@ -1262,6 +1265,7 @@ Lasterbide hau ere erabil dezakezu: lehenengo, nabarmendu testua, eta, ondoren, 
 <translation id="5297704307811127955">Desaktibatuta</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5302048478445481009">Hizkuntza</translation>
+<translation id="5302531370473608800">YouTube Music erabiltzeko, eguneratu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5303319262469238330">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio.
 Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5308380583665731573">Konektatu</translation>
@@ -1821,6 +1825,7 @@ Berriki instalatu da</translation>
 <translation id="7144942256906679589">Bateriaren egoera</translation>
 <translation id="7145639536026937076">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio, eta kargatzen ari da. Bateria-aurreztailea aktibatuta dago.</translation>
 <translation id="7147587499155271409">Ez dago arakatze-historiarik</translation>
+<translation id="7147657298465433425">F teklak erabiltzeko, sakatu fn tekla + goiko errenkadako teklak</translation>
 <translation id="7149149900052329230">Kudeatu gailuko eta Google Drive-ko fitxategi guztiak Fitxategiak aplikazioan.</translation>
 <translation id="7165278925115064263">Alt + Maius + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
 <translation id="7564874036684306347">Leihoak beste mahaigain batera eramaten badira, baliteke ustekabeko portaerak izatea. Aurrerantzeko jakinarazpenak, baliteke leihoak eta elkarrizketa-koadroak bi mahaigainen artean banatuta agertzea.</translation>
+<translation id="7568154670718626683">"Ezabatu" erabili nahi duzu? Erabili</translation>
 <translation id="7568790562536448087">Eguneratzen</translation>
 <translation id="7569509451529460200">Braillea eta ChromeVox gaituta daude</translation>
 <translation id="7569886975397378678">Baztertu telefonoko jakinarazpenak eta aplikazioak ikusteko aukera konfiguratzeko prozesua</translation>
@@ -2132,6 +2138,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> <ph name="FOCUSED_TIME" /> igaro dituzu kontzentratuta. Berriro kontzentratzeko, ireki ezarpen bizkorrak.</translation>
 <translation id="8203224998425013577">Erakutsi emoji eta GIF gehiago</translation>
 <translation id="8203795194971602413">Egin klik eskuineko botoiarekin</translation>
+<translation id="8205469348819768313">"Orrian behera" erabili nahi duzu? Erabili</translation>
 <translation id="8214996719228530800">Canary kanala</translation>
 <translation id="8219451629189078428">Chromebook-ak piztuta eta korrontera konektatuta egon behar du aldi horretan. Ziurtatu kargagailuaren edo egokigailuaren kableak behar bezala entxufatuta daudela, bai Chromebook-era, bai entxufera. Ez itzali Chromebook-a.</translation>
 <translation id="8220076512072059941">Gehitu <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2324,6 +2331,7 @@ Bestela, 30 segundo barru gaituko da berriro ukipen-panela.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google-ren Laguntzailea zerbitzuak ezin du erabili hizkuntza hori.</translation>
 <translation id="8926951137623668982">Apala beti dago ezkutatuta</translation>
+<translation id="8929566928381252430">"Blok maius" erabili nahi duzu? Erabili</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxategi}other{# fitxategi}}</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>

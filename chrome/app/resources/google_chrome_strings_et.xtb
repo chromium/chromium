@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">Keele tuvastamine</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> nõuab, et loete enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustute nendega. Need tingimused ei laienda, muuda ega piira Google Chrome OS Flexi tingimusi.</translation>
 <translation id="1341711321000856656">Saate lülituda, et näha paroole teiselt Chrome'i profiililt</translation>
+<translation id="1356661055722410047">Uus! Saate tõlkida nii ekraanil olevat teksti kui ka pilte</translation>
 <translation id="1363996462118479832">Chrome OS ei saanud teie andmeid sünkroonida sisselogimisvea tõttu.</translation>
 <translation id="137466361146087520">Google Chrome'i beetaversioon</translation>
 <translation id="1399397803214730675">Selles arvutis on juba Google Chrome'i uuem versioon. Kui tarkvara ei tööta, desinstallige Google Chrome ja proovige uuesti.</translation>
@@ -49,6 +50,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame automaatselt huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chrome'il arvesse võtta.</translation>
 <translation id="1628000112320670027">Chrome'i puhul abi hankimine</translation>
 <translation id="1640672724030957280">Allalaadimine ...</translation>
+<translation id="1651617469580841801">Kui kasutate Google Lensi, saadetakse lehe pealkiri, URL ja sisu (sh PDF-id) Google'ile. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Teave Chrome OS Flexi kohta</translation>
 <translation id="1674870198290878346">Ava link Chrome'i inko&amp;gnito aknas</translation>
 <translation id="1682634494516646069">Google Chrome ei saa andmekataloogi lugeda ega sellesse kirjutada:
@@ -195,6 +197,7 @@
 <translation id="3261565993776444564">Proovige oma brauseri kohandamiseks uut värvi</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
+<translation id="3289358082435924389">Edaspidi küsib Chrome, kas soovite vormide automaattäitmiseks kasutada salvestatud teavet</translation>
 <translation id="3292333338048274092">Seejärel peate Chrome'i taaskäivitama.</translation>
 <translation id="3360895254066713204">Chrome'i abistaja</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käivitatakse kohe uuesti}=1{Chrome käivitatakse uuesti 1 sekundi pärast}other{Chrome käivitatakse uuesti # sekundi pärast}}</translation>
@@ -508,6 +511,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7308322188646931570">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7352881504289275361">Täiustatud ohutu sirvimine pakub Chrome'i parimat kaitset veebis, et sirvimise ajal teie turvalisus tagada</translation>
+<translation id="7386878009611068389">Et kaitsta ennast veebis paremini vanema valikutega, lülituge Chrome'i profiilile, millele olete kasutajana <ph name="USER_EMAIL_ADDRESS" /> juba sisse logitud</translation>
 <translation id="7394745511930161845">Looge AI-ga omaenda teema, et oma brauserile ainulaadne välimus anda</translation>
 <translation id="7398801000654795464">Olite Chrome'i sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
 <translation id="7412494426921990001">Klõpsake Chrome'i menüül</translation>
@@ -521,6 +525,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7477130805345743099">Chrome hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
+<translation id="7512187482580860950">Chrome mõistab enamaid teabetüüpe ja automaattäidab teie vormid kiiremini. Lisateave <ph name="BEGIN_LINK" />Chrome'i automaattäite kohta<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Saate Google Lensi hõlpsaks juurdepääsuks kinnitada</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -563,6 +568,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7886087451482920026">Valige Google Lensi abil tekst</translation>
 <translation id="7890208801193284374">Kui jagate oma arvutit, siis saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chrome'i just nii, nagu neile meeldib.</translation>
 <translation id="7896673875602241923">Keegi on varem selles arvutis Chrome'i sisse loginud kasutajana <ph name="ACCOUNT_EMAIL_LAST" />. Looge uus Chrome'i kasutaja, et oma teave eraldi hoida.</translation>
+<translation id="7917470403848199310">Chrome küsib, kas soovite salvestada vormi teabe, nt sünnipäeva, vanuse ja passi numbri</translation>
 <translation id="7917876797003313048">Saate oma sisselogitud Google'i kontosid hallata. Teie Google'i kontosid kasutatakse Chrome'i brauseris, Play poes, Gmailis ja mujal. Kui soovite lisada konto kellegi teise (näiteks pereliikme) jaoks, lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome blokeeris selle allalaadimise, kuna fail on petlik ja võib teie seadmes ootamatuid muudatusi teha</translation>
 <translation id="7947083960301164556">Vaadake, mis on uut</translation>
@@ -619,6 +625,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8550334526674375523">See tööprofiil on teie isiklikust profiilist täielikult eraldi.</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Chrome'i profiilidega saate eraldada kogu oma Chrome'i sisu. See muudab töö ja lõbu eraldamise lihtsamaks.</translation>
+<translation id="8601359445272098721">Uus! Saate tõlkida nii ekraanil olevat teksti kui ka pilte, valides nupu „Tõlgi kuva“</translation>
 <translation id="8614913330719544658">Google Chrome ei reageeri. Kas soovite kohe taaskäivitada?</translation>
 <translation id="861702415419836452">Chrome vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käivitatakse uuesti 1 minuti pärast}other{Chrome käivitatakse uuesti # minuti pärast}}</translation>
