@@ -687,7 +687,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         saveButton.click();
         flush();
 
-        assertTrue(isThresholdValueSetInPref(65));
+        assertTrue(isThresholdValueSetInPref(55));
         assertFalse(faceGazeAddActionDialog.$.dialog.open);
       });
 
@@ -709,7 +709,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         saveButton.click();
         flush();
 
-        assertTrue(isThresholdValueSetInPref(55));
+        assertTrue(isThresholdValueSetInPref(45));
         assertEventContainsCommandPair(new FaceGazeCommandPair(
             MacroName.MOUSE_CLICK_LEFT, FacialGesture.BROW_INNER_UP));
         assertFalse(faceGazeAddActionDialog.$.dialog.open);
@@ -864,12 +864,12 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         webUIListenerCallback('settings.sendGestureInfoToSettings', [
           {gesture: FacialGesture.BROW_INNER_UP, confidence: 70},
-          {gesture: FacialGesture.BROW_INNER_UP, confidence: 50},
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 40},
         ]);
 
         const gestureCountDiv = getGestureCountDiv();
 
-        // Default confidence threshold is 60, so only one gesture should
+        // Default confidence threshold is 50, so only one gesture should
         // register as detected.
         assertEquals(`Detected 1 time`, gestureCountDiv.innerText);
       });
@@ -888,7 +888,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         const gestureCountDiv = getGestureCountDiv();
 
-        // Default confidence threshold is 60, so only one gesture should
+        // Default confidence threshold is 50, so only one gesture should
         // register as detected.
         assertEquals(`Detected 1 time`, gestureCountDiv.innerText);
       });
@@ -925,7 +925,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         const gestureCountDiv = getGestureCountDiv();
 
-        // Default confidence threshold is 60, so three gestures should register
+        // Default confidence threshold is 50, so three gestures should register
         // as detected.
         assertEquals(`Detected 3 times`, gestureCountDiv.innerText);
       });

@@ -104,7 +104,7 @@ export const FACEGAZE_CUSTOM_KEYBOARD_SHORTCUT_FLOW:
 
 export type ShortcutInputCompleteEvent = CustomEvent<{keyEvent: KeyEvent}>;
 
-export const FACEGAZE_CONFIDENCE_DEFAULT = 60;
+export const FACEGAZE_CONFIDENCE_DEFAULT = 50;
 export const FACEGAZE_CONFIDENCE_MIN = 1;
 export const FACEGAZE_CONFIDENCE_MAX = 100;
 export const FACEGAZE_CONFIDENCE_BUTTON_STEP = 5;
