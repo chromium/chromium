@@ -69,8 +69,18 @@ promise_test(async t => {
   });
   await promise_rejects_js(t, TypeError, result);
 
-  // Create a new session with both system prompt and initial prompts, it should
-  // fail.
+  // Create a new session with both system prompt and initial prompts, but the
+  // initial prompts do not contain a system role, it should pass.
+  result = ai.languageModel.create({
+    systemPrompt: 'you are a robot',
+    initialPrompts: [
+      { role: 'user', content: 'hello' }, { role: 'assistant', content: 'hello' }
+    ]
+  });
+  assert_true(!!session);
+
+  // Create a new session with both system prompt and initial prompts, and the
+  // initial prompts contain a system role, it should fail.
   result = ai.languageModel.create({
     systemPrompt: 'you are a robot',
     initialPrompts: [

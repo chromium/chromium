@@ -189,8 +189,6 @@ ScriptPromise<AIAssistantCapabilities> AIAssistantFactory::capabilities(
   return promise;
 }
 
-// TODO(crbug.com/348108460): block the promise until the model is downloaded,
-// and add the download progress monitor support.
 ScriptPromise<AIAssistant> AIAssistantFactory::create(
     ScriptState* script_state,
     const AIAssistantCreateOptions* options,
@@ -203,9 +201,6 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
   auto promise = resolver->Promise();
-  mojom::blink::AIAssistantSamplingParamsPtr sampling_params;
-  WTF::String system_prompt;
-  Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts;
 
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
@@ -216,6 +211,9 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
     return promise;
   }
 
+  mojom::blink::AIAssistantSamplingParamsPtr sampling_params;
+  WTF::String system_prompt;
+  WTF::Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts;
   AbortSignal* signal = nullptr;
   AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
       GetExecutionContext(), task_runner_);
@@ -231,6 +229,8 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
       std::ignore = options->monitor()->Invoke(nullptr, monitor);
     }
 
+    // The temperature and top_k are optional, but they must be provided
+    // together.
     if (!options->hasTopK() && !options->hasTemperature()) {
       sampling_params = nullptr;
     } else if (options->hasTopK() && options->hasTemperature()) {
@@ -243,24 +243,26 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
       return promise;
     }
 
-    if (options->hasSystemPrompt() && options->hasInitialPrompts()) {
-      // If the `systemPrompt` and `initialPrompts` are both set, reject with a
-      // `TypeError`.
-      resolver->RejectWithTypeError(
-          kExceptionMessageSystemPromptAndInitialPromptsExist);
-      return promise;
-    }
     if (options->hasSystemPrompt()) {
       system_prompt = options->systemPrompt();
-    } else if (options->hasInitialPrompts()) {
+    }
+
+    if (options->hasInitialPrompts()) {
       auto& prompts = options->initialPrompts();
       if (prompts.size() > 0) {
         size_t start_index = 0;
-        // Only the first prompt can have a `system` role, so it's handled
+        // Only the first prompt might have a `system` role, so it's handled
         // separately.
         auto* first_prompt = prompts.begin()->Get();
         if (first_prompt->role() ==
             V8AIAssistantInitialPromptRole::Enum::kSystem) {
+          if (options->hasSystemPrompt()) {
+            // If the system prompt cannot be provided both from system prompt
+            // and initial prompts, so reject with a `TypeError`.
+            resolver->RejectWithTypeError(
+                kExceptionMessageSystemPromptIsDefinedMultipleTimes);
+            return promise;
+          }
           system_prompt = first_prompt->content();
           start_index++;
         }

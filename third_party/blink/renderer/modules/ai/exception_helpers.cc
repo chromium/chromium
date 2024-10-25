@@ -39,8 +39,9 @@ const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
-const char kExceptionMessageSystemPromptAndInitialPromptsExist[] =
-    "The systemPrompt and initialPrompts should not present at the same time.";
+const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
+    "The system prompt should not be defined in both systemPrompt and "
+    "initialPrompts.";
 const char kExceptionMessageSystemPromptIsNotTheFirst[] =
     "The prompt with 'system' role must be placed at the first entry of "
     "initialPrompts.";
