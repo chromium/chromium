@@ -38,14 +38,22 @@ UIImage* GetEnterpriseIcon() {
       @[ color ]);
 }
 
+// Returns whether the snackbar should use short lines. I.e. it is a iphone in
+// portrait.
+bool useShortLabels() {
+  return UIDevice.currentDevice.userInterfaceIdiom ==
+             UIUserInterfaceIdiomPhone &&
+         UIDeviceOrientationIsPortrait(UIDevice.currentDevice.orientation);
+}
+
 // Returns the text for `_emailView`.
 NSString* GetEmailLabelText(NSString* email, bool managed) {
   if (!managed) {
     // Not managed, just the email.
     return email;
   }
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-    // iPhone, show the label on a separate line.
+  if (useShortLabels()) {
+    // In order to keep labels short, the second label only contains the email.
     return email;
   }
   // TODO(crbug.com/349071774): In Phase 2, display the domain name or
@@ -62,7 +70,9 @@ NSString* GetManagementLabelText(bool managed) {
   if (!managed) {
     return nil;
   }
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+  if (useShortLabels()) {
+    // As the second label only contains the email, the management notice is on
+    // the third label.
     return l10n_util::GetNSString(
         IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
   }
