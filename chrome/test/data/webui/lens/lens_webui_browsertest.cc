@@ -101,6 +101,11 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     RunTest(file, trigger);
   }
 
+  void RunGhostLoaderTest(const std::string& file, const std::string& trigger) {
+    set_test_loader_host(chrome::kChromeUILensSidePanelHost);
+    RunTest(file, trigger);
+  }
+
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
   // the tab must not be about:blank and must be painted.
   void WaitForPaint() {
@@ -204,5 +209,11 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SearchboxBackButton) {
 
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, ErrorPage) {
   RunSidePanelTest("lens/side_panel/error_page_test.js", "mocha.run()");
+}
+
+using LensGhostLoaderTest = LensOverlayTest;
+IN_PROC_BROWSER_TEST_F(LensGhostLoaderTest, GhostLoaderState) {
+  RunGhostLoaderTest("lens/ghost_loader/ghost_loader_state_test.js",
+                     "mocha.run()");
 }
 }  // namespace

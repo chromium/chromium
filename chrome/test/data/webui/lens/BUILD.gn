@@ -7,6 +7,8 @@ import("../build_webui_tests.gni")
 build_webui_tests("build") {
   is_chrome_untrusted = true
   files = [
+    "ghost_loader/ghost_loader_state_test.ts",
+    "ghost_loader/test_ghost_loader_browser_proxy.ts",
     "overlay/find_words_in_region_test.ts",
     "overlay/object_selection_test.ts",
     "overlay/overlay_background_scrim_test.ts",
@@ -40,6 +42,9 @@ build_webui_tests("build") {
                     target_gen_dir),
     "chrome-untrusted://lens/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/lens/overlay/tsc/*",
+                    target_gen_dir),
+    "chrome-untrusted://lens/lens/shared/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/lens/shared/tsc/*",
                     target_gen_dir),
   ]
 

@@ -610,6 +610,7 @@ const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,
 }
 
 void RealboxHandler::OnAutocompleteStopTimerTriggered() {
-  // TODO(niharm): Notify lens overlay when autocomplete is stopped for zero
-  //   suggest.
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnAutocompleteStopTimerTriggered();
+  }
 }

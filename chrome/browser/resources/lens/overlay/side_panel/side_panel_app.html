@@ -177,6 +177,15 @@
     inset-inline-end: 14px;
     top: 16px;
   }
+
+  /**
+   * Show the ghost loader when the searchbox is focused and the searchbox
+   * dropdown isn't showing (no results available). Only show for contextual
+   * searchboxes.
+   */
+  :host([is-searchbox-focused][is-contextual-searchbox]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+    display: block;
+  }
 </style>
 <div id="searchboxContainer">
   <template is="dom-if" if="[[isBackArrowVisible]]">

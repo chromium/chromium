@@ -66,6 +66,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         value: true,
         reflectToAttribute: true,
       },
+      isContextualSearchbox: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
       loadingImageUrl: {
         type: String,
         value: loadTimeData.getString('resultsLoadingUrl'),
@@ -74,6 +79,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       darkMode: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('darkMode'),
+        reflectToAttribute: true,
+      },
+      isSearchboxFocused: {
+        type: Boolean,
+        value: false,
         reflectToAttribute: true,
       },
     };
@@ -86,6 +96,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // browser because the iframe is cross-origin. Default true since the side
   // panel can open before a navigation has started.
   private isLoadingResults: boolean;
+  private isSearchboxFocused: boolean;
+  private isContextualSearchbox: boolean;
   // The URL for the loading image shown when results frame is loading a new
   // page.
   private readonly loadingImageUrl: string;
@@ -99,6 +111,13 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   constructor() {
     super();
+    // Need to get the page classification through a mojom call since the
+    // WebUI controller doesn't have access to the lens overlay controller
+    // in time to set this as a loadTimeData.
+    this.browserProxy.handler.getIsContextualSearchbox().then(
+        ({isContextualSearchbox}) => {
+          this.isContextualSearchbox = isContextualSearchbox;
+        });
     this.pageHandler = SidePanelBrowserProxyImpl.getInstance().handler;
     ColorChangeUpdater.forDocument().start();
   }
@@ -180,6 +199,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onSearchboxFocusIn_() {
     this.isBackArrowVisible = false;
+    this.isSearchboxFocused = true;
     this.notifyHelpBubbleAnchorCustomEvent(
         'kLensSidePanelSearchBoxElementId',
         'kLensSidePanelSearchBoxFocusedEventId');
@@ -187,6 +207,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onSearchboxFocusOut_() {
     this.isBackArrowVisible = this.wasBackArrowAvailable;
+    this.isSearchboxFocused = false;
   }
 }
 

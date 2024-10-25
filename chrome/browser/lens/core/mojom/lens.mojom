@@ -271,6 +271,8 @@ interface LensSidePanelPageHandler {
   // Pops the most recent search query from the history stack to load in the
   // side panel.
   PopAndLoadQueryFromHistory();
+  // Gets whether the current searchbox is contextual.
+  GetIsContextualSearchbox() => (bool is_contextual_searchbox);
 };
 
 // Side Panel WebUI page handler for request from Browser side.

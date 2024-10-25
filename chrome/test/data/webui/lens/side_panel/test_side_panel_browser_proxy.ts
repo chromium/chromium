@@ -13,13 +13,16 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
     LensSidePanelPageHandlerInterface {
   constructor() {
-    super([
-      'popAndLoadQueryFromHistory',
-    ]);
+    super(['popAndLoadQueryFromHistory', 'getIsContextualSearchbox']);
   }
 
   popAndLoadQueryFromHistory() {
     this.methodCalled('popAndLoadQueryFromHistory');
+  }
+
+  getIsContextualSearchbox(): Promise<{isContextualSearchbox: boolean}> {
+    this.methodCalled('getIsContextualSearchbox');
+    return Promise.resolve({isContextualSearchbox: false});
   }
 }
 

@@ -387,6 +387,8 @@ class LensOverlayController : public LensSearchboxClient,
 
   // lens::mojom::LensSidePanelPageHandler overrides.
   void PopAndLoadQueryFromHistory() override;
+  void GetIsContextualSearchbox(
+      GetIsContextualSearchboxCallback callback) override;
 
   // Sets whether the results frame should show its loading state.
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
@@ -747,6 +749,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Initializes the overlay UI after it has been created with data fetched
   // before its creation.
   void InitializeOverlayUI(const OverlayInitializationData& init_data);
+
+  // Returns true if the searchbox is a CONTEXTUAL_SEARCHBOX.
+  bool IsContextualSearchbox();
 
   // Called when the UI needs to create the view to show in the overlay.
   std::unique_ptr<views::View> CreateViewForOverlay();

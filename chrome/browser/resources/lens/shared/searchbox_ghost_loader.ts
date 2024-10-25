@@ -5,12 +5,15 @@
 import '//resources/cr_elements/cr_spinner_style.css.js';
 import './searchbox_shared_style.css.js';
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './searchbox_ghost_loader.html.js';
+import {BrowserProxyImpl} from './searchbox_ghost_loader_browser_proxy.js';
+import type {BrowserProxy} from './searchbox_ghost_loader_browser_proxy.js';
 
 // Displays a loading preview while waiting on autocomplete to return matches.
-class SearchboxGhostLoaderElement extends PolymerElement {
+export class SearchboxGhostLoaderElement extends PolymerElement {
   static get is() {
     return 'cr-searchbox-ghost-loader';
   }
@@ -21,12 +24,42 @@ class SearchboxGhostLoaderElement extends PolymerElement {
 
   static get properties() {
     return {
-      hasStopTimerTriggered: {
+      showErrorState: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
     };
+  }
+
+  // Whether the autocomplete stop timer has triggered. If it has, we should
+  // hide the ghost loader. We also show the error text in this case.
+  private showErrorState: boolean;
+  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+  private listenerIds: number[];
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    const callbackRouter = this.browserProxy.callbackRouter;
+    this.listenerIds = [
+      callbackRouter.notifyAutocompleteStopTimerTriggered.addListener(() => {
+        this.showErrorState = true;
+      }),
+    ];
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds.forEach(
+        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
+    this.listenerIds = [];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-searchbox-ghost-loader': SearchboxGhostLoaderElement;
   }
 }
 

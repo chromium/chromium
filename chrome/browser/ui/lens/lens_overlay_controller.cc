@@ -714,6 +714,11 @@ bool LensOverlayController::IsOverlayClosing() {
   return state_ == State::kClosing || state_ == State::kClosingSidePanel;
 }
 
+bool LensOverlayController::IsContextualSearchbox() {
+  return GetPageClassification() ==
+         metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+}
+
 void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
   if (!IsOverlayShowing() && state() != State::kLivePageAndResults) {
     return;
@@ -763,8 +768,7 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     initialization_data_->additional_search_query_params_.clear();
     selected_region_thumbnail_uri_.clear();
     // The selection type is the searchbox input type for contextual queries.
-    if (GetPageClassification() !=
-        metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+    if (!IsContextualSearchbox()) {
       lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     }
     page_->ClearAllSelections();
@@ -922,6 +926,11 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   // Set the currently loaded query to the one we just popped.
   initialization_data_->currently_loaded_search_query_.reset();
   initialization_data_->currently_loaded_search_query_ = query;
+}
+
+void LensOverlayController::GetIsContextualSearchbox(
+    GetIsContextualSearchboxCallback callback) {
+  std::move(callback).Run(IsContextualSearchbox());
 }
 
 void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
@@ -2502,8 +2511,7 @@ void LensOverlayController::IssueSearchBoxRequest(
   // Do not attempt to contextualize if CSB is disabled or if the user is not in
   // the contextual search flow (aka, issues an image request already).
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
-      GetPageClassification() !=
-          metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+      !IsContextualSearchbox()) {
     IssueSearchBoxRequestPart2(search_box_text, match_type,
                                is_zero_prefix_suggestion,
                                additional_query_params);
@@ -2543,8 +2551,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   }
 
   if (initialization_data_->selected_region_.is_null() &&
-      GetPageClassification() ==
-          metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+      IsContextualSearchbox()) {
     lens_overlay_query_controller_->SendContextualTextQuery(
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
@@ -2564,12 +2571,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
         initialization_data_->additional_search_query_params_,
         selected_region_bitmap);
   }
-  results_side_panel_coordinator_->RegisterEntryAndShow();
   CloseSearchBubble();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kSearchbox);
   search_performed_in_session_ = true;
-  MaybeLaunchSurvey();
 
   // If we are in the zero state, this request must have come from CSB. In that
   // case, hide the overlay to allow live page to show through.
@@ -2582,6 +2587,9 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   // contextual flow and the state needs to stay as State::kLivePageAndResults.
   state_ = state_ == State::kOverlayAndResults ? State::kOverlayAndResults
                                                : State::kLivePageAndResults;
+
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  MaybeLaunchSurvey();
 }
 
 void LensOverlayController::HandleStartQueryResponse(

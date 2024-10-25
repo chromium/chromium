@@ -70,11 +70,11 @@
 }
 
 #loadingState,
-:host([has-stop-timer-triggered]) #errorState  {
+:host([show-error-state]) #errorState  {
   display: flex;
 }
 
-:host([has-stop-timer-triggered]) #loadingState,
+:host([show-error-state]) #loadingState,
 #errorState {
   display: none;
 }
