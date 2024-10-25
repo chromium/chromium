@@ -12,10 +12,37 @@
 
 namespace autofill {
 
+namespace {
+
 // The maximum number of fields that can share a label.
-const int kMaxNumberOfFieldsToShareALabel = 3;
+constexpr int kMaxNumberOfFieldsToShareALabel = 3;
 // The maximum length of a label that can be shared among fields.
-const int kMaxLengthOfShareableLabel = 40;
+constexpr int kMaxLengthOfShareableLabel = 40;
+// Common separators to split the labels by.
+constexpr std::u16string_view kSeparators[] = {
+    u"/", u",", u"&", u" - ", u" and ", u" und ", u" et ", u" y "};
+
+// Splits the `label` at all `kSeparators`.
+std::vector<std::u16string_view> SplitBySeparators(std::u16string_view label) {
+  std::vector<std::u16string_view> components = {label};
+  for (std::u16string_view separator : kSeparators) {
+    std::vector<std::u16string_view> new_components;
+    for (std::u16string_view component : components) {
+      std::vector<std::u16string_view> subcomponents =
+          base::SplitStringPieceUsingSubstr(component, separator,
+                                            base::TRIM_WHITESPACE,
+                                            base::SPLIT_WANT_NONEMPTY);
+      // TODO(crbug.com/40100455): Use `std::vector::append_range()` when
+      // C++23 is available.
+      new_components.insert(new_components.end(), subcomponents.begin(),
+                            subcomponents.end());
+    }
+    components = std::move(new_components);
+  }
+  return components;
+}
+
+}  // namespace
 
 std::vector<std::u16string_view> GetParseableLabels(
     std::vector<std::u16string_view> labels) {
@@ -46,20 +73,8 @@ std::vector<std::u16string_view> GetParseableLabels(
       continue;
     }
 
-    // Split the label by single character separators or by common separating
-    // words, until the right number of components are archived.
-    std::vector<std::u16string_view> label_components = base::SplitStringPiece(
-        label, u"/,&-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (label_components.size() != num_shareable_fields) {
-      for (const char16_t* word : {u" and ", u" und ", u" et ", u" y "}) {
-        label_components = base::SplitStringPieceUsingSubstr(
-            label, word, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-        if (label_components.size() == num_shareable_fields) {
-          break;
-        }
-      }
-    }
-
+    std::vector<std::u16string_view> label_components =
+        SplitBySeparators(label);
     if (label_components.size() == num_shareable_fields) {
       std::ranges::move(label_components, shared_label_candidate_it);
     }
