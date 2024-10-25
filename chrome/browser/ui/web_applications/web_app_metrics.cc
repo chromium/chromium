@@ -397,6 +397,7 @@ void WebAppMetrics::CountUserInstalledApps() {
   DCHECK_GE(num_user_installed_apps_, 0);
 }
 
+// TODO(https://crbug.com/358404364): Delete this method and all callsites.
 void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
                                   TabSwitching mode) {
   // TODO(crbug.com/362130525): The discarded check can be removed once
@@ -483,8 +484,6 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     return;
   }
   last_recorded_web_app_start_url_ = features.start_url;
-
-  FlushOldRecordsAndUpdate(features, profile_);
 }
 
 base::Time WebAppMetrics::GetOrSetLastInteractedTimeForApp(

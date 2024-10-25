@@ -450,8 +450,6 @@ source_set("web_applications") {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
       "policy/web_app_settings_policy_handler.h",
-      "sampling_metrics_provider.cc",
-      "sampling_metrics_provider.h",
     ]
   }
 
@@ -616,6 +614,21 @@ source_set("web_applications") {
     "//components/permissions:permissions",
     "//components/services/app_service",
   ]
+}
+
+if (!is_android) {
+  source_set("web_applications_metrics") {
+    sources = [
+      "sampling_metrics_provider.cc",
+      "sampling_metrics_provider.h",
+    ]
+    deps = [
+      ":web_applications",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ui/browser_window",
+    ]
+    public_deps = [ "//base" ]
+  }
 }
 
 # This test_support library doesn't use extensions. It must not depend on
@@ -1172,6 +1185,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":web_applications",
+    ":web_applications_metrics",
     ":web_applications_test_support",
     "//chrome/app:command_ids",
     "//chrome/test:test_support",
