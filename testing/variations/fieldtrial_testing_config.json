@@ -17791,6 +17791,30 @@
             ]
         }
     ],
+    "Prerender2FallbackPrefetchSpecRules": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20241023",
+                    "params": {
+                        "kPrerender2FallbackPrefetchReusablePolicy": "UseIfIsLikelyAheadOfPrerender"
+                    },
+                    "enable_features": [
+                        "Prerender2FallbackPrefetchSpecRules"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2NewTabPageAndroidTrigger": [
         {
             "platforms": [
