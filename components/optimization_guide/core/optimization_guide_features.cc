@@ -710,7 +710,7 @@ base::TimeDelta GetOnDeviceModelTimeoutBackoffBaseTime() {
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
-      base::Minutes(2)};
+      base::Minutes(3)};
   return kOnDeviceStartupMetricDelay.Get();
 }
 
