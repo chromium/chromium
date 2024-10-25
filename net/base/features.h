@@ -482,6 +482,16 @@ NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
 // behavior by default.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
 
+// When enabled and an IP protection delegate can be be created in the
+// `NetworkContext`, a `IpProtectionProxyDelegate` will ALWAYS be created even
+// for `NetworkContexts` that do not participate in IP protection. This is
+// necessary for the WebView traffic experiment. By default, this feature param
+// is false and will not create a delegate when IP protection is not enabled.
+// Further, this also prevents the unnecessary instantiation of the
+// `IpProtectionCore` for a `NetworkContext` that does not participate in IP
+// protection.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

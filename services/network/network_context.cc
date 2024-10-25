@@ -17,6 +17,7 @@
 #include "base/build_time.h"
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
@@ -2558,16 +2559,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // Decide which ProxyDelegate to create. At most one of these will be the
   // case for any given NetworkContext: either PrefetchProxy, handling its
   // custom proxy configs, or IpProtection, using the proxy allowlist.
-  // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
-  // done, we should only create an IpProtectionProxyDelegate when
-  // `params_->ip_protection_core_host` is set (to avoid creating
-  // proxynetwork_conte delegates for network contexts that don't participate in
-  // IP Protection, or for any network context when the IP Protection feature is
-  // disabled).
   auto* mdl_manager = network_service_->masked_domain_list_manager();
   std::unique_ptr<ip_protection::IpProtectionControlMojo>
       ip_protection_control_mojo;
-  if (!params_->initial_custom_proxy_config && mdl_manager->IsEnabled()) {
+  bool requires_ipp_proxy_delegate =
+      mdl_manager->IsEnabled() &&
+      (params_->ip_protection_core_host ||
+       net::features::kIpPrivacyAlwaysCreateCore.Get());
+  if (requires_ipp_proxy_delegate) {
+    CHECK(!params_->initial_custom_proxy_config);
+    CHECK(!params_->custom_proxy_config_client_receiver);
     auto ip_protection_core_impl =
         std::make_unique<ip_protection::IpProtectionCoreImpl>(
             std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
