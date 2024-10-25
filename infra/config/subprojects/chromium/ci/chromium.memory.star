@@ -96,6 +96,9 @@ linux_memory_builder(
             "x64",
         ],
     ),
+    # crbug.com/372503456: This builder gets died on a 8 cores bot when it fails
+    # to get builder cache.
+    cores = 16,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "linux|asan lsan",
