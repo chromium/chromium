@@ -894,9 +894,11 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       // Ignore move events if it's not a root window that's being moved. If it
       // is a root window, we want to calculate occlusion to support tab
       // dragging to windows that were occluded when the drag was started but
-      // are no longer occluded.
-      if (root_window_hwnds_occlusion_state_.find(hwnd) ==
-          root_window_hwnds_occlusion_state_.end()) {
+      // are no longer occluded.  If there is only one root window, occlusion
+      // calculation is not needed.
+      if ((root_window_hwnds_occlusion_state_.size() <= 1) ||
+          (root_window_hwnds_occlusion_state_.find(hwnd) ==
+           root_window_hwnds_occlusion_state_.end())) {
         return;
       }
     } else {
