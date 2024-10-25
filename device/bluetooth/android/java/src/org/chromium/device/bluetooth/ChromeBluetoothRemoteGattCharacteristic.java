@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattCharacteristicWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 
 import java.util.List;
 
@@ -24,13 +26,13 @@ final class ChromeBluetoothRemoteGattCharacteristic {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothRemoteGattCharacteristicAndroid;
-    final Wrappers.BluetoothGattCharacteristicWrapper mCharacteristic;
+    final BluetoothGattCharacteristicWrapper mCharacteristic;
     final String mInstanceId;
     final ChromeBluetoothDevice mChromeDevice;
 
     private ChromeBluetoothRemoteGattCharacteristic(
             long nativeBluetoothRemoteGattCharacteristicAndroid,
-            Wrappers.BluetoothGattCharacteristicWrapper characteristicWrapper,
+            BluetoothGattCharacteristicWrapper characteristicWrapper,
             String instanceId,
             ChromeBluetoothDevice chromeDevice) {
         mNativeBluetoothRemoteGattCharacteristicAndroid =
@@ -104,7 +106,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
     @CalledByNative
     private static ChromeBluetoothRemoteGattCharacteristic create(
             long nativeBluetoothRemoteGattCharacteristicAndroid,
-            Wrappers.BluetoothGattCharacteristicWrapper characteristicWrapper,
+            BluetoothGattCharacteristicWrapper characteristicWrapper,
             String instanceId,
             ChromeBluetoothDevice chromeDevice) {
         return new ChromeBluetoothRemoteGattCharacteristic(
@@ -164,7 +166,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
     // BluetoothRemoteGattCharacteristicAndroid::EnsureDescriptorsCreated.
     @CalledByNative
     private void createDescriptors() {
-        List<Wrappers.BluetoothGattDescriptorWrapper> descriptors =
+        List<BluetoothGattDescriptorWrapper> descriptors =
                 mCharacteristic.getDescriptors();
         // descriptorInstanceId ensures duplicate UUIDs have unique instance
         // IDs. BluetoothGattDescriptor does not offer getInstanceId the way
@@ -172,7 +174,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
         //
         // TODO(crbug.com/40452041) Do not reuse IDs upon onServicesDiscovered.
         int instanceIdCounter = 0;
-        for (Wrappers.BluetoothGattDescriptorWrapper descriptor : descriptors) {
+        for (BluetoothGattDescriptorWrapper descriptor : descriptors) {
             String descriptorInstanceId =
                     mInstanceId + "/" + descriptor.getUuid().toString() + ";" + instanceIdCounter++;
             ChromeBluetoothRemoteGattCharacteristicJni.get()
@@ -211,7 +213,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
                 long nativeBluetoothRemoteGattCharacteristicAndroid,
                 ChromeBluetoothRemoteGattCharacteristic caller,
                 String instanceId,
-                Wrappers.BluetoothGattDescriptorWrapper descriptorWrapper,
+                BluetoothGattDescriptorWrapper descriptorWrapper,
                 ChromeBluetoothDevice chromeBluetoothDevice);
     }
 }
