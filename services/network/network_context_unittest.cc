@@ -908,6 +908,7 @@ TEST_F(NetworkContextTest, NetworkBoundURLLoaderFactory) {
   // This needs to be different than mojom::kInvalidProcessId to stop Mojo
   // from yelling.
   params->process_id = mojom::kBrowserProcessId;
+  params->disable_web_security = true;
   network_context->CreateURLLoaderFactory(
       loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
   EXPECT_TRUE(loader_factory.is_bound());
