@@ -955,9 +955,10 @@ void LensOverlayController::IssueLensRegionRequestForTesting(
 void LensOverlayController::IssueTextSelectionRequestForTesting(
     const std::string& text_query,
     int selection_start_index,
-    int selection_end_index) {
+    int selection_end_index,
+    bool is_translate) {
   IssueTextSelectionRequest(text_query, selection_start_index,
-                            selection_end_index);
+                            selection_end_index, is_translate);
 }
 
 void LensOverlayController::
@@ -2357,8 +2358,11 @@ void LensOverlayController::IssueLensObjectRequest(
 
 void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
                                                       int selection_start_index,
-                                                      int selection_end_index) {
+                                                      int selection_end_index,
+                                                      bool is_translate) {
   initialization_data_->additional_search_query_params_.clear();
+  lens_selection_type_ =
+      is_translate ? lens::SELECT_TRANSLATED_TEXT : lens::SELECT_TEXT_HIGHLIGHT;
 
   IssueTextSelectionRequestInner(query, selection_start_index,
                                  selection_end_index);
@@ -2372,6 +2376,7 @@ void LensOverlayController::IssueTranslateSelectionRequest(
   initialization_data_->additional_search_query_params_.clear();
   lens::AppendTranslateParamsToMap(
       initialization_data_->additional_search_query_params_, query, "auto");
+  lens_selection_type_ = lens::TRANSLATE_CHIP;
 
   IssueTextSelectionRequestInner(query, selection_start_index,
                                  selection_end_index);
@@ -2384,7 +2389,6 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
   selected_region_thumbnail_uri_.clear();
-  lens_selection_type_ = lens::SELECT_TEXT_HIGHLIGHT;
   initialization_data_->selected_text_ =
       std::make_pair(selection_start_index, selection_end_index);
 

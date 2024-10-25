@@ -201,6 +201,7 @@ source_set("browser_tests") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//pdf:features",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/base",
     "//ui/base:types",
     "//ui/compositor",

@@ -81,6 +81,11 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 // results.
 GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 
+// Returns whether |lens_selection_type| should be considered as a text-only
+// selection type.
+bool IsLensTextSelectionType(
+    lens::LensOverlaySelectionType lens_selection_type);
+
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_

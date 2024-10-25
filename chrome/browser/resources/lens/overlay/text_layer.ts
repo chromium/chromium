@@ -538,7 +538,8 @@ export class TextLayerElement extends PolymerElement {
 
     // On selection complete, send the selected text to C++.
     this.browserProxy.handler.issueTextSelectionRequest(
-        highlightedText, this.selectionStartIndex, this.selectionEndIndex);
+        highlightedText, this.selectionStartIndex, this.selectionEndIndex,
+        this.shouldRenderTranslateWords);
     recordLensOverlayInteraction(
         INVOCATION_SOURCE,
         this.shouldRenderTranslateWords ? UserAction.kTranslateTextSelection :

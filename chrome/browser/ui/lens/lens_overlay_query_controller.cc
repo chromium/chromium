@@ -406,9 +406,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // so that is_parent_query can be accurately set if the user issues multiple
   // interactions in quick succession.
   if (lens::features::SendVisualSearchInteractionParamForLensTextQueries() &&
-      lens_selection_type == lens::SELECT_TEXT_HIGHLIGHT) {
+      IsLensTextSelectionType(lens_selection_type)) {
     additional_search_query_params = AddVisualSearchInteractionLogData(
-        additional_search_query_params, lens::SELECT_TEXT_HIGHLIGHT);
+        additional_search_query_params, lens_selection_type);
   }
 
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;

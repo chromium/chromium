@@ -13,6 +13,7 @@
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_intent_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_stickiness_signals.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_translate_stickiness_signals.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_video_context_input_params.pb.h"
@@ -223,8 +224,7 @@ GURL BuildTextOnlySearchURL(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
-  if (lens_selection_type ==
-      lens::LensOverlaySelectionType::SELECT_TEXT_HIGHLIGHT) {
+  if (IsLensTextSelectionType(lens_selection_type)) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensFootprintParameterKey,
         kLensFootprintParameterValue);
@@ -369,6 +369,13 @@ GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
         processed_url, query_param, std::nullopt);
   }
   return processed_url;
+}
+
+bool IsLensTextSelectionType(
+    lens::LensOverlaySelectionType lens_selection_type) {
+  return lens_selection_type == lens::SELECT_TEXT_HIGHLIGHT ||
+         lens_selection_type == lens::SELECT_TRANSLATED_TEXT ||
+         lens_selection_type == lens::TRANSLATE_CHIP;
 }
 
 }  // namespace lens

@@ -418,7 +418,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Testing function to issue a text request.
   void IssueTextSelectionRequestForTesting(const std::string& text_query,
                                            int selection_start_index,
-                                           int selection_end_index);
+                                           int selection_end_index,
+                                           bool is_translate = false);
 
   // Testing function to issue a text request.
   void RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
@@ -841,7 +842,8 @@ class LensOverlayController : public LensSearchboxClient,
                               bool is_click) override;
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
-                                 int selection_end_index) override;
+                                 int selection_end_index,
+                                 bool is_translate) override;
   void IssueTranslateFullPageRequest(
       const std::string& source_language,
       const std::string& target_language) override;

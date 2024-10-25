@@ -137,9 +137,11 @@ interface LensPageHandler {
   // browser-side UI solely for the purposes of maintaining a history stack.
   // They do not and will not be used to be indexed into anything in the
   // browser; when the user traverses history, the indices may be passed back to
-  // the WebUI.
+  // the WebUI. The function also passed an `is_translate` boolean for logging
+  // purposes but it does not change any functionality.
   IssueTextSelectionRequest(
-      string query, int32 selection_start_index, int32 selection_end_index);
+      string query, int32 selection_start_index, int32 selection_end_index,
+      bool is_translate);
 
   // Similar to IssueTextSelectionRequest(), but requests that the selected
   // text be translated.

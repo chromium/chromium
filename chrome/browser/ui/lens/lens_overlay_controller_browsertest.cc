@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
@@ -96,6 +97,7 @@
 #include "pdf/pdf_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
@@ -416,6 +418,16 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     LensOverlayQueryController::SendRegionSearch(
         std::move(region), selection_type, additional_search_query_params,
         region_bytes);
+  }
+
+  void SendTextOnlyQuery(const std::string& query_text,
+                         lens::LensOverlaySelectionType lens_selection_type,
+                         std::map<std::string, std::string>
+                             additional_search_query_params) override {
+    last_queried_text_ = query_text;
+    last_lens_selection_type_ = lens_selection_type;
+    LensOverlayQueryController::SendTextOnlyQuery(
+        query_text, lens_selection_type, additional_search_query_params);
   }
 
   void SendMultimodalRequest(
@@ -1334,6 +1346,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
   EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  auto search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(search_query);
+  EXPECT_EQ(search_query->search_query_text_, text_query);
+  EXPECT_EQ(search_query->lens_selection_type_, lens::SELECT_TEXT_HIGHLIGHT);
+
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_queried_text_, text_query);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
 
   // Verify that the side panel displays our query.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1342,6 +1367,48 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                            content::JsReplace(
                                kCheckSidePanelResultsLoadedScript, text_query));
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       SelectionTypeForTranslateTextSelection) {
+  WaitForPaint();
+
+  std::string text_query = "Apples";
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  controller->IssueTextSelectionRequestForTesting(text_query,
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0,
+                                                  /*is_translate=*/true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  auto search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(search_query);
+  EXPECT_EQ(search_query->search_query_text_, text_query);
+  EXPECT_EQ(search_query->lens_selection_type_, lens::SELECT_TRANSLATED_TEXT);
+
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_queried_text_, text_query);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::SELECT_TRANSLATED_TEXT);
 }
 
 // TODO(b/335028577): Test flaky on Mac.
@@ -1383,6 +1450,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
   EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  auto search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(search_query);
+  EXPECT_EQ(search_query->search_query_text_, text_query);
+  EXPECT_EQ(search_query->lens_selection_type_, lens::TRANSLATE_CHIP);
+
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_queried_text_, text_query);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::TRANSLATE_CHIP);
 
   // Verify that the side panel displays our query.
   ASSERT_TRUE(base::test::RunUntil([&]() {
