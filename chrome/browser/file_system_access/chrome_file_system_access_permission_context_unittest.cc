@@ -244,6 +244,25 @@ class TestFileSystemAccessPermissionContext
 
 class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
  public:
+  class ScopedHomeDirOverride {
+   public:
+    explicit ScopedHomeDirOverride(
+        base::AutoReset<std::optional<base::FilePath>> profile_path_override)
+        : profile_path_override_(std::move(profile_path_override)) {}
+
+    explicit ScopedHomeDirOverride(base::FilePath home_dir)
+        : home_dir_override_(
+              std::make_optional<base::ScopedPathOverride>(base::DIR_HOME,
+                                                           std::move(home_dir),
+                                                           true,
+                                                           true)) {}
+
+   private:
+    std::optional<base::AutoReset<std::optional<base::FilePath>>>
+        profile_path_override_;
+    std::optional<base::ScopedPathOverride> home_dir_override_;
+  };
+
   ChromeFileSystemAccessPermissionContextTest() {
 // TODO(crbug.com/40101963): Enable when android persisted permissions are
 // implemented.
@@ -440,6 +459,18 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   base::Time Now() const { return task_environment_.GetMockClock()->Now(); }
   void Advance(base::TimeDelta delta) { task_environment_.AdvanceClock(delta); }
 
+  // Overrides the home directory. Prefer to use this over a
+  // `base::ScopedPathOverride` of base::DIR_HOME.
+  ScopedHomeDirOverride OverrideHomeDir(const base::FilePath& home_dir) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // ChromeOS has special logic to handle the base::DIR_HOME path key.
+    return ScopedHomeDirOverride(
+        permission_context_->OverrideProfilePathForTesting(home_dir));
+#else
+    return ScopedHomeDirOverride(home_dir);
+#endif
+  }
+
  protected:
   static constexpr char kPermissionIsDirectoryKey[] = "is-directory";
   static constexpr char kPermissionWritableKey[] = "writable";
@@ -533,7 +564,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
-  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -619,6 +650,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
         IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
   }
 
+  // The profile directory is the home directory on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   // The profile directory, its children, and its direct parent should all be
   // blocked. Note that this may not match USER_DATA_DIR if the --user-data-dir
   // override is used.
@@ -639,6 +672,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
     EXPECT_TRUE(
         IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
   }
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // `DIR_IE_INTERNET_CACHE` is an example of a directory where nested
@@ -658,10 +692,40 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_UseProfilePathAsDirHome) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+
+  // Setting `temp_dir_` as DIR_EXE will block all children by default in
+  // `temp_dir_` unless another rule is specifies otherwise for a child.
+  base::ScopedPathOverride app_override(base::DIR_EXE, temp_dir_.GetPath(),
+                                        true, true);
+  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+
+  // `base::DIR_HOME` and paths inside of it should not be allowed.
+  EXPECT_FALSE(IsOpenAllowed(home_dir, HandleType::kDirectory));
+  EXPECT_FALSE(
+      IsOpenAllowed(home_dir.AppendASCII("foo"), HandleType::kDirectory));
+  EXPECT_FALSE(IsOpenAllowed(home_dir.AppendASCII("foo"), HandleType::kFile));
+
+  base::FilePath profile_path;
+  base::NormalizeFilePath(profile()->GetPath(), &profile_path);
+
+  // On ChromeOs, the profile directory should act as the home directory where
+  // it is blocked but not its children.
+  EXPECT_FALSE(IsOpenAllowed(profile_path, HandleType::kDirectory));
+  EXPECT_TRUE(
+      IsOpenAllowed(profile_path.AppendASCII("foo"), HandleType::kDirectory));
+  EXPECT_TRUE(
+      IsOpenAllowed(profile_path.AppendASCII("foo"), HandleType::kFile));
+}
+#endif
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_RelativePathBlock) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
-  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
 
   // ~/.ssh should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -713,7 +777,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren_Overlapping) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
-  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -777,7 +841,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren_UserApplicationsDir) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
-  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
 
   // User's Applications directory should be blocked.
   base::FilePath user_applications_dir(home_dir.AppendASCII("Applications"));
@@ -948,7 +1012,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
-  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
 
   // Saving files with a harmless extension should be allowed.
   EXPECT_EQ(

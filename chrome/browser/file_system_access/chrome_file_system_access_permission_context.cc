@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -395,7 +396,8 @@ base::FilePath NormalizeFilePath(const base::FilePath& path) {
 
 bool ShouldBlockAccessToPath(const base::FilePath& path,
                              HandleType handle_type,
-                             std::vector<BlockPathRule> rules) {
+                             std::vector<BlockPathRule> rules,
+                             const base::FilePath& profile_path) {
   DCHECK(!path.empty());
 #if BUILDFLAG(IS_ANDROID)
   // The only check for content-URIs is that they are not from an internal
@@ -423,11 +425,21 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   }
 #endif
 
+  // ChromeOS supports multi-user sign-in. base::DIR_HOME only returns the
+  // profile path for the primary user, the first user to sign in. We want to
+  // use the `profile_path` instead since that's associated with user that
+  // initiated this blocklist check.
+  //
+  // TODO(crbug.com/375490221): Improve the ChromeOS blocklist logic.
+  constexpr bool kUseProfilePathForDirHome = BUILDFLAG(IS_CHROMEOS);
+
   // Add the hard-coded rules to the dynamic rules.
   for (const auto& block : kBlockedPaths) {
     base::FilePath blocked_path;
     if (block.base_path_key != kNoBasePathKey) {
-      if (!base::PathService::Get(block.base_path_key, &blocked_path)) {
+      if (kUseProfilePathForDirHome && block.base_path_key == base::DIR_HOME) {
+        blocked_path = profile_path;
+      } else if (!base::PathService::Get(block.base_path_key, &blocked_path)) {
         continue;
       }
       if (block.path) {
@@ -1838,7 +1850,8 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShouldBlockAccessToPath, path_info.path, handle_type,
-                     extra_rules),
+                     extra_rules,
+                     profile_path_override_.value_or(profile_->GetPath())),
       std::move(callback));
 }
 
@@ -2861,6 +2874,13 @@ ChromeFileSystemAccessPermissionContext::
       ->SetStatus(PermissionStatus::GRANTED,
                   PersistedPermissionOptions::kUpdatePersistedPermission);
   return grant;
+}
+
+base::AutoReset<std::optional<base::FilePath>>
+ChromeFileSystemAccessPermissionContext::OverrideProfilePathForTesting(
+    const base::FilePath& profile_path_override) {
+  return base::AutoReset<std::optional<base::FilePath>>(&profile_path_override_,
+                                                        profile_path_override);
 }
 
 void ChromeFileSystemAccessPermissionContext::Shutdown() {

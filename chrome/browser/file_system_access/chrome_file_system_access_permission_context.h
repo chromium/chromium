@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -18,14 +19,13 @@
 #include "base/types/expected.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
-
-#include "chrome/browser/permissions/one_time_permissions_tracker.h"
-#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -325,6 +325,9 @@ class ChromeFileSystemAccessPermissionContext
                                             const content::PathInfo& path_info,
                                             HandleType handle_type);
 
+  base::AutoReset<std::optional<base::FilePath>> OverrideProfilePathForTesting(
+      const base::FilePath& profile_path_override);
+
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
 
   // Dictionary key for the FILE_SYSTEM_ACCESS_CHOOSER_DATA setting.
@@ -540,6 +543,8 @@ class ChromeFileSystemAccessPermissionContext
   // `window.showSaveFilePicker()`.
   FileCreatedFromShowSaveFilePickerCallbackList
       file_created_from_show_save_file_picker_callback_list_;
+
+  std::optional<base::FilePath> profile_path_override_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};
