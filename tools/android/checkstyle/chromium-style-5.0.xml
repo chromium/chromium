@@ -264,6 +264,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.browser_ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ContextGetString"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="ontext\(?\)?\.getResources\(\)\.getString\("/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Use Context.getString() rather than Context.getResources().getString()."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
