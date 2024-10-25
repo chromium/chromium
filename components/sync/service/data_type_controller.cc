@@ -289,7 +289,13 @@ void DataTypeController::HasUnsyncedData(
   delegate_->HasUnsyncedData(std::move(callback));
 }
 
-void DataTypeController::GetAllNodes(AllNodesCallback callback) {
+void DataTypeController::GetAllNodesForDebugging(AllNodesCallback callback) {
+  // Precautionary safeguard.
+  if (state_ != RUNNING) {
+    std::move(callback).Run(base::Value::List());
+    return;
+  }
+
   CHECK(delegate_);
   delegate_->GetAllNodesForDebugging(std::move(callback));
 }

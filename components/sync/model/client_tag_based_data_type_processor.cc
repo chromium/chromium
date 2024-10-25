@@ -1291,9 +1291,8 @@ void ClientTagBasedDataTypeProcessor::HasUnsyncedData(
 
 void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
-  if (!bridge_) {
-    return;
-  }
+  CHECK(bridge_);
+  CHECK(model_ready_to_sync_);
 
   std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
   if (!batch) {

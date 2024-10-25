@@ -137,7 +137,8 @@ class DataTypeController {
   // Returns a Value::List representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
-  void GetAllNodes(AllNodesCallback callback);
+  // Returns an empty result if state() is anything other than RUNNING.
+  void GetAllNodesForDebugging(AllNodesCallback callback);
 
   // Collects TypeEntitiesCount for this datatype and passes them to |callback|.
   // Used to display entity counts in chrome://sync-internals.

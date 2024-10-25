@@ -457,7 +457,7 @@ void SyncEngineBackend::DoClearNigoriDataForMigration() {
 
 void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  nigori_controller_->GetAllNodes(std::move(callback));
+  nigori_controller_->GetAllNodesForDebugging(std::move(callback));
 }
 
 void SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms() {

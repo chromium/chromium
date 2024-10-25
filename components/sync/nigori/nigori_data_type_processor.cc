@@ -265,6 +265,8 @@ void NigoriDataTypeProcessor::HasUnsyncedData(
 void NigoriDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(model_ready_to_sync_);
+  CHECK(bridge_);
 
   std::unique_ptr<EntityData> entity_data = bridge_->GetDataForDebugging();
   if (!entity_data) {
