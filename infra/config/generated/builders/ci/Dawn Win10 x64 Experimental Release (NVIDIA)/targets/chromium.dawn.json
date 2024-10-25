@@ -310,8 +310,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -342,8 +341,7 @@
         "args": [
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -645,8 +643,7 @@
       {
         "args": [
           "--flag-specific=webgpu-swiftshader",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [
@@ -677,8 +674,7 @@
         "args": [
           "--flag-specific=webgpu-swiftshader-with-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "merge": {
           "args": [

@@ -1970,9 +1970,6 @@ targets.mixin(
     mac_args = [
         "--platform=mac-mac11",
     ],
-    win64_args = [
-        "--target=Release_x64",
-    ],
     merge = targets.merge(
         script = "//third_party/blink/tools/merge_web_test_results.py",
         args = [

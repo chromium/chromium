@@ -1455,8 +1455,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_profile_data": true,
         "merge": {
