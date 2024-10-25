@@ -42,6 +42,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ewallet_manager_unittest.cc",
     "facilitated_payments_manager_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
@@ -50,6 +51,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
     "//components/optimization_guide/core",
@@ -59,5 +61,21 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "ewallet_manager_test_api.h",
+    "mock_facilitated_payments_api_client.cc",
+    "mock_facilitated_payments_api_client.h",
+    "mock_facilitated_payments_client.cc",
+    "mock_facilitated_payments_client.h",
+  ]
+
+  deps = [
+    ":browser",
+    "//testing/gmock:gmock",
   ]
 }

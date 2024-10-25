@@ -24,6 +24,7 @@ FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
 
 void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {
   manager_->Reset();
+  ewallet_manager_->Reset();
 }
 
 void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(

@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
+#include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
@@ -73,8 +74,9 @@ class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
 
 class MockEwalletManager : public EwalletManager {
  public:
-  explicit MockEwalletManager(FacilitatedPaymentsClient* client)
-      : EwalletManager(client) {}
+  MockEwalletManager(FacilitatedPaymentsClient* client,
+                     FacilitatedPaymentsApiClientCreator api_client_creator)
+      : EwalletManager(client, std::move(api_client_creator)) {}
   ~MockEwalletManager() override = default;
 
   MOCK_METHOD(void,
@@ -123,7 +125,9 @@ class ContentFacilitatedPaymentsDriverTest
         client_.get(), decider_.get(), render_frame_host, std::move(sc));
 
     std::unique_ptr<MockEwalletManager> em =
-        std::make_unique<testing::NiceMock<MockEwalletManager>>(client_.get());
+        std::make_unique<testing::NiceMock<MockEwalletManager>>(
+            client_.get(), GetFacilitatedPaymentsApiClientCreator(
+                               render_frame_host->GetGlobalId()));
     ewallet_manager_ = em.get();
     driver_->SetEwalletManagerForTesting(std::move(em));
   }

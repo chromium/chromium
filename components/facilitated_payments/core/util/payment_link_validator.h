@@ -18,6 +18,8 @@ class PaymentLinkValidator {
   PaymentLinkValidator(const PaymentLinkValidator&) = delete;
   PaymentLinkValidator& operator=(const PaymentLinkValidator&) = delete;
 
+  // This validation method uses std::string::find(), which is safe to use in
+  // the browser process on untrusted data.
   bool IsValid(std::string_view url) const;
 
  private:

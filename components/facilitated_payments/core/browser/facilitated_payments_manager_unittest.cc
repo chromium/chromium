@@ -22,9 +22,10 @@
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
+#include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
@@ -76,29 +77,6 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
               (override));
 };
 
-// A mock for the facilitated payment API client interface.
-class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
- public:
-  static std::unique_ptr<FacilitatedPaymentsApiClient> CreateApiClient() {
-    return std::make_unique<MockFacilitatedPaymentsApiClient>();
-  }
-
-  MockFacilitatedPaymentsApiClient() = default;
-  ~MockFacilitatedPaymentsApiClient() override = default;
-
-  MOCK_METHOD(void, IsAvailable, (base::OnceCallback<void(bool)>), (override));
-  MOCK_METHOD(void,
-              GetClientToken,
-              (base::OnceCallback<void(std::vector<uint8_t>)>),
-              (override));
-  MOCK_METHOD(void,
-              InvokePurchaseAction,
-              (CoreAccountInfo,
-               base::span<const uint8_t>,
-               base::OnceCallback<void(PurchaseActionResult)>),
-              (override));
-};
-
 class MockOptimizationGuideDecider
     : public optimization_guide::OptimizationGuideDecider {
  public:
@@ -128,39 +106,6 @@ class MockOptimizationGuideDecider
        std::optional<optimization_guide::proto::RequestContextMetadata>
            request_context_metadata),
       (override));
-};
-
-// A mock for the facilitated payment "client" interface.
-class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
- public:
-  MockFacilitatedPaymentsClient() = default;
-  ~MockFacilitatedPaymentsClient() override = default;
-
-  MOCK_METHOD(void,
-              LoadRiskData,
-              (base::OnceCallback<void(const std::string&)>),
-              (override));
-  MOCK_METHOD(autofill::PaymentsDataManager*,
-              GetPaymentsDataManager,
-              (),
-              (override));
-  MOCK_METHOD(FacilitatedPaymentsNetworkInterface*,
-              GetFacilitatedPaymentsNetworkInterface,
-              (),
-              (override));
-  MOCK_METHOD(std::optional<CoreAccountInfo>,
-              GetCoreAccountInfo,
-              (),
-              (override));
-  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
-  MOCK_METHOD(void,
-              ShowPixPaymentPrompt,
-              (base::span<const autofill::BankAccount> pix_account_suggestions,
-               base::OnceCallback<void(bool, int64_t)>),
-              (override));
-  MOCK_METHOD(void, ShowProgressScreen, (), (override));
-  MOCK_METHOD(void, ShowErrorScreen, (), (override));
-  MOCK_METHOD(void, DismissPrompt, (), (override));
 };
 
 class MockFacilitatedPaymentsNetworkInterface
