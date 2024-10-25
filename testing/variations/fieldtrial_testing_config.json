@@ -21479,16 +21479,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Reauth_Enabled",
+                    "name": "Enabled",
                     "enable_features": [
                         "BiometricsAuthForPwdFill"
-                    ]
-                },
-                {
-                    "name": "Reauth_With_Promo_Enabled",
-                    "enable_features": [
-                        "BiometricsAuthForPwdFill",
-                        "ScreenlockReauthPromoCard"
                     ]
                 }
             ]
