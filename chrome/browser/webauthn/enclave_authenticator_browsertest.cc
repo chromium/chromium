@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/rand_util.h"
@@ -35,7 +36,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -512,6 +515,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     explicit DelegateObserver(EnclaveAuthenticatorBrowserTest* test_instance)
         : test_instance_(test_instance) {
       run_loop_ = std::make_unique<base::RunLoop>();
+      tai_run_loop_ = std::make_unique<base::RunLoop>();
       destruction_run_loop_ = std::make_unique<base::RunLoop>();
     }
     virtual ~DelegateObserver() = default;
@@ -519,6 +523,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     void WaitForUI() {
       run_loop_->Run();
       run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    void WaitForTransportAvailabilityEnumerated() {
+      tai_run_loop_->Run();
+      tai_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
     void WaitForDelegateDestruction() {
@@ -546,6 +555,9 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         delegate->SetTrustedVaultConnectionForTesting(
             std::move(pending_connection_));
       }
+      delegate->SetMockTimeForTesting(
+          test_instance_->timer_task_runner_->GetMockTickClock(),
+          test_instance_->timer_task_runner_);
     }
 
     void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
@@ -571,6 +583,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       if (additional_transport_.has_value()) {
         tai->available_transports.insert(*additional_transport_);
       }
+      tai_run_loop_->QuitWhenIdle();
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
@@ -590,6 +603,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     bool use_synced_device_cable_pairing_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
+    std::unique_ptr<base::RunLoop> tai_run_loop_;
     std::unique_ptr<base::RunLoop> destruction_run_loop_;
   };
 
@@ -605,13 +619,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         model_->observers.RemoveObserver(this);
         model_ = nullptr;
       }
-    }
-
-    void WaitForLoadingEnclaveTimeout() {
-      run_loop_ = std::make_unique<base::RunLoop>();
-      waiting_for_loading_enclave_timeout_ = true;
-      run_loop_->Run();
-      Reset();
     }
 
     // Call this before the state transition you are looking to observe.
@@ -655,9 +662,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     }
 
     void OnLoadingEnclaveTimeout() override {
-      if (run_loop_ && waiting_for_loading_enclave_timeout_) {
-        run_loop_->QuitWhenIdle();
-      }
+      loading_enclave_timed_out_ = true;
     }
 
     void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
@@ -674,12 +679,14 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       return all_steps_;
     }
 
+    bool loading_enclave_timed_out() { return loading_enclave_timed_out_; }
+
    private:
     raw_ptr<AuthenticatorRequestDialogModel> model_;
     AuthenticatorRequestDialogModel::Step step_ =
         AuthenticatorRequestDialogModel::Step::kNotStarted;
     std::vector<AuthenticatorRequestDialogModel::Step> all_steps_;
-    bool waiting_for_loading_enclave_timeout_ = false;
+    bool loading_enclave_timed_out_ = false;
     bool observe_next_step_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
   };
@@ -971,6 +978,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   }
 
  protected:
+  scoped_refptr<base::TestMockTimeTaskRunner> timer_task_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   const TempDir temp_dir_;
   base::CallbackListSubscription subscription_;
@@ -2090,9 +2099,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kConditionalMediation);
 
-  // Wait for the request to time out.
-  // TODO: advance a clock.
-  model_observer()->WaitForLoadingEnclaveTimeout();
+  // Have the request time out.
+  timer_task_runner_->FastForwardBy(
+      GPMEnclaveController::kDownloadAccountStateTimeout);
+  ASSERT_TRUE(model_observer()->loading_enclave_timed_out());
 
   // Tap the passkey and expect an error.
   model_observer()->SetStepToObserve(
@@ -2126,7 +2136,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // Wait for the request to time out.
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMError);
-  // TODO: advance a clock.
+  timer_task_runner_->FastForwardBy(
+      GPMEnclaveController::kDownloadAccountStateTimeout);
   model_observer()->WaitForStep();
 }
 
@@ -2267,10 +2278,18 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Now set the security domain check to timeout. Chrome should operate
   // normally.
-
   SetVaultConnectionToTimeout();
 
+  // Wait for the transport availability to be enumerated. The UI won't be shown
+  // yet because the enclave is not ready.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMConnecting);
+  delegate_observer()->WaitForTransportAvailabilityEnumerated();
+
+  // Make the enclave ready by having the account state download time out.
+  timer_task_runner_->FastForwardBy(
+      GPMEnclaveController::kDownloadAccountStateTimeout);
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),

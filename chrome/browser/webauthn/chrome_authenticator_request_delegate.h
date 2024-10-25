@@ -33,6 +33,11 @@ class GPMEnclaveController;
 class PrefService;
 class Profile;
 
+namespace base {
+class SequencedTaskRunner;
+class TickClock;
+}  // namespace base
+
 namespace chromeos {
 class PasskeyDialogController;
 }
@@ -295,6 +300,12 @@ class ChromeAuthenticatorRequestDelegate
   void SetTrustedVaultConnectionForTesting(
       std::unique_ptr<trusted_vault::TrustedVaultConnection> connection);
 
+  // Overrides the tick clock and task runner used to track the vault connection
+  // timeout.
+  void SetMockTimeForTesting(
+      base::TickClock const* tick_clock,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            DaysSinceDate);
@@ -428,6 +439,8 @@ class ChromeAuthenticatorRequestDelegate
   // `enclave_controller_` when it is created.
   std::unique_ptr<trusted_vault::TrustedVaultConnection>
       pending_trusted_vault_connection_;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

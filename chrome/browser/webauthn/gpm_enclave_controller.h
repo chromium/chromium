@@ -13,8 +13,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -22,6 +24,11 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
+
+namespace base {
+class TickClock;
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace content {
 class RenderFrameHost;
@@ -77,6 +84,8 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
       const std::string& rp_id,
       device::FidoRequestType request_type,
       device::UserVerificationRequirement user_verification_requirement,
+      base::TickClock const* tick_clock,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       // `optional_connection` can be set to override the connection to the
       // security domain service for testing.
       std::unique_ptr<trusted_vault::TrustedVaultConnection>
@@ -319,6 +328,10 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // The gaia id of the user at the time the account state was downloaded.
   std::string user_gaia_id_;
+
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
+
+  scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };

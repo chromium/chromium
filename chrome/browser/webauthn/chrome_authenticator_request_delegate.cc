@@ -33,6 +33,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1115,7 +1116,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
           enclave_controller_ = std::make_unique<GPMEnclaveController>(
               GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
               user_verification_requirement,
-              std::move(pending_trusted_vault_connection_));
+              tick_clock_ ? tick_clock_ : base::DefaultTickClock::GetInstance(),
+              timer_task_runner_, std::move(pending_trusted_vault_connection_));
         }
       }
     } else {
@@ -1344,6 +1346,23 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+      (can_use_synced_phone_passkeys_ ||
+       (enclave_controller_ && enclave_controller_->is_active()))) {
+    GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
+  }
+  FilterRecognizedCredentials(&data);
+
+  if (g_observer) {
+    g_observer->OnTransportAvailabilityEnumerated(this, &data);
+  }
+
+  if (dialog_model_->step() !=
+      AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    dialog_controller_->OnTransportAvailabilityChanged(std::move(data));
+    return;
+  }
+
   const bool delay_ui_for_gpm =
       enclave_controller_ && !enclave_controller_->ready_for_ui();
   if (delay_ui_for_gpm) {
@@ -1476,6 +1495,14 @@ void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(
   pending_trusted_vault_connection_ = std::move(connection);
 }
 
+void ChromeAuthenticatorRequestDelegate::SetMockTimeForTesting(
+    base::TickClock const* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  CHECK(!enclave_controller_);
+  tick_clock_ = tick_clock;
+  timer_task_runner_ = std::move(task_runner);
+}
+
 content::RenderFrameHost*
 ChromeAuthenticatorRequestDelegate::GetRenderFrameHost() const {
   content::RenderFrameHost* ret =
@@ -1491,23 +1518,6 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
 
 void ChromeAuthenticatorRequestDelegate::ShowUI(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
-      (can_use_synced_phone_passkeys_ ||
-       (enclave_controller_ && enclave_controller_->is_active()))) {
-    GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
-  }
-  FilterRecognizedCredentials(&tai);
-
-  if (g_observer) {
-    g_observer->OnTransportAvailabilityEnumerated(this, &tai);
-  }
-
-  if (dialog_model_->step() !=
-      AuthenticatorRequestDialogModel::Step::kNotStarted) {
-    dialog_controller_->OnTransportAvailabilityChanged(std::move(tai));
-    return;
-  }
-
   // At the time of writing we don't support GPM passkeys on iOS, so we want to
   // avoid defaulting to GPM for macOS users who likely have an iPhone. But on
   // all other platforms, GPM should be the default.

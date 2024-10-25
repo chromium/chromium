@@ -32,8 +32,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/buildflag.h"
@@ -365,6 +367,8 @@ GPMEnclaveController::GPMEnclaveController(
     const std::string& rp_id,
     device::FidoRequestType request_type,
     device::UserVerificationRequirement user_verification_requirement,
+    base::TickClock const* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<trusted_vault::TrustedVaultConnection> optional_connection)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       rp_id_(rp_id),
@@ -373,7 +377,9 @@ GPMEnclaveController::GPMEnclaveController(
       enclave_manager_(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
       model_(model),
-      vault_connection_override_(std::move(optional_connection)) {
+      vault_connection_override_(std::move(optional_connection)),
+      tick_clock_(tick_clock),
+      timer_task_runner_(std::move(task_runner)) {
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
 
@@ -524,7 +530,10 @@ void GPMEnclaveController::DownloadAccountState() {
   FIDO_LOG(EVENT) << "Fetching account state";
   account_state_ = AccountState::kChecking;
 
-  account_state_timeout_ = std::make_unique<base::OneShotTimer>();
+  account_state_timeout_ = std::make_unique<base::OneShotTimer>(tick_clock_);
+  if (timer_task_runner_) {
+    account_state_timeout_->SetTaskRunner(timer_task_runner_);
+  }
   account_state_timeout_->Start(
       FROM_HERE, kDownloadAccountStateTimeout,
       base::BindOnce(&GPMEnclaveController::OnAccountStateTimeOut,
