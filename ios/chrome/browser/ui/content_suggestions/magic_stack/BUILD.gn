@@ -41,6 +41,7 @@ source_set("ranking_model") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:features",

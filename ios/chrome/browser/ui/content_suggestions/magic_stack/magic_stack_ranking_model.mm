@@ -24,11 +24,14 @@
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/pref_names.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
@@ -56,6 +59,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -83,10 +87,11 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                       ParcelTrackingMediatorDelegate,
                                       PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
-                                      TipsMagicStackMediatorDelegate,
+                                      SendTabPromoMediatorDelegate,
                                       SetUpListMediatorAudience,
                                       ShortcutsMediatorDelegate,
-                                      TabResumptionHelperDelegate>
+                                      TabResumptionHelperDelegate,
+                                      TipsMagicStackMediatorDelegate>
 // For testing-only
 @property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
 @property(nonatomic, assign) BOOL hasReceivedEphemericalCardResponse;
@@ -115,6 +120,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  SendTabPromoMediator* _sendTabPromoMediator;
   TipsMagicStackMediator* _tipsMediator;
   raw_ptr<TipsManagerIOS> _tipsManager;
   base::TimeTicks ranking_fetch_start_time_;
@@ -178,7 +184,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         _tipsMediator = static_cast<TipsMagicStackMediator*>(mediator);
         _tipsMediator.delegate = self;
       } else if ([mediator isKindOfClass:[SendTabPromoMediator class]]) {
-        // TODO(crbug.com/343495516): Handle case.
+        _sendTabPromoMediator = static_cast<SendTabPromoMediator*>(mediator);
+        _sendTabPromoMediator.delegate = self;
       } else {
         // Known module mediators need to be handled.
         NOTREACHED_IN_MIGRATION();
@@ -196,6 +203,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   _priceTrackingPromoMediator = nil;
   _shortcutsMediator = nil;
   _safetyCheckMediator = nil;
+  _sendTabPromoMediator = nil;
   _tipsMediator = nil;
   _tipsManager = nil;
 }
@@ -249,6 +257,18 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_safetyCheckMediator.safetyCheckState];
+}
+
+#pragma mark - SendTabPromoMediatorDelegate
+
+- (void)sentTabReceived {
+  MagicStackModule* item = _sendTabPromoMediator.sendTabPromoItemToShow;
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
 #pragma mark - TipsMagicStackMediatorDelegate
@@ -399,6 +419,17 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
             _shoppingService->IsShoppingListEligible()));
   }
 
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kSendTabInfobarReceivedInLastSession,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            !_prefService
+                 ->GetString(send_tab_to_self::prefs::
+                                 kIOSSendTabToSelfLastReceivedTabURLPref)
+                 .empty()));
+  }
+
   if (IsTipsMagicStackEnabled() && _tipsManager) {
     // Profile signals
     inputContext->metadata_args.emplace(
@@ -525,6 +556,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
         card = _tipsMediator.state;
 
+        break;
+      }
+    } else if (label == segmentation_platform::kSendTabNotificationPromo) {
+      if (send_tab_to_self::
+              IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+        _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
+        card = _sendTabPromoMediator.sendTabPromoItemToShow;
         break;
       }
     }
@@ -695,6 +733,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
             _priceTrackingPromoMediator.priceTrackingPromoItemToShow) {
           [magicStackOrder addObject:_priceTrackingPromoMediator
                                          .priceTrackingPromoItemToShow];
+        }
+        break;
+      case ContentSuggestionsModuleType::kSendTabPromo:
+        if (send_tab_to_self::
+                IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+          [magicStackOrder
+              addObject:_sendTabPromoMediator.sendTabPromoItemToShow];
         }
         break;
       case ContentSuggestionsModuleType::kTips:

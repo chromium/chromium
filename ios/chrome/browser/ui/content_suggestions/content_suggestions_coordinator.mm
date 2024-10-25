@@ -757,6 +757,10 @@ using segmentation_platform::TipIdentifier;
       registry->NotifyCardShown(
           segmentation_platform::kPriceTrackingNotificationPromo);
       break;
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      registry->NotifyCardShown(
+          segmentation_platform::kSendTabNotificationPromo);
+      break;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips: {
       CHECK(_tipsMediator);

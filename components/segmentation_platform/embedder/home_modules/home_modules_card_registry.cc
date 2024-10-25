@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #if BUILDFLAG(IS_IOS)
@@ -45,6 +46,9 @@ const char kSavePasswordsEphemeralModuleImpressionCounterPref[] =
 // Impression counter for the Lens ephemeral module.
 const char kLensEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.lens_ephemeral_module_counter";
+// Impression counter for the Send Tab ephemeral module.
+const char kSendTabPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.send_tab_promo_counter";
 
 // Creates a card corresponding to the given ephemeral `tip` module and adds
 // it to the `cards` list if the module is enabled.
@@ -125,6 +129,7 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kPriceTrackingPromoImpressionCounterPref, 0);
+  registry->RegisterIntegerPref(kSendTabPromoImpressionCounterPref, 0);
   registry->RegisterIntegerPref(
       kAddressBarPositionEphemeralModuleImpressionCounterPref, 0);
   registry->RegisterIntegerPref(
@@ -234,6 +239,11 @@ void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
   } else if (strcmp(card_name, kLensEphemeralModuleTranslateVariation) == 0) {
     profile_prefs_->SetBoolean(
         kLensEphemeralModuleTranslateVariationInteractedPref, true);
+  } else if (strcmp(card_name, kSendTabNotificationPromo) == 0) {
+    int freshness_impression_count =
+        profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
+    profile_prefs_->SetInteger(kSendTabPromoImpressionCounterPref,
+                               freshness_impression_count + 1);
   }
 #endif
 }
@@ -242,6 +252,8 @@ void HomeModulesCardRegistry::CreateAllCards() {
 #if BUILDFLAG(IS_IOS)
   int price_tracking_promo_count =
       profile_prefs_->GetInteger(kPriceTrackingPromoImpressionCounterPref);
+  int send_tab_promo_count =
+      profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
   if (PriceTrackingNotificationPromo::IsEnabled(price_tracking_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<PriceTrackingNotificationPromo>(
@@ -260,6 +272,10 @@ void HomeModulesCardRegistry::CreateAllCards() {
 
       AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
     }
+  }
+  if (SendTabNotificationPromo::IsEnabled(send_tab_promo_count)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<SendTabNotificationPromo>(send_tab_promo_count));
   }
 #endif
   InitializeAfterAddingCards();

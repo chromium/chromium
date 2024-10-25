@@ -71,6 +71,7 @@
 *SegmentationResultPrefsTest.*
 *SegmentationUkmHelperTest.*
 *SelectionUtilsTest.*
+*SendTabNotificationPromoTest.*
 *ServiceProxyImplTest.*
 *ShoppingUserModelTest.*
 *SignalDatabaseImplTest.*

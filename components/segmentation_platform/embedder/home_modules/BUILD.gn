@@ -16,6 +16,8 @@ static_library("home_modules") {
     "home_modules_card_registry.h",
     "price_tracking_notification_promo.cc",
     "price_tracking_notification_promo.h",
+    "send_tab_notification_promo.cc",
+    "send_tab_notification_promo.h",
   ]
 
   if (is_ios) {
@@ -41,6 +43,7 @@ static_library("home_modules") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/internal",
+    "//components/send_tab_to_self",
   ]
 }
 
@@ -61,6 +64,7 @@ source_set("unit_tests") {
     "ephemeral_home_module_backend_unittest.cc",
     "home_modules_card_registry_unittest.cc",
     "price_tracking_notification_promo_unittest.cc",
+    "send_tab_notification_promo_unittest.cc",
   ]
 
   if (is_ios) {
@@ -87,6 +91,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -34,6 +34,8 @@ inline constexpr char kDidNotSeeAddressBarPositionChoiceScreen[] =
 inline constexpr char kNoSavedPasswords[] = "no_saved_passwords";
 inline constexpr char kDidNotUsePasswordAutofill[] =
     "did_not_use_password_autofill";
+inline constexpr char kSendTabInfobarReceivedInLastSession[] =
+    "send_tab_infobar_received_in_last_session";
 
 // Placeholder output label for segmentation model executor.
 inline constexpr char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
@@ -50,6 +52,7 @@ inline constexpr char kEnhancedSafeBrowsingEphemeralModule[] =
 inline constexpr char kSavePasswordsEphemeralModule[] =
     "save_passwords_ephemeral_module";
 inline constexpr char kLensEphemeralModule[] = "lens_ephemeral_module";
+inline constexpr char kSendTabNotificationPromo[] = "send_tab_promo";
 
 // Variation labels for emphemeral IOS modules.
 // Lens variation labels

@@ -174,6 +174,7 @@ const char kEphemeralCardRankerForceShowCardParam[] =
 const char kEphemeralCardRankerForceHideCardParam[] =
     "EphemeralCardRankerForceHideCardParam";
 const char kPriceTrackingPromoForceOverride[] = "price-tracking-promo";
+const char kSendTabPromoForceOverride[] = "send-tab-promo";
 
 // Feature flag for enabling the Emphemeral Card ranker.
 BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
