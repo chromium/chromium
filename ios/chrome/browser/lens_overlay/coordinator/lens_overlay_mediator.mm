@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 
 #import <memory>
-#import <stack>
 
 #import "base/base64url.h"
 #import "base/metrics/user_metrics.h"
@@ -17,6 +16,8 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -27,26 +28,12 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
-#import "ios/web/public/navigation/navigation_context.h"
-#import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/web_state.h"
-#import "ios/web/public/web_state_observer_bridge.h"
+#import "ios/web/public/navigation/referrer.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
-/// History Element in the `historyStack` used for navigating to previous
-/// selection/URLs.
-@interface HistoryElement : NSObject
-/// URL of the navigation.
-@property(nonatomic, assign) GURL URL;
-/// Lens result object of the navigation.
-@property(nonatomic, strong) id<ChromeLensOverlayResult> lensResult;
-@end
-
-@implementation HistoryElement
-@end
-
-@interface LensOverlayMediator () <CRWWebStateObserver, SearchEngineObserving>
+@interface LensOverlayMediator () <LensOverlayNavigationMutator,
+                                   SearchEngineObserving>
 
 /// Current lens result.
 @property(nonatomic, strong, readwrite) id<ChromeLensOverlayResult>
@@ -59,36 +46,19 @@
 @implementation LensOverlayMediator {
   /// Whether the browser is off the record.
   BOOL _isIncognito;
-  /// Bridges C++ WebStateObserver methods to this mediator.
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
-
-  /// History stack for back navigation.
-  NSMutableArray<HistoryElement*>* _historyStack;
-  /// Whether the next navigation is a reload.
-  BOOL _isReloading;
+  /// Orchestrates the navigation in the bottom sheet of the lens result page.
+  std::unique_ptr<LensOverlayNavigationManager> _navigationManager;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     _isIncognito = isIncognito;
-    _webStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-    _historyStack = [[NSMutableArray alloc] init];
+    _navigationManager = std::make_unique<LensOverlayNavigationManager>(self);
   }
   return self;
-}
-
-- (void)setWebState:(web::WebState*)webState {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-  }
-  _webState = webState;
-  if (_webState) {
-    _webState->AddObserver(_webStateObserverBridge.get());
-  }
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
@@ -103,15 +73,9 @@
 }
 
 - (void)disconnect {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webState = nullptr;
-  }
   _searchEngineObserver.reset();
-  _webStateObserverBridge.reset();
-  [_historyStack removeAllObjects];
+  _navigationManager.reset();
   _currentLensResult = nil;
-  _isReloading = NO;
 }
 
 #pragma mark - SearchEngineObserving
@@ -127,25 +91,6 @@
 }
 
 #pragma mark - Omnibox
-
-#pragma mark CRWWebStateObserver
-
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigationContext {
-  if (navigationContext && !navigationContext->IsSameDocument()) {
-    const GURL& URL = navigationContext->GetUrl();
-    if ([self shouldAddURLToHistory:URL]) {
-      [self addURLToHistory:URL];
-    }
-  }
-}
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webState = nullptr;
-  }
-}
 
 #pragma mark LensOmniboxClientDelegate
 
@@ -184,22 +129,9 @@
 }
 
 - (void)goBack {
-  if (_historyStack.count < 2) {
-    [self updateBackButton];
-    return;
-  }
-
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Back"));
-
-  // Remove the current navigation.
-  [_historyStack removeLastObject];
-
-  // If the LensResult is different, reload the result.
-  HistoryElement* lastEntry = _historyStack.lastObject;
-  if (lastEntry.lensResult != _currentLensResult) {
-    _isReloading = YES;
-    [self updateOmniboxText:lastEntry.lensResult.queryText];
-    [self.lensHandler reloadResult:lastEntry.lensResult];
+  if (_navigationManager) {
+    _navigationManager->GoBack();
   }
 }
 
@@ -229,14 +161,9 @@
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     didGenerateResult:(id<ChromeLensOverlayResult>)result {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.NewResult"));
-  _currentLensResult = result;
-  // When reloading, replace the last object.
-  if (_isReloading) {
-    [_historyStack removeLastObject];
-    _isReloading = NO;
+  if (_navigationManager) {
+    _navigationManager->LensOverlayDidGenerateResult(result);
   }
-  [self.resultConsumer loadResultsURL:result.searchResultURL];
-  [self updateForLensResult:result];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
@@ -262,6 +189,26 @@
   [self.delegate lensOverlayMediatorDidOpenOverlayMenu:self];
 }
 
+#pragma mark - LensOverlayNavigationMutator
+
+- (void)loadLensResult:(id<ChromeLensOverlayResult>)result {
+  _currentLensResult = result;
+  // Load the URL, it will start the result UI.
+  [self.resultConsumer loadResultsURL:result.searchResultURL];
+  [self updateForLensResult:result];
+}
+
+- (void)reloadLensResult:(id<ChromeLensOverlayResult>)result {
+  // Pre update the UI.
+  [self updateForLensResult:result];
+  // Reload the result.
+  [self.lensHandler reloadResult:result];
+}
+
+- (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack {
+  [self.toolbarConsumer setCanGoBack:canGoBack];
+}
+
 #pragma mark - LensResultPageMediatorDelegate
 
 - (void)lensResultPageWebStateDestroyed {
@@ -271,7 +218,9 @@
 }
 
 - (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
-  self.webState = webState;
+  if (_navigationManager) {
+    _navigationManager->SetWebState(webState);
+  }
 }
 
 - (void)lensResultPageMediator:(LensResultPageMediator*)mediator
@@ -329,35 +278,6 @@
     response.set_encoded_image_signals(encodedString);
     self.omniboxClient->SetLensOverlaySuggestInputs(response);
   }
-}
-
-/// Whether the navigation to `URL` with the `_currentLensResult` should be
-/// added to the history stack.
-- (BOOL)shouldAddURLToHistory:(const GURL&)URL {
-  if (!_historyStack.count) {
-    return YES;
-  }
-
-  // TODO(crbug.com/370708965): Add sub-navigation support for the latest
-  // result. When supporting sub-navigation. Don't add the
-  // URL to the history stack if the only change is dark/light mode.
-
-  // Only add lens result change to the history.
-  return _historyStack.lastObject.lensResult != _currentLensResult;
-}
-
-/// Adds the URL navigation to the `historyStack`.
-- (void)addURLToHistory:(const GURL&)URL {
-  HistoryElement* element = [[HistoryElement alloc] init];
-  element.URL = URL;
-  element.lensResult = _currentLensResult;
-  [_historyStack addObject:element];
-  [self updateBackButton];
-}
-
-/// Updates the back button availability.
-- (void)updateBackButton {
-  [self.toolbarConsumer setCanGoBack:_historyStack.count > 1];
 }
 
 /// Records lens overlay opening a new tab.

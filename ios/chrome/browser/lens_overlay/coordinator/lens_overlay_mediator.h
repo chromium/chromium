@@ -23,9 +23,6 @@ class LensOmniboxClient;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
 class TemplateURLService;
-namespace web {
-class WebState;
-}  // namespace web
 
 /// Main mediator for Lens Overlay.
 /// Manages data flow between Selection, Omnibox and Results.
@@ -58,9 +55,6 @@ class WebState;
 /// Presentation delegate for requesting bottom sheet resizing.
 @property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
     presentationDelegate;
-
-/// Active`webState` observed by this mediator.
-@property(nonatomic, assign) web::WebState* webState;
 
 /// TemplateURLService to observe default search engine change.
 @property(nonatomic, assign) TemplateURLService* templateURLService;

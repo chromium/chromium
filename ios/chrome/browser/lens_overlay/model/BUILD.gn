@@ -4,6 +4,9 @@
 
 source_set("model") {
   sources = [
+    "lens_overlay_navigation_manager.h",
+    "lens_overlay_navigation_manager.mm",
+    "lens_overlay_navigation_mutator.h",
     "lens_overlay_pan_tracker.h",
     "lens_overlay_pan_tracker.mm",
     "lens_overlay_snapshot_controller.h",
@@ -25,6 +28,7 @@ source_set("model") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/colors",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/web/public",
     "//ui/base",
   ]
@@ -66,12 +70,16 @@ source_set("entrypoint") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "lens_overlay_tab_helper_unittest.mm" ]
+  sources = [
+    "lens_overlay_navigation_manager_unittest.mm",
+    "lens_overlay_tab_helper_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base/test:test_support",
     "//components/lens:enterprise_policy",
     "//components/prefs",
+    "//ios/chrome/browser/lens_overlay/coordinator:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",

@@ -112,10 +112,10 @@ class LensOverlayMediatorTest : public PlatformTest {
     mediator_.resultConsumer = fake_result_consumer_;
     mediator_.omniboxCoordinator = mock_omnibox_coordinator_;
     mediator_.toolbarConsumer = mock_toolbar_consumer_;
-    mediator_.webState = fake_web_state_.get();
     mediator_.lensHandler = fake_chrome_lens_overlay_;
     mediator_.commandsHandler = mock_lens_commands_;
     mediator_.omniboxClient = lens_omnibox_client_.get();
+    [mediator_ lensResultPageDidChangeActiveWebState:fake_web_state_.get()];
   }
 
   ~LensOverlayMediatorTest() override {
@@ -219,13 +219,13 @@ class LensOverlayMediatorTest : public PlatformTest {
   void GoBack(const GURL& expectedURL,
               BOOL expectCanGoBack,
               id<ChromeLensOverlayResult> expectedResultReload) {
-    // Expect omnibox text update when starting to go back.
+    // Expect UI update when starting to go back and on navigation start.
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
-    // Expect omnibox text update at page load.
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
-
+    OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
     if (expectedResultReload) {
+      OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
       OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
     }
 
