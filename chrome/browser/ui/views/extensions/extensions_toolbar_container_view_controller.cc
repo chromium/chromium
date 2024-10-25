@@ -84,6 +84,11 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
 void ExtensionsToolbarContainerViewController::UpdateRequestAccessButton() {
   CHECK(extensions_container_);
 
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
   auto* web_contents = extensions_container_->GetCurrentWebContents();
   extensions::PermissionsManager::UserSiteSetting site_setting =
       extensions::PermissionsManager::Get(browser_->profile())
