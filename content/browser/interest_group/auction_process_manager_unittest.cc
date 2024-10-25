@@ -496,18 +496,32 @@ class AuctionProcessManagerTest
   raw_ptr<AuctionProcessManager> auction_process_manager_;
 };
 
-// Run most tests in both kDedicated and kInRendererSitePerProcess modes, as
-// their behavior should be very similar in most cases.
+// Run most tests in both kDedicated and kInRendererSitePerProcess ProcessModes,
+// as their behavior should be very similar in most cases.
+using SitePerProcessAuctionProcessManagerTest = AuctionProcessManagerTest;
 INSTANTIATE_TEST_SUITE_P(
     All,
-    AuctionProcessManagerTest,
+    SitePerProcessAuctionProcessManagerTest,
     testing::Combine(
         testing::Values(AuctionProcessManager::WorkletType::kSeller,
                         AuctionProcessManager::WorkletType::kBidder),
         testing::Values(ProcessMode::kDedicated,
                         ProcessMode::kInRendererSitePerProcess)));
 
-TEST_P(AuctionProcessManagerTest, Basic) {
+// Tests for the kInRendererSharedProcess ProcessMode only. These are different
+// enough for the SameSite test, that no tests are currently run in all three
+// modes.
+using SharedRendererInRendererAuctionProcessManagerTest =
+    AuctionProcessManagerTest;
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedRendererInRendererAuctionProcessManagerTest,
+    testing::Combine(
+        testing::Values(AuctionProcessManager::WorkletType::kSeller,
+                        AuctionProcessManager::WorkletType::kBidder),
+        testing::Values(ProcessMode::kInRendererSharedProcess)));
+
+TEST_P(SitePerProcessAuctionProcessManagerTest, Basic) {
   auto worklet = GetServiceExpectSuccess(kOriginA);
   EXPECT_TRUE(worklet->GetService());
   EXPECT_EQ(1u, GetActiveProcessesOfWorkletType());
@@ -517,7 +531,8 @@ TEST_P(AuctionProcessManagerTest, Basic) {
 
 // Make sure requests for different origins don't share processes, nor do
 // sellers and bidders.
-TEST_P(AuctionProcessManagerTest, MultipleRequestsForDifferentProcesses) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       MultipleRequestsForDifferentProcesses) {
   auto worlket_a = GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA);
   auto worklet_b = GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB);
   auto worklet_of_other_type_a =
@@ -539,7 +554,8 @@ TEST_P(AuctionProcessManagerTest, MultipleRequestsForDifferentProcesses) {
             worklet_of_other_type_b->GetService());
 }
 
-TEST_P(AuctionProcessManagerTest, MultipleRequestsForSameProcess) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       MultipleRequestsForSameProcess) {
   // Request 3 processes of the same type for the same origin. All requests
   // should get the same process.
   auto process_a1 = GetServiceExpectSuccess(kOriginA);
@@ -563,7 +579,7 @@ TEST_P(AuctionProcessManagerTest, MultipleRequestsForSameProcess) {
 // Test requesting and releasing worklet processes, exceeding the limit. This
 // test does not cover the case of multiple requests sharing the same process,
 // which is covered by the next test.
-TEST_P(AuctionProcessManagerTest, LimitExceeded) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, LimitExceeded) {
   // The list of operations below assumes at least 3 processes are allowed at
   // once.
   CHECK_GE(GetMaxProcesses(), 3u);
@@ -774,7 +790,7 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
 // Check the process sharing logic - specifically, that requests share processes
 // when origins match, and that handles that share a process only count once
 // towrads the process limit the process limit.
-TEST_P(AuctionProcessManagerTest, ProcessSharing) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, ProcessSharing) {
   // This test assumes GetMaxProcesses() is greater than 1.
   DCHECK_GT(GetMaxProcesses(), 1u);
 
@@ -900,7 +916,8 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
   EXPECT_EQ(GetMaxProcesses(), GetActiveProcessesOfWorkletType());
 }
 
-TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       DestroyHandlesWithPendingRequests) {
   // Make GetMaxProcesses() requests for worklets with different origins.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> processes;
   for (size_t i = 0; i < GetMaxProcesses(); ++i) {
@@ -951,7 +968,7 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
 }
 
 // Check that process crash is handled properly, by creating a new process.
-TEST_P(AuctionProcessManagerTest, ProcessCrash) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, ProcessCrash) {
   auto process = GetServiceExpectSuccess(kOriginA);
   auction_worklet::mojom::AuctionWorkletService* service =
       process->GetService();
@@ -972,7 +989,7 @@ TEST_P(AuctionProcessManagerTest, ProcessCrash) {
   EXPECT_EQ(1u, GetActiveProcessesOfWorkletType());
 }
 
-TEST_P(AuctionProcessManagerTest, DisconnectBeforeDelete) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, DisconnectBeforeDelete) {
   // Exercise the codepath where the mojo pipe to a service is broken when
   // a handle to its process is still alive, to make sure this is handled
   // correctly (rather than hitting a DCHECK on incorrect refcounting).
@@ -984,7 +1001,7 @@ TEST_P(AuctionProcessManagerTest, DisconnectBeforeDelete) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        DoesNotStartAnticipatoryProcessIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -993,7 +1010,7 @@ TEST_P(AuctionProcessManagerTest,
   CheckOnlyIdleProcessesWithCount(0);
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        ProcessLimitIsRespected_AnticipatoryProcessesOnly) {
   // Create the maximum possible # of anticipatory processes.
   for (size_t i = 0; i < GetMaxProcesses(); ++i) {
@@ -1010,7 +1027,7 @@ TEST_P(AuctionProcessManagerTest,
 // Make sure the process limit is respected when we have a combination of
 // anticipatory and active processes. Make sure we can make processes of
 // the other type (active and idle) even if we've hit the limit of one type.
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        ProcessLimitIsRespected_ActiveAndAnticipatoryProcesses) {
   // Alternate creating anticipatory and active processes. Each active processes
   // will consume 1 anticipatory process. After the for loop, we end up with 1
@@ -1108,7 +1125,7 @@ TEST_P(AuctionProcessManagerTest,
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        DoNotStartMultipleProcessesSameOriginAndType) {
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
@@ -1116,7 +1133,7 @@ TEST_P(AuctionProcessManagerTest,
   CheckOnlyIdleProcessesWithCount(1);
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        CanStartProcessesWithSameOriginIfOneIsSellerAndOneIsBuyer) {
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
@@ -1124,7 +1141,7 @@ TEST_P(AuctionProcessManagerTest,
   CheckOnlyIdleProcessesWithCount(2);
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        DoNotStartProcessWithSameOriginAndTypeAsExistingProcess) {
   AuctionProcessManager::ProcessHandle process_handle;
   RequestWorkletService(
@@ -1138,7 +1155,7 @@ TEST_P(AuctionProcessManagerTest,
 
 // This test covers the different behavior when there's an unused anticipatory
 // process created with varying parameters.
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        TryToUseAnticipatoryProcessOfSameOrDifferentOriginAndType) {
   for (const auto& origin_to_request : {kOriginA, kOriginB}) {
     SCOPED_TRACE(origin_to_request);
@@ -1193,7 +1210,7 @@ TEST_P(AuctionProcessManagerTest,
   }
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        ReassignsOrDestroysIdleProcessOfSameTypeOnlyAfterReachingLimit) {
   // Make an anticipatory process of the other type. This will not be
   // convertible to a process of our type after we hit the limit.
@@ -1237,7 +1254,7 @@ TEST_P(AuctionProcessManagerTest,
   EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        ProcessesCanBeAssignedInDifferentOrderFromHowTheyWereMade) {
   std::vector<std::tuple<url::Origin, AuctionProcessManager::WorkletType>>
       origins_and_types;
@@ -1281,7 +1298,7 @@ TEST_P(AuctionProcessManagerTest,
 // Make sure we're not creating duplicate processes for
 // an origin, even if we've assigned one of our anticipatory
 // processes to a worklet.
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        DoesNotRecreateAnticipatoryProcessForOriginAfterAssigned) {
   url::Origin origins[] = {kOriginA, kOriginB, kOriginC};
   for (const url::Origin& origin_to_request_service : origins) {
@@ -1314,7 +1331,8 @@ TEST_P(AuctionProcessManagerTest,
   }
 }
 
-TEST_P(AuctionProcessManagerTest, RemovesProcessAfterExpirationTime) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       RemovesProcessAfterExpirationTime) {
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
   task_environment_.FastForwardBy(
@@ -1325,7 +1343,8 @@ TEST_P(AuctionProcessManagerTest, RemovesProcessAfterExpirationTime) {
   CheckOnlyIdleProcessesWithCount(0);
 }
 
-TEST_P(AuctionProcessManagerTest, CorrectProcessGetsDeletedAfterExpiration) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       CorrectProcessGetsDeletedAfterExpiration) {
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -1352,7 +1371,7 @@ TEST_P(AuctionProcessManagerTest, CorrectProcessGetsDeletedAfterExpiration) {
   CheckOnlyIdleProcessesWithCount(2);
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        DoesNotRemoveActiveProcessAfterExpirationTime) {
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
@@ -1369,7 +1388,8 @@ TEST_P(AuctionProcessManagerTest,
   EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
 }
 
-TEST_P(AuctionProcessManagerTest, PrioritizesReadyIdleUnboundProcess) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       PrioritizesReadyIdleUnboundProcess) {
   // Unbound processes are only created in the dedicated process case.
   if (GetProcessMode() != ProcessMode::kDedicated) {
     return;
@@ -1400,7 +1420,8 @@ TEST_P(AuctionProcessManagerTest, PrioritizesReadyIdleUnboundProcess) {
   EXPECT_EQ(ProcessCreationOrder(handle2), 0u);
 }
 
-TEST_P(AuctionProcessManagerTest, PrioritizesEarliestReadyUnboundIdleProcess) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       PrioritizesEarliestReadyUnboundIdleProcess) {
   // Unbound processes are only created in the dedicated process case.
   if (GetProcessMode() != ProcessMode::kDedicated) {
     return;
@@ -1430,7 +1451,7 @@ TEST_P(AuctionProcessManagerTest, PrioritizesEarliestReadyUnboundIdleProcess) {
   }
 }
 
-TEST_P(AuctionProcessManagerTest,
+TEST_P(SitePerProcessAuctionProcessManagerTest,
        PrioritizesReadyUnboundIdleProcessOfSameTypeIfOverLimit) {
   // Unbound processes are only created in the dedicated process case.
   if (GetProcessMode() != ProcessMode::kDedicated) {
@@ -1482,33 +1503,9 @@ TEST_P(AuctionProcessManagerTest,
   EXPECT_EQ(ProcessCreationOrder(handle3), 0u);
 }
 
-// Tests for the kInRendererSharedProcess ProcessMode only. These are different
-// enough for the the other two modes test, that no tests are currently run in
-// all three modes.
-class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
-    : public AuctionProcessManagerTest {
- public:
-  InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFledgeStartAnticipatoryProcesses,
-        {{"AnticipatoryProcessHoldTime", "3s"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
-    testing::Combine(
-        testing::Values(AuctionProcessManager::WorkletType::kSeller,
-                        AuctionProcessManager::WorkletType::kBidder),
-        testing::Values(ProcessMode::kInRendererSharedProcess)));
-
 // Exercise the codepath where a RenderProcessHostDestroyed is received, to
 // make sure it doesn't crash.
-TEST_P(AuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   // The process crashing case in the dedicated process world is covered by the
   // ProcessCrash test, rather than this one.
   if (GetProcessMode() == ProcessMode::kDedicated) {
@@ -1527,7 +1524,7 @@ TEST_P(AuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(AuctionProcessManagerTest, PidLookup) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, PidLookup) {
   auto handle = GetServiceExpectSuccess(kOriginA);
 
   base::ProcessId expected_pid = base::Process::Current().Pid();
@@ -1583,7 +1580,8 @@ TEST_P(AuctionProcessManagerTest, PidLookup) {
   EXPECT_EQ(expected_pid, pid3);
 }
 
-TEST_P(AuctionProcessManagerTest, PidLookupRendererProcessAlreadyRunning) {
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       PidLookupRendererProcessAlreadyRunning) {
   // There's no analog to a renderer process already existing in the dedicated
   // process world.
   if (GetProcessMode() == ProcessMode::kDedicated) {
@@ -1620,7 +1618,7 @@ TEST_P(AuctionProcessManagerTest, PidLookupRendererProcessAlreadyRunning) {
   EXPECT_EQ(expected_pid, pid1.value());
 }
 
-TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(SharedRendererInRendererAuctionProcessManagerTest,
        MultipleSiteInstances) {
   base::HistogramTester histogram_tester;
 
@@ -1684,14 +1682,14 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
 
 // Test that anticipatory processes are not created for origins that can use the
 // shared renderer process.
-TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(SharedRendererInRendererAuctionProcessManagerTest,
        MaybeStartAnticipatoryProcess_DoesNotStartIfSharedProcessPossible) {
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(0);
 }
 
 // Test that anticipatory processes can be created for isolated origins.
-TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+TEST_P(SharedRendererInRendererAuctionProcessManagerTest,
        MaybeStartAnticipatoryProcess_StartsProcessForIsolatedOrigin) {
   MaybeStartAnticipatoryProcess(kIsolatedOrigin);
   CheckOnlyIdleProcessesWithCount(1);
@@ -1713,7 +1711,7 @@ TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
 
 // Tests the site-per-process sharing model, focusing on the multiple
 // SiteInstances case, which should not affect process sharing.
-TEST_P(AuctionProcessManagerTest, MultipleSiteInstances) {
+TEST_P(SitePerProcessAuctionProcessManagerTest, MultipleSiteInstances) {
   base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
@@ -1786,8 +1784,7 @@ TEST_P(AuctionProcessManagerTest, MultipleSiteInstances) {
       RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 3);
 }
 
-TEST_P(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
-       PolicyChange) {
+TEST_P(SharedRendererInRendererAuctionProcessManagerTest, PolicyChange) {
   // Launch site in default instance.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
