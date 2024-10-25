@@ -8,7 +8,7 @@ import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, View
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {BeforeUnloadProxy} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {BeforeUnloadProxy, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -452,4 +452,33 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
   });
   return mockPlugin;
 }
+
+/**
+ * Helper to get a non-empty list of brush size buttons.
+ * @param selector The ink size selector element.
+ * @returns A list of exactly 5 size buttons.
+ */
+export function getSizeButtons(selector: InkSizeSelectorElement):
+    NodeListOf<HTMLElement> {
+  const sizeButtons =
+      selector.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
+  assert(sizeButtons);
+  assert(sizeButtons.length === 5);
+  return sizeButtons;
+}
+
+/**
+ * Tests that the ink size options have correct values for the selected
+ * attribute. The size button with index `buttonIndex` should be selected.
+ * @sizeButtons A list of ink size buttons.
+ * @param buttonIndex The expected selected size button.
+ */
+export function assertSelectedSize(
+    sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+  for (let i = 0; i < sizeButtons.length; ++i) {
+    const buttonSelected = sizeButtons[i].dataset['selected'];
+    chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
+  }
+}
+
 // </if>

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {AnnotationBrush, InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, InkBrushSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {getRequiredElement, setupTestMockPluginForInk} from './test_util.js';
+import {assertSelectedSize, getRequiredElement, getSizeButtons, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
@@ -56,19 +56,6 @@ function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
 }
 
 /**
- * Tests that the size options have corrected values for the selected attribute.
- * The size button with index `buttonIndex` should be selected.
- * @param buttonIndex The expected selected size button.
- */
-function assertSelectedSize(buttonIndex: number) {
-  const sizeButtons = getSizeButtons();
-  for (let i = 0; i < sizeButtons.length; ++i) {
-    const buttonSelected = sizeButtons[i].dataset['selected'];
-    chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
-  }
-}
-
-/**
  * Tests that the color options have corrected values for the selected
  * attribute. The color button with index `buttonIndex` should be selected.
  * @param buttonIndex The expected selected color button.
@@ -89,18 +76,9 @@ function getBrushSelector(): InkBrushSelectorElement {
       sidePanel, 'ink-brush-selector');
 }
 
-/**
- * Helper to get a non-empty list of brush size buttons.
- * @returns A list of exactly 5 size buttons.
- */
-function getSizeButtons(): NodeListOf<HTMLElement> {
-  const sizeSelector =
-      getRequiredElement<HTMLElement>(sidePanel, 'ink-size-selector');
-  const sizeButtons =
-      sizeSelector.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
-  assert(sizeButtons);
-  assert(sizeButtons.length === 5);
-  return sizeButtons;
+function getSizeSelector(): InkSizeSelectorElement {
+  return getRequiredElement<InkSizeSelectorElement>(
+      sidePanel, 'ink-size-selector');
 }
 
 /**
@@ -113,22 +91,6 @@ function getColorButtons(): NodeListOf<HTMLElement> {
   const colorButtons = colorSelector.shadowRoot!.querySelectorAll('input');
   assert(colorButtons);
   return colorButtons;
-}
-
-/**
- * Tests that the selected size index is `expectedButtonIndex` after
- * `targetElement` receives a keyboard event with key `key`.
- * @param targetElement The target element to receive the keyboard event.
- * @param key The key being pressed.
- * @param expectedButtonIndex The expected size button index after the keyboard
- *     event.
- */
-async function testSizeKeyboardEvent(
-    targetElement: HTMLElement, key: string, expectedButtonIndex: number) {
-  keyDownOn(targetElement, 0, [], key);
-  await microtasksFinished();
-
-  assertSelectedSize(/*buttonIndex=*/ expectedButtonIndex);
 }
 
 /**
@@ -154,10 +116,10 @@ chrome.test.runTests([
     // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
     // there's no need to set the brush in the backend immediately after getting
     // the default brush.
-    assertSelectedSize(/*buttonIndex=*/ 2);
+    const sizeButtons = getSizeButtons(getSizeSelector());
+    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
 
     // Change the pen size.
-    const sizeButtons = getSizeButtons();
     sizeButtons[0].click();
     await microtasksFinished();
 
@@ -166,7 +128,6 @@ chrome.test.runTests([
       color: {r: 0, g: 0, b: 0},
       size: 1,
     });
-    assertSelectedSize(/*buttonIndex=*/ 0);
 
     // Change the pen color.
     // Pens should have 20 color options.
@@ -196,10 +157,11 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 3,
     });
-    assertSelectedSize(/*buttonIndex=*/ 2);
+
+    const sizeButtons = getSizeButtons(getSizeSelector());
+    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
 
     // Change the eraser size.
-    const sizeButtons = getSizeButtons();
     sizeButtons[1].click();
     await microtasksFinished();
 
@@ -207,7 +169,6 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
-    assertSelectedSize(/*buttonIndex=*/ 1);
 
     // There shouldn't be color options.
     chrome.test.assertTrue(!sidePanel.shadowRoot!.querySelector<HTMLElement>(
@@ -229,10 +190,11 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 8,
     });
-    assertSelectedSize(/*buttonIndex=*/ 2);
+
+    const sizeButtons = getSizeButtons(getSizeSelector());
+    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
 
     // Change the highlighter size.
-    const sizeButtons = getSizeButtons();
     sizeButtons[4].click();
     await microtasksFinished();
 
@@ -241,7 +203,6 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 16,
     });
-    assertSelectedSize(/*buttonIndex=*/ 4);
 
     // Change the highlighter color.
     // Highlighters should have 10 color options.
@@ -257,75 +218,6 @@ chrome.test.runTests([
       color: {r: 52, g: 168, b: 83},
       size: 16,
     });
-    chrome.test.succeed();
-  },
-
-  // Test that arrow keys does nothing to the size when the size buttons are not
-  // focused.
-  async function testArrowKeysSizeNonFocused() {
-    assertSelectedSize(/*buttonIndex=*/ 4);
-
-    // Press arrow keys on the root element. This should not change the size.
-    await testSizeKeyboardEvent(
-        document.documentElement, 'ArrowLeft', /*expectedButtonIndex=*/ 4);
-
-    await testSizeKeyboardEvent(
-        document.documentElement, 'ArrowUp', /*expectedButtonIndex=*/ 4);
-
-    await testSizeKeyboardEvent(
-        document.documentElement, 'ArrowRight', /*expectedButtonIndex=*/ 4);
-
-    await testSizeKeyboardEvent(
-        document.documentElement, 'ArrowDown', /*expectedButtonIndex=*/ 4);
-
-    chrome.test.succeed();
-  },
-
-  // Test that arrow keys change brush sizes when the brush size buttons are
-  // focused.
-  async function testArrowKeysChangeSize() {
-    assertSelectedSize(/*buttonIndex=*/ 4);
-
-    const sizeButtons = getSizeButtons();
-
-    // Pressing 'ArrowLeft' or 'ArrowUp' should select the previous size button.
-    await testSizeKeyboardEvent(
-        sizeButtons[4], 'ArrowLeft', /*expectedButtonIndex=*/ 3);
-
-    await testSizeKeyboardEvent(
-        sizeButtons[3], 'ArrowUp', /*expectedButtonIndex=*/ 2);
-
-    // Pressing 'ArrowRight' or 'ArrowDown' should select the next size button.
-    await testSizeKeyboardEvent(
-        sizeButtons[2], 'ArrowRight', /*expectedButtonIndex=*/ 3);
-
-    await testSizeKeyboardEvent(
-        sizeButtons[3], 'ArrowDown', /*expectedButtonIndex=*/ 4);
-
-    chrome.test.succeed();
-  },
-
-  // Test that when the last size button is selected, pressing 'ArrowRight' or
-  // 'ArrowDown' will select the first size button.
-  // Test that when the first size button is selected, pressing 'ArrowLeft' or
-  // 'ArrowUp' will select the last size button.
-  async function testArrowKeysChangeSizeFirstLast() {
-    assertSelectedSize(/*buttonIndex=*/ 4);
-
-    const sizeButtons = getSizeButtons();
-
-    await testSizeKeyboardEvent(
-        sizeButtons[4], 'ArrowRight', /*expectedButtonIndex=*/ 0);
-
-    await testSizeKeyboardEvent(
-        sizeButtons[0], 'ArrowLeft', /*expectedButtonIndex=*/ 4);
-
-    await testSizeKeyboardEvent(
-        sizeButtons[4], 'ArrowDown', /*expectedButtonIndex=*/ 0);
-
-    await testSizeKeyboardEvent(
-        sizeButtons[0], 'ArrowUp', /*expectedButtonIndex=*/ 4);
-
     chrome.test.succeed();
   },
 
