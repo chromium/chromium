@@ -644,6 +644,9 @@ void StorageAreaImpl::OnMapLoaded(
   // class is functional for the lifetime of the object.
   delegate_->OnMapLoaded(status);
   if (!status.ok()) {
+    if (database_) {
+      database_->RemoveCommitter(this);
+    }
     database_ = nullptr;
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
   }
@@ -917,6 +920,9 @@ void StorageAreaImpl::OnForkStateLoaded(bool database_enabled,
   }
 
   if (!database_enabled) {
+    if (database_) {
+      database_->RemoveCommitter(this);
+    }
     database_ = nullptr;
     cache_mode_ = CacheMode::KEYS_AND_VALUES;
   }
