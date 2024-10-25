@@ -24,11 +24,13 @@ import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -55,13 +57,13 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
     private Activity mActivity;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Callback<Context> mLaunchGmsCoreUpdate;
     @Mock private Runnable mLaunchExportFlow;
     private CustomTabIntentHelper mCustomTabIntentHelper;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mCustomTabIntentHelper = (Context context, Intent intent) -> intent;
         mActivity = Robolectric.buildActivity(Activity.class).create().start().resume().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);

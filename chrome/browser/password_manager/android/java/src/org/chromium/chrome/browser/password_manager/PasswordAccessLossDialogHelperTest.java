@@ -21,7 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -50,6 +51,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @EnableFeatures(
         ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 public class PasswordAccessLossDialogHelperTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
@@ -66,7 +68,6 @@ public class PasswordAccessLossDialogHelperTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(any())).thenReturn(mPrefService);

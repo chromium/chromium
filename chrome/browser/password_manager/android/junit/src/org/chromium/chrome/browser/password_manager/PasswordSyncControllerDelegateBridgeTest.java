@@ -19,7 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -44,6 +45,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
     private static final Exception EXPECTED_API_EXCEPTION =
             new ApiException(new Status(EXPECTED_API_ERROR_CODE, ""));
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
@@ -53,7 +55,6 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mJniMocker.mock(PasswordSyncControllerDelegateBridgeImplJni.TEST_HOOKS, mBridgeJniMock);
         mDelegateBridge =
                 new PasswordSyncControllerDelegateBridgeImpl(sFakeNativePointer, mDelegateMock);

@@ -32,7 +32,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -76,14 +77,12 @@ public class TouchToFillIntegrationTest {
 
     @Mock private BottomSheetFocusHelper mMockFocusHelper;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private BottomSheetController mBottomSheetController;
-
-    public TouchToFillIntegrationTest() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Before
     public void setUp() throws InterruptedException {

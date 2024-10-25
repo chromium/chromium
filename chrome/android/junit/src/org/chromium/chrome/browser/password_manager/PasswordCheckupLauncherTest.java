@@ -25,8 +25,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -62,6 +63,8 @@ import java.lang.ref.WeakReference;
 public class PasswordCheckupLauncherTest {
     private static final AccountInfo TEST_ACCOUNT = TestAccounts.ACCOUNT1;
     private static final String TEST_NO_EMAIL_ADDRESS = null;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -100,7 +103,6 @@ public class PasswordCheckupLauncherTest {
 
     @Before
     public void setUp() throws PasswordCheckBackendException {
-        MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mMockPasswordManagerUtilBridgeJni);
         when(mMockPasswordManagerUtilBridgeJni.areMinUpmRequirementsMet()).thenReturn(true);

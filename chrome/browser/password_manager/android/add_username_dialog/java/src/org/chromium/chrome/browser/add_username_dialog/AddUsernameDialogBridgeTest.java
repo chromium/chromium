@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -51,7 +50,6 @@ public class AddUsernameDialogBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mJniMocker.mock(AddUsernameDialogBridgeJni.TEST_HOOKS, mBridgeJniMock);
 
         mBridge = new AddUsernameDialogBridge(sTestNativePointer, mWindowAndroid);

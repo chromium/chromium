@@ -12,10 +12,12 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.PendingIntent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,9 @@ import java.util.Optional;
 public class FakePasswordCheckupClientHelperTest {
     private static final String TEST_ACCOUNT = "test@example.com";
     private FakePasswordCheckupClientHelper mFakeHelper;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private PendingIntent mPendingIntentForLocalCheckupMock;
     @Mock private PendingIntent mPendingIntentForAccountCheckupMock;
 
@@ -45,7 +50,6 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mFakeHelper = new FakePasswordCheckupClientHelper();
         mFakeHelper.setIntentForLocalCheckup(mPendingIntentForLocalCheckupMock);
         mFakeHelper.setIntentForAccountCheckup(mPendingIntentForAccountCheckupMock);

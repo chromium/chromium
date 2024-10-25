@@ -55,7 +55,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
@@ -89,6 +90,8 @@ import java.io.IOException;
 // The export from settings was used before the access loss warning feature.
 @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 public class PasswordSettingsExportTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PasswordSettings.class);
@@ -99,7 +102,6 @@ public class PasswordSettingsExportTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
     }
 

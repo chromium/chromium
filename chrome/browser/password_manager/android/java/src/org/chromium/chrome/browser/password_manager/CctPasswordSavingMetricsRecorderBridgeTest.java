@@ -9,10 +9,12 @@ import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -31,11 +33,11 @@ public class CctPasswordSavingMetricsRecorderBridgeTest {
     private static final long INCREMENT_MS = 10;
 
     private UnownedUserDataHost mUnownedUserDataHost;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mUnownedUserDataHost = new UnownedUserDataHost();
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
     }

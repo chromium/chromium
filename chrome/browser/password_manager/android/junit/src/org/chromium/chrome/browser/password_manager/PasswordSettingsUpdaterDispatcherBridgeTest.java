@@ -14,11 +14,13 @@ import static org.chromium.base.ThreadUtils.hasSubtleSideEffectsSetThreadAsserts
 import android.accounts.Account;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -38,6 +40,8 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
     private static final Optional<Account> sTestAccount =
             Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private PasswordSettingsAccessor mAccessorMock;
     @Mock private PasswordSettingsUpdaterReceiverBridge mReceiverBridgeMock;
 
@@ -48,7 +52,6 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
         // Dispatcher bridge checks it is used on the background thread. Disable this check for this
         // test.
         hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
-        MockitoAnnotations.initMocks(this);
         mDispatcherBridge =
                 new PasswordSettingsUpdaterDispatcherBridge(mReceiverBridgeMock, mAccessorMock);
     }

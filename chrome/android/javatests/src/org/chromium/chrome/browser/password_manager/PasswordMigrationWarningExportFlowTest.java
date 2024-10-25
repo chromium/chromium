@@ -45,7 +45,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
@@ -85,6 +86,8 @@ import java.io.IOException;
 @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 @EnableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
 public class PasswordMigrationWarningExportFlowTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityRule = new ChromeTabbedActivityTestRule();
 
@@ -95,7 +98,6 @@ public class PasswordMigrationWarningExportFlowTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mChromeActivityRule.startMainActivityOnBlankPage();
         Context context = mChromeActivityRule.getActivity();
         BottomSheetController bottomSheetController =

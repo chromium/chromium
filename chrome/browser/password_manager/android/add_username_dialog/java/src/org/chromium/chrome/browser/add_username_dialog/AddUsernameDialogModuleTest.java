@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -51,8 +50,6 @@ public class AddUsernameDialogModuleTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         mActivity = createActivity();
         mController =
                 new AddUsernameDialogController(mActivity, mModalDialogManager, mBridgeDelegate);

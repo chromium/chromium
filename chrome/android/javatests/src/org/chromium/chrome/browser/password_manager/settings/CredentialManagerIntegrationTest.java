@@ -29,7 +29,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -55,6 +56,7 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 // TODO(crbug.com/344665935): Failing when batched, batch this again.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class CredentialManagerIntegrationTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule
@@ -70,7 +72,6 @@ public class CredentialManagerIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
         CredentialManagerLauncherFactory.setFactoryForTesting(mFakeLauncherFactory);
         mFakeLauncherFactory.setSuccessCallback(mSuccessCallbackHelper::notifyCalled);
         mFakeLauncherFactory.setFailureCallback(mFailureCallbackHelper::notifyCalled);

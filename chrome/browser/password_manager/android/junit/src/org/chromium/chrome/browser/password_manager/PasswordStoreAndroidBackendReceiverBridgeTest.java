@@ -16,7 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -51,6 +52,7 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
     private static final long sFakeNativePointer = 4;
     private static final int sTestJobId = 1337;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock
@@ -60,7 +62,6 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mJniMocker.mock(
                 PasswordStoreAndroidBackendReceiverBridgeImplJni.TEST_HOOKS,
                 mBackendReceiverBridgeJniMock);

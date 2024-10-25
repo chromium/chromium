@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -90,8 +89,6 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
