@@ -78,16 +78,13 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCoral:
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk),
-                      u"New Coral Desk", CreateIconForMenuItem(kCoralOpenIcon));
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
-                      u"Save Coral For Later",
-                      CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      // TODO(zxdan): localize the strings.
+      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk), u"Open",
+                      CreateIconForMenuItem(kCoralOpenIcon));
       AddSeparator(ui::NORMAL_SEPARATOR);
       add_hide_suggestion_item();
-      // TODO(yulunwu) Replace with product name.
       AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
-                      u"Hide all coral suggestions",
+                      u"Don't suggest group to resume",
                       CreateIconForMenuItem(kForbidIcon));
       break;
     default:

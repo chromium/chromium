@@ -859,25 +859,25 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
 
   base::flat_map<BirchItemType, views::MenuItemView*> type_to_item;
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* weather_item = sub_menu->GetMenuItemAt(1);
+  auto* weather_item = sub_menu->GetMenuItemAt(2);
   EXPECT_EQ(weather_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kWeatherSuggestions));
   type_to_item[BirchItemType::kWeather] = weather_item;
 
-  auto* calendar_item = sub_menu->GetMenuItemAt(2);
+  auto* calendar_item = sub_menu->GetMenuItemAt(3);
   EXPECT_EQ(calendar_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kCalendarSuggestions));
   type_to_item[BirchItemType::kCalendar] = calendar_item;
 
-  auto* file_item = sub_menu->GetMenuItemAt(3);
+  auto* file_item = sub_menu->GetMenuItemAt(4);
   EXPECT_EQ(file_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kDriveSuggestions));
   type_to_item[BirchItemType::kFile] = file_item;
 
-  auto* tab_item = sub_menu->GetMenuItemAt(4);
+  auto* tab_item = sub_menu->GetMenuItemAt(5);
   EXPECT_EQ(tab_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kChromeTabSuggestions));
@@ -937,7 +937,7 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsExtended) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* tab_item = sub_menu->GetMenuItemAt(4);
+  auto* tab_item = sub_menu->GetMenuItemAt(5);
   EXPECT_EQ(tab_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kChromeTabSuggestions));
@@ -953,7 +953,7 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsExtended) {
       bar_chips));
 
   // Find the media suggestions menu item.
-  auto* media_item = sub_menu->GetMenuItemAt(5);
+  auto* media_item = sub_menu->GetMenuItemAt(6);
   EXPECT_EQ(media_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kMediaSuggestions));
@@ -1005,7 +1005,7 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsExtended2) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* coral_item = sub_menu->GetMenuItemAt(6);
+  auto* coral_item = sub_menu->GetMenuItemAt(1);
   EXPECT_EQ(coral_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kCoralSuggestions));
@@ -1253,7 +1253,7 @@ TEST_F(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
   LeftClickOn(customize_suggestions_item);
 
   auto* sub_menu = customize_suggestions_item->GetSubmenu();
-  auto* calendar_item = sub_menu->GetMenuItemAt(2);
+  auto* calendar_item = sub_menu->GetMenuItemAt(3);
   EXPECT_EQ(calendar_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kCalendarSuggestions));
@@ -1277,7 +1277,7 @@ TEST_F(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
       model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
   LeftClickOn(customize_suggestions_item);
 
-  calendar_item = customize_suggestions_item->GetSubmenu()->GetMenuItemAt(2);
+  calendar_item = customize_suggestions_item->GetSubmenu()->GetMenuItemAt(3);
   calendar_checkbox =
       views::AsViewClass<Checkbox>(calendar_item->children()[0]);
 
@@ -1398,7 +1398,7 @@ TEST_F(BirchBarMenuTest, CheckboxAccessibleName) {
 
   // Ensure that the second item is a checkbox.
   views::MenuItemView* item_view =
-      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
   ASSERT_TRUE(views::IsViewClass<Checkbox>(item_view->children()[0]));
 
   // `views::MenuItemView` calculates its accessible name by calling
@@ -1477,7 +1477,7 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
   GestureTapOn(customize_suggestions_item);
 
   auto* sub_menu = customize_suggestions_item->GetSubmenu();
-  auto* calendar_item = sub_menu->GetMenuItemAt(2);
+  auto* calendar_item = sub_menu->GetMenuItemAt(3);
   EXPECT_EQ(calendar_item->GetCommand(),
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kCalendarSuggestions));
@@ -1501,7 +1501,7 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
       model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
   GestureTapOn(customize_suggestions_item);
 
-  calendar_item = customize_suggestions_item->GetSubmenu()->GetMenuItemAt(2);
+  calendar_item = customize_suggestions_item->GetSubmenu()->GetMenuItemAt(3);
   calendar_checkbox =
       views::AsViewClass<Checkbox>(calendar_item->children()[0]);
 

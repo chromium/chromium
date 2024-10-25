@@ -37,6 +37,9 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
   if (type == Type::kExpandedBarMenu) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
+    AddItem(base::to_underlying(CommandId::kCoralSuggestions),
+            u"Suggested group");
+
     bool enabled = IsWeatherAllowedByGeolocation();
     std::u16string weather_label =
         enabled ? l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_WEATHER)
@@ -60,8 +63,6 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_CHROME_BROWSER));
     AddItem(base::to_underlying(CommandId::kMediaSuggestions),
             l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_MEDIA));
-    // TODO(yulunwu) Replace with product name.
-    AddItem(base::to_underlying(CommandId::kCoralSuggestions), u"Coral");
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kReset),
                     l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MENU_RESET),

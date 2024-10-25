@@ -421,10 +421,10 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
                                                   /*show=*/false);
       break;
     case base::to_underlying(CommandId::kCoralNewDesk):
-      // TODO(yulunwu) implement behavior
+      item_->PerformAction();
       break;
     case base::to_underlying(CommandId::kCoralSaveForLater):
-      // TODO(yulunwu) implement behavior
+      // TODO(zxdan) implement behavior
       break;
     case base::to_underlying(CommandId::kProvideFeedback):
       Shell::Get()->shell_delegate()->OpenFeedbackDialog(

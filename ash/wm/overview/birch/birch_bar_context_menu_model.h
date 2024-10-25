@@ -22,12 +22,12 @@ class ASH_EXPORT BirchBarContextMenuModel : public ui::SimpleMenuModel {
   // The commands for the birch bar menu items.
   enum class ASH_EXPORT CommandId {
     kShowSuggestions = 0,   // Show/hide the birch bar with a switch button.
+    kCoralSuggestions,      // Show/hide coral suggestions.
     kWeatherSuggestions,    // Show/hide the weather related suggestions.
     kCalendarSuggestions,   // Show/hide the Calendar related suggestions.
     kDriveSuggestions,      // Show/hide the Drive related suggestions.
     kChromeTabSuggestions,  // Show/hide Chrome tab suggestions.
     kMediaSuggestions,      // Show/hide media playing tab suggestions.
-    kCoralSuggestions,      // Show/hide coral suggestions.
     kReset,                 // Reset preferences of all types of suggestions.
     kBarMenuEnd,
   };
