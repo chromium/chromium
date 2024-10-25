@@ -82,16 +82,6 @@ class HttpStreamPool::Group {
                                  bool is_http1_allowed,
                                  ProxyInfo proxy_info);
 
-  // Starts a Job. Will call one of Job::Delegate methods to notify results.
-  void StartJob(Job* job,
-                RequestPriority priority,
-                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                RespectLimits respect_limits,
-                bool enable_ip_based_pooling,
-                bool enable_alternative_services,
-                quic::ParsedQuicVersion quic_version,
-                const NetLogWithSource& net_log);
-
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once
   // `this` has enough streams/sessions for `num_streams` be opened. This means
@@ -205,10 +195,6 @@ class HttpStreamPool::Group {
 
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
-
-  // If the group is forced to use QUIC and the QUIC version is unknown, try
-  // the preferred QUIC version that is supported by default.
-  void MaybeUpdateQuicVersionWhenForced(quic::ParsedQuicVersion& quic_version);
 
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);

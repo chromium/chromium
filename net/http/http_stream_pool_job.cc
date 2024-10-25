@@ -65,10 +65,10 @@ void HttpStreamPool::Job::Start(
     return;
   }
 
-  attempt_manager_->group()->StartJob(this, priority, allowed_bad_certs,
-                                      respect_limits, enable_ip_based_pooling,
-                                      enable_alternative_services, quic_version,
-                                      net_log);
+  attempt_manager_->StartJob(this, priority, allowed_bad_certs, respect_limits,
+                             enable_ip_based_pooling,
+                             enable_alternative_services, quic_version,
+                             net_log);
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {

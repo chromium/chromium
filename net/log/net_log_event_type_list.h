@@ -1395,7 +1395,12 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 
-// Emitted when a group starts a stream. The event parameters are:
+// Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
+// reference to HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+
+// Emitted when an HttpStreamPool::AttemptManager starts a stream. The event
+// parameters are:
 //   {
 //     "priority": <The priority of the erquest>,
 //     "allowed_bad_certs": <The list of allowed bad certs>,
@@ -1404,22 +1409,19 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 //     "quic_version": <The QUIC version to attempt>,
 //     "source_dependency": <The source identifier of the request>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_START_JOB)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB)
 
-// Emitted when a group is requested a preconnect. The event parameter is:
+// Records on the caller's NetLog to indicate that an
+// HttpStreamPool::AttemptManager starts a Job.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND)
+
+// Emitted when an HttpStreamPool::AttemptManager is requested a preconnect. The
+// event parameter is:
 //   {
 //      "num_streams": <The number of streams requested>,
 //      "quic_version": <The QUIC version to attempt>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_PRECONNECT)
-
-// Records on the caller's NetLog to indicate that an HttpStreamPool::Group
-// starts a Job.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_BOUND)
-
-// Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
-// reference to HttpStreamPool::Group's net log.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT)
 
 // Emitted when an HttpStreamPool::AttemptManager is destroyed. Used to add a
 // reference to HttpStreamPool::Group's net log.

@@ -162,6 +162,26 @@ void HttpStreamPool::AttemptManager::StartJob(
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  MaybeUpdateQuicVersionWhenForced(quic_version);
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
+        base::Value::Dict dict;
+        dict.Set("priority", priority);
+        base::Value::List allowed_bad_certs_list;
+        for (const auto& cert_and_status : allowed_bad_certs) {
+          allowed_bad_certs_list.Append(
+              cert_and_status.cert->subject().GetDisplayName());
+        }
+        dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
+        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling);
+        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        net_log.source().AddToEventParameters(dict);
+        return dict;
+      });
+  net_log.AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND,
+      net_log_.source());
+
   if (respect_limits == RespectLimits::kIgnore) {
     respect_limits_ = RespectLimits::kIgnore;
   }
@@ -221,6 +241,15 @@ int HttpStreamPool::AttemptManager::Preconnect(
     size_t num_streams,
     quic::ParsedQuicVersion quic_version,
     CompletionOnceCallback callback) {
+  MaybeUpdateQuicVersionWhenForced(quic_version);
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT, [&] {
+        base::Value::Dict dict;
+        dict.Set("num_streams", static_cast<int>(num_streams));
+        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        return dict;
+      });
+
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
   CHECK(!CanUseExistingQuicSession());
@@ -1460,6 +1489,16 @@ void HttpStreamPool::AttemptManager::OnStreamAttemptDelayPassed() {
   CHECK(should_block_stream_attempt_);
   should_block_stream_attempt_ = false;
   MaybeAttemptConnection();
+}
+
+void HttpStreamPool::AttemptManager::MaybeUpdateQuicVersionWhenForced(
+    quic::ParsedQuicVersion& quic_version) {
+  if (!quic_version.IsKnown() && group_->force_quic()) {
+    quic_version = http_network_session()
+                       ->context()
+                       .quic_context->params()
+                       ->supported_versions[0];
+  }
 }
 
 bool HttpStreamPool::AttemptManager::CanUseQuic() {

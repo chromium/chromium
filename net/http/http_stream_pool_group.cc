@@ -111,50 +111,9 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
                                std::move(proxy_info));
 }
 
-void HttpStreamPool::Group::StartJob(
-    Job* job,
-    RequestPriority priority,
-    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-    RespectLimits respect_limits,
-    bool enable_ip_based_pooling,
-    bool enable_alternative_services,
-    quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& net_log) {
-  MaybeUpdateQuicVersionWhenForced(quic_version);
-  net_log_.AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_GROUP_START_JOB, [&] {
-        base::Value::Dict dict;
-        dict.Set("priority", priority);
-        base::Value::List allowed_bad_certs_list;
-        for (const auto& cert_and_status : allowed_bad_certs) {
-          allowed_bad_certs_list.Append(
-              cert_and_status.cert->subject().GetDisplayName());
-        }
-        dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
-        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling);
-        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-        net_log.source().AddToEventParameters(dict);
-        return dict;
-      });
-  net_log.AddEventReferencingSource(
-      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_BOUND, net_log_.source());
-  EnsureAttemptManager();
-  attempt_manager_->StartJob(
-      job, priority, allowed_bad_certs, respect_limits, enable_ip_based_pooling,
-      enable_alternative_services, quic_version, net_log);
-}
-
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
                                       quic::ParsedQuicVersion quic_version,
                                       CompletionOnceCallback callback) {
-  MaybeUpdateQuicVersionWhenForced(quic_version);
-  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_PRECONNECT, [&] {
-    base::Value::Dict dict;
-    dict.Set("num_streams", static_cast<int>(num_streams));
-    dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-    return dict;
-  });
-
   if (ActiveStreamSocketCount() >= num_streams) {
     return OK;
   }
@@ -361,16 +320,6 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
-}
-
-void HttpStreamPool::Group::MaybeUpdateQuicVersionWhenForced(
-    quic::ParsedQuicVersion& quic_version) {
-  if (!quic_version.IsKnown() && force_quic_) {
-    quic_version = http_network_session()
-                       ->context()
-                       .quic_context->params()
-                       ->supported_versions[0];
-  }
 }
 
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
