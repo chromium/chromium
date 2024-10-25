@@ -336,8 +336,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // If primary account is signed in.
   bool IsPrimaryAccountSignedIn() const override;
 
-  // Checks whether the account associated with |username| is a Gmail account.
-  bool IsAccountGmail(const std::string& username) const override;
+  // Checks whether |username| maps to a consumer account.
+  bool IsAccountConsumer(const std::string& username) const override;
 
   // Gets the AccountInfo for the account corresponding to |username| from the
   // list of signed-in users.

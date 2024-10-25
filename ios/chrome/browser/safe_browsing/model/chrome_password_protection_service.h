@@ -177,7 +177,7 @@ class ChromePasswordProtectionService
 
   bool IsPrimaryAccountSignedIn() const override;
 
-  bool IsAccountGmail(const std::string& username) const override;
+  bool IsAccountConsumer(const std::string& username) const override;
 
   bool IsInExcludedCountry() override;
 
