@@ -130,9 +130,13 @@ const char kHistorySyncLastDeclinedTimestamp[] =
 const char kHistorySyncSuccessiveDeclineCount[] =
     "signin.history_sync.successive_decline_count";
 
-// List of patterns to determine the account visibility.
+#if BUILDFLAG(IS_IOS)
+// List of patterns to determine the account visibility, according to the
+// "RestrictAccountsToPatterns" policy. Note that the policy also exists on
+// Android, but has a separate implementation there which doesn't use this pref.
 const char kRestrictAccountsToPatterns[] =
     "signin.restrict_accounts_to_patterns";
+#endif  // BUILDFLAG(IS_IOS)
 
 // Boolean which indicates if the user is allowed to sign into Chrome on the
 // next startup.
