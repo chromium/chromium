@@ -15,14 +15,3 @@ include_rules = [
   "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/webdata_services/model",
 ]
-
-specific_include_rules = {
-  # TODO(crbug.com/40820398): Remove these dependencies.
-  "^authentication_service.mm": [
-    "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
-  ],
-  "^chrome_account_manager_service.mm": [
-    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
-  ],
-}
-
