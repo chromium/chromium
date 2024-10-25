@@ -209,7 +209,7 @@ class FastCheckoutClientImpl
   // Fills credit card form via the `autofill_manager_` and handles internal
   // state.
   void FillCreditCardForm(const autofill::FormStructure& form,
-                          const autofill::FormFieldData& field,
+                          const autofill::FieldGlobalId& field_id,
                           const autofill::CreditCard& credit_card,
                           const std::u16string& cvc);
 

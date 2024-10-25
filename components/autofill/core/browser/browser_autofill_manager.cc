@@ -1975,9 +1975,10 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
       credit_card, *form_structure, metrics_->signin_state_for_metrics);
 
   GetCreditCardAccessManager().FetchCreditCard(
-      &credit_card, base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                                   weak_ptr_factory_.GetWeakPtr(), form, field,
-                                   trigger_details.trigger_source));
+      &credit_card,
+      base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
+                     weak_ptr_factory_.GetWeakPtr(), form, field.global_id(),
+                     trigger_details.trigger_source));
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -2111,17 +2112,18 @@ void BrowserAutofillManager::UndoAutofill(
 void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const AutofillTriggerDetails& trigger_details) {
-  if (!IsValidFormData(form) || !IsValidFormFieldData(field)) {
+  const FormFieldData* const field = form.FindFieldByGlobalId(field_id);
+  if (!IsValidFormData(form) || !field || !IsValidFormFieldData(*field)) {
     return;
   }
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, &credit_card, &cvc,
@@ -2498,7 +2500,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
 
 void BrowserAutofillManager::OnCreditCardFetched(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     AutofillTriggerSource fetched_credit_card_trigger_source,
     CreditCardFetchResult result,
     const CreditCard* credit_card) {
@@ -2513,13 +2515,13 @@ void BrowserAutofillManager::OnCreditCardFetched(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
 
   FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, field, *credit_card,
+      mojom::ActionPersistence::kFill, form, field_id, *credit_card,
       credit_card->cvc(),
       {.trigger_source = fetched_credit_card_trigger_source});
 }

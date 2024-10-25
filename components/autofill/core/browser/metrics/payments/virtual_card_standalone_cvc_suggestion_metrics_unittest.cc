@@ -178,7 +178,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(form(), form().fields().front(),
+      .OnCreditCardFetched(form(), form().fields().front().global_id(),
                            AutofillTriggerSource::kPopup,
                            CreditCardFetchResult::kSuccess, &card());
 
@@ -206,7 +206,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(form(), form().fields().front(),
+      .OnCreditCardFetched(form(), form().fields().front().global_id(),
                            AutofillTriggerSource::kPopup,
                            CreditCardFetchResult::kSuccess, &card());
   EXPECT_THAT(
@@ -241,7 +241,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(form(), form().fields().front(),
+      .OnCreditCardFetched(form(), form().fields().front().global_id(),
                            AutofillTriggerSource::kPopup,
                            CreditCardFetchResult::kSuccess, &card());
   SubmitForm(form());

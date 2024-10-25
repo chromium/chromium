@@ -132,7 +132,7 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void FillOrPreviewCreditCardForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const CreditCard& credit_card,
       const std::u16string& cvc,
       const AutofillTriggerDetails& trigger_details);
@@ -485,7 +485,7 @@ class BrowserAutofillManager : public AutofillManager {
   // `credit_card` is filled.
   void OnCreditCardFetched(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       AutofillTriggerSource fetched_credit_card_trigger_source,
       CreditCardFetchResult result,
       const CreditCard* credit_card);

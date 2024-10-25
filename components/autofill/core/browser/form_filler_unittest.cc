@@ -203,7 +203,7 @@ class FormFillerTest : public testing::Test {
           **profile, trigger_details);
     } else {
       browser_autofill_manager_->FillOrPreviewCreditCardForm(
-          mojom::ActionPersistence::kFill, form, trigger_field,
+          mojom::ActionPersistence::kFill, form, trigger_field.global_id(),
           *absl::get<const CreditCard*>(profile_or_credit_card), /*cvc=*/u"",
           trigger_details);
     }
@@ -220,14 +220,14 @@ class FormFillerTest : public testing::Test {
 
   std::vector<FormFieldData> PreviewVirtualCardDataAndGetResults(
       const FormData& input_form,
-      const FormFieldData& input_field,
+      const FieldGlobalId& input_field_id,
       const CreditCard& virtual_card) {
     std::vector<FormFieldData> filled_fields;
     EXPECT_CALL(autofill_driver_, ApplyFormAction)
         .WillOnce((DoAll(SaveArgElementsTo<2>(&filled_fields),
                          Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kPreview, input_form, input_field,
+        mojom::ActionPersistence::kPreview, input_form, input_field_id,
         virtual_card, std::u16string(),
         {.trigger_source = AutofillTriggerSource::kPopup});
     return filled_fields;
@@ -928,7 +928,8 @@ TEST_F(FormFillerTest, PreviewCreditCardForm_VirtualCard) {
 
   CreditCard virtual_card = test::GetVirtualCard();
   std::vector<FormFieldData> filled_fields =
-      PreviewVirtualCardDataAndGetResults(form, form.fields()[1], virtual_card);
+      PreviewVirtualCardDataAndGetResults(form, form.fields()[1].global_id(),
+                                          virtual_card);
 
   std::u16string expected_cardholder_name = u"Lorem Ipsum";
   // Virtual card number using obfuscated dots only: Virtual card Mastercard

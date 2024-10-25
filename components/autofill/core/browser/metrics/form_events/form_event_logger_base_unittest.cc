@@ -267,7 +267,7 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
       form, form.fields()[2], u"CC_NAME_VALUE",
       SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NAME_FULL);
   autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[3],
+      mojom::ActionPersistence::kFill, form, form.fields()[3].global_id(),
       test::GetCreditCard(), std::u16string(),
       {.trigger_source = AutofillTriggerSource::kPopup});
   base::HistogramTester histogram_tester;

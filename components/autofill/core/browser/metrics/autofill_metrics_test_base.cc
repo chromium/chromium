@@ -219,7 +219,7 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
                                    : CreditCard::RecordType::kMaskedServerCard);
   credit_card_.SetNumber(real_pan);
   test_api(autofill_manager())
-      .OnCreditCardFetched(form, field, trigger_source,
+      .OnCreditCardFetched(form, field.global_id(), trigger_source,
                            CreditCardFetchResult::kSuccess, &credit_card_);
 }
 
@@ -228,7 +228,7 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingFailed(
     const FormFieldData& field,
     AutofillTriggerSource trigger_source) {
   test_api(autofill_manager())
-      .OnCreditCardFetched(form, field, trigger_source,
+      .OnCreditCardFetched(form, field.global_id(), trigger_source,
                            CreditCardFetchResult::kPermanentError, nullptr);
 }
 

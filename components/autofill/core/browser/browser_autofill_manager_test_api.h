@@ -72,11 +72,11 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void OnCreditCardFetched(const FormData& form,
-                           const FormFieldData& field,
+                           const FieldGlobalId& field_id,
                            AutofillTriggerSource trigger_source,
                            CreditCardFetchResult result,
                            const CreditCard* credit_card = nullptr) {
-    manager_->OnCreditCardFetched(form, field, trigger_source, result,
+    manager_->OnCreditCardFetched(form, field_id, trigger_source, result,
                                   credit_card);
   }
 

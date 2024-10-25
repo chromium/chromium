@@ -187,7 +187,7 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
               FillOrPreviewCreditCardForm,
               (autofill::mojom::ActionPersistence action_persistence,
                const FormData&,
-               const FormFieldData&,
+               const FieldGlobalId&,
                const autofill::CreditCard&,
                const std::u16string&,
                const autofill::AutofillTriggerDetails&),
@@ -862,7 +862,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
               FillOrPreviewCreditCardForm(
                   autofill::mojom::ActionPersistence::kFill,
                   FormDataEqualTo(credit_card_form->ToFormData()),
-                  FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc),
+                  field.global_id(), Eq(*credit_card), Eq(cvc),
                   EqualsAutofilltriggerDetails(
                       {.trigger_source =
                            autofill::AutofillTriggerSource::kFastCheckout})));
@@ -1050,7 +1050,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
               FillOrPreviewCreditCardForm(
                   autofill::mojom::ActionPersistence::kFill,
                   FormDataEqualTo(credit_card_form->ToFormData()),
-                  FormFieldDataEqualTo(field), Eq(*credit_card), Eq(cvc),
+                  field.global_id(), Eq(*credit_card), Eq(cvc),
                   EqualsAutofilltriggerDetails(
                       {.trigger_source =
                            autofill::AutofillTriggerSource::kFastCheckout})));
@@ -1171,7 +1171,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
               FillOrPreviewCreditCardForm(
                   autofill::mojom::ActionPersistence::kFill,
                   FormDataEqualTo(credit_card_form->ToFormData()),
-                  FormFieldDataEqualTo(field), _, Eq(u""),
+                  field.global_id(), _, Eq(u""),
                   EqualsAutofilltriggerDetails(
                       {.trigger_source =
                            autofill::AutofillTriggerSource::kFastCheckout})));

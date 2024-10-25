@@ -138,7 +138,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               FillOrPreviewCreditCardForm,
               (mojom::ActionPersistence action_persistence,
                const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field_id,
                const CreditCard& credit_card,
                const std::u16string& cvc,
                const AutofillTriggerDetails& trigger_details),

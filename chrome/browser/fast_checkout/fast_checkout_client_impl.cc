@@ -435,7 +435,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
       const autofill::CreditCard* credit_card = GetSelectedCreditCard();
       if (field && !credit_card_form_global_id_ && credit_card) {
         if (autofill::CreditCard::IsLocalCard(credit_card)) {
-          FillCreditCardForm(*form, *field, *credit_card, u"");
+          FillCreditCardForm(*form, field->global_id(), *credit_card, u"");
         } else {
           autofill::CreditCardCvcAuthenticator& cvc_authenticator =
               autofill_client_->GetPaymentsAutofillClient()
@@ -455,7 +455,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
 
 void FastCheckoutClientImpl::FillCreditCardForm(
     const autofill::FormStructure& form,
-    const autofill::FormFieldData& field,
+    const autofill::FieldGlobalId& field_id,
     const autofill::CreditCard& credit_card,
     const std::u16string& cvc) {
   form_filling_states_[std::make_pair(form.form_signature(),
@@ -465,7 +465,7 @@ void FastCheckoutClientImpl::FillCreditCardForm(
       static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get());
   bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
   bam->FillOrPreviewCreditCardForm(
-      autofill::mojom::ActionPersistence::kFill, form.ToFormData(), field,
+      autofill::mojom::ActionPersistence::kFill, form.ToFormData(), field_id,
       credit_card, cvc,
       {.trigger_source = autofill::AutofillTriggerSource::kFastCheckout});
 }
@@ -538,7 +538,7 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
           credit_card_form_global_id_.value());
   if (const autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true)) {
-    FillCreditCardForm(*form, *field, card, cvc);
+    FillCreditCardForm(*form, field->global_id(), card, cvc);
   }
   credit_card_form_global_id_ = std::nullopt;
 }

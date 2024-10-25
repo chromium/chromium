@@ -1181,8 +1181,8 @@ void AutofillExternalDelegate::OnCreditCardScanned(
     const AutofillTriggerSource trigger_source,
     const CreditCard& card) {
   manager_->FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, query_form_, query_field_, card,
-      std::u16string(), {.trigger_source = trigger_source});
+      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
+      card, std::u16string(), {.trigger_source = trigger_source});
 }
 
 void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
@@ -1419,16 +1419,16 @@ void AutofillExternalDelegate::FillAutofillFormData(
   if (const CreditCard* credit_card =
           pdm->payments_data_manager().GetCreditCardByGUID(
               absl::get<Suggestion::Guid>(payload).value())) {
-    is_preview
-        ? manager_->FillOrPreviewCreditCardForm(
-              mojom::ActionPersistence::kPreview, query_form_, query_field_,
-              *credit_card, std::u16string(), trigger_details)
-        : manager_->AuthenticateThenFillCreditCardForm(
-              query_form_, query_field_,
-              type == SuggestionType::kVirtualCreditCardEntry
-                  ? CreditCard::CreateVirtualCard(*credit_card)
-                  : *credit_card,
-              trigger_details);
+    is_preview ? manager_->FillOrPreviewCreditCardForm(
+                     mojom::ActionPersistence::kPreview, query_form_,
+                     query_field_.global_id(), *credit_card, std::u16string(),
+                     trigger_details)
+               : manager_->AuthenticateThenFillCreditCardForm(
+                     query_form_, query_field_,
+                     type == SuggestionType::kVirtualCreditCardEntry
+                         ? CreditCard::CreateVirtualCard(*credit_card)
+                         : *credit_card,
+                     trigger_details);
   }
 }
 

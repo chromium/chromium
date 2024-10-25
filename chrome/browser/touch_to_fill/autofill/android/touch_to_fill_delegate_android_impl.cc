@@ -291,8 +291,8 @@ void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
     const CreditCard& card) {
   HideTouchToFill();
   manager_->FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, query_form_, query_field_, card,
-      std::u16string(),
+      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
+      card, std::u16string(),
       {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
 }
 

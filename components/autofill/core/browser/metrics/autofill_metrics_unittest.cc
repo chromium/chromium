@@ -6047,7 +6047,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   // mimic its effect on |form_|.
   void FillForm(const FormFieldData& triggering_field) {
     autofill_manager().FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kFill, form_, triggering_field,
+        mojom::ActionPersistence::kFill, form_, triggering_field.global_id(),
         fill_data().credit_card, fill_data().cvc,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
