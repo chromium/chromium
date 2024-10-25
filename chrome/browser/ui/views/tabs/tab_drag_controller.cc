@@ -123,7 +123,7 @@ namespace {
 // maximized size.
 constexpr int kMaximizedWindowInset = 10;  // DIPs.
 
-// Some platforms, such as Lacros and Desktop Linux with Wayland, disallow
+// Some platforms, such and Desktop Linux with Wayland, disallow
 // client applications to manipulate absolute screen positions, by design.
 // Preventing, for example, clients from programmatically positioning toplevel
 // windows using absolute coordinates. By default, this class assumes that the
@@ -1019,9 +1019,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     else
       SetCapture(target_context);
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
     // EndMoveLoop is going to snap the window back to its original location.
     // Hide it so users don't see this. Hiding a window in Linux aura causes
     // it to lose capture so skip it.
@@ -1617,8 +1615,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 
     // If `attached_context_` received a gesture end event, it will have ended
     // the drag, destroying `this`. This shouldn't ever happen (preventing this
-    // scenario is why we pass kDontCancel above), but on Lacros it apparently
-    // sometimes can. See https://crbug.com/1350564.
+    // scenario is why we pass kDontCancel above) - https://crbug.com/1350564.
     CHECK(ref) << "Drag session was ended as part of transferring events to "
                   "the new browser. This should not happen.";
   }
@@ -2527,9 +2524,8 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
     if (dragged_window)
       exclude.insert(dragged_window);
   }
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_LINUX)
   // Exclude windows which are pending deletion via Browser::TabStripEmpty().
   // These windows can be returned in the Linux Aura port because the browser
   // window which was used for dragging is not hidden once all of its tabs are

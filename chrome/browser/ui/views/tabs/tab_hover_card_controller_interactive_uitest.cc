@@ -194,13 +194,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       CheckHovercardIsClosed());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HoverCardShownOnTabFocus DISABLED_HoverCardShownOnTabFocus
-#else
-#define MAYBE_HoverCardShownOnTabFocus HoverCardShownOnTabFocus
-#endif
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       MAYBE_HoverCardShownOnTabFocus) {
+                       HoverCardShownOnTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
   tab_strip->GetFocusManager()->SetFocusedView(tab);

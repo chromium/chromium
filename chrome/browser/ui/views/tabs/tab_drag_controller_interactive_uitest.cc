@@ -126,14 +126,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "ui/aura/window_tree_host_platform.h"
-#include "ui/platform_window/extensions/wayland_extension.h"
-#define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameLacros
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/ozone/public/ozone_platform.h"
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAuraLinux
@@ -857,24 +850,7 @@ class DetachToBrowserTabDragControllerTest
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
   void SetMinFlingVelocity(float velocity) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(velocity);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* lacros_service = chromeos::LacrosService::Get();
-    const int version =
-        lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>();
-    const int required_version = crosapi::mojom::TestController::
-        MethodMinVersions::kSetMinFlingVelocityMinVersion;
-    if (version < required_version) {
-      LOG(WARNING) << "Ash does not support crosapi "
-                      "TestController::SetMinFlingVelocity; skipping call.";
-      return;
-    }
-    auto& test_controller =
-        lacros_service->GetRemote<crosapi::mojom::TestController>();
-    crosapi::mojom::TestControllerAsyncWaiter(test_controller.get())
-        .SetMinFlingVelocity(velocity);
-#endif
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2743,17 +2719,8 @@ void DoubleNestedRunLoopStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-// TODO(crbug.com/326021146): flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop \
-  DISABLED_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop
-#else
-#define MAYBE_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop \
-  DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop
-#endif
-IN_PROC_BROWSER_TEST_P(
-    DetachToBrowserTabDragControllerTest,
-    MAYBE_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop) {
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Wayland doesn't necessarily support window move loops; this test doesn't
@@ -3153,9 +3120,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(model->IsGroupCollapsed(group));
 }
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // Test is flaky on Mac and Linux: https://crbug.com/1167249
 #define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
@@ -3346,8 +3311,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 }
 
 // Home tab can't be detached.
-// TODO(crbug.com/40245163): Enable this test for Linux and Lacros.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+// TODO(crbug.com/40245163): Enable this test for Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CantDragHomeTab DISABLED_CantDragHomeTab
 #else
 #define MAYBE_CantDragHomeTab CantDragHomeTab
@@ -3435,11 +3400,8 @@ class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
 // Disabling on macOS due to DCHECK crashes; see https://crbug.com/1183043.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (BUILDFLAG(IS_MAC) && DCHECK_IS_ON())
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && DCHECK_IS_ON())
 #define MAYBE_DraggingRightExpandsTabStripSize \
   DISABLED_DraggingRightExpandsTabStripSize
 #else
@@ -4137,11 +4099,7 @@ void FastResizeDuringDraggingStep2(DetachToBrowserTabDragControllerTest* test,
   size_t num_browsers = test->browser_list()->size();
   EXPECT_EQ(3u, num_browsers);
 
-  // TODO(crbug.com/40142064): Remove explicit OS_CHROMEOS check once OS_LINUX
-  // CrOS cleanup is done.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
   // Get this new created window for the drag. It should have fast resize set.
   Browser* new_browser = test->browser_list()->get(num_browsers - 1);
   EXPECT_TRUE(WebContentsIsFastResized(new_browser));
@@ -5363,9 +5321,6 @@ INSTANTIATE_TEST_SUITE_P(
         /*kSplitTabStrip=*/::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("touch")));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/40283516): Enable Multi Display Test on lacros
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DifferentDeviceScaleFactorDisplayTabDragControllerTest,
@@ -5394,9 +5349,6 @@ INSTANTIATE_TEST_SUITE_P(
         /*kSplitTabStrip=*/::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("mouse", "touch")));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithTabbedWebApp,
