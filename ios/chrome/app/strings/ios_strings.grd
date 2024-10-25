@@ -4121,6 +4121,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY" desc="Friendlier summary for Privacy Safe Browsing enhanced protection mode.">
         Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
       </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
+        Real-time, AI-powered protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
+      </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
       </message>
