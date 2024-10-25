@@ -16,9 +16,14 @@ ConnectorsService::ConnectorsService(
     policy::UserCloudPolicyManager* user_cloud_policy_manager)
     : off_the_record_(off_the_record),
       prefs_(pref_service),
-      user_cloud_policy_manager_(user_cloud_policy_manager) {
+      user_cloud_policy_manager_(user_cloud_policy_manager),
+      connectors_manager_(
+          std::make_unique<ConnectorsManager>(pref_service,
+                                              GetServiceProviderConfig())) {
   DCHECK(prefs_);
 }
+
+ConnectorsService::~ConnectorsService() = default;
 
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
   // None of the analysis connector policies are supported on iOS.
@@ -62,14 +67,12 @@ const PrefService* ConnectorsService::GetPrefs() const {
 }
 
 ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase() {
-  // TODO(crbug.com/370466578): Implement this method.
-  return nullptr;
+  return connectors_manager_.get();
 }
 
 const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
     const {
-  // TODO(crbug.com/370466578): Implement this method.
-  return nullptr;
+  return connectors_manager_.get();
 }
 
 policy::CloudPolicyManager*

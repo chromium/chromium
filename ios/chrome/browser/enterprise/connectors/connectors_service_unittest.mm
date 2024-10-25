@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 
+#import "base/json/json_reader.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -182,6 +183,93 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
+}
+
+TEST_F(ConnectorsServiceTest, ReportingSettings) {
+  auto service = ConnectorsService(
+      /*off_the_record=*/false, prefs(),
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+
+  EXPECT_FALSE(
+      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
+  EXPECT_TRUE(
+      service
+          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
+          .empty());
+
+  prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
+                                         R"([
+                                              {
+                                                "service_provider": "google"
+                                              }
+                                            ])",
+                                         base::JSON_ALLOW_TRAILING_COMMAS));
+  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
+
+  auto settings =
+      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  EXPECT_TRUE(settings.has_value());
+  EXPECT_FALSE(settings->per_profile);
+  EXPECT_EQ(settings->dm_token, kTestBrowserDmToken);
+  EXPECT_EQ(settings->enabled_event_names,
+            std::set<std::string>(kAllReportingEvents.begin(),
+                                  kAllReportingEvents.end()));
+  EXPECT_TRUE(settings->enabled_opt_in_events.empty());
+  auto provider_names = service.GetReportingServiceProviderNames(
+      ReportingConnector::SECURITY_EVENT);
+  EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
+
+  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
+
+  settings = service.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  EXPECT_TRUE(settings.has_value());
+  EXPECT_TRUE(settings->per_profile);
+  EXPECT_EQ(settings->dm_token, kTestProfileDmToken);
+  EXPECT_EQ(settings->enabled_event_names,
+            std::set<std::string>(kAllReportingEvents.begin(),
+                                  kAllReportingEvents.end()));
+  EXPECT_TRUE(settings->enabled_opt_in_events.empty());
+  provider_names = service.GetReportingServiceProviderNames(
+      ReportingConnector::SECURITY_EVENT);
+  EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
+}
+
+TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
+  auto service = ConnectorsService(
+      /*off_the_record=*/true, prefs(),
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+
+  EXPECT_FALSE(
+      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
+  EXPECT_TRUE(
+      service
+          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
+          .empty());
+
+  prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
+                                         R"([
+                                              {
+                                                "service_provider": "google"
+                                              }
+                                            ])",
+                                         base::JSON_ALLOW_TRAILING_COMMAS));
+  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
+
+  EXPECT_FALSE(
+      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
+  EXPECT_TRUE(
+      service
+          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
+          .empty());
+
+  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
+
+  EXPECT_FALSE(
+      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
+  EXPECT_TRUE(
+      service
+          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
+          .empty());
 }
 
 }  // namespace enterprise_connectors
