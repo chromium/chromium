@@ -1389,8 +1389,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   const DrawMode draw_mode = GetDrawMode();
 
   int num_missing_tiles = 0;
-  bool has_incompletely_rastered_tiles = false;
-  bool has_incompletely_recorded_tiles = false;
+  CHECK(!frame->checkerboarded_needs_raster);
+  CHECK(!frame->checkerboarded_needs_record);
 
   bool have_copy_request =
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
@@ -1461,18 +1461,12 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
           append_quads_data.visible_layer_area);
       rendering_stats_instrumentation_->AddApproximatedVisibleContentArea(
           append_quads_data.approximated_visible_content_area);
-      rendering_stats_instrumentation_->AddCheckerboardedVisibleContentArea(
-          append_quads_data.checkerboarded_visible_content_area);
-      rendering_stats_instrumentation_->AddCheckerboardedNeedsRecordContentArea(
-          append_quads_data.checkerboarded_needs_record_content_area);
-      rendering_stats_instrumentation_->AddCheckerboardedNeedsRasterContentArea(
-          append_quads_data.checkerboarded_needs_raster_content_area);
 
       num_missing_tiles += append_quads_data.num_missing_tiles;
-      has_incompletely_rastered_tiles |=
-          append_quads_data.num_incompletely_rastered_tiles > 0;
-      has_incompletely_recorded_tiles |=
-          append_quads_data.num_incompletely_recorded_tiles > 0;
+      frame->checkerboarded_needs_raster |=
+          append_quads_data.checkerboarded_needs_raster;
+      frame->checkerboarded_needs_record |=
+          append_quads_data.checkerboarded_needs_record;
 
       if (append_quads_data.num_missing_tiles > 0) {
         have_missing_animated_tiles |=
@@ -1509,7 +1503,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // not cause the scheduler to do a main frame, instead it will continue to try
   // drawing until we finally complete, so the copy request will not be lost.
   // TODO(weiliangc): Remove RequiresHighResToDraw. crbug.com/469175
-  if (has_incompletely_rastered_tiles || num_missing_tiles) {
+  if (frame->checkerboarded_needs_raster) {
     if (RequiresHighResToDraw())
       draw_result = DrawResult::kAbortedMissingHighResContent;
   }
@@ -1564,10 +1558,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     // Draw properties depend on copy requests.
     active_tree()->set_needs_update_draw_properties();
   }
-
-  frame->checkerboarded_needs_raster =
-      num_missing_tiles > 0 || has_incompletely_rastered_tiles;
-  frame->checkerboarded_needs_record = has_incompletely_recorded_tiles;
 
   TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
                    "draw_result", draw_result, "missing tiles",

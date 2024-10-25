@@ -51,12 +51,6 @@ RenderingStats::AsTraceableData() const {
   record_data->SetInteger("visible_content_area", visible_content_area);
   record_data->SetInteger("approximated_visible_content_area",
                           approximated_visible_content_area);
-  record_data->SetInteger("checkerboarded_visible_content_area",
-                          checkerboarded_visible_content_area);
-  record_data->SetInteger("checkerboarded_needs_record_content_area",
-                          checkerboarded_needs_record_content_area);
-  record_data->SetInteger("checkerboarded_needs_raster_content_area",
-                          checkerboarded_needs_raster_content_area);
   draw_duration.AddToTracedValue("draw_duration_ms", record_data.get());
 
   draw_duration_estimate.AddToTracedValue("draw_duration_estimate_ms",

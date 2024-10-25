@@ -3734,8 +3734,7 @@ class IncompleteRecordingLayer : public LayerImpl {
 
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
-    append_quads_data->checkerboarded_needs_record_content_area += 200;
-    append_quads_data->num_incompletely_recorded_tiles++;
+    append_quads_data->checkerboarded_needs_record = true;
     append_quads_data->visible_layer_area += 200;
   }
 };
@@ -6776,10 +6775,11 @@ class MissingTextureAnimatingLayer : public DidDrawCheckLayer {
                    AppendQuadsData* append_quads_data) override {
     LayerImpl::AppendQuads(render_pass, append_quads_data);
     if (had_incomplete_tile_) {
-      append_quads_data->num_incompletely_rastered_tiles++;
+      append_quads_data->checkerboarded_needs_raster = true;
     }
     if (tile_missing_) {
       append_quads_data->num_missing_tiles++;
+      append_quads_data->checkerboarded_needs_raster = true;
     }
   }
 

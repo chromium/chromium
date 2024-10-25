@@ -54,33 +54,6 @@ void RenderingStatsInstrumentation::AddApproximatedVisibleContentArea(
   impl_thread_rendering_stats_.approximated_visible_content_area += area;
 }
 
-void RenderingStatsInstrumentation::AddCheckerboardedVisibleContentArea(
-    int64_t area) {
-  if (!record_rendering_stats_)
-    return;
-
-  base::AutoLock scoped_lock(lock_);
-  impl_thread_rendering_stats_.checkerboarded_visible_content_area += area;
-}
-
-void RenderingStatsInstrumentation::AddCheckerboardedNeedsRecordContentArea(
-    int64_t area) {
-  if (!record_rendering_stats_)
-    return;
-
-  base::AutoLock scoped_lock(lock_);
-  impl_thread_rendering_stats_.checkerboarded_needs_record_content_area += area;
-}
-
-void RenderingStatsInstrumentation::AddCheckerboardedNeedsRasterContentArea(
-    int64_t area) {
-  if (!record_rendering_stats_)
-    return;
-
-  base::AutoLock scoped_lock(lock_);
-  impl_thread_rendering_stats_.checkerboarded_needs_raster_content_area += area;
-}
-
 void RenderingStatsInstrumentation::AddDrawDuration(
     base::TimeDelta draw_duration,
     base::TimeDelta draw_duration_estimate) {
