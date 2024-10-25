@@ -646,7 +646,6 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
     ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
         map, IsNewProfile(), IsRegularProfile());
     crosapi::browser_util::CacheLacrosAvailability(map);
-    crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
     ash::standalone_browser::CacheLacrosSelection(map);
   }
 #endif
@@ -1183,7 +1182,6 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
         ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
             map, IsNewProfile(), IsRegularProfile());
         crosapi::browser_util::CacheLacrosAvailability(map);
-        crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
         ash::standalone_browser::CacheLacrosSelection(map);
       }
 

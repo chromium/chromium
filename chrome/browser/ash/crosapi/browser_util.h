@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 
-#include <optional>
-#include <string>
-#include <string_view>
-
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -16,7 +12,6 @@
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 
 class PrefRegistrySimple;
-class PrefService;
 
 namespace ash::standalone_browser::migrator_util {
 enum class PolicyInitState;
@@ -134,9 +129,6 @@ extern const char kLaunchOnLoginPref[];
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// Registers prefs used via local state PrefService.
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
 // Returns the user directory for lacros-chrome.
 base::FilePath GetUserDataDir();
 
@@ -146,14 +138,6 @@ bool IsLacrosAllowedToBeEnabled();
 
 // Returns true if the Lacros feature is enabled for the primary user.
 bool IsLacrosEnabled();
-
-// Similar to `IsLacrosEnabled()` but does not check if profile migration has
-// been completed. This is to be used inside `BrowserDataMigrator`. Unlike
-// `IsLacrosEnabled()` it can be called before the primary user profile is
-// created.
-bool IsLacrosEnabledForMigration(
-    const user_manager::User* user,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state);
 
 // Returns true if Ash browser is enabled. Returns false iff Lacros is
 // enabled and is the only browser.
@@ -202,10 +186,6 @@ base::Version GetRootfsLacrosVersionMayBlock(
 // availability.
 void CacheLacrosAvailability(const policy::PolicyMap& map);
 
-// To be called at primary user login, to cache the policy value for the
-// LacrosDataBackwardMigrationMode policy.
-void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map);
-
 // Returns the lacros ComponentInfo for a given channel.
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
 
@@ -231,59 +211,8 @@ void SetCachedLacrosAvailabilityForTesting(
 ash::standalone_browser::LacrosAvailability
 GetCachedLacrosAvailabilityForTesting();
 
-// GetCachedLacrosDataBackwardMigrationMode returns the cached value of the
-// LacrosDataBackwardMigrationMode policy.
-LacrosDataBackwardMigrationMode GetCachedLacrosDataBackwardMigrationMode();
-
 // Clears the cached values for lacros availability policy.
 void ClearLacrosAvailabilityCacheForTest();
-
-// Clears the cached value for LacrosDataBackwardMigrationMode.
-void ClearLacrosDataBackwardMigrationModeCacheForTest();
-
-// Returns true if profile migraiton is enabled. If profile migration is
-// enabled, the completion of it is required to enable Lacros.
-bool IsProfileMigrationEnabled(
-    const user_manager::User* user,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state);
-
-// Returns true if the profile migration is enabled, but not yet completed.
-bool IsProfileMigrationAvailable();
-
-// Returns migration status for the primary user. Returns nullopt if the primary
-// user is not yet set, which should only happen in tests.
-std::optional<MigrationStatus> GetMigrationStatus();
-MigrationStatus GetMigrationStatusForUser(PrefService* local_state,
-                                          const user_manager::User* user);
-
-// Sets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
-// identified by `user_id_hash` to the current time.
-void SetProfileMigrationCompletionTimeForUser(PrefService* local_state,
-                                              const std::string& user_id_hash);
-
-// Gets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
-// identified by `user_id_hash`.
-std::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash);
-
-// Clears the value of `kProfileMigrationCompletionTimeForUserPref` for the user
-// identified by `user_id_hash`.
-void ClearProfileMigrationCompletionTimeForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash);
-
-// Sets the value of `kProfileDataBackwardMigrationCompletedForUserPref` for the
-// user identified by `user_id_hash`.
-void SetProfileDataBackwardMigrationCompletedForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash);
-
-// Clears the value of `kProfileDataBackwardMigrationCompletedForUserPref` for
-// the user identified by `user_id_hash`.
-void ClearProfileDataBackwardMigrationCompletedForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash);
 
 // Indicate whether sync on Ash should be enabled for browser data. Sync should
 // stop syncing browser items from Ash if Lacros is enabled and once browser
@@ -300,28 +229,6 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 // so that later DCHECKs do not fail.
 void SetLacrosLaunchSwitchSourceForTest(
     ash::standalone_browser::LacrosAvailability test_value);
-
-// Parses the string representation of LacrosDataBackwardMigrationMode policy
-// value into the enum value. Returns nullopt on unknown value.
-std::optional<LacrosDataBackwardMigrationMode>
-ParseLacrosDataBackwardMigrationMode(std::string_view value);
-
-// Returns the policy string representation from the given enum value.
-std::string_view GetLacrosDataBackwardMigrationModeName(
-    LacrosDataBackwardMigrationMode value);
-
-// Stores that "Go to files button" on the migration error screen is clicked.
-void SetGotoFilesClicked(PrefService* local_state,
-                         const std::string& user_id_hash);
-
-// Forgets that "Go to files button" on the migration error screen was clicked.
-void ClearGotoFilesClicked(PrefService* local_state,
-                           const std::string& user_id_hash);
-
-// Returns true if "Go to files button" on the migration error screen was
-// clicked.
-bool WasGotoFilesClicked(PrefService* local_state,
-                         const std::string& user_id_hash);
 
 // Returns true if ash 1st party extension keep list should be enforced.
 bool ShouldEnforceAshExtensionKeepList();

@@ -19,8 +19,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
@@ -286,13 +284,6 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
   // Launch sign in screen to add another user to current session.
   DCHECK(!UserManager::Get()->GetUsersAllowedForMultiUserSignIn().empty());
 
-  // Lacros and multiprofile are mutually exclusive.
-  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(!crosapi::browser_util::IsLacrosEnabledForMigration(
-      primary_user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
-
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
   bool show_intro = true;
@@ -376,13 +367,7 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
       ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return false;
   }
-  // Multiprofile mode is not allowed if Lacros is enabled.
-  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  if (primary_user && crosapi::browser_util::IsLacrosEnabledForMigration(
-                          primary_user, ash::standalone_browser::migrator_util::
-                                            PolicyInitState::kAfterInit)) {
-    return false;
-  }
+
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
   // Does not include users that are logged in.
   size_t users_available_to_add =
@@ -468,15 +453,6 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   if (user_manager->GetLoggedInUsers().size() >=
       session_manager::kMaximumNumberOfUserSessions) {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
-  }
-
-  const auto* primary_user = user_manager->GetPrimaryUser();
-  if (primary_user) {
-    if (crosapi::browser_util::IsLacrosEnabledForMigration(
-            primary_user, ash::standalone_browser::migrator_util::
-                              PolicyInitState::kAfterInit)) {
-      return ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED;
-    }
   }
 
   return ash::AddUserSessionPolicy::ALLOWED;

@@ -367,7 +367,6 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
@@ -1095,6 +1094,11 @@ constexpr char kProfileMoveMigrationCompletedForUserPref[] =
     "lacros.profile_move_migration_completed_for_user";
 constexpr char kProfileMigrationCompletedForNewUserPref[] =
     "lacros.profile_migration_completed_for_new_user";
+const char kProfileDataBackwardMigrationCompletedForUserPref[] =
+    "lacros.profile_data_backward_migration_completed_for_user";
+const char kGotoFilesPref[] = "lacros.goto_files";
+const char kProfileMigrationCompletionTimeForUserPref[] =
+    "lacros.profile_migration_completion_time_for_user";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1219,6 +1223,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref);
   registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref);
   registry->RegisterDictionaryPref(kProfileMigrationCompletedForNewUserPref);
+  registry->RegisterDictionaryPref(
+      kProfileDataBackwardMigrationCompletedForUserPref);
+  registry->RegisterListPref(kGotoFilesPref);
+  registry->RegisterDictionaryPref(kProfileMigrationCompletionTimeForUserPref);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1756,7 +1764,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::ManagedCellularPrefHandler::RegisterLocalStatePrefs(registry);
   ash::ChromeSessionManager::RegisterPrefs(registry);
   user_manager::UserManagerImpl::RegisterPrefs(registry);
-  crosapi::browser_util::RegisterLocalStatePrefs(registry);
   ash::CupsPrintersManager::RegisterLocalStatePrefs(registry);
   ash::bluetooth_config::BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
       registry);
@@ -2498,6 +2505,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kProfileMigrationCompletedForUserPref);
   local_state->ClearPref(kProfileMoveMigrationCompletedForUserPref);
   local_state->ClearPref(kProfileMigrationCompletedForNewUserPref);
+  local_state->ClearPref(kProfileDataBackwardMigrationCompletedForUserPref);
+  local_state->ClearPref(kGotoFilesPref);
+  local_state->ClearPref(kProfileMigrationCompletionTimeForUserPref);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

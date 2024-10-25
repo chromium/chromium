@@ -144,86 +144,6 @@ TEST_F(BrowserUtilTest, LacrosDisableDisallowedLacrosByCommandLineFlag) {
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
 }
 
-TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
-  const user_manager::User* const user = AddRegularUser("user@test.com");
-
-  // Lacros is enabled only after profile migration for LacrosOnly mode.
-  {
-    base::test::ScopedCommandLine command_line;
-    command_line.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-
-    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
-        user,
-        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
-    // Since profile migration hasn't been marked as completed, this returns
-    // false.
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-
-    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-        local_state(), user->username_hash(),
-        ash::standalone_browser::migrator_util::MigrationMode::kCopy);
-
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  }
-}
-
-TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
-  constexpr char kUserEmail[] = "user@test.com";
-  const user_manager::User* const user =
-      AddRegularUser(kUserEmail, /*login=*/false);
-
-  // Lacros is not enabled yet for profile migration to happen.
-  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-      user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit));
-
-  // Sets command line flag to emulate the situation where the Chrome
-  // restart happens.
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchASCII(
-      ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
-      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
-  cmdline->AppendSwitchASCII(ash::switches::kLoginUser, kUserEmail);
-
-  // Policy should not enable Lacros anymore.
-  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-      user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit));
-}
-
-TEST_F(BrowserUtilTest, LacrosEnabled) {
-  const user_manager::User* const user = AddRegularUser("user@test.com");
-  ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-      local_state(), user->username_hash(),
-      ash::standalone_browser::migrator_util::MigrationMode::kMove);
-
-  EXPECT_FALSE(browser_util::IsLacrosEnabled());
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-}
-
-TEST_F(BrowserUtilTest, ManagedAccountLacros) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  const user_manager::User* const user =
-      AddRegularUser("user@managedchrome.com");
-  ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-      local_state(), user->username_hash(),
-      ash::standalone_browser::migrator_util::MigrationMode::kMove);
-
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  }
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  }
-}
-
 TEST_F(BrowserUtilTest, BlockedForChildUser) {
   AccountId account_id = AccountId::FromUserEmail("user@test.com");
   const User* user = fake_user_manager_->AddChildUser(account_id);
@@ -250,9 +170,6 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-        user,
-        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 
   // Lacros is allowed but not enabled.
@@ -262,9 +179,6 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-        user,
-        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 
   // Lacros is allowed and enabled by flag.
@@ -277,9 +191,6 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
-        user,
-        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 
   // Lacros cannot be enabled via policy.
@@ -289,9 +200,6 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-        user,
-        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 }
 
@@ -306,9 +214,6 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   // Lacros cannot be enabled via policy.
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-      user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
@@ -321,9 +226,6 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableLacrosForTesting);
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
-      user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 TEST_F(BrowserUtilTest, LacrosOnlyBrowserByFlags) {
@@ -494,78 +396,6 @@ TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
   EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
 }
 
-TEST_F(BrowserUtilTest, GetMigrationStatusForUser) {
-  using ash::standalone_browser::migrator_util::MigrationMode;
-  using browser_util::GetMigrationStatusForUser;
-  using browser_util::MigrationStatus;
-
-  const user_manager::User* const user = AddRegularUser("user@test.com");
-
-  EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
-            MigrationStatus::kLacrosNotEnabled);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
-            MigrationStatus::kUncompleted);
-
-  {
-    for (int i = 0;
-         i < ash::standalone_browser::migrator_util::kMaxMigrationAttemptCount;
-         i++) {
-      ash::standalone_browser::migrator_util::
-          UpdateMigrationAttemptCountForUser(local_state(),
-                                             user->username_hash());
-    }
-
-    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
-              MigrationStatus::kMaxAttemptReached);
-
-    ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
-        local_state(), user->username_hash());
-  }
-
-  {
-    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-        local_state(), user->username_hash(),
-        ash::standalone_browser::migrator_util::MigrationMode::kCopy);
-
-    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
-              MigrationStatus::kCopyCompleted);
-
-    ash::standalone_browser::migrator_util::
-        ClearProfileMigrationCompletedForUser(local_state(),
-                                              user->username_hash());
-  }
-
-  {
-    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-        local_state(), user->username_hash(),
-        ash::standalone_browser::migrator_util::MigrationMode::kMove);
-
-    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
-              MigrationStatus::kMoveCompleted);
-
-    ash::standalone_browser::migrator_util::
-        ClearProfileMigrationCompletedForUser(local_state(),
-                                              user->username_hash());
-  }
-
-  {
-    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-        local_state(), user->username_hash(),
-        ash::standalone_browser::migrator_util::MigrationMode::kSkipForNewUser);
-
-    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
-              MigrationStatus::kSkippedForNewUser);
-
-    ash::standalone_browser::migrator_util::
-        ClearProfileMigrationCompletedForUser(local_state(),
-                                              user->username_hash());
-  }
-}
-
 TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
   const user_manager::User* const user = AddRegularUser("user@random.com");
   ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
@@ -720,9 +550,6 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
-      user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
 
 }  // namespace crosapi

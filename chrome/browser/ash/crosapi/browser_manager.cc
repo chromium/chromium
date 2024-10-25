@@ -83,7 +83,6 @@
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -126,10 +125,6 @@ namespace {
 const char kLacrosLaunchModeDaily[] = "Ash.Lacros.Launch.Mode.Daily";
 const char kLacrosLaunchModeAndSourceDaily[] =
     "Ash.Lacros.Launch.ModeAndSource.Daily";
-
-// Used to get field data on how much users have migrated to Lacros.
-const char kLacrosMigrationStatus[] = "Ash.LacrosMigrationStatus2";
-const char kLacrosMigrationStatusDaily[] = "Ash.LacrosMigrationStatus2.Daily";
 
 // The interval at which the daily UMA reporting function should be
 // called. De-duping of events will be happening on the server side.
@@ -543,9 +538,8 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   PrepareLacrosPolicies(this);
 
-  // Perform the UMA recording for the current Lacros launch mode and migration
-  // status.
-  RecordLacrosLaunchModeAndMigrationStatus();
+  // Perform the UMA recording for the current Lacros launch mode.
+  RecordLacrosLaunchMode();
 
   // As a switch between Ash and Lacros mode requires an Ash restart plus
   // profile migration, the state will not change while the system is up.
@@ -956,9 +950,6 @@ void BrowserManager::OnSessionStateChanged() {
   if (state_ == State::NOT_INITIALIZED) {
     InitializeAndStartIfNeeded();
   }
-
-  // If "Go to files" on the migration error page was clicked, launch it here.
-  HandleGoToFiles();
 }
 
 void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {
@@ -1014,11 +1005,6 @@ void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
     return;
   }
 
-  // Record data version for primary user profile.
-  ash::standalone_browser::migrator_util::RecordDataVer(
-      g_browser_process->local_state(), user.username_hash(),
-      version_info::GetVersion());
-
   // Check if Lacros is enabled for crash reporting. This must happen after the
   // primary user has been set as priamry user state is used in when evaluating
   // the correct value for IsLacrosEnabled().
@@ -1054,21 +1040,6 @@ void BrowserManager::StartIfNeeded() {
     if (!pending_actions_.IsEmpty() || IsKeepAliveEnabled()) {
       Start();
     }
-  }
-}
-
-void BrowserManager::HandleGoToFiles() {
-  // If "Go to files" on the migration error page was clicked, launch it here.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  std::string user_id_hash =
-      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile);
-  if (browser_util::WasGotoFilesClicked(g_browser_process->local_state(),
-                                        user_id_hash)) {
-    files_app_launcher_ = std::make_unique<FilesAppLauncher>(
-        apps::AppServiceProxyFactory::GetForProfile(profile));
-    files_app_launcher_->Launch(base::BindOnce(
-        browser_util::ClearGotoFilesClicked, g_browser_process->local_state(),
-        std::move(user_id_hash)));
   }
 }
 
@@ -1122,21 +1093,6 @@ void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
   browser_service_->service->UpdateKeepAlive(enabled);
 }
 
-void BrowserManager::SetLacrosMigrationStatus() {
-  const std::optional<browser_util::MigrationStatus> status =
-      browser_util::GetMigrationStatus();
-
-  if (!status.has_value()) {
-    // This should only happen in tests.
-    return;
-  }
-
-  CHECK(!migration_status_.has_value() || *migration_status_ == *status)
-      << "Lacros migration status should not change in-session.";
-
-  migration_status_ = status;
-}
-
 void BrowserManager::SetLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;
   LacrosLaunchModeAndSource lacros_mode_and_source;
@@ -1188,30 +1144,19 @@ void BrowserManager::SetLacrosLaunchMode() {
   }
 }
 
-void BrowserManager::RecordLacrosLaunchModeAndMigrationStatus() {
-  SetLacrosMigrationStatus();
-  if (!migration_status_.has_value()) {
-    // `SetLacrosMigrationStatus()` does not set `migration_status_` if primary
-    // user is not yet set at the time of calling (see
-    // `browser_util::GetMigrationMode()` for details). This should only happen
-    // in tests.
-    CHECK_IS_TEST();
-    return;
-  }
+void BrowserManager::RecordLacrosLaunchMode() {
   SetLacrosLaunchMode();
 
   base::UmaHistogramEnumeration("Ash.Lacros.Launch.Mode", *lacros_mode_);
   base::UmaHistogramEnumeration("Ash.Lacros.Launch.ModeAndSource",
                                 *lacros_mode_and_source_);
-  base::UmaHistogramEnumeration(kLacrosMigrationStatus, *migration_status_);
 
   // Call our Daily reporting once now to make sure we have an event. If it's a
   // dupe, the server will de-dupe.
-  OnDailyLaunchModeAndMigrationStatusTimer();
+  OnDailyLaunchModeTimer();
   if (!daily_event_timer_.IsRunning()) {
-    daily_event_timer_.Start(
-        FROM_HERE, kDailyLaunchModeTimeDelta, this,
-        &BrowserManager::OnDailyLaunchModeAndMigrationStatusTimer);
+    daily_event_timer_.Start(FROM_HERE, kDailyLaunchModeTimeDelta, this,
+                             &BrowserManager::OnDailyLaunchModeTimer);
   }
 }
 
@@ -1289,9 +1234,7 @@ void BrowserManager::OnActionPerformed(std::unique_ptr<BrowserAction> action,
 }
 
 // Callback called when the daily event happens.
-void BrowserManager::OnDailyLaunchModeAndMigrationStatusTimer() {
-  base::UmaHistogramEnumeration(kLacrosMigrationStatusDaily,
-                                *migration_status_);
+void BrowserManager::OnDailyLaunchModeTimer() {
   base::UmaHistogramEnumeration(kLacrosLaunchModeDaily, *lacros_mode_);
   base::UmaHistogramEnumeration(kLacrosLaunchModeAndSourceDaily,
                                 *lacros_mode_and_source_);

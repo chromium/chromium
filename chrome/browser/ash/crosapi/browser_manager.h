@@ -534,12 +534,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void OnActionPerformed(std::unique_ptr<BrowserAction> action, bool retry);
 
-  // Remembers lacros launch mode and migration status by calling
-  // `SetLacrosMigrationStatus()` and `SetLacrosLaunchMode()`, then kicks off
-  // the daily reporting for the metrics.
-  void RecordLacrosLaunchModeAndMigrationStatus();
-  // Sets `migration_mode_`.
-  void SetLacrosMigrationStatus();
+  // Remembers lacros launch mode by calling `SetLacrosLaunchMode()`, then kicks
+  // off the daily reporting for the metrics.
+  void RecordLacrosLaunchMode();
   // Sets `lacros_mode_` and `lacros_mode_and_source_`.
   void SetLacrosLaunchMode();
 
@@ -576,9 +573,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnLaunchComplete(
       base::expected<BrowserLauncher::LaunchResults,
                      BrowserLauncher::LaunchFailureReason> launch_results);
-
-  // Launch "Go to files" if the migration error page was clicked.
-  void HandleGoToFiles();
 
   // BrowserServiceHostObserver:
   void OnBrowserRelaunchRequested(CrosapiId id) override;
@@ -636,9 +630,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Creates windows from template data.
   void RestoreWindowsFromTemplate();
 
-  // Sending the LaunchMode and MigrationStatus state at least once a day.
+  // Sending the LaunchMode state at least once a day.
   // multiple events will get de-duped on the server side.
-  void OnDailyLaunchModeAndMigrationStatusTimer();
+  void OnDailyLaunchModeTimer();
 
   void PerformAction(std::unique_ptr<BrowserAction> action);
 
@@ -721,8 +715,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // deciding if Lacros should be used or not.
   std::optional<LacrosLaunchMode> lacros_mode_;
   std::optional<LacrosLaunchModeAndSource> lacros_mode_and_source_;
-  // The migration status used to emit UMA reports.
-  std::optional<browser_util::MigrationStatus> migration_status_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
