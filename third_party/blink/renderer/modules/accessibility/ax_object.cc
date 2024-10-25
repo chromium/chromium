@@ -2375,13 +2375,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     // On Android, style attributes are only serialized for snapshots.
     if (is_snapshot) {
       SerializeStyleAttributes(node_data);
-    } else {
-      // For non-snapshots we include writing direction for image descriptions.
-      // TODO(mschillaci): Remove this after content is updated.
-      if (IsImage() &&
-          GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
-        node_data->SetTextDirection(GetTextDirection());
-      }
     }
 #else
     SerializeStyleAttributes(node_data);

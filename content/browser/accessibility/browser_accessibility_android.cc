@@ -148,23 +148,7 @@ BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
         status);
   }
 
-  int message_id = 0;
-  switch (static_cast<ax::mojom::WritingDirection>(
-      GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
-    case ax::mojom::WritingDirection::kRtl:
-      message_id = IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_RTL;
-      break;
-    case ax::mojom::WritingDirection::kTtb:
-    case ax::mojom::WritingDirection::kBtt:
-    case ax::mojom::WritingDirection::kNone:
-    case ax::mojom::WritingDirection::kLtr:
-      message_id = IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR;
-      break;
-  }
-
-  DCHECK(message_id);
-
-  return GetLocalizedString(message_id);
+  return GetLocalizedString(IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID);
 }
 
 void BrowserAccessibilityAndroid::AppendTextToString(
