@@ -7,20 +7,20 @@ found in the LICENSE file.
 Material 3: Forward/backward transition
 https://m3.material.io/styles/motion/transitions/transition-patterns
 -->
-<set xmlns:android="http://schemas.android.com/apk/res/android"
-        android:ordering="together">
-    <objectAnimator
-            android:propertyName="alpha"
-            android:valueType="floatType"
-            android:valueFrom="1.0"
-            android:valueTo="0.0"
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <alpha android:fromAlpha="1.0"
+            android:toAlpha="0.0"
             android:interpolator="@interpolator/m3_sys_motion_easing_standard_accelerate"
+            android:fillEnabled="true"
+            android:fillBefore="true"
+            android:fillAfter="true"
+            android:startOffset="0"
             android:duration="100" />
-    <objectAnimator
-            android:propertyName="translationX"
-            android:valueType="floatType"
-            android:valueFrom="0"
-            android:valueTo="-30dp"
+    <translate android:fromXDelta="0"
+            android:toXDelta="30dp"
+            android:fillEnabled="true"
+            android:fillBefore="true"
+            android:fillAfter="true"
             android:interpolator="@interpolator/m3_sys_motion_easing_emphasized"
             android:duration="450" />
 </set>
