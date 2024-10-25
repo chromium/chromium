@@ -32,6 +32,8 @@ class ScreenWinDisplay final {
   const gfx::Rect& screen_rect() const { return screen_rect_; }
   const gfx::Rect& screen_work_rect() const { return screen_work_rect_; }
 
+  Display& modifiable_display() { return display_; }
+
  private:
   Display display_;
   gfx::Rect pixel_bounds_;

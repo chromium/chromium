@@ -11,6 +11,13 @@
 namespace display {
 namespace features {
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/368060445): Remove this when the feature is fully launched.
+BASE_FEATURE(kSkipEmptyDisplayHotplugEvent,
+             "SkipEmptyDisplayHotplugEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables the rounded corners for the internal display.
