@@ -31,10 +31,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -210,11 +213,49 @@ public class BottomSheetControllerTest {
         requestContentInSheet(mLowPriorityContent, true);
         float transYWithBottomInset = bottomSheet.getTranslationY();
 
+        int bottomInsets = ViewUtils.dpToPx(mActivity, mEdgeToEdgeController.bottomInset);
         Assert.assertEquals(
                 "The translate is not adjusted for the extra content when it is expanded to edge.",
                 transYWithoutBottomInset,
-                transYWithBottomInset + ViewUtils.dpToPx(mActivity, 100),
+                transYWithBottomInset + bottomInsets,
                 MathUtils.EPSILON);
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Padding for the sheet should match the bottom insets.",
+                                bottomSheet
+                                        .findViewById(R.id.bottom_sheet_content)
+                                        .getPaddingBottom(),
+                                Matchers.equalTo(bottomInsets)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"BottomSheetController"})
+    public void testShowWithBottomInset_LargeBottomInsets() {
+        mEdgeToEdgeController.bottomInset = 2000;
+
+        requestContentInSheet(mNonPeekableContent, true);
+        View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
+        float transYWithBottomInset = bottomSheet.getTranslationY();
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The transition should be non-negative.",
+                                transYWithBottomInset,
+                                Matchers.greaterThanOrEqualTo(0.f)));
+
+        int bottomInsets = ViewUtils.dpToPx(mActivity, mEdgeToEdgeController.bottomInset);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Padding for the sheet should match the bottom insets.",
+                                bottomSheet
+                                        .findViewById(R.id.bottom_sheet_content)
+                                        .getPaddingBottom(),
+                                Matchers.equalTo(bottomInsets)));
     }
 
     @Test

@@ -327,7 +327,7 @@ class BottomSheet extends FrameLayout
         // Listen to height changes on the root.
         mSheetContainer.addOnLayoutChangeListener(
                 new View.OnLayoutChangeListener() {
-                    private int mPreviousKeyboardHeight;
+                    private int mPreviousBottomPadding;
 
                     @Override
                     public void onLayoutChange(
@@ -362,21 +362,24 @@ class BottomSheet extends FrameLayout
                             sizeAndPositionSheetInParent();
                         }
 
-                        int heightMinusKeyboard = (int) mContainerHeight;
-                        int keyboardHeight = 0;
+                        assert mEdgeToEdgeBottomInsetSupplier.get() != null;
+                        int bottomInset =
+                                ViewUtils.dpToPx(
+                                        getContext(), mEdgeToEdgeBottomInsetSupplier.get());
+                        int bottomPadding = bottomInset;
 
                         // Reset mVisibleViewportRect regardless of sheet open state as it is used
                         // outside of calculating the keyboard height.
                         window.getDecorView().getWindowVisibleDisplayFrame(mVisibleViewportRect);
                         if (isSheetOpen()) {
                             int decorHeight = window.getDecorView().getHeight();
-                            heightMinusKeyboard =
+                            int visibleHeight =
                                     Math.min(decorHeight, mVisibleViewportRect.height());
-                            keyboardHeight =
-                                    Math.max(0, (int) (mContainerHeight - heightMinusKeyboard));
+                            bottomPadding =
+                                    Math.max(bottomPadding, mContainerHeight - visibleHeight);
                         }
 
-                        if (keyboardHeight != mPreviousKeyboardHeight) {
+                        if (bottomPadding != mPreviousBottomPadding) {
                             // If the keyboard height changed, recompute the padding for the content
                             // area.
                             // This shrinks the content size while retaining the default background
@@ -386,11 +389,11 @@ class BottomSheet extends FrameLayout
                                     mBottomSheetContentContainer.getPaddingLeft(),
                                     mBottomSheetContentContainer.getPaddingTop(),
                                     mBottomSheetContentContainer.getPaddingRight(),
-                                    keyboardHeight);
+                                    bottomPadding);
                         }
 
                         if (previousHeight != mContainerHeight
-                                || mPreviousKeyboardHeight != keyboardHeight) {
+                                || mPreviousBottomPadding != bottomPadding) {
                             // If we are in the middle of a touch event stream (i.e. scrolling while
                             // keyboard is up) don't set the sheet state. Instead allow the gesture
                             // detector to position the sheet and make sure the keyboard hides.
@@ -407,7 +410,7 @@ class BottomSheet extends FrameLayout
                             }
                         }
 
-                        mPreviousKeyboardHeight = keyboardHeight;
+                        mPreviousBottomPadding = bottomPadding;
                     }
                 });
 
@@ -725,6 +728,9 @@ class BottomSheet extends FrameLayout
                 (mContainerHeight - mCurrentOffsetPx)
                         + getOffsetFromBrowserControls()
                         - (mTargetState == SheetState.HIDDEN ? 0 : bottomInset);
+
+        // Ensure we don't over translate the bottom container.
+        translationY = Math.max(0, translationY);
 
         if (isSheetOpen() && MathUtils.areFloatsEqual(translationY, getTranslationY())) return;
 
