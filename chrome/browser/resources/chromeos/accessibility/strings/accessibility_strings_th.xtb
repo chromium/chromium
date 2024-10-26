@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="100421257800558142">กดแป้นลูกศรขวา</translation>
 <translation id="100506692671054486">ไม่มีคําสั่งก่อนหน้า</translation>
 <translation id="1009046985747440431">กดลูกศรขึ้นหรือลงเพื่อไปยังส่วนต่างๆ แล้วกด Enter เพื่อเปิดใช้งาน</translation>
 <translation id="1011903154582639569">หาแป้นแล้วยกนิ้วขึ้นพิมพ์</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">ปุ่มเปิด-ปิด</translation>
 <translation id="1299774449519412690">สีฟ้าท้องฟ้าอ่อน</translation>
 <translation id="1303806948938513162">ใช้ 4 นิ้วแตะเพื่อเข้าสู่เมนู ChromeVox</translation>
+<translation id="1304162325618937178">กดแป้นเว้นวรรค</translation>
 <translation id="1313373992684326101">ไปที่ส่วนก่อนหน้า เช่น ถาดสถานะและ Launcher</translation>
 <translation id="1315077335264761176">การวางแนวในการแตะ</translation>
 <translation id="1325363694295259631">ยกเลิกการเลือกปุ่มตัวเลือกรายการในเมนู <ph name="NAME" /> แล้ว</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">สีน้ำตาลข้าวสาลี</translation>
 <translation id="1618597272655350600">แจ้งคำอธิบายแบบเต็มของตำแหน่งปัจจุบัน</translation>
 <translation id="1627222324347828322">สีขาวโกสต์ไวท์</translation>
+<translation id="1632810692616643246">เข้าหรือออกจากโหมดเลื่อน</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{เครื่องหมายมากกว่า}other{# เครื่องหมายมากกว่า}}</translation>
 <translation id="1653266918374749391">ส่วนหัวระดับ 3 ก่อนหน้า</translation>
 <translation id="1657616855184033958">แสดงตัวกรองสตรีมเหตุการณ์</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">ไม่มีการควบคุมก่อนหน้า</translation>
 <translation id="2045606329038304310">การควบคุมช่องในฟอร์ม</translation>
 <translation id="2063539687800151747">คำจารึก</translation>
+<translation id="2067158561093481039">ดำเนินการชุดแป้นที่กำหนดเอง</translation>
 <translation id="2086961585857038472">คำถัดไป</translation>
 <translation id="2087981446621639008">รายละเอียดรายการคำอธิบาย</translation>
 <translation id="2089387485033699258">th</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">สีน้ำตาลแซดเดิลบราวน์</translation>
 <translation id="2199994615414171367">คณิตศาสตร์ก่อนหน้า</translation>
 <translation id="2203046366315513658">ลดค่า</translation>
+<translation id="2206580811360135054">แสดงหรือซ่อนภาพรวมของหน้าต่าง</translation>
 <translation id="2216790501338699346">URL ลิงก์: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">เลื่อนไปข้างหลัง 1 อักขระ</translation>
 <translation id="2220529011494928058">รายงานปัญหา</translation>
+<translation id="2239819015858077439">กดแป้นลูกศรลง</translation>
 <translation id="2243633977138166243">กดลูกศรซ้ายหรือขวาเพื่อไปยังส่วนต่างๆ แล้วกด Enter เพื่อเปิดใช้งาน</translation>
 <translation id="224426591676115802">ไม่มีเสียงสำหรับภาษา<ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">กำลังหยุดโหมดการเรียนรู้</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">สีแดงอินเดียนเรด</translation>
 <translation id="4432896207833262240">เนื้อหาที่มีการทำเครื่องหมาย</translation>
 <translation id="4437615272777527928">พิมพ์เพื่อค้นหาเมนู ใช้ลูกศรขึ้นและลงเพื่อวนดูผลการค้นหา ใช้แป้นลูกศรซ้ายและขวาเพื่อปรับเครื่องหมาย Caret ของข้อความและเพื่อย้ายระหว่างเมนู</translation>
+<translation id="4441677939526091190">กดแป้นลูกศรขึ้น</translation>
 <translation id="4453530046591759283">หากต้องการข้ามไปยังส่วนอื่นๆ ของหน้าจอ เช่น แถบเครื่องมือหรือถาดระบบ ให้กด Control+F1 F1 คือแป้นแรกทางด้านขวาของแป้น Escape</translation>
 <translation id="4457472090507035117">เลือกเสียงปัจจุบัน:</translation>
 <translation id="4476183483923481720">บรรทัดใหม่</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">ใช้ฟีเจอร์การเข้าถึงบนหน้าจอสัมผัสของ Chromebook</translation>
 <translation id="5655682562155942719">คำสั่งข้าม</translation>
 <translation id="56637627897541303">พื้นที่ข้อความ</translation>
+<translation id="5666746275818170484">กดแป้นลูกศรซ้าย</translation>
 <translation id="5669637233317991674">กด Search + ลูกศรขวา หรือ Search + ลูกศรซ้ายเพื่อไปยังบทเรียนนี้</translation>
 <translation id="5677240841070992068">ตำแหน่งปัจจุบัน</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">ปุ่มป๊อปอัป</translation>
 <translation id="7167657087543110">พูดอักขระ</translation>
 <translation id="7173102181852295013">สีน้ำเงินแก่</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">ขยาย</translation>
 <translation id="7209751026933045237">ไม่มีแถบเลื่อนถัดไป</translation>
 <translation id="7218782500591078391">สีเหลืองโกลเด้นร็อด</translation>
@@ -1089,6 +1098,7 @@
 <translation id="8378855320830505539">ภูมิภาค</translation>
 <translation id="8382679411218029383">การเติมข้อความอัตโนมัติแบบในบรรทัดและเป็นรายการ</translation>
 <translation id="8394908167088220973">เล่น/หยุดสื่อชั่วคราว</translation>
+<translation id="8409502156784390079">ใช้งานโหมดเลื่อนอยู่</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428603554127842284">ระดับ <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1166,6 +1176,7 @@
 <translation id="8986362086234534611">เลิกจำ</translation>
 <translation id="8989104346085848538">หากต้องการหยุดเสียงพูดของ ChromeVox ให้กดแป้น Control</translation>
 <translation id="9014206344398081366">บทแนะนำ ChromeVox</translation>
+<translation id="9034592733577768445">หยุดการควบคุมด้วยใบหน้าชั่วคราวแล้ว</translation>
 <translation id="9040132695316389094">ส่วนหัวระดับ 1</translation>
 <translation id="9061884144798498064">เลือกตารางเบรลล์แบบ 8 จุด:</translation>
 <translation id="9063946545000394379">ย้ายไปที่อักขระก่อนหน้า</translation>

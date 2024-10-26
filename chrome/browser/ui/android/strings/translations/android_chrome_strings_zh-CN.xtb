@@ -419,6 +419,7 @@
 <translation id="2942036813789421260">预览标签页已关闭</translation>
 <translation id="2946420957526726953">正在更新 Chrome 以连接到其他设备</translation>
 <translation id="2951071800649516099">将网页添加到阅读清单以供日后阅读</translation>
+<translation id="2954586176076923855">将地址栏移到顶部</translation>
 <translation id="2956070106555335453">摘要</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
 <translation id="2972109037780336501">自动撤消权限</translation>
@@ -653,6 +654,7 @@
 <translation id="4095425503313512126">浏览和搜索速度更快</translation>
 <translation id="4096227151372679484">书签保存流程已半屏打开</translation>
 <translation id="4101475238162928417">同步即可获取您在其他设备上的密码、书签和其他设置</translation>
+<translation id="4105527135143631701">Google 密码管理工具更新动作条已打开</translation>
 <translation id="4108314971463891922">关注</translation>
 <translation id="4113030288477039509">由您的管理员管理</translation>
 <translation id="4116038641877404294">下载网页以便离线查看</translation>
@@ -1257,6 +1259,7 @@
 <translation id="6813446258015311409">登录 Chrome，已打开。</translation>
 <translation id="6817747507826986771">快速分享此页面。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Google 密码管理工具更新动作条已关闭</translation>
 <translation id="6822587385560699678">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="6823561724060793716">在地址栏中，您可打开网页信息，查看当前所访问网页的更多信息</translation>
 <translation id="6828070228333235514">停止跟踪价格</translation>
@@ -1456,6 +1459,7 @@
 <translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612989789287281429">正在为您登录…</translation>
 <translation id="7619072057915878432">未能成功下载 <ph name="FILE_NAME" />，因为出现了网络故障。</translation>
+<translation id="762537095495606755">此设备上的密码将失效</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7628417132421583481">前往密码管理工具</translation>
 <translation id="7630202231528827509">提供商网址</translation>
@@ -1548,6 +1552,7 @@
 <translation id="8015452622527143194">将网页上的所有内容恢复到默认大小</translation>
 <translation id="8017431260099661477">无法打开邀请链接</translation>
 <translation id="8026238112629815203">我们更改了此设备上的密码保存方式</translation>
+<translation id="8027395186860110042">密码可能即将失效</translation>
 <translation id="8027863900915310177">选择要下载到何处</translation>
 <translation id="8030852056903932865">批准</translation>
 <translation id="8032569120109842252">已关注</translation>
@@ -1618,7 +1623,9 @@
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
 <translation id="829672787777123339">正在连接您的设备…</translation>
+<translation id="8306751933352925837">此设备上的密码即将失效。如需继续使用这些密码，请更新 Google Play 服务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />移除了标签页“<ph name="TAB_NAME" />”</translation>
+<translation id="8310451567823644042">密码即将失效</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
 <translation id="8342727528718219152">Chrome 会通知您哪些网站可能发送了过多通知</translation>
 <translation id="834313815369870491">一律不翻译网站</translation>
@@ -1685,6 +1692,7 @@
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8582529315803410153">您在其他设备上打开的标签页会显示在此处</translation>
+<translation id="8585103689515290060">自动填充服务</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>
 <translation id="859064343657890103">已删除“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
@@ -1753,6 +1761,7 @@
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8965591936373831584">待下载</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{系统将会关闭 <ph name="INCOGNITO_TAB_COUNT" /> 个无痕式标签页以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭 <ph name="INCOGNITO_TAB_COUNT" /> 个无痕式标签页以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="897061774231912216">由于未安装 Google Play 服务，密码即将失效。如需使用保存在 Google 账号中的密码，请使用其他设备登录，或前往 passwords.google.com。</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8972098258593396643">是否下载到默认文件夹？</translation>
 <translation id="8982113230057126145">选择“不喜欢”，提交您不喜欢此摘要的反馈</translation>
@@ -1802,6 +1811,7 @@
 <translation id="9148126808321036104">重新登录</translation>
 <translation id="9157212632995922070">选择一个账号以继续访问 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">仅分享内容</translation>
+<translation id="9168847423516963845">将地址栏移到底部</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>

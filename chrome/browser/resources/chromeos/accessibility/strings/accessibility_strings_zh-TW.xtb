@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="100421257800558142">按向右鍵</translation>
 <translation id="100506692671054486">沒有上一個指令</translation>
 <translation id="1009046985747440431">使用向上鍵或向下鍵瀏覽內容，按下 Enter 鍵即可啟用控制項</translation>
 <translation id="1011903154582639569">找到需要的按鍵後，輕輕一點即可輸入</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">切換鈕</translation>
 <translation id="1299774449519412690">淺天藍</translation>
 <translation id="1303806948938513162">用四指輕觸即可進入 ChromeVox 選單</translation>
+<translation id="1304162325618937178">按空格鍵</translation>
 <translation id="1313373992684326101">移至上一個區段，例如「狀態匣」和「啟動器」。</translation>
 <translation id="1315077335264761176">觸控入門課程</translation>
 <translation id="1325363694295259631">未選取「<ph name="NAME" />」選單項目圓形按鈕</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">小麥色</translation>
 <translation id="1618597272655350600">朗讀目前位置的完整說明</translation>
 <translation id="1627222324347828322">鬼魅白</translation>
+<translation id="1632810692616643246">進入或退出捲動模式</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{大於符號}other{# 個大於符號}}</translation>
 <translation id="1653266918374749391">上一個第 3 階標題</translation>
 <translation id="1657616855184033958">顯示活動訊息串篩選器</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">沒有上一個控制項</translation>
 <translation id="2045606329038304310">表單欄位控制項</translation>
 <translation id="2063539687800151747">題詞</translation>
+<translation id="2067158561093481039">執行自訂按鍵組合</translation>
 <translation id="2086961585857038472">下一個字詞</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">zh-TW</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">馬鞍褐</translation>
 <translation id="2199994615414171367">上一個數學元素</translation>
 <translation id="2203046366315513658">調降值</translation>
+<translation id="2206580811360135054">顯示或隱藏視窗總覽</translation>
 <translation id="2216790501338699346">連結網址：<ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">移到上一個字元</translation>
 <translation id="2220529011494928058">回報問題</translation>
+<translation id="2239819015858077439">按向下鍵</translation>
 <translation id="2243633977138166243">按下向左或向右鍵即可瀏覽；按下 Enter 鍵即可啟用</translation>
 <translation id="224426591676115802">下列語言沒有可用的語音服務：<ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">正在停止學習模式</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">印度紅</translation>
 <translation id="4432896207833262240">已標示的內容</translation>
 <translation id="4437615272777527928">輸入要在選單中搜尋的字詞。使用向上/向下箭頭可切換搜尋結果，使用向左/向右箭頭可調整文字插入點，並在選單間移動。</translation>
+<translation id="4441677939526091190">按向上鍵</translation>
 <translation id="4453530046591759283">如要跳至螢幕的其他部分 (例如工具列或系統匣)，請按下 Control + F1 鍵。F1 是 Escape 鍵右側的第一個鍵。</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
 <translation id="4476183483923481720">換行</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">使用 Chromebook 觸控螢幕無障礙功能</translation>
 <translation id="5655682562155942719">跳轉指令</translation>
 <translation id="56637627897541303">文字區域</translation>
+<translation id="5666746275818170484">按向左鍵</translation>
 <translation id="5669637233317991674">按下搜尋鍵 + 向右鍵，或是搜尋鍵 + 向左鍵即可瀏覽本課程</translation>
 <translation id="5677240841070992068">目前位置</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">彈出式按鈕</translation>
 <translation id="7167657087543110">字元語音回應</translation>
 <translation id="7173102181852295013">午夜藍</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">已展開</translation>
 <translation id="7209751026933045237">沒有下一個滑桿</translation>
 <translation id="7218782500591078391">金菊色</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">區域</translation>
 <translation id="8382679411218029383">自動即時查詢內嵌元素和清單</translation>
 <translation id="8394908167088220973">媒體播放/暫停</translation>
+<translation id="8409502156784390079">已啟用捲動模式</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428603554127842284">第 <ph name="DEPTH" /> 階</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8989104346085848538">如要停止目前的任何 ChromeVox 朗讀，請按下 Control 鍵。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
+<translation id="9034592733577768445">人臉操控已暫停</translation>
 <translation id="9040132695316389094">標題 1</translation>
 <translation id="9061884144798498064">選取 8 點點字表：</translation>
 <translation id="9063946545000394379">移至上一個字元</translation>

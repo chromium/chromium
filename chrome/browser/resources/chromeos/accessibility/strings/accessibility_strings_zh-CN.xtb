@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="100421257800558142">按向右键</translation>
 <translation id="100506692671054486">没有上一个命令</translation>
 <translation id="1009046985747440431">按向上或向下箭头键即可浏览；按 Enter 键即可激活</translation>
 <translation id="1011903154582639569">找到需要的键后，移开手指即可输入</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">切换按钮</translation>
 <translation id="1299774449519412690">浅天蓝色</translation>
 <translation id="1303806948938513162">用 4 根手指点按即可进入 ChromeVox 菜单</translation>
+<translation id="1304162325618937178">按空格键</translation>
 <translation id="1313373992684326101">移到上一部分。例如，状态栏和启动器。</translation>
 <translation id="1315077335264761176">触摸手势入门</translation>
 <translation id="1325363694295259631"><ph name="NAME" />，未选中的菜单项单选按钮</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">小麦色</translation>
 <translation id="1618597272655350600">读出关于当前位置的完整说明</translation>
 <translation id="1627222324347828322">苍白色</translation>
+<translation id="1632810692616643246">进入或退出滚动模式</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{1个大于号}other{#个大于号}}</translation>
 <translation id="1653266918374749391">上一个 3 级标题</translation>
 <translation id="1657616855184033958">显示事件流过滤条件</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">没有上一个控件</translation>
 <translation id="2045606329038304310">表单字段控件</translation>
 <translation id="2063539687800151747">题词</translation>
+<translation id="2067158561093481039">执行自定义组合键</translation>
 <translation id="2086961585857038472">下一个字词</translation>
 <translation id="2087981446621639008">说明表详情</translation>
 <translation id="2089387485033699258">zh-CN</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">鞍褐色</translation>
 <translation id="2199994615414171367">上一个数学元素</translation>
 <translation id="2203046366315513658">将值减小</translation>
+<translation id="2206580811360135054">显示或隐藏窗口概览</translation>
 <translation id="2216790501338699346">链接网址：<ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">后移 1 个字符</translation>
 <translation id="2220529011494928058">报告问题</translation>
+<translation id="2239819015858077439">按向下键</translation>
 <translation id="2243633977138166243">按向左键或向右键可浏览；按 Enter 键可激活</translation>
 <translation id="224426591676115802">以下语言没有可用的语音服务：<ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">正在停止学习模式</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">印度红色</translation>
 <translation id="4432896207833262240">已标记的内容</translation>
 <translation id="4437615272777527928">输入文字即可在菜单中搜索。使用向上和向下箭头键可上下浏览结果。使用向左和向右箭头键可调整文本插入符号以及切换菜单。</translation>
+<translation id="4441677939526091190">按向上键</translation>
 <translation id="4453530046591759283">如需跳转到屏幕上的其他部分（例如工具栏或系统任务栏），请按 Ctrl+F1。F1 键是位于 Esc 键右侧的第一个键。</translation>
 <translation id="4457472090507035117">请选择当前的声音：</translation>
 <translation id="4476183483923481720">换行</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">使用 Chromebook 触摸屏无障碍功能</translation>
 <translation id="5655682562155942719">跳转命令</translation>
 <translation id="56637627897541303">文本区域</translation>
+<translation id="5666746275818170484">按向左键</translation>
 <translation id="5669637233317991674">按搜索键 + 向右键或搜索键 + 向左键即可浏览本课程中的各项内容</translation>
 <translation id="5677240841070992068">当前位置</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">弹出式按钮</translation>
 <translation id="7167657087543110">字符回显</translation>
 <translation id="7173102181852295013">午夜蓝</translation>
+<translation id="7194194198490288773"><ph name="ACTION" />（<ph name="GESTURE" />）</translation>
 <translation id="7203150201908454328">已展开</translation>
 <translation id="7209751026933045237">没有下一个滑块</translation>
 <translation id="7218782500591078391">金菊色</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">区域</translation>
 <translation id="8382679411218029383">自动填充内嵌和列表</translation>
 <translation id="8394908167088220973">媒体播放/暂停</translation>
+<translation id="8409502156784390079">滚动模式处于活动状态</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" />级</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8989104346085848538">若要停止任何当前 ChromeVox 语音，请按 Ctrl 键。</translation>
 <translation id="9014206344398081366">ChromeVox 教程</translation>
+<translation id="9034592733577768445">人脸操控已暂停</translation>
 <translation id="9040132695316389094">1 级标题标记</translation>
 <translation id="9061884144798498064">请选择一个 8 点式盲文表：</translation>
 <translation id="9063946545000394379">移到上一个字符</translation>

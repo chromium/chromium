@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">เปิดหรือปิดการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="2531025035050312891">อุปกรณ์ทำงานช้า</translation>
 <translation id="2531107890083353124">กด <ph name="KEY_ONE" /> ขณะที่ลากแท็บ</translation>
+<translation id="2545334090614121435">หากต้องการใช้ฟังก์ชัน Home ให้ใช้แป้น</translation>
 <translation id="254900897760075745">คัดลอกเนื้อหาที่เลือกไปยังคลิปบอร์ด</translation>
 <translation id="2549711466868162843">ปรับแสง</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">ดูแอปทั้งหมด</translation>
 <translation id="2992272421330787632">ซ่อนคำแนะนำทั้งหมดของสื่อ</translation>
 <translation id="2992327365391326550">ปุ่มไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
+<translation id="2993956882370897557">หากต้องการใช้ฟังก์ชัน End ให้ใช้แป้น</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3001391739687111021">แก้ไขขนาดหน้าจอ</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> จะย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
 <translation id="316798519864381606">Google สไลด์</translation>
 <translation id="3171170659304083361">การตั้งค่าวิธีการป้อนข้อมูล</translation>
+<translation id="3174897399179348329">หากต้องการใช้ฟังก์ชัน Page Up ให้ใช้แป้น</translation>
 <translation id="3176221688814061633">Chromebook หรืออุปกรณ์บลูทูธของคุณกำลังใช้บลูทูธเวอร์ชันเก่า เปิด Bluetooth Super Resolution หรือใช้ไมโครโฟนภายในเพื่อคุณภาพเสียงที่ดีกว่า</translation>
 <translation id="3181441307743005334">การรีสตาร์ทอาจใช้เวลาสักพัก</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{เชื่อมต่ออุปกรณ์แล้ว 1 เครื่อง}other{เชื่อมต่ออุปกรณ์แล้ว # เครื่อง}}</translation>
@@ -1256,6 +1259,7 @@
 <translation id="5297704307811127955">ปิด</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5302048478445481009">ภาษา</translation>
+<translation id="5302531370473608800">อัปเดต <ph name="DEVICE_TYPE" /> เพื่อใช้ YouTube Music</translation>
 <translation id="5303319262469238330">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />%
 ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
@@ -1815,6 +1819,7 @@
 <translation id="7144942256906679589">สถานะแบตเตอรี่</translation>
 <translation id="7145639536026937076">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="7147587499155271409">ไม่มีประวัติการท่องเว็บ</translation>
+<translation id="7147657298465433425">หากต้องการเข้าถึงแป้น F ให้กดแป้น fn + แป้นแถวบนสุด</translation>
 <translation id="7149149900052329230">จัดการไฟล์ในเครื่องและไฟล์ Google ไดรฟ์ทั้งหมดได้ในแอป Files</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1924,6 +1929,7 @@
 <translation id="7557816257942363084">"<ph name="APP_NAME" />" กำลังใช้ไมโครโฟน</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
+<translation id="7568154670718626683">หากต้องการใช้ฟังก์ชัน Delete ให้ใช้แป้น</translation>
 <translation id="7568790562536448087">การอัปเดต</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
 <translation id="7569886975397378678">ปิดการตั้งค่าการดูการแจ้งเตือนและแอปของโทรศัพท์</translation>
@@ -2126,6 +2132,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> คุณเพิ่งโฟกัสไป <ph name="FOCUSED_TIME" /> เปิดการตั้งค่าด่วนเพื่อโฟกัสอีกครั้ง</translation>
 <translation id="8203224998425013577">แสดงอีโมจิและ GIF เพิ่มเติม</translation>
 <translation id="8203795194971602413">คลิกขวา</translation>
+<translation id="8205469348819768313">หากต้องการใช้ฟังก์ชัน Page Down ให้ใช้แป้น</translation>
 <translation id="8214996719228530800">เวอร์ชัน Canary</translation>
 <translation id="8219451629189078428">คุณต้องเปิด Chromebook และเสียบปลั๊กไว้ตลอดในระหว่างนี้ ตรวจดูว่าได้เสียบสายที่ชาร์จและอะแดปเตอร์ไว้แน่นดีแล้ว ทั้งกับ Chromebook และเต้ารับ และอย่าปิด Chromebook</translation>
 <translation id="8220076512072059941">เพิ่ม <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2318,6 +2325,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ยังพูดภาษานี้ไม่ได้</translation>
 <translation id="8926951137623668982">ซ่อนชั้นวางเสมอ</translation>
+<translation id="8929566928381252430">หากต้องการใช้ฟังก์ชัน Caps Lock ให้ใช้แป้น</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ไฟล์}other{# ไฟล์}}</translation>
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>

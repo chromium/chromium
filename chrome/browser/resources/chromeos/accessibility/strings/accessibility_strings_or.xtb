@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="100421257800558142">ଡାହାଣ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="100506692671054486">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ କମାଣ୍ଡ ନାହିଁ</translation>
 <translation id="1009046985747440431">ନାଭିଗେଟ୍ କରିବା ପାଇଁ ଅପ୍ କିମ୍ବା ଡାଉନ୍ ତୀରଚିହ୍ନ କୀ; ସକ୍ରିୟ କରିବା ପାଇଁ enter କୀ ଦବାନ୍ତୁ</translation>
 <translation id="1011903154582639569">ଏକ କୀ'କୁ ଖୋଜି ଦବାଇ ଧରନ୍ତୁ ତା'ପରେ ସେହି ଅକ୍ଷରଟି ଟାଇପ୍ କରିବାକୁ ଆଙ୍ଗୁଠିକୁ ଉଠାଇ ଦିଅନ୍ତୁ</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">ଟୋଗଲ୍ ବଟନ୍</translation>
 <translation id="1299774449519412690">ହାଲୁକା ଆକାଶିଆ ନୀଳ</translation>
 <translation id="1303806948938513162">ChromeVox ମେନୁକୁ ଯିବାକୁ 4 ଆଙ୍ଗୁଠି ସାହାଯ୍ୟରେ ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="1304162325618937178">ସ୍ପେସ କୀ ଦବାନ୍ତୁ</translation>
 <translation id="1313373992684326101">ପୂର୍ବବର୍ତ୍ତୀ ବିଭାଗକୁ ମୁଭ୍ କରନ୍ତୁ। ଉଦାହରଣରେ ସ୍ଥିତି ଟ୍ରେ ଏବଂ ଲଞ୍ଚର୍ ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
 <translation id="1315077335264761176">ଟଚ୍ ଓରିଏଣ୍ଟେସନ୍</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ମେନୁ ଆଇଟମ୍ ରେଡିଓ ବଟନ୍ ଅଚୟନ କରାଯାଇଛି</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">ଗହମ</translation>
 <translation id="1618597272655350600">ସାମ୍ପ୍ରତିକ ଅବସ୍ଥିତିର ସମ୍ପୂର୍ଣ୍ଣ ବିବରଣୀ ଘୋଷଣା କରେ</translation>
 <translation id="1627222324347828322">ଘୋଷ୍ଟ ଧଳା</translation>
+<translation id="1632810692616643246">ସ୍କ୍ରୋଲ ମୋଡରେ ପ୍ରବେଶ କରନ୍ତୁ କିମ୍ବା ଏଥିରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ଗ୍ରେଟର୍ ଦାନ୍}other{#ଟି ଗ୍ରେଟର୍ ଦାନ୍ ଚିହ୍ନ}}</translation>
 <translation id="1653266918374749391">ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 3 ଶୀର୍ଷକ</translation>
 <translation id="1657616855184033958">ଇଭେଣ୍ଟ ଷ୍ଟ୍ରିମ୍ ଫିଲ୍ଟର୍ ଦେଖାନ୍ତୁ</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ନିୟନ୍ତ୍ରଣ ନାହିଁ</translation>
 <translation id="2045606329038304310">ଫର୍ମ ଫିଲ୍ଡ କଣ୍ଟ୍ରୋଲ୍</translation>
 <translation id="2063539687800151747">ଖୋଦିତ ଲେଖା</translation>
+<translation id="2067158561093481039">ଏକ କଷ୍ଟମ କୀ କମ୍ବିନେସନ ପରଫର୍ମ କରନ୍ତୁ</translation>
 <translation id="2086961585857038472">ପରବର୍ତ୍ତୀ ଶବ୍ଦ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">or</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">ସାଡାଲ୍ ବାଦାମୀ</translation>
 <translation id="2199994615414171367">ପୂର୍ବବର୍ତ୍ତୀ ଗଣିତ</translation>
 <translation id="2203046366315513658">ମୂଲ୍ୟ କମ୍ କରନ୍ତୁ</translation>
+<translation id="2206580811360135054">ୱିଣ୍ଡୋଗୁଡ଼ିକର ଓଭରଭ୍ୟୁ ଦେଖାନ୍ତୁ କିମ୍ୱା ଲୁଚାନ୍ତୁ</translation>
 <translation id="2216790501338699346">ଲିଙ୍କ୍ URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">ଗୋଟିଏ ଅକ୍ଷର ପଛକୁ ନିଅନ୍ତୁ</translation>
 <translation id="2220529011494928058">କୌଣସି ଏକ ତ୍ରୁଟିର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="2239819015858077439">ଡାଉନ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="2243633977138166243">ନାଭିଗେଟ୍ କରିବାକୁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ; ସକ୍ରିୟ କରିବା ପାଇଁ Enter କୀ ଦବାନ୍ତୁ</translation>
 <translation id="224426591676115802">ଏହି ଭାଷା ପାଇଁ କୌଣସି ଭଏସ୍ ଉପଲବ୍ଧ ନାହିଁ: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">ଶିକ୍ଷଣ ମୋଡ୍ ବନ୍ଦ କରାଯାଉଛି</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">ଇଣ୍ଡିଆନ୍ ରେଡ୍</translation>
 <translation id="4432896207833262240">ଚିହ୍ନଟ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
 <translation id="4437615272777527928">ମେନୁ ସର୍ଚ୍ଚ କରିବାକୁ ଟାଇପ କରନ୍ତୁ। ଫଳାଫଳକୁ ଯିବା ପାଇଁ ଅପ ଏବଂ ଡାଉନ ତୀର କୀ'ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ। ଟେକ୍ସଟ କେରେଟ ଆଡଜଷ୍ଟ କରିବାକୁ ଏବଂ ମେନୁଗୁଡ଼ିକ ମଧ୍ୟରେ ମୁଭ କରିବାକୁ ବାମ ଏବଂ ଡାହାଣ ତୀର କୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="4441677939526091190">ଅପ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="4453530046591759283">ଟୁଲବାର କିମ୍ବା ସିଷ୍ଟମ ଟ୍ରେ ପରି ସ୍କ୍ରିନର ଅନ୍ୟ ଅଂଶଗୁଡ଼ିକୁ ଯିବା ପାଇଁ Control+F1 କୀ ଦବାନ୍ତୁ। F1 ହେଉଛି ଏସକେପ କୀ'ର ଡାହାଣପଟରେ ଥିବା ପ୍ରଥମ କୀ।</translation>
 <translation id="4457472090507035117">ବର୍ତ୍ତମାନର ସ୍ୱରକୁ ଚୟନ କରନ୍ତୁ:</translation>
 <translation id="4476183483923481720">ନୂଆ ରେଖା</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook ସ୍ପର୍ଶ ସ୍କ୍ରିନ୍‌ର ଆକ୍ସେସିବିଲିଟୀ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="5655682562155942719">ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="56637627897541303">ଟେକ୍ସଟ୍ କ୍ଷେତ୍ର</translation>
+<translation id="5666746275818170484">ବାମ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="5669637233317991674">ଏହି ଲେସନକୁ ନାଭିଗେଟ କରିବା ପାଇଁ Search + ଡାହାଣ ତୀର କୀ କିମ୍ବା Search + ବାମ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="5677240841070992068">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">ପପ୍-ଅପ୍ ବଟନ୍</translation>
 <translation id="7167657087543110">ଅକ୍ଷର ଇକୋ</translation>
 <translation id="7173102181852295013">ମିଡନାଇଟ୍ ନୀଳ</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">ପ୍ରସାରିତ ହୋଇଛି</translation>
 <translation id="7209751026933045237">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ଲାଇଡର୍ ନାହିଁ</translation>
 <translation id="7218782500591078391">ସ୍ୱର୍ଣ୍ଣିମ ରଡ୍</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">ଅଞ୍ଚଳ</translation>
 <translation id="8382679411218029383">ସ୍ୱତଃସମ୍ପୂର୍ଣ୍ଣ ଇନ୍‍ଲାଇନ୍ ଓ ତାଲିକା</translation>
 <translation id="8394908167088220973">ମିଡିଆ ଚଲାନ୍ତୁ/ବିରତ କରନ୍ତୁ</translation>
+<translation id="8409502156784390079">ସ୍କ୍ରୋଲ ମୋଡ ସକ୍ରିୟ ଅଛି</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
 <translation id="8428603554127842284">ସ୍ତର <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">ଭୁଲିଗଲେ</translation>
 <translation id="8989104346085848538">ବର୍ତ୍ତମାନର ଯେ କୌଣସି ChromeVox ସ୍ପିଚକୁ ବନ୍ଦ କରିବା ପାଇଁ, Control କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="9014206344398081366">ChromeVox ଟ୍ୟୁଟୋରିଆଲ୍</translation>
+<translation id="9034592733577768445">ଫେସ ନିୟନ୍ତ୍ରଣ ବିରତ ହୋଇଛି</translation>
 <translation id="9040132695316389094">ଶୀର୍ଷକ 1</translation>
 <translation id="9061884144798498064">ଗୋଟିଏ 8-ଡଟ୍‍ ବ୍ରେଲି ଟେବଲ୍‌ ଚୟନ କରନ୍ତୁ:</translation>
 <translation id="9063946545000394379">ପୂର୍ବବର୍ତ୍ତୀ ଅକ୍ଷରକୁ ମୁଭ କରନ୍ତୁ</translation>

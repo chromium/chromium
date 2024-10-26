@@ -38,6 +38,7 @@
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1164891049599601209">Uneseno na obmanjujućoj web-lokaciji</translation>
 <translation id="1165039591588034296">Pogreška</translation>
+<translation id="1172240852337942024">Odbaci odabir</translation>
 <translation id="1172898394251786223">Sljedeće polje</translation>
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -189,6 +190,7 @@
 <translation id="1854463785401910334">Pretražite otvorene kartice</translation>
 <translation id="1861067954551502701">{count,plural, =1{Zaporka {position} od {count}}one{Zaporka {position} od {count}}few{Zaporka {position} od {count}}other{Zaporka {position} od {count}}}</translation>
 <translation id="1861262398884155592">Mapa je prazna</translation>
+<translation id="1864266050569350424">Na web-lokaciji na kojoj ste spremili zaporku dodirnite polje zaporke za prijavu.</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Pozovite članove obitelji</translation>
@@ -199,6 +201,8 @@
 <translation id="1890237935065108104">Ta postavka nije dostupna.</translation>
 <translation id="1894023287452300670">Prati cijenu ovdje</translation>
 <translation id="189531189292803889">Vaš je iPad nedavno vraćen na prethodno stanje, što je možda promijenilo vaš zadani preglednik.</translation>
+<translation id="1901366738768303267">Kako se upotrebljava ta značajka?</translation>
+<translation id="1901600657316773839">Zadrži odabir</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="1911619930368729126">Prenesi na Google disk</translation>
 <translation id="1923342640370224680">Posljednji sat</translation>
@@ -508,6 +512,8 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3443810440409579745">Primljena je kartica.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Saznajte više o Google objektivu</translation>
+<translation id="3447332786336558089">Nakon što se odjavite, kartice će se zatvoriti, a podaci računa koji nisu spremljeni izbrisat će se s ovog uređaja. To može uključivati zaporke, povijest i drugo.</translation>
+<translation id="3449016921756175697">Korisni prijedlozi koji poboljšavaju i olakšavaju pregledavanje.</translation>
 <translation id="345348365500626747">Pronađena je adresa</translation>
 <translation id="3464194322481586217">Praćenje cijene nije uspjelo.</translation>
 <translation id="3469117812148449995">Opcije spremanja zaporke</translation>
@@ -688,6 +694,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4320848494125124980">Nedavno</translation>
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
 <translation id="4324735664183300693">Uključi obavijesti</translation>
+<translation id="4326912346867677256">Dodirnite Upotrijebi zaporku da biste se sigurno prijavili.</translation>
 <translation id="4328843285884395590">Moj disk</translation>
 <translation id="4331177082088332784">Time možete upravljati u odjeljku BEGIN_LINK Postavke sadržaja END_LINK</translation>
 <translation id="4334428914252001502">Jedan nepročitani članak.</translation>
@@ -975,6 +982,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5652623411397330904">Ovdje će se prikazivati proizvodi koje pratite.</translation>
 <translation id="5657156137487675418">Dopusti sve kolačiće</translation>
 <translation id="5659593005791499971">e-pošta</translation>
+<translation id="5666313630530585305">Prijavite se na web-lokaciju.</translation>
 <translation id="5669335982068190158">Odjavljeni ste pri vraćanju iPhonea na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verzija <ph name="PRODUCT_VERSION" /></translation>
@@ -1037,6 +1045,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="594324569139756587">Blokiraj treće strane</translation>
 <translation id="5944869793365969636">Skenirajte QR kod</translation>
 <translation id="5948291296578561264">To vam omogućuje da spremite fotografije u zbirku fotografija.</translation>
+<translation id="5952641243319721872">Jeste li sigurni da želite odbaciti odabir?</translation>
 <translation id="5956112131836209882">Kartica grupe kartica. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pretraživanje pomoću usluge <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Izrada veze na istaknuti tekst nije uspjela.</translation>
@@ -1124,6 +1133,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6301104306974789820">Primajte obavijesti o praćenju cijena</translation>
 <translation id="6303969859164067831">Odjava i isključivanje sinkronizacije</translation>
 <translation id="6310451064941005489">Opcije zaporke</translation>
+<translation id="6316141353357700666">Na popisu koji se prikaže odaberite zaporku koju želite upotrijebiti.</translation>
 <translation id="6321526113093607004">Dodaj u Oznake</translation>
 <translation id="6337234675334993532">Enkripcija</translation>
 <translation id="633809752005859102">Dogodila se velika pogreška. Poradit ćemo na tome.</translation>
@@ -1543,6 +1553,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8173034266693057059">Duljina</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1}, {website_2}}=3{Za {website_1}, {website_2} i još 1}one{Za {website_1}, {website_2} i još {more_count}}few{Za {website_1}, {website_2} i još {more_count}}other{Za {website_1}, {website_2} i još {more_count}}}</translation>
+<translation id="8189615296021678665">Dodirnite Spremi da biste lako pristupili ovoj zaporci sljedeći put kad se prijavite.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaši uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Dodavanje zaporke</translation>
 <translation id="8202744799033457229">Prikaz povijesti</translation>
@@ -1556,12 +1567,14 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8219424187226230983">Prikaži offline verziju na novoj kartici</translation>
 <translation id="8230355548492839438">Traženje prethodnog</translation>
 <translation id="8232956427053453090">Zadrži podatke</translation>
+<translation id="8242644458318193141">Radi zaštite sigurnosti vaše organizacije, kartice će se zatvoriti, a podaci računa koji nisu spremljeni izbrisat će se s ovog uređaja. To može uključivati zaporke, povijest i drugo.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Pogledajte ostale kartice</translation>
 <translation id="8263809106706527890">Možda je došlo do promjene u postavkama zadanog preglednika. To možete provjeriti u postavkama.</translation>
 <translation id="8264966119170358612">Neke od vaših spremljenih zaporki otkrivene su u neovlaštenom pristupu podacima izvan Googlea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPada na zadano. Da biste se ponovno prijavili, dodirnite Nastavi u nastavku.</translation>
 <translation id="8273982424131314219">Unijet ćete podatke u <ph name="URL" /></translation>
+<translation id="827464923811805683">Svatko s vezom može uređivati sve kartice, pa budite oprezni prilikom dijeljenja. Veza istječe za 48 sati. <ph name="BEGIN_LINK" />Saznajte više o dijeljenim grupama kartica<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">Više…</translation>
 <translation id="8278488584187265939">Prilagodite početnu stranicu</translation>
 <translation id="8281781826761538115">Zadano – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1574,6 +1587,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8299613349954694191">Otvorite anonimnu karticu da biste pregledavali web privatno.</translation>
 <translation id="8307481894409578819">Prijenos datoteke nije uspio</translation>
 <translation id="8319076807703933069">Novo pretraživanje</translation>
+<translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8343993175958086504">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju.</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8366466717204352506">Provjera nikad nije provedena</translation>
@@ -1754,6 +1768,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9081058212938299310">Želite li ažurirati zaporku za <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Da biste sinkronizirali i prilagodili više uređaja, uključite sinkronizaciju.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Imate {count} slabu zaporku koja bi mogla ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}one{Imate {count} slabu zaporku koja bi mogla ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}few{Imate {count} slabe zaporke koje bi mogle ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}other{Imate {count} slabih zaporki koje bi mogle ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}}</translation>
+<translation id="9084369964545892485">Nova anonimna kartica u grupi</translation>
 <translation id="9087339162317338348">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju.</translation>
 <translation id="9090979472668095374">Izgovaranje odgovora</translation>
 <translation id="9094033019050270033">Ažuriraj zaporku</translation>

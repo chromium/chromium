@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="100421257800558142">Nhấn phím mũi tên phải</translation>
 <translation id="100506692671054486">không có lệnh nào trước đó</translation>
 <translation id="1009046985747440431">Nhấn phím mũi tên lên hoặc xuống để di chuyển; nhấn phím enter để kích hoạt</translation>
 <translation id="1011903154582639569">Tìm phím rồi nhấc tay lên để nhập</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Nút bật/tắt</translation>
 <translation id="1299774449519412690">Màu xanh da trời nhạt</translation>
 <translation id="1303806948938513162">Nhấn bằng 4 ngón tay để vào menu ChromeVox</translation>
+<translation id="1304162325618937178">Nhấn phím cách</translation>
 <translation id="1313373992684326101">Chuyển về phần trước. Các ví dụ bao gồm Khay trạng thái và Trình chạy.</translation>
 <translation id="1315077335264761176">Hướng chạm</translation>
 <translation id="1325363694295259631">Đã bỏ chọn nút chọn cho mục trong trình đơn <ph name="NAME" /></translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Màu lúa mì</translation>
 <translation id="1618597272655350600">Thông báo mô tả đầy đủ của vị trí hiện tại</translation>
 <translation id="1627222324347828322">Màu trắng tinh</translation>
+<translation id="1632810692616643246">Chuyển sang hoặc thoát chế độ cuộn</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{dấu lớn hơn}other{# dấu lớn hơn}}</translation>
 <translation id="1653266918374749391">Tiêu đề cấp 3 trước</translation>
 <translation id="1657616855184033958">Hiển thị các bộ lọc luồng sự kiện</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Không có tùy chọn kiểm soát nào trước đó</translation>
 <translation id="2045606329038304310">Tùy chọn kiểm soát trường biểu mẫu</translation>
 <translation id="2063539687800151747">Lời đề từ</translation>
+<translation id="2067158561093481039">Sử dụng tổ hợp phím tuỳ chỉnh</translation>
 <translation id="2086961585857038472">Từ tiếp theo</translation>
 <translation id="2087981446621639008">ttct dsmt</translation>
 <translation id="2089387485033699258">vi</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Màu nâu yên ngựa</translation>
 <translation id="2199994615414171367">Biểu thức toán trước</translation>
 <translation id="2203046366315513658">Giảm giá trị</translation>
+<translation id="2206580811360135054">Hiện hoặc ẩn màn hình tổng quan về cửa sổ</translation>
 <translation id="2216790501338699346">URL của đường liên kết: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Lùi lại một ký tự</translation>
 <translation id="2220529011494928058">Báo cáo sự cố</translation>
+<translation id="2239819015858077439">Nhấn phím mũi tên xuống</translation>
 <translation id="2243633977138166243">Nhấn mũi tên trái hoặc phải để di chuyển; nhấn phím Enter để kích hoạt</translation>
 <translation id="224426591676115802">Không có giọng nói cho ngôn ngữ: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Đang dừng Chế độ học</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Màu đỏ Ấn Độ</translation>
 <translation id="4432896207833262240">Nội dung được đánh dấu</translation>
 <translation id="4437615272777527928">Nhập để tìm kiếm trong trình đơn. Sử dụng các mũi tên lên và xuống để chuyển qua kết quả. Sử dụng các mũi tên trái và phải để điều chỉnh điểm chèn văn bản và di chuyển giữa các trình đơn.</translation>
+<translation id="4441677939526091190">Nhấn phím mũi tên lên</translation>
 <translation id="4453530046591759283">Để chuyển đến các phần khác của màn hình, như thanh công cụ hoặc khay hệ thống, hãy nhấn tổ hợp phím Control + F1. F1 là phím đầu tiên ở bên phải phím Escape.</translation>
 <translation id="4457472090507035117">Chọn giọng nói hiện tại:</translation>
 <translation id="4476183483923481720">dòng mới</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Sử dụng tính năng trợ năng của màn hình cảm ứng Chromebook</translation>
 <translation id="5655682562155942719">Chuyển lệnh</translation>
 <translation id="56637627897541303">Vùng văn bản</translation>
+<translation id="5666746275818170484">Nhấn phím mũi tên trái</translation>
 <translation id="5669637233317991674">Nhấn tổ hợp phím Tìm kiếm + Mũi tên phải, hoặc Tìm kiếm + Mũi tên trái để di chuyển trong bài học này</translation>
 <translation id="5677240841070992068">Vị trí hiện tại</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Nút cửa sổ bật lên</translation>
 <translation id="7167657087543110">âm ký tự</translation>
 <translation id="7173102181852295013">Màu lam sẫm</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Được mở rộng</translation>
 <translation id="7209751026933045237">Không có thanh trượt nào tiếp theo</translation>
 <translation id="7218782500591078391">Màu vàng nghệ</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Khu vực</translation>
 <translation id="8382679411218029383">Tự động hoàn thành nội dòng và danh sách</translation>
 <translation id="8394908167088220973">Phát/Tạm dừng trình phát phương tiện</translation>
+<translation id="8409502156784390079">Chế độ cuộn đang hoạt động</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8428603554127842284">cấp <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Quên</translation>
 <translation id="8989104346085848538">Để dừng giọng đọc ChromeVox hiện tại, hãy nhấn phím Control.</translation>
 <translation id="9014206344398081366">Hướng dẫn về ChromeVox</translation>
+<translation id="9034592733577768445">Tính năng điều khiển bằng khuôn mặt đã tạm dừng</translation>
 <translation id="9040132695316389094">Tiêu đề 1</translation>
 <translation id="9061884144798498064">Chọn bảng chữ nổi 8 chấm:</translation>
 <translation id="9063946545000394379">chuyển về ký tự trước</translation>

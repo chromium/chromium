@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">କ୍ୟାରେଟ୍ ବ୍ରାଉଜିଂ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2531025035050312891">ଡିଭାଇସ ଧୀର ଅଛି</translation>
 <translation id="2531107890083353124">ଟାବକୁ ଡ୍ରାଗ କରିବା ସମୟରେ <ph name="KEY_ONE" />କୁ ଦବାନ୍ତୁ</translation>
+<translation id="2545334090614121435">ହୋମକୁ ବ୍ୟବହାର କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="254900897760075745">ଚୟନିତ ବିଷୟବସ୍ତୁକୁ କ୍ଲିପବୋର୍ଡକୁ କପି କରନ୍ତୁ</translation>
 <translation id="2549711466868162843">ଉନ୍ନତ ଲାଇଟିଂ</translation>
 <translation id="2549985041256363841">ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">ସମସ୍ତ ଆପ ଦେଖନ୍ତୁ</translation>
 <translation id="2992272421330787632">ସମସ୍ତ ମିଡିଆ ପରାମର୍ଶକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="2992327365391326550">ଡିଭାଇସର ମାଇକ୍ରୋଫୋନ୍ ବଟନ୍ ବନ୍ଦ କରାଯାଇଛି।</translation>
+<translation id="2993956882370897557">ଏଣ୍ଡକୁ ବ୍ୟବହାର କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3000461861112256445">ମୋନୋ ଅଡିଓ</translation>
 <translation id="3001391739687111021">ସ୍କ୍ରିନ ସାଇଜ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରୁଛି। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">ଇନପୁଟ୍ ପଦ୍ଧତି ସେଟିଂସ୍</translation>
+<translation id="3174897399179348329">Page Upକୁ ବ୍ୟବହାର କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3176221688814061633">ଆପଣଙ୍କ Chromebook କିମ୍ବା ବ୍ଲୁଟୁଥ ଡିଭାଇସ ବ୍ଲୁଟୁଥର ଏକ ପୁରୁଣା ଭର୍ସନ ବ୍ୟବହାର କରୁଛି। ଆହୁରି ଭଲ ଅଡିଓ ଗୁଣବତ୍ତା ପାଇଁ ବ୍ଲୁଟୁଥ ସୁପର ରିଜୋଲ୍ୟୁସନକୁ ଚାଲୁ କରନ୍ତୁ କିମ୍ବା ଇଣ୍ଟର୍ନଲ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3181441307743005334">ରିଷ୍ଟାର୍ଟ ହେବା ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ଏକ ଡିଭାଇସ୍‌ ସହ ସଂଯୁକ୍ତ}other{#ଟି ଡିଭାଇସ୍‌ ସହ ସଂଯୁକ୍ତ}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">ବନ୍ଦ</translation>
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5302048478445481009">ଭାଷା</translation>
+<translation id="5302531370473608800">YouTube Music ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି।
 ବେଟେରୀ ଲାଇଫକୁ ବଢ଼ାଇବା ପାଇଁ କିଛି ଫିଚରକୁ ସୀମିତ କରାଯାଇଛି।</translation>
 <translation id="5308380583665731573">ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -1819,6 +1823,7 @@
 <translation id="7144942256906679589">ବ୍ୟାଟେରୀ ସ୍ଥିତି</translation>
 <translation id="7145639536026937076">ବ୍ୟାଟେରୀ <ph name="PERCENTAGE" />% ଅଛି ଏବଂ ଚାର୍ଜ ହେଉଛି। ବେଟେରୀ ସେଭର ଚାଲୁ ଅଛି।</translation>
 <translation id="7147587499155271409">କୌଣସି ବ୍ରାଉଜିଂ ଇତିହାସ ନାହିଁ</translation>
+<translation id="7147657298465433425">F କୀ'ଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିବା ପାଇଁ fn କୀ + ଶୀର୍ଷ ଧାଡ଼ିରେ ଥିବା କୀ'ଗୁଡ଼ିକୁ ଦବାନ୍ତୁ</translation>
 <translation id="7149149900052329230">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ଫାଇଲ ଏବଂ ଆପଣଙ୍କ Google Drive ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ, ସବୁକିଛି Files ଆପରେ।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1928,6 +1933,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7561982940498449837">ମେନୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7564874036684306347">ୱିଣ୍ଡୋକୁ ଅନ୍ୟ ଡେକ୍ସଟପ୍‌କୁ ତ୍ୱରିତ କରିବା ଦ୍ୱାରା ଅପ୍ରତ୍ୟାଶିତ ଆଚରଣ ହୋଇପାରେ। ଏହା ପରବର୍ତ୍ତୀ ବିଜ୍ଞପ୍ତି, ୱିଣ୍ଡୋ ଏବଂ ଡାଏଲଗ୍‌ଗୁଡ଼ିକ ଡେକ୍ସଟପ୍‌ଗୁଡ଼ିକ ମଧ୍ୟରେ ଅଲଗା ହୋଇପାରେ।</translation>
+<translation id="7568154670718626683">ଡିଲିଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7568790562536448087">ଅପ୍‌ଡେଟ୍ ହେଉଛି</translation>
 <translation id="7569509451529460200">Braille ଏବଂ ChromeVoxକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="7569886975397378678">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଭ୍ୟୁ କରିବାକୁ ସେଟ ଅପ କରିବା ଖାରଜ କରନ୍ତୁ</translation>
@@ -2130,6 +2136,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> ଆପଣ ଏବେ <ph name="FOCUSED_TIME" /> ପାଇଁ ଫୋକସ କରିଛନ୍ତି। ପୁଣି ଫୋକସ କରିବା ପାଇଁ କୁଇକ ସେଟିଂସ ଖୋଲନ୍ତୁ।</translation>
 <translation id="8203224998425013577">ଅଧିକ ଇମୋଜି ଏବଂ GIF ଦେଖାନ୍ତୁ</translation>
 <translation id="8203795194971602413">ଡାହାଣ କ୍ଲିକ୍</translation>
+<translation id="8205469348819768313">Page Downକୁ ବ୍ୟବହାର କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8214996719228530800">କାନାରି ଚ୍ୟାନେଲ</translation>
 <translation id="8219451629189078428">ଏହି ସମୟରେ ଆପଣଙ୍କ Chromebook ଚାଲୁ ରହି ପାୱାର୍ ସହିତ ସଂଯୁକ୍ତ ରହିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କର ଉଭୟ Chromebook ଓ ପାୱାର୍ ଆଉଟଲେଟ୍ ସହ ଚାର୍ଜର କିମ୍ବା ଆଡପ୍ଟର କେବୁଲଗୁଡ଼ିକ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ପ୍ଲଗ୍ ଇନ୍ ହୋଇଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ। ଆପଣଙ୍କ Chromebookକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ଯୋଗ କରନ୍ତୁ</translation>
@@ -2322,6 +2329,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ଆସିଷ୍ଟାଣ୍ଟ ଏହି ଭାଷା କହେ ନାହିଁ।</translation>
 <translation id="8926951137623668982">ସେଲ୍ଫ ସର୍ବଦା ଲୁଚାଇ ରଖାଯାଇଛି</translation>
+<translation id="8929566928381252430">Caps Lockକୁ ବ୍ୟବହାର କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1ଟି ଫାଇଲ}other{#ଟି ଫାଇଲ}}</translation>
 <translation id="8936501819958976551">ନିଷ୍କ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="8938800817013097409">USB-C ଡିଭାଇସ୍‌ (ପଛରେ ଥିବା ଡାହାଣପଟ ପୋର୍ଟ)</translation>

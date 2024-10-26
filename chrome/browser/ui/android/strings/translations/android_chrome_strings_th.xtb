@@ -419,6 +419,7 @@
 <translation id="2942036813789421260">แท็บแสดงตัวอย่างปิดอยู่</translation>
 <translation id="2946420957526726953">กำลังอัปเดต Chrome เพื่อเชื่อมต่อกับอุปกรณ์อื่นๆ</translation>
 <translation id="2951071800649516099">เพิ่มหน้าเว็บลงในเรื่องรออ่านไว้อ่านภายหลัง</translation>
+<translation id="2954586176076923855">ย้ายแถบที่อยู่ไปไว้ด้านบน</translation>
 <translation id="2956070106555335453">สรุป</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> หน้า}other{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> หน้า}}</translation>
 <translation id="2972109037780336501">นําสิทธิ์ออกโดยอัตโนมัติ</translation>
@@ -653,6 +654,7 @@
 <translation id="4095425503313512126">การท่องเว็บและการค้นหารวดเร็วขึ้น</translation>
 <translation id="4096227151372679484">ขั้นตอนการบันทึกบุ๊กมาร์กเปิดอยู่ที่ระดับความสูงครึ่งหนึ่ง</translation>
 <translation id="4101475238162928417">ซิงค์เพื่อรับรหัสผ่าน บุ๊กมาร์ก และอีกมากมายในอุปกรณ์อื่นๆ ของคุณ</translation>
+<translation id="4105527135143631701">การอัปเดตเครื่องมือจัดการรหัสผ่านบน Google เปิดอยู่</translation>
 <translation id="4108314971463891922">ติดตาม</translation>
 <translation id="4113030288477039509">มีการจัดการโดยผู้ดูแลระบบ</translation>
 <translation id="4116038641877404294">ดาวน์โหลดหน้าเพื่อใช้งานแบบออฟไลน์</translation>
@@ -1257,6 +1259,7 @@
 <translation id="6813446258015311409">ลงชื่อเข้าใช้ Chrome เปิดอยู่</translation>
 <translation id="6817747507826986771">แชร์หน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">การอัปเดตเครื่องมือจัดการรหัสผ่านบน Google ปิดอยู่</translation>
 <translation id="6822587385560699678">เมื่อเปิด ระบบจะบันทึกรหัสผ่านใน <ph name="ACCOUNT" /> เมื่อปิด ระบบจะบันทึกรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6823561724060793716">คุณสามารถเปิดข้อมูลหน้าเว็บเพื่อดูรายละเอียดเพิ่มเติมเกี่ยวกับหน้าที่กำลังเข้าชมได้จากแถบที่อยู่</translation>
 <translation id="6828070228333235514">หยุดติดตามราคา</translation>
@@ -1458,6 +1461,7 @@
 <translation id="7612619742409846846">ลงชื่อเข้าใช้ Google ด้วย</translation>
 <translation id="7612989789287281429">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="7619072057915878432">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเครือข่ายขัดข้อง</translation>
+<translation id="762537095495606755">รหัสผ่านจะหยุดทำงานในอุปกรณ์เครื่องนี้</translation>
 <translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7628417132421583481">ไปที่เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="7630202231528827509">URL ผู้ให้บริการ</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8015452622527143194">เปลี่ยนทุกอย่างบนหน้ากลับไปเป็นขนาดเริ่มต้น</translation>
 <translation id="8017431260099661477">เปิดลิงก์คำเชิญไม่ได้</translation>
 <translation id="8026238112629815203">เราเปลี่ยนวิธีบันทึกรหัสผ่านในอุปกรณ์นี้แล้ว</translation>
+<translation id="8027395186860110042">รหัสผ่านอาจหยุดทำงานเร็วๆ นี้</translation>
 <translation id="8027863900915310177">เลือกตำแหน่งที่จะดาวน์โหลด</translation>
 <translation id="8030852056903932865">อนุมัติ</translation>
 <translation id="8032569120109842252">กำลังติดตาม</translation>
@@ -1620,7 +1625,9 @@
 <translation id="8282297628636750033">ใช้ธีมมืดกับเว็บไซต์เมื่อทำได้</translation>
 <translation id="8282950411412455249">ไปที่การตั้งค่าความปลอดภัย</translation>
 <translation id="829672787777123339">กำลังเชื่อมต่อกับอุปกรณ์…</translation>
+<translation id="8306751933352925837">รหัสผ่านจะหยุดทำงานในอุปกรณ์เครื่องนี้เร็วๆ นี้ อัปเดตบริการ Google Play เพื่อใช้รหัสผ่านต่อไป <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> นำแท็บ "<ph name="TAB_NAME" />" ออกแล้ว</translation>
+<translation id="8310451567823644042">รหัสผ่านจะหยุดทำงานเร็วๆ นี้</translation>
 <translation id="831192587911042850">เพิ่มเว็บไซต์ปัจจุบันลงในรายการเว็บไซต์ที่คุณกำลังติดตาม</translation>
 <translation id="8342727528718219152">Chrome จะแจ้งให้คุณทราบเกี่ยวกับเว็บไซต์ที่อาจส่งการแจ้งเตือนมากเกินไป</translation>
 <translation id="834313815369870491">ไม่ต้องแปลเว็บไซต์</translation>
@@ -1687,6 +1694,7 @@
 <translation id="8570677896027847510">ดาวน์โหลดไฟล์อย่างปลอดภัยไม่ได้</translation>
 <translation id="8571213806525832805">4 สัปดาห์ที่แล้ว</translation>
 <translation id="8582529315803410153">คุณจะเห็นแท็บจากอุปกรณ์อื่นๆ ที่นี่</translation>
+<translation id="8585103689515290060">บริการป้อนข้อความอัตโนมัติ</translation>
 <translation id="859046281437143747">ติดตามราคาโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
 <translation id="859064343657890103">ลบกลุ่มแท็บ<ph name="TAB_GROUP_TITLE" />แล้ว</translation>
 <translation id="860043288473659153">ชื่อผู้ถือบัตร</translation>
@@ -1755,6 +1763,7 @@
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8965591936373831584">รอดำเนินการ</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="897061774231912216">รหัสผ่านจะหยุดทำงานเร็วๆ นี้เนื่องจากบริการ Google Play ไม่พร้อมใช้งาน หากต้องการใช้รหัสผ่านที่บันทึกไว้ในบัญชี Google ให้ลงชื่อเข้าใช้ด้วยอุปกรณ์เครื่องอื่น หรือไปที่ passwords.google.com</translation>
 <translation id="8970887620466824814">เกิดข้อผิดพลาด</translation>
 <translation id="8972098258593396643">ดาวน์โหลดลงโฟลเดอร์เริ่มต้นไหม</translation>
 <translation id="8982113230057126145">ปุ่ม "ไม่ชอบ" จะส่งความคิดเห็นว่าคุณไม่ชอบสรุปนี้</translation>
@@ -1804,6 +1813,7 @@
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9157212632995922070">เลือกบัญชีเพื่อดำเนินการต่อไปยัง <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">แชร์เนื้อหาเท่านั้น</translation>
+<translation id="9168847423516963845">ย้ายแถบที่อยู่ไปไว้ด้านล่าง</translation>
 <translation id="9169507124922466868">ประวัติการนำทางเปิดอยู่ครึ่งเดียว</translation>
 <translation id="918419812064856259">Chrome เบต้า</translation>
 <translation id="9190276265094487094">อุปกรณ์ทั้งหมดที่ซิงค์ไว้จะมีประวัติการเข้าชม คุณจึงทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>

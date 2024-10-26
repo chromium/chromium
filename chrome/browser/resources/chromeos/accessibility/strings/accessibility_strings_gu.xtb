@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="100421257800558142">જમણી ઍરો કી દબાવો</translation>
 <translation id="100506692671054486">અગાઉનો કોઈ આદેશ નથી</translation>
 <translation id="1009046985747440431">નૅવિગેટ કરવા ઉપર અથવા નીચેની ઍરો કી દબાવો; સક્રિય કરવા Enter દબાવો</translation>
 <translation id="1011903154582639569">કી શોધો, પછી ટાઇપ કરવા માટે ઊંચકો</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">ટૉગલ બટન</translation>
 <translation id="1299774449519412690">આછો આસમાની ભૂરો</translation>
 <translation id="1303806948938513162">ChromeVox મેનૂમાં દાખલ થવા માટે 4 આંગળીઓથી ટૅપ કરો</translation>
+<translation id="1304162325618937178">Space કી દબાવો</translation>
 <translation id="1313373992684326101">પાછળના વિભાગ પર ખસેડો. ઉદાહરણોમાં સ્ટેટસ ટ્રે અને લૉન્ચર શામેલ છે.</translation>
 <translation id="1315077335264761176">ટચ ઓરિએન્ટેશન</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, મેનૂ આઇટમ રેડિયો બટન નાપસંદ કર્યું</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">ઘઉં જેવો</translation>
 <translation id="1618597272655350600">વર્તમાન સ્થિતિનું સંપૂર્ણ વર્ણન જાહેર કરે છે</translation>
 <translation id="1627222324347828322">ભૂતિયો સફેદ</translation>
+<translation id="1632810692616643246">સ્ક્રોલ મોડમાં દાખલ થાઓ અથવા તેમાંથી બહાર નીકળો</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{આના કરતાં મોટું}one{# આના કરતાં મોટાની નિશાની}other{# આના કરતાં મોટાની નિશાની}}</translation>
 <translation id="1653266918374749391">પાછલું લેવલ 3 શીર્ષક</translation>
 <translation id="1657616855184033958">ઇવેન્ટ સ્ટ્રીમ ફિલ્ટર બતાવો</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">કોઈ પાછલું નિયંત્રણ નથી</translation>
 <translation id="2045606329038304310">ફોર્મ ફીલ્ડનું નિયંત્રણ</translation>
 <translation id="2063539687800151747">શિલાલેખ</translation>
+<translation id="2067158561093481039">કસ્ટમ કી કૉમ્બિનેશન હાથ ધરો</translation>
 <translation id="2086961585857038472">આગલો શબ્દ</translation>
 <translation id="2087981446621639008">વર્ણનની સૂચિની વિગત</translation>
 <translation id="2089387485033699258">gu</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">આછો કથ્થઈ</translation>
 <translation id="2199994615414171367">પાછલું ગણિત</translation>
 <translation id="2203046366315513658">મૂલ્ય ઘટાડો</translation>
+<translation id="2206580811360135054">વિન્ડોનો ઓવરવ્યૂ બતાવો અથવા છુપાવો</translation>
 <translation id="2216790501338699346">લિંક URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">એક અક્ષર પાછળ ખસેડો</translation>
 <translation id="2220529011494928058">સમસ્યાની જાણ કરો</translation>
+<translation id="2239819015858077439">નીચેની ઍરો કી દબાવો</translation>
 <translation id="2243633977138166243">નૅવિગેટ કરવા માટે ડાબી કે જમણી ઍરો કી દબાવો, સક્રિય કરવા માટે દાખલ કરો</translation>
 <translation id="224426591676115802">આ ભાષા માટે કોઈ વૉઇસ ઉપલબ્ધ નથી: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">'જાણો' મોડ અટકાવી રહ્યાં છીએ</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">ભારતીય લાલ</translation>
 <translation id="4432896207833262240">માર્ક કરેલું કન્ટેન્ટ</translation>
 <translation id="4437615272777527928">મેનૂ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે ઍરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા ઍરોનો ઉપયોગ કરો.</translation>
+<translation id="4441677939526091190">ઉપરની ઍરો કી દબાવો</translation>
 <translation id="4453530046591759283">ટૂલબાર કે સિસ્ટમ ટ્રે જેવા સ્ક્રીનના બીજા ભાગો પર જવા માટે, Control+F1 દબાવો. Escape કીની જમણી બાજુએ પ્રથમ કી F1 છે.</translation>
 <translation id="4457472090507035117">વર્તમાન વૉઇસ પસંદ કરો:</translation>
 <translation id="4476183483923481720">નવી લાઇન</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Chromebook ટચ સ્ક્રીન ઍક્સેસિબિલિટી સુવિધાઓનો ઉપયોગ કરો</translation>
 <translation id="5655682562155942719">જંપ આદેશો</translation>
 <translation id="56637627897541303">ટેક્સ્ટ ક્ષેત્ર</translation>
+<translation id="5666746275818170484">ડાબી ઍરો કી દબાવો</translation>
 <translation id="5669637233317991674">આ પાઠ પર નૅવિગેટ કરવા માટે, Search + જમણો ઍરો અથવા Search + ડાબો ઍરો દબાવો</translation>
 <translation id="5677240841070992068">હાલનું સ્થાન</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">પૉપ-અપ બટન</translation>
 <translation id="7167657087543110">અક્ષર પડઘો</translation>
 <translation id="7173102181852295013">ગાઢ વાદળી</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">વિસ્તૃત કરેલ</translation>
 <translation id="7209751026933045237">કોઈ આગલું સ્લાઇડર નથી</translation>
 <translation id="7218782500591078391">ગોલ્ડન રૉડ</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">પ્રદેશ</translation>
 <translation id="8382679411218029383">સ્વતઃપૂર્ણ ઇનલાઇન અને સૂચિ</translation>
 <translation id="8394908167088220973">મીડિયા ચલાવો/થોભાવો</translation>
+<translation id="8409502156784390079">સ્ક્રોલ મોડ સક્રિય</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428603554127842284">સ્તર <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">ભૂલી જાઓ</translation>
 <translation id="8989104346085848538">કોઈપણ વર્તમાન ChromeVox સ્પીચ રોકવા માટે, Control કી દબાવો.</translation>
 <translation id="9014206344398081366">ChromeVoxનું ટ્યૂટૉરિઅલ</translation>
+<translation id="9034592733577768445">ફેસ કન્ટ્રોલ થોભાવ્યું</translation>
 <translation id="9040132695316389094">મથાળું 1</translation>
 <translation id="9061884144798498064">8-ડૉટ બ્રેઇલ કોષ્ટક પસંદ કરો:</translation>
 <translation id="9063946545000394379">પાછલા અક્ષર પર ખસેડો</translation>

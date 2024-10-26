@@ -419,6 +419,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2942036813789421260">Thẻ xem trước đang đóng</translation>
 <translation id="2946420957526726953">Đang cập nhật Chrome để kết nối với các thiết bị khác</translation>
 <translation id="2951071800649516099">Thêm các trang vào danh sách đọc để đọc sau</translation>
+<translation id="2954586176076923855">Chuyển thanh địa chỉ lên trên cùng</translation>
 <translation id="2956070106555335453">Tổng hợp</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> trang chưa đọc}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> trang chưa đọc}}</translation>
 <translation id="2972109037780336501">Tự động loại bỏ quyền</translation>
@@ -653,6 +654,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4095425503313512126">Duyệt web và tìm kiếm nhanh hơn</translation>
 <translation id="4096227151372679484">Luồng lưu dấu trang đã mở ở nửa dưới của màn hình</translation>
 <translation id="4101475238162928417">Đồng bộ hoá để sử dụng mật khẩu, dấu trang và nhiều nội dung khác trên các thiết bị khác của bạn.</translation>
+<translation id="4105527135143631701">Đã mở yêu cầu cập nhật của Trình quản lý mật khẩu của Google</translation>
 <translation id="4108314971463891922">Theo dõi</translation>
 <translation id="4113030288477039509">Do quản trị viên của bạn quản lý</translation>
 <translation id="4116038641877404294">Tải trang xuống để sử dụng ngoại tuyến</translation>
@@ -1257,6 +1259,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6813446258015311409">Đã mở trang Đăng nhập vào Chrome.</translation>
 <translation id="6817747507826986771">Chia sẻ nhanh trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Đã đóng yêu cầu cập nhật của Trình quản lý mật khẩu của Google</translation>
 <translation id="6822587385560699678">Khi tính năng này bật, mật khẩu sẽ được lưu trong <ph name="ACCOUNT" />. Khi tính năng này tắt, mật khẩu chỉ được lưu trên thiết bị này.</translation>
 <translation id="6823561724060793716">Trên thanh địa chỉ, bạn có thể mở phần thông tin trang để xem thông tin bổ sung về trang bạn đang truy cập</translation>
 <translation id="6828070228333235514">Dừng theo dõi giá</translation>
@@ -1458,6 +1461,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7612619742409846846">Đã đăng nhập vào Google bằng</translation>
 <translation id="7612989789287281429">Đang đăng nhập…</translation>
 <translation id="7619072057915878432">Tải xuống không thành công <ph name="FILE_NAME" /> do lỗi mạng.</translation>
+<translation id="762537095495606755">Các mật khẩu sắp ngừng hoạt động trên thiết bị này</translation>
 <translation id="7626032353295482388">Chào mừng bạn đến với Chrome</translation>
 <translation id="7628417132421583481">Chuyển đến Trình quản lý mật khẩu</translation>
 <translation id="7630202231528827509">URL của nhà cung cấp</translation>
@@ -1550,6 +1554,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8015452622527143194">Trả lại mọi nội dung trên trang về kích thước mặc định</translation>
 <translation id="8017431260099661477">Không mở được đường liên kết của lời mời</translation>
 <translation id="8026238112629815203">Chúng tôi đã thay đổi cách lưu mật khẩu trên thiết bị này</translation>
+<translation id="8027395186860110042">Các mật khẩu có thể sắp ngừng hoạt động</translation>
 <translation id="8027863900915310177">Chọn vị trí lưu tệp tải xuống</translation>
 <translation id="8030852056903932865">Phê duyệt</translation>
 <translation id="8032569120109842252">Đang theo dõi</translation>
@@ -1620,7 +1625,9 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8282297628636750033">Áp dụng giao diện tối khi có thể</translation>
 <translation id="8282950411412455249">Chuyển đến phần cài đặt bảo mật</translation>
 <translation id="829672787777123339">Đang kết nối với thiết bị của bạn…</translation>
+<translation id="8306751933352925837">Các mật khẩu sắp ngừng hoạt động trên thiết bị này. Hãy cập nhật Dịch vụ Google Play để tiếp tục sử dụng mật khẩu. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> đã xoá thẻ "<ph name="TAB_NAME" />"</translation>
+<translation id="8310451567823644042">Các mật khẩu sắp ngừng hoạt động</translation>
 <translation id="831192587911042850">Thêm trang web hiện tại vào danh sách các trang web bạn đang theo dõi.</translation>
 <translation id="8342727528718219152">Chrome sẽ cho bạn biết những trang web có thể đang gửi quá nhiều thông báo</translation>
 <translation id="834313815369870491">Không bao giờ dịch các trang web</translation>
@@ -1687,6 +1694,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8570677896027847510">Không thể tải tệp xuống một cách an toàn</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
 <translation id="8582529315803410153">Bạn sẽ thấy các thẻ mà bạn mở trên những thiết bị khác tại đây</translation>
+<translation id="8585103689515290060">Dịch vụ tự động điền</translation>
 <translation id="859046281437143747">Theo dõi giá trong nút Tuỳ chọn khác</translation>
 <translation id="859064343657890103">Đã xoá nhóm thẻ <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="860043288473659153">Tên chủ thẻ</translation>
@@ -1755,6 +1763,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8963117664422609631">Chuyển đến phần cài đặt trang web</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>
+<translation id="897061774231912216">Các mật khẩu sắp ngừng hoạt động do thiết bị chưa cài đặt Dịch vụ Google Play. Để sử dụng mật khẩu lưu trong Tài khoản Google của bạn, hãy đăng nhập bằng một thiết bị khác hoặc truy cập vào passwords.google.com.</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>
 <translation id="8982113230057126145">Nút Không thích gửi phản hồi cho biết bạn không thích nội dung tóm tắt này</translation>
@@ -1804,6 +1813,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9157212632995922070">Chọn một tài khoản để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
+<translation id="9168847423516963845">Chuyển thanh địa chỉ xuống dưới cùng</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Bạn sẽ thấy nhật ký duyệt web trên tất cả những thiết bị đã đồng bộ hoá, nhờ vậy bạn có thể tiếp tục những việc bạn đang làm</translation>

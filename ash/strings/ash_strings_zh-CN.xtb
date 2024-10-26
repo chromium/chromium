@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">开启或关闭光标浏览模式</translation>
 <translation id="2531025035050312891">设备运行缓慢</translation>
 <translation id="2531107890083353124">在拖动标签页的同时按 <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">要使用 Home 键吗？请使用</translation>
 <translation id="254900897760075745">将所选内容复制到剪贴板</translation>
 <translation id="2549711466868162843">改善光线</translation>
 <translation id="2549985041256363841">开始录制</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992272421330787632">隐藏所有媒体建议</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
+<translation id="2993956882370897557">要使用 End 键吗？请使用</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001391739687111021">修改屏幕尺寸</translation>
 <translation id="3009178788565917040">输出</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
 <translation id="316798519864381606">Google 幻灯片</translation>
 <translation id="3171170659304083361">输入法设置</translation>
+<translation id="3174897399179348329">要使用 Page Up 键吗？请使用</translation>
 <translation id="3176221688814061633">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。开启超高解析度蓝牙或使用内置麦克风可提升音质。</translation>
 <translation id="3181441307743005334">重启可能需要一点时间</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已连接到 1 台设备}other{已连接到 # 台设备}}</translation>
@@ -1260,6 +1263,7 @@
 <translation id="5297704307811127955">已关闭</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5302048478445481009">语言</translation>
+<translation id="5302531370473608800">需要更新 <ph name="DEVICE_TYPE" /> 才能使用 YouTube Music</translation>
 <translation id="5303319262469238330">电量剩余 <ph name="PERCENTAGE" />%。为了延长电池续航时间，部分功能会受到限制。</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
@@ -1818,6 +1822,7 @@
 <translation id="7144942256906679589">电池状态</translation>
 <translation id="7145639536026937076">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。省电模式已开启。</translation>
 <translation id="7147587499155271409">没有浏览记录</translation>
+<translation id="7147657298465433425">若要使用 F 键，请按 fn 键 + 顶行按键</translation>
 <translation id="7149149900052329230">在“文件”应用中一站式管理本地文件和 Google 云端硬盘文件。</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
@@ -1927,6 +1932,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />正在使用您的麦克风</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
+<translation id="7568154670718626683">要使用 Delete 键吗？请使用</translation>
 <translation id="7568790562536448087">更新</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
 <translation id="7569886975397378678">取消设置查看手机中的通知和应用</translation>
@@ -2129,6 +2135,7 @@
 <translation id="820256110035940528"><ph name="TITLE" />您刚刚专注了 <ph name="FOCUSED_TIME" />。打开“快捷设置”即可再次开启专注模式。</translation>
 <translation id="8203224998425013577">显示更多表情符号和 GIF</translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>
+<translation id="8205469348819768313">要使用 Page Down 键吗？请使用</translation>
 <translation id="8214996719228530800">Canary 渠道</translation>
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
 <translation id="8220076512072059941">增加 <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2321,6 +2328,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支持此语言。</translation>
 <translation id="8926951137623668982">任务栏始终处于隐藏状态</translation>
+<translation id="8929566928381252430">要使用 Caps Lock 键吗？请使用</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>

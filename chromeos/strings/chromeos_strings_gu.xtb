@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="1908394185991500139">તીર ડાબું</translation>
+<translation id="1914144885717544695">શુક્રવારે</translation>
 <translation id="1923388006036088459">ઍક્સેન્ટના રંગ</translation>
 <translation id="1945403655450283000">રેકોર્ડર</translation>
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">આસપાસમાં ફરો</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">આજે</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
 <translation id="2154460308960858308">શોધ સાફ કરો</translation>
 <translation id="2157660087437850958">ઇમોજી પિકર</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2715723665057727940">નદી</translation>
 <translation id="2717139507051041123">ઘેરા રંગવાળો મોડ ચાલુ કરો</translation>
+<translation id="2726755229438917165">સોમવારે</translation>
 <translation id="2728460467788544679">બધો પ્રિન્ટ ઇતિહાસ સાફ કરો</translation>
 <translation id="2731700343119398978">કૃપા કરીને રાહ જુઓ...</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">છેવટ</translation>
 <translation id="3060579846059757016">આઉટલાઇન</translation>
 <translation id="3061850252076394168">સાંભળવા માટે પસંદ કરો સુવિધા ચાલુ કરો</translation>
+<translation id="3066772729299747758">મંગળવારે</translation>
 <translation id="3069085583900247081">પરીક્ષણ નિષ્ફળ થયું</translation>
 <translation id="3078740164268491126">કોષ્ટક</translation>
 <translation id="3081652522083185657">લાઇટ</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">સુશી</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">અર્થ ફ્લો વૉલપેપર</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> અક્ષરવાળું <ph name="LETTERS_COLOR" /> બૅકગ્રાઉન્ડ</translation>
 <translation id="3383623117265110236">વિશેષ</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">લેઆઉટના વધુ વિકલ્પો માટે માઉસ ફેરવતા રહો</translation>
 <translation id="4130750466177569591">હું સંમત છું</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
+<translation id="4137700675046373159">શનિવારે</translation>
 <translation id="4143226836069425823">બદલવા માટે કીબોર્ડની અન્ય કી પર ટૅપ કરો</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">રવિવારે</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4251839292699800785">સ્ટાઇલિશ ઑફિસ</translation>
 <translation id="4258281355379922695">HTTPની વિલંબતા</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">વાઇ-ફાઇ સુરક્ષાનો અજાણ્યો પ્રોટોકૉલ</translation>
 <translation id="6535178685492749208">તમે ઑફલાઇન છો. પ્રતિસાદ થોડા સમય પછી મોકલવામાં આવશે.</translation>
 <translation id="6543412779435705598">ટાકોસ</translation>
+<translation id="6550369542114086980">ગુરુવારે</translation>
 <translation id="6551839203326557324">સફરજન</translation>
 <translation id="65526652485742171">કન્ફર્મ બટન હવે ચાલુ છે</translation>
 <translation id="6557784757915238407">APNનો પ્રકાર <ph name="ATTACH" /> છે.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7182063559013288142">ઝટપટ હૉટસ્પૉટ</translation>
 <translation id="7184043045742675738">તમારા બટનને કસ્ટમાઇઝ કરવા માટે કોઈપણ કી પર ક્લિક કરો. માઉસ અથવા ઍરો કી વડે કીના સ્થાનમાં ફેરફાર કરો.</translation>
+<translation id="7187669805838282391">બુધવારે</translation>
 <translation id="7206979415662233817">સેવાની શરતો</translation>
 <translation id="7210635925306941239">સ્યાન</translation>
 <translation id="7212547870105584639">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">બિલ્ટ-ઇન ટચપૅડ</translation>
 <translation id="7397270852490618635">ઝાંખી થીમ બંધ કરો</translation>
 <translation id="7401543881546089382">શોર્ટકટ ડિલીટ કરો</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> અપડેટ કરવા માટે તૈયાર છે</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
 <translation id="7415801143053185905">HTTPની અતિ ઉચ્ચ વિલંબતા</translation>
 <translation id="7425037327577270384">લખવામાં મારી સહાય કરો</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">શું સ્પીકરની ભાળ મેળવવા અને તેને લેબલ કરવા માટે Recorderને મંજૂરી આપીએ?</translation>
 <translation id="7501957181231305652">અથવા</translation>
 <translation id="7502658306369382406">IPv6 સરનામું</translation>
+<translation id="7503342217608032738">ડિવાઇસનો ઉપયોગ કરી શકાતો નથી</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_COLOR" /> રંગનું ખીલેલું <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">સૌથી નીચે</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">શફલ કરો</translation>
 <translation id="7550715992156305117">નિદાન માટેના રૂટિન</translation>
 <translation id="7551123448725492271">ડિવાઇસ એક ઑડિયો ડિવાઇસ છે.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />આ <ph name="DEVICE_TYPE" />નો ઉપયોગ ક્યારે કરી શકાય છે, એ <ph name="MANAGER" />ના ઍડમિનિસ્ટ્રેટર દ્વારા સેટ કરવામાં આવ્યું છે.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />તમે <ph name="DAY" />ના રોજ <ph name="TIME" /> વાગ્યે ફરીથી આ ડિવાઇસનો ઉપયોગ કરી શકશો.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">સ્ક્રીનશૉટનો પ્રીવ્યૂ જુઓ</translation>
 <translation id="7561454561030345039">આ ક્રિયાને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}one{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}other{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}}</translation>
 <translation id="7994702968232966508">EAP પદ્ધતિ</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
+<translation id="8010765388850538088">જનરેટિવ AI વિશે વધુ જાણો</translation>
 <translation id="8017679124341497925">શૉર્ટકટમાં ફેરફાર કર્યો</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8028993641010258682">કદ</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
 <translation id="8054112564438735763">બૅઇજ</translation>
 <translation id="8062968459344882447">કોઈ <ph name="CHARACTERS_BACKGROUND" /> બૅકગ્રાઉન્ડ પર <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN કનેક્ટેડ છે.</translation>
 <translation id="8067208048261192356">કથ્થઈ</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ડિલીટ કરો</translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">તમારા મોબાઇલ ઑપરેટરને તેમના નેટવર્ક સાથે કનેક્ટ કરવા માટે, આ વિકલ્પની જરૂર પડી શકે છે. વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" /> માટે ફર્મવેયરનું ઇન્સ્ટૉલેશન વર્ઝન <ph name="VERSION" /> પર પૂર્ણ કરવા ફરી શરૂ કરવાની જરૂર છે. તમારું કમ્પ્યૂટર ઘણી વખત રીબૂટ કર્યું હોય એવું લાગે છે. આ વર્તન અપેક્ષિત છે.</translation>
 <translation id="8593058461203131755">મીડિયા થોભાવો</translation>
 <translation id="8620617069779373398">રોમિંગ સ્થિતિ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> માટે વધુ ક્રિયાઓ</translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9188992814426075118">તમારું કીબોર્ડ ઑટોમૅટિક રીતે તમારા વૉલપેપર સાથે મેળ કરી શકે છે</translation>
 <translation id="9189000703457422362">જેની ઑટોમૅટિક રીતે ભાળ મળી હોય તેવા APNsનો ઉપયોગ કરીને આ નેટવર્ક સાથે કનેક્ટ કરી શકતાં નથી. વધુ માહિતી માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">પસંદ કરેલી જૉયસ્ટિક કી <ph name="KEYS" /> છે. કન્ટ્રોલમાં ફેરફાર કરવા માટે બટન પર ટૅપ કરો</translation>
 <translation id="9204237731135241582">Android ઍપથી ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>

@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1908394185991500139">左矢印</translation>
+<translation id="1914144885717544695">金曜日</translation>
 <translation id="1923388006036088459">アクセント カラー</translation>
 <translation id="1945403655450283000">レコーダー</translation>
 <translation id="1947737735496445907">印刷完了</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">浮かぶ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">今日</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 枚の写真</translation>
 <translation id="2154460308960858308">検索をクリア</translation>
 <translation id="2157660087437850958">絵文字選択ツール</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">白</translation>
 <translation id="2715723665057727940">川</translation>
 <translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
+<translation id="2726755229438917165">月曜日</translation>
 <translation id="2728460467788544679">印刷履歴をすべて削除</translation>
 <translation id="2731700343119398978">お待ちください...</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">エンドポイント</translation>
 <translation id="3060579846059757016">アウトライン</translation>
 <translation id="3061850252076394168">「選択して読み上げ」を有効にする</translation>
+<translation id="3066772729299747758">火曜日</translation>
 <translation id="3069085583900247081">テストに失敗しました</translation>
 <translation id="3078740164268491126">表</translation>
 <translation id="3081652522083185657">ライト</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">寿司</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">「地球の動き」の壁紙</translation>
 <translation id="33736539805963175">「<ph name="LETTERS_LETTER" />」という文字を含む<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">限定</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
 <translation id="4130750466177569591">同意する</translation>
 <translation id="4131410914670010031">白黒</translation>
+<translation id="4137700675046373159">土曜日</translation>
 <translation id="4143226836069425823">置き換える別のキーボード キーをタップします</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4147897805161313378">Google フォト</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">日曜日</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4251839292699800785">洗練されたオフィス</translation>
 <translation id="4258281355379922695">HTTP レイテンシ</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
 <translation id="6535178685492749208">オフラインです。フィードバックは後で送信されます。</translation>
 <translation id="6543412779435705598">タコス</translation>
+<translation id="6550369542114086980">木曜日</translation>
 <translation id="6551839203326557324">リンゴ</translation>
 <translation id="65526652485742171">確認ボタンが有効になりました</translation>
 <translation id="6557784757915238407">APN の種類は <ph name="ATTACH" /> です。</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7182063559013288142">インスタント アクセス ポイント</translation>
 <translation id="7184043045742675738">ボタンをカスタマイズするには、いずれかのキーをクリックします。マウスまたは矢印キーを使用してキーの位置を変更します。</translation>
+<translation id="7187669805838282391">水曜日</translation>
 <translation id="7206979415662233817">利用規約</translation>
 <translation id="7210635925306941239">シアン</translation>
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">デバイス内蔵タッチパッド</translation>
 <translation id="7397270852490618635">ライトモードをオフにする</translation>
 <translation id="7401543881546089382">ショートカットを削除</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> を更新する準備ができました</translation>
 <translation id="741244894080940828">単位変換</translation>
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7425037327577270384">文書作成サポート</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">レコーダーに話し手の検出とラベル付けを許可しますか？</translation>
 <translation id="7501957181231305652">または</translation>
 <translation id="7502658306369382406">IPv6 アドレス</translation>
+<translation id="7503342217608032738">デバイスは使用できません</translation>
 <translation id="7507061649493508884">輝くような <ph name="FLOWER_COLOR" /> の <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">下</translation>
 <translation id="7514365320538308">ダウンロード</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">シャッフル</translation>
 <translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> の管理者が、この <ph name="DEVICE_TYPE" /> を使用できる時間を設定しました。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />このデバイスは、<ph name="DAY" /> の <ph name="TIME" /> に再び使用できるようになります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">スクリーンショットのプレビュー</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{「<ph name="APP_NAME_1" />」が自動的に起動されました}other{# 個のアプリが自動的に起動されました}}</translation>
 <translation id="7994702968232966508">EAP 方式</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
+<translation id="8010765388850538088">生成 AI の詳細</translation>
 <translation id="8017679124341497925">ショートカットを編集しました</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8028993641010258682">サイズ</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">マイクのミュート</translation>
 <translation id="8054112564438735763">ベージュ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> の背景に <ph name="CHARACTERS_COLOR" /> の <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN に接続しました。</translation>
 <translation id="8067208048261192356">茶色</translation>
 <translation id="8067224607978179455">削除 <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" /> でバージョン <ph name="VERSION" /> へのファームウェアのインストールを完了するには、再起動が必要です。その際、コンピュータに再起動の画面が複数回表示されることがありますが、これは正常な動作です。</translation>
 <translation id="8593058461203131755">メディアを一時停止する</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">テスト</translation>
 <translation id="9188992814426075118">キーボードのバックライトの色を壁紙に合わせて自動調整できます</translation>
 <translation id="9189000703457422362">自動検出された APN を使用してこのネットワークとの接続を試みましたが接続できません。詳しくは、ご利用の携帯通信会社にお問い合わせください。</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">選択したジョイスティックのキーは <ph name="KEYS" /> です。コントロールを編集するにはボタンをタップします</translation>
 <translation id="9204237731135241582">Android アプリからゲートウェイにアクセスできません</translation>

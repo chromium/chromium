@@ -419,6 +419,7 @@
 <translation id="2942036813789421260">預覽分頁已關閉</translation>
 <translation id="2946420957526726953">正在更新 Chrome 以連線到其他裝置</translation>
 <translation id="2951071800649516099">將網頁新增至閱讀清單以供日後使用</translation>
+<translation id="2954586176076923855">將網址列移至頂端</translation>
 <translation id="2956070106555335453">摘要</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀取的網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀取的網頁}}</translation>
 <translation id="2972109037780336501">自動移除權限</translation>
@@ -653,6 +654,7 @@
 <translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快了</translation>
 <translation id="4096227151372679484">書籤儲存流程已開啟，目前顯示半個版面的內容</translation>
 <translation id="4101475238162928417">進行同步處理，取得你在其他裝置上的密碼、書籤和其他資料</translation>
+<translation id="4105527135143631701">Google 密碼管理工具更新資訊已開啟</translation>
 <translation id="4108314971463891922">追蹤</translation>
 <translation id="4113030288477039509">您的管理員已停用這項功能</translation>
 <translation id="4116038641877404294">下載網頁以便離線存取</translation>
@@ -1257,6 +1259,7 @@
 <translation id="6813446258015311409">登入 Chrome，帳戶挑選器已開啟。</translation>
 <translation id="6817747507826986771">快速分享這個專頁。按住這裡即可編輯這個捷徑。</translation>
 <translation id="6820686453637990663">信用卡驗證碼</translation>
+<translation id="6820942662346226299">Google 密碼管理工具更新資訊已關閉</translation>
 <translation id="6822587385560699678">如果開啟，系統會將密碼儲存在 <ph name="ACCOUNT" /> 中。如果關閉，密碼只會儲存在這部裝置上。</translation>
 <translation id="6823561724060793716">你可以透過網址列開啟網頁資訊，查看目前所在網頁的其他資訊</translation>
 <translation id="6828070228333235514">停止追蹤價格</translation>
@@ -1458,6 +1461,7 @@
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612989789287281429">正在登入…</translation>
 <translation id="7619072057915878432">無法連上網路，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="762537095495606755">密碼即將停止在這部裝置上運作</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7628417132421583481">前往密碼管理工具</translation>
 <translation id="7630202231528827509">供應商網址</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8015452622527143194">將網頁上的所有內容都回復為預設大小</translation>
 <translation id="8017431260099661477">無法開啟邀請連結</translation>
 <translation id="8026238112629815203">我們調整了這部裝置的密碼儲存方式</translation>
+<translation id="8027395186860110042">密碼可能很快就會停止運作</translation>
 <translation id="8027863900915310177">選擇下載位置</translation>
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032569120109842252">追蹤中</translation>
@@ -1620,7 +1625,9 @@
 <translation id="8282297628636750033">盡可能對網站套用深色主題</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
 <translation id="829672787777123339">正在連線至裝置…</translation>
+<translation id="8306751933352925837">密碼即將停止在這部裝置上運作。如要繼續使用密碼，請更新 Google Play 服務。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />移除了「<ph name="TAB_NAME" />」分頁</translation>
+<translation id="8310451567823644042">密碼很快就會停止在這部裝置上運作</translation>
 <translation id="831192587911042850">將目前的網站加到你追蹤的網站清單中。</translation>
 <translation id="8342727528718219152">Chrome 會通知你哪些網站可能傳送太多通知</translation>
 <translation id="834313815369870491">一律不翻譯的網站</translation>
@@ -1687,6 +1694,7 @@
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8582529315803410153">這裡會顯示你在其他裝置上的分頁</translation>
+<translation id="8585103689515290060">自動填入服務</translation>
 <translation id="859046281437143747">透過 [更多] 選項按鈕追蹤價格</translation>
 <translation id="859064343657890103">已刪除「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
@@ -1755,6 +1763,7 @@
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="897061774231912216">由於無法使用 Google Play 服務，密碼即將停止運作。如要使用儲存在 Google 帳戶的密碼，請從其他裝置登入，或前往 passwords.google.com。</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
 <translation id="8982113230057126145">按倒讚可給予這則摘要負面評價</translation>
@@ -1804,6 +1813,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9157212632995922070">請選擇接下來要在「<ph name="SITE_ETLD_PLUS_ONE" />」上使用的帳戶</translation>
 <translation id="9158770349521403363">僅分享內容</translation>
+<translation id="9168847423516963845">將網址列移至底部</translation>
 <translation id="9169507124922466868">已在畫面下半部顯示瀏覽記錄</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
 <translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>

@@ -27,6 +27,7 @@
 <translation id="1330562121671411446">检测语言</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">已固定！您可以通过工具栏中的新按钮再次使用图片搜索功能</translation>
+<translation id="1356661055722410047">新功能！您可以翻译屏幕上的文字和图片</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
@@ -128,8 +129,10 @@
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2770231113462710648">将默认浏览器更改为：</translation>
+<translation id="277338894894732084">之后，Chromium 会询问您是否要使用已保存的信息自动填写表单</translation>
 <translation id="2785438272836277133">此扩展程序包含恶意软件，所以不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2799223571221894425">重新启动</translation>
+<translation id="2806241689335397269">Chromium 会询问您是否要保存表单信息，例如生日、年龄和护照号码</translation>
 <translation id="2837693172913560447">这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="2841525013647267359">源语言</translation>
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
@@ -230,6 +233,7 @@
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 网络登录 - Chromium</translation>
 <translation id="421369550622382712">在这里，您可以找到适用于 Chromium 的精彩应用、游戏、扩展程序和主题背景。</translation>
+<translation id="4217972271355023382">若要使用家长选择的设置更安全地上网，请切换到你已用 <ph name="USER_EMAIL_ADDRESS" /> 身份登录的 Chromium 资料</translation>
 <translation id="4222932583846282852">正在取消…</translation>
 <translation id="4224210481850767180">已取消安装。</translation>
 <translation id="4230135487732243613">是否将您的 Chromium 数据与此账号相关联？</translation>
@@ -437,6 +441,7 @@
 <translation id="6843464627590537736">图片搜索搜索气泡</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
+<translation id="685279860330610299">Chromium 可以理解更多类型的信息，并更快地自动填充表单。详细了解 <ph name="BEGIN_LINK" />Chrome 自动填充功能<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
 <translation id="6896758677409633944">复制</translation>
@@ -548,6 +553,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8397248745433792218">Chromium 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="8417404458978023919">{0,plural, =1{请于 1 天内重新启动 Chromium}other{请于 # 天内重新启动 Chromium}}</translation>
+<translation id="8438543370129609977">当您使用图片搜索功能时，系统会将相关网页的标题、网址和内容（包括 PDF 文件）发送给服务器。<ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 仅支持 Windows 10 或更高版本的操作系统。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
@@ -559,6 +565,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8568283329061645092">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="8576826849825683917">多个组织负责管理 Chromium</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
+<translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chromium 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="8619360774459241877">正在启动 Chromium…</translation>
 <translation id="8621669128220841554">未指定的错误导致安装失败。请重新下载 Chromium。</translation>

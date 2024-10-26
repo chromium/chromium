@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1908234395526491708">‏تعذَّر طلب بروتوكول UDP.</translation>
 <translation id="1908394185991500139">سهم متّجه لليسار</translation>
+<translation id="1914144885717544695">يوم الجمعة</translation>
 <translation id="1923388006036088459">ألوان التمييز</translation>
 <translation id="1945403655450283000">المسجّلة الذكية</translation>
 <translation id="1947737735496445907">تمت الطباعة</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">التحليق عاليًا</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">اليوم</translation>
+<translation id="215206000155329774"><ph name="INTENT" />؛ <ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> صورة</translation>
 <translation id="2154460308960858308">محو البحث</translation>
 <translation id="2157660087437850958">أداة اختيار رموز الإيموجي</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2715723665057727940">نهر</translation>
 <translation id="2717139507051041123">تفعيل وضع الألوان الداكنة</translation>
+<translation id="2726755229438917165">يوم الاثنين</translation>
 <translation id="2728460467788544679">محو سجلّ الطباعة بالكامل</translation>
 <translation id="2731700343119398978">يرجى الانتظار...</translation>
 <translation id="2740531572673183784">حسنًا</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">نقطة النهاية</translation>
 <translation id="3060579846059757016">المخططات</translation>
 <translation id="3061850252076394168">تفعيل ميزة "سماع الاختيار"</translation>
+<translation id="3066772729299747758">يوم الثلاثاء</translation>
 <translation id="3069085583900247081">تعذّر إجراء اختبار</translation>
 <translation id="3078740164268491126">جدول</translation>
 <translation id="3081652522083185657">فاتحة</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">سوشي</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />؛ <ph name="QUERY_TEXT" />؛ <ph name="SUBTEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">خلفية تعرض منظرًا انسيابيًا للأرض</translation>
 <translation id="33736539805963175">خلفية <ph name="LETTERS_COLOR" /> على شكل حرف <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">مجموعة حصرية</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
 <translation id="4130750466177569591">أوافق</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
+<translation id="4137700675046373159">يوم السبت</translation>
 <translation id="4143226836069425823">انقر على مفتاح آخر بلوحة المفاتيح لاستبدال هذا المفتاح</translation>
 <translation id="4145784616224233563">‏جدار الحماية لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
+<translation id="4249717042534905822">يوم الأحد</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4251839292699800785">مكتب أنيق</translation>
 <translation id="4258281355379922695">‏وقت استجابة بروتوكول HTTP</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="6535178685492749208">لا يتوفّر اتصال بالإنترنت. سيتم إرسال التعليقات لاحقًا.</translation>
 <translation id="6543412779435705598">تاكو</translation>
+<translation id="6550369542114086980">يوم الخميس</translation>
 <translation id="6551839203326557324">تفاح</translation>
 <translation id="65526652485742171">زر "تأكيد" متاح الآن</translation>
 <translation id="6557784757915238407">اسم نقطة الوصول من النوع <ph name="ATTACH" />.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7182063559013288142">نقطة اتصال فورية</translation>
 <translation id="7184043045742675738">انقر على أي مفتاح لتخصيص الزر. غيِّر موضع المفتاح باستخدام الماوس أو مفاتيح الأسهم.</translation>
+<translation id="7187669805838282391">يوم الأربعاء</translation>
 <translation id="7206979415662233817">بنود الخدمة</translation>
 <translation id="7210635925306941239">سماوي</translation>
 <translation id="7212547870105584639">يمكنك إدارة إعدادات اسم نقطة الوصول للشبكة. وتُنشئ أسماء نقاط الوصول اتصالاً بين شبكة الجوّال والإنترنت. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">لوحة لمس مُدمَجة</translation>
 <translation id="7397270852490618635">إيقاف تشغيل المظهر الفاتح</translation>
 <translation id="7401543881546089382">حذف الاختصار</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> جاهز للتحديث</translation>
 <translation id="741244894080940828">التحويل</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">هل تريد السماح لتطبيق "المسجّلة الذكية" برصد المتحدّثِين وتصنيفهم؟</translation>
 <translation id="7501957181231305652">أو</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
+<translation id="7503342217608032738">يتعذَّر استخدام هذا الجهاز</translation>
 <translation id="7507061649493508884">صورة <ph name="FLOWER_TYPE" /> مشرقة بلون <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">الأسفل</translation>
 <translation id="7514365320538308">تنزيل</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">ترتيب عشوائي</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />ضبطَ مشرف <ph name="MANAGER" /> وقتًا لاستخدام جهاز <ph name="DEVICE_TYPE" /> خلاله.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />سيصبح بإمكانك استخدام هذا الجهاز مجددًا <ph name="DAY" /> في <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">معاينة لقطة الشاشة</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
+<translation id="8010765388850538088">مزيد من المعلومات حول الذكاء الاصطناعي التوليدي</translation>
 <translation id="8017679124341497925">تمّ تعديل الاختصار</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8028993641010258682">الحجم</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">كتم صوت الميكروفون</translation>
 <translation id="8054112564438735763">بيج</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> بلون <ph name="CHARACTERS_COLOR" /> على خلفية بلون <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">‏اسم نقطة الوصول (APN) متصل.</translation>
 <translation id="8067208048261192356">بني</translation>
 <translation id="8067224607978179455">حذف <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
+<translation id="8584654835905316966">يجب إعادة تشغيل الجهاز لإكمال عملية تثبيت البرامج الثابتة لـ <ph name="DEVICE_NAME" /> على الإصدار <ph name="VERSION" />. وقد يبدو أنّه يُعاد تشغيل جهاز الكمبيوتر عدة مرات، فهذا سلوك متوقَّع.</translation>
 <translation id="8593058461203131755">إيقاف الوسائط مؤقتًا</translation>
 <translation id="8620617069779373398">حالة التجوال</translation>
 <translation id="8626489604350149811">مزيد من الإجراءات لـ "<ph name="APN_NAME" />"</translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">اختبار</translation>
 <translation id="9188992814426075118">يمكن أن تكون لوحة المفاتيح متطابقة تلقائيًا مع خلفيتك.</translation>
 <translation id="9189000703457422362">‏يتعذّر الاتصال بهذه الشبكة باستخدام أسماء نقاط الوصول (APN) التي يتم رصدها تلقائيًا. يُرجى التواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من المعلومات.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />؛ <ph name="SUBTEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">‫APN*‎</translation>
 <translation id="9195918315673527512">مفاتيح ذراع التحكّم التي تمّ اختيارها هي <ph name="KEYS" />. انقر على الزر لتعديل عنصر التحكّم.</translation>
 <translation id="9204237731135241582">‏تعذَّر الاتصال بالبوابة من خلال تطبيقات Android.</translation>

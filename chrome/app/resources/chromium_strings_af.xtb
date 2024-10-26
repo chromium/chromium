@@ -30,6 +30,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1330562121671411446">Bespeur taal</translation>
 <translation id="1342274909142618978">Vee ook data uit Chromium uit (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Vasgespeld! Jy kan weer toegang tot Prentsoektog kry vanaf die nuwe knoppie op die nutsbalk</translation>
+<translation id="1356661055722410047">Nuut! Jy kan sowel teks as prente op jou skerm vertaal</translation>
 <translation id="1414495520565016063">Jy is by Chromium aangemeld!</translation>
 <translation id="1478370723027452770">Kry hulp met Chrome-toetsweergawe</translation>
 <translation id="1497802159252041924">Installeerfout: <ph name="INSTALL_ERROR" /></translation>
@@ -131,8 +132,10 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2738871930057338499">Kon nie aan die internet koppel nie. HTTP 403 verbode. Gaan asseblief jou proxy-opstelling na.</translation>
 <translation id="2753623023919742414">Klik om te soek</translation>
 <translation id="2770231113462710648">Verander verstekblaaier na:</translation>
+<translation id="277338894894732084">Chromium sal jou later vra of jy gestoorde inligting wil gebruik om vorms outomaties in te vul</translation>
 <translation id="2785438272836277133">Hierdie uitbreiding bevat wanware en is onveilig. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="2799223571221894425">Begin weer</translation>
+<translation id="2806241689335397269">Chromium sal jou vra of jy vorminligting wil stoor, soos jou geboortedatum, ouderdom en paspoortnommer</translation>
 <translation id="2837693172913560447">Dit sal 'n nuwe Chromium-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>
 <translation id="2841525013647267359">Vertaal uit</translation>
 <translation id="2846251086934905009">Installeerfout: Die installeerder is nie voltooi nie. Die installasie is gestaak.</translation>
@@ -233,6 +236,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4148957013307229264">Installeer tans …</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Netwerkaanmelding – Chromium</translation>
 <translation id="421369550622382712">Ontdek wonderlike programme, speletjies, uitbreidings en temas vir Chromium.</translation>
+<translation id="4217972271355023382">Skakel oor na jou Chromium-profiel waar jy reeds aangemeld is as <ph name="USER_EMAIL_ADDRESS" /> om met jou ouers se keuses veiliger aanlyn te bly</translation>
 <translation id="4222932583846282852">Kanselleer tans …</translation>
 <translation id="4224210481850767180">Die installering is gekanselleer.</translation>
 <translation id="4230135487732243613">Koppel jou Chromium-data aan hierdie rekening?</translation>
@@ -440,6 +444,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6843464627590537736">Prentsoektog se soekborrel</translation>
 <translation id="6847869444787758381">Chromium sal jou laat weet as jou wagwoorde gekompromitteer is</translation>
 <translation id="684888714667046800">Kan nie aan die internet koppel nie. As jy ’n brandmuur gebruik, moet jy seker maak dat <ph name="PRODUCT_EXE_NAME" /> op die toelaatlys is.</translation>
+<translation id="685279860330610299">Chromium kan meer soorte inligting verstaan en jou vorms vinniger outovul. Kry meer inligting oor <ph name="BEGIN_LINK" />Chrome-outovul<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium het bevind dat "<ph name="EXTENSION_NAME" />" wanware bevat</translation>
 <translation id="6896758677409633944">Kopieer</translation>
@@ -551,6 +556,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8397248745433792218">Chromium beveel aan dat jy dit verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Die ontwikkelaar van hierdie uitbreiding het dit gedepubliseer, en dit kan onveilig wees. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Herbegin Chromium binne 'n dag}other{Herbegin Chromium binne # dae}}</translation>
+<translation id="8438543370129609977">Wanneer jy Prentsoektog gebruik, word die bladsytitel, URL en inhoud, insluitend PDF’s, na die bediener toe gestuur. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>
 <translation id="8458614432758743027">Chromium vereis Windows 10 of nuwer.</translation>
 <translation id="8463672209299734063">Opsioneel: Help om Chromium-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
@@ -562,6 +568,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8568283329061645092">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld</translation>
 <translation id="8576826849825683917">Veelvuldige organisasies bestuur Chromium</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
+<translation id="8601359445272098721">Nuut! Jy kan sowel teks as prente op jou skerm vertaal deur die “vertaal skerm”-knoppie te kies</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Werwe kan inligting oor jou belangstellings in Chromium stoor. As jy byvoorbeeld ’n werf besoek om skoene vir ’n marathon te koop, kan die werf jou belangstelling definieer as iemand wat marathons hardloop. As jy later ’n ander werf besoek om vir ’n wedloop te registreer, kan daardie werf vir jou ’n advertensie vir drafskoene op grond van jou belangstellings wys.</translation>
 <translation id="8619360774459241877">Begin tans Chromium …</translation>
 <translation id="8621669128220841554">Kon weens 'n ongespesifiseerde fout nie installeer nie. Laai Chromium asseblief weer af.</translation>

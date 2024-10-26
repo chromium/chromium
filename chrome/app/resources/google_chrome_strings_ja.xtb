@@ -28,6 +28,7 @@
 <translation id="1330562121671411446">検出言語</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google ChromeOS Flex 利用規約を拡張、変更、制限するものではありません。</translation>
 <translation id="1341711321000856656">別の Chrome プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
+<translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1363996462118479832">ログイン時にエラーが発生したため、Chrome OS はデータを同期できませんでした。</translation>
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
 <translation id="1399397803214730675">新しいバージョンの Google Chrome が既にインストールされています。ソフトウェアが動作しない場合は、Google Chrome をアンインストールしてからもう一度お試しください。</translation>
@@ -49,6 +50,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="1628000112320670027">Chrome のヘルプを見る</translation>
 <translation id="1640672724030957280">ダウンロードしています...</translation>
+<translation id="1651617469580841801">Google レンズを使用すると、ページのタイトル、URL、コンテンツ（PDF を含む）が Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex について</translation>
 <translation id="1674870198290878346">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome はこのデータ ディレクトリへの読み書きを実行できません: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -193,6 +195,7 @@
 <translation id="3261565993776444564">新しい色でブラウザをカスタマイズできます</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
+<translation id="3289358082435924389">今後、Chrome で保存した情報を使用してフォームに自動入力するかどうかを確認するメッセージが表示されます</translation>
 <translation id="3292333338048274092">その後、Chrome を再起動する必要があります。</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
@@ -503,6 +506,7 @@
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7352881504289275361">Chrome のセーフ ブラウジング保護強化機能では、ブラウジング中のユーザーを最強レベルのセキュリティで保護します</translation>
+<translation id="7386878009611068389">保護者の方が指定した設定でインターネットをより安全に利用するには、すでに <ph name="USER_EMAIL_ADDRESS" /> としてログインしている Chrome プロフィールに切り替えてください</translation>
 <translation id="7394745511930161845">AI を活用して独自のテーマを作成し、ブラウザを好みのデザインでカスタマイズできます</translation>
 <translation id="7398801000654795464">Chrome に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7412494426921990001">Chrome メニューをクリックします</translation>
@@ -516,6 +520,7 @@
 <translation id="7477130805345743099">Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
+<translation id="7512187482580860950">Chrome でより多くの種類の情報を識別して、フォームにすばやく自動入力できます。詳しくは、<ph name="BEGIN_LINK" />Chrome の自動入力<ph name="END_LINK" />をご覧ください</translation>
 <translation id="7514258452813684157">Google Updater サービス</translation>
 <translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -558,6 +563,7 @@
 <translation id="7886087451482920026">Google レンズでテキストを選択します</translation>
 <translation id="7890208801193284374">パソコンを共有している場合、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
 <translation id="7896673875602241923">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chrome にログインしました。情報を個別に保持するには、新しい Chrome ユーザーを作成してください。</translation>
+<translation id="7917470403848199310">Chrome で誕生日、年齢、パスポート番号などのフォーム情報を保存するかどうかを確認するメッセージが表示されます</translation>
 <translation id="7917876797003313048">ログインする Google アカウントを管理できます。Google アカウントは、Chrome ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">このダウンロードは Chrome でブロックされました。ファイルが虚偽のもので、デバイスに予期しない変更を加える可能性があります</translation>
 <translation id="7947083960301164556">新機能を表示</translation>
@@ -614,6 +620,7 @@
 <translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8571790202382503603">Chrome プロフィールを使うと、Chrome のあらゆる項目や設定を個別に管理できます。これにより、仕事と遊びの使い分けが簡単になります。</translation>
+<translation id="8601359445272098721">New! [画面を翻訳] ボタンを選択して、画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="8614913330719544658">Google Chrome が応答しません。今すぐ再起動しますか？</translation>
 <translation id="861702415419836452">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome は 1 分後に再起動されます}other{Chrome は # 分後に再起動されます}}</translation>

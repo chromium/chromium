@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="100421257800558142">右矢印キーを押す</translation>
 <translation id="100506692671054486">前のコマンドがありません</translation>
 <translation id="1009046985747440431">上または下矢印キーで移動し、Enter キーで有効にします</translation>
 <translation id="1011903154582639569">キーを探し、見つかったら指を離して入力します</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">切り替えボタン</translation>
 <translation id="1299774449519412690">ライト スカイブルー</translation>
 <translation id="1303806948938513162">ChromeVox メニューを開くには 4 本の指でタップします</translation>
+<translation id="1304162325618937178">Space キーを押す</translation>
 <translation id="1313373992684326101">前のセクションに移動します。たとえばステータス トレイやランチャーなどです。</translation>
 <translation id="1315077335264761176">タップ操作の向き</translation>
 <translation id="1325363694295259631"><ph name="NAME" />、選択されていないメニュー項目のラジオボタン</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">ウィート</translation>
 <translation id="1618597272655350600">現在位置の詳細な説明を読み上げます</translation>
 <translation id="1627222324347828322">ゴースト ホワイト</translation>
+<translation id="1632810692616643246">スクロール モードを開始または終了する</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{大なり}other{# 個の大なり記号}}</translation>
 <translation id="1653266918374749391">前のレベル 3 見出し</translation>
 <translation id="1657616855184033958">イベント ストリーム フィルタを表示する</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">前のコントロールはありません</translation>
 <translation id="2045606329038304310">フォーム フィールドの制御</translation>
 <translation id="2063539687800151747">題辞</translation>
+<translation id="2067158561093481039">カスタムキーの組み合わせを実行する</translation>
 <translation id="2086961585857038472">次の単語</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ja</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">サドルブラウン</translation>
 <translation id="2199994615414171367">前の数式</translation>
 <translation id="2203046366315513658">値を小さくします</translation>
+<translation id="2206580811360135054">ウィンドウの概要を表示または非表示にする</translation>
 <translation id="2216790501338699346">リンク URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">1 文字後ろへ移動</translation>
 <translation id="2220529011494928058">問題を報告</translation>
+<translation id="2239819015858077439">下矢印キーを押す</translation>
 <translation id="2243633977138166243">移動するには左矢印キーまたは右矢印キーを押し、有効にするには Enter キーを押します</translation>
 <translation id="224426591676115802"><ph name="LANGUAGE" />の音声はご利用いただけません</translation>
 <translation id="2247700577781885251">学習モードを停止します</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">インディアン レッド</translation>
 <translation id="4432896207833262240">マークされたコンテンツ</translation>
 <translation id="4437615272777527928">メニューを検索するには入力してください。結果を切り替えるには上下の矢印キーを使用します。テキスト カーソルの調整やメニュー間の移動には左右の矢印キーを使用します。</translation>
+<translation id="4441677939526091190">上矢印キーを押す</translation>
 <translation id="4453530046591759283">ツールバーやシステムトレイなど、画面の他の部分に移動するには、Ctrl+F1 キーを押します。Esc キーの右側にある最初のキーが F1 キーです。</translation>
 <translation id="4457472090507035117">現在の音声を選択:</translation>
 <translation id="4476183483923481720">新しい行</translation>
@@ -712,6 +719,7 @@
 <translation id="5653397561111110475">Chromebook のタッチ スクリーンのユーザー補助機能を使用する</translation>
 <translation id="5655682562155942719">ジャンプ コマンド</translation>
 <translation id="56637627897541303">テキスト領域</translation>
+<translation id="5666746275818170484">左矢印キーを押す</translation>
 <translation id="5669637233317991674">このレッスンを前後に移動するには、検索+右矢印キーまたは検索+左矢印キーを押します</translation>
 <translation id="5677240841070992068">現在地</translation>
 <translation id="5678161956734658133">メールを編集</translation>
@@ -916,6 +924,7 @@
 <translation id="7161771961008409533">ポップアップ ボタン</translation>
 <translation id="7167657087543110">文字読み上げ</translation>
 <translation id="7173102181852295013">ミッドナイト ブルー</translation>
+<translation id="7194194198490288773"><ph name="ACTION" />（<ph name="GESTURE" />）</translation>
 <translation id="7203150201908454328">展開表示中</translation>
 <translation id="7209751026933045237">次のスライダーはありません</translation>
 <translation id="7218782500591078391">ゴールデン ロッド</translation>
@@ -1089,6 +1098,7 @@
 <translation id="8378855320830505539">地域</translation>
 <translation id="8382679411218029383">予測入力はインライン表示とリスト形式の両方</translation>
 <translation id="8394908167088220973">メディアの再生/一時停止</translation>
+<translation id="8409502156784390079">スクロール モードが有効になっています</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" /> 階層</translation>
 <translation id="8430049249787218991">メニューバー</translation>
@@ -1166,6 +1176,7 @@
 <translation id="8986362086234534611">削除</translation>
 <translation id="8989104346085848538">ChromeVox による現在の読み上げを停止するには Ctrl キーを押します。</translation>
 <translation id="9014206344398081366">ChromeVox チュートリアル</translation>
+<translation id="9034592733577768445">フェイス コントロールを一時停止しました</translation>
 <translation id="9040132695316389094">見出し 1</translation>
 <translation id="9061884144798498064">8 点点字表を選択:</translation>
 <translation id="9063946545000394379">前の文字に移動</translation>

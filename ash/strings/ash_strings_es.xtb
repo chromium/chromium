@@ -445,6 +445,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en 30 segund
 <translation id="2530896289327917474">Activar o desactivar la navegación por cursor de texto</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Mientras arrastras la pestaña, pulsa <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">¿Estás intentando usar Inicio? Usa</translation>
 <translation id="254900897760075745">Copiar el contenido seleccionado en el portapapeles</translation>
 <translation id="2549711466868162843">Mejorar iluminación</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
@@ -563,6 +564,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en 30 segund
 <translation id="2985148236010982088">Ver todas las aplicaciones</translation>
 <translation id="2992272421330787632">Ocultar todas las sugerencias de contenido multimedia</translation>
 <translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
+<translation id="2993956882370897557">¿Estás intentando usar Fin? Usa</translation>
 <translation id="3000461861112256445">Audio en mono</translation>
 <translation id="3001391739687111021">Editar el tamaño de la pantalla</translation>
 <translation id="3009178788565917040">Salida</translation>
@@ -615,6 +617,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en 30 segund
 <translation id="316356270129335934"><ph name="MANAGER" /> va a restaurar tu <ph name="DEVICE_TYPE" />. Tu dispositivo se reiniciará y se eliminarán todos los datos.</translation>
 <translation id="316798519864381606">Presentación de Google</translation>
 <translation id="3171170659304083361">Configuración de métodos de introducción de texto</translation>
+<translation id="3174897399179348329">¿Estás intentando usar Re Pág? Usa</translation>
 <translation id="3176221688814061633">Tu Chromebook o dispositivo Bluetooth usan una versión antigua de Bluetooth. Activa el Bluetooth de alta resolución o usa un micrófono interno para disfrutar de una mejor calidad de audio.</translation>
 <translation id="3181441307743005334">El reinicio puede tardar un poco</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a 1 dispositivo}other{Conectado a # dispositivos}}</translation>
@@ -1262,6 +1265,7 @@ También puedes usar la combinación de teclas. Primero, selecciona el texto y, 
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302531370473608800">Actualiza tu <ph name="DEVICE_TYPE" /> para usar YouTube Music</translation>
 <translation id="5303319262469238330">Queda un <ph name="PERCENTAGE" /> % de batería.
 Algunas funciones están limitadas para aumentar la duración de la batería.</translation>
 <translation id="5308380583665731573">Conectar</translation>
@@ -1821,6 +1825,7 @@ Nueva instalación</translation>
 <translation id="7144942256906679589">Estado de la batería</translation>
 <translation id="7145639536026937076">La batería está al <ph name="PERCENTAGE" /> % y se está cargando. Ahorro de batería está activado.</translation>
 <translation id="7147587499155271409">No hay historial de navegación</translation>
+<translation id="7147657298465433425">Para acceder a las teclas F, pulsa la tecla fn + las teclas de la fila superior</translation>
 <translation id="7149149900052329230">Puedes gestionar tus archivos locales y de Google Drive desde la aplicación Archivos.</translation>
 <translation id="7165278925115064263">Alt + Mayús + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en 30 segund
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando tu micrófono</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves ventanas a otro escritorio, es posible que se produzca un comportamiento inesperado. Puede que las notificaciones, las ventanas y los cuadros de diálogo que aparezcan después de realizar esta acción se dividan entre los escritorios.</translation>
+<translation id="7568154670718626683">¿Estás intentando usar Supr? Usa</translation>
 <translation id="7568790562536448087">Actualización</translation>
 <translation id="7569509451529460200">Braille y ChromeVox están habilitados</translation>
 <translation id="7569886975397378678">Cerrar la configuración de la visualización de las notificaciones y las aplicaciones de tu teléfono</translation>
@@ -2132,6 +2138,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en 30 segund
 <translation id="820256110035940528"><ph name="TITLE" /> Has evitado distraerte durante <ph name="FOCUSED_TIME" />. Abre los ajustes rápidos para volver a concentrarte.</translation>
 <translation id="8203224998425013577">Mostrar más emojis y GIFs</translation>
 <translation id="8203795194971602413">Clic derecho</translation>
+<translation id="8205469348819768313">¿Estás intentando usar Av Pág? Usa</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">Mientras tanto, tu Chromebook debe estar encendido y conectado a la corriente. Asegúrate de que los cables del cargador o del adaptador estén enchufados correctamente al Chromebook y a la toma de corriente. No apagues el Chromebook.</translation>
 <translation id="8220076512072059941">Añadir <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2324,6 +2331,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en 30 segund
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">El Asistente de Google no habla este idioma.</translation>
 <translation id="8926951137623668982">La estantería está siempre oculta</translation>
+<translation id="8929566928381252430">¿Estás intentando usar Bloq Mayús? Usa</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivado</translation>
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>

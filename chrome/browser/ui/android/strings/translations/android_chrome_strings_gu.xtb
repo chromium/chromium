@@ -419,6 +419,7 @@
 <translation id="2942036813789421260">પ્રીવ્યૂની ટૅબ બંધ કરવામાં આવી</translation>
 <translation id="2946420957526726953">અન્ય ડિવાઇસને કનેક્ટ કરવા માટે, Chrome અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="2951071800649516099">પછીથી વાંચવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
+<translation id="2954586176076923855">ઍડ્રેસ બારને સૌથી ઉપર ખસેડો</translation>
 <translation id="2956070106555335453">સારાંશ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> પેજ}one{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}other{વાંચ્યા વગરના <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}}</translation>
 <translation id="2972109037780336501">પરવાનગીઓ ઑટોમૅટિક રીતે કાઢી નાખો</translation>
@@ -653,6 +654,7 @@
 <translation id="4095425503313512126">બ્રાઉઝ કરવું અને શોધવું વધુ ઝડપી બને છે</translation>
 <translation id="4096227151372679484">બુકમાર્ક સાચવવાનો ફ્લો અડધી ઊંચાઈએ ખુલ્લો છે</translation>
 <translation id="4101475238162928417">તમારા અન્ય ડિવાઇસ પર તમારા પાસવર્ડ અને બુકમાર્ક જેવું બીજું ઘણું મેળવવા માટે સિંક કરો</translation>
+<translation id="4105527135143631701">Google Password Manager અપડેટ ખોલી</translation>
 <translation id="4108314971463891922">ફૉલો કરો</translation>
 <translation id="4113030288477039509">તમારા વ્યવસ્થાપક દ્વારા મેનેજ થયેલ</translation>
 <translation id="4116038641877404294">ઇન્ટરનેટ ન હોય ત્યારે પણ ઉપયોગમાં લેવા માટે પેજ ડાઉનલોડ કરો</translation>
@@ -1257,6 +1259,7 @@
 <translation id="6813446258015311409">Chromeમાં સાઇન ઇન કરવાની શીટ ખોલવામાં આવી.</translation>
 <translation id="6817747507826986771">આ પેજ ઝડપથી શેર કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Google Password Manager અપડેટ બંધ કરી</translation>
 <translation id="6822587385560699678">જ્યારે આ ચાલુ હોય, ત્યારે પાસવર્ડ <ph name="ACCOUNT" />માં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે પાસવર્ડ માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
 <translation id="6823561724060793716">તમે જેની મુલાકાત લઈ રહ્યાં હો તે પેજ વિશે વધારાની માહિતી જોવા માટે, તમે ઍડ્રેસ બારમાંથી પેજ વિશેની માહિતી ખોલી શકો છો</translation>
 <translation id="6828070228333235514">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
@@ -1458,6 +1461,7 @@
 <translation id="7612619742409846846">Google પર આ તરીકે સાઇન ઇન કરો</translation>
 <translation id="7612989789287281429">તમને સાઇન ઇન કરી રહ્યાં છીએ…</translation>
 <translation id="7619072057915878432">નેટવર્ક નિષ્ફળતાને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
+<translation id="762537095495606755">આ ડિવાઇસ પર પાસવર્ડ કામ કરવાનું બંધ કરશે</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
 <translation id="7628417132421583481">Password Managerમાં જાઓ</translation>
 <translation id="7630202231528827509">પ્રદાતા URL</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8015452622527143194">પેજ પરનું બધું કન્ટેન્ટ પાછું ડિફૉલ્ટ કદમાં બદલો</translation>
 <translation id="8017431260099661477">આમંત્રણની લિંક ખોલી શકાઈ નથી</translation>
 <translation id="8026238112629815203">અમે આ ડિવાઇસ પર પાસવર્ડ સાચવવાની રીત બદલી છે</translation>
+<translation id="8027395186860110042">પાસવર્ડ કદાચ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
@@ -1620,7 +1625,9 @@
 <translation id="8282297628636750033">શક્ય હોય ત્યારે સાઇટ પર ઘેરી થીમ લાગુ કરો</translation>
 <translation id="8282950411412455249">સુરક્ષા સેટિંગ પર જાઓ</translation>
 <translation id="829672787777123339">તમારા ડિવાઇસ સાથે કનેક્ટ કરી રહ્યાં છીએ…</translation>
+<translation id="8306751933352925837">આ ડિવાઇસ પર પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે. તમારા પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે, Google Play સેવાઓ અપડેટ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> દ્વારા “<ph name="TAB_NAME" />” ટૅબ કાઢી નાખવામાં આવ્યું</translation>
+<translation id="8310451567823644042">પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે</translation>
 <translation id="831192587911042850">તમે ફૉલો કરતા હો તે વેબસાઇટની સૂચિમાં હાલની વેબસાઇટને ઉમેરે છે.</translation>
 <translation id="8342727528718219152">Chrome ઘણા નોટિફિકેશન મોકલતી હોઈ શકે તેવી સાઇટ વિશે તમને જાણકારી આપશે</translation>
 <translation id="834313815369870491">સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
@@ -1687,6 +1694,7 @@
 <translation id="8570677896027847510">ફાઇલ સુરક્ષિત રીતે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8582529315803410153">તમને અન્ય ડિવાઇસમાંની તમારી ટૅબ અહીં મળશે</translation>
+<translation id="8585103689515290060">ઑટોમૅટિક રીતે ભરવાની સુવિધાઓ</translation>
 <translation id="859046281437143747">વધુ વિકલ્પોના બટન પરથી કિંમત ટ્રૅક કરો</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> ટૅબનું ગ્રૂપ ડિલીટ કર્યું</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>
@@ -1755,6 +1763,7 @@
 <translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>
 <translation id="8965591936373831584">બાકી</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_ONE" /> ટૅબ બંધ કરવામાં આવશે}one{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}other{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}}</translation>
+<translation id="897061774231912216">પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે કારણ કે Google Play સેવાઓ ઉપલબ્ધ નથી. તમારા Google એકાઉન્ટમાં સાચવેલા પાસવર્ડનો ઉપયોગ કરવા માટે, અન્ય ડિવાઇસનો ઉપયોગ કરીને સાઇન ઇન કરો અથવા passwords.google.com પર જાઓ.</translation>
 <translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8972098258593396643">ડિફૉલ્ટ ફોલ્ડરમાં ડાઉનલોડ કરીએ?</translation>
 <translation id="8982113230057126145">આ સારાંશ તમને નાપસંદ હોવાનો પ્રતિસાદ થમ્બ્સ ડાઉન દ્વારા સબમિટ કરવામાં આવે છે</translation>
@@ -1804,6 +1813,7 @@
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે, કોઈ એકાઉન્ટ પસંદ કરો</translation>
 <translation id="9158770349521403363">માત્ર કન્ટેન્ટ શેર કરો</translation>
+<translation id="9168847423516963845">ઍડ્રેસ બારને સૌથી નીચે ખસેડો</translation>
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
 <translation id="918419812064856259">Chrome બીટા</translation>
 <translation id="9190276265094487094">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>

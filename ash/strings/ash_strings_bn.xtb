@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">ক্যারেট ব্রাউজিং চালু বা বন্ধ করুন</translation>
 <translation id="2531025035050312891">ডিভাইস ধীরে চলছে</translation>
 <translation id="2531107890083353124">ট্যাবটি টেনে আনার সময়, <ph name="KEY_ONE" /> প্রেস করুন</translation>
+<translation id="2545334090614121435">হোম কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
 <translation id="254900897760075745">বেছে নেওয়া কন্টেন্ট কপি করুন</translation>
 <translation id="2549711466868162843">উন্নত লাইটিং</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">সব অ্যাপ দেখুন</translation>
 <translation id="2992272421330787632">সব মিডিয়া সাজেশন লুকান</translation>
 <translation id="2992327365391326550">ডিভাইসের মাইক্রোফোন বোতাম বন্ধ আছে।</translation>
+<translation id="2993956882370897557">এন্ড কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3001391739687111021">স্ক্রিনের সাইজ এডিট করুন</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যাচ্ছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
 <translation id="316798519864381606">Google Slides</translation>
 <translation id="3171170659304083361">'ইনপুট পদ্ধতি' সম্পর্কিত সেটিংস</translation>
+<translation id="3174897399179348329">পেজ আপ কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
 <translation id="3176221688814061633">আপনার Chromebook অথবা ব্লুটুথ ডিভাইস, ব্লুটুথের পুরনো কোনও ভার্সন ব্যবহার করছে। ব্লুটুথ সুপার রেজোলিউশন চালু করুন অথবা আরও ভাল অডিও কোয়ালিটির জন্য ইন্টার্নাল মাইক্রোফোন ব্যবহার করুন।</translation>
 <translation id="3181441307743005334">রিস্টার্ট করতে কিছুক্ষণ সময় লাগতে পারে</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{একটি ডিভাইসে কানেক্ট রয়েছে}one{#টি ডিভাইসে কানেক্ট রয়েছে}other{#টি ডিভাইসে কানেক্ট রয়েছে}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5302048478445481009">ভাষা</translation>
+<translation id="5302531370473608800">YouTube Music ব্যবহার করতে <ph name="DEVICE_TYPE" /> আপডেট করুন</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% ব্যাটারির চার্জ আছে।
 ব্যাটারির আয়ু বাড়াতে কিছু ফিচার সীমিত করা হয়েছে।</translation>
 <translation id="5308380583665731573">কানেক্ট করুন</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">ব্যাটারির স্ট্যাটাস</translation>
 <translation id="7145639536026937076">ব্যাটারি <ph name="PERCENTAGE" />% চার্জ করা হয়েছে এবং চার্জ হচ্ছে। 'ব্যাটারি সেভার' ফিচার চালু আছে।</translation>
 <translation id="7147587499155271409">কোনও ব্রাউজিং ইতিহাস নেই</translation>
+<translation id="7147657298465433425">F কী অ্যাক্সেস করতে, fn কী টিপে উপরের সারির কী টিপুন</translation>
 <translation id="7149149900052329230">আপনার লোকাল ফাইল ও Google Drive-এর ফাইল সবকিছু Files অ্যাপ থেকে ম্যানেজ করুন।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> এখন আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
+<translation id="7568154670718626683">ডিলিট কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
 <translation id="7568790562536448087">আপডেট হচ্ছে</translation>
 <translation id="7569509451529460200">ব্রেল এবং ChromeVox সক্ষম করেছেন</translation>
 <translation id="7569886975397378678">আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
@@ -2132,6 +2138,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> আপনি এইমাত্র <ph name="FOCUSED_TIME" />-এর জন্য ফোকাস করেছেন। আবার ফোকাস করতে দ্রুত সেটিংস ফিচার খুলুন।</translation>
 <translation id="8203224998425013577">আরও ইমোজি ও GIF দেখুন</translation>
 <translation id="8203795194971602413">ডানদিকের বোতামে ক্লিক করুন</translation>
+<translation id="8205469348819768313">পেজ ডাউন কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
 <translation id="8214996719228530800">ক্যানারি চ্যানেল</translation>
 <translation id="8219451629189078428">এই সময়ে আপনার Chromebook চালু অবস্থায় থাকতে হবে ও সেটি চার্জে বসিয়ে রাখতে হবে। আপনার Chromebook ও প্লাগ পয়েন্ট, উভয়ের সাথে চার্জার বা অ্যাডাপ্টার কেবল ঠিকমতো প্লাগ-ইন করা আছে কিনা তা দেখে নিন। আপনার Chromebook বন্ধ করবেন না।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> যোগ করুন</translation>
@@ -2324,6 +2331,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google অ্যাসিস্ট্যান্ট এই ভাষায় কথা বলে না।</translation>
 <translation id="8926951137623668982">শেল্ফ সবসময় লুকানো থাকবে</translation>
+<translation id="8929566928381252430">ক্যাপস লক কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="8936501819958976551">বন্ধ আছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>

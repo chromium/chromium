@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="100421257800558142">Sağ ok tuşuna basın</translation>
 <translation id="100506692671054486">daha önce komut yok</translation>
 <translation id="1009046985747440431">Gezinmek için yukarı veya aşağı oka, etkinleştirmek için Enter tuşuna basın</translation>
 <translation id="1011903154582639569">Bir tuşu bulun ve yazmak için elinizi o tuştan kaldırın</translation>
@@ -59,6 +60,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1291286136605998134">Açma/Kapatma Düğmesi</translation>
 <translation id="1299774449519412690">Açık Gök Mavisi</translation>
 <translation id="1303806948938513162">ChromeVox menülerine girmek için 4 parmağınızla dokunun</translation>
+<translation id="1304162325618937178">Boşluk tuşuna basın</translation>
 <translation id="1313373992684326101">Önceki bölüme git. Örneğin, Durum Tepsisi ve Başlatıcı.</translation>
 <translation id="1315077335264761176">Dokunma yönü</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menü öğesi radyo düğmesi seçili değil</translation>
@@ -112,6 +114,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1616111909442424068">Buğday</translation>
 <translation id="1618597272655350600">Mevcut konumun tam açıklamasını söyler</translation>
 <translation id="1627222324347828322">Kireç Beyazı</translation>
+<translation id="1632810692616643246">Kaydırma moduna girin veya bu moddan çıkın</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{büyüktür işareti}other{# büyüktür işareti}}</translation>
 <translation id="1653266918374749391">Önceki 3. düzey başlık</translation>
 <translation id="1657616855184033958">Etkinlik akış filtrelerini göster</translation>
@@ -165,6 +168,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2045055672832940894">Önceki denetim yok</translation>
 <translation id="2045606329038304310">Form alanı kontrolü</translation>
 <translation id="2063539687800151747">Yazıt</translation>
+<translation id="2067158561093481039">Özel bir tuş kombinasyonu gerçekleştirin</translation>
 <translation id="2086961585857038472">Sonraki Kelime</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">tr</translation>
@@ -184,9 +188,11 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2197863150503783129">Kırmızımsı Kahverengi</translation>
 <translation id="2199994615414171367">Önceki matematik tuşu</translation>
 <translation id="2203046366315513658">Değeri azaltma</translation>
+<translation id="2206580811360135054">Pencerelere genel bakışı gösterin veya gizleyin</translation>
 <translation id="2216790501338699346">Bağlantı URL'si: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Bir karakter geri git</translation>
 <translation id="2220529011494928058">Sorun bildir</translation>
+<translation id="2239819015858077439">Aşağı ok tuşuna basın</translation>
 <translation id="2243633977138166243">Ekranda gezinmek için sol veya sağ oka, etkinleştirmek için enter tuşuna basın</translation>
 <translation id="224426591676115802">Şu dil için ses yok: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Öğrenme Modu durduruluyor</translation>
@@ -535,6 +541,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4432457053224379116">Hint Kırmızısı</translation>
 <translation id="4432896207833262240">İşaretli içerik</translation>
 <translation id="4437615272777527928">Menülerde aramak için yazmaya başlayın. Sonuçlar arasında geçiş yapmak için yukarı ve aşağı okları kullanın. Metin imlecini ayarlamak ve menüler arasında dolaşmak için sol ve sağ okları kullanın.</translation>
+<translation id="4441677939526091190">Yukarı ok tuşuna basın</translation>
 <translation id="4453530046591759283">Araç çubukları veya sistem tepsisi gibi ekranın diğer bölümlerine geçmek için Control+F1 tuşlarına basın. F1, Escape tuşunun sağındaki ilk tuştur.</translation>
 <translation id="4457472090507035117">Geçerli sesi seçin:</translation>
 <translation id="4476183483923481720">yeni satır</translation>
@@ -713,6 +720,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5653397561111110475">Chromebook dokunmatik ekran erişilebilirlik özelliklerini kullanma</translation>
 <translation id="5655682562155942719">Atlama Komutları</translation>
 <translation id="56637627897541303">Metin alanı</translation>
+<translation id="5666746275818170484">Sol ok tuşuna basın</translation>
 <translation id="5669637233317991674">Bu derste gezinmek için Arama + Sağ Ok veya Arama + Sol Ok tuşlarına basın</translation>
 <translation id="5677240841070992068">Geçerli konum</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7161771961008409533">Pop-up düğme</translation>
 <translation id="7167657087543110">karakter yansıtma</translation>
 <translation id="7173102181852295013">Gece Mavisi</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Genişletilmiş</translation>
 <translation id="7209751026933045237">Sonraki kaydırma çubuğu yok</translation>
 <translation id="7218782500591078391">Altın Sarısı</translation>
@@ -1089,6 +1098,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8378855320830505539">Bölge</translation>
 <translation id="8382679411218029383">Satır içi ve liste otomatik tamamlama</translation>
 <translation id="8394908167088220973">Medyayı Oynat/Duraklat</translation>
+<translation id="8409502156784390079">Kaydırma modu etkin</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428603554127842284">seviye: <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1166,6 +1176,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8986362086234534611">Unut</translation>
 <translation id="8989104346085848538">Devam etmekte olan bir ChromeVox konuşmasını durdurmak için Control tuşuna basın.</translation>
 <translation id="9014206344398081366">ChromeVox eğitimi</translation>
+<translation id="9034592733577768445">Yüzle kumanda duraklatıldı</translation>
 <translation id="9040132695316389094">Başlık 1</translation>
 <translation id="9061884144798498064">8 noktalı bir braille tablosu seçin:</translation>
 <translation id="9063946545000394379">önceki karaktere git</translation>

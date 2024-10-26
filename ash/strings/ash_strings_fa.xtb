@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">روشن یا خاموش کردن مرور با نشانگر نوشتار</translation>
 <translation id="2531025035050312891">دستگاه کند است</translation>
 <translation id="2531107890083353124">همان‌طور که برگه را می‌کشید، <ph name="KEY_ONE" /> را فشار دهید</translation>
+<translation id="2545334090614121435">‏می‌خواهید از کلید Home استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="254900897760075745">کپی کردن محتوای انتخاب‌شده در بریده‌دان</translation>
 <translation id="2549711466868162843">بهبود میزان نور</translation>
 <translation id="2549985041256363841">شروع ضبط</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">دیدن همه برنامه‌ها</translation>
 <translation id="2992272421330787632">پنهان کردن همه پیشنهادهای رسانه</translation>
 <translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
+<translation id="2993956882370897557">‏می‌خواهید از کلید End استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="3000461861112256445">صدای مونو</translation>
 <translation id="3001391739687111021">ویرایش اندازه صفحه</translation>
 <translation id="3009178788565917040">خروجی</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> درحال تنزل دادن <ph name="DEVICE_TYPE" /> است. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>
 <translation id="316798519864381606">‏اسلایدنگار Google</translation>
 <translation id="3171170659304083361">تنظیمات روش‌های ورودی</translation>
+<translation id="3174897399179348329">‏می‌خواهید از کلید Page Up استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="3176221688814061633">‏‫Chromebook یا دستگاه بلوتوث شما از نسخه قدیمی‌تر بلوتوث استفاده می‌کند. برای کیفیت صدای بهتر، «وضوح فوق‌العاده با بلوتوث» را روشن کنید یا از میکروفون داخلی استفاده کنید.</translation>
 <translation id="3181441307743005334">بازراه‌اندازی ممکن است مدتی طول بکشد</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{متصل به یک دستگاه.}one{متصل به # دستگاه}other{متصل به # دستگاه}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">خاموش</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5302531370473608800">‏برای استفاده از YouTube Music،‏ <ph name="DEVICE_TYPE" /> را به‌روز کنید</translation>
 <translation id="5303319262469238330">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است.
 برخی‌از ویژگی‌ها برای افزایش عمر باتری محدود شده‌اند.</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">وضعیت باتری</translation>
 <translation id="7145639536026937076">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است. «بهینه‌سازی باتری» روشن است.</translation>
 <translation id="7147587499155271409">سابقه مروری وجود ندارد</translation>
+<translation id="7147657298465433425">‏برای دسترسی به کلیدهای F، کلید fn + کلیدهای ردیف بالا را فشار دهید</translation>
 <translation id="7149149900052329230">‏فایل‌های محلی و فایل‌های Google Drive را در برنامه Files مدیریت کنید.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
@@ -1929,6 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> درحال استفاده از میکروفون است</translation>
 <translation id="7561982940498449837">بستن منو</translation>
 <translation id="7564874036684306347">انتقال پنجره‌ها به میز کار دیگر می‌تواند به رفتار غیرمنتظره منجر شود. اعلان‌ها، پنجره‌ها و کادرهای گفتگوی بعدی ممکن است بین میز کارها تقسیم شوند.</translation>
+<translation id="7568154670718626683">‏می‌خواهید از کلید Delete استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="7568790562536448087">در حال به‌روزرسانی</translation>
 <translation id="7569509451529460200">‏بریل و ChromeVox فعال هستند</translation>
 <translation id="7569886975397378678">بستن راه‌اندازی مشاهده اعلان‌ها و برنامه‌های تلفن</translation>
@@ -2131,6 +2137,7 @@
 <translation id="820256110035940528">‫<ph name="TITLE" /> به‌مدت <ph name="FOCUSED_TIME" /> تمرکز کردید. برای تمرکز مجدد، «تنظیمات فوری» را باز کنید.</translation>
 <translation id="8203224998425013577">نمایش اموجی و گیف بیشتر</translation>
 <translation id="8203795194971602413">کلیک راست</translation>
+<translation id="8205469348819768313">‏می‌خواهید از کلید Page Down استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="8214996719228530800">‏کانال Canary</translation>
 <translation id="8219451629189078428">‏Chromebook باید در این مدت روشن بماند و به برق متصل باشد. مطمئن شوید سیم شارژر یا آداپتور کاملاً متصل باشد، هم به Chromebook و هم به پریز برق. Chromebook را خاموش نکنید.</translation>
 <translation id="8220076512072059941">افزودن <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2322,6 +2329,7 @@
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏«دستیار Google» به این زبان صحبت نمی‌کند.</translation>
 <translation id="8926951137623668982">قفسه همیشه پنهان می‌شود</translation>
+<translation id="8929566928381252430">‏می‌خواهید از کلید Caps Lock استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="8936501819958976551">غیرفعال</translation>
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>

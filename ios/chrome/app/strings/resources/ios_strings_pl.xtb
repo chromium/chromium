@@ -38,6 +38,7 @@
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1164891049599601209">Wpisano na stronie wprowadzającej w błąd</translation>
 <translation id="1165039591588034296">Błąd</translation>
+<translation id="1172240852337942024">Odrzuć wybór</translation>
 <translation id="1172898394251786223">Następne pole</translation>
 <translation id="1179890706672152411">Pamięć jest pełna</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -189,6 +190,7 @@
 <translation id="1854463785401910334">Wyszukiwanie w otwartych kartach</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} z {count} hasła}few{{position} z {count} haseł}many{{position} z {count} haseł}other{{position} z {count} hasła}}</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
+<translation id="1864266050569350424">Na stronie, na której zapisano hasło, kliknij pole hasła do logowania.</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Zaproś osoby do grupy rodzinnej</translation>
@@ -199,6 +201,8 @@
 <translation id="1890237935065108104">To ustawienie jest niedostępne.</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
+<translation id="1901366738768303267">Jak korzystać z tej funkcji?</translation>
+<translation id="1901600657316773839">Zachowaj wybór</translation>
 <translation id="1904580727789512086">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
 <translation id="1923342640370224680">Ostatnia godzina</translation>
@@ -508,6 +512,8 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3443810440409579745">Odebrano kartę.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Więcej informacji o Obiektywie Google</translation>
+<translation id="3447332786336558089">Po wylogowaniu karty zostaną zamknięte, a niezapisane dane konta zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
+<translation id="3449016921756175697">Przydatne sugestie, dzięki którym przeglądanie jest przyjemniejsze i łatwiejsze.</translation>
 <translation id="345348365500626747">Adres znaleziony</translation>
 <translation id="3464194322481586217">Wystąpił błąd monitorowania ceny.</translation>
 <translation id="3469117812148449995">Opcje zapisania hasła</translation>
@@ -688,6 +694,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4320848494125124980">Ostatnie</translation>
 <translation id="4322394346347055525">Zamknij inne karty</translation>
 <translation id="4324735664183300693">Włącz powiadomienia</translation>
+<translation id="4326912346867677256">Aby się bezpiecznie zalogować, kliknij „Użyj hasła”.</translation>
 <translation id="4328843285884395590">Mój dysk</translation>
 <translation id="4331177082088332784">Tymi informacjami możesz zarządzać w START_LINKUstawieniach treściEND_LINK</translation>
 <translation id="4334428914252001502">Jeden nieprzeczytany artykuł.</translation>
@@ -975,6 +982,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
 <translation id="5657156137487675418">Zezwalaj na wszystkie pliki cookie</translation>
 <translation id="5659593005791499971">E-mail</translation>
+<translation id="5666313630530585305">Zaloguj się na stronie.</translation>
 <translation id="5669335982068190158">W ramach resetowania iPhone'a nastąpiło wylogowanie. Aby się zalogować, poniżej kliknij Dalej.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Wersja <ph name="PRODUCT_VERSION" /></translation>
@@ -1037,6 +1045,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="594324569139756587">Blokuj pliki cookie innych firm</translation>
 <translation id="5944869793365969636">Zeskanuj kod QR</translation>
 <translation id="5948291296578561264">Umożliwia zapisywanie zdjęć w ich bibliotece.</translation>
+<translation id="5952641243319721872">Czy na pewno chcesz odrzucić wybór?</translation>
 <translation id="5956112131836209882">Karta grupy kart. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nie udało się utworzyć linku do podświetlenia.</translation>
@@ -1124,6 +1133,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6301104306974789820">Otrzymuj powiadomienia ze śledzenia cen</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6310451064941005489">Opcje dotyczące haseł</translation>
+<translation id="6316141353357700666">Wybierz z wyświetlonej listy hasło, którego chcesz użyć.</translation>
 <translation id="6321526113093607004">Dodaj do Zakładek</translation>
 <translation id="6337234675334993532">Szyfrowanie</translation>
 <translation id="633809752005859102">Coś poszło nie tak. Zajmiemy się tym.</translation>
@@ -1543,6 +1553,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8173034266693057059">Długość</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Do witryny {website_1}}=2{Do witryn {website_1}, {website_2}}=3{Do witryn {website_1}, {website_2} i jeszcze 1}few{Do witryn {website_1}, {website_2} i jeszcze {more_count}}many{Do witryn {website_1}, {website_2} i jeszcze {more_count}}other{Do witryn {website_1}, {website_2} i jeszcze {more_count}}}</translation>
+<translation id="8189615296021678665">Kliknij „Zapisz”, aby łatwo uzyskać dostęp do tego hasła przy następnym logowaniu.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Twoje urządzenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Dodawanie hasła</translation>
 <translation id="8202744799033457229">Pokaż historię</translation>
@@ -1556,12 +1567,14 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8219424187226230983">Wyświetl wersję offline w nowej karcie</translation>
 <translation id="8230355548492839438">Znajdź poprzedni</translation>
 <translation id="8232956427053453090">Zachowaj dane</translation>
+<translation id="8242644458318193141">Ze względu na bezpieczeństwo organizacji karty zostaną zamknięte, a niezapisane dane konta zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="82619448491672958">Zobacz inne karty</translation>
 <translation id="8263809106706527890">Być może zostały zmienione ustawienia domyślnej przeglądarki. Możesz to sprawdzić w ustawieniach.</translation>
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="8273982424131314219">Informacje zostaną podane na stronie <ph name="URL" /></translation>
+<translation id="827464923811805683">Każda osoba mająca link może edytować wszystkie karty, więc podczas udostępniania zachowaj ostrożność. Link wygaśnie za 48 godzin. <ph name="BEGIN_LINK" />Więcej informacji o udostępnianych grupach kart<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">Więcej…</translation>
 <translation id="8278488584187265939">Dostosuj stronę główną</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1574,6 +1587,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8299613349954694191">Otwórz kartę incognito, aby przeglądać strony prywatnie.</translation>
 <translation id="8307481894409578819">Nie udało się przesłać tego pliku</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
+<translation id="8320212361750431956">Ostatnia aktywność</translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8366466717204352506">Jeszcze nie sprawdzano</translation>
@@ -1754,6 +1768,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Masz {count} słabe hasło, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}few{Masz {count} słabe hasła, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}many{Masz {count} słabych haseł, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}other{Masz {count} słabego hasła, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}}</translation>
+<translation id="9084369964545892485">Nowa karta incognito w grupie</translation>
 <translation id="9087339162317338348">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują.</translation>
 <translation id="9090979472668095374">Odpowiadaj głosowo</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>

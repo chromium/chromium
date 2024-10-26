@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
+<translation id="2545334090614121435">Home キーの代わりに次のキーを使用してください</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
 <translation id="2549711466868162843">明るさ補正</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">アプリをすべて表示</translation>
 <translation id="2992272421330787632">メディアの提案をすべて非表示にする</translation>
 <translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
+<translation id="2993956882370897557">End キーの代わりに次のキーを使用してください</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001391739687111021">画面サイズを編集</translation>
 <translation id="3009178788565917040">出力</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックしています。デバイスはリセットされ、データはすべて削除されます。</translation>
 <translation id="316798519864381606">Google スライド</translation>
 <translation id="3171170659304083361">入力方法の設定</translation>
+<translation id="3174897399179348329">PageUp キーの代わりに次のキーを使用してください</translation>
 <translation id="3176221688814061633">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。Bluetooth 超解像をオンにするか、内蔵マイクを使用すると音質が向上します。</translation>
 <translation id="3181441307743005334">再起動には時間がかかる場合があります</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{1 台のデバイスと接続されています}other{# 台のデバイスと接続されています}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">オフ</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5302048478445481009">言語</translation>
+<translation id="5302531370473608800">YouTube Music を使用するには <ph name="DEVICE_TYPE" /> を更新してください</translation>
 <translation id="5303319262469238330">バッテリー残量が <ph name="PERCENTAGE" />% です。
 バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
 <translation id="5308380583665731573">接続</translation>
@@ -1820,6 +1824,7 @@
 <translation id="7144942256906679589">バッテリーの状態</translation>
 <translation id="7145639536026937076">バッテリー残量が <ph name="PERCENTAGE" />% です（現在充電中）。バッテリー セーバーがオンになりました。</translation>
 <translation id="7147587499155271409">閲覧履歴がありません</translation>
+<translation id="7147657298465433425">F キーを使用する代わりに fn+最上段のキーを押してください</translation>
 <translation id="7149149900052329230">ファイルアプリでは、ローカルと Google ドライブのすべてのファイルを管理できます。</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />、
@@ -1930,6 +1935,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
+<translation id="7568154670718626683">削除する場合は次のキーを使用してください</translation>
 <translation id="7568790562536448087">更新中:</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7569886975397378678">スマートフォンの通知とアプリの表示の設定を行わない</translation>
@@ -2132,6 +2138,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> フォーカス モードで <ph name="FOCUSED_TIME" /> 分間作業しました。もう一度フォーカス モードにするには、クイック設定を開いてください。</translation>
 <translation id="8203224998425013577">他の絵文字と GIF を表示</translation>
 <translation id="8203795194971602413">右クリック</translation>
+<translation id="8205469348819768313">PageDown キーの代わりに次のキーを使用してください</translation>
 <translation id="8214996719228530800">Canary チャンネル</translation>
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> 延長</translation>
@@ -2323,6 +2330,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google アシスタントはこの言語に対応していません。</translation>
 <translation id="8926951137623668982">シェルフは常に非表示です</translation>
+<translation id="8929566928381252430">CapsLock キーの代わりに次のキーを使用してください</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>

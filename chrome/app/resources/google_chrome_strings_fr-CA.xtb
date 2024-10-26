@@ -30,6 +30,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1330562121671411446">Détecter la langue</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent les conditions d'utilisation de Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Vous pouvez passer à un autre profil Chrome pour voir les mots de passe</translation>
+<translation id="1356661055722410047">Nouveau! Vous pouvez traduire à la fois le texte et les images sur votre écran</translation>
 <translation id="1363996462118479832">Chrome OS n'a pas pu synchroniser vos données parce qu'une erreur s'est produite lors de la connexion.</translation>
 <translation id="137466361146087520">Google Chrome bêta</translation>
 <translation id="1399397803214730675">Une version plus récente de Google Chrome est déjà installée sur cet ordinateur. Si celle-ci ne fonctionne pas, désinstallez Google Chrome, puis réessayez.</translation>
@@ -51,6 +52,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chrome les prenne en compte.</translation>
 <translation id="1628000112320670027">Obtenir de l'aide pour Chrome</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
+<translation id="1651617469580841801">Lorsque vous utilisez Lentille Google, le titre de la page, l'URL et le contenu, y compris les fichiers PDF, sont envoyés à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">À propos de ChromeOS Flex</translation>
 <translation id="1674870198290878346">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ne peut pas lire et écrire dans son répertoire de données :
@@ -197,6 +199,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3261565993776444564">Essayez une nouvelle couleur pour personnaliser votre navigateur</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
+<translation id="3289358082435924389">Plus tard, Chrome vous demandera si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement les formulaires</translation>
 <translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va maintenant redémarrer}=1{Chrome redémarrera dans 1 seconde}one{Chrome redémarrera dans # seconde}other{Chrome redémarrera dans # secondes}}</translation>
@@ -511,6 +514,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7308322188646931570">Chrome a besoin d'accéder au stockage pour télécharger des fichiers</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7352881504289275361">La Navigation sécurisée améliorée offre la protection en ligne la plus puissante de Chrome pour assurer votre sécurité lorsque vous naviguez</translation>
+<translation id="7386878009611068389">Pour rester en sécurité en ligne avec les choix de tes parents, passe à ton profil Chrome où tu as utilisé l'adresse <ph name="USER_EMAIL_ADDRESS" /> pour te connecter</translation>
 <translation id="7394745511930161845">Créez votre propre thème au moyen de l'IA pour donner à votre navigateur une apparence unique</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7412494426921990001">Cliquez sur le menu Chrome.</translation>
@@ -524,6 +528,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7477130805345743099">Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="7481213027396403996">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="749228101751499733">Pendant que vous êtes connecté, vous pouvez utiliser vos mots de passe et bien plus encore à partir de votre compte Google dans Chrome. <ph name="SHORTCUT" /> peut modifier les paramètres de vos services Google.</translation>
+<translation id="7512187482580860950">Chrome peut comprendre davantage de types d'informations et remplir automatiquement vos formulaires plus rapidement. En savoir plus sur le <ph name="BEGIN_LINK" />remplissage automatique de Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Service de mise à jour Google</translation>
 <translation id="7515191208480168435">Vous pouvez épingler Lentille Google pour un accès facile</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -566,6 +571,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7886087451482920026">Sélectionnez du texte avec Lentille Google</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Google Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Google Chrome pour séparer vos données.</translation>
+<translation id="7917470403848199310">Chrome vous demandera si vous souhaitez enregistrer les informations du formulaire, comme votre date de naissance, votre âge et votre numéro de passeport</translation>
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chrome, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome a bloqué ce téléchargement, car le fichier est trompeur et pourrait apporter des modifications inattendues à votre appareil</translation>
 <translation id="7947083960301164556">Afficher les nouveautés</translation>
@@ -622,6 +628,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8550334526674375523">Ce profil professionnel est distinct de votre profil personnel.</translation>
 <translation id="8555465886620020932">Erreur liée au service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Utilisez les profils Chrome pour dissocier toutes vos données Chrome. Cette façon de faire facilite la distinction entre le travail et le divertissement.</translation>
+<translation id="8601359445272098721">Nouveau! Vous pouvez traduire à la fois le texte et les images sur votre écran en sélectionnant le bouton « Traduire l'écran »</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant?</translation>
 <translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer une carte 3D de votre environnement</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome redémarrera dans 1 minute}one{Chrome redémarrera dans # minute}other{Chrome redémarrera dans # minutes}}</translation>

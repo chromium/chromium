@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="100421257800558142">Naciśnij klawisz strzałki w prawo</translation>
 <translation id="100506692671054486">brak poprzedniego polecenia</translation>
 <translation id="1009046985747440431">Naciśnij strzałkę w górę lub w dół, by się poruszać, i Enter, by wybrać opcję</translation>
 <translation id="1011903154582639569">Znajdź klawisz, a potem unieś palec, by wpisać znak</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Przycisk przełączania</translation>
 <translation id="1299774449519412690">Jasny błękit</translation>
 <translation id="1303806948938513162">Kliknij czterema palcami, by otworzyć menu ChromeVoxa</translation>
+<translation id="1304162325618937178">Naciśnij spację</translation>
 <translation id="1313373992684326101">Przejdź do poprzedniej sekcji. Przykłady: pasek stanu i Menu z aplikacjami.</translation>
 <translation id="1315077335264761176">Orientacja ekranu dotykowego</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, niewybrany przycisk pozycji menu</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Pszenica</translation>
 <translation id="1618597272655350600">Przedstawia pełny opis aktualnej pozycji</translation>
 <translation id="1627222324347828322">Białawy</translation>
+<translation id="1632810692616643246">Otwórz lub zamknij tryb przewijania</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{większy niż}few{# znaki większości}many{# znaków większości}other{# greater than signs}}</translation>
 <translation id="1653266918374749391">Poprzedni nagłówek poziomu 3</translation>
 <translation id="1657616855184033958">Pokaż filtry strumienia wydarzenia</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Nie ma poprzedniego elementu sterującego</translation>
 <translation id="2045606329038304310">Sterowanie na poziomie pola formularza</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2067158561093481039">Użyj niestandardowej kombinacji klawiszy</translation>
 <translation id="2086961585857038472">Następne słowo</translation>
 <translation id="2087981446621639008">szczeg listyopisu</translation>
 <translation id="2089387485033699258">pl</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Siodlany brązowy</translation>
 <translation id="2199994615414171367">Poprzednie wyrażenie matematyczne</translation>
 <translation id="2203046366315513658">Zmniejsz wartość</translation>
+<translation id="2206580811360135054">Pokaż lub ukryj przegląd okien</translation>
 <translation id="2216790501338699346">URL linku: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Przejdź jeden znak wstecz</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
+<translation id="2239819015858077439">Naciśnij klawisz strzałki w dół</translation>
 <translation id="2243633977138166243">Aby przechodzić między elementami menu, naciskaj strzałki w lewo lub w prawo. Aby aktywować, naciśnij Enter.</translation>
 <translation id="224426591676115802">Brak dostępnego głosu dla języka: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Wyłączam tryb informacyjny</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Indiański czerwony</translation>
 <translation id="4432896207833262240">Oznaczona treść</translation>
 <translation id="4437615272777527928">Zacznij pisać, by wyszukiwać w menu. Użyj strzałek w górę i w dół, by przeglądać wyniki. Używaj strzałek w lewo i w prawo, by ustawić kursor tekstu i poruszać się między różnymi menu.</translation>
+<translation id="4441677939526091190">Naciśnij klawisz strzałki w górę</translation>
 <translation id="4453530046591759283">Aby przejść do innego elementu ekranu, np. paska narzędzi lub obszaru powiadomień, naciśnij Control + F1. F1 to pierwszy klawisz na prawo od klawisza Escape.</translation>
 <translation id="4457472090507035117">Wybierz bieżący głos:</translation>
 <translation id="4476183483923481720">nowy wiersz</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Korzystanie z ułatwień dostępu na ekranie dotykowym Chromebooka</translation>
 <translation id="5655682562155942719">Polecenia nawigacyjne</translation>
 <translation id="56637627897541303">Obszar tekstu</translation>
+<translation id="5666746275818170484">Naciśnij klawisz strzałki w lewo</translation>
 <translation id="5669637233317991674">Aby poruszać się po modułach tej lekcji, naciśnij klawisz wyszukiwania i strzałkę w prawo lub klawisz wyszukiwania i strzałkę w lewo</translation>
 <translation id="5677240841070992068">Bieżąca lokalizacja</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Przycisk wyskakującego okienka</translation>
 <translation id="7167657087543110">odczytywanie znaków</translation>
 <translation id="7173102181852295013">Ciemnogranatowy</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Rozwinięty</translation>
 <translation id="7209751026933045237">Nie ma następnego suwaka</translation>
 <translation id="7218782500591078391">Złotawy</translation>
@@ -1089,6 +1098,7 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autouzupełnianie tekstu i listy</translation>
 <translation id="8394908167088220973">Odtwórz/wstrzymaj multimedia</translation>
+<translation id="8409502156784390079">Tryb przewijania aktywny</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428603554127842284">poziom <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1166,6 +1176,7 @@
 <translation id="8986362086234534611">Zapomnij</translation>
 <translation id="8989104346085848538">Aby zatrzymać odczytywanie w ChromeVox, naciśnij klawisz Ctrl.</translation>
 <translation id="9014206344398081366">Samouczek ChromeVox</translation>
+<translation id="9034592733577768445">Sterowanie twarzą zostało wstrzymane</translation>
 <translation id="9040132695316389094">Nagłówek 1</translation>
 <translation id="9061884144798498064">Wybierz tabelę ośmiopunktowego pisma Braille'a:</translation>
 <translation id="9063946545000394379">przejdź do poprzedniego znaku</translation>

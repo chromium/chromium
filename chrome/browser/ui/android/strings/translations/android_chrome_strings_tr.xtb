@@ -419,6 +419,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2942036813789421260">Önizleme sekmesi kapalı</translation>
 <translation id="2946420957526726953">Diğer cihazlara bağlanmak için Chrome güncelleniyor</translation>
 <translation id="2951071800649516099">Daha sonra okumak için sayfaları okuma listenize ekleyin</translation>
+<translation id="2954586176076923855">Adres çubuğunu en üste taşı</translation>
 <translation id="2956070106555335453">Özet</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Okunmamış <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> sayfa}other{Okunmamış <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> sayfa}}</translation>
 <translation id="2972109037780336501">İzinleri otomatik olarak kaldırın</translation>
@@ -653,6 +654,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4095425503313512126">Göz atma ve arama daha hızlıdır</translation>
 <translation id="4096227151372679484">Yer işareti kaydetme akışı ekranın yarısına kadar açıldı</translation>
 <translation id="4101475238162928417">Şifrelerinize, yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için senkronize edin</translation>
+<translation id="4105527135143631701">Google Şifre Yöneticisi güncellemesi açıldı</translation>
 <translation id="4108314971463891922">Takip et</translation>
 <translation id="4113030288477039509">Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="4116038641877404294">Sayfaları çevrimdışı olarak kullanmak için indirin</translation>
@@ -1257,6 +1259,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6813446258015311409">Chrome'da oturum açma sayfası açıldı.</translation>
 <translation id="6817747507826986771">Bu sayfayı hızlıca paylaşın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Google Şifre Yöneticisi güncellemesi kapatıldı</translation>
 <translation id="6822587385560699678">Bu ayar etkinken şifreler <ph name="ACCOUNT" /> hesabına kaydedilir. Devre dışı bırakıldığında şifreler yalnızca bu cihaza kaydedilir.</translation>
 <translation id="6823561724060793716">Ziyaret ettiğiniz sayfayla ilgili ek bilgileri görmek için adres çubuğundan sayfa bilgilerini açabilirsiniz</translation>
 <translation id="6828070228333235514">Fiyat takibini durdur</translation>
@@ -1458,6 +1461,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7612619742409846846">Google'da şu hesapla oturum açıldı:</translation>
 <translation id="7612989789287281429">Oturum açılıyor…</translation>
 <translation id="7619072057915878432">Ağ sorunları nedeniyle <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
+<translation id="762537095495606755">Şifreler yakında bu cihazda çalışmayı durduracak</translation>
 <translation id="7626032353295482388">Chrome'a Hoş Geldiniz</translation>
 <translation id="7628417132421583481">Şifre Yöneticisi'ne gidin</translation>
 <translation id="7630202231528827509">Sağlayıcı URL'si</translation>
@@ -1550,6 +1554,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8015452622527143194">Sayfadaki her şeyi varsayılan boyutuna döndürür</translation>
 <translation id="8017431260099661477">Davet bağlantısı açılamadı</translation>
 <translation id="8026238112629815203">Şifrelerin bu cihaza kaydedilme şeklini değiştirdik</translation>
+<translation id="8027395186860110042">Şifreler yakında kullanılamayabilir</translation>
 <translation id="8027863900915310177">Nereye indirileceğini seçin</translation>
 <translation id="8030852056903932865">Onayla</translation>
 <translation id="8032569120109842252">Takip edilenler</translation>
@@ -1620,7 +1625,9 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8282297628636750033">Sitelere koyu tema uygulayın</translation>
 <translation id="8282950411412455249">Güvenlik Ayarları'na gidin</translation>
 <translation id="829672787777123339">Cihazınıza bağlanılıyor…</translation>
+<translation id="8306751933352925837">Şifreler yakında bu cihazda çalışmayı durduracak. Şifrelerinizi kullanmaya devam etmek için Google Play Hizmetleri'ni güncelleyin. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />, "<ph name="TAB_NAME" />" sekmesini kaldırdı</translation>
+<translation id="8310451567823644042">Şifreler yakında kullanılamayacak</translation>
 <translation id="831192587911042850">Mevcut web sitesini, takip ettiğiniz web sitelerinin listesine ekler.</translation>
 <translation id="8342727528718219152">Chrome, çok fazla bildirim gönderen siteleri size bildirir</translation>
 <translation id="834313815369870491">Siteleri asla çevirme</translation>
@@ -1687,6 +1694,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8570677896027847510">Dosya güvenli bir şekilde indirilemiyor</translation>
 <translation id="8571213806525832805">Son 4 hafta</translation>
 <translation id="8582529315803410153">Diğer cihazlarınızdaki sekmeleri burada bulabilirsiniz.</translation>
+<translation id="8585103689515290060">Otomatik doldurma hizmetleri</translation>
 <translation id="859046281437143747">Daha fazla seçenek düğmesinden fiyatı takip edin</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> sekme grubu silindi</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
@@ -1755,6 +1763,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8963117664422609631">Site ayarlarına gidin</translation>
 <translation id="8965591936373831584">beklemede</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_ONE" /> sekme daha kapatılacak}other{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_MANY" /> sekme daha kapatılacak}}</translation>
+<translation id="897061774231912216">Google Play Hizmetleri kullanılamadığı için şifreler yakında çalışmayı durduracak. Google Hesabınızda kayıtlı şifreleri kullanmak için başka bir cihazla oturum açın veya passwords.google.com adresine gidin.</translation>
 <translation id="8970887620466824814">Bir hata oluştu.</translation>
 <translation id="8972098258593396643">Varsayılan klasöre indirilsin mi?</translation>
 <translation id="8982113230057126145">Beğenmeme düğmesini tıkladığınızda bu özetin hoşunuza gitmediğine dair geri bildirim gönderilir.</translation>
@@ -1804,6 +1813,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9148126808321036104">Tekrar oturum açın</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> web sitesine devam etmek için bir hesap seçin</translation>
 <translation id="9158770349521403363">Yalnızca içerik paylaşılıyor</translation>
+<translation id="9168847423516963845">Adres çubuğunu en alta taşı</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Geçmiş bilgilerinizi senkronize edilmiş tüm cihazlarınızda bulabilirsiniz. Bu şekilde, son bıraktığınız yerden devam edebilirsiniz</translation>

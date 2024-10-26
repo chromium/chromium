@@ -445,6 +445,7 @@ Anders sal die ingeboude raakpaneel binne 30 sekondes geheraktiveer word.</trans
 <translation id="2530896289327917474">Skakel karetblaai aan of af</translation>
 <translation id="2531025035050312891">toestel stadig</translation>
 <translation id="2531107890083353124">Druk <ph name="KEY_ONE" /> terwyl jy die oortjie sleep</translation>
+<translation id="2545334090614121435">Probeer jy om Home te gebruik? Gebruik</translation>
 <translation id="254900897760075745">Kopieer geselekteerde inhoud na knipbord</translation>
 <translation id="2549711466868162843">Verbeter Beligting</translation>
 <translation id="2549985041256363841">Begin opname</translation>
@@ -563,6 +564,7 @@ Anders sal die ingeboude raakpaneel binne 30 sekondes geheraktiveer word.</trans
 <translation id="2985148236010982088">Sien alle programme</translation>
 <translation id="2992272421330787632">Versteek alle mediavoorstelle</translation>
 <translation id="2992327365391326550">Toestel se mikrofoonknoppie is afgeskakel.</translation>
+<translation id="2993956882370897557">Probeer jy om End te gebruik? Gebruik</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3001391739687111021">Wysig skermgrootte</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
@@ -615,6 +617,7 @@ Anders sal die ingeboude raakpaneel binne 30 sekondes geheraktiveer word.</trans
 <translation id="316356270129335934"><ph name="MANAGER" /> rol tans jou <ph name="DEVICE_TYPE" /> terug. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
 <translation id="316798519864381606">Google-skyfie</translation>
 <translation id="3171170659304083361">Invoermetodesinstellings</translation>
+<translation id="3174897399179348329">Probeer jy om Page Up te gebruik? Gebruik</translation>
 <translation id="3176221688814061633">Jou Chromebook of Bluetooth-toestel gebruik tans ’n ouer weergawe van Bluetooth. Skakel die Bluetooth-superresolusie aan of gebruik interne mikrofoon vir beter klankgehalte.</translation>
 <translation id="3181441307743005334">Dit kan 'n rukkie neem om te herbegin</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Gekoppel aan 'n toestel}other{Gekoppel aan # toestelle}}</translation>
@@ -1262,6 +1265,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5297704307811127955">Af</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5302048478445481009">Taal</translation>
+<translation id="5302531370473608800">Dateer jou <ph name="DEVICE_TYPE" /> op om YouTube Music te gebruik</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% batterykrag oor.
 Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5308380583665731573">Koppel</translation>
@@ -1821,6 +1825,7 @@ Nuwe installasie</translation>
 <translation id="7144942256906679589">Batterystatus</translation>
 <translation id="7145639536026937076">Battery op <ph name="PERCENTAGE" />% en laai tans. Batterybespaarder is aan.</translation>
 <translation id="7147587499155271409">Geen blaaigeskiedenis nie</translation>
+<translation id="7147657298465433425">Druk fn-sleutel + boonste ry sleutels vir toegang tot F-sleutels</translation>
 <translation id="7149149900052329230">Bestuur jou plaaslike lêers en jou Google Driver-lêers, alles in die Lêers-app.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Anders sal die ingeboude raakpaneel binne 30 sekondes geheraktiveer word.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruik tans jou mikrofoon</translation>
 <translation id="7561982940498449837">Maak kieslys toe</translation>
 <translation id="7564874036684306347">Om vensters na 'n ander werkskerm te skuif, kan lei tot onverwagte gedrag. Opeenvolgende kennisgewings, vensters en dialoë kan tussen werkskerms verdeel word.</translation>
+<translation id="7568154670718626683">Probeer jy om Delete te gebruik? Gebruik</translation>
 <translation id="7568790562536448087">Dateer tans op</translation>
 <translation id="7569509451529460200">Braille en ChromeVox is geaktiveer</translation>
 <translation id="7569886975397378678">Maak die opstelling toe vir die bekyk van jou foon se kennisgewings en apps</translation>
@@ -2132,6 +2138,7 @@ Anders sal die ingeboude raakpaneel binne 30 sekondes geheraktiveer word.</trans
 <translation id="820256110035940528"><ph name="TITLE" /> Jy het pas gefokus vir <ph name="FOCUSED_TIME" />. Maak Kitsinstellings oop om weer te fokus.</translation>
 <translation id="8203224998425013577">Wys meer emosiekone en GIF’s</translation>
 <translation id="8203795194971602413">Regsklik</translation>
+<translation id="8205469348819768313">Probeer jy om Page Down te gebruik? Gebruik</translation>
 <translation id="8214996719228530800">Kanarie-kanaal</translation>
 <translation id="8219451629189078428">Jou Chromebook moet in hierdie tyd aangeskakel bly en aan krag gekoppel wees. Maak seker dat die laaier of kragprop se drade behoorlik by sowel jou Chromebook as die kragpunt ingeprop is. Moenie jou Chromebook afskakel nie.</translation>
 <translation id="8220076512072059941">Voeg <ph name="FOCUS_DURATION_DELTA" /> by</translation>
@@ -2324,6 +2331,7 @@ Anders sal die ingeboude raakpaneel binne 30 sekondes geheraktiveer word.</trans
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Die Google Assistent praat nie hierdie taal nie.</translation>
 <translation id="8926951137623668982">Rak is altyd versteek</translation>
+<translation id="8929566928381252430">Probeer jy om Caps Lock te gebruik? Gebruik</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 lêer}other{# lêers}}</translation>
 <translation id="8936501819958976551">gedeaktiveer</translation>
 <translation id="8938800817013097409">USB C-toestel (regterpoort aan agterkant)</translation>
