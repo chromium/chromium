@@ -129,7 +129,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // Identifies this `WebNNTensor` mojo instance in the service process.
   const blink::WebNNTensorToken webnn_handle_;
 
-  // The `WebNNTensor` is a buffer that can be used by the hardware
+  // The `WebNNTensor` is a tensor that can be used by the hardware
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNTensor> remote_tensor_;
 

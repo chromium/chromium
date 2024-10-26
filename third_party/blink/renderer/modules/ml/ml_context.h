@@ -147,7 +147,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void OnLost(uint32_t custom_reason, const std::string& description);
 
   // Validate and write ArrayBuffer data to hardware accelerated OS
-  // machine learning buffers in the WebNN Service.
+  // machine learning tensors in the WebNN Service.
   // `src_data` is the source span of the array buffer data.
   // `src_element_offset` is the start of the data to write from in the span.
   // `src_element_count` is optional to denote when the entire span will be
@@ -185,7 +185,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   HeapHashSet<WeakMember<MLGraph>> graphs_;
   HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
-  HeapHashSet<WeakMember<MLTensor>> buffers_;
+  HeapHashSet<WeakMember<MLTensor>> tensors_;
 };
 
 }  // namespace blink

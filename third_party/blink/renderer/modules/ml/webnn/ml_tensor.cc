@@ -71,8 +71,8 @@ uint32_t MLTensor::usage() const {
 }
 
 void MLTensor::destroy() {
-  // Calling OnConnectionError() will disconnect and destroy the buffer in
-  // the service. The remote buffer must remain unbound after calling
+  // Calling OnConnectionError() will disconnect and destroy the tensor in
+  // the service. The remote tensor must remain unbound after calling
   // OnConnectionError() because it is valid to call destroy() multiple times.
   OnConnectionError();
 }
@@ -106,7 +106,7 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
     return EmptyPromise();
   }
 
@@ -130,12 +130,12 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
   // destructs.
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid buffer state");
+                                      "Invalid tensor state");
     return EmptyPromise();
   }
 
   if (dst_data->ByteLength() < PackedByteLength()) {
-    exception_state.ThrowTypeError("The destination buffer is too small.");
+    exception_state.ThrowTypeError("The destination tensor is too small.");
     return EmptyPromise();
   }
 
@@ -159,12 +159,12 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
   // destructs.
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid buffer state");
+                                      "Invalid tensor state");
     return EmptyPromise();
   }
 
   if (dst_data->byteLength() < PackedByteLength()) {
-    exception_state.ThrowTypeError("The destination buffer is too small.");
+    exception_state.ThrowTypeError("The destination tensor is too small.");
     return EmptyPromise();
   }
 
@@ -186,10 +186,10 @@ void MLTensor::OnDidReadTensor(
   pending_resolvers_.erase(resolver);
 
   if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
-        read_buffer_error.message);
+        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
+        read_tensor_error.message);
     return;
   }
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
@@ -203,10 +203,10 @@ void MLTensor::OnDidReadTensorByob(
   pending_byob_resolvers_.erase(resolver);
 
   if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
-        read_buffer_error.message);
+        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
+        read_tensor_error.message);
     return;
   }
 
@@ -231,10 +231,10 @@ void MLTensor::OnDidReadTensorByobView(
   pending_byob_resolvers_.erase(resolver);
 
   if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
-        read_buffer_error.message);
+        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
+        read_tensor_error.message);
     return;
   }
 
@@ -258,7 +258,7 @@ void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
     return;
   }
 
@@ -278,14 +278,14 @@ void MLTensor::OnConnectionError() {
   for (const auto& resolver : pending_resolvers_) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
   }
   pending_resolvers_.clear();
 
   for (const auto& resolver : pending_byob_resolvers_) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
   }
   pending_byob_resolvers_.clear();
 }

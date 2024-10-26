@@ -118,7 +118,7 @@ void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(pending_resolvers_);
   visitor->Trace(graphs_);
   visitor->Trace(graph_builders_);
-  visitor->Trace(buffers_);
+  visitor->Trace(tensors_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -146,8 +146,8 @@ void MLContext::destroy(ScriptState* script_state,
       graph_builder->OnConnectionError();
     }
 
-    for (const auto& buffer : buffers_) {
-      buffer->destroy();
+    for (const auto& tensor : tensors_) {
+      tensor->destroy();
     }
   }
 }
@@ -1095,13 +1095,13 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
 
   if (src_tensor->context() != this) {
     exception_state.ThrowTypeError(
-        "The source buffer wasn't created with this context.");
+        "The source tensor wasn't created with this context.");
     return EmptyPromise();
   }
 
   if (!src_tensor->Usage().Has(webnn::MLTensorUsageFlags::kRead)) {
     exception_state.ThrowTypeError(
-        "The source buffer doesn't have read access.");
+        "The source tensor doesn't have read access.");
     return EmptyPromise();
   }
 
@@ -1123,7 +1123,7 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
 
   if (src_tensor->context() != this) {
     exception_state.ThrowTypeError(
-        "The source buffer wasn't created with this context.");
+        "The source tensor wasn't created with this context.");
     return EmptyPromise();
   }
 
@@ -1145,7 +1145,7 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
 
   if (src_tensor->context() != this) {
     exception_state.ThrowTypeError(
-        "The source buffer wasn't created with this context.");
+        "The source tensor wasn't created with this context.");
     return EmptyPromise();
   }
 
@@ -1169,13 +1169,13 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
 
   if (dst_tensor->context() != this) {
     exception_state.ThrowTypeError(
-        "The destination buffer wasn't created with this context.");
+        "The destination tensor wasn't created with this context.");
     return;
   }
 
   if (!dst_tensor->Usage().Has(webnn::MLTensorUsageFlags::kWrite)) {
     exception_state.ThrowTypeError(
-        "The destination buffer doesn't have write access.");
+        "The destination tensor doesn't have write access.");
     return;
   }
 
@@ -1217,7 +1217,7 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
 
   if (write_byte_size > dst_tensor->PackedByteLength()) {
     exception_state.ThrowTypeError(
-        "Number of bytes to write is too large: write size exceeded buffer "
+        "Number of bytes to write is too large: write size exceeded tensor "
         "size.");
     return;
   }
@@ -1277,19 +1277,19 @@ void MLContext::DidCreateWebNNTensor(
   }
 
   if (result->is_error()) {
-    const auto& create_buffer_error = result->get_error();
+    const auto& create_tensor_error = result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(create_buffer_error->code),
-        create_buffer_error->message);
+        WebNNErrorCodeToDOMExceptionCode(create_tensor_error->code),
+        create_tensor_error->message);
     return;
   }
 
-  auto* buffer = MakeGarbageCollected<MLTensor>(
+  auto* tensor = MakeGarbageCollected<MLTensor>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
       usage, std::move(result->get_success()), base::PassKey<MLContext>());
-  buffers_.insert(buffer);
+  tensors_.insert(tensor);
 
-  resolver->Resolve(buffer);
+  resolver->Resolve(tensor);
 }
 
 }  // namespace blink
