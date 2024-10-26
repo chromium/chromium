@@ -133,7 +133,9 @@ class MockOptimizationGuideDecider
 class TabGroupSyncServiceTest : public testing::Test {
  public:
   TabGroupSyncServiceTest()
-      : saved_store_(
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
+        saved_store_(
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         shared_store_(
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
@@ -268,8 +270,17 @@ class TabGroupSyncServiceTest : public testing::Test {
     EXPECT_EQ(tab_updater_cache_guid, tab->last_updater_cache_guid());
   }
 
+  void WaitForPostedTasks() {
+    // Post a dummy task in the current thread and wait for its completion so
+    // that any already posted tasks are completed.
+    base::RunLoop run_loop;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   signin::IdentityTestEnvironment identity_test_environment_;
   TestingPrefServiceSimple pref_service_;
@@ -327,7 +338,7 @@ TEST_F(TabGroupSyncServiceTest, GetGroup) {
 TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
   // Delete a group from sync. It should add the deleted ID to the pref.
   model_->RemovedFromSync(group_1_.saved_guid());
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
   EXPECT_EQ(1u, deleted_ids.size());
@@ -346,7 +357,7 @@ TEST_F(TabGroupSyncServiceTest,
        GetDeletedGroupIdsUsingPrefsWhileRemovedFromLocal) {
   // Delete a group from local. It should not add the entry to the prefs.
   model_->Remove(group_1_.saved_guid());
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
   EXPECT_EQ(0u, deleted_ids.size());
@@ -396,7 +407,7 @@ TEST_F(TabGroupSyncServiceTest, AddGroup_BeforeInit) {
 
   // Initialize model and add group 4.
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Verify model internals.
   EXPECT_TRUE(model_->Contains(group_4.saved_guid()));
@@ -501,7 +512,7 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
               ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
       .Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
@@ -518,7 +529,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
 
   // Initialize model and add group 4.
   model_->LoadStoredEntries(/*groups=*/{group_4_}, /*tabs=*/{});
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   retrieved_group = tab_group_sync_service_->GetGroup(group_4_.saved_guid());
   EXPECT_TRUE(retrieved_group.has_value());
@@ -656,7 +667,9 @@ TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
       .Times(1);
 
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
+  // Wait again as the posted task will post again.
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateTab) {
@@ -766,13 +779,13 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
 TEST_F(TabGroupSyncServiceTest, AddObserverBeforeInitialize) {
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   tab_group_sync_service_->RemoveObserver(observer_.get());
 
@@ -791,7 +804,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::REMOTE)))
       .Times(1);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
@@ -805,7 +818,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
       .Times(1);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
@@ -823,7 +836,7 @@ TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
       .Times(0);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Empty group should be excluded from GetAllGroups().
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
@@ -836,7 +849,7 @@ TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
   tab_group_sync_service_->AddTab(tab_group_id, local_tab_id_2,
                                   u"random tab title", GURL("www.google.com"),
                                   std::nullopt);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 4u);
 }
@@ -852,7 +865,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
@@ -866,7 +879,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
@@ -932,7 +945,7 @@ TEST_F(TabGroupSyncServiceTest,
               OnTabGroupAdded(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
       .Times(0);
   model_->AddedFromSync(group_4);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Verify that GetAllGroups call will not return it.
   all_groups = tab_group_sync_service_->GetAllGroups();
@@ -947,7 +960,7 @@ TEST_F(TabGroupSyncServiceTest,
       .Times(0);
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   model_->UpdatedVisualDataFromSync(group_id, &visual_data);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Add a tab to the group. Observers will be notified as an Add event.
   EXPECT_CALL(*observer_,
@@ -959,7 +972,7 @@ TEST_F(TabGroupSyncServiceTest,
   SavedTabGroupTab tab =
       test::CreateSavedTabGroupTab("A_Link", u"Tab", group_id);
   model_->AddTabToGroupFromSync(group_id, tab);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Update visuals. Observers will be notified as an Update event.
   EXPECT_CALL(*observer_,
@@ -969,7 +982,7 @@ TEST_F(TabGroupSyncServiceTest,
               OnTabGroupUpdated(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->UpdatedVisualDataFromSync(group_id, &visual_data);
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
@@ -984,7 +997,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->RemovedFromSync(group_1_.saved_guid());
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Remove a group with no local ID.
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
@@ -992,7 +1005,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->RemovedFromSync(group_2_.saved_guid());
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 
   // Try removing a group that doesn't exist.
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
@@ -1000,7 +1013,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(0);
   model_->RemovedFromSync(group_1_.saved_guid());
-  task_environment_.RunUntilIdle();
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
