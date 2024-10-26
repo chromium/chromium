@@ -627,12 +627,31 @@ public class ManageSyncSettingsTest {
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
 
+        SyncService syncService = mSyncTestRule.getSyncService();
+
         // Switching history sync on from settings clears history sync declined prefs.
         mSyncTestRule.togglePreference(historyToggle);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
+
+        Set<Integer> activeDataTypes =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return syncService.getActiveDataTypes();
+                        });
+        Assert.assertTrue(activeDataTypes.contains(DataType.HISTORY));
+        Assert.assertTrue(activeDataTypes.contains(DataType.SESSIONS));
+
         // Switching history sync off from settings records history sync declined prefs.
         mSyncTestRule.togglePreference(historyToggle);
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
+
+        activeDataTypes =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return syncService.getActiveDataTypes();
+                        });
+        Assert.assertFalse(activeDataTypes.contains(DataType.HISTORY));
+        Assert.assertFalse(activeDataTypes.contains(DataType.SESSIONS));
     }
 
     @Test
