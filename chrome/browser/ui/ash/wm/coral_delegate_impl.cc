@@ -20,6 +20,10 @@
 
 namespace {
 
+// TODO(crbug.com/375117758): temporarily use the ID to avoid the conflict with
+// the newly created browser window until the issue is fixed.
+constexpr int kRestoredBrowserWindowsId = 40;
+
 std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     coral::mojom::GroupPtr group) {
   auto restore_data = std::make_unique<app_restore::RestoreData>();
@@ -38,7 +42,8 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
         restore_data
             ->mutable_app_id_to_launch_list()[app_constants::kChromeAppId];
     // All tabs go into the same window.
-    auto& app_restore_data = launch_list[/*window_id=*/0];
+    auto& app_restore_data =
+        launch_list[/*window_id=*/kRestoredBrowserWindowsId];
     app_restore_data = std::make_unique<app_restore::AppRestoreData>();
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
