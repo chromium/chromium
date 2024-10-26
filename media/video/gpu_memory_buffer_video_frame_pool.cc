@@ -1229,7 +1229,7 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
       si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40194712): Always add the flag once the
     // OzoneImageBacking is by default turned on.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1237,6 +1237,9 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
       // This SharedImage may be used for zero-copy import into WebGPU.
       si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
     }
+#elif BUILDFLAG(IS_MAC)
+    // This SharedImage may be used for zero-copy import into WebGPU.
+    si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
 #endif
     // Create a Mappable shared image.
     frame_resource->shared_image =
