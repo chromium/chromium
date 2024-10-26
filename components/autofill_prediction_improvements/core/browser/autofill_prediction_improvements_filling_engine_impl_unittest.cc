@@ -49,15 +49,12 @@ void AddFieldToResponse(
   filled_field->set_request_field_index(request_field_index);
 }
 
-MATCHER_P(HasPrediction, expected_prediction, "") {
-  EXPECT_THAT(arg, AllOf(Field("Prediction::value", &Prediction::value,
-                               expected_prediction.value),
-                         Field("Prediction::label", &Prediction::label,
-                               expected_prediction.label),
-                         Field("Prediction::select_option_text",
-                               &Prediction::select_option_text,
-                               expected_prediction.select_option_text)));
-  return true;
+auto HasPrediction(Prediction expected_prediction) {
+  return AllOf(
+      Field("Prediction::value", &Prediction::value, expected_prediction.value),
+      Field("Prediction::label", &Prediction::label, expected_prediction.label),
+      Field("Prediction::select_option_text", &Prediction::select_option_text,
+            expected_prediction.select_option_text));
 }
 
 class AutofillPredictionImprovementsFillingEngineImplTest
