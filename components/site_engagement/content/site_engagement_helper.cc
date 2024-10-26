@@ -57,7 +57,7 @@ SiteEngagementService::Helper::PeriodicTracker::PeriodicTracker(
     SiteEngagementService::Helper* helper)
     : helper_(helper), pause_timer_(std::make_unique<base::OneShotTimer>()) {}
 
-SiteEngagementService::Helper::PeriodicTracker::~PeriodicTracker() {}
+SiteEngagementService::Helper::PeriodicTracker::~PeriodicTracker() = default;
 
 void SiteEngagementService::Helper::PeriodicTracker::Start(
     base::TimeDelta initial_delay) {
@@ -147,7 +147,7 @@ SiteEngagementService::Helper::MediaTracker::MediaTracker(
     content::WebContents* web_contents)
     : PeriodicTracker(helper), content::WebContentsObserver(web_contents) {}
 
-SiteEngagementService::Helper::MediaTracker::~MediaTracker() {}
+SiteEngagementService::Helper::MediaTracker::~MediaTracker() = default;
 
 void SiteEngagementService::Helper::MediaTracker::TrackingStarted() {
   if (!active_media_players_.empty()) {
