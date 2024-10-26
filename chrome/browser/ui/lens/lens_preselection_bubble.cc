@@ -35,6 +35,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -95,6 +96,9 @@ void LensPreselectionBubble::Init() {
     auto button = views::CreateVectorImageButtonWithNativeTheme(
         base::RepeatingClosure(), kHelpMenuIcon, 20,
         kColorLensOverlayToastForeground, kColorLensOverlayToastForeground);
+    views::HighlightPathGenerator::Install(
+        button.get(),
+        std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
     button->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP));
     more_info_button_ = AddChildView(std::move(button));
