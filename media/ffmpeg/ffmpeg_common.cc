@@ -798,7 +798,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         // Treat dolby vision contents as dolby vision codec only if the
         // device support clear DV decoding, otherwise use the original
         // HEVC or AVC codec and profile.
-        if (media::IsSupportedVideoType(type)) {
+        if (media::IsDecoderSupportedVideoType(type)) {
           codec = type.codec;
           profile = type.profile;
         }

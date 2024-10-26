@@ -960,7 +960,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
         break;
       // Only supported on some hardware and via ffmpeg.
       case H264PROFILE_HIGH10PROFILE:
-        if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+        if (IsDecoderBuiltInVideoCodec(VideoCodec::kH264)) {
           // FFmpeg is not generally used for encrypted videos, so we do not
           // know whether 10-bit is supported.
           ambiguous_platform_support = is_encrypted;
@@ -978,12 +978,13 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
     if (codec == MPEG4_XHE_AAC)
       audio_profile = AudioCodecProfile::kXHE_AAC;
 
-    if (!IsSupportedAudioType({audio_codec, audio_profile, false}))
+    if (!IsDecoderSupportedAudioType({audio_codec, audio_profile, false})) {
       return SupportsType::kNotSupported;
+    }
   }
 
   if (video_codec != VideoCodec::kUnknown) {
-    if (!IsSupportedVideoType(
+    if (!IsDecoderSupportedVideoType(
             {video_codec, video_profile, video_level, color_space})) {
       return SupportsType::kNotSupported;
     }
@@ -991,7 +992,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(chcunningham): Delete this. Android platform support should be
-  // handled by (android specific) media::IsSupportedVideoType() above.
+  // handled by (android specific) media::IsDecoderSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,
                                  video_profile, platform_info_)) {
     return SupportsType::kNotSupported;

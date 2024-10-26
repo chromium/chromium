@@ -1336,7 +1336,7 @@ TEST_F(FFmpegDemuxerTest, HEVC_in_MP4_container) {
       .profile = HEVCPROFILE_MIN,
       .color_space = VideoColorSpace::REC709(),
   };
-  if (IsSupportedVideoType(kHevc)) {
+  if (IsDecoderSupportedVideoType(kHevc)) {
     InitializeDemuxer();
 
     DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
@@ -1357,7 +1357,7 @@ TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
       .codec = AudioCodec::kAC3,
       .spatial_rendering = false,
   };
-  if (IsSupportedAudioType(kAc3)) {
+  if (IsDecoderSupportedAudioType(kAc3)) {
     InitializeDemuxer();
 
     // Attempt a read from the audio stream and run the message loop until done.
@@ -1379,7 +1379,7 @@ TEST_F(FFmpegDemuxerTest, Read_EAC3_Audio) {
       .codec = AudioCodec::kEAC3,
       .spatial_rendering = false,
   };
-  if (IsSupportedAudioType(kEac3)) {
+  if (IsDecoderSupportedAudioType(kEac3)) {
     InitializeDemuxer();
 
     // Attempt a read from the audio stream and run the message loop until done.
@@ -1458,7 +1458,7 @@ TEST_F(FFmpegDemuxerTest, Read_Mp4_Crbug657437) {
 }
 
 TEST_F(FFmpegDemuxerTest, XHE_AAC) {
-  if (!IsSupportedAudioType(
+  if (!IsDecoderSupportedAudioType(
           {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false})) {
     GTEST_SKIP() << "Unsupported platform.";
   }

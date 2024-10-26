@@ -218,14 +218,16 @@ ContentRendererClient::GetSupportedKeySystems(
   return nullptr;
 }
 
-bool ContentRendererClient::IsSupportedAudioType(const media::AudioType& type) {
+bool ContentRendererClient::IsDecoderSupportedAudioType(
+    const media::AudioType& type) {
   // Defer to media's default support.
-  return ::media::IsDefaultSupportedAudioType(type);
+  return ::media::IsDefaultDecoderSupportedAudioType(type);
 }
 
-bool ContentRendererClient::IsSupportedVideoType(const media::VideoType& type) {
+bool ContentRendererClient::IsDecoderSupportedVideoType(
+    const media::VideoType& type) {
   // Defer to media's default support.
-  return ::media::IsDefaultSupportedVideoType(type);
+  return ::media::IsDefaultDecoderSupportedVideoType(type);
 }
 
 media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {

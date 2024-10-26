@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, Navigate) {
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioOnly_XHE_AAC_MP4) {
-  if (media::IsSupportedAudioType(
+  if (media::IsDecoderSupportedAudioType(
           {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     PlayAudio("noise-xhe-aac.mp4");
   }

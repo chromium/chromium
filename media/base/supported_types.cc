@@ -59,17 +59,18 @@ class SupplementalProfileCache {
   base::flat_set<T> profiles_ GUARDED_BY(profiles_lock_);
 };
 
-SupplementalProfileCache<VideoCodecProfile>* GetSupplementalProfileCache() {
+SupplementalProfileCache<VideoCodecProfile>*
+GetSupplementalDecoderVideoProfileCache() {
   static base::NoDestructor<SupplementalProfileCache<VideoCodecProfile>> cache;
   return cache.get();
 }
 
-SupplementalProfileCache<AudioType>* GetSupplementalAudioTypeCache() {
+SupplementalProfileCache<AudioType>* GetSupplementalDecoderAudioTypeCache() {
   static base::NoDestructor<SupplementalProfileCache<AudioType>> cache;
   return cache.get();
 }
 
-bool IsSupportedHdrMetadata(const VideoType& type) {
+bool IsDecoderSupportedHdrMetadata(const VideoType& type) {
   switch (type.hdr_metadata_type) {
     case gfx::HdrMetadataType::kNone:
       return true;
@@ -88,7 +89,7 @@ bool IsSupportedHdrMetadata(const VideoType& type) {
   }
 }
 
-bool IsColorSpaceSupported(const VideoColorSpace& color_space) {
+bool IsDecoderColorSpaceSupported(const VideoColorSpace& color_space) {
   switch (color_space.primaries) {
     // Transfers supported before color management.
     case VideoColorSpace::PrimaryID::BT709:
@@ -222,9 +223,10 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
 }
 #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-bool IsHevcProfileSupported(const VideoType& type) {
-  if (!IsColorSpaceSupported(type.color_space))
+bool IsDecoderHevcProfileSupported(const VideoType& type) {
+  if (!IsDecoderColorSpaceSupported(type.color_space)) {
     return false;
+  }
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
@@ -243,7 +245,8 @@ bool IsHevcProfileSupported(const VideoType& type) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+  return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(
+      type.profile);
 #else
   return true;
 #endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
@@ -252,15 +255,16 @@ bool IsHevcProfileSupported(const VideoType& type) {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 }
 
-bool IsVp9ProfileSupported(const VideoType& type) {
+bool IsDecoderVp9ProfileSupported(const VideoType& type) {
 #if BUILDFLAG(ENABLE_LIBVPX)
   // High bit depth capabilities may be toggled via LibVPX config flags.
   static const bool vpx_supports_hbd = (vpx_codec_get_caps(vpx_codec_vp9_dx()) &
                                         VPX_CODEC_CAP_HIGHBITDEPTH) != 0;
 
   // Color management required for HDR to not look terrible.
-  if (!IsColorSpaceSupported(type.color_space))
+  if (!IsDecoderColorSpaceSupported(type.color_space)) {
     return false;
+  }
 
   switch (type.profile) {
     // LibVPX always supports Profiles 0 and 1.
@@ -286,46 +290,47 @@ bool IsVp9ProfileSupported(const VideoType& type) {
   return false;
 }
 
-bool IsAV1Supported(const VideoType& type) {
+bool IsDecoderAV1Supported(const VideoType& type) {
   // If the AV1 decoder is enabled, or if we're on Q or later, yes.
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  return IsColorSpaceSupported(type.color_space);
+  return IsDecoderColorSpaceSupported(type.color_space);
 #elif BUILDFLAG(IS_ANDROID)
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
              base::android::SDK_VERSION_Q &&
-         IsColorSpaceSupported(type.color_space);
+         IsDecoderColorSpaceSupported(type.color_space);
 #else
   return false;
 #endif
 }
 
-bool IsAACSupported(const AudioType& type) {
+bool IsDecoderAACSupported(const AudioType& type) {
   if (type.profile != AudioCodecProfile::kXHE_AAC) {
     return true;
   }
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && \
     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-  return GetSupplementalAudioTypeCache()->IsProfileSupported(type);
+  return GetSupplementalDecoderAudioTypeCache()->IsProfileSupported(type);
 #else
   return false;
 #endif
 }
 
-bool IsDolbyVisionProfileSupported(const VideoType& type) {
+bool IsDecoderDolbyVisionProfileSupported(const VideoType& type) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&               \
     BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT) && \
     BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+  return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(
+      type.profile);
 #else
   return false;
 #endif
 }
 
-bool IsDolbyAc3Eac3Supported(const AudioType& type) {
+bool IsDecoderDolbyAc3Eac3Supported(const AudioType& type) {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-  return GetSupplementalAudioTypeCache()->IsProfileSupported(type);
+  return GetSupplementalDecoderAudioTypeCache()->IsProfileSupported(type);
 #else
   // Keep 'true' for other platforms as old code snippet.
   return true;
@@ -336,10 +341,10 @@ bool IsDolbyAc3Eac3Supported(const AudioType& type) {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 }
 
-bool IsDolbyAc4Supported(const AudioType& type) {
+bool IsDecoderDolbyAc4Supported(const AudioType& type) {
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO) && \
     BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && BUILDFLAG(IS_WIN)
-  return GetSupplementalAudioTypeCache()->IsProfileSupported(type);
+  return GetSupplementalDecoderAudioTypeCache()->IsProfileSupported(type);
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO) &&
@@ -348,22 +353,22 @@ bool IsDolbyAc4Supported(const AudioType& type) {
 
 }  // namespace
 
-bool IsSupportedAudioType(const AudioType& type) {
+bool IsDecoderSupportedAudioType(const AudioType& type) {
   if (auto* media_client = GetMediaClient())
-    return media_client->IsSupportedAudioType(type);
-  return IsDefaultSupportedAudioType(type);
+    return media_client->IsDecoderSupportedAudioType(type);
+  return IsDefaultDecoderSupportedAudioType(type);
 }
 
-bool IsSupportedVideoType(const VideoType& type) {
+bool IsDecoderSupportedVideoType(const VideoType& type) {
   if (auto* media_client = GetMediaClient())
-    return media_client->IsSupportedVideoType(type);
-  return IsDefaultSupportedVideoType(type);
+    return media_client->IsDecoderSupportedVideoType(type);
+  return IsDefaultDecoderSupportedVideoType(type);
 }
 
 // TODO(chcunningham): Add platform specific logic for Android (move from
 // MimeUtilInternal).
-bool IsDefaultSupportedVideoType(const VideoType& type) {
-  if (!IsSupportedHdrMetadata(type)) {
+bool IsDefaultDecoderSupportedVideoType(const VideoType& type) {
+  if (!IsDecoderSupportedHdrMetadata(type)) {
     return false;
   }
 
@@ -374,22 +379,22 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
 
   switch (type.codec) {
     case VideoCodec::kTheora:
-      return IsBuiltInVideoCodec(type.codec);
+      return IsDecoderBuiltInVideoCodec(type.codec);
     case VideoCodec::kH264:
       return true;
     case VideoCodec::kVP8:
-      return IsBuiltInVideoCodec(type.codec)
+      return IsDecoderBuiltInVideoCodec(type.codec)
                  ? true
-                 : GetSupplementalProfileCache()->IsProfileSupported(
-                       type.profile);
+                 : GetSupplementalDecoderVideoProfileCache()
+                       ->IsProfileSupported(type.profile);
     case VideoCodec::kAV1:
-      return IsAV1Supported(type);
+      return IsDecoderAV1Supported(type);
     case VideoCodec::kVP9:
-      return IsVp9ProfileSupported(type);
+      return IsDecoderVp9ProfileSupported(type);
     case VideoCodec::kHEVC:
-      return IsHevcProfileSupported(type);
+      return IsDecoderHevcProfileSupported(type);
     case VideoCodec::kDolbyVision:
-      return IsDolbyVisionProfileSupported(type);
+      return IsDecoderDolbyVisionProfileSupported(type);
     case VideoCodec::kUnknown:
     case VideoCodec::kVC1:
     case VideoCodec::kMPEG2:
@@ -398,7 +403,7 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
   }
 }
 
-bool IsDefaultSupportedAudioType(const AudioType& type) {
+bool IsDefaultDecoderSupportedAudioType(const AudioType& type) {
   if (type.spatial_rendering)
     return false;
 
@@ -409,7 +414,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
 
   switch (type.codec) {
     case AudioCodec::kAAC:
-      return IsAACSupported(type);
+      return IsDecoderAACSupported(type);
     case AudioCodec::kFLAC:
     case AudioCodec::kMP3:
     case AudioCodec::kOpus:
@@ -434,13 +439,13 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
       return BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO);
     case AudioCodec::kAC3:
     case AudioCodec::kEAC3:
-      return IsDolbyAc3Eac3Supported(type);
+      return IsDecoderDolbyAc3Eac3Supported(type);
     case AudioCodec::kAC4:
-      return IsDolbyAc4Supported(type);
+      return IsDecoderDolbyAc4Supported(type);
   }
 }
 
-bool IsBuiltInVideoCodec(VideoCodec codec) {
+bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (codec == VideoCodec::kH264 &&
       base::FeatureList::IsEnabled(kBuiltInH264Decoder)) {
@@ -460,13 +465,14 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
   return false;
 }
 
-void UpdateDefaultSupportedVideoProfiles(
+void UpdateDefaultDecoderSupportedVideoProfiles(
     const base::flat_set<media::VideoCodecProfile>& profiles) {
-  GetSupplementalProfileCache()->UpdateCache(profiles);
+  GetSupplementalDecoderVideoProfileCache()->UpdateCache(profiles);
 }
 
-void UpdateDefaultSupportedAudioTypes(const base::flat_set<AudioType>& types) {
-  GetSupplementalAudioTypeCache()->UpdateCache(types);
+void UpdateDefaultDecoderSupportedAudioTypes(
+    const base::flat_set<AudioType>& types) {
+  GetSupplementalDecoderAudioTypeCache()->UpdateCache(types);
 }
 
 }  // namespace media

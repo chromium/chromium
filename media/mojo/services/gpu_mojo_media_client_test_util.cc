@@ -50,7 +50,7 @@ void AddSupplementalCodecsForTesting(gpu::GpuPreferences gpu_preferences) {
     supported_audio_types.emplace(config.codec, config.profile,
                                   /*spatial_rendering=*/false);
   }
-  UpdateDefaultSupportedAudioTypes(supported_audio_types);
+  UpdateDefaultDecoderSupportedAudioTypes(supported_audio_types);
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
 
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
@@ -61,7 +61,7 @@ void AddSupplementalCodecsForTesting(gpu::GpuPreferences gpu_preferences) {
       supported_video_profiles.insert(static_cast<VideoCodecProfile>(profile));
     }
   }
-  UpdateDefaultSupportedVideoProfiles(supported_video_profiles);
+  UpdateDefaultDecoderSupportedVideoProfiles(supported_video_profiles);
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || \
         // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)

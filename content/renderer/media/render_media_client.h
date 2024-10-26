@@ -35,8 +35,8 @@ class RenderMediaClient : public media::MediaClient {
   static void Initialize();
 
   // MediaClient implementation.
-  bool IsSupportedAudioType(const media::AudioType& type) final;
-  bool IsSupportedVideoType(const media::VideoType& type) final;
+  bool IsDecoderSupportedAudioType(const media::AudioType& type) final;
+  bool IsDecoderSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;
   std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
@@ -64,15 +64,17 @@ class RenderMediaClient : public media::MediaClient {
   // retrieved from the |video_decoder_for_supported_profiles_|. May be waited
   // upon by any thread but the RenderThread since it's always signaled from the
   // RenderThread.
-  [[maybe_unused]] base::WaitableEvent did_video_update_;
+  [[maybe_unused]] base::WaitableEvent did_video_decoder_update_;
+
   // Used to indicate if optional audio codec support information has been
   // retrieved from the MojoAudioDecoder. May be waited upon by any thread but
   // the RenderThread since it's always signaled from the RenderThread.
-  [[maybe_unused]] base::WaitableEvent did_audio_update_;
+  [[maybe_unused]] base::WaitableEvent did_audio_decoder_update_;
 
   [[maybe_unused]] mojo::Remote<media::mojom::InterfaceFactory>
       interface_factory_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
+
   [[maybe_unused]] absl::variant<
       mojo::SharedRemote<media::mojom::VideoDecoder>,
       mojo::SharedRemote<media::stable::mojom::StableVideoDecoder>>

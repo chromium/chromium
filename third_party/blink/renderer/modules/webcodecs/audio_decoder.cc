@@ -162,7 +162,7 @@ ScriptPromise<AudioDecoderSupport> AudioDecoder::isConfigSupported(
   }
 
   AudioDecoderSupport* support = AudioDecoderSupport::Create();
-  support->setSupported(media::IsSupportedAudioType(*audio_type));
+  support->setSupported(media::IsDecoderSupportedAudioType(*audio_type));
   support->setConfig(CopyConfig(*config));
   return ToResolvedPromise<AudioDecoderSupport>(script_state, support);
 }

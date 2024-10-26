@@ -310,8 +310,8 @@ ScriptPromise<VideoDecoderSupport> VideoDecoder::isConfigSupported(
   support->setConfig(config_copy);
 
   if ((hw_pref == HardwarePreference::kPreferSoftware &&
-       !media::IsBuiltInVideoCodec(video_type->codec)) ||
-      !media::IsSupportedVideoType(*video_type)) {
+       !media::IsDecoderBuiltInVideoCodec(video_type->codec)) ||
+      !media::IsDecoderSupportedVideoType(*video_type)) {
     support->setSupported(false);
     return ToResolvedPromise<VideoDecoderSupport>(script_state, support);
   }

@@ -692,7 +692,7 @@ bool IsAudioConfigurationSupported(
   if (audio_config->hasSpatialRendering())
     is_spatial_rendering = audio_config->spatialRendering();
 
-  return media::IsSupportedAudioType(
+  return media::IsDecoderSupportedAudioType(
       {audio_codec, audio_profile, is_spatial_rendering});
 }
 
@@ -732,9 +732,9 @@ bool IsVideoConfigurationSupported(const String& mime_type,
     video_color_space = result->color_space;
   }
 
-  return media::IsSupportedVideoType({result->codec, result->profile,
-                                      result->level, video_color_space,
-                                      hdr_metadata_type});
+  return media::IsDecoderSupportedVideoType({result->codec, result->profile,
+                                             result->level, video_color_space,
+                                             hdr_metadata_type});
 }
 
 void OnMediaCapabilitiesEncodingInfo(
@@ -1707,7 +1707,8 @@ void MediaCapabilities::OnGpuFactoriesSupport(int callback_id,
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 
   pending_cb->is_gpu_factories_supported = is_supported;
-  pending_cb->is_builtin_video_codec = media::IsBuiltInVideoCodec(video_codec);
+  pending_cb->is_builtin_video_codec =
+      media::IsDecoderBuiltInVideoCodec(video_codec);
 
   ResolveCallbackIfReady(callback_id);
 }

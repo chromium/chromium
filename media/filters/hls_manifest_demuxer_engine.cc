@@ -58,7 +58,7 @@ bool AreAllAudioCodecsSupported(const std::vector<AudioType>& audio_types) {
     return false;
   }
   for (const auto& type : audio_types) {
-    if (!IsSupportedAudioType(type)) {
+    if (!IsDecoderSupportedAudioType(type)) {
       return false;
     }
   }
@@ -70,7 +70,7 @@ bool AreAllVideoCodecsSupported(const std::vector<VideoType>& video_types) {
     return false;
   }
   for (const auto& type : video_types) {
-    if (!IsSupportedVideoType(type)) {
+    if (!IsDecoderSupportedVideoType(type)) {
       return false;
     }
   }
