@@ -30,6 +30,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/mac/info_plist_data.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/launch.h"
@@ -38,7 +39,6 @@
 #include "base/synchronization/lock.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
-#include "chrome/browser/web_applications/mojom/web_app_shortcut_copier.mojom.h"
 #include "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
@@ -46,13 +46,8 @@
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #import "chrome/common/mac/app_mode_common.h"
-#include "components/variations/active_field_trials.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "mojo/public/cpp/platform/platform_channel.h"
-#include "mojo/public/cpp/system/invitation.h"
 
 #if defined(COMPONENT_BUILD)
 #include <mach-o/loader.h>
@@ -89,10 +84,6 @@ namespace web_app {
 BASE_FEATURE(kWebAppMaskableIconsOnMac,
              "WebAppMaskableIconsOnMac",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-class WebAppShortcutCopierSyncCallHelper {
-  mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_;
-};
 
 namespace {
 
@@ -252,43 +243,27 @@ bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
       base::apple::FrameworkBundlePath().Append("Helpers").Append(
           "web_app_shortcut_copier");
   base::CommandLine command_line(web_app_shortcut_copier_path);
-  base::LaunchOptions options;
-  mojo::PlatformChannel channel;
-  channel.PrepareToPassRemoteEndpoint(&options, &command_line);
+  command_line.AppendArgPath(staging_path);
+  command_line.AppendArgPath(dst_app_path);
 
-  // Ensure that the helper tool sees the same feature state as the browser.
-  variations::PopulateLaunchOptionsWithVariationsInfo(&command_line, &options);
+  // Pass NSBundle's cached copy of the app's Info.plist data to the helper tool
+  // for use in dynamic signature validation. The data is validated against a
+  // hash recorded in the code signature before being used during requirement
+  // validation.
+  std::vector<uint8_t> info_plist_data =
+      base::mac::OuterBundleCachedInfoPlistData();
+  command_line.AppendArg(base::as_string_view(info_plist_data));
 
-  base::Process copier_process = base::LaunchProcess(command_line, options);
-  if (!copier_process.IsValid()) {
-    LOG(ERROR) << "Failed to launch web_app_shortcut_copier.";
-    return false;
-  }
-  channel.RemoteProcessLaunchAttempted();
-
-  mojo::ScopedMessagePipeHandle pipe = mojo::OutgoingInvitation::SendIsolated(
-      channel.TakeLocalEndpoint(), {}, copier_process.Handle());
-  if (!pipe) {
-    LOG(ERROR) << "Failed to send Mojo invitation to web_app_shortcut_copier.";
-    return false;
-  }
-  mojo::PendingRemote<mojom::WebAppShortcutCopier> pending_remote(
-      std::move(pipe), mojom::WebAppShortcutCopier::Version_);
-  if (!pending_remote) {
-    LOG(ERROR)
-        << "Failed to establish Mojo connection with web_app_shortcut_copier.";
-    return false;
+  // Synchronously wait for the copy to complete to match the semantics of
+  // `base::CopyDirectory`.
+  std::string command_output;
+  int exit_code;
+  if (base::GetAppOutputWithExitCode(command_line, &command_output,
+                                     &exit_code)) {
+    return !exit_code;
   }
 
-  mojo::Remote<mojom::WebAppShortcutCopier> copier(std::move(pending_remote));
-  WebAppShortcutCopierSyncCallHelper sync_calls_allowed;
-  bool copy_result = false;
-  if (!copier->CopyWebAppShortcut(staging_path, dst_app_path, &copy_result)) {
-    LOG(ERROR)
-        << "Failed to call CopyWebAppShortcut in web_app_shortcut_copier.";
-    return false;
-  }
-  return copy_result;
+  return false;
 }
 
 // Remove the leading . from the entries of |extensions|. Any items that do not
