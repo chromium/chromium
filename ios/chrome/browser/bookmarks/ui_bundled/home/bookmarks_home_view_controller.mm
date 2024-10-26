@@ -423,6 +423,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   } else {
     [self showLoadingSpinnerBackground];
   }
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:TraitCollectionSetForTraits(nil)
+                       withAction:@selector(stopEdittingBookmarkOnTraitChange)];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -489,11 +494,16 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   return NO;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  // Stop edit of current bookmark folder name, if any.
-  [self.editingFolderCell stopEdit];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self stopEdittingBookmarkOnTraitChange];
 }
+#endif
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleDefault;
@@ -1203,6 +1213,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (BOOL)isAtTopOfNavigation {
   return (self.navigationController.topViewController == self);
+}
+
+// Stop edit of current bookmark folder name, if any.
+- (void)stopEdittingBookmarkOnTraitChange {
+  [self.editingFolderCell stopEdit];
 }
 
 #pragma mark - BookmarkTableCellTitleEditDelegate
