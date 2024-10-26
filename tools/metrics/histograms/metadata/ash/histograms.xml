@@ -9379,9 +9379,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Enter" units="%"
-    expires_after="2025-02-02">
+    expires_after="2025-10-25">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of animations when entering tablet mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
@@ -9390,9 +9391,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Exit" units="%"
-    expires_after="2024-12-04">
+    expires_after="2025-10-25">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of animations when exiting tablet mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
