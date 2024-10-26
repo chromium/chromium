@@ -2473,20 +2473,23 @@ void CaptureModeSession::OnLocatedEventReleased(
     }
   };
 
+  // TODO: crbug.com/375261308 - Prevent image search when the region stays the
+  // same or is within a throttling QPS after a release event.
+  // Notify the behavior that the region was selected or adjusted, in case it
+  // needs to do specific handling. Note `this` may be destroyed by
+  // `OnRegionSelectedOrAdjusted()`.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  active_behavior_->OnRegionSelectedOrAdjusted();
+  if (!weak_ptr) {
+    return;
+  }
+
   if (!is_selecting_region_) {
     return;
   }
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
-
-  // Notify the behavior that the region was selected, in case it needs to do
-  // specific handling. Note `this` may be destroyed by `OnRegionSelected()`.
-  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  active_behavior_->OnRegionSelected();
-  if (!weak_ptr) {
-    return;
-  }
 
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (features::IsSunfishFeatureEnabled() &&

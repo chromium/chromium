@@ -159,9 +159,9 @@ TEST_F(SunfishTest, PressEnterKey) {
   EXPECT_EQ(1, test_delegate->num_capture_image_attempts());
 }
 
-// Tests the session UI after a region is dragged and the results panel is
-// shown.
-TEST_F(SunfishTest, OnRegionSelected) {
+// Tests the session UI after a region is selected, adjusted, or repositioned,
+// and the results panel is shown.
+TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
   ASSERT_TRUE(controller->IsActive());
@@ -179,6 +179,33 @@ TEST_F(SunfishTest, OnRegionSelected) {
   EXPECT_TRUE(session_layer->IsVisible());
   EXPECT_EQ(session_layer->GetTargetOpacity(), 1.f);
   EXPECT_TRUE(test_api.AreAllUisVisible());
+
+  // Adjust the region from the northwest corner.
+  gfx::Rect old_region = controller->user_capture_region();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 100));
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(ui::mojom::CursorType::kNorthWestResize,
+            cursor_manager->GetCursor().type());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(50, 50));
+  event_generator->ReleaseLeftButton();
+  EXPECT_NE(controller->user_capture_region(), old_region);
+
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // Reposition the region.
+  old_region = controller->user_capture_region();
+  event_generator->MoveMouseTo(gfx::Point(150, 150));
+  EXPECT_EQ(ui::mojom::CursorType::kMove, cursor_manager->GetCursor().type());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(200, 200));
+  event_generator->ReleaseLeftButton();
+  EXPECT_NE(controller->user_capture_region(), old_region);
+
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
 }
 
 // Tests the sunfish capture label view.

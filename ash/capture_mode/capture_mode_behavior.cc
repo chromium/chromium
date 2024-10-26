@@ -344,7 +344,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<SunfishCaptureBarView>();
   }
-  void OnRegionSelected() override {
+  void OnRegionSelectedOrAdjusted() override {
     // `CaptureModeController` will perform DLP restriction checks and determine
     // whether the image can be sent for search.
     CaptureModeController::Get()->PerformCapture();
@@ -595,7 +595,7 @@ void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 
 void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
 
-void CaptureModeBehavior::OnRegionSelected() {}
+void CaptureModeBehavior::OnRegionSelectedOrAdjusted() {}
 
 void CaptureModeBehavior::OnEnterKeyPressed() {
   CaptureModeController::Get()->PerformCapture();
