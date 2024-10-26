@@ -49,41 +49,33 @@ using ::testing::ReturnRef;
 using ::testing::SaveArg;
 using ::testing::VariantWith;
 
-MATCHER_P(HasType, expected_type, "") {
-  EXPECT_THAT(arg,
-              Field("Suggestion::type", &Suggestion::type, Eq(expected_type)));
-  return true;
+auto HasType(SuggestionType expected_type) {
+  return Field("Suggestion::type", &Suggestion::type, Eq(expected_type));
 }
 
-MATCHER_P(HasPredictionImprovementsPayload, expected_payload, "") {
-  EXPECT_THAT(
-      arg,
-      Field("Suggestion::payload", &Suggestion::payload,
-            ::testing::VariantWith<Suggestion::PredictionImprovementsPayload>(
-                expected_payload)));
-  return true;
+auto HasPredictionImprovementsPayload(auto expected_payload) {
+  return Field(
+      "Suggestion::payload", &Suggestion::payload,
+      VariantWith<Suggestion::PredictionImprovementsPayload>(expected_payload));
 }
 
-MATCHER_P(HasValueToFill, expected_value_to_fill, "") {
-  EXPECT_THAT(arg, Field("Suggestion::payload", &Suggestion::payload,
-                         VariantWith<Suggestion::ValueToFill>(
-                             Suggestion::ValueToFill(expected_value_to_fill))));
-  return true;
+auto HasValueToFill(const std::u16string& expected_value_to_fill) {
+  return Field("Suggestion::payload", &Suggestion::payload,
+               VariantWith<Suggestion::ValueToFill>(
+                   Suggestion::ValueToFill(expected_value_to_fill)));
 }
 
-MATCHER_P(HasMainText, expected_main_text, "") {
-  EXPECT_THAT(arg, Field("Suggestion::main_text", &Suggestion::main_text,
-                         Field("Suggestion::Text::value",
-                               &Suggestion::Text::value, expected_main_text)));
-  return true;
+auto HasMainText(const std::u16string& expected_main_text) {
+  return Field("Suggestion::main_text", &Suggestion::main_text,
+               Field("Suggestion::Text::value", &Suggestion::Text::value,
+                     expected_main_text));
 }
 
-MATCHER_P(HasLabel, expected_label, "") {
-  EXPECT_THAT(arg, Field("Suggestion::labels", &Suggestion::labels,
-                         ElementsAre(ElementsAre(Field(
-                             "Suggestion::Text::value",
-                             &Suggestion::Text::value, expected_label)))));
-  return true;
+auto HasLabel(const std::u16string& expected_label) {
+  return Field("Suggestion::labels", &Suggestion::labels,
+               ElementsAre(ElementsAre(Field("Suggestion::Text::value",
+                                             &Suggestion::Text::value,
+                                             expected_label))));
 }
 
 class MockAutofillPredictionImprovementsClient
