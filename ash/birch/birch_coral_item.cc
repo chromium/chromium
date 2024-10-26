@@ -120,6 +120,7 @@ void BirchCoralItem::PerformAction() {
   switch (source_) {
     case CoralSource::kPostLogin:
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
+      BirchCoralProvider::Get()->OnPostLoginClusterRestored();
       break;
     case CoralSource::kInSession:
       Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));

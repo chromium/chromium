@@ -53,7 +53,10 @@ namespace {
 
 constexpr size_t kMaxClusterCount = 2;
 // Persist post-login clusters for 15 minutes.
-constexpr base::TimeDelta kPostLoginClusterLifespan = base::Minutes(15);
+constexpr base::TimeDelta kPostLoginClustersLifespan = base::Minutes(15);
+// Persist second post-login cluster for 10 minutes after restoring the first
+// cluster.
+constexpr base::TimeDelta kPostLoginSecondClusterLifespan = base::Minutes(10);
 BirchCoralProvider* g_instance = nullptr;
 
 bool HasValidClusterCount(size_t num_clusters) {
@@ -249,6 +252,11 @@ void BirchCoralProvider::RemoveItemFromGroup(const base::Token& group_id,
   coral_item_remover_->RemoveItem(identifier);
 }
 
+void BirchCoralProvider::OnPostLoginClusterRestored() {
+  post_login_response_expiration_timestamp_ =
+      base::Time::Now() + kPostLoginSecondClusterLifespan;
+}
+
 mojo::PendingRemote<coral::mojom::TitleObserver>
 BirchCoralProvider::BindRemote() {
   receiver_.reset();
@@ -384,9 +392,8 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
 bool BirchCoralProvider::HasValidPostLoginResponse() {
   return response_ && response_->source() == CoralSource::kPostLogin &&
          response_->groups().size() > 0 &&
-         !post_login_response_timestamp_.is_null() &&
-         base::Time::Now() - post_login_response_timestamp_ <
-             kPostLoginClusterLifespan;
+         !post_login_response_expiration_timestamp_.is_null() &&
+         base::Time::Now() < post_login_response_expiration_timestamp_;
 }
 
 void BirchCoralProvider::HandlePostLoginCoralResponse(
@@ -396,7 +403,9 @@ void BirchCoralProvider::HandlePostLoginCoralResponse(
   if (response_) {
     return;
   }
-  post_login_response_timestamp_ = base::Time::Now();
+
+  post_login_response_expiration_timestamp_ =
+      base::Time::Now() + kPostLoginClustersLifespan;
   HandleCoralResponse(std::move(response));
 }
 
@@ -409,7 +418,7 @@ void BirchCoralProvider::HandleInSessionCoralResponse(
   }
 
   // Invalid post login response if a valid in-session response is generated.
-  post_login_response_timestamp_ = base::Time();
+  post_login_response_expiration_timestamp_ = base::Time();
   HandleCoralResponse(std::move(response));
 }
 
