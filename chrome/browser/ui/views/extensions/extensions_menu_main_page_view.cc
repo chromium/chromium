@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -157,6 +158,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
 
   views::Builder<ExtensionsMenuMainPageView>(this)
+      .SetProperty(views::kElementIdentifierKey,
+                   kExtensionsMenuMainPageElementId)
       // Last item is a hover button, so we need to account for the extra
       // vertical spacing. We cannot add horizontal margins at this level
       // because some views need to expand the full length (e.g settings
@@ -282,7 +285,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               l10n_util::GetStringUTF16(
                   IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS))),
 #endif
-          // Settings button.
+          // Manage extensions button.
           views::Builder<HoverButton>(
               std::make_unique<HoverButton>(
                   base::BindRepeating(
@@ -295,7 +298,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       browser_),
                   ui::ImageModel::FromVectorIcon(
                       vector_icons::kSettingsChromeRefreshIcon),
-                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS))))
+                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
+              .SetProperty(views::kElementIdentifierKey,
+                           kExtensionsMenuManageExtensionsElementId))
       .BuildChildren();
 
   // By default, the button's accessible description is set to the button's

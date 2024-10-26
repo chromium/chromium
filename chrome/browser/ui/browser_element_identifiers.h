@@ -47,6 +47,8 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kExclusiveAccessBubbleViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kExtensionsMv2DisabledDialogManageButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuMainPageElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuManageExtensionsElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kExtensionsMv2DisabledDialogParagraphElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsRequestAccessButtonElementId);

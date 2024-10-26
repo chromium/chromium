@@ -43,6 +43,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,6 +59,16 @@ using ::testing::ElementsAre;
 
 class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
  public:
+  ExtensionsMenuViewInteractiveUITest() {
+    // kExtensionsMenuAccessControl uses a different menu. Thus, disable the
+    // feature while it's being rolled out so we make sure existent behaver is
+    // still being tested.
+    // TODO(crbug.com/40857680): Remove all these tests once
+    // kExtensionsMenuAccessControl is fully enabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+
   static base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
   GetExtensionMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
@@ -240,7 +251,10 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
 
   void ClickExtensionsMenuButton() { ClickExtensionsMenuButton(browser()); }
 
+ private:
   std::string ui_test_name_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, InvokeUi_default) {

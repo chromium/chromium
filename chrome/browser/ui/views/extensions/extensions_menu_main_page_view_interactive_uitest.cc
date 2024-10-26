@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -26,6 +29,7 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
@@ -467,4 +471,58 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extensionA->id()));
+}
+
+class ExtensionsMenuMainPageViewInteractiveTest
+    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest> {
+ public:
+  ExtensionsMenuMainPageViewInteractiveTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+  ExtensionsMenuMainPageViewInteractiveTest(
+      const ExtensionsMenuMainPageViewInteractiveTest&) = delete;
+  ExtensionsMenuMainPageViewInteractiveTest& operator=(
+      const ExtensionsMenuMainPageViewInteractiveTest&) = delete;
+
+  ExtensionsToolbarContainer* extensions_container() {
+    return browser()->GetBrowserView().toolbar()->extensions_container();
+  }
+
+  auto OpenExtensionsMenu() {
+    return Steps(PressButton(kExtensionsMenuButtonElementId),
+                 WaitForShow(kExtensionsMenuMainPageElementId));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that opening the extensions menu highlight the extension toolbar
+// button.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       ExtensionsMenuButtonHighlight) {
+  LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
+
+  RunTestSequence(
+      OpenExtensionsMenu(),
+      CheckResult(
+          [this]() {
+            return views::InkDrop::Get(
+                       extensions_container()->GetExtensionsButton())
+                ->GetInkDrop()
+                ->GetTargetInkDropState();
+          },
+          views::InkDropState::ACTIVATED));
+}
+
+// Tests clicking on the 'manage extensions' button opens chrome://extensions.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       ManageExtensionsOpensExtensionsPage) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
+
+  RunTestSequence(InstrumentTab(kTab), OpenExtensionsMenu(),
+                  PressButton(kExtensionsMenuManageExtensionsElementId),
+                  WaitForWebContentsReady(kTab, GURL("chrome://extensions")));
 }
