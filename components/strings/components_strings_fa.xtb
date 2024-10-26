@@ -65,7 +65,7 @@
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
 <translation id="1113000785583998331">‏‫IBAN ذخیره شود؟</translation>
-<translation id="1113869188872983271">&amp;واگرد ترتیب‌بندی مجدد</translation>
+<translation id="1113869188872983271">&amp;واگرد تغییر ترتیب</translation>
 <translation id="1118429183611783760">جاروبرقی و مراقبت از کف</translation>
 <translation id="1122714970786750095">دستگاه‌های الکترونیکی و برقی</translation>
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس ناشنوایان زنده» در دسترس نیست</translation>
@@ -1228,7 +1228,7 @@
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
 <translation id="3270041629388773465">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تسویه‌حساب کنید</translation>
-<translation id="3270847123878663523">&amp;واگرد ترتیب‌بندی مجدد</translation>
+<translation id="3270847123878663523">&amp;واگرد تغییر ترتیب</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
 <translation id="3272091146646336650">‏B سوپر</translation>
 <translation id="3272112314896217187">کد درستی‌سنجی <ph name="NUMBER_OF_DIGITS" /> رقمی را وارد کنید</translation>
@@ -2852,7 +2852,7 @@
 <translation id="6254436959401408446">حافظه کافی برای باز کردن این صفحه وجود ندارد</translation>
 <translation id="625463612687472648">توقف دسترسی</translation>
 <translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}one{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}other{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}}</translation>
-<translation id="6259156558325130047">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
+<translation id="6259156558325130047">&amp;بازانجام تغییر ترتیب</translation>
 <translation id="6263376278284652872">نشانک‌های <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6264485186158353794">بازگشت به ایمنی</translation>
@@ -3429,7 +3429,7 @@
 <translation id="7320336641823683070">راهنمای اتصال</translation>
 <translation id="7323804146520582233">پنهان کردن بخش «<ph name="SECTION" />»</translation>
 <translation id="733354035281974745">لغو حساب محلی دستگاه</translation>
-<translation id="7334320624316649418">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
+<translation id="7334320624316649418">&amp;بازانجام تغییر ترتیب</translation>
 <translation id="7335157162773372339">می‌تواند برای استفاده از دوربین درخواست دهد</translation>
 <translation id="7336636595549675416">پلاک خانه</translation>
 <translation id="7337248890521463931">نمایش خطوط بیشتر</translation>

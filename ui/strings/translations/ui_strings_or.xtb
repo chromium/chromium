@@ -90,11 +90,11 @@
 <translation id="3618849550573277856">“<ph name="LOOKUP_STRING" />” ଉପରକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="3622035490309591977">କ୍ଲିପବୋର୍ଡ ଇତିହାସ</translation>
 <translation id="364720409959344976">ଅପ୍‌ଲୋଡ୍ କରିବାକୁ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="3660179305079774227">Up Arrow</translation>
+<translation id="3660179305079774227">ଉପର ତୀର</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3889424535448813030">Right Arrow</translation>
+<translation id="3889424535448813030">ଡାହାଣ ତୀର</translation>
 <translation id="3897092660631435901">ମେନୁ</translation>
 <translation id="3909791450649380159">&amp;ଛେଦନ କରନ୍ତୁ</translation>
 <translation id="3924145049010392604">ମେଟା</translation>
@@ -129,7 +129,7 @@
 <translation id="5528053674512161860">ଡେଭଲପର୍ UI ମଡ୍ୟୁଲ୍ (dev_ui) ଇନଷ୍ଟଲ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ ପୃଷ୍ଠା ଲୋଡ୍ ହେବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ସିଷ୍ଟମ୍</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
-<translation id="5613020302032141669">Left Arrow</translation>
+<translation id="5613020302032141669">ବାମ ତୀର</translation>
 <translation id="5633029987065897167">ଖାଲି</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ମିନିଟ୍}other{# ମିନିଟ୍}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ଆଜି ସକ୍ରିୟ ଅଛି}=1{1 ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}other{# ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}}</translation>
