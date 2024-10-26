@@ -4,22 +4,14 @@
 
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
-#include "components/webapps/browser/banners/installable_web_app_check_result.h"
-#include "components/webapps/browser/banners/web_app_banner_data.h"
 
 namespace web_app {
 
@@ -28,127 +20,6 @@ namespace {
 // Decreasing this number will improve accuracy at the expense of more frequent
 // client-side work.
 constexpr int kTimerIntervalInSeconds = 5 * 60;
-
-using IdSet = std::set<webapps::AppId>;
-
-// Emits UKM metrics for the given tab. The tab may be for an app window or a
-// normal browser window.
-void EmitUkmMetricsForTab(tabs::TabInterface* tab) {
-  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-  Profile* profile = browser->GetProfile();
-  auto* web_app_helper =
-      web_app::WebAppTabHelper::FromWebContents(tab->GetContents());
-  std::optional<webapps::AppId> app_id = web_app_helper->app_id();
-  CHECK(app_id);
-
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  auto& registrar = provider->registrar_unsafe();
-  DailyInteraction interaction;
-
-  interaction.start_url = registrar.GetAppStartUrl(*app_id);
-  interaction.installed = registrar.IsInstallState(
-      *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::INSTALLED_WITH_OS_INTEGRATION});
-  auto install_source =
-      provider->registrar_unsafe().GetLatestAppInstallSource(*app_id);
-  if (install_source) {
-    interaction.install_source = static_cast<int>(*install_source);
-  }
-  DisplayMode display_mode =
-      provider->registrar_unsafe().GetAppEffectiveDisplayMode(*app_id);
-  interaction.effective_display_mode = static_cast<int>(display_mode);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    interaction.captures_links =
-        proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(*app_id);
-  }
-#else
-  interaction.captures_links = registrar.CapturesLinksInScope(*app_id);
-#endif
-
-  interaction.promotable = !registrar.IsDiyApp(*app_id);
-
-  if (tab->IsInForeground() && browser->IsActive()) {
-    interaction.foreground_duration = base::Seconds(kTimerIntervalInSeconds);
-  } else {
-    interaction.background_duration = base::Seconds(kTimerIntervalInSeconds);
-  }
-  // Note that with this new sampling approach we are no longer tracking the
-  // concept of session, and thus don't fill in num_sessions.
-  FlushOldRecordsAndUpdate(interaction, profile);
-}
-
-// Checks whether metrics should be emitted. If so, updates `emitted_ids` and
-// emits metrics.
-void MaybeEmitUkmMetricsForTab(tabs::TabInterface* tab, IdSet& emitted_ids) {
-  auto* web_app_helper =
-      web_app::WebAppTabHelper::FromWebContents(tab->GetContents());
-  std::optional<webapps::AppId> app_id = web_app_helper->app_id();
-  CHECK(app_id);
-
-  // We only emit UKM metrics a single time for a given AppId.
-  if (base::Contains(emitted_ids, *app_id)) {
-    return;
-  }
-
-  auto* provider = web_app::WebAppProvider::GetForWebApps(
-      tab->GetBrowserWindowInterface()->GetProfile());
-  auto& registrar = provider->registrar_unsafe();
-  std::optional<mojom::UserDisplayMode> user_display_mode =
-      registrar.GetAppUserDisplayMode(*app_id);
-  CHECK(user_display_mode);
-  switch (*user_display_mode) {
-    case mojom::UserDisplayMode::kBrowser:
-      // Emit metrics only if the app is configured to run in a tab
-      // window, and is running in a tab.
-      if (tab->GetBrowserWindowInterface()->GetType() ==
-          BrowserWindowInterface::Type::TYPE_NORMAL) {
-        emitted_ids.insert(*app_id);
-        EmitUkmMetricsForTab(tab);
-      }
-      break;
-    case mojom::UserDisplayMode::kStandalone:
-      // Emit metrics only if the app is configured to run in a standalone
-      // window, and is running in a standalone window.
-      if (tab->GetBrowserWindowInterface()->GetAppBrowserController()) {
-        emitted_ids.insert(*app_id);
-        EmitUkmMetricsForTab(tab);
-      }
-      break;
-    case mojom::UserDisplayMode::kTabbed:
-      // We don't track metrics for tabbed standalone PWAs.
-      break;
-  }
-}
-
-// Checks whether metrics should be emitted. If so, updates `emitted_ids` and
-// emits metrics.
-void MaybeEmitUkmMetricsForPromotable(
-    tabs::TabInterface* tab,
-    const webapps::WebAppBannerData& banner_data,
-    IdSet& emitted_ids) {
-  const GURL& url = banner_data.manifest().start_url;
-  if (base::Contains(emitted_ids, url.spec())) {
-    return;
-  }
-
-  emitted_ids.insert(url.spec());
-  DailyInteraction interaction;
-  interaction.start_url = url;
-  interaction.installed = false;
-  if (!banner_data.manifest().display_override.empty()) {
-    interaction.effective_display_mode =
-        static_cast<int>(banner_data.manifest().display_override[0]);
-  } else {
-    interaction.effective_display_mode =
-        static_cast<int>(banner_data.manifest().display);
-  }
-  interaction.promotable = true;
-  FlushOldRecordsAndUpdate(interaction,
-                           tab->GetBrowserWindowInterface()->GetProfile());
-}
 
 }  // namespace
 
@@ -177,7 +48,6 @@ void SamplingMetricsProvider::EmitMetrics() {
   int tabbed_pwas_display_mode_standalone_count = 0;
   int tabbed_pwas_display_mode_standalone_installed_by_user_count = 0;
 
-  IdSet emitted_ukm_ids;
   for (BrowserWindowInterface* browser : GetAllBrowserWindowInterfaces()) {
     // If this is a standalone app window.
     if (browser->GetAppBrowserController()) {
@@ -188,9 +58,6 @@ void SamplingMetricsProvider::EmitMetrics() {
       if (browser->IsActive()) {
         standalone_pwas_in_active_use = true;
       }
-
-      MaybeEmitUkmMetricsForTab(browser->GetActiveTabInterface(),
-                                emitted_ukm_ids);
     }
 
     // If this is a PWA-tab in a normal browser window.
@@ -224,22 +91,6 @@ void SamplingMetricsProvider::EmitMetrics() {
             if (installed_by_user) {
               ++tabbed_pwas_display_mode_standalone_installed_by_user_count;
             }
-          }
-          MaybeEmitUkmMetricsForTab(tab, emitted_ukm_ids);
-        } else {
-          // If the tab does not have an app id, it might be promotable.
-          auto* app_banner_manager =
-              webapps::AppBannerManager::FromWebContents(tab->GetContents());
-          std::optional<webapps::WebAppBannerData> banner_data =
-              app_banner_manager->GetCurrentWebAppBannerData();
-          webapps::InstallableWebAppCheckResult installable =
-              app_banner_manager->GetInstallableWebAppCheckResult();
-
-          if (banner_data &&
-              installable ==
-                  webapps::InstallableWebAppCheckResult::kYes_Promotable) {
-            MaybeEmitUkmMetricsForPromotable(tab, *banner_data,
-                                             emitted_ukm_ids);
           }
         }
       }
