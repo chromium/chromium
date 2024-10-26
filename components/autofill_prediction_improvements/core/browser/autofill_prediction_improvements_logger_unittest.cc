@@ -20,6 +20,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager_test_api.h"
+#include "components/autofill_prediction_improvements/core/browser/mock_autofill_prediction_improvements_client.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,50 +102,6 @@ std::string GetCorrectionAfterFillHistogram(bool submitted) {
   return base::StringPrintf(correction_after_fill,
                             submitted ? submitted_str : abandoned_str);
 }
-
-class MockAutofillPredictionImprovementsClient
-    : public AutofillPredictionImprovementsClient {
- public:
-  MOCK_METHOD(void,
-              GetAXTree,
-              (AutofillPredictionImprovementsClient::AXTreeCallback callback),
-              (override));
-  MOCK_METHOD(AutofillPredictionImprovementsManager&,
-              GetManager,
-              (),
-              (override));
-  MOCK_METHOD(AutofillPredictionImprovementsFillingEngine*,
-              GetFillingEngine,
-              (),
-              (override));
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
-  MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (override));
-  MOCK_METHOD(std::string, GetTitle, (), (override));
-  MOCK_METHOD(user_annotations::UserAnnotationsService*,
-              GetUserAnnotationsService,
-              (),
-              (override));
-  MOCK_METHOD(bool,
-              IsAutofillPredictionImprovementsEnabledPref,
-              (),
-              (const override));
-  MOCK_METHOD(void,
-              TryToOpenFeedbackPage,
-              (const std::string& feedback_id),
-              (override));
-  MOCK_METHOD(void, OpenPredictionImprovementsSettings, (), (override));
-  MOCK_METHOD(bool, IsUserEligible, (), (override));
-  MOCK_METHOD(autofill::FormStructure*,
-              GetCachedFormStructure,
-              (const autofill::FormData& form_data),
-              (override));
-  MOCK_METHOD(std::u16string,
-              GetAutofillNameFillingValue,
-              (const std::string& autofill_profile_guid,
-               autofill::FieldType field_type,
-               const autofill::FormFieldData& field),
-              (override));
-};
 
 class MockOptimizationGuideDecider
     : public optimization_guide::OptimizationGuideDecider {
