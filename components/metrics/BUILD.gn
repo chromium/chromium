@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
+import("//tools/grit/grit_rule.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -675,4 +676,16 @@ if (!is_cronet_build) {
       "//components/test:test_support",
     ]
   }
+}
+
+grit("url_constants") {
+  if (is_chrome_branded) {
+    source = "internal/url_constants.grd"
+  } else {
+    source = "url_constants.grd"
+  }
+  outputs = [
+    "grit/metrics_url_constants.h",
+    "metrics_url_constants.pak",
+  ]
 }

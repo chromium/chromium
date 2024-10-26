@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+The URL strings in this file are intentionally empty to prevent Chromium forks from
+accidentally sending metrics to Google servers. The values for Chrome-branded builds can
+be found here:
+https://chrome-internal.googlesource.com/chrome/components/metrics/internal/+/main/url_constants.grd
+
+Note that for LGPL compliance reasons, these URL strings are stored in resource files
+rather than the code.
+-->
+
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/metrics_url_constants.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="metrics_url_constants.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <!-- Ideally, these would be empty strings, but Grit skips empty messages.
+      So instead, use a dash as a placeholder, which we manually interpret as
+      an empty string in the cpp code. -->
+      <message name="IDS_NEW_METRICS_SERVER_URL" translateable="false">
+          -
+      </message>
+      <message name="IDS_NEW_METRICS_SERVER_URL_INSECURE" translateable="false">
+          -
+      </message>
+      <message name="IDS_OLD_METRICS_SERVER_URL" translateable="false">
+          -
+      </message>
+      <message name="IDS_DEFAULT_METRICS_MIME_TYPE" translateable="false">
+          -
+      </message>
+      <message name="IDS_DEFAULT_UKM_SERVER_URL" translateable="false">
+          -
+      </message>
+      <message name="IDS_UKM_MIME_TYPE" translateable="false">
+          -
+      </message>
+      <message name="IDS_DEFAULT_DWA_SERVER_URL" translateable="false">
+          -
+      </message>
+    </messages>
+  </release>
+</grit>

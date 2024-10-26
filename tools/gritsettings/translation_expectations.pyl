@@ -123,6 +123,7 @@
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
+    "components/metrics/url_constants.grd": "Not UI strings; URLs of metrics endpoints",
     "components/search_engine_descriptions_strings.grd": "The strings are already translated when provided",
     "components/plus_addresses/resources/strings/plus_addresses_strings.grd": "UX research ongoing - strings are not yet finalized",
     "components/policy/resources/policy_templates.build.grd": "Copy of policy_templates.grd used locally for build only",

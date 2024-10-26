@@ -10,6 +10,7 @@ import("//build/config/python.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//tools/grit/repack.gni")
 
 # Mark all targets as test only.
 testonly = true
@@ -595,6 +596,14 @@ source_set("webview_instrumentation_test_native_jni_impl") {
   ]
 }
 
+repack("android_webview_unittests_pak") {
+  sources = [ "$root_gen_dir/components/metrics/metrics_url_constants.pak" ]
+
+  deps = [ "//components/metrics:url_constants" ]
+
+  output = "$root_out_dir/android_webview_unittests_resources.pak"
+}
+
 test("android_webview_unittests") {
   deps = [
     ":android_webview_unittests_assets",
@@ -642,11 +651,15 @@ test("android_webview_unittests") {
     "//net/third_party/quiche:blind_sign_auth",
     "//services/cert_verifier/public/mojom",
     "//services/network:test_support",
+    "//testing/gtest",
     "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
+    "//ui/base",
     "//ui/base:ui_base_jni_headers",
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+
+  data_deps = [ ":android_webview_unittests_pak" ]
 
   data = [ "data/" ]
 
