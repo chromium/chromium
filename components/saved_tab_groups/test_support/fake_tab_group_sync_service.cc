@@ -211,7 +211,7 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   // No op.
 }
 
-std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() {
+std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
   std::vector<SavedTabGroup> groups;
   for (const SavedTabGroup& group : groups_) {
     groups.push_back(group);
@@ -220,7 +220,7 @@ std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() {
 }
 
 std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
-    const base::Uuid& guid) {
+    const base::Uuid& guid) const {
   std::optional<int> index = GetIndexOf(guid);
   if (!index.has_value()) {
     return std::nullopt;
@@ -229,7 +229,7 @@ std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
 }
 
 std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id) const {
   std::optional<int> index = GetIndexOf(local_id);
   if (!index.has_value()) {
     return std::nullopt;
@@ -237,7 +237,8 @@ std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
   return std::make_optional(groups_[index.value()]);
 }
 
-std::vector<LocalTabGroupID> FakeTabGroupSyncService::GetDeletedGroupIds() {
+std::vector<LocalTabGroupID> FakeTabGroupSyncService::GetDeletedGroupIds()
+    const {
   std::vector<LocalTabGroupID> deleted_group_ids;
   return deleted_group_ids;
 }
@@ -375,7 +376,8 @@ void FakeTabGroupSyncService::ClearGroups() {
   groups_.clear();
 }
 
-std::optional<int> FakeTabGroupSyncService::GetIndexOf(const base::Uuid& guid) {
+std::optional<int> FakeTabGroupSyncService::GetIndexOf(
+    const base::Uuid& guid) const {
   for (size_t i = 0; i < groups_.size(); i++) {
     if (groups_[i].saved_guid() == guid) {
       return i;
@@ -386,7 +388,7 @@ std::optional<int> FakeTabGroupSyncService::GetIndexOf(const base::Uuid& guid) {
 }
 
 std::optional<int> FakeTabGroupSyncService::GetIndexOf(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id) const {
   for (size_t i = 0; i < groups_.size(); i++) {
     if (groups_[i].local_group_id() == local_id) {
       return i;

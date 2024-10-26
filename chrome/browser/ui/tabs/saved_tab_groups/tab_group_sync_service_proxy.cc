@@ -188,23 +188,24 @@ void TabGroupSyncServiceProxy::MakeTabGroupShared(
                                         std::string(collaboration_id));
 }
 
-std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() {
+std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() const {
   return service_->model()->saved_tab_groups();
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
-    const base::Uuid& guid) {
+    const base::Uuid& guid) const {
   const SavedTabGroup* group = service_->model()->Get(guid);
   return group ? std::optional<SavedTabGroup>(*group) : std::nullopt;
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id) const {
   const SavedTabGroup* group = service_->model()->Get(local_id);
   return group ? std::optional<SavedTabGroup>(*group) : std::nullopt;
 }
 
-std::vector<LocalTabGroupID> TabGroupSyncServiceProxy::GetDeletedGroupIds() {
+std::vector<LocalTabGroupID> TabGroupSyncServiceProxy::GetDeletedGroupIds()
+    const {
   NOTIMPLEMENTED();
   return std::vector<LocalTabGroupID>();
 }

@@ -446,7 +446,7 @@ void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
                                        std::string(collaboration_id));
 }
 
-std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
+std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() const {
   VLOG(2) << __func__;
   std::unordered_set<base::Uuid, base::UuidHash> tab_groups_to_skip;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
@@ -472,7 +472,7 @@ std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
-    const base::Uuid& guid) {
+    const base::Uuid& guid) const {
   VLOG(2) << __func__;
   const SavedTabGroup* tab_group = model_->Get(guid);
   return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
@@ -480,14 +480,15 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id) const {
   const SavedTabGroup* tab_group = model_->Get(local_id);
   VLOG(2) << __func__;
   return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
                    : std::nullopt;
 }
 
-std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
+std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds()
+    const {
   return GetDeletedGroupIdsFromPref();
 }
 
@@ -813,7 +814,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
 }
 
 std::vector<LocalTabGroupID>
-TabGroupSyncServiceImpl::GetDeletedGroupIdsFromPref() {
+TabGroupSyncServiceImpl::GetDeletedGroupIdsFromPref() const {
   std::vector<LocalTabGroupID> deleted_ids;
 
   ScopedDictPrefUpdate update(pref_service_, prefs::kDeletedTabGroupIds);

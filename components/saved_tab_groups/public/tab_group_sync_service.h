@@ -159,11 +159,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                   std::string_view collaboration_id) = 0;
 
   // Accessor methods.
-  virtual std::vector<SavedTabGroup> GetAllGroups() = 0;
-  virtual std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) = 0;
+  virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(
-      const LocalTabGroupID& local_id) = 0;
-  virtual std::vector<LocalTabGroupID> GetDeletedGroupIds() = 0;
+      const base::Uuid& guid) const = 0;
+  virtual std::optional<SavedTabGroup> GetGroup(
+      const LocalTabGroupID& local_id) const = 0;
+  virtual std::vector<LocalTabGroupID> GetDeletedGroupIds() const = 0;
 
   // Method invoked from UI to open a remote tab group in the local tab model.
   virtual void OpenTabGroup(const base::Uuid& sync_group_id,

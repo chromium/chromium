@@ -90,11 +90,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
                                     std::string_view collaboration_id);
 
-  std::vector<SavedTabGroup> GetAllGroups() override;
-  std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
+  std::vector<SavedTabGroup> GetAllGroups() const override;
+  std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
-      const LocalTabGroupID& local_id) override;
-  std::vector<LocalTabGroupID> GetDeletedGroupIds() override;
+      const LocalTabGroupID& local_id) const override;
+  std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;
   void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
@@ -190,7 +190,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // RemoveLocalTabGroupMapping is invoked from the UI.
   // On startup, UI invokes GetDeletedGroupIdsFromPref to clean up any deleted
   // groups from tab model.
-  std::vector<LocalTabGroupID> GetDeletedGroupIdsFromPref();
+  std::vector<LocalTabGroupID> GetDeletedGroupIdsFromPref() const;
   void AddDeletedGroupIdToPref(const LocalTabGroupID& local_id,
                                const base::Uuid& sync_id);
   void RemoveDeletedGroupIdFromPref(const LocalTabGroupID& local_id);

@@ -49,11 +49,11 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) override;
-  std::vector<SavedTabGroup> GetAllGroups() override;
-  std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
+  std::vector<SavedTabGroup> GetAllGroups() const override;
+  std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
-      const LocalTabGroupID& local_id) override;
-  std::vector<LocalTabGroupID> GetDeletedGroupIds() override;
+      const LocalTabGroupID& local_id) const override;
+  std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;
   void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
@@ -91,8 +91,8 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
 
  private:
   // Helpers.
-  std::optional<int> GetIndexOf(const base::Uuid& guid);
-  std::optional<int> GetIndexOf(const LocalTabGroupID& local_id);
+  std::optional<int> GetIndexOf(const base::Uuid& guid) const;
+  std::optional<int> GetIndexOf(const LocalTabGroupID& local_id) const;
 
   void NotifyObserversOfTabGroupUpdated(SavedTabGroup& group);
 
