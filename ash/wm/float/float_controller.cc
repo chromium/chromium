@@ -31,6 +31,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -492,6 +493,15 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver,
     }
 
     if (Shell::Get()->IsInTabletMode()) {
+      // Prevent recursive bounds update calls. The
+      // `UpdateWindowBoundsForTablet` can trigger widget minimum size change
+      // which then trigger the call of `OnWidgetSizeConstraintsChanged`, which
+      // then calls into this function again.
+      if (in_bounds_update_) {
+        return;
+      }
+
+      base::AutoReset<bool> resetter(&in_bounds_update_, true);
       UpdateWindowBoundsForTablet(
           floated_window_, WindowState::BoundsChangeAnimationType::kNone);
     }
@@ -540,6 +550,8 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver,
 
   gfx::Size last_minimum_size_;
   gfx::Size last_maximum_size_;
+
+  bool in_bounds_update_ = false;
 
   base::WeakPtrFactory<FloatedWindowInfo> weak_ptr_factory_{this};
 };
