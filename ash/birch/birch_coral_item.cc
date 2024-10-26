@@ -112,6 +112,27 @@ std::string BirchCoralItem::ToString() const {
   return root.DebugString();
 }
 
+base::Value::Dict BirchCoralItem::ToCoralItemDetails() const {
+  const coral::mojom::GroupPtr& group =
+      BirchCoralProvider::Get()->GetGroupById(group_id_);
+  base::Value::List items;
+  for (const auto& entity : group->entities) {
+    if (entity->is_tab()) {
+      items.Append(base::Value::Dict()
+                       .Set("type", "tab")
+                       .Set("title", entity->get_tab()->title)
+                       .Set("url", entity->get_tab()->url.spec()));
+    } else {
+      items.Append(base::Value::Dict()
+                       .Set("type", "app")
+                       .Set("title", entity->get_app()->title)
+                       .Set("id", entity->get_app()->id));
+    }
+  }
+  return std::move(
+      base::Value::Dict().Set("title", title()).Set("items", std::move(items)));
+}
+
 void BirchCoralItem::PerformAction() {
   coral::mojom::GroupPtr group =
       BirchCoralProvider::Get()->ExtractGroupById(group_id_);

@@ -11,6 +11,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/coral_constants.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_writer.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
@@ -37,6 +38,8 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   void LoadIcon(LoadIconCallback callback) const override;
   BirchAddonType GetAddonType() const override;
   std::u16string GetAddonAccessibleName() const override;
+
+  base::Value::Dict ToCoralItemDetails() const;
 
  private:
   // Helper method that calls `birch_client` to retrieve the image from

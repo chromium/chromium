@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
@@ -19,8 +20,10 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -227,6 +230,25 @@ void BirchBarController::ToggleTemperatureUnits() {
     bar_view->SetState(BirchBarView::State::kReloading);
   }
   MaybeFetchDataFromModel();
+}
+
+void BirchBarController::ProvideFeedbackForCoral() {
+  base::Value::List root;
+  for (auto& item : items_) {
+    if (item->GetType() == BirchItemType::kCoral) {
+      root.Append(
+          static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
+    }
+  }
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      ShellDelegate::FeedbackSource::kOverview,
+      /*description_template=*/
+      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
+                    base::WriteJsonWithOptions(
+                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+                        .value_or(std::string()),
+                    "\n", kMarkdownBackticks}),
+      /*category_tag=*/"Coral");
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {

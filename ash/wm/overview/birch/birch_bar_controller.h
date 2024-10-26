@@ -22,6 +22,15 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+inline constexpr char kUserFeedbackPrompt[] =
+    "## Your Feedback Matters!\n"
+    "We're always looking for ways to improve the smart grouping. "
+    "Please tell us what you think:\n\n\n"
+    "----------\n"
+    "Auto-generated logs:\n";
+
+inline constexpr char kMarkdownBackticks[] = "```";
+
 class BirchBarMenuModelAdapter;
 class BirchBarView;
 class BirchChipButton;
@@ -92,6 +101,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  // Launches feedback diaglog for Coral items.
+  void ProvideFeedbackForCoral();
 
   BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
     return chip_menu_model_adapter_.get();

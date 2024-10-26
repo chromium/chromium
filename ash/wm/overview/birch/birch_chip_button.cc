@@ -6,8 +6,6 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
@@ -427,10 +425,7 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       // TODO(zxdan) implement behavior
       break;
     case base::to_underlying(CommandId::kProvideFeedback):
-      Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-          ShellDelegate::FeedbackSource::kOverview,
-          /*description_template=*/std::string(),
-          /*category_tag=*/"Coral");
+      birch_bar_controller->ProvideFeedbackForCoral();
       break;
     default:
       birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
