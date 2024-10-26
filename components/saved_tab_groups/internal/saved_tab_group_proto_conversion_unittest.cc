@@ -60,8 +60,6 @@ class SavedTabGroupConversionTest : public testing::Test {
               sp2.local_tab_group_data().local_group_id());
     EXPECT_EQ(sp1.local_tab_group_data().created_before_syncing_tab_groups(),
               sp2.local_tab_group_data().created_before_syncing_tab_groups());
-    EXPECT_EQ(sp1.local_tab_group_data().close_and_delete_on_next_restore(),
-              sp2.local_tab_group_data().close_and_delete_on_next_restore());
     EXPECT_EQ(sp1.local_tab_group_data()
                   .last_user_interaction_time_windows_epoch_micros(),
               sp2.local_tab_group_data()
