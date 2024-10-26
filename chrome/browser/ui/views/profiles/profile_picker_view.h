@@ -245,12 +245,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SwitchToSignedInFlow(Profile* signed_in_profile,
-                            std::optional<SkColor> profile_color,
-                            std::unique_ptr<content::WebContents> contents);
-#endif
-
   // Builds the views hierarchy.
   void BuildLayout();
 
@@ -284,13 +278,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // `ProfilePicker::Hide()` because it only clears this specific instance of
   // the picker view, whereas `Hide()` would close any picker view.
   ClearHostClosure GetClearClosure();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when the user selects an account on the Lacros-specific account
-  // selection screen. Only called for existing profiles, not as part of profile
-  // creation.
-  void NotifyAccountSelected(const std::string& gaia_id);
-#endif
 
   // Create the feature promo that manages the IPH logic that can be displayed
   // through the Profile Picker.

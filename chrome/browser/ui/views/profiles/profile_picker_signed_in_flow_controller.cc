@@ -151,13 +151,6 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
                                    std::move(process_user_choice_callback)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProfilePickerSignedInFlowController::SwitchToLacrosIntro(
-    signin::SigninChoiceCallback proceed_callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-#endif
-
 void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
   DCHECK(IsInitialized());

@@ -52,12 +52,6 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
   bool is_incognito = browser.profile()->IsIncognitoProfile();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, the guest session returns true for `IsIncognitoProfile()`, see
-  // https://crbug.com/1348572
-  is_incognito &= !browser.profile()->IsGuestSession();
-#endif
-
   if (is_incognito) {
     bubble =
         std::make_unique<IncognitoMenuView>(avatar_toolbar_button, &browser);

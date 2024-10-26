@@ -304,7 +304,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
   EXPECT_TRUE(widget()->IsFullscreen());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        CloseDiceSigninWithKeyboard) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
@@ -394,7 +393,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
       WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        NavigateBackFromProfileTypeChoiceWithKeyboard) {

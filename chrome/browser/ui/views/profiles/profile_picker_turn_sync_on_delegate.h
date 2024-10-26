@@ -45,7 +45,6 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
-  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override;
   void ShowSyncDisabledConfirmation(
       bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -69,11 +68,6 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   void ShowManagedUserNotice(ManagedUserProfileNoticeUI::ScreenType type);
   void OnManagedUserNoticeClosed(ManagedUserProfileNoticeUI::ScreenType type,
                                  signin::SigninChoice choice);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros first run intro
-  void OnLacrosIntroClosed(signin::SigninChoice choice);
-#endif
 
   // Handles the logic behind when the cancel button is clicked
   void HandleCancelSigninChoice(

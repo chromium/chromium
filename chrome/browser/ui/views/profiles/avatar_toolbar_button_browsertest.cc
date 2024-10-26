@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
   AddBlankTabAndShow(browser1);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser1);
   ASSERT_TRUE(avatar);
-  // On ChromeOS (Ash and Lacros), captive portal signin windows show a
+  // On ChromeOS, captive portal signin windows show a
   // disabled avatar button to indicate that the window is incognito.
   EXPECT_TRUE(avatar->GetVisible());
   EXPECT_FALSE(avatar->GetEnabled());

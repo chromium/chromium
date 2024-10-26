@@ -34,13 +34,10 @@ class ProfileManagementFlowController {
     kUnknown,
     // Renders the `chrome://profile-picker` app, covering the profile picker,
     // the profile type choice at the beginning of the profile creation
-    // flow and the account selection on Lacros.
+    // flow and the account selection.
     kProfilePicker,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Renders the sign in screen on Dice platforms.
-    // TODO(crbug.com/40237764): Support the `kAccountSelection` step on
-    // Lacros. Picking an account during the `kLacrosSelectAvailableAccount`
-    // flow and the profile creation should be implemented as a standalone step.
     kAccountSelection,
     // Moves the rest of the flow to a browser tab so that the user can complete
     // the SAML sign in they started at the previous step.

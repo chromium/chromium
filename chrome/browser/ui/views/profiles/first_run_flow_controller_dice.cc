@@ -489,9 +489,7 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
   // accepted before we show the prompt. So here we need to revert it.
   // Currently we remove the account to match the behaviour from the profile
   // creation flow.
-  // TODO(crbug.com/40067597): Refactor ProfilePickerSignedInFlowController
-  // to split the lacros and dice behaviours more and remove the need for such
-  // hacky workarounds. Look into letting the user keep their account.
+  // TODO(crbug.com/40067597): Look into letting the user keep their account.
   signin::ClearProfileWithManagedAccounts(profile_);
 
   HandleIdentityStepsCompleted(profile_, PostHostClearedCallback(),

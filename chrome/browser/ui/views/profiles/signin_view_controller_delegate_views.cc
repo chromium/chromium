@@ -56,8 +56,7 @@
 namespace {
 
 const int kModalDialogWidth = 448;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const int kManagedUserNoticeConfirmationDialogWidth = 512;
 const int kManagedUserNoticeConfirmationDialogHeight = 576;
 const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 780;
@@ -67,10 +66,10 @@ const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const int kReauthDialogWidth = 540;
 const int kReauthDialogHeight = 520;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
   // If sync is disabled, then the sync confirmation dialog looks like an error
@@ -80,7 +79,7 @@ int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
              : kSigninErrorDialogHeight;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void CloseModalSigninInBrowser(
     base::WeakPtr<Browser> browser,
     bool show_profile_switch_iph,
@@ -97,7 +96,7 @@ void CloseModalSigninInBrowser(
     browser->window()->MaybeShowProfileSwitchIPH();
   }
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // This layout auto-resizes the host view widget to always adapt to changes in
 // the size of the child views.
@@ -138,7 +137,7 @@ SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
                              InitializeSigninWebDialogUI(true));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
@@ -176,10 +175,9 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
                      show_profile_switch_iph, show_supervised_user_iph));
   return web_view;
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
@@ -189,12 +187,10 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
   bool is_oidc_account = create_param->is_oidc_account;
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   enable_updated_dialog |=
       is_oidc_account &&
       base::FeatureList::IsEnabled(
           profile_management::features::kOidcAuthProfileManagement);
-#endif
   auto width = enable_updated_dialog
                    ? kManagedUserNoticeConfirmationUpdatedDialogWidth
                    : kManagedUserNoticeConfirmationDialogWidth;
@@ -337,8 +333,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // On the local profile creation dialog, cancelling the dialog (for instance
   // through the VKEY_ESCAPE accelerator) should delete the profile.
   if (delete_profile_on_cancel) {
@@ -426,8 +421,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
   content_view_->RequestFocus();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -474,7 +468,7 @@ SigninViewControllerDelegate::CreateSigninErrorDelegate(Browser* browser) {
       browser, ui::mojom::ModalType::kWindow, true, false);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
@@ -501,10 +495,9 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
       browser, ui::mojom::ModalType::kWindow, false, false,
       is_local_profile_creation);
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(

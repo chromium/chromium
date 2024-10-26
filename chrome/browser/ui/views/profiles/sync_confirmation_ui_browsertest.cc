@@ -39,7 +39,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error Platform not supported
 #endif
 
@@ -108,12 +108,9 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
 const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
-// The sign-in intercept feature isn't enabled on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "SigninInterceptStyle"},
      .sync_style = SyncConfirmationStyle::kSigninInterceptModal,
      .is_sync_promo = true},
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "Rtl",
@@ -340,7 +337,7 @@ class SyncConfirmationUITest
     }
     command_line->AppendSwitchASCII(switches::kLang, GetLanguage());
 
-    // On Linux & Lacros the command line switch has no effect, we need to use
+    // On Linux the command line switch has no effect, we need to use
     // environment variables to change the language.
     scoped_env_override_ =
         std::make_unique<base::ScopedEnvironmentVariableOverride>(
@@ -389,13 +386,9 @@ class SyncConfirmationUITest
   }
 
   int GetTitleId() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
-#else
     return IsSigninIntercept()
                ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
                : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   int GetDescriptionId() {
@@ -459,12 +452,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     SyncConfirmationUITest,
     testing::Combine(
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // Sign-in intercept is not supported on Lacros.
-        testing::Values(false),
-#else
         testing::Bool(),
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
                         SyncConfirmationUIAction::kGoToSettings),
         testing::Values("", "pl")),

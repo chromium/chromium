@@ -81,12 +81,6 @@ class ProfilePickerSignedInFlowController
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The default implementation is NOTREACHED
-  virtual void SwitchToLacrosIntro(
-      signin::SigninChoiceCallback proceed_callback);
-#endif
-
   // When the sign-in flow cannot be completed because another profile at
   // `profile_path` is already syncing with a chosen account, shows the profile
   // switch screen. It uses the system profile for showing the switch screen.
