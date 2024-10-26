@@ -181,10 +181,16 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                 const base::Uuid& sync_tab_id,
                                 const LocalTabID& local_tab_id) = 0;
 
-  // Called from the UI layer such as tab group restore from recent tabs or undo
-  // tab group closure to reconnect a local tab group to a saved tab group.
-  // `opening_source` refers to the callsite that results in invoking this
-  // method.
+  // Only under certain circumstances. Called from the UI layer to reestablish
+  // the connection between a local tab group and saved tab group. Don't call
+  // this method if you can get what you want via `UpdateLocalTabGroupMapping`,
+  // `AddGroup`, or `OpenTabGroup`. Currently invoked from the following places:
+  // 1. Session restore in desktop.
+  // 2. Undo tab group closure on iOS.
+  // 3. Saved to Shared tab group conversion.
+  // Invoking this method would update the mapping for tab group, individual
+  // tabs, and (on desktop) recreate the tab group listeners. `opening_source`
+  // refers to the callsite that results in invoking this method.
   virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
                                     const LocalTabGroupID& local_id,
                                     OpeningSource opening_source) = 0;

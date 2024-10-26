@@ -81,7 +81,7 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
   MOCK_METHOD(void,
               ConnectLocalTabGroup,
-              (const base::Uuid&, const LocalTabGroupID&, OpeningSource));
+              (const base::Uuid&, const LocalTabGroupID&));
   MOCK_METHOD(void, DisconnectLocalTabGroup, (const LocalTabGroupID&));
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
@@ -481,8 +481,7 @@ TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
 TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
   LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
   EXPECT_CALL(*coordinator_,
-              ConnectLocalTabGroup(group_2_.saved_guid(), local_id,
-                                   OpeningSource::kOpenedFromRevisitUi))
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
       .Times(1);
   tab_group_sync_service_->ConnectLocalTabGroup(
       group_2_.saved_guid(), local_id, OpeningSource::kOpenedFromRevisitUi);
@@ -493,16 +492,13 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
   tab_group_sync_service_->SetIsInitializedForTesting(false);
 
   // Expect ConnectLocalTabGroup to not be called before init.
-  EXPECT_CALL(*coordinator_,
-              ConnectLocalTabGroup(_, _, OpeningSource::kAutoOpenedFromSync))
-      .Times(0);
+  EXPECT_CALL(*coordinator_, ConnectLocalTabGroup(_, _)).Times(0);
 
   tab_group_sync_service_->ConnectLocalTabGroup(
       group_2_.saved_guid(), local_id, OpeningSource::kAutoOpenedFromSync);
   // Initialize model and connect the group.
   EXPECT_CALL(*coordinator_,
-              ConnectLocalTabGroup(group_2_.saved_guid(), local_id,
-                                   OpeningSource::kAutoOpenedFromSync))
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
       .Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
   task_environment_.RunUntilIdle();

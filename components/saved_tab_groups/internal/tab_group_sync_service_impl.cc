@@ -577,7 +577,8 @@ void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
   }
 
   VLOG(2) << __func__;
-  coordinator_->ConnectLocalTabGroup(sync_id, local_id, opening_source);
+  UpdateLocalTabGroupMapping(sync_id, local_id, opening_source);
+  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
 }
 
 bool TabGroupSyncServiceImpl::IsRemoteDevice(

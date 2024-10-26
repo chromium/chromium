@@ -60,14 +60,9 @@ TEST_F(TabGroupSyncCoordinatorTest, ConnectLocalTabGroup) {
   EXPECT_CALL(*service_, GetGroup(sync_id))
       .Times(2)
       .WillRepeatedly(Return(group));
-  EXPECT_CALL(*service_,
-              UpdateLocalTabGroupMapping(sync_id, local_id,
-                                         OpeningSource::kUndoCloseAllTabs))
-      .Times(1);
   EXPECT_CALL(*delegate_, UpdateLocalTabGroup(UuidEq(sync_id))).Times(1);
 
-  coordinator_->ConnectLocalTabGroup(sync_id, local_id,
-                                     OpeningSource::kUndoCloseAllTabs);
+  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
 }
 
 TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupAdded) {
