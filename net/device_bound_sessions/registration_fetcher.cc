@@ -49,7 +49,7 @@ constexpr net::NetworkTrafficAnnotationTag kRegistrationTrafficAnnotation =
         policy {
           cookies_allowed: YES
           cookies_store: "user"
-          setting: "There is no seperate setting for this feature, but it will "
+          setting: "There is no separate setting for this feature, but it will "
             "follow the cookie settings."
           policy_exception_justification: "Not implemented."
         })");
