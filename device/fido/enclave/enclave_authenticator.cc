@@ -19,7 +19,6 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
-#include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -46,6 +45,8 @@ std::array<uint8_t, 8> RandomId() {
   return ret;
 }
 
+// Error codes from the service on per-request failures. These can be returned
+// alongside success responses in some cases.
 // Needs to match `RequestError` in
 // //third_party/cloud_authenticator/processor/src/lib.rs.
 enum {
@@ -68,7 +69,7 @@ GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
       // This is a temporary error. Allow the request to fail.
     case kDuplicate:
     case kRecoveryKeyStoreDowngrade:
-      // These are not a valid error for a passkey request.
+      // These are not valid errors for a passkey request.
     default:
       return GetAssertionStatus::kEnclaveError;
   }
@@ -85,7 +86,7 @@ MakeCredentialStatus EnclaveErrorToMakeCredentialStatus(int enclave_code) {
       // This is a temporary error. Allow the request to fail.
     case kDuplicate:
     case kRecoveryKeyStoreDowngrade:
-      // These are not a valid error for a passkey request, deliberate
+      // These are not valid errors for a passkey request, deliberate
       // fallthrough.
     default:
       return MakeCredentialStatus::kEnclaveError;
@@ -264,16 +265,30 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
 }
 
 void EnclaveAuthenticator::ProcessMakeCredentialResponse(
-    std::optional<cbor::Value> response) {
-  if (!response) {
-    CompleteRequestWithError(MakeCredentialStatus::kEnclaveCancel);
+    base::expected<cbor::Value, TransactError> maybe_response) {
+  if (!maybe_response.has_value()) {
+    TransactError error = maybe_response.error();
+    // Failure to submit a new UV key, or learning that this is unrecognized, is
+    // an unrecoverable state for the current registration. This client needs to
+    // be re-registered.
+    if (includes_new_uv_key_ || error == TransactError::kMissingKey ||
+        error == TransactError::kUnknownClient) {
+      std::move(ui_request_->unregister_callback).Run();
+    }
+    MakeCredentialStatus return_status = MakeCredentialStatus::kEnclaveError;
+    if (error == TransactError::kSigningFailed) {
+      return_status = MakeCredentialStatus::kEnclaveCancel;
+    }
+    CompleteRequestWithError(return_status);
     return;
   }
+
+  cbor::Value& response = maybe_response.value();
   std::optional<AuthenticatorMakeCredentialResponse> opt_response;
   std::optional<sync_pb::WebauthnCredentialSpecifics> opt_entity;
   std::string error_description;
   auto parse_result = ParseMakeCredentialResponse(
-      std::move(*response), pending_make_credential_request_->request,
+      std::move(response), pending_make_credential_request_->request,
       *ui_request_->key_version, ui_request_->user_verified);
   if (absl::holds_alternative<ErrorResponse>(parse_result)) {
     auto& error_details = absl::get<ErrorResponse>(parse_result);
@@ -295,15 +310,28 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
 }
 
 void EnclaveAuthenticator::ProcessGetAssertionResponse(
-    std::optional<cbor::Value> response) {
-  if (!response) {
-    CompleteRequestWithError(GetAssertionStatus::kEnclaveCancel);
+    base::expected<cbor::Value, TransactError> maybe_response) {
+  if (!maybe_response.has_value()) {
+    TransactError error = maybe_response.error();
+    // Failure to submit a new UV key, or learning that this is unrecognized, is
+    // an unrecoverable state for the current registration. This client needs to
+    // be re-registered.
+    if (includes_new_uv_key_ || error == TransactError::kMissingKey ||
+        error == TransactError::kUnknownClient) {
+      std::move(ui_request_->unregister_callback).Run();
+    }
+    GetAssertionStatus return_status = GetAssertionStatus::kEnclaveError;
+    if (error == TransactError::kSigningFailed) {
+      return_status = GetAssertionStatus::kEnclaveCancel;
+    }
+    CompleteRequestWithError(return_status);
     return;
   }
 
+  cbor::Value& response = maybe_response.value();
   const std::string& cred_id_str = ui_request_->entity->credential_id();
   auto parse_result = ParseGetAssertionResponse(
-      std::move(*response), base::as_bytes(base::make_span(cred_id_str)));
+      std::move(response), base::as_bytes(base::make_span(cred_id_str)));
   if (absl::holds_alternative<ErrorResponse>(parse_result)) {
     auto& error_details = absl::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);

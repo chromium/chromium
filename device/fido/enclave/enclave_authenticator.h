@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
@@ -24,6 +25,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
+#include "device/fido/enclave/transact.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
@@ -96,8 +98,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
       base::span<const uint8_t> uv_public_key);
   void DispatchGetAssertionWithNewUVKey(
       base::span<const uint8_t> uv_public_key);
-  void ProcessMakeCredentialResponse(std::optional<cbor::Value> response);
-  void ProcessGetAssertionResponse(std::optional<cbor::Value> response);
+  void ProcessMakeCredentialResponse(
+      base::expected<cbor::Value, TransactError> maybe_response);
+  void ProcessGetAssertionResponse(
+      base::expected<cbor::Value, TransactError> maybe_response);
   void ProcessErrorResponse(const ErrorResponse& error);
 
   // `Complete*` methods invoke callbacks that can result in `this` being
