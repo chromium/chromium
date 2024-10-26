@@ -41,13 +41,6 @@ class AutofillPredictionImprovementsFillingEngine {
     bool is_focusable;
     // Shown as main text in the suggestion if set.
     std::optional<std::u16string> select_option_text = std::nullopt;
-
-   private:
-    // For tests to readably print an instance of this struct.
-    friend void PrintTo(
-        const AutofillPredictionImprovementsFillingEngine::Prediction&
-            prediction,
-        std::ostream* os);
   };
   using PredictionsByGlobalId =
       base::flat_map<autofill::FieldGlobalId, Prediction>;

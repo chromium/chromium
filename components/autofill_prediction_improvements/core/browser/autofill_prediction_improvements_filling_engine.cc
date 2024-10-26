@@ -27,26 +27,11 @@ AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
     : value(std::move(value)),
       label(std::move(label)),
       is_focusable(is_focusable),
-      select_option_text(select_option_text) {}
+      select_option_text(std::move(select_option_text)) {}
 
 AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
     const Prediction& other) = default;
 AutofillPredictionImprovementsFillingEngine::Prediction::~Prediction() =
     default;
-
-// For tests to readably print an instance of this struct.
-void PrintTo(
-    const AutofillPredictionImprovementsFillingEngine::Prediction& prediction,
-    std::ostream* os) {
-  *os << "Prediction { " << ".value = \"" << base::UTF16ToUTF8(prediction.value)
-      << "\", " << ".label = \"" << base::UTF16ToUTF8(prediction.label)
-      << "\", " << ".select_option_text = "
-      << (prediction.select_option_text
-              ? base::StrCat({"\"",
-                              base::UTF16ToUTF8(*prediction.select_option_text),
-                              "\""})
-              : "std::nullopt")
-      << " " << "}";
-}
 
 }  // namespace autofill_prediction_improvements

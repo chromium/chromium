@@ -55,6 +55,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     testonly = true
     sources = [
       "autofill_prediction_improvements_manager_test_api.h",
+      "autofill_prediction_improvements_test_utils.cc",
+      "autofill_prediction_improvements_test_utils.h",
       "mock_autofill_prediction_improvements_client.cc",
       "mock_autofill_prediction_improvements_client.h",
     ]

@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_test_utils.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -176,7 +177,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   user_annotations_service()->ReplaceAllEntries({});
 
   // Make sure model executor not called.
-  EXPECT_CALL(*model_executor(), ExecuteModel(_, _, _, _)).Times(0);
+  EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");
