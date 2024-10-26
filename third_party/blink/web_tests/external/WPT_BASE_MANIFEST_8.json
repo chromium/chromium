@@ -21049,6 +21049,49 @@
       ]
      ]
     },
+    "css-inline": {
+     "text-box-trim": {
+      "not-at-page-edges-001-print.html": [
+       "c565ac7cc8695d2e56ce7fee49b7a482a20908d4",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/not-at-page-edges-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "not-at-page-edges-002-print.html": [
+       "50a370dbee2a0c38007c11d2c4c1f508dca336bf",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/not-at-page-edges-002-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "not-at-page-edges-003-print.html": [
+       "9707412fa7d76ef1067e52a4a930a2a94240f32a",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/not-at-page-edges-003-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     }
+    },
     "css-multicol": {
      "auto-fill-auto-size-001-print.html": [
       "6652fe18e9d41ea08b25b8436698c6149776e404",
@@ -21177,6 +21220,58 @@
         [
          "/css/css-page/basic-pagination-004-print-ref.html",
          "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "body-background-slr-print.html": [
+      "d7c1e91db7ce1de876e86498f93a23a0000c2a4b",
+      [
+       null,
+       [
+        [
+         "/css/css-page/body-background-slr-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "body-background-srl-print.html": [
+      "1c5f1c3362244d73e5cf0a0c50604e0cedb2c643",
+      [
+       null,
+       [
+        [
+         "/css/css-page/body-background-srl-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "body-background-vlr-print.html": [
+      "505e74400d56e163261ab08ff0d48ca3828f9fb9",
+      [
+       null,
+       [
+        [
+         "/css/css-page/body-background-vlr-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "body-background-vrl-print.html": [
+      "6f9df91c5dcbfd2e1087e657f1e98b0cd13ea67c",
+      [
+       null,
+       [
+        [
+         "/css/css-page/body-background-vrl-print-ref.html",
+         "=="
         ]
        ],
        {}
@@ -147196,6 +147291,32 @@
         {}
        ]
       ],
+      "initial-letter-block-position-margins-slr.html": [
+       "b177d469f0bcf55766ab463b870339fe8136b69d",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-block-position-margins-slr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-block-position-margins-srl.html": [
+       "0ac5cac1e395d61233c42a92fc42c5a15adb6246",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-block-position-margins-srl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "initial-letter-block-position-margins-vlr.html": [
        "09c69480fada52fc5b387516ffff2e9233e74f57",
        [
@@ -147287,6 +147408,32 @@
         {}
        ]
       ],
+      "initial-letter-breaking-slr.html": [
+       "9676957ee053979f79a27f9793e0b5a0191a70d4",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-breaking-slr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-breaking-srl.html": [
+       "20a87263aaf09c59ba89ba934aeeff35a345b127",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-breaking-srl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "initial-letter-drop-initial-rtl.html": [
        "542cf00d21af3809fc6eaf47b1fb32f2c2e4790f",
        [
@@ -147294,6 +147441,32 @@
         [
          [
           "/css/css-inline/initial-letter/initial-letter-drop-initial-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-drop-initial-slr.html": [
+       "e6e295ec8c1ded922fff3b8bff5bc4f3f5591fcd",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-drop-initial-slr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-drop-initial-srl.html": [
+       "43f23e118a069738eb8dcd982da9d95f79e2a77b",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-drop-initial-srl-ref.html",
           "=="
          ]
         ],
@@ -147346,6 +147519,32 @@
         [
          [
           "/css/css-inline/initial-letter/initial-letter-float-001-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-float-001-slr.html": [
+       "8b66737d492c129472634cfeb4151dd5e020567a",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-float-001-slr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-float-001-srl.html": [
+       "010257a63874af88c4d617e09959b314b3b2116c",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-float-001-srl-ref.html",
           "=="
          ]
         ],
@@ -147482,6 +147681,32 @@
         {}
        ]
       ],
+      "initial-letter-raise-initial-slr.html": [
+       "fcd92cefa1ad9888f35b73e60c10fc0c9a7705c6",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-raise-initial-slr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-raise-initial-srl.html": [
+       "66d52ee66f14f60a46cd39c3a67c1193fe2c3372",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-raise-initial-srl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "initial-letter-raise-initial-vlr.html": [
        "6b1ebd50919fd1c2c0f34bfa0b4496cc746f16fa",
        [
@@ -147597,6 +147822,32 @@
         [
          [
           "/css/css-inline/initial-letter/initial-letter-short-para-initial-letter-wraps-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-sunk-initial-slr.html": [
+       "1ec992031eb34ada5aadf44d495ac99fc3af34dd",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-sunk-initial-slr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-sunk-initial-srl.html": [
+       "60e5e77437bdf4677b9728692f06e5a4dd10ee35",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-sunk-initial-srl-ref.html",
           "=="
          ]
         ],
@@ -148090,7 +148341,7 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-003.html": [
-       "dc5e3204c98e9e0553de6d9739f16533201f234a",
+       "e33c0d0b40dd312422411d0d32bfccc860c0e2a2",
        [
         null,
         [
@@ -148129,12 +148380,12 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-006.html": [
-       "ad6059ed7d89bbd75f6b7e563f9539f6cd0a0818",
+       "244f5a1887aaea0869a8be1367c2eaf431d623bd",
        [
         null,
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-003-ref.html",
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-006-ref.html",
           "=="
          ]
         ],
@@ -148246,7 +148497,7 @@
        ]
       ],
       "text-box-trim-multicol-001.html": [
-       "e8669b4651c4a97329690a657c70c4784f48c988",
+       "494bf69e001101d69bc393abb2ee2ba383ed8e9a",
        [
         null,
         [
@@ -148259,12 +148510,142 @@
        ]
       ],
       "text-box-trim-multicol-002.html": [
-       "445814df90430cdb8e964b2f4a4c2c95cf93c7f1",
+       "4380f8ac5fb34fb7dfb1e0e992663c21f8830091",
        [
         null,
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-multicol-001-ref.html",
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-003.html": [
+       "93cdd829c42e0963b78a3fd9a503f1fac5f1e1bf",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-004.html": [
+       "5953bf9abf9b1a28c3e8a0017d74d78627215e71",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-005.html": [
+       "d5c58a4c869d486ecfad7b56ccbb5e639ca3b1f5",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-006.html": [
+       "0a8c09a59b6d4e0bfab16265202caf47c5a643fd",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-007.html": [
+       "da371c31265141c4bd0f9b8fe04e32fc4ee6f9dc",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-008.html": [
+       "e2fd2720abd63f3b9b5570d754c5d178ac9e9e4c",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-008-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-009.html": [
+       "a8e2fa329bc78a6b494cb458db3af10830c71b5c",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-010.html": [
+       "10907a7a9b23f8abe130c55844e61cb02f765828",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-011.html": [
+       "bdae103ecd4718194f5f8de51a75b3579c0b0c69",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-multicol-012.html": [
+       "b1242403ba99a93d79e10dad464724681d76352a",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-multicol-012-ref.html",
           "=="
          ]
         ],
@@ -337977,6 +338358,14 @@
        "00dd32be9a7ae278dfd809a2f8f072e37b389642",
        []
       ],
+      "initial-letter-block-position-margins-slr-ref.html": [
+       "6937080148c829fe7cc0c36f79dc79f80d37e86a",
+       []
+      ],
+      "initial-letter-block-position-margins-srl-ref.html": [
+       "c7a1e9fe141a7ecb14cd21fc5c219cc9cd9e9338",
+       []
+      ],
       "initial-letter-block-position-margins-vlr-ref.html": [
        "677e2a40db68ff38e0069f129e228b754e8d254b",
        []
@@ -338001,12 +338390,28 @@
        "e818de68cd8d1b1cb00321e6ba713e29dd1be362",
        []
       ],
+      "initial-letter-breaking-slr-ref.html": [
+       "7a5b18d0635f3a9bbf363cde0b6549a4cccf5b1d",
+       []
+      ],
+      "initial-letter-breaking-srl-ref.html": [
+       "0303cb00f422c48d4eded069e35f80344c441fc3",
+       []
+      ],
       "initial-letter-drop-initial-ref.html": [
        "aa2615957147e48936717432c58ac77fe6f3abba",
        []
       ],
       "initial-letter-drop-initial-rtl-ref.html": [
        "1b55ae05e6bba343d861b037f8e518bd65e62606",
+       []
+      ],
+      "initial-letter-drop-initial-slr-ref.html": [
+       "6d5a01d0c4577648a18a17d8130d4fe88605b49f",
+       []
+      ],
+      "initial-letter-drop-initial-srl-ref.html": [
+       "f51904dc3851c8e07f619efa6139feec5ea3edca",
        []
       ],
       "initial-letter-drop-initial-vlr-ref.html": [
@@ -338023,6 +338428,14 @@
       ],
       "initial-letter-float-001-rtl-ref.html": [
        "22b93e1a3f142d12c8c059c04a1cc4ba7ca83290",
+       []
+      ],
+      "initial-letter-float-001-slr-ref.html": [
+       "278b4dfffb0a72c13e8a7f5e5a514f001607fc56",
+       []
+      ],
+      "initial-letter-float-001-srl-ref.html": [
+       "76acba6c9dcc923c17c975766d2e41bf9a6e8809",
        []
       ],
       "initial-letter-float-001-vlr-ref.html": [
@@ -338065,6 +338478,14 @@
        "8a409603029d9333623311345e22ed92ba45ba91",
        []
       ],
+      "initial-letter-raise-initial-slr-ref.html": [
+       "7a7ad1ddc9061b4871bea46abfbea70780fde32c",
+       []
+      ],
+      "initial-letter-raise-initial-srl-ref.html": [
+       "593d3968b3cdfa99659a1c645d4ea055833654b7",
+       []
+      ],
       "initial-letter-raise-initial-vlr-ref.html": [
        "72d2dd05a3edbf99d784abe61a173b29089034fb",
        []
@@ -338091,6 +338512,14 @@
       ],
       "initial-letter-sunk-initial-ref.html": [
        "160751274af111b9097352ec61ae92ede136b676",
+       []
+      ],
+      "initial-letter-sunk-initial-slr-ref.html": [
+       "024019da747d5b7eb157fdabbc073c51b3f15ae6",
+       []
+      ],
+      "initial-letter-sunk-initial-srl-ref.html": [
+       "80e1e8ea8c2bd5c0522a1cbeea3b034d0ef820ed",
        []
       ],
       "initial-letter-sunk-initial-vlr-ref.html": [
@@ -338153,6 +338582,18 @@
      "text-box-trim": {
       "WEB_FEATURES.yml": [
        "e9a2fc218b369825c991e3109986481a922e671f",
+       []
+      ],
+      "not-at-page-edges-001-print-ref.html": [
+       "f142aeec84dd5abdf87bf754554fbdf64888490b",
+       []
+      ],
+      "not-at-page-edges-002-print-ref.html": [
+       "0d73c1675aa0039e79e1bb7da3ccf5bff88b93d2",
+       []
+      ],
+      "not-at-page-edges-003-print-ref.html": [
+       "77fbb2630bf84a66c0b54e225efb42883e977dc4",
        []
       ],
       "parsing": {
@@ -338256,11 +338697,15 @@
        []
       ],
       "text-box-trim-half-leading-block-box-003-ref.html": [
-       "176526e55b2586beb80693a48cabba0f5448f24a",
+       "b3e3e8d2f1ad6e75d68ec9d8c1e378f0f70882d6",
        []
       ],
       "text-box-trim-half-leading-block-box-004-ref.html": [
        "eb8952b57e935a35ce370614ee9d22d750ed903f",
+       []
+      ],
+      "text-box-trim-half-leading-block-box-006-ref.html": [
+       "6598123f1ae775aae6022694b73af5be99c5e3b4",
        []
       ],
       "text-box-trim-height-001-ref.html": [
@@ -338296,7 +338741,51 @@
        []
       ],
       "text-box-trim-multicol-001-ref.html": [
-       "aa81e23a26a4900dde31b1943b2774e0449d7249",
+       "9228b865ea66a7a7b8320af98981fea300f62912",
+       []
+      ],
+      "text-box-trim-multicol-002-ref.html": [
+       "7af72ec948c3dc332a90c6c704197b6e0f78a910",
+       []
+      ],
+      "text-box-trim-multicol-003-ref.html": [
+       "ad7e39dae5c0296ed6959aa110aafc6a80e858b4",
+       []
+      ],
+      "text-box-trim-multicol-004-ref.html": [
+       "cd140a080a29482d2d635dcbe256113b4b5828f0",
+       []
+      ],
+      "text-box-trim-multicol-005-ref.html": [
+       "ab4ce9a91b33700a34d9d8a4bf76e179df2285a9",
+       []
+      ],
+      "text-box-trim-multicol-006-ref.html": [
+       "1c2590c0cd3eda5c5a97ae62e8121b6dd9714ac3",
+       []
+      ],
+      "text-box-trim-multicol-007-ref.html": [
+       "066ccc2e829c611f4e0aadd0b0cc8b49c7b4199a",
+       []
+      ],
+      "text-box-trim-multicol-008-ref.html": [
+       "777a42b6989bf62d90c512ebc056ae813849ea60",
+       []
+      ],
+      "text-box-trim-multicol-009-ref.html": [
+       "491ca31ef16877191fc85da0013cdc9795190154",
+       []
+      ],
+      "text-box-trim-multicol-010-ref.html": [
+       "d3c4eddd1280ac76e200666b67c43463b8269787",
+       []
+      ],
+      "text-box-trim-multicol-011-ref.html": [
+       "60a4fa4c4e7db4b289613534e5c8a2f066333f91",
+       []
+      ],
+      "text-box-trim-multicol-012-ref.html": [
+       "efb5d17792c24518f9cee9ef33ac6b79c90434e7",
        []
       ],
       "text-box-trim-not-ignore-nested-text-box-edge-ref.html": [
@@ -341910,6 +342399,22 @@
      ],
      "basic-pagination-004-print-ref.html": [
       "3487aa6eabb456eda6d342e4bc5200d0d9c28509",
+      []
+     ],
+     "body-background-slr-print-ref.html": [
+      "d47a59af4d3f29326f2707a1a4cd893f6370890e",
+      []
+     ],
+     "body-background-srl-print-ref.html": [
+      "293bcbae7d5cea493a2664a710de025cb701e4d5",
+      []
+     ],
+     "body-background-vlr-print-ref.html": [
+      "7b966a5b3d5f2065caef6cf5a0609da52263d96d",
+      []
+     ],
+     "body-background-vrl-print-ref.html": [
+      "bbc265e6cfa3d8e39ad7d8b37625cbfd607e789f",
       []
      ],
      "cssom": {
@@ -400697,10 +401202,6 @@
    "push-api": {
     "META.yml": [
      "4886e6a70da668e136d3149ee760c79aaf34be39",
-     []
-    ],
-    "idlharness.https.any.serviceworker-expected.txt": [
-     "e7e6997acd218ec6c304a32e080d753c2488e077",
      []
     ],
     "noop-sw.js": [
@@ -484989,6 +485490,13 @@
       ],
       "replaced-element-036.html": [
        "0cd5eb1a59056e05fdaf945785df85477a69a990",
+       [
+        null,
+        {}
+       ]
+      ],
+      "replaced-element-042.html": [
+       "2a301c3e1930d3351435ad17938b19c67ad85e8d",
        [
         null,
         {}
@@ -634244,7 +634752,7 @@
       ]
      ],
      "signal-abort-window-stop-in-onnavigate.html": [
-      "1b406c42d367f98e0d993f5e4d66d8b704386697",
+      "27487e500dc94ee63dd6b385333492ea37a4399b",
       [
        null,
        {}

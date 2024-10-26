@@ -8168,10 +8168,10 @@ crbug.com/370303484 [ Debug Win11-arm64 ] external/wpt/selection/contenteditable
 # TODO(crbug.com/372372940): Update the values when we remove the flag and the virtual test suite.
 crbug.com/372372940 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-failure-status-update.js [ Failure ]
 crbug.com/372372940 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-status-update-on-enable.js [ Failure ]
-crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-failure-status-update.js [ Pass Failure ]
-crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-status-update-on-enable.js [ Pass Failure ]
-crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Pass Failure ]
-crbug.com/372372940 virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Pass Failure ]
+crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-failure-status-update.js [ Failure Pass ]
+crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-status-update-on-enable.js [ Failure Pass ]
+crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure Pass ]
+crbug.com/372372940 virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Failure Pass ]
 crbug.com/372372940 wpt_internal/prerender/focus-on-prerendered-window-client.https.html [ Pass Timeout ]
 
 # Flaky on WebKit Linux ASAN and Win
