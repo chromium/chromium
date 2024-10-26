@@ -5035,6 +5035,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4602776638371779614">Kjo skedë po skanon në mënyrë aktive për pajisje me Bluetooth</translation>
 <translation id="4605026046465576953">Ky aplikacion nuk mund të hapet sepse ti nuk ke leje për të ekzekutuar aplikacionet e izoluara të uebit</translation>
 <translation id="4606551464649945562">Mos lejo që sajtet të krijojnë një hartë 3D të ambientit tënd rrethues ose të gjurmojnë pozicionin e kamerës</translation>
+<translation id="4606933160360542263">Kombinimi i personalizuar i tasteve: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Të fshihet grupi i skedave?}other{Të fshihen grupet e skedave?}}</translation>
 <translation id="4608500690299898628">&amp;Gjej...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ka hasur në një gabim</translation>
@@ -6268,6 +6269,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5517304475148761050">Ky aplikacion kërkon qasje te "Dyqani i Play"</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5520605865175417976">Hiq veprimin "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">A është kjo faqja kryesore që prisje?</translation>
 <translation id="5522156646677899028">Kjo shtesë përmban një dobësi serioze sigurie.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Një shtesë është instaluar nga administratori yt}other{# shtesa janë instaluar nga administratori yt}}</translation>
@@ -10245,6 +10247,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8429928917752180743">Më shumë opsione për "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8431190899827883166">Shfaq trokitjet</translation>
 <translation id="843173223122814223">Krijo sfonde me inteligjencën artificiale</translation>
+<translation id="8431977087510901105">Rivendosja e cilësimeve të kursorit</translation>
 <translation id="8433186206711564395">Cilësimet e rrjetit</translation>
 <translation id="8434109185104929038">Kënd leximi</translation>
 <translation id="8434480141477525001">Porta e korrigjimit NaCl</translation>

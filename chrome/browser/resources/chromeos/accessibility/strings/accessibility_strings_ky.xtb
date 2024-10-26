@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Буудай ыраң</translation>
 <translation id="1618597272655350600">Учурдагы абалдын толук сүрөттөмөсүн жарыялайт</translation>
 <translation id="1627222324347828322">Күңүрт агыш</translation>
-<translation id="1632810692616643246">Сыдыруу режимине кирүү же чыгуу</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{мындан чоңураак}other{# мындан чоңураак белгилер}}</translation>
 <translation id="1653266918374749391">Мурунку 3-деңгээлдеги баш ат</translation>
 <translation id="1657616855184033958">Иш-чаралардын агымынын чыпкасын көрсөтүү</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Кийинки объект</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Брайль буйруктарын ChromeVox менюсунда көрсөтүү</translation>
-<translation id="1999763610967697511">Сүйрөп баруу</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{сол кашаа}other{# сол кашаа}}</translation>
 <translation id="2009187674653301682">Жогорку индекс эмес</translation>
 <translation id="2010555995361223825">ChromeVox менюлары</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Мала бирюза</translation>
 <translation id="4826415162591436065">Алга чабыттоо</translation>
 <translation id="4827410568042294688">тандалбаган</translation>
-<translation id="483262387981411190">Жүз көзөмөлдөөсүн тындыруу же улантуу</translation>
 <translation id="4835598628985424375">Эриндерди кысып, бырыштыруу</translation>
 <translation id="4838490795649708173">Төрт манжаңыз менен таптаңыз</translation>
 <translation id="4839925464551908214">Мурунку сапка өтүү</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Инкремент</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{тырмакча}other{# тырмакчалар}}</translation>
-<translation id="8017004049696748317">Текстти айтып терүү/киргизүүнү баштоо же токтотуу</translation>
 <translation id="8017588669690167134">Кеп өчүк</translation>
 <translation id="801990297710781303">Шилтеме</translation>
 <translation id="8028833145828956995">ChromeVox'ту сенсордук экран менен колдонсоңуз болот</translation>

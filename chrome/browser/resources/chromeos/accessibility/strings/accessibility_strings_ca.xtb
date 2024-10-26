@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="100421257800558142">Prem la tecla de fletxa dreta</translation>
 <translation id="100506692671054486">no hi ha cap ordre anterior</translation>
 <translation id="1009046985747440431">Prem les fletxes amunt i avall per navegar; prem Retorn per activar una opció</translation>
 <translation id="1011903154582639569">Cerca una tecla i, a continuació, aixeca el dit per prémer-la</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Botó per activar o desactivar</translation>
 <translation id="1299774449519412690">Blau cel clar</translation>
 <translation id="1303806948938513162">Toca amb 4 dits per entrar als menús de ChromeVox</translation>
+<translation id="1304162325618937178">Prem la tecla de la barra espaiadora</translation>
 <translation id="1313373992684326101">Va a la secció anterior. Entre els exemples s'inclouen la safata d'estat i el menú d'aplicacions.</translation>
 <translation id="1315077335264761176">Orientació sobre tocs</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, botó d'opció no seleccionat de l'element de menú</translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">Objecte següent</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostra ordres de braille als menús de ChromeVox</translation>
-<translation id="1999763610967697511">Arrossega i deixa anar</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{claudàtor d'obertura}other{# claudàtors d'obertura}}</translation>
 <translation id="2009187674653301682">No és un superíndex</translation>
 <translation id="2010555995361223825">Menús de ChromeVox</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">Cuir</translation>
 <translation id="2199994615414171367">Expressió matemàtica anterior</translation>
 <translation id="2203046366315513658">Disminueix el valor</translation>
+<translation id="2206580811360135054">Mostra o amaga la visió general de finestres</translation>
 <translation id="2216790501338699346">URL de l'enllaç: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Retrocedeix un caràcter</translation>
 <translation id="2220529011494928058">Informa d'un problema</translation>
+<translation id="2239819015858077439">Prem la tecla de fletxa avall</translation>
 <translation id="2243633977138166243">Prem les fletxes esquerra o dreta per navegar i Retorn per activar</translation>
 <translation id="224426591676115802">No hi ha cap veu disponible en <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">S'està aturant el mode d'aprenentatge</translation>
@@ -541,6 +544,7 @@
 <translation id="4432457053224379116">Vermell indi</translation>
 <translation id="4432896207833262240">Contingut marcat</translation>
 <translation id="4437615272777527928">Escriu per cercar als menús. Fes servir les fletxes amunt i cp avall per moure't entre els resultats. Fes servir les tecles de fletxa esquerra i dreta per ajustar la marca d'inserció de text i per moure't entre els menús.</translation>
+<translation id="4441677939526091190">Prem la tecla de fletxa amunt</translation>
 <translation id="4453530046591759283">Per desplaçar-te a altres parts de la pantalla, com ara les barres d'eines o la safata del sistema, prem Control+F1. F1 és la primera tecla a la dreta de la tecla Esc.</translation>
 <translation id="4457472090507035117">Selecciona la veu actual:</translation>
 <translation id="4476183483923481720">línia nova</translation>
@@ -587,7 +591,6 @@
 <translation id="4815668758102003883">Turquesa pàl·lid</translation>
 <translation id="4826415162591436065">Navega endavant.</translation>
 <translation id="4827410568042294688">no seleccionat</translation>
-<translation id="483262387981411190">Posa en pausa o reprèn el control facial</translation>
 <translation id="4835598628985424375">Fer morrets estrenyent els llavis</translation>
 <translation id="4838490795649708173">Toca amb quatre dits</translation>
 <translation id="4839925464551908214">Ves a la fila anterior</translation>
@@ -720,6 +723,7 @@
 <translation id="5653397561111110475">Utilitzar les funcions d'accessibilitat de la pantalla tàctil de Chromebook</translation>
 <translation id="5655682562155942719">Ordres de salt</translation>
 <translation id="56637627897541303">Àrea de text</translation>
+<translation id="5666746275818170484">Prem la tecla de fletxa esquerra</translation>
 <translation id="5669637233317991674">Prem Cerca+fletxa dreta o esquerra per navegar per aquesta lliçó</translation>
 <translation id="5677240841070992068">Ubicació actual</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -926,6 +930,7 @@
 <translation id="7161771961008409533">Botó emergent</translation>
 <translation id="7167657087543110">retorn de caràcters</translation>
 <translation id="7173102181852295013">Blau nit</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Ampliat</translation>
 <translation id="7209751026933045237">No hi ha cap control lliscant més</translation>
 <translation id="7218782500591078391">Groc daurat</translation>
@@ -1042,7 +1047,6 @@
 <translation id="8004512796067398576">Incrementa</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{cometes}other{# cometes}}</translation>
-<translation id="8017004049696748317">Inicia o atura el dictat</translation>
 <translation id="8017588669690167134">Desactiva la veu</translation>
 <translation id="801990297710781303">Nota al peu</translation>
 <translation id="8028833145828956995">Pots fer servir ChromeVox amb la pantalla tàctil</translation>
@@ -1099,6 +1103,7 @@
 <translation id="8378855320830505539">Regió</translation>
 <translation id="8382679411218029383">Compleció automàtica en línia i llista</translation>
 <translation id="8394908167088220973">Fitxer multimèdia: reprodueix/posa en pausa</translation>
+<translation id="8409502156784390079">El mode de desplaçament està actiu</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8428603554127842284">nivell <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1176,6 +1181,7 @@
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8989104346085848538">Per aturar totes les entrades de veu en curs de ChromeVox, prem la tecla de control.</translation>
 <translation id="9014206344398081366">Tutorial de ChromeVox</translation>
+<translation id="9034592733577768445">El control facial s'ha posat en pausa</translation>
 <translation id="9040132695316389094">Capçalera 1</translation>
 <translation id="9061884144798498064">Selecciona una taula de braille de vuit punts:</translation>
 <translation id="9063946545000394379">ves al caràcter anterior</translation>

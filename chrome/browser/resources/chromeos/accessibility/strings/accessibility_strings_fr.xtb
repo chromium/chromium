@@ -157,7 +157,6 @@
 <translation id="1964135212174907577">Objet suivant</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Afficher les commandes braille dans les menus ChromeVox</translation>
-<translation id="1999763610967697511">Glisser-déposer</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{crochet gauche}one{# crochet gauche}other{# crochets gauches}}</translation>
 <translation id="2009187674653301682">Pas en exposant</translation>
 <translation id="2010555995361223825">Menus ChromeVox</translation>
@@ -587,7 +586,6 @@
 <translation id="4815668758102003883">Turquoise pâle</translation>
 <translation id="4826415162591436065">Navigation vers le bas</translation>
 <translation id="4827410568042294688">désélectionné</translation>
-<translation id="483262387981411190">Mettre en pause ou reprendre la commande par le visage</translation>
 <translation id="4835598628985424375">Faire la moue en pinçant les lèvres</translation>
 <translation id="4838490795649708173">Appuyer avec quatre doigts</translation>
 <translation id="4839925464551908214">Accéder à la ligne précédente</translation>
@@ -1042,7 +1040,6 @@
 <translation id="8004512796067398576">Augmenter</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{guillemet}one{# guillemet}other{# guillemets}}</translation>
-<translation id="8017004049696748317">Commencer ou arrêter la dictée</translation>
 <translation id="8017588669690167134">Voix désactivée</translation>
 <translation id="801990297710781303">Note de bas de page</translation>
 <translation id="8028833145828956995">Vous pouvez utiliser ChromeVox avec l'écran tactile</translation>

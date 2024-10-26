@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Gwenith</translation>
 <translation id="1618597272655350600">Yn cyhoeddi disgrifiad cyflawn o'r safle presennol</translation>
 <translation id="1627222324347828322">Gwyn Ysbryd</translation>
-<translation id="1632810692616643246">Dechrau neu adael y modd sgrolio</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{mwy na}zero{# symbol mwy na}two{# symbol mwy na}few{# symbol mwy na}many{# symbol mwy na}other{# symbol mwy na}}</translation>
 <translation id="1653266918374749391">Pennawd lefel 3 blaenorol</translation>
 <translation id="1657616855184033958">Dangos hidlyddion ffrwd digwyddiadau</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Gwrthrych Nesaf</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Dangos gorchmynion Braille yn newislenni ChromeVox</translation>
-<translation id="1999763610967697511">Llusgo a gollwng</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{cromfach chwith}zero{# cromfach chwith}two{# gromfach chwith}few{# cromfach chwith}many{# chromfach chwith}other{# cromfach chwith}}</translation>
 <translation id="2009187674653301682">Nid yw'n uwchysgrif</translation>
 <translation id="2010555995361223825">Dewislenni ChromeVox</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Gwyrddlas Gwelw</translation>
 <translation id="4826415162591436065">Llywio ymlaen</translation>
 <translation id="4827410568042294688">wedi dad-ddewis</translation>
-<translation id="483262387981411190">Oedi neu ailddechrau rheoli wynebau</translation>
 <translation id="4835598628985424375">Crychwch wefusau trwy wasgu'ch gwefusau gyda'i gilydd</translation>
 <translation id="4838490795649708173">Tapiwch gyda phedwar bys</translation>
 <translation id="4839925464551908214">Mynd i'r rhes flaenorol</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Cynyddiad</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{dyfynnod}zero{# dyfynnod}two{# ddyfynnod}few{# dyfynnod}many{# dyfynnod}other{# dyfynnod}}</translation>
-<translation id="8017004049696748317">Dechrau neu stopio arddweud</translation>
 <translation id="8017588669690167134">Diffodd lleferydd</translation>
 <translation id="801990297710781303">Troednodyn</translation>
 <translation id="8028833145828956995">Gallwch ddefnyddio ChromeVox gyda'r sgrîn gyffwrdd</translation>

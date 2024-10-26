@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="100421257800558142">اضغط على مفتاح السهم المتّجه لليمين</translation>
 <translation id="100506692671054486">ما مِن طلب سابق.</translation>
 <translation id="1009046985747440431">‏اضغط على السهم المتجه للأعلى أو للأسفل للتنقل، واضغط على Enter للتفعيل.</translation>
 <translation id="1011903154582639569">اعثر على لوحة المفاتيح المراد استخدامها، ثم انقر عليها للكتابة.</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">زر التبديل</translation>
 <translation id="1299774449519412690">أزرق سماوي فاتح</translation>
 <translation id="1303806948938513162">‏النقر بأربعة أصابع للدخول إلى قوائم ChromeVox</translation>
+<translation id="1304162325618937178">اضغط على مفتاح المسافة</translation>
 <translation id="1313373992684326101">الانتقال إلى القسم السابق تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
 <translation id="1315077335264761176">إرشادات حول وظيفة اللمس</translation>
 <translation id="1325363694295259631">تم إلغاء اختيار الزر الخاص باختيار عنصر القائمة <ph name="NAME" />.</translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">الكائن التالي</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏عرض طلبات لغة برايل في قوائم ChromeVox</translation>
-<translation id="1999763610967697511">السحب والإفلات</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{قوس متوسط أيسر واحد}zero{# left brackets}two{قوسان متوسطان أيسران (#)}few{# أقواس متوسطة يسرى}many{# قوسًا متوسطًا أيسرًا}other{# من الأقواس اليسرى}}</translation>
 <translation id="2009187674653301682">ليست نصوصًا مرتفعة</translation>
 <translation id="2010555995361223825">‏قوائم ChromeVox</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">بني جلدي</translation>
 <translation id="2199994615414171367">التعبير الرياضي السابق</translation>
 <translation id="2203046366315513658">تقليل القيمة</translation>
+<translation id="2206580811360135054">إظهار أو إخفاء ملخّص النوافذ</translation>
 <translation id="2216790501338699346">‏عنوان URL للرابط: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">نقل للخلف بمقدار حرف واحد</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
+<translation id="2239819015858077439">اضغط على مفتاح السهم المتّجه للأسفل</translation>
 <translation id="2243633977138166243">‏للتنقُّل، اضغط على السهم المتّجه لليسار أو السهم المتّجه لليمين، ويمكنك الضغط على مفتاح Enter للتفعيل.</translation>
 <translation id="224426591676115802">لا يتوفّر صوت للغة: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">جارٍ إيقاف "وضع التعلُّم"</translation>
@@ -541,6 +544,7 @@
 <translation id="4432457053224379116">أحمر هندي</translation>
 <translation id="4432896207833262240">محتوى مميز</translation>
 <translation id="4437615272777527928">اكتب للبحث في القائمة. واستخدِم السهمَين المتّجِهين للأعلى وللأسفل للتنقّل بين النتائج. واستخدِم السهمَين الأيمن والأيسر لضبط علامة إقحام النص والتنقّل بين القوائم.</translation>
+<translation id="4441677939526091190">اضغط على مفتاح السهم المتّجه للأعلى</translation>
 <translation id="4453530046591759283">‏للانتقال سريعًا إلى أجزاء أخرى من الشاشة، مثل أشرطة الأدوات أو لوحة النظام، اضغط على مفتاحَي Control+F1. المفتاح F1 هو المفتاح الأول على يمين مفتاح Escape.</translation>
 <translation id="4457472090507035117">تحديد الصوت الحالي:</translation>
 <translation id="4476183483923481720">سطر جديد</translation>
@@ -587,7 +591,6 @@
 <translation id="4815668758102003883">فيروزي باهت</translation>
 <translation id="4826415162591436065">التنقل للأمام</translation>
 <translation id="4827410568042294688">تم إلغاء الاختيار</translation>
-<translation id="483262387981411190">‏إيقاف ميزة FaceGaze مؤقتًا أو استئنافها</translation>
 <translation id="4835598628985424375">تصغير الشفاه عن طريق ضمّها معًا</translation>
 <translation id="4838490795649708173">النقر بأربعة أصابع</translation>
 <translation id="4839925464551908214">انتقِل إلى الصف السابق.</translation>
@@ -720,6 +723,7 @@
 <translation id="5653397561111110475">‏استخدام ميزات إمكانية الوصول في شاشة لمس Chromebook</translation>
 <translation id="5655682562155942719">أوامر الانتقال السريع</translation>
 <translation id="56637627897541303">منطقة النص</translation>
+<translation id="5666746275818170484">اضغط على مفتاح السهم المتّجه لليسار</translation>
 <translation id="5669637233317991674">للتنقّل في هذا الدرس، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
 <translation id="5677240841070992068">الموقع الحالي</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -926,6 +930,7 @@
 <translation id="7161771961008409533">زر بقائمة منبثقة</translation>
 <translation id="7167657087543110">صدى الحرف</translation>
 <translation id="7173102181852295013">أزرق ليلي</translation>
+<translation id="7194194198490288773">‫<ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">موسع</translation>
 <translation id="7209751026933045237">ليس هناك شريط تمرير تالٍ.</translation>
 <translation id="7218782500591078391">أصفر ذهبي</translation>
@@ -1041,7 +1046,6 @@
 <translation id="8004512796067398576">زيادة</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{علامة اقتباس واحدة}zero{# quotes}two{علامتا اقتباس (#)}few{# علامات اقتباس}many{# علامة اقتباس}other{# من علامات الاقتباس}}</translation>
-<translation id="8017004049696748317">تفعيل ميزة "الإملاء" أو إيقافها</translation>
 <translation id="8017588669690167134">إيقاف ميزة تحويل النص إلى كلام</translation>
 <translation id="801990297710781303">حاشية سُفلية</translation>
 <translation id="8028833145828956995">‏يمكنك استخدام ChromeVox مع الشاشة التي تعمل باللمس.</translation>
@@ -1098,6 +1102,7 @@
 <translation id="8378855320830505539">منطقة</translation>
 <translation id="8382679411218029383">إكمال تلقائي على السطر وعلى هيئة قائمة</translation>
 <translation id="8394908167088220973">تشغيل/إيقاف الوسائط</translation>
+<translation id="8409502156784390079">وضع الانتقال مفعّل</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428603554127842284">المستوى <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1175,6 +1180,7 @@
 <translation id="8986362086234534611">حذف</translation>
 <translation id="8989104346085848538">‏لإيقاف ChromeVox عن الكلام، اضغط على مفتاح Control.</translation>
 <translation id="9014206344398081366">‏البرنامج التعليمي لقارئ الشاشة ChromeVox</translation>
+<translation id="9034592733577768445">‏تمّ إيقاف ميزة FaceGaze مؤقتًا</translation>
 <translation id="9040132695316389094">العنوان الأول</translation>
 <translation id="9061884144798498064">اختيار جدول نمط برايل مكوّن من 8 نقاط:</translation>
 <translation id="9063946545000394379">الانتقال إلى الحرف السابق</translation>

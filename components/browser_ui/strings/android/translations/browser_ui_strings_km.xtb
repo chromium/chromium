@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">បន្ទាប់</translation>
 <translation id="1240190568154816272">គន្លឹះប្រើប្រាស់ Chrome</translation>
 <translation id="1242008676835033345">បានបង្កប់​នៅលើ <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">ចុច កម្មវិធី  &gt; កម្មវិធី​លំនាំដើម</translation>
 <translation id="1272079795634619415">ឈប់</translation>
 <translation id="1289742167380433257">ដើម្បី​សន្សំសំចៃ​ទិន្នន័យ​ឱ្យអ្នក រូបភាព​របស់ទំព័រនេះ​ត្រូវបានបង្កើន​គុណភាព​ដោយ Google។</translation>
 <translation id="129382876167171263">ឯកសារ​ដែលបានរក្សាទុក​ដោយគេហទំព័រ​បង្ហាញ​នៅទីនេះ</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">ទប់ស្កាត់​ខូគីភាគីទីបី​ក្នុងមុខងារ​ឯកជន</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">មុខងារ​មួយចំនួន​ប្រហែល​​​​មិន​​ដំណើរការ​ទេ។ គេហទំព័រ​ដែល​ពាក់ព័ន្ធ​នៅ​តែ​អាច​ប្រើ​ខូគី​ភាគីទីបីបាន។</translation>
+<translation id="3922092564198021702">នៅលើ​ទូរសព្ទ​របស់អ្នក សូមបើក "ការកំណត់"</translation>
 <translation id="3933121352599513978">បង្រួម​សំណើ​ដែលមិនចង់បាន (បានណែនាំ)</translation>
 <translation id="3955193568934677022">អនុញ្ញាត​ឲ្យ​ទំព័រ​ចាក់​មាតិកា​ដែលមាន​ការ​ការពារ (ត្រូវបាន​ណែនាំ)</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">ឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="6207207788774442484">លុប​ទិន្នន័យ និង​កំណត់​ការអនុញ្ញាត​ឡើងវិញ</translation>
 <translation id="6231752747840485235">លុប '<ph name="APP_NAME" />' ឬ?</translation>
+<translation id="6234351944623978659">ចុច កម្មវិធីរុករក​តាមអ៊ីនធឺណិត &gt; Chrome</translation>
 <translation id="6262191102408817757">ដោយផ្អែកលើ​ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>
 <translation id="6262279340360821358">បានទប់ស្កាត់ <ph name="PERMISSION_1" /> និង <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">គេហទំព័រ​អាច​ស្នើសុំ​ការអនុញ្ញាត​ដើម្បី​ផ្ញើ​ការជូន​ដំណឹង</translation>

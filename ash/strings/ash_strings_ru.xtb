@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">Включить или отключить режим активного курсора</translation>
 <translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="2531107890083353124">Нажмите <ph name="KEY_ONE" /> при перетаскивании вкладки</translation>
+<translation id="2545334090614121435">Хотите нажать клавишу Home? Используйте</translation>
 <translation id="254900897760075745">Скопировать данные в буфер обмена</translation>
 <translation id="2549711466868162843">Улучшение освещенности</translation>
 <translation id="2549985041256363841">Начать запись</translation>
@@ -560,6 +561,7 @@
 <translation id="2985148236010982088">Посмотреть все приложения</translation>
 <translation id="2992272421330787632">Скрыть все подсказки для мультимедиа</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
+<translation id="2993956882370897557">Хотите нажать клавишу End? Используйте</translation>
 <translation id="3000461861112256445">Монофо­нический звук</translation>
 <translation id="3001391739687111021">Изменить размер экрана</translation>
 <translation id="3009178788565917040">Выход</translation>
@@ -612,6 +614,7 @@
 <translation id="316356270129335934">По требованию <ph name="MANAGER" /> на вашем устройстве <ph name="DEVICE_TYPE" /> выполняется откат. Настройки устройства будут сброшены, а все данные – удалены.</translation>
 <translation id="316798519864381606">Презентация Google</translation>
 <translation id="3171170659304083361">Настройки способов ввода</translation>
+<translation id="3174897399179348329">Хотите нажать клавишу Page Up? Используйте</translation>
 <translation id="3176221688814061633">На одном из ваших устройств устаревшая версия Bluetooth. Включите функцию Bluetooth Super Resolution или используйте встроенный микрофон для более высокого качества звука.</translation>
 <translation id="3181441307743005334">Перезапуск может занять несколько минут</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Подключено одно устройство}one{Подключено # устройство}few{Подключено # устройства}many{Подключено # устройств}other{Подключено # устройства}}</translation>
@@ -1259,6 +1262,7 @@
 <translation id="5297704307811127955">Отключено</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5302048478445481009">Язык</translation>
+<translation id="5302531370473608800">Для использования YouTube Music обновите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5303319262469238330">Уровень заряда батареи: <ph name="PERCENTAGE" /> %.
 Чтобы продлить время работы от батареи, использование некоторых функций было ограничено.</translation>
 <translation id="5308380583665731573">Подключение</translation>
@@ -1817,6 +1821,7 @@
 <translation id="7144942256906679589">Состояние батареи</translation>
 <translation id="7145639536026937076">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания. Режим энергосбережения включен.</translation>
 <translation id="7147587499155271409">Нет результатов из истории браузера.</translation>
+<translation id="7147657298465433425">Для использования функциональных клавиш нажимайте клавиши верхнего ряда, удерживая Fn.</translation>
 <translation id="7149149900052329230">Управляйте файлами на устройстве и Google Диске через приложение "Файлы".</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1928,7 @@
 <translation id="7557816257942363084">Сейчас использует микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
+<translation id="7568154670718626683">Хотите нажать клавишу Delete? Используйте</translation>
 <translation id="7568790562536448087">Обновление</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
 <translation id="7569886975397378678">Не настраивать просмотр уведомлений и приложений с телефона</translation>
@@ -2125,6 +2131,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Время в режиме концентрации внимания: <ph name="FOCUSED_TIME" />. Чтобы снова сфокусироваться на задаче, откройте быстрые настройки.</translation>
 <translation id="8203224998425013577">Ещё эмодзи и GIF</translation>
 <translation id="8203795194971602413">Нажатие правой кнопкой мыши</translation>
+<translation id="8205469348819768313">Хотите нажать клавишу Page Down? Используйте</translation>
 <translation id="8214996719228530800">Версия Canary</translation>
 <translation id="8219451629189078428">В течение этого времени устройство Chromebook должно быть включено, а кабели зарядного устройства или адаптера – надежно подсоединены к нему и подключены к сети электропитания. Не выключайте устройство Chromebook.</translation>
 <translation id="8220076512072059941">Плюс <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2324,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Ассистент не говорит на этом языке</translation>
 <translation id="8926951137623668982">Временное хранилище будет всегда скрыто</translation>
+<translation id="8929566928381252430">Хотите нажать клавишу Caps Lock? Используйте</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="8936501819958976551">отключила</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>

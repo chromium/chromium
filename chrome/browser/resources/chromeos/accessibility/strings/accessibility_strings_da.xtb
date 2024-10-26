@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Strågul</translation>
 <translation id="1618597272655350600">Angiver en komplet beskrivelse af den aktuelle position</translation>
 <translation id="1627222324347828322">Spøgelseshvid</translation>
-<translation id="1632810692616643246">Aktivér eller afslut rulletilstand</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{større end}one{# større end-tegn}other{# større end-tegn}}</translation>
 <translation id="1653266918374749391">Forrige niveau 3-overskrift</translation>
 <translation id="1657616855184033958">Vis filtre for begivenhedsstreaming</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Næste objekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Vis braillekommandoer i ChromeVox-menuer</translation>
-<translation id="1999763610967697511">Træk og slip</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{venstre kantet parentes}one{# venstre kantede parenteser}other{# venstre kantede parenteser}}</translation>
 <translation id="2009187674653301682">Ikke hævet skrift</translation>
 <translation id="2010555995361223825">ChromeVox-menuer</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Lys turkis</translation>
 <translation id="4826415162591436065">Naviger frem</translation>
 <translation id="4827410568042294688">fravalgt</translation>
-<translation id="483262387981411190">Sæt ansigtsstyring på pause, eller genoptag</translation>
 <translation id="4835598628985424375">Lav trutmund ved at klemme læberne sammen</translation>
 <translation id="4838490795649708173">Tryk med fire fingre</translation>
 <translation id="4839925464551908214">Gå til forrige række</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Forøg</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{anførelsestegn}one{# anførelsestegn}other{# anførelsestegn}}</translation>
-<translation id="8017004049696748317">Start eller stop diktering</translation>
 <translation id="8017588669690167134">Slå tale fra</translation>
 <translation id="801990297710781303">Fodnote</translation>
 <translation id="8028833145828956995">Du kan bruge ChromeVox med touchskærmen</translation>

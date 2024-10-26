@@ -442,6 +442,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
 <translation id="2531025035050312891">dispositiu lent</translation>
 <translation id="2531107890083353124">Mentre arrossegues la pestanya, prem <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Estàs provant d'utilitzar Inici? Utilitza:</translation>
 <translation id="254900897760075745">Copia el contingut seleccionat al porta-retalls</translation>
 <translation id="2549711466868162843">Millora la il·luminació</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
@@ -560,6 +561,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992272421330787632">Amaga tots els suggeriments de contingut multimèdia</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
+<translation id="2993956882370897557">Estàs provant d'utilitzar Fi? Utilitza:</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3001391739687111021">Edita la mida de la pantalla</translation>
 <translation id="3009178788565917040">Sortida</translation>
@@ -612,6 +614,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> està tornant el dispositiu <ph name="DEVICE_TYPE" /> a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
 <translation id="316798519864381606">Presentació de Google</translation>
 <translation id="3171170659304083361">Configuració dels mètodes d'introducció de text</translation>
+<translation id="3174897399179348329">Estàs provant d'utilitzar Re Pàg? Utilitza:</translation>
 <translation id="3176221688814061633">El Chromebook o el dispositiu Bluetooth utilitza una versió anterior de Bluetooth. Activa la superresolució Bluetooth o utilitza el micròfon intern per millorar la qualitat de l'àudio.</translation>
 <translation id="3181441307743005334">Pot tardar una estona a reiniciar-se</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connectat a un dispositiu}other{Connectat a # dispositius}}</translation>
@@ -1259,6 +1262,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302531370473608800">Actualitza el <ph name="DEVICE_TYPE" /> per utilitzar YouTube Music</translation>
 <translation id="5303319262469238330">Queda un <ph name="PERCENTAGE" /> % de bateria.
 Algunes funcions estan limitades per allargar la durada de la bateria.</translation>
 <translation id="5308380583665731573">Connecta</translation>
@@ -1817,6 +1821,7 @@ Instal·lació nova</translation>
 <translation id="7144942256906679589">Estat de la bateria</translation>
 <translation id="7145639536026937076">La bateria s'està carregant i està a un <ph name="PERCENTAGE" /> %. L'estalvi de bateria està activat.</translation>
 <translation id="7147587499155271409">No hi ha cap historial de navegació</translation>
+<translation id="7147657298465433425">Per accedir a les tecles F, prem la tecla fn+les tecles de la fila superior</translation>
 <translation id="7149149900052329230">Gestiona els fitxers locals i els de Google Drive des de l'aplicació Fitxers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1928,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7557816257942363084"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
+<translation id="7568154670718626683">Estàs provant de suprimir? Utilitza:</translation>
 <translation id="7568790562536448087">Actualització</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7569886975397378678">Ignora la configuració de visualització de les notificacions i de les aplicacions del telèfon</translation>
@@ -2125,6 +2131,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="820256110035940528"><ph name="TITLE" /> T'acabes de concentrar durant <ph name="FOCUSED_TIME" />. Obre la configuració ràpida per tornar-te a concentrar.</translation>
 <translation id="8203224998425013577">Mostra més emojis i GIF</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>
+<translation id="8205469348819768313">Estàs provant d'utilitzar Av Pàg? Utilitza:</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
 <translation id="8220076512072059941">Afegeix <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2324,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
 <translation id="8926951137623668982">El prestatge està sempre amagat</translation>
+<translation id="8929566928381252430">Estàs provant d'utilitzar Bloq Maj? Utilitza:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>

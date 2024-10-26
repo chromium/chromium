@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1908234395526491708">Невыполненные запросы UDP.</translation>
 <translation id="1908394185991500139">стрелка влево</translation>
+<translation id="1914144885717544695">в пятницу</translation>
 <translation id="1923388006036088459">Акцентные цвета</translation>
 <translation id="1945403655450283000">Диктофон</translation>
 <translation id="1947737735496445907">Напечатано</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">Течение воды</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Сегодня</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
 <translation id="2154460308960858308">Очистить строку поиска</translation>
 <translation id="2157660087437850958">окно выбора эмодзи</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2715723665057727940">река</translation>
 <translation id="2717139507051041123">Включить режим темных цветов</translation>
+<translation id="2726755229438917165">в понедельник</translation>
 <translation id="2728460467788544679">Удаление всей истории печати</translation>
 <translation id="2731700343119398978">Подождите…</translation>
 <translation id="2740531572673183784">ОК</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">Конечная точка</translation>
 <translation id="3060579846059757016">Описание</translation>
 <translation id="3061850252076394168">включить озвучивание при нажатии</translation>
+<translation id="3066772729299747758">во вторник</translation>
 <translation id="3069085583900247081">Проверка не пройдена</translation>
 <translation id="3078740164268491126">таблица</translation>
 <translation id="3081652522083185657">светлые тона</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">суши</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Динамические обои с Землей</translation>
 <translation id="33736539805963175">Буква: <ph name="LETTERS_LETTER" />, фон: <ph name="LETTERS_COLOR" /></translation>
 <translation id="3383623117265110236">Эксклюзивно</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
 <translation id="4130750466177569591">Принимаю</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
+<translation id="4137700675046373159">в субботу</translation>
 <translation id="4143226836069425823">Чтобы заменить выбранную клавишу, нажмите другую на клавиатуре</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">в воскресенье</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4251839292699800785">Стильный офис</translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">луг</translation>
 <translation id="551689408806449779">Устройство отключено. Подключите его снова, чтобы продолжить тестирование.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">Настройки микрофона</translation>
 <translation id="5534900277405737921">Рельеф</translation>
 <translation id="554067135846762198">коралловый и светло-коричневый</translation>
 <translation id="5543701552415191873">заблокировано</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
 <translation id="6535178685492749208">Нет подключения к интернету. Отзыв будет отправлен позже.</translation>
 <translation id="6543412779435705598">тако</translation>
+<translation id="6550369542114086980">в четверг</translation>
 <translation id="6551839203326557324">яблоки</translation>
 <translation id="65526652485742171">Кнопка "Подтвердить" стала доступной</translation>
 <translation id="6557784757915238407">Тип точки доступа – <ph name="ATTACH" />.</translation>
@@ -1264,6 +1273,7 @@
 <translation id="7180865173735832675">Настроить</translation>
 <translation id="7182063559013288142">Мгновенная точка доступа</translation>
 <translation id="7184043045742675738">Чтобы настроить кнопку, нажмите на любую клавишу. Измените положение с помощью мыши или клавиш со стрелками.</translation>
+<translation id="7187669805838282391">в среду</translation>
 <translation id="7206979415662233817">Условия использования</translation>
 <translation id="7210635925306941239">циановый</translation>
 <translation id="7212547870105584639">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1310,6 +1320,7 @@
 <translation id="7388959671917308825">Встроенная сенсорная панель</translation>
 <translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="7401543881546089382">Удалить ярлык</translation>
+<translation id="7405493795721832710">Устройство <ph name="DEVICE_NAME" /> готово к обновлению</translation>
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
@@ -1324,6 +1335,7 @@
 <translation id="7500205272584643581">Разрешить Диктофону распознавать и обозначать говорящих?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">Адрес IPv6</translation>
+<translation id="7503342217608032738">Невозможно использовать устройство</translation>
 <translation id="7507061649493508884">Сияющие растение. Вид: <ph name="FLOWER_TYPE" />. Цвет: <ph name="FLOWER_COLOR" />.</translation>
 <translation id="7513770521371759388">снизу</translation>
 <translation id="7514365320538308">Скачать</translation>
@@ -1336,6 +1348,8 @@
 <translation id="7544853251252956727">Перемешать</translation>
 <translation id="7550715992156305117">Программы диагностики</translation>
 <translation id="7551123448725492271">Это аудиоустройство.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Вы сможете снова использовать его <ph name="DAY" /> в <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Предварительный просмотр скриншота</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7561759921596375678">Включить звук</translation>
@@ -1397,6 +1411,7 @@
 <translation id="785170686607360576">тюльпан</translation>
 <translation id="7856267634822906833">Сенсорный экран Bluetooth</translation>
 <translation id="7859006200041800233">кактус</translation>
+<translation id="7865217133132122390">Включить микрофон</translation>
 <translation id="7869143217755017858">Отключить тёмную тему</translation>
 <translation id="7878972877380405573">Получить краткий пересказ от помощника по чтению</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1425,6 +1440,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Приложение "<ph name="APP_NAME_1" />" открылось автоматически}one{# приложение открылось автоматически}few{# приложения открылись автоматически}many{# приложений открылись автоматически}other{# приложения открылись автоматически}}</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
 <translation id="8004582292198964060">Браузер</translation>
+<translation id="8010765388850538088">Подробнее о генеративном искусственном интеллекте</translation>
 <translation id="8017679124341497925">Ярлык изменен</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -1434,6 +1450,7 @@
 <translation id="8045012663542226664">Микрофон</translation>
 <translation id="8054112564438735763">бежевый</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" />, цвет: <ph name="CHARACTERS_COLOR" />, фон: <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">Точка доступа подключена.</translation>
 <translation id="8067208048261192356">коричневый</translation>
 <translation id="8067224607978179455">Удалить клавишу "<ph name="ACTION_NAME" />"</translation>
@@ -1537,6 +1554,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
 <translation id="8576249514688522074">Без инициализации</translation>
+<translation id="8584654835905316966">Чтобы завершить установку встроенного ПО версии <ph name="VERSION" /> на устройстве <ph name="DEVICE_NAME" />, перезапустите устройство. Вам может показаться, что компьютер перезагружается несколько раз. Это нормально.</translation>
 <translation id="8593058461203131755">приостановить воспроизведение</translation>
 <translation id="8620617069779373398">Статус роуминга</translation>
 <translation id="8626489604350149811">Другие действия для точки доступа <ph name="APN_NAME" /></translation>
@@ -1670,6 +1688,7 @@
 <translation id="917720651393141712">Проверить</translation>
 <translation id="9188992814426075118">Цвет клавиатуры может автоматически подстраиваться под цвет обоев.</translation>
 <translation id="9189000703457422362">Не удается подключиться к этой сети через автоматически обнаруженные точки доступа. За подробной информацией обратитесь к оператору мобильной связи.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">Точка доступа*</translation>
 <translation id="9195918315673527512">Выбраны следующие клавиши для навигации: <ph name="KEYS" />. Чтобы настроить управление, нажмите кнопку.</translation>
 <translation id="9204237731135241582">Не удается связаться со шлюзом в приложениях для Android.</translation>
@@ -1690,5 +1709,6 @@
 <translation id="982713511914535780">Запустить проверку расхода заряда</translation>
 <translation id="98515147261107953">Пейзаж</translation>
 <translation id="987264212798334818">Общие</translation>
+<translation id="994473081369871639">Выключить микрофон</translation>
 <translation id="995062385528875723">Невозможно использовать знаки любых алфавитов, кроме латинского, буквы с диакритическими знаками и специальные символы.</translation>
 </translationbundle>

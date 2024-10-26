@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">위트</translation>
 <translation id="1618597272655350600">현재 위치에 대한 자세한 설명을 들려줍니다.</translation>
 <translation id="1627222324347828322">고스트 화이트</translation>
-<translation id="1632810692616643246">스크롤 모드 시작 또는 종료</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{큼 부호}other{큼 부호 #개}}</translation>
 <translation id="1653266918374749391">이전 수준 3 제목</translation>
 <translation id="1657616855184033958">이벤트 스트림 필터 표시</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">다음 객체</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox 메뉴에 점자 명령어 표시</translation>
-<translation id="1999763610967697511">드래그 앤 드롭</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{왼쪽 꺾음 괄호}other{왼쪽 꺾음 괄호 #개}}</translation>
 <translation id="2009187674653301682">위 첨자 아님</translation>
 <translation id="2010555995361223825">ChromeVox 메뉴</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">페일 터코이즈</translation>
 <translation id="4826415162591436065">앞으로 탐색</translation>
 <translation id="4827410568042294688">선택되지 않음</translation>
-<translation id="483262387981411190">얼굴 제어 일시중지 또는 재개</translation>
 <translation id="4835598628985424375">양 입술 오므리기</translation>
 <translation id="4838490795649708173">손가락 네 개로 탭</translation>
 <translation id="4839925464551908214">이전 행으로 이동</translation>
@@ -1049,7 +1046,6 @@
 <translation id="8004512796067398576">올리기</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{따옴표}other{따옴표 #개}}</translation>
-<translation id="8017004049696748317">음성기록 시작 또는 중지</translation>
 <translation id="8017588669690167134">음성 사용 중지</translation>
 <translation id="801990297710781303">각주</translation>
 <translation id="8028833145828956995">터치스크린으로 ChromeVox를 사용할 수 있습니다.</translation>

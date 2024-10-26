@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">пшениченожълто</translation>
 <translation id="1618597272655350600">Съобщава пълно описание на текущата позиция</translation>
 <translation id="1627222324347828322">призрачнобяло</translation>
-<translation id="1632810692616643246">Включване или изключване на режима за превъртане</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{знак за по-голямо}other{# знака за по-голямо}}</translation>
 <translation id="1653266918374749391">Предишното заглавие от трето ниво</translation>
 <translation id="1657616855184033958">Показване на филтрите за потоци на събития</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Следващият обект</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Показване на брайлови команди в менютата на ChromeVox</translation>
-<translation id="1999763610967697511">Хващане и преместване с мишката</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{лява квадратна скоба}other{# леви квадратни скоби}}</translation>
 <translation id="2009187674653301682">Не е горен индекс</translation>
 <translation id="2010555995361223825">Менюта на ChromeVox</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">бледотюркоазено</translation>
 <translation id="4826415162591436065">Навигация напред</translation>
 <translation id="4827410568042294688">отмяна на открояването</translation>
-<translation id="483262387981411190">Поставяне на пауза или възобновяване на контролирането с лице</translation>
 <translation id="4835598628985424375">Събиране на устните</translation>
 <translation id="4838490795649708173">Докоснете с четири пръста</translation>
 <translation id="4839925464551908214">Преминаване към предишния ред</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Увеличаване</translation>
 <translation id="8007540374018858731">заглавие от трето ниво</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{кавички}other{# кавички}}</translation>
-<translation id="8017004049696748317">Стартиране или спиране на диктуването</translation>
 <translation id="8017588669690167134">Функцията за реч е изключена</translation>
 <translation id="801990297710781303">Бележка под линия</translation>
 <translation id="8028833145828956995">Можете да използвате ChromeVox със сензорния екран</translation>

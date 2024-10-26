@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> देखि <ph name="KEY_TWO" /> सम्म थिच्नुहोस्</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
+<translation id="2781658180588759579">यो अन्तर्निर्मित टचप्याड अफ गरिएको छ। यो परिवर्तनको पुष्टि गर्न आफ्नो किबोर्ड वा अर्को पोइन्टर डिभाइस प्रयोग गर्नुहोस्।
+
+अन्यथा यो अन्तर्निर्मित टचप्याड <ph name="TIMEOUT_SECONDS" /> मा फेरि अन गरिने छ।</translation>
 <translation id="2782591952652094792">क्याप्चर मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="2785499565474703580">एउटा डिभाइस कनेक्ट गरिएको छ</translation>
 <translation id="2791421900609674576">तपाईं आफूले छाडेकै ठाउँबाट जारी राख्न सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिसहरू देखाइने छन्।  तपाईं टच एण्ड होल्ड गरेर ती सिफारिसहरू हटाउन सक्नुहुन्छ।</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">सेल्फमा भएको अघिल्लो वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="311799651966070385">रिमाइन्डर बन्द गर्नुहोस्</translation>
 <translation id="3120421559657122717">यो डिभाइस सट डाउन गर्ने हो?</translation>
+<translation id="3121411970001795539">माउस कनेक्ट गरिएकाले यो अन्तर्निर्मित टचप्याड अफ गरिएको छ। यो परिवर्तनको पुष्टि गर्न माउस वा किबोर्ड प्रयोग गर्नुहोस्।
+
+अन्यथा यो अन्तर्निर्मित टचप्याड <ph name="TIMEOUT_SECONDS" /> मा फेरि अन गरिने छ।</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">कक्षाकार्यको प्रकार</translation>
 <translation id="3126026824346185272">Ctrl</translation>

@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Pšeničná</translation>
 <translation id="1618597272655350600">Oznamuje úplný popis aktuálnej pozície</translation>
 <translation id="1627222324347828322">Sivastá biela</translation>
-<translation id="1632810692616643246">Spustenie alebo ukončenie režimu posúvania</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{znak je väčšie ako}few{# znaky je väčšie ako}many{# greater than signs}other{# znakov je väčšie ako}}</translation>
 <translation id="1653266918374749391">Predchádzajúci nadpis 3. úrovne</translation>
 <translation id="1657616855184033958">Zobraziť filtre streamovania udalosti</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Ďalší objekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Zobrazovať príkazy v Braillovom písme v ponukách čítačky ChromeVox</translation>
-<translation id="1999763610967697511">Presunutie</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ľavá hranatá zátvorka}few{# ľavé hranaté zátvorky}many{# left brackets}other{# ľavých hranatých zátvoriek}}</translation>
 <translation id="2009187674653301682">Text nie je horný index</translation>
 <translation id="2010555995361223825">Ponuky ChromeVox</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Bledotyrkysová</translation>
 <translation id="4826415162591436065">Prejsť dopredu</translation>
 <translation id="4827410568042294688">nevybrané</translation>
-<translation id="483262387981411190">Pozastaviť alebo obnoviť ovládanie tvárou</translation>
 <translation id="4835598628985424375">Stlačte pery a našpúľte ich</translation>
 <translation id="4838490795649708173">Klepnite štyrmi prstami</translation>
 <translation id="4839925464551908214">Prechod na predchádzajúci riadok</translation>
@@ -1049,7 +1046,6 @@
 <translation id="8004512796067398576">Zvýšenie</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{úvodzovka}few{# úvodzovky}many{# quotes}other{# úvodzoviek}}</translation>
-<translation id="8017004049696748317">Spustiť alebo zastaviť diktovanie</translation>
 <translation id="8017588669690167134">Hlasová odozva je vypnutá</translation>
 <translation id="801990297710781303">Poznámka pod čiarou</translation>
 <translation id="8028833145828956995">ChromeVox môžete používať pomocou dotykovej obrazovky</translation>

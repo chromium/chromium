@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">Միացրեք/անջատեք ստեղնային դիտարկումը</translation>
 <translation id="2531025035050312891">սարքը դանդաղ է</translation>
 <translation id="2531107890083353124">Ներդիրը քաշելով՝ սեղմեք <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Home ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
 <translation id="254900897760075745">Պատճենել ընտրված բովանդակությունը սեղմատախտակին</translation>
 <translation id="2549711466868162843">Բարելավված լուսավորություն</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
@@ -560,6 +561,7 @@
 <translation id="2985148236010982088">Տեսնել բոլոր հավելվածները</translation>
 <translation id="2992272421330787632">Թաքցնել մուլտիմեդիա ֆայլերի բոլոր առաջարկները</translation>
 <translation id="2992327365391326550">Սարքի խոսափողի կոճակն անջատված է։</translation>
+<translation id="2993956882370897557">End ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
 <translation id="3000461861112256445">Մոնո</translation>
 <translation id="3001391739687111021">Փոփոխել էկրանի չափսը</translation>
 <translation id="3009178788565917040">Ելք</translation>
@@ -612,6 +614,7 @@
 <translation id="316356270129335934">Համաձայն կառավարչի (<ph name="MANAGER" />) պահանջի՝ ձեր <ph name="DEVICE_TYPE" /> սարքում վերականգնվում է օպերացիոն համակարգի նախորդ տարբերակը։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
 <translation id="316798519864381606">Google Սլայդների ֆայլ</translation>
 <translation id="3171170659304083361">Ներածման մեթոդների կարգավորումներ</translation>
+<translation id="3174897399179348329">Page Up ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
 <translation id="3176221688814061633">Ձեր Chromebook-ը կամ Bluetooth սարքն օգտագործում է Bluetooth-ի ավելի հին տարբերակ։ Միացրեք Bluetooth Super Resolution-ը կամ օգտագործեք ներքին խոսափողը, որպեսզի ձայնի որակն ավելի լավը լինի։</translation>
 <translation id="3181441307743005334">Վերագործարկման համար կարող է որոշ ժամանակ պահանջվել</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Միացված է մեկ սարքի}one{Միացված է # սարքի}other{Միացված է # սարքի}}</translation>
@@ -1259,6 +1262,7 @@
 <translation id="5297704307811127955">Անջատված է</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5302048478445481009">Լեզու</translation>
+<translation id="5302531370473608800">Թարմացրեք ձեր <ph name="DEVICE_TYPE" /> սարքը՝ YouTube Music-ից օգտվելու համար</translation>
 <translation id="5303319262469238330">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%։
 Որոշ գործառույթներ սահմանափակվել են՝ մարտկոցի աշխատաժամանակը երկարացնելու համար։</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
@@ -1817,6 +1821,7 @@
 <translation id="7144942256906679589">Մարտկոցի կարգավիճակը</translation>
 <translation id="7145639536026937076">Մարտկոցը լիցքավորվում է (լիցքը՝ <ph name="PERCENTAGE" />%)։ Մարտկոցի տնտեսումը միացված է։</translation>
 <translation id="7147587499155271409">Այցելությունների պատմություն չկա</translation>
+<translation id="7147657298465433425">F ստեղներն օգտագործելու համար սեղմեք fn ստեղնը + վերևի շարքի ստեղները</translation>
 <translation id="7149149900052329230">Կառավարեք սարքում և Google Drive-ում պահված ձեր ֆայլերը՝ բոլորը «Ֆայլեր» հավելվածում։</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1928,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր խոսափողը</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
+<translation id="7568154670718626683">Փորձում եք ջնջե՞լ։ Օգտագործեք</translation>
 <translation id="7568790562536448087">Թարմացում</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
 <translation id="7569886975397378678">Բաց թողնել հեռախոսի ծանուցումների և հավելվածների դիտման կարգավորումը</translation>
@@ -2125,6 +2131,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Առանց շեղումների ռեժիմ <ph name="FOCUSED_TIME" /> տևողությամբ։ Բացեք Արագ կարգավորումները՝ առաջադրանքի վրա նորից կենտրոնանալու համար։</translation>
 <translation id="8203224998425013577">Ցուցադրել այլ էմոջիներ և GIF-եր</translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>
+<translation id="8205469348819768313">Page Down ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
 <translation id="8214996719228530800">Canary կապուղի</translation>
 <translation id="8219451629189078428">Այս ընթացքում Chromebook-ը պետք է միացված լինի և սնուցվի հոսանքից։ Համոզվեք, որ լիցքավորիչի և ադապտերի մալուխները պատշաճ միացված են Chromebook-ին և վարդակին։ Մի՛ անջատեք Chromebook-ը։</translation>
 <translation id="8220076512072059941">Ավելացնել <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2324,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google օգնականն այս լեզվով չի խոսում:</translation>
 <translation id="8926951137623668982">Դարակը միշտ թաքցված է</translation>
+<translation id="8929566928381252430">Caps Lock ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>

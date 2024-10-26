@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Kviešu</translation>
 <translation id="1618597272655350600">Sniedz pilnīgu aprakstu par pašreizējo pozīciju</translation>
 <translation id="1627222324347828322">Spoku balta</translation>
-<translation id="1632810692616643246">Ieslēgt vai izslēgt ritināšanas režīmu</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{zīme “lielāks par”}zero{# zīmju “lielāks par”}one{# zīme “lielāks par”}other{# zīmes “lielāks par”}}</translation>
 <translation id="1653266918374749391">Iepriekšējais 3. līmeņa virsraksts</translation>
 <translation id="1657616855184033958">Rādīt notikumu plūsmas filtrus</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Nākamais objekts</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Rādīt Braila raksta komandas ChromeVox izvēlnēs</translation>
-<translation id="1999763610967697511">Vilkšana un nomešana</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{atverošā kvadrātiekava}zero{# atverošo kvadrātiekavu}one{# atverošā kvadrātiekava}other{# atverošās kvadrātiekavas}}</translation>
 <translation id="2009187674653301682">Nav augšrakstā</translation>
 <translation id="2010555995361223825">ChromeVox izvēlnes</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Blāvi tirkīzzila</translation>
 <translation id="4826415162591436065">Pārvietoties uz priekšu</translation>
 <translation id="4827410568042294688">nav atlasīts</translation>
-<translation id="483262387981411190">Pārtraukt vai atsākt sejas vadību</translation>
 <translation id="4835598628985424375">Izstiepiet kopā savilktas lūpas</translation>
 <translation id="4838490795649708173">Pieskarieties ar četriem pirkstiem</translation>
 <translation id="4839925464551908214">Pāriet uz iepriekšējo rindu</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Palielināt</translation>
 <translation id="8007540374018858731">3. līmeņa virsraksts</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{pēdiņu rakstzīme}zero{# pēdiņu rakstzīmju}one{# pēdiņu rakstzīme}other{# pēdiņu rakstzīmes}}</translation>
-<translation id="8017004049696748317">Sākt vai apturēt diktēšanu</translation>
 <translation id="8017588669690167134">Runa izslēgta</translation>
 <translation id="801990297710781303">Vēre</translation>
 <translation id="8028833145828956995">ChromeVox var izmantot skārienekrānā.</translation>

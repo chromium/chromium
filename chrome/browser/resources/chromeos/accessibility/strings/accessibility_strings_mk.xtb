@@ -157,7 +157,6 @@
 <translation id="1964135212174907577">Следен објект</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Прикажувај наредби во брајово писмо во менијата на ChromeVox</translation>
-<translation id="1999763610967697511">Влечи и спушти</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{лева заграда}one{# лева заграда}other{# леви загради}}</translation>
 <translation id="2009187674653301682">Не е горен индекс</translation>
 <translation id="2010555995361223825">Менија на ChromeVox</translation>
@@ -588,7 +587,6 @@
 <translation id="4815668758102003883">Бледотиркизна</translation>
 <translation id="4826415162591436065">Оди напред</translation>
 <translation id="4827410568042294688">неизбрано</translation>
-<translation id="483262387981411190">Паузирајте или продолжете го контролирањето лице</translation>
 <translation id="4835598628985424375">Соберете ги усните така што ќе ги стиснете заедно</translation>
 <translation id="4838490795649708173">Допрете со четири прста</translation>
 <translation id="4839925464551908214">Одете на претходниот ред</translation>
@@ -1043,7 +1041,6 @@
 <translation id="8004512796067398576">Зголемување</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{цитат}one{# цитат}other{# цитати}}</translation>
-<translation id="8017004049696748317">Стартувајте или сопрете „Диктирање“</translation>
 <translation id="8017588669690167134">Исклучи говор</translation>
 <translation id="801990297710781303">Фуснота</translation>
 <translation id="8028833145828956995">Може да го користите ChromeVox со екранот на допир</translation>

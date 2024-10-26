@@ -157,7 +157,6 @@
 <translation id="1964135212174907577">Seguinte obxecto</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostrar comandos de braille nos menús de ChromeVox</translation>
-<translation id="1999763610967697511">Arrastrar e soltar</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{paréntese de apertura}other{# parénteses de apertura}}</translation>
 <translation id="2009187674653301682">Non é un superíndice</translation>
 <translation id="2010555995361223825">Menús de ChromeVox</translation>
@@ -587,7 +586,6 @@
 <translation id="4815668758102003883">Turquesa pálido</translation>
 <translation id="4826415162591436065">Navega cara adiante</translation>
 <translation id="4827410568042294688">non seleccionado</translation>
-<translation id="483262387981411190">Pór en pausa ou retomar o control facial</translation>
 <translation id="4835598628985424375">Facer o xesto de bicar</translation>
 <translation id="4838490795649708173">Toca con catro dedos</translation>
 <translation id="4839925464551908214">Ir á fila anterior</translation>
@@ -1042,7 +1040,6 @@
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{comiña}other{# comiñas}}</translation>
-<translation id="8017004049696748317">Iniciar ou deter o ditado</translation>
 <translation id="8017588669690167134">Desactiva a fala</translation>
 <translation id="801990297710781303">Nota ao pé</translation>
 <translation id="8028833145828956995">Podes utilizar ChromeVox coa pantalla táctil</translation>

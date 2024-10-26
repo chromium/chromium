@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="100421257800558142">የቀኝ ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="100506692671054486">ምንም ቀዳሚ ትዕዛዝ የለም</translation>
 <translation id="1009046985747440431">ለማሰስ የላይ ወይም የታች ቀስትን፣ ለማግበር enter ይጫኑ</translation>
 <translation id="1011903154582639569">አንድ ቁልፍ ያግኙ፣ ከዚያ ለመተየ ያንሱት</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">የማቀያየሪያ አዝራር</translation>
 <translation id="1299774449519412690">ፈካ ያለ የሰማይ ሰማያዊ</translation>
 <translation id="1303806948938513162">የChromeVox ምናሌዎችን ለማስገባት በ4 ጣቶች መታ ያድርጉ</translation>
+<translation id="1304162325618937178">የቦታ ቁልፍን ይጫኑ</translation>
 <translation id="1313373992684326101">ወደ ቀዳሚው ክፍል ውሰድ። ምሳሌዎች የሁኔታ መሳቢያውን እና ማስጀመሪያውን ያካትታሉ።</translation>
 <translation id="1315077335264761176">የንክኪ አቀማመጠ ገፅ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />፣ የምናሌ ንጥል ሬዲዮ አዝራር አልተመረጠም</translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">ቀጣይ ነገር</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">በChromeVox ምናሌዎች ውስጥ የብሬይል ትዕዛዞችን አሳይ</translation>
-<translation id="1999763610967697511">ይጎትቱና ጣል ያድርጉ</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{የግራ ማዕዘን ቅንፍ}one{# የግራ ማዕዘን ቅንፎች}other{# የግራ ማዕዘን ቅንፎች}}</translation>
 <translation id="2009187674653301682">ራስጌ አደር አይደለም</translation>
 <translation id="2010555995361223825">የChromeVox ምናሌዎች</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">የኮርቻ ቡናማ ቀለም</translation>
 <translation id="2199994615414171367">ቀዳሚ ሒሳብ</translation>
 <translation id="2203046366315513658">እሴትን ይቀንሱ</translation>
+<translation id="2206580811360135054">የመስኮቶች አጠቃላይ ዕይታን ያሳዩ እና ይደብቁ</translation>
 <translation id="2216790501338699346">የአገናኝ ዩአርኤል፦ <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">አንድ ቁምፊ ወደኋላ ውሰድ</translation>
 <translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
+<translation id="2239819015858077439">የታች ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="2243633977138166243">ለማሰስ ግራ ወይም ቀኝ ቀስት ይጫኑ፤ ለማግበር ይግቡ</translation>
 <translation id="224426591676115802">ለዚህ ቋንቋ ድምፅ አይገኝም፦ <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">መማር ሁነታን በማቆም ላይ</translation>
@@ -541,6 +544,7 @@
 <translation id="4432457053224379116">የህንድ ቀይ</translation>
 <translation id="4432896207833262240">ምልክት የተደረገበት ይዘት</translation>
 <translation id="4437615272777527928">ምናሌዎችን ለመፈለግ ይተይቡ። ውጤቶቹን ለማሰስ ወደ ላይ እና ወደታች ቀስቶችን ይጠቀሙ የጽሑፍ ክብደቱን ለማስተካከል እና በምናሌዎች መካከል ለማንቀሳቀስ የግራ እና ይቀኝ ቀስቶችን ይጠቀሙ።</translation>
+<translation id="4441677939526091190">የላይ ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="4453530046591759283">እንደ የመሣሪያ አሞሌዎች ወይም ወደ ስርዓት ትሪ ወዳሉ ሌሎች የማያ ገጹ ክፍሎች ለመሄድ Control+F1ን ይጫኑ። F1 ከዝለል ቁልፉ በስተቀኝ ያለው የመጀመሪያው ቁልፍ ነው።</translation>
 <translation id="4457472090507035117">አሁን ያለውን ድምፅ ይመረጡ፦</translation>
 <translation id="4476183483923481720">አዲስ መስመር</translation>
@@ -587,7 +591,6 @@
 <translation id="4815668758102003883">ግራጫ ወይራ ቅጠል</translation>
 <translation id="4826415162591436065">ወደፊት ያስሱ</translation>
 <translation id="4827410568042294688">አልተመረጠም</translation>
-<translation id="483262387981411190">የመልክ መቆጣጠሪያን ባለበት ያቁሙ እና ከቆመበት ይቀጥሉ</translation>
 <translation id="4835598628985424375">ከንፈሮችን አንድ ላይ በመጭመቅ ያጨማድዱ</translation>
 <translation id="4838490795649708173">በአራት ጣቶች መታ ያድርጉ</translation>
 <translation id="4839925464551908214">ወደ ቀዳሚ ረድፍ ይሂዱ</translation>
@@ -720,6 +723,7 @@
 <translation id="5653397561111110475">የChromebook ማያ ንካ የተደራሽነት ባህሪዎችን ይጠቀሙ</translation>
 <translation id="5655682562155942719">የዝላይ ትዕዛዞች</translation>
 <translation id="56637627897541303">የጽሑፍ ቦታ</translation>
+<translation id="5666746275818170484">የግራ ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="5669637233317991674">ይህን ትምህርት ለመዳሰስ Search + የቀኝ ቀስት፣ ወይም Search + የግራ ቀስትን ይጫኑ</translation>
 <translation id="5677240841070992068">የአሁኑ አካባቢ</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -926,6 +930,7 @@
 <translation id="7161771961008409533">ብቅ-ባይ አዝራር</translation>
 <translation id="7167657087543110">የቁምፊ ማስተጋባት</translation>
 <translation id="7173102181852295013">የእኩለ ሌሊት ሰማያዊ</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">ተዘርግቷል</translation>
 <translation id="7209751026933045237">ምንም ቀጣይ ተንሸራታች የለም</translation>
 <translation id="7218782500591078391">ወርቃማ በትር</translation>
@@ -1042,7 +1047,6 @@
 <translation id="8004512796067398576">ጭማሬ</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{የጥቅስ ምልክት}one{# የጥቅስ ምልክቶች}other{# የጥቅስ ምልክቶች}}</translation>
-<translation id="8017004049696748317">በቃል ማስጻፍን ያስጀምሩ እና ያቁሙ</translation>
 <translation id="8017588669690167134">ንግግር አጥፋ</translation>
 <translation id="801990297710781303">የግርጌ ማስታወሻ</translation>
 <translation id="8028833145828956995">በንኪ ማያ ገፅ ChromeVoxን መጠቀም ይችላሉ</translation>
@@ -1099,6 +1103,7 @@
 <translation id="8378855320830505539">ክልል</translation>
 <translation id="8382679411218029383">ራስ-አጠናቅቅ መስመር ውስጥ እና ዝርዝር</translation>
 <translation id="8394908167088220973">ሚዲያ አጫውት/ለአፍታ አቁም</translation>
+<translation id="8409502156784390079">የሸብልል ሁነታ ነቅቷል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8428603554127842284">ደረጃ <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1176,6 +1181,7 @@
 <translation id="8986362086234534611">እርሳ</translation>
 <translation id="8989104346085848538">ማንኛውም የአሁኑ ChromeVox ንግግርን ለማቆም የControl ቁልፉን ይጫኑ።</translation>
 <translation id="9014206344398081366">የChromeVox አጋዥ ሥልጠና</translation>
+<translation id="9034592733577768445">የፊት መቆጣጠሪያ ባለበት ቆሟል</translation>
 <translation id="9040132695316389094">ርዕስ 1</translation>
 <translation id="9061884144798498064">ባለ8 ነጥብ የብሬል ሰንጠረዥ ይምረጡ፦</translation>
 <translation id="9063946545000394379">ወደ ቀዳሚው ቁምፊ ውሰድ</translation>

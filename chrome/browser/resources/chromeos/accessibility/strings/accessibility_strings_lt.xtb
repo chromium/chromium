@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Rusva spalva</translation>
 <translation id="1618597272655350600">Paskelbiamas išsamus esamos pozicijos aprašas</translation>
 <translation id="1627222324347828322">Blyški balta spalva</translation>
-<translation id="1632810692616643246">Įjungti slinkimo režimą arba išeiti iš jo</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ženklas daugiau}one{# ženklas daugiau}few{# ženklai daugiau}many{# greater than signs}other{# ženklų daugiau}}</translation>
 <translation id="1653266918374749391">Ankstesnė 3 lygio antraštė</translation>
 <translation id="1657616855184033958">Rodyti įvykių srauto filtrus</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Kitas objektas</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Rodyti komandas Brailio raštu „ChromeVox“ meniu</translation>
-<translation id="1999763610967697511">Nuvilkti</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{atidaromasis laužtinis skliaustas}one{# atidaromasis laužtinis skliaustas}few{# atidaromieji laužtiniai skliaustai}many{# left brackets}other{# atidaromųjų laužtinių skliaustų}}</translation>
 <translation id="2009187674653301682">Ne viršutinis indeksas</translation>
 <translation id="2010555995361223825">„ChromeVox“ meniu</translation>
@@ -500,6 +498,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekundė}one{sekundė}few{sekundės}many{sekundės}other{sekundžių}}</translation>
 <translation id="4161663686871496107">„ChromeVox“ ekrano skaitymas balsu parengtas</translation>
 <translation id="4176463684765177261">Išjungta</translation>
+<translation id="4176677444195790114">Vykdomas nuvilkimas</translation>
 <translation id="4187322598335821254">Jei norite pereiti po vieną eilutę, perbraukite aukštyn arba žemyn</translation>
 <translation id="4188530942454211480">Ankstesnis sakinys</translation>
 <translation id="4191918948604314587">Mygtukas</translation>
@@ -594,7 +593,6 @@
 <translation id="4815668758102003883">Blyški turkio spalva</translation>
 <translation id="4826415162591436065">Eiti į priekį</translation>
 <translation id="4827410568042294688">nepasirinkta</translation>
-<translation id="483262387981411190">Pristabdyti arba atnaujinti veido kontrolę</translation>
 <translation id="4835598628985424375">Suspausti lūpas tarsi vamzdelį</translation>
 <translation id="4838490795649708173">Palieskite keturiais pirštais</translation>
 <translation id="4839925464551908214">Pereiti prie ankstesnės eilutės</translation>
@@ -1051,7 +1049,6 @@
 <translation id="8004512796067398576">Padidinti</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{kabučių ženklas}one{# kabučių ženklas}few{# kabučių ženklai}many{# quotes}other{# kabučių ženklų}}</translation>
-<translation id="8017004049696748317">Pradėti arba sustabdyti diktavimą</translation>
 <translation id="8017588669690167134">Kalbėjimas išjungtas</translation>
 <translation id="801990297710781303">Išnaša</translation>
 <translation id="8028833145828956995">Galite naudoti „ChromeVox“ jutikliniame ekrane</translation>

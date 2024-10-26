@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Цайвар шаргал (Буудайн өнгө)</translation>
 <translation id="1618597272655350600">Одоогийн албан тушаалын ажил үүргийн тодорхойлолтыг унших</translation>
 <translation id="1627222324347828322">Бага зэргийн цэнхэр туяатай цагаан</translation>
-<translation id="1632810692616643246">Гүйлгэх горимд орох эсвэл гарна уу</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ихийг илэрхийлэх тэмдэг}other{# ихийг илэрхийлэх тэмдгүүд}}</translation>
 <translation id="1653266918374749391">Өмнөх 3-р түвшний гарчиг</translation>
 <translation id="1657616855184033958">Арга хэмжээ цацах шүүлтүүрийг харуулах</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Дараах обьект</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox-н цэсэд брайлын тушаалуудыг харуулах</translation>
-<translation id="1999763610967697511">Зөөж хийх</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ зүүн талын хаалт}other{ # зүүн талын хаалтнууд}}</translation>
 <translation id="2009187674653301682">Дээд индекс биш байна</translation>
 <translation id="2010555995361223825">ChromeVox-н цэс</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Бүдэг оюу ногоон</translation>
 <translation id="4826415162591436065">Цааш нь үргэлжүүлэх</translation>
 <translation id="4827410568042294688">сонгоогүй</translation>
-<translation id="483262387981411190">Царайн хяналтыг түр зогсоох эсвэл үргэлжлүүлэх</translation>
 <translation id="4835598628985424375">Уруулаа цорвойлгох</translation>
 <translation id="4838490795649708173">Дөрвөн хуруугаар товших</translation>
 <translation id="4839925464551908214">Өмнөх мөр рүү очих</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Тоон өсөлт</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ квот}other{ # квотууд}}</translation>
-<translation id="8017004049696748317">Дуу хоолойгоор бичихийг эхлүүлэх эсвэл зогсоох</translation>
 <translation id="8017588669690167134">Яриаг идэвхгүй болгох</translation>
 <translation id="801990297710781303">Зүүлт тайлбар</translation>
 <translation id="8028833145828956995">Та ChromeVox-г мэдрэмтгий дэлгэцээр ашиглах боломжтой</translation>

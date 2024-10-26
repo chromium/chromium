@@ -442,6 +442,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2530896289327917474">Ativar ou desativar Caret Browsing</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Ao arrastar a guia, pressione <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Quer usar a tecla Home? Use</translation>
 <translation id="254900897760075745">Copiar conteúdo selecionado para a área de transferência</translation>
 <translation id="2549711466868162843">Ajustar iluminação</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
@@ -560,6 +561,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2985148236010982088">Mostrar todos os apps</translation>
 <translation id="2992272421330787632">Ocultar todas as sugestões de mídia</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
+<translation id="2993956882370897557">Quer usar a tecla End? Use</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3001391739687111021">Editar tamanho da tela</translation>
 <translation id="3009178788565917040">Saída</translation>
@@ -612,6 +614,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
 <translation id="316798519864381606">Apresentação Google</translation>
 <translation id="3171170659304083361">Configurações de métodos de entrada</translation>
+<translation id="3174897399179348329">Quer usar a tecla Page Up? Use</translation>
 <translation id="3176221688814061633">Seu Chromebook ou dispositivo Bluetooth está usando uma versão mais antiga do Bluetooth. Ative a super resolução do Bluetooth ou use o microfone interno para melhorar a qualidade do áudio.</translation>
 <translation id="3181441307743005334">A reinicialização pode demorar um pouco</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a um dispositivo}one{Conectado a # dispositivo}other{Conectado a # dispositivos}}</translation>
@@ -1259,6 +1262,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5297704307811127955">Desativado</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5302531370473608800">Atualize o <ph name="DEVICE_TYPE" /> para usar o YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% de bateria.
 Alguns recursos estão limitados para aumentar a duração da bateria.</translation>
 <translation id="5308380583665731573">Conectar</translation>
@@ -1817,6 +1821,7 @@ Nova instalação</translation>
 <translation id="7144942256906679589">Status da bateria</translation>
 <translation id="7145639536026937076">Bateria em <ph name="PERCENTAGE" />% e carregando. A Economia de bateria está ativada.</translation>
 <translation id="7147587499155271409">Não há histórico de navegação</translation>
+<translation id="7147657298465433425">Para acessar as teclas F, pressione a tecla Fn + as teclas da linha de cima</translation>
 <translation id="7149149900052329230">Gerencie seus arquivos locais e do Google Drive no app Arquivos.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1928,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando seu microfone</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outra área de trabalho pode resultar em comportamentos inesperados. Notificações posteriores, janelas e caixas de diálogo podem ser divididas entre as áreas de trabalho.</translation>
+<translation id="7568154670718626683">Quer excluir? Use</translation>
 <translation id="7568790562536448087">Atualização</translation>
 <translation id="7569509451529460200">Braille e ChromeVox estão ativados</translation>
 <translation id="7569886975397378678">Dispensar configuração de visualização de notificações e apps do smartphone</translation>
@@ -2125,6 +2131,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="820256110035940528"><ph name="TITLE" /> Você manteve o Foco por <ph name="FOCUSED_TIME" />. Abra as Configurações rápidas para usar o Foco de novo.</translation>
 <translation id="8203224998425013577">Mostrar mais emojis e GIFs</translation>
 <translation id="8203795194971602413">Clicar com o botão direito</translation>
+<translation id="8205469348819768313">Quer usar a tecla Page Down? Use</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">O Chromebook precisa ficar ligado e conectado à energia durante esse período. Verifique se os cabos do carregador ou adaptador estão completamente conectados, tanto ao Chromebook quanto à tomada. Não desligue o Chromebook.</translation>
 <translation id="8220076512072059941">Adicionar <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2324,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Google Assistente não fala esse idioma.</translation>
 <translation id="8926951137623668982">Estante sempre oculta</translation>
+<translation id="8929566928381252430">Quer usar a tecla Caps Lock? Use</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="8936501819958976551">desativado</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira da direita)</translation>

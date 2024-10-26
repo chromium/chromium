@@ -501,6 +501,9 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + búsqueda + s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> administra <ph name="DEVICE_TYPE" /></translation>
+<translation id="2781658180588759579">El panel táctil integrado está inhabilitado. Usa el teclado o algún otro dispositivo apuntador para confirmar el cambio.
+
+De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, manténlas presionadas.</translation>
@@ -598,6 +601,9 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3113492864356515707">Destacar el elemento anterior en la barra</translation>
 <translation id="311799651966070385">Cerrar sugerencia</translation>
 <translation id="3120421559657122717">¿Quieres apagar el dispositivo?</translation>
+<translation id="3121411970001795539">El panel táctil integrado está inhabilitado porque se conectó un mouse. Usa el mouse o el teclado para confirmar el cambio.
+
+De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabajo en clase</translation>
 <translation id="3126026824346185272">Ctrl</translation>

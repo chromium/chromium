@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="100421257800558142">Druk die regspylsleutel</translation>
 <translation id="100506692671054486">geen vorige opdrag nie</translation>
 <translation id="1009046985747440431">Druk op- of afpyl om te navigeer; Enter om te aktiveer</translation>
 <translation id="1011903154582639569">Soek 'n sleutel; lig dan op om te tik</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Wisselknoppie</translation>
 <translation id="1299774449519412690">Ligte hemelblou</translation>
 <translation id="1303806948938513162">Tik met 4 vingers om by die ChromeVox-kieslyste in te gaan</translation>
+<translation id="1304162325618937178">Druk die spasiesleutel</translation>
 <translation id="1313373992684326101">Gaan na vorige afdeling. Voorbeelde sluit die Statuslaai en Lanseerder in.</translation>
 <translation id="1315077335264761176">Raakoriëntering</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, kieslysitemradioknoppie is ontmerk</translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">Volgende voorwerp</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Wys braille-bevele in die ChromeVox-kieslyste</translation>
-<translation id="1999763610967697511">Sleep en los</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{linkerhakie}other{# linkerhakies}}</translation>
 <translation id="2009187674653301682">Nie boskrif nie</translation>
 <translation id="2010555995361223825">ChromeVox-kieslyste</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">Saalbruin</translation>
 <translation id="2199994615414171367">Vorige wiskunde</translation>
 <translation id="2203046366315513658">Verminder waarde</translation>
+<translation id="2206580811360135054">Wys of versteek oorsig van vensters</translation>
 <translation id="2216790501338699346">Skakel-URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Beweeg een karakter terug</translation>
 <translation id="2220529011494928058">Gee 'n kwessie aan</translation>
+<translation id="2239819015858077439">Druk die afpylsleutel</translation>
 <translation id="2243633977138166243">Druk links- of regspyl om te navigeer en Enter om te aktiveer</translation>
 <translation id="224426591676115802">Geen stem is vir die taal <ph name="LANGUAGE" /> beskikbaar nie</translation>
 <translation id="2247700577781885251">Stop tans Leermodus</translation>
@@ -541,6 +544,7 @@
 <translation id="4432457053224379116">Indiese rooi</translation>
 <translation id="4432896207833262240">Gemerkte inhoud</translation>
 <translation id="4437615272777527928">Tik om die kieslyste te deursoek. Gebruik die op- en afpyl om deur resultate te beweeg. Gebruik die links- en regspyl om die teksinlasteken te verstel en tussen kieslyste te beweeg.</translation>
+<translation id="4441677939526091190">Druk die oppylsleutel</translation>
 <translation id="4453530046591759283">Druk Control+F1 om na ander dele van die skerm, soos nutsbalke of die stelsellaai, te spring. F1 is die eerste sleutel regs van die Escape-sleutel.</translation>
 <translation id="4457472090507035117">Kies huidige stem:</translation>
 <translation id="4476183483923481720">nuwe reël</translation>
@@ -587,7 +591,6 @@
 <translation id="4815668758102003883">Ligturkoois</translation>
 <translation id="4826415162591436065">Navigeer vorentoe</translation>
 <translation id="4827410568042294688">ongekies</translation>
-<translation id="483262387981411190">Onderbreek of hervat gesigbeheer</translation>
 <translation id="4835598628985424375">Tuit deur jou lippe teen mekaar te druk</translation>
 <translation id="4838490795649708173">Tik met vier vingers</translation>
 <translation id="4839925464551908214">Gaan na die vorige ry</translation>
@@ -720,6 +723,7 @@
 <translation id="5653397561111110475">Gebruik Chromebook-raakskerm se toeganklikheidkenmerke</translation>
 <translation id="5655682562155942719">Springbevele</translation>
 <translation id="56637627897541303">Teksgebied</translation>
+<translation id="5666746275818170484">Druk die linkspylsleutel</translation>
 <translation id="5669637233317991674">Druk Search + regspyl of Search + linkspyl om deur hierdie les te navigeer</translation>
 <translation id="5677240841070992068">Huidige ligging</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -926,6 +930,7 @@
 <translation id="7161771961008409533">Opspringerknoppie</translation>
 <translation id="7167657087543110">karaktereggo</translation>
 <translation id="7173102181852295013">Middernagblou</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Uitgevou</translation>
 <translation id="7209751026933045237">Geen volgende glyer nie</translation>
 <translation id="7218782500591078391">Ougoud</translation>
@@ -1042,7 +1047,6 @@
 <translation id="8004512796067398576">Inkrement</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{aanhaling}other{# aanhalings}}</translation>
-<translation id="8017004049696748317">Begin of eindig diktering</translation>
 <translation id="8017588669690167134">Spraak af</translation>
 <translation id="801990297710781303">Voetnoot</translation>
 <translation id="8028833145828956995">Jy kan ChromeVox met die raakskerm gebruik</translation>
@@ -1099,6 +1103,7 @@
 <translation id="8378855320830505539">Streek</translation>
 <translation id="8382679411218029383">Outovoltooiing inlyn en lys</translation>
 <translation id="8394908167088220973">Media speel/laat wag</translation>
+<translation id="8409502156784390079">Rolleesmodus aktief</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8428603554127842284">vlak <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">kieslysbalk</translation>
@@ -1176,6 +1181,7 @@
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="8989104346085848538">Druk die Control-sleutel om enige ChromeVox-spraak te stop.</translation>
 <translation id="9014206344398081366">ChromeVox-tutoriaal</translation>
+<translation id="9034592733577768445">Gesigbeheer is onderbreek</translation>
 <translation id="9040132695316389094">Opskrif 1</translation>
 <translation id="9061884144798498064">Kies 'n 8-kolletje-brailletabel:</translation>
 <translation id="9063946545000394379">gaan na die vorige karakter</translation>

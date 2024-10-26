@@ -114,7 +114,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="1616111909442424068">Hveitigulur</translation>
 <translation id="1618597272655350600">Gefur ítarlega lýsingu á núverandi stöðu</translation>
 <translation id="1627222324347828322">Fölhvítur</translation>
-<translation id="1632810692616643246">Opna eða loka flettistillingu</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{stærra en}one{# stærra en-merki}other{# stærra en-merki}}</translation>
 <translation id="1653266918374749391">Fyrri 3. stigs fyrirsögn</translation>
 <translation id="1657616855184033958">Sýna síur viðburðarstraums</translation>
@@ -160,7 +159,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="1964135212174907577">Næsti hlutur</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Sýna skipanir fyrir blindraletur í valmyndum ChromeVox</translation>
-<translation id="1999763610967697511">Draga og sleppa</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{vinstri hornklofi}one{# vinstri hornklofi}other{# vinstri hornklofar}}</translation>
 <translation id="2009187674653301682">Ekki brjóstletur</translation>
 <translation id="2010555995361223825">ChromeVox valmyndir</translation>
@@ -593,7 +591,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4815668758102003883">Fölgrænblár</translation>
 <translation id="4826415162591436065">Fara áfram</translation>
 <translation id="4827410568042294688">ekki valinn</translation>
-<translation id="483262387981411190">Gera hlé á eða halda áfram með andlitsstýringu</translation>
 <translation id="4835598628985424375">Gerðu stút á varirnar</translation>
 <translation id="4838490795649708173">Ýttu með fjórum fingrum</translation>
 <translation id="4839925464551908214">Fara í fyrri línu</translation>
@@ -1050,7 +1047,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="8004512796067398576">Auka</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{gæsalöpp}one{# gæsalöpp}other{# gæsalappir}}</translation>
-<translation id="8017004049696748317">Hefja eða stöðva raddinnslátt</translation>
 <translation id="8017588669690167134">Slökkva á rödd</translation>
 <translation id="801990297710781303">Neðanmálsgrein</translation>
 <translation id="8028833145828956995">Hægt er að nota ChromeVox með snertiskjánum</translation>

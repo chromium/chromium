@@ -157,7 +157,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1964135212174907577">Objekti tjetër</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Shfaq komandat breil në menytë e ChromeVox</translation>
-<translation id="1999763610967697511">Zvarrit dhe lësho</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{kllapë e majtë}other{# kllapa të majta}}</translation>
 <translation id="2009187674653301682">Jo shkrim i sipërm</translation>
 <translation id="2010555995361223825">Menytë e ChromeVox</translation>
@@ -558,6 +557,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4562381607973973258">Titulli</translation>
 <translation id="4597532268155981612">formulari</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Kombinimi i personalizuar i tasteve: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Po shpërfill shtypjen tjetër të çelësit</translation>
 <translation id="4617384941327705512">"Modaliteti 'i ngjitur' inteligjent" është joaktiv</translation>
 <translation id="4623097797855662355">Kolofon</translation>
@@ -586,7 +586,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4815668758102003883">Gurkali e zbehtë</translation>
 <translation id="4826415162591436065">Lundro përpara</translation>
 <translation id="4827410568042294688">e papërzgjedhur</translation>
-<translation id="483262387981411190">Vendos në pauzë ose vazhdo me kontrollin me anë të fytyrës</translation>
 <translation id="4835598628985424375">Rrudh buzët me njëra-tjetrën</translation>
 <translation id="4838490795649708173">Trokit me katër gishta</translation>
 <translation id="4839925464551908214">Shko te radha e mëparshme</translation>
@@ -1041,7 +1040,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="8004512796067398576">Rritje</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{thonjëz}other{# thonjëza}}</translation>
-<translation id="8017004049696748317">Nis ose ndalo diktimin</translation>
 <translation id="8017588669690167134">E folura joaktive</translation>
 <translation id="801990297710781303">Fusnotë</translation>
 <translation id="8028833145828956995">Mund të përdorësh ChromeVox me ekranin me prekje</translation>

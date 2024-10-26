@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Pšenična</translation>
 <translation id="1618597272655350600">Objavi popoln opis trenutnega položaja</translation>
 <translation id="1627222324347828322">Sivo bela</translation>
-<translation id="1632810692616643246">Vklop ali izklop načina pomikanja</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{znak za več}one{# znak za več}two{# znaka za več}few{# znaki za več}other{# znakov za več}}</translation>
 <translation id="1653266918374749391">Prejšnji naslov na ravni 3</translation>
 <translation id="1657616855184033958">Prikaz filtrov toka dogodkov</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Naslednji predmet</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Prikaži ukaze v braillovi pisavi v menijih ChromeVoxa</translation>
-<translation id="1999763610967697511">Vlečenje in spuščanje</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{oglati oklepaj}one{# oglati oklepaj}two{# oglata oklepaja}few{# oglati oklepaji}other{# oglatih oklepajev}}</translation>
 <translation id="2009187674653301682">Ni nadpisano</translation>
 <translation id="2010555995361223825">ChromeVoxovi meniji</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Nežna turkizna</translation>
 <translation id="4826415162591436065">Pomik naprej</translation>
 <translation id="4827410568042294688">neizbrano</translation>
-<translation id="483262387981411190">Začasna zaustavitev ali nadaljevanje upravljanja z obrazom</translation>
 <translation id="4835598628985424375">Našobljenje ustnic</translation>
 <translation id="4838490795649708173">Dotaknite se s štirimi prsti</translation>
 <translation id="4839925464551908214">Na prejšnjo vrstico</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Povečava</translation>
 <translation id="8007540374018858731">n3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{narekovaj}one{# narekovaj}two{# narekovaja}few{# narekovaji}other{# narekovajev}}</translation>
-<translation id="8017004049696748317">Začetek ali ustavitev nareka</translation>
 <translation id="8017588669690167134">Izklop govora</translation>
 <translation id="801990297710781303">Sprotna opomba</translation>
 <translation id="8028833145828956995">ChromeVox lahko uporabljate z zaslonom na dotik</translation>

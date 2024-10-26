@@ -157,7 +157,6 @@
 <translation id="1964135212174907577">האובייקט הבא</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏בתפריטי ChromeVox יוצגו פקודות בכתב ברייל</translation>
-<translation id="1999763610967697511">גרירה ושחרור</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{סוגר מרובע שמאלי}one{# סימני סוגר מרובע שמאלי}two{# סימני סוגר מרובע שמאלי}other{# סימני סוגר מרובע שמאלי}}</translation>
 <translation id="2009187674653301682">לא כתב עילי</translation>
 <translation id="2010555995361223825">‏תפריטים של ChromeVox</translation>
@@ -587,7 +586,6 @@
 <translation id="4815668758102003883">טורקיז בהיר</translation>
 <translation id="4826415162591436065">ניווט קדימה</translation>
 <translation id="4827410568042294688">בחירה בוטלה</translation>
-<translation id="483262387981411190">השהיה או המשך של שליטה באמצעות תנועות הפנים</translation>
 <translation id="4835598628985424375">מצמידים ומכווצים את השפתיים</translation>
 <translation id="4838490795649708173">הקשה עם ארבע אצבעות</translation>
 <translation id="4839925464551908214">מעבר לשורה הקודמת</translation>
@@ -1042,7 +1040,6 @@
 <translation id="8004512796067398576">הוספה</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{מירכאות}one{# סימני מירכאות}two{# סימני מירכאות}other{# סימני מירכאות}}</translation>
-<translation id="8017004049696748317">הפעלה או הפסקה של ההכתבה</translation>
 <translation id="8017588669690167134">הדיבור כבוי</translation>
 <translation id="801990297710781303">הערת שוליים</translation>
 <translation id="8028833145828956995">‏אפשר להשתמש ב-ChromeVox באמצעות מסך המגע</translation>

@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">ਕਣਕਵੰਨਾ</translation>
 <translation id="1618597272655350600">ਵਰਤਮਾਨ ਪੋਜੀਸ਼ਨ ਦੇ ਇੱਕ ਪੂਰੇ ਵਰਣਨ ਦੀ ਘੋਸ਼ਣਾ ਕਰਦਾ ਹੈ</translation>
 <translation id="1627222324347828322">ਚਮਕਦਾਰ ਸਫ਼ੈਦ</translation>
-<translation id="1632810692616643246">ਸਕ੍ਰੋਲ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ ਜਾਂ ਉਸ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ਤੋਂ ਵੱਧ}one{# ਤੋਂ ਵੱਧ ਚਿੰਨ੍ਹ}other{# ਤੋਂ ਵੱਧ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="1653266918374749391">ਪਿਛਲਾ ਪੱਧਰ 3 ਸਿਰਲੇਖ</translation>
 <translation id="1657616855184033958">ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਫਿਲਟਰ ਦਿਖਾਓ</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">ਅਗਲਾ ਔਬਜੈਕਟ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਬਰੇਲ ਲਿਪੀ ਆਦੇਸ਼ ਦਿਖਾਓ</translation>
-<translation id="1999763610967697511">ਘਸੀਟੋ ਅਤੇ ਛੱਡੋ</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ਖੱਬੀ ਬ੍ਰੈਕਟ}one{# ਖੱਬੀਆਂ ਬ੍ਰੈਕਟਾਂ}other{# ਖੱਬੀਆਂ ਬ੍ਰੈਕਟਾਂ}}</translation>
 <translation id="2009187674653301682">ਕੋਈ ਉੱਪਰ ਅੰਕਿਤ ਲਿਖਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2010555995361223825">ChromeVox ਮੀਨੂ</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">ਫਿੱਕਾ ਫਿਰੋਜ਼ੀ</translation>
 <translation id="4826415162591436065">ਅੱਗੇ ਵੱਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="4827410568042294688">ਅਚੋਣਵਾਂ ਕੀਤਾ</translation>
-<translation id="483262387981411190">ਚਿਹਰਾ ਕੰਟਰੋਲ ਰੋਕੋ ਜਾਂ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4835598628985424375">ਬੁੱਲ੍ਹਾਂ ਨੂੰ ਇੱਕ-ਦੂਜੇ ਨਾਲ ਘੁੱਟ ਕੇ, ਉਨ੍ਹਾਂ ਨੂੰ ਅੰਦਰ ਵੱਲ ਖਿੱਚੋ</translation>
 <translation id="4838490795649708173">ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="4839925464551908214">ਪਿਛਲੀ ਕਤਾਰ 'ਤੇ ਜਾਓ</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ਉਕਤੀ}one{# ਉਕਤੀਆਂ}other{# ਉਕਤੀਆਂ}}</translation>
-<translation id="8017004049696748317">ਡਿਕਟੇਸ਼ਨ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="8017588669690167134">ਬੋਲੀ ਬੰਦ ਕਰੋ</translation>
 <translation id="801990297710781303">ਪਗ ਟਿੱਪਣੀ</translation>
 <translation id="8028833145828956995">ਤੁਸੀਂ ਟੱਚਸਕ੍ਰੀਨ ਨਾਲ ChromeVox ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>

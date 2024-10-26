@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
 <translation id="1908394185991500139">ลูกศรซ้าย</translation>
+<translation id="1914144885717544695">ในวันศุกร์</translation>
 <translation id="1923388006036088459">สีเฉพาะจุด</translation>
 <translation id="1945403655450283000">โปรแกรมอัดเสียง</translation>
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">ล่องลอยผ่านไป</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">วันนี้</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
 <translation id="2154460308960858308">ล้างการค้นหา</translation>
 <translation id="2157660087437850958">เครื่องมือเลือกอีโมจิ</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2715723665057727940">แม่น้ำ</translation>
 <translation id="2717139507051041123">เปิดใช้โหมดสีมืด</translation>
+<translation id="2726755229438917165">ในวันจันทร์</translation>
 <translation id="2728460467788544679">ล้างประวัติการพิมพ์ทั้งหมด</translation>
 <translation id="2731700343119398978">โปรดรอสักครู่...</translation>
 <translation id="2740531572673183784">ตกลง</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">ปลายทาง</translation>
 <translation id="3060579846059757016">โครงร่าง</translation>
 <translation id="3061850252076394168">เปิดใช้ฟีเจอร์เลือกเพื่อให้อ่าน</translation>
+<translation id="3066772729299747758">ในวันอังคาร</translation>
 <translation id="3069085583900247081">การทดสอบไม่สำเร็จ</translation>
 <translation id="3078740164268491126">ตาราง</translation>
 <translation id="3081652522083185657">สว่าง</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">ซูชิ</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">วอลเปเปอร์การเคลื่อนที่ของโลก</translation>
 <translation id="33736539805963175">พื้นหลัง <ph name="LETTERS_COLOR" /> พร้อมตัวอักษร <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">พิเศษ</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">ลากเมาส์ไปเรื่อยๆ เพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
 <translation id="4130750466177569591">ฉันยอมรับ</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
+<translation id="4137700675046373159">ในวันเสาร์</translation>
 <translation id="4143226836069425823">แตะคีย์อื่นบนแป้นพิมพ์เพื่อแทนที่</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">ในวันอาทิตย์</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4251839292699800785">สำนักงานที่มีสไตล์</translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">ทุ่งหญ้า</translation>
 <translation id="551689408806449779">ยกเลิกการเชื่อมต่ออุปกรณ์แล้ว ลองเชื่อมต่ออีกครั้งเพื่อทดสอบ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">ตัวเลือกไมโครโฟน</translation>
 <translation id="5534900277405737921">ภูมิประเทศ</translation>
 <translation id="554067135846762198">ชมพูคอรัลและน้ำตาลอ่อน</translation>
 <translation id="5543701552415191873">ล็อกอยู่</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
 <translation id="6535178685492749208">คุณออฟไลน์อยู่ ระบบจะส่งความคิดเห็นในภายหลัง</translation>
 <translation id="6543412779435705598">ทาโก้</translation>
+<translation id="6550369542114086980">ในวันพฤหัสบดี</translation>
 <translation id="6551839203326557324">แอปเปิ้ล</translation>
 <translation id="65526652485742171">เปิดใช้ปุ่มยืนยันแล้ว</translation>
 <translation id="6557784757915238407">APN เป็นแบบ <ph name="ATTACH" /></translation>
@@ -1264,6 +1273,7 @@
 <translation id="7180865173735832675">กำหนดค่า</translation>
 <translation id="7182063559013288142">ฮอตสปอตด่วน</translation>
 <translation id="7184043045742675738">คลิกแป้นใดก็ได้เพื่อปรับแต่งปุ่ม เปลี่ยนตำแหน่งแป้นด้วยเมาส์หรือแป้นลูกศร</translation>
+<translation id="7187669805838282391">ในวันพุธ</translation>
 <translation id="7206979415662233817">ข้อกำหนดในการให้บริการ</translation>
 <translation id="7210635925306941239">ฟ้าอมเขียว</translation>
 <translation id="7212547870105584639">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1310,6 +1320,7 @@
 <translation id="7388959671917308825">ทัชแพดในตัว</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
 <translation id="7401543881546089382">ลบทางลัด</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> พร้อมอัปเดตแล้ว</translation>
 <translation id="741244894080940828">การแปลง</translation>
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
 <translation id="7425037327577270384">ช่วยฉันเขียน</translation>
@@ -1324,6 +1335,7 @@
 <translation id="7500205272584643581">อนุญาตให้โปรแกรมอัดเสียงตรวจหาและติดป้ายกำกับผู้พูดไหม</translation>
 <translation id="7501957181231305652">หรือ</translation>
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
+<translation id="7503342217608032738">ใช้อุปกรณ์ไม่ได้</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" />สี<ph name="FLOWER_COLOR" />สดใส</translation>
 <translation id="7513770521371759388">ด้านล่าง</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
@@ -1336,6 +1348,8 @@
 <translation id="7544853251252956727">สุ่มเพลง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />คุณจะใช้อุปกรณ์นี้ได้อีกครั้ง<ph name="DAY" /> เวลา <ph name="TIME" /><ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">ดูตัวอย่างภาพหน้าจอ</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7561759921596375678">เปิดระดับเสียง</translation>
@@ -1397,6 +1411,7 @@
 <translation id="785170686607360576">ทิวลิป</translation>
 <translation id="7856267634822906833">หน้าจอสัมผัสบลูทูธ</translation>
 <translation id="7859006200041800233">ดอกกระบองเพชร</translation>
+<translation id="7865217133132122390">เปิดไมโครโฟน</translation>
 <translation id="7869143217755017858">ปิดใช้โหมดมืด</translation>
 <translation id="7878972877380405573">สรุปด้วยฟีเจอร์ช่วยฉันอ่าน</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1425,6 +1440,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" เริ่มทำงานโดยอัตโนมัติแล้ว}other{แอป # แอปเริ่มทำงานโดยอัตโนมัติแล้ว}}</translation>
 <translation id="7994702968232966508">วิธีการ EAP</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
+<translation id="8010765388850538088">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Generative AI</translation>
 <translation id="8017679124341497925">แก้ไขทางลัดแล้ว</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8028993641010258682">ขนาด</translation>
@@ -1434,6 +1450,7 @@
 <translation id="8045012663542226664">ปุ่มปิดเสียงไมโครโฟน</translation>
 <translation id="8054112564438735763">เบจ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" />สี<ph name="CHARACTERS_COLOR" />บนพื้นหลังสี<ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">เชื่อมต่อ APN แล้ว</translation>
 <translation id="8067208048261192356">น้ำตาล</translation>
 <translation id="8067224607978179455">ลบ<ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1554,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
+<translation id="8584654835905316966">ต้องรีสตาร์ทเพื่อติดตั้งเฟิร์มแวร์สำหรับ <ph name="DEVICE_NAME" /> เป็นเวอร์ชัน <ph name="VERSION" /> ให้เสร็จสมบูรณ์ คอมพิวเตอร์อาจดูเหมือนรีบูตหลายครั้ง ลักษณะการทำงานนี้เป็นสิ่งที่คาดไว้อยู่แล้ว</translation>
 <translation id="8593058461203131755">หยุดสื่อชั่วคราว</translation>
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
 <translation id="8626489604350149811">การดำเนินการเพิ่มเติมสำหรับ <ph name="APN_NAME" /></translation>
@@ -1670,6 +1688,7 @@
 <translation id="917720651393141712">ทดสอบ</translation>
 <translation id="9188992814426075118">แป้นพิมพ์สามารถจับคู่กับวอลเปเปอร์ได้โดยอัตโนมัติ</translation>
 <translation id="9189000703457422362">ไม่สามารถเชื่อมต่อกับเครือข่ายนี้โดยใช้ APN ที่ตรวจพบโดยอัตโนมัติ โปรดติดต่อสอบถามข้อมูลเพิ่มเติมจากผู้ให้บริการเครือข่ายมือถือ</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">คีย์จอยสติ๊กที่เลือกคือ <ph name="KEYS" /> แตะปุ่มเพื่อแก้ไขตัวควบคุม</translation>
 <translation id="9204237731135241582">ไม่สามารถติดต่อกับเกตเวย์จากแอป Android</translation>
@@ -1690,5 +1709,6 @@
 <translation id="982713511914535780">ทดสอบการคายประจุของแบตเตอรี่</translation>
 <translation id="98515147261107953">ภาพทิวทัศน์</translation>
 <translation id="987264212798334818">ทั่วไป</translation>
+<translation id="994473081369871639">ปิดไมโครโฟน</translation>
 <translation id="995062385528875723">ใช้ตัวอักษรเน้นเสียง อักขระที่ไม่ใช่ภาษาละติน หรือสัญลักษณ์ไม่ได้</translation>
 </translationbundle>

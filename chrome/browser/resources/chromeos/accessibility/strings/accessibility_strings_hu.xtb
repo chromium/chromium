@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Búza</translation>
 <translation id="1618597272655350600">Pontosan elmondja, hogy mi az aktuális pozíció</translation>
 <translation id="1627222324347828322">Szellemfehér</translation>
-<translation id="1632810692616643246">Görgetési mód használata vagy kikapcsolása</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{nagyobb jel}other{# nagyobb jel}}</translation>
 <translation id="1653266918374749391">Előző 3. szintű fejléc</translation>
 <translation id="1657616855184033958">Esemény streamszűrőinek megjelenítése</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Következő objektum</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Braille-parancsok megjelenítése a ChromeVox-menükben</translation>
-<translation id="1999763610967697511">Húzás</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{szögletes nyitó zárójel}other{# szögletes nyitó zárójel}}</translation>
 <translation id="2009187674653301682">Nem felső indexelt</translation>
 <translation id="2010555995361223825">ChromeVox-menük</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Halvány türkizkék</translation>
 <translation id="4826415162591436065">Navigálás előre</translation>
 <translation id="4827410568042294688">nincs kijelölve</translation>
-<translation id="483262387981411190">Arcvezérlés szüneteltetése vagy folytatása</translation>
 <translation id="4835598628985424375">Ajkak ráncolása az összehúzásukkal</translation>
 <translation id="4838490795649708173">Koppintson négy ujjal</translation>
 <translation id="4839925464551908214">Ugrás az előző sorra</translation>
@@ -1049,7 +1046,6 @@
 <translation id="8004512796067398576">Növelés</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{idézőjel}other{# idézőjel}}</translation>
-<translation id="8017004049696748317">Diktálás elkezdése vagy befejezése</translation>
 <translation id="8017588669690167134">Szövegfelolvasás kikapcsolása</translation>
 <translation id="801990297710781303">Lábjegyzet</translation>
 <translation id="8028833145828956995">A ChromeVox használható az érintőképernyővel</translation>

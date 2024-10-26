@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="100421257800558142">فشار دادن کلید راست‌بَر</translation>
 <translation id="100506692671054486">پیام قبلی وجود ندارد</translation>
 <translation id="1009046985747440431">‏پیکان بالا یا پایین را برای پیمایش فشار دهید؛ برای فعال کردن Enter (ورود) را فشار دهید</translation>
 <translation id="1011903154582639569">کلیدی را پیدا کنید، سپس سراغ تایپ کردن بروید</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">دکمه تغییر وضعیت</translation>
 <translation id="1299774449519412690">آبی آسمانی روشن</translation>
 <translation id="1303806948938513162">‏برای ورود به منوهای ChromeVox، با ۴ انگشت تک‌ضرب بزنید</translation>
+<translation id="1304162325618937178">فشار دادن کلید فاصله</translation>
 <translation id="1313373992684326101">به بخش قبلی بروید. نمونه‌ها شامل «سینی وضعیت» و «راه‌انداز» می‌شود.</translation>
 <translation id="1315077335264761176">جهت لمس</translation>
 <translation id="1325363694295259631"><ph name="NAME" />، دکمه رادیویی گزینه منو لغو انتخاب شد</translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">شیء بعدی</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏نمایش فرمان‌های بریل در منوهای ChromeVox</translation>
-<translation id="1999763610967697511">کشیدن و رها کردن</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{کروشه چپ}one{# کروشه چپ}other{# کروشه چپ}}</translation>
 <translation id="2009187674653301682">بالانگاشت نیست</translation>
 <translation id="2010555995361223825">‏منوهای ChromeVox</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">کاکائویی</translation>
 <translation id="2199994615414171367">عبارت ریاضی قبلی</translation>
 <translation id="2203046366315513658">کاهش مقدار</translation>
+<translation id="2206580811360135054">نشان دادن یا پنهان کردن نمای کلی پنجره‌ها</translation>
 <translation id="2216790501338699346">نشانی وب پیوند: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">یک نویسه به عقب بروید</translation>
 <translation id="2220529011494928058">گزارش یک مشکل</translation>
+<translation id="2239819015858077439">فشار دادن کلید پایین‌بر</translation>
 <translation id="2243633977138166243">برای پیمایش، جهت‌نمای چپ یا راست را فشار دهید؛ برای فعال‌سازی کلید ورود را فشار دهید</translation>
 <translation id="224426591676115802">هیچ صدایی برای زبان <ph name="LANGUAGE" /> در دسترس نیست</translation>
 <translation id="2247700577781885251">درحال توقف «حالت یادگیری»</translation>
@@ -541,6 +544,7 @@
 <translation id="4432457053224379116">جگری</translation>
 <translation id="4432896207833262240">محتوای علامت‌دار</translation>
 <translation id="4437615272777527928">برای جستجو در منوها، تایپ کنید. برای جابه‌جایی بین نتایج از پیکان‌های بالا و پایین استفاده کنید. برای تنظیم کردن هشتک نوشتار و حرکت کردن بین منوها از پیکان‌های چپ و راست استفاده کنید.</translation>
+<translation id="4441677939526091190">فشار دادن کلید بالابر</translation>
 <translation id="4453530046591759283">‏برای رفتن به قسمت‌های دیگر صفحه، مثل نوارهای ابزار یا سینی سیستم، کلید «Control+F1» را فشار دهید. کلید F1 اولین کلید در سمت راست کلید Esc است.</translation>
 <translation id="4457472090507035117">انتخاب صدای فعلی:</translation>
 <translation id="4476183483923481720">خط جدید</translation>
@@ -587,7 +591,6 @@
 <translation id="4815668758102003883">فیروزه‌ای کدر</translation>
 <translation id="4826415162591436065">پیمایش به‌جلو</translation>
 <translation id="4827410568042294688">انتخاب لغو شد</translation>
-<translation id="483262387981411190">موقتاً متوقف کردن یا ازسر گرفتن کنترل چهره</translation>
 <translation id="4835598628985424375">غنچه کردن لب‌ها با فشردن آن‌ها به هم</translation>
 <translation id="4838490795649708173">ضربه با چهار انگشت</translation>
 <translation id="4839925464551908214">رفتن به ردیف قبلی</translation>
@@ -720,6 +723,7 @@
 <translation id="5653397561111110475">‏استفاده از قابلیت‌های دسترس‌پذیری صفحه لمسی Chromebook</translation>
 <translation id="5655682562155942719">پرش از فرمان‌ها</translation>
 <translation id="56637627897541303">قسمت نوشتاری</translation>
+<translation id="5666746275818170484">فشار دادن کلید چپ‌بَر</translation>
 <translation id="5669637233317991674">برای پیمایش کردن در این درس، کلیدهای «جستجو + پیکان روبه‌راست»، یا «جستجو + پیکان روبه‌چپ» را فشار دهید</translation>
 <translation id="5677240841070992068">مکان فعلی</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -926,6 +930,7 @@
 <translation id="7161771961008409533">دکمه بازشو</translation>
 <translation id="7167657087543110">بازگویی نویسه</translation>
 <translation id="7173102181852295013">آبی نفتی</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">باز شده</translation>
 <translation id="7209751026933045237">لغزنده بعدی وجود ندارد</translation>
 <translation id="7218782500591078391">خردلی</translation>
@@ -1042,7 +1047,6 @@
 <translation id="8004512796067398576">افزایش</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{نقل قول}one{# نقل قول}other{# نقل قول}}</translation>
-<translation id="8017004049696748317">شروع یا متوقف کردن دیکته</translation>
 <translation id="8017588669690167134">خاموش کردن گفتار</translation>
 <translation id="801990297710781303">پانویس</translation>
 <translation id="8028833145828956995">‏می‌توانید با صفحه لمسی از ChromeVox استفاده کنید</translation>
@@ -1099,6 +1103,7 @@
 <translation id="8378855320830505539">منطقه</translation>
 <translation id="8382679411218029383">تکمیل خودکار به‌خط و فهرست</translation>
 <translation id="8394908167088220973">پخش/مکث رسانه</translation>
+<translation id="8409502156784390079">حالت پیمایش فعال است</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8428603554127842284">سطح <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1176,6 +1181,7 @@
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="8989104346085848538">‏برای متوقف کردن گفتار فعلی ChromeVox، کلید Control را فشار دهید.</translation>
 <translation id="9014206344398081366">‏آموزش گام‌به‌گام ChromeVox</translation>
+<translation id="9034592733577768445">کنترل چهره موقتاً متوقف شد</translation>
 <translation id="9040132695316389094">عنوان ۱</translation>
 <translation id="9061884144798498064">انتخاب جدول بریل ۸ نقطه‌ای:</translation>
 <translation id="9063946545000394379">رفتن به نویسه قبلی</translation>

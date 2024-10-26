@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">गहुँगोरो</translation>
 <translation id="1618597272655350600">हालको स्थितिको पूरा विवरण घोषणा गर्छ</translation>
 <translation id="1627222324347828322">भूत जस्तो सेतो</translation>
-<translation id="1632810692616643246">स्क्रोल मोड अन वा अफ गर्नुहोस्</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ भन्दा ठुलो}other{ संकेतहरू # भन्दा सानो}}</translation>
 <translation id="1653266918374749391">अघिल्लो तह 3 शीर्षक</translation>
 <translation id="1657616855184033958">घटनाका स्ट्रिमसम्बन्धी फिल्टरहरू देखाउनुहोस्</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">अर्को वस्तु</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox का मेनुहरूमा ब्रेल आदेशहरू देखाउनुहोस्</translation>
-<translation id="1999763610967697511">ड्र्याग एन्ड ड्रप गर्नुहोस्</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{बायाँ ब्र्याकेट}other{# बायाँ ब्र्याकेटहरू}}</translation>
 <translation id="2009187674653301682">सुपरस्क्रिप्ट होइन</translation>
 <translation id="2010555995361223825">ChromeVox मेनुहरू</translation>
@@ -499,6 +497,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{सेकेन्ड}other{सेकेन्ड}}</translation>
 <translation id="4161663686871496107">ChromeVox बोली पृष्ठपोषण तैयार छ</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
+<translation id="4176677444195790114">ड्र्याग एन्ड ड्रप गरिँदै छ</translation>
 <translation id="4187322598335821254">एउटाबाट अर्को हरफमा सर्न माथि वा तलतिर स्वाइप गर्नुहोस्</translation>
 <translation id="4188530942454211480">अघिल्लो वाक्य</translation>
 <translation id="4191918948604314587">एउटा बटन</translation>
@@ -593,7 +592,6 @@
 <translation id="4815668758102003883">फिक्का टर्कोइस</translation>
 <translation id="4826415162591436065">अगाडि जानुहोस्</translation>
 <translation id="4827410568042294688">चयन नगरिएका</translation>
-<translation id="483262387981411190">फेस कन्ट्रोल पज वा सुचारु गर्नुहोस्</translation>
 <translation id="4835598628985424375">ओठ जोडेर मुख चुच्चो पार्नुहोस्</translation>
 <translation id="4838490795649708173">चार औँलाले ट्याप गर्नुहोस्</translation>
 <translation id="4839925464551908214">अघिल्लो पङ्क्तिमा जानुहोस्</translation>
@@ -1050,7 +1048,6 @@
 <translation id="8004512796067398576">बृद्धि</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{कोट}other{# कोटहरू}}</translation>
-<translation id="8017004049696748317">स्पिच-टु-टेक्स्ट अन वा अफ गर्नुहोस्</translation>
 <translation id="8017588669690167134">बोली निष्क्रिय पार्नुहोस्</translation>
 <translation id="801990297710781303">फुटनोट</translation>
 <translation id="8028833145828956995">तपाईं टचस्क्रिनमार्फत ChromeVox प्रयोग गर्न सक्नुहुन्छ</translation>

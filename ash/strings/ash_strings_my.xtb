@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">Caret ဖြင့်ရှာကြည့်ခြင်းကို ဖွင့်ရန် သို့မဟုတ် ပိတ်ရန်</translation>
 <translation id="2531025035050312891">စက်နှေး</translation>
 <translation id="2531107890083353124">တဘ်ကို ဖိဆွဲနေစဉ် <ph name="KEY_ONE" /> ကို နှိပ်ပါ</translation>
+<translation id="2545334090614121435">‘Home’ ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="254900897760075745">ရွေးထားသောအကြောင်းအရာကို ကလစ်ဘုတ်သို့ မိတ္တူကူးရန်</translation>
 <translation id="2549711466868162843">မီးရောင်မွမ်းမံခြင်း</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
@@ -500,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> မှ <ph name="KEY_TWO" /> အထိ</translation>
 <translation id="2778197796481941784">Ctrl+ရှာဖွေမှု+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
+<translation id="2781658180588759579">အသင့်ပါပြီးတာ့ချ်ပက်ကို ပိတ်ထားသည်။ ပြောင်းလဲမှုကို အတည်ပြုရန်အတွက် ကီးဘုတ် (သို့) အခြား ညွှန်ပြသည့်ကိရိယာ အသုံးပြုပါ။
+
+သို့မဟုတ်ပါက အသင့်ပါပြီးတာ့ချ်ပက်ကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ဖွင့်မည်။</translation>
 <translation id="2782591952652094792">ပုံဖမ်းယူမှုမုဒ်မှ ထွက်မည်</translation>
 <translation id="2785499565474703580">စက်ပစ္စည်း ၁ ခု ချိတ်ဆက်ထားသည်</translation>
 <translation id="2791421900609674576">ထားခဲ့သည့်နေရာမှ ဆက်လုပ်နိုင်ရန် အကြံပြုချက်များ မြင်ရပါမည်။ တို့ထိ၍ ဖိထားပြီး အကြံပြုချက်များ ဖျက်နိုင်သည်။</translation>
@@ -560,6 +564,7 @@
 <translation id="2985148236010982088">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="2992272421330787632">မီဒီယာ အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="2992327365391326550">စက်၏မိုက်ခရိုဖုန်းခလုတ် ပိတ်ထားသည်။</translation>
+<translation id="2993956882370897557">‘End’ ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="3000461861112256445">မိုနိုအသံ</translation>
 <translation id="3001391739687111021">ဖန်သားပြင်အရွယ်အစား ပြင်ဆင်ရန်</translation>
 <translation id="3009178788565917040">အထွက်</translation>
@@ -596,6 +601,9 @@
 <translation id="3113492864356515707">စင်ပေါ်တွင် ယခင်အက်ပ်ကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="311799651966070385">သတိပေးနှိုးဆော်ချက် ပိတ်ရန်</translation>
 <translation id="3120421559657122717">စက်ကို အပြီးပိတ်မလား။</translation>
+<translation id="3121411970001795539">မောက်စ် ချိတ်ဆက်ထားသဖြင့် အသင့်ပါပြီးတာ့ချ်ပက်ကို ပိတ်ထားသည်။ ပြောင်းလဲမှုကို အတည်ပြုရန်အတွက် မောက်စ် (သို့) ကီးဘုတ် အသုံးပြုပါ။
+
+သို့မဟုတ်ပါက အသင့်ပါပြီးတာ့ချ်ပက်ကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ဖွင့်မည်။</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">အတန်းတွင်းသင်ခန်းစာ အမျိုးအစား</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -612,6 +620,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> က သင့် <ph name="DEVICE_TYPE" /> ကို နောက်ပြန်ဆုတ်နေသည်။ စက်ပြင်ဆင်သတ်မှတ်မည်ဖြစ်ပြီး ဒေတာအားလုံးကို ဖျက်ပါမည်။</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">လက်ကွက် ဆက်တင်များ</translation>
+<translation id="3174897399179348329">‘Page Up’ ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="3176221688814061633">သင့် Chromebook (သို့) ဘလူးတုသ်သုံးစက်သည် ဘလူးတုသ် ဗားရှင်းဟောင်းကို သုံးနေသည်။ ပိုကောင်းသောအရည်အသွေးအတွက် ‘ဘလူးတုသ် စူပါကြည်လင်ပြတ်သားမှု’ ဖွင့်ပါ (သို့) စက်တွင်းပါမိုက်ခရိုဖုန်း သုံးပါ။</translation>
 <translation id="3181441307743005334">ပြန်စရန် အချိန်အနည်းငယ် ကြာနိုင်သည်</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{စက်ပစ္စည်းတစ်ခုသို့ ချိတ်ထားသည်}other{စက်ပစ္စည်း # ခုသို့ ချိတ်ထားသည်}}</translation>
@@ -1259,6 +1268,7 @@
 <translation id="5297704307811127955">ပိတ်ရန်</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5302048478445481009">ဘာသာစကား</translation>
+<translation id="5302531370473608800">YouTube Music သုံးရန် သင့် <ph name="DEVICE_TYPE" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="5303319262469238330">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။
 ဘက်ထရီသက်တမ်းကြာစေရန် ဝန်ဆောင်မှုအချို့ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
@@ -1817,6 +1827,7 @@
 <translation id="7144942256906679589">ဘက်ထရီ အခြေအနေ</translation>
 <translation id="7145639536026937076">ဘက်ထရီ <ph name="PERCENTAGE" />% ရှိပြီး အားသွင်းနေသည်။ ‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်။</translation>
 <translation id="7147587499155271409">ကြည့်ရှုမှုမှတ်တမ်း မရှိပါ</translation>
+<translation id="7147657298465433425">F ခလုတ်များကို သုံးရန်အတွက် fn ခလုတ် + ထိပ်ဆုံးအတန်းခလုတ်များကို နှိပ်ပါ</translation>
 <translation id="7149149900052329230">သင်၏ စက်တွင်းဖိုင်နှင့် Google Drive ဖိုင်များအားလုံးကို Files အက်ပ်တွင် စီမံနိုင်သည်။</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />၊
@@ -1923,6 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> က သင့်မိုက်ခရိုဖုန်းကို လက်ရှိသုံးနေသည်</translation>
 <translation id="7561982940498449837">မီနူးကို ပိတ်ရန်</translation>
 <translation id="7564874036684306347">ဝင်းဒိုးများကို အခြားဒက်စ်တော့တစ်ခုသို့ ရွှေ့ခြင်းဖြင့် မျှော်လင့်မထားသည့် လုပ်ဆောင်ပုံများ ဖြစ်ပေါ်စေနိုင်ပါသည်။ နောက်ဆက်တွဲ အကြောင်းကြားချက်များ၊ ဝင်းဒိုးများနှင့် စကားပြောများကို ဒက်စ်တော့များအကြား ခွဲဖွင့်နိုင်ပါသည်။</translation>
+<translation id="7568154670718626683">‘Delete’ ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="7568790562536448087">အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="7569509451529460200">မျက်မမြင်စာ နှင့် ChromeVox ကို ဖွင့်ထားပါသည်</translation>
 <translation id="7569886975397378678">သင့်ဖုန်းရှိ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
@@ -2125,6 +2137,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> <ph name="FOCUSED_TIME" /> အတွက် အထူးပြသထားသည်။ ထပ်မံ၍ အထူးပြသရန် ‘အမြန်ဆက်တင်များ’ ဖွင့်ပါ။</translation>
 <translation id="8203224998425013577">အီမိုဂျီနှင့် GIF များ ပိုပြပါ</translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
+<translation id="8205469348819768313">‘Page Down’ ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="8214996719228530800">Canary ချန်နယ်</translation>
 <translation id="8219451629189078428">ဤအချိန်အတွင်းတွင် သင့် Chromebook ကို ဖွင့်ထားပြီး ပါဝါချိတ်ဆက်ထားရန် လိုအပ်ပါသည်။ အားသွင်းကိရိယာ သို့မဟုတ် ကြားခံကိရိယာကြိုးများကို သင့် Chromebook နှင့် ပလတ်ပေါက် နှစ်ခုစလုံးတွင် တပ်ထားကြောင်း သေချာပါစေ။ သင့် Chromebook ကို မပိတ်ပါနှင့်။</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ထည့်ရန်</translation>
@@ -2318,6 +2331,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant သည် ဤဘာသာစကားကို မသိပါ။</translation>
 <translation id="8926951137623668982">စင်ကို အမြဲ ဖျောက်ထားလိုက်ပါပြီ</translation>
+<translation id="8929566928381252430">‘စာလုံးကြီး’ အတွက် လော့ခ်ချမည့်ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ဖိုင် ၁ ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>
 <translation id="8938800817013097409">USB-C ကိရိယာ (ကျောဘက် ညာ ပို့တ်)</translation>

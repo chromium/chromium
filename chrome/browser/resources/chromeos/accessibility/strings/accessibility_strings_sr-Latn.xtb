@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Boja pšenice</translation>
 <translation id="1618597272655350600">Objavljuje potpun opis aktuelnog položaja</translation>
 <translation id="1627222324347828322">Prljavobela</translation>
-<translation id="1632810692616643246">Uđi u režim skrolovanja ili izađi iz njega</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{znak „veće od“}one{# znak „veće od“}few{# znaka „veće od“}other{# znakova „veće od“}}</translation>
 <translation id="1653266918374749391">Prethodno zaglavlje 3. nivoa</translation>
 <translation id="1657616855184033958">Prikaži filtere strima događaja</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Sledeći objekat</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Prikazuj komande na Brajevoj azbuci u ChromeVox menijima</translation>
-<translation id="1999763610967697511">Prevlačenje i otpuštanje</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{leva uglasta zagrada}one{# leva uglasta zagrada}few{# leve uglaste zagrade}other{# levih uglastih zagrada}}</translation>
 <translation id="2009187674653301682">Nije eksponentni tekst</translation>
 <translation id="2010555995361223825">ChromeVox meniji</translation>
@@ -595,7 +593,6 @@
 <translation id="4815668758102003883">Svetlotirkizna</translation>
 <translation id="4826415162591436065">Kretanje unapred</translation>
 <translation id="4827410568042294688">izbor je opozvan</translation>
-<translation id="483262387981411190">Pauzirajte ili nastavite kontrolu lica</translation>
 <translation id="4835598628985424375">Napućite usne tako što ćete ih stisnuti zajedno</translation>
 <translation id="4838490795649708173">Dodirnite pomoću četiri prsta</translation>
 <translation id="4839925464551908214">Idite na prethodni red</translation>
@@ -1052,7 +1049,6 @@
 <translation id="8004512796067398576">Povećanje</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{znak navoda}one{# znak navoda}few{# znaka navoda}other{# znakova navoda}}</translation>
-<translation id="8017004049696748317">Pokrenite ili zaustavite diktiranje</translation>
 <translation id="8017588669690167134">Govor je isključen</translation>
 <translation id="801990297710781303">Fusnota</translation>
 <translation id="8028833145828956995">ChromeVox možete da koristite sa dodirnim ekranom</translation>

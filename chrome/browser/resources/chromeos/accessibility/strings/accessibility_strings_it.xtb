@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Grano</translation>
 <translation id="1618597272655350600">Fornisce una descrizione completa della posizione corrente</translation>
 <translation id="1627222324347828322">Bianco gesso</translation>
-<translation id="1632810692616643246">Attiva o disattiva la modalità di scorrimento</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{simbolo di maggiore}other{# simboli di maggiore}}</translation>
 <translation id="1653266918374749391">Intestazione livello 3 precedente</translation>
 <translation id="1657616855184033958">Mostra i filtri del flusso di eventi</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Oggetto successivo</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostra comandi braille nei menu ChromeVox</translation>
-<translation id="1999763610967697511">Trascinare</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{parentesi quadra di apertura}other{# parentesi quadre di apertura}}</translation>
 <translation id="2009187674653301682">Non apice</translation>
 <translation id="2010555995361223825">Menu ChromeVox</translation>
@@ -594,7 +592,6 @@
 <translation id="4815668758102003883">Turchese chiaro</translation>
 <translation id="4826415162591436065">Spostati avanti</translation>
 <translation id="4827410568042294688">non selezionato</translation>
-<translation id="483262387981411190">Metti in pausa o riprendi il controllo del volto</translation>
 <translation id="4835598628985424375">Protendi insieme le labbra</translation>
 <translation id="4838490795649708173">Tocca con quattro dita</translation>
 <translation id="4839925464551908214">Consente di andare alla riga precedente</translation>
@@ -1051,7 +1048,6 @@
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{virgolette}other{# segni di virgolette}}</translation>
-<translation id="8017004049696748317">Avvia o interrompi la dettatura</translation>
 <translation id="8017588669690167134">Sintesi vocale disattivata</translation>
 <translation id="801990297710781303">Piè di pagina</translation>
 <translation id="8028833145828956995">Puoi usare ChromeVox con il touchscreen</translation>

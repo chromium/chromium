@@ -157,7 +157,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1964135212174907577">अगला ऑब्जेक्ट</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox मेन्यू में ब्रेल निर्देश दिखाएं</translation>
-<translation id="1999763610967697511">खींचें और छोड़ें</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{बायां कोष्ठक}one{# बाएं कोष्ठक}other{# बाएं कोष्ठक}}</translation>
 <translation id="2009187674653301682">सुपरस्क्रिप्ट नहीं है</translation>
 <translation id="2010555995361223825">ChromeVox मेनू</translation>
@@ -587,7 +586,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4815668758102003883">हल्का फ़िरोज़ी</translation>
 <translation id="4826415162591436065">'आगे की ओर' नेविगेट करें</translation>
 <translation id="4827410568042294688">अचयनित</translation>
-<translation id="483262387981411190">फ़ेस कंट्रोल की सुविधा को रोकें या फिर से शुरू करें</translation>
 <translation id="4835598628985424375">होंठों को एक-दूसरे से चिपकाकर, उन्हें अंदर की ओर खींचें</translation>
 <translation id="4838490795649708173">चार उंगलियों से टैप करें</translation>
 <translation id="4839925464551908214">पिछली पंक्ति पर जाएं</translation>
@@ -1041,7 +1039,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8004512796067398576">वृद्धि</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{उद्धरण}one{# उद्धरण}other{# उद्धरण}}</translation>
-<translation id="8017004049696748317">बोलकर लिखवाने की सुविधा चालू या बंद करें</translation>
 <translation id="8017588669690167134">बोली बंद करें</translation>
 <translation id="801990297710781303">फ़ुटनोट</translation>
 <translation id="8028833145828956995">आप टचस्क्रीन की मदद से ChromeVox का इस्तेमाल कर सकते हैं</translation>

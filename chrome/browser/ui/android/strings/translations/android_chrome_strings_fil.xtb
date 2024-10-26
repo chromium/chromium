@@ -80,6 +80,7 @@
 <translation id="1332501820983677155">Mga shortcut ng feature ng Google Chrome</translation>
 <translation id="1333491156693005331">Sinuri kamakailan</translation>
 <translation id="1336996151357442890">Nag-unsubscribe sa <ph name="SITE_NAME" />. Tatanungin ka ulit sa iyong susunod na pagbisita.</translation>
+<translation id="1342886103232377846">Para tingnan kung may mga nakompromisong password, pumunta sa Google Password Manager</translation>
 <translation id="1344653310988386453">Isama ang link sa highlight</translation>
 <translation id="1347468774581902829">Pamahalaan ang aktibidad</translation>
 <translation id="1355088659320425659">History at mga tab</translation>
@@ -135,6 +136,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1553358976309200471">I-update ang Chrome</translation>
 <translation id="1554532453982918912">Tumulong na pahusayin ang Chrome para sa mga taong ginagamit ito gaya ng paggamit mo</translation>
 <translation id="1568636008098739136">Makinig sa page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
+<translation id="1571041387761170095">Walang password na mahina o ginamit ulit</translation>
 <translation id="1571304935088121812">Kopyahin ang username</translation>
 <translation id="1584648915421894279">Sa ngayon, hindi magagamit sa lahat ng channel ng Chrome ang mga password na naka-save sa device na ito. Pagkatapos ng Chrome 125, ime-merge ang mga password na naka-save sa iyong device para sa Chrome at <ph name="CHROME_CHANNEL" />, at magagamit ang mga ito sa parehong app.</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> (na) iminumungkahing item sa listahan sa ibaba.</translation>

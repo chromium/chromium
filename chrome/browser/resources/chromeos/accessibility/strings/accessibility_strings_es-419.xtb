@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Amarillo trigo</translation>
 <translation id="1618597272655350600">Muestra una descripción completa de la posición actual.</translation>
 <translation id="1627222324347828322">Blanco fantasma</translation>
-<translation id="1632810692616643246">Ingresa al modo de desplazamiento o sal de él</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{mayor que}other{# signos mayor que}}</translation>
 <translation id="1653266918374749391">Encabezado anterior de nivel 3</translation>
 <translation id="1657616855184033958">Mostrar filtros para la transmisión de eventos</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Objeto siguiente</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostrar los comandos braille en los menús de ChromeVox</translation>
-<translation id="1999763610967697511">Arrastrar y soltar</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{corchete de apertura}other{# corchetes de apertura}}</translation>
 <translation id="2009187674653301682">Sin superíndice</translation>
 <translation id="2010555995361223825">Menús de ChromeVox</translation>
@@ -499,6 +497,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{segundo}other{segundos}}</translation>
 <translation id="4161663686871496107">Los comentarios por voz de ChromeVox están listos.</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
+<translation id="4176677444195790114">Arrastrar y soltar en curso</translation>
 <translation id="4187322598335821254">Desliza hacia arriba o abajo para desplazarte entre las líneas</translation>
 <translation id="4188530942454211480">Frase anterior</translation>
 <translation id="4191918948604314587">Un botón</translation>
@@ -593,7 +592,6 @@
 <translation id="4815668758102003883">Turquesa claro</translation>
 <translation id="4826415162591436065">Avanzar</translation>
 <translation id="4827410568042294688">sin seleccionar</translation>
-<translation id="483262387981411190">Pausar o reanudar el control facial</translation>
 <translation id="4835598628985424375">Apretar los labios y fruncirlos</translation>
 <translation id="4838490795649708173">Presionar con cuatro dedos</translation>
 <translation id="4839925464551908214">Ir a la fila anterior</translation>
@@ -1050,7 +1048,6 @@
 <translation id="8004512796067398576">Incremento</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{comilla}other{# comillas}}</translation>
-<translation id="8017004049696748317">Iniciar o detener el dictado</translation>
 <translation id="8017588669690167134">Desactivar comentarios de texto a voz</translation>
 <translation id="801990297710781303">Nota a pie de página</translation>
 <translation id="8028833145828956995">Puedes usar ChromeVox con la pantalla táctil</translation>

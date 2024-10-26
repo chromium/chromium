@@ -442,6 +442,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2530896289327917474">Uključivanje ili isključivanje pregledavanja kursorom</translation>
 <translation id="2531025035050312891">uređaj je spor</translation>
 <translation id="2531107890083353124">Dok povlačite karticu, pritisnite <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Pokušavate li upotrijebiti tipku Home? Upotrijebite</translation>
 <translation id="254900897760075745">Kopiranje odabranog sadržaja u međuspremnik</translation>
 <translation id="2549711466868162843">Poboljšanje osvjetljenja</translation>
 <translation id="2549985041256363841">Početak snimanja</translation>
@@ -563,6 +564,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
 <translation id="2992272421330787632">Sakrij sve medijske prijedloge</translation>
 <translation id="2992327365391326550">Gumb mikrofona na uređaju je isključen.</translation>
+<translation id="2993956882370897557">Pokušavate li upotrijebiti tipku End? Upotrijebite</translation>
 <translation id="3000461861112256445">Monozvuk</translation>
 <translation id="3001391739687111021">Uredite veličinu zaslona</translation>
 <translation id="3009178788565917040">Izlaz</translation>
@@ -618,6 +620,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="316356270129335934"><ph name="MANAGER" /> vraća vaš uređaj <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se vratiti na zadano i svi će se podaci izbrisati.</translation>
 <translation id="316798519864381606">Google prezentacija</translation>
 <translation id="3171170659304083361">Postavke načina unosa</translation>
+<translation id="3174897399179348329">Pokušavate li upotrijebiti tipku Page Up? Upotrijebite</translation>
 <translation id="3176221688814061633">Chromebook ili Bluetooth uređaj upotrebljava stariju verziju Bluetootha. Uključite Bluetooth Super Resolution ili upotrebljavajte interni mikrofon za bolju kvalitetu zvuka.</translation>
 <translation id="3181441307743005334">Ponovno pokretanje može potrajati neko vrijeme</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Povezano s jednim uređajem}one{Povezano s # uređajem}few{Povezano s # uređaja}other{Povezano s # uređaja}}</translation>
@@ -1266,6 +1269,7 @@ Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim priti
 <translation id="5297704307811127955">Isključeno</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5302048478445481009">Jezik</translation>
+<translation id="5302531370473608800">Ažurirajte uređaj <ph name="DEVICE_TYPE" /> da biste upotrebljavali YouTube Music</translation>
 <translation id="5303319262469238330">Preostalo baterije: <ph name="PERCENTAGE" />%.
 Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="5308380583665731573">Poveži</translation>
@@ -1824,6 +1828,7 @@ Novo instaliranje</translation>
 <translation id="7144942256906679589">Status baterije</translation>
 <translation id="7145639536026937076">Baterija je na <ph name="PERCENTAGE" />% i puni se. Štednja baterije je uključena.</translation>
 <translation id="7147587499155271409">Nema povijesti pregledavanja</translation>
+<translation id="7147657298465433425">Da biste pristupili F tipkama, pritisnite tipku fn + tipke u gornjem retku</translation>
 <translation id="7149149900052329230">Upravljajte lokalnim datotekama i datotekama na Google disku, a sve to u aplikaciji Datoteke.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7557816257942363084">Aplikacija <ph name="APP_NAME" /> trenutačno koristi vaš mikrofon</translation>
 <translation id="7561982940498449837">Zatvori izbornik</translation>
 <translation id="7564874036684306347">Premještanje prozora na drugu radnu površinu može dovesti do neočekivanog ponašanja. Daljnje obavijesti, prozori i dijaloški okviri mogu se podijeliti između radnih površina.</translation>
+<translation id="7568154670718626683">Pokušavate li upotrijebiti tipku Delete? Upotrijebite</translation>
 <translation id="7568790562536448087">Ažuriranje stavke</translation>
 <translation id="7569509451529460200">Brajica i ChromeVox omogućeni</translation>
 <translation id="7569886975397378678">Odbacite postavljanje prikaza obavijesti i aplikacija telefona</translation>
@@ -2133,6 +2139,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="820256110035940528"><ph name="TITLE" /> Upravo ste bili u načinu rada za koncentraciju <ph name="FOCUSED_TIME" />. Otvorite Brze postavke da biste ponovo pokrenuli način rada za koncentraciju.</translation>
 <translation id="8203224998425013577">Prikaži više emojija i GIF-ova</translation>
 <translation id="8203795194971602413">Desni klik</translation>
+<translation id="8205469348819768313">Pokušavate li upotrijebiti tipku Page Down? Upotrijebite</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Chromebook u međuvremenu mora ostati uključen i spojen na napajanje. Provjerite je li kabel punjača ili adaptera pravilno priključen u Chromebook i utičnicu. Nemojte isključivati Chromebook.</translation>
 <translation id="8220076512072059941">Dodajte <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2326,6 +2333,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google asistent ne govori taj jezik.</translation>
 <translation id="8926951137623668982">Polica je uvijek skrivena</translation>
+<translation id="8929566928381252430">Pokušavate li upotrijebiti Caps Lock? Upotrijebite</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">USB-C uređaj (desni priključak sa stražnje strane)</translation>

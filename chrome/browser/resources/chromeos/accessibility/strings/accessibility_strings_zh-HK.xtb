@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">小麥色</translation>
 <translation id="1618597272655350600">朗讀目前位置的完整說明</translation>
 <translation id="1627222324347828322">冷白色</translation>
-<translation id="1632810692616643246">進入或退出捲動模式</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{1 個大於符號}other{# 個大於符號}}</translation>
 <translation id="1653266918374749391">上一個第 3 級標題</translation>
 <translation id="1657616855184033958">顯示活動串流篩選器</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">下一個對象</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">在 ChromeVox 選單中顯示點字指令</translation>
-<translation id="1999763610967697511">拖放</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{1 個左括弧}other{# 個左括弧}}</translation>
 <translation id="2009187674653301682">唔係上標</translation>
 <translation id="2010555995361223825">ChromeVox 選單</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">淺綠松石色</translation>
 <translation id="4826415162591436065">向前導覽</translation>
 <translation id="4827410568042294688">未選取</translation>
-<translation id="483262387981411190">暫停或繼續使用面部控制功能</translation>
 <translation id="4835598628985424375">嘟嘴</translation>
 <translation id="4838490795649708173">以四隻手指輕按</translation>
 <translation id="4839925464551908214">前往上一列</translation>
@@ -1049,7 +1046,6 @@
 <translation id="8004512796067398576">增加</translation>
 <translation id="8007540374018858731">標題 3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{1 個引號}other{# 個引號}}</translation>
-<translation id="8017004049696748317">開始或停止語音聽寫</translation>
 <translation id="8017588669690167134">關閉語音功能</translation>
 <translation id="801990297710781303">註腳</translation>
 <translation id="8028833145828956995">您可以透過觸控螢幕使用 ChromeVox</translation>

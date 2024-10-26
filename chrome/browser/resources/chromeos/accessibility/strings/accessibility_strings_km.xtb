@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">ពណ៌ត្នោត​ស្រាល</translation>
 <translation id="1618597272655350600">ប្រកាសការពិពណ៌នាពេញលេញនៃទីតាំងបច្ចុប្បន្ន</translation>
 <translation id="1627222324347828322">សស្រអាប់</translation>
-<translation id="1632810692616643246">ចូល ឬចាកចេញពីមុខងាររំកិល</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ធំជាង}other{# ធំជាងសញ្ញា}}</translation>
 <translation id="1653266918374749391">ផ្នែកក្បាលកម្រិត 3 ពីមុន។</translation>
 <translation id="1657616855184033958">បង្ហាញ​តម្រងសម្រាប់​កម្រងព្រឹត្តិការណ៍</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">វត្ថុបន្ទាប់</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">បង្ហាញ​ការបញ្ជា​អក្សរស្ទាប​នៅក្នុង​ម៉ឺនុយ ChromeVox</translation>
-<translation id="1999763610967697511">អូស​ហើយ​ទម្លាក់</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{សញ្ញាតង្ក្រៀបខាងឆ្វេង}other{# សញ្ញាតង្ក្រៀបខាងឆ្វេង}}</translation>
 <translation id="2009187674653301682">មិនមែន​អក្សរតូចខាង​លើទេ</translation>
 <translation id="2010555995361223825">ម៉ឺនុយ ChromeVox</translation>
@@ -341,6 +339,7 @@
 <translation id="311015743332597320">អូសម្រាមដៃ​បួនទៅស្ដាំ</translation>
 <translation id="3112457281078985179">ដើម្បីបើក ឬបិទ ChromeVox សូមប្រើ Control+Alt+Z ។</translation>
 <translation id="3115800313647508384">បិទ​អេក្រង់ឬ?</translation>
+<translation id="3127625407966660979">ការសរសេរ​តាមអាន​កំពុង​ដំណើរការ</translation>
 <translation id="3131002934070407451">អាន​លេខ​ជា៖</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">បៃតងចាស់</translation>
@@ -594,7 +593,6 @@
 <translation id="4815668758102003883">ផ្ទៃមេឃ</translation>
 <translation id="4826415162591436065">បញ្ជាទៅមុខ</translation>
 <translation id="4827410568042294688">បានដកការជ្រើសរើស</translation>
-<translation id="483262387981411190">ផ្អាក ឬបន្តការគ្រប់គ្រងដោយមុខ</translation>
 <translation id="4835598628985424375">បូញមាត់​ដោយផ្អិប​បបូរមាត់​ចូលគ្នា</translation>
 <translation id="4838490795649708173">ចុចដោយប្រើម្រាមដៃបួន</translation>
 <translation id="4839925464551908214">ទៅកាន់​ជួរ​ដេក​ពីមុន</translation>
@@ -1051,7 +1049,6 @@
 <translation id="8004512796067398576">ការបន្ថែម</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{សញ្ញាដកស្រង់}other{# សញ្ញាដកស្រង់}}</translation>
-<translation id="8017004049696748317">ចាប់ផ្ដើម ឬបញ្ឈប់ការសរសេរ​តាមអាន</translation>
 <translation id="8017588669690167134">បិទ​ការនិយាយ</translation>
 <translation id="801990297710781303">កំណត់​ចំណាំនៅជើងទំព័រ</translation>
 <translation id="8028833145828956995">អ្នកអាច​ប្រើ ChromeVox ជាមួយ​អេក្រង់​ចុចបាន</translation>

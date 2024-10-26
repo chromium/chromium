@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">Увімкнути або вимкнути клавішну навігацію</translation>
 <translation id="2531025035050312891">пристрій працює повільно</translation>
 <translation id="2531107890083353124">Перетягуючи вкладку, натисніть <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Щоб натиснути клавішу Home, скористайтеся такою комбінацією:</translation>
 <translation id="254900897760075745">Копіювати вибраний контент у буфер обміну</translation>
 <translation id="2549711466868162843">Покращення освітлення</translation>
 <translation id="2549985041256363841">Почати запис</translation>
@@ -560,6 +561,7 @@
 <translation id="2985148236010982088">Показати всі додатки</translation>
 <translation id="2992272421330787632">Сховати всі пропозиції медіаконтенту</translation>
 <translation id="2992327365391326550">Кнопку мікрофона пристрою вимкнено.</translation>
+<translation id="2993956882370897557">Щоб натиснути клавішу End, скористайтеся такою комбінацією:</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3001391739687111021">Змінити розмір екрана</translation>
 <translation id="3009178788565917040">Вихід</translation>
@@ -612,6 +614,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> повертає на пристрої <ph name="DEVICE_TYPE" /> попередню версію. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="316798519864381606">Презентація Google</translation>
 <translation id="3171170659304083361">Налаштування методів введення</translation>
+<translation id="3174897399179348329">Щоб натиснути клавішу Page Up, скористайтеся такою комбінацією:</translation>
 <translation id="3176221688814061633">На вашому ноутбуку Chromebook або пристрої з Bluetooth використовується застаріла версія Bluetooth. Увімкніть високу роздільну здатність Bluetooth або використовуйте внутрішній мікрофон для кращої якості аудіо.</translation>
 <translation id="3181441307743005334">Перезапуск може зайняти якийсь час</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Під’єднано до пристрою}one{Під’єднано до # пристрою}few{Під’єднано до # пристроїв}many{Під’єднано до # пристроїв}other{Під’єднано до # пристрою}}</translation>
@@ -1259,6 +1262,7 @@
 <translation id="5297704307811127955">Вимкнено</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5302048478445481009">Мова</translation>
+<translation id="5302531370473608800">Оновіть <ph name="DEVICE_TYPE" />, щоб використовувати YouTube Music</translation>
 <translation id="5303319262469238330">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора.
 Роботу деяких функцій обмежено, щоб заощадити заряд.</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
@@ -1817,6 +1821,7 @@
 <translation id="7144942256906679589">Стан акумулятора</translation>
 <translation id="7145639536026937076">Акумулятор заряджений на <ph name="PERCENTAGE" />% і продовжує заряджатися. Режим енергозбереження ввімкнено.</translation>
 <translation id="7147587499155271409">Немає історії вебперегляду</translation>
+<translation id="7147657298465433425">Щоб скористатися функціональними клавішами, натисніть клавішу Fn + одну з клавіш верхнього рядка</translation>
 <translation id="7149149900052329230">Керуйте файлами на пристрої і Google Диску в додатку Файли.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1928,7 @@
 <translation id="7557816257942363084">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
+<translation id="7568154670718626683">Щоб натиснути клавішу Delete, скористайтеся такою комбінацією:</translation>
 <translation id="7568790562536448087">Оновлення</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
 <translation id="7569886975397378678">Відхилити налаштування перегляду сповіщень і додатків на телефоні</translation>
@@ -2125,6 +2131,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Час у режимі концентрації уваги: <ph name="FOCUSED_TIME" />. Щоб знову зосередитися, відкрийте "Швидкі налаштування".</translation>
 <translation id="8203224998425013577">Показати більше смайлів і зображень GIF</translation>
 <translation id="8203795194971602413">Натиснути правою кнопкою</translation>
+<translation id="8205469348819768313">Щоб натиснути клавішу Page Down, скористайтеся такою комбінацією:</translation>
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">Не вимикайте та не відключайте Chromebook від живлення впродовж цього часу. Переконайтеся, що кабелі зарядного пристрою або адаптера надійно під'єднано до вашого пристрою та розетки. Не вимикайте Chromebook.</translation>
 <translation id="8220076512072059941">Додати <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2324,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Асистент не підтримує цю мову.</translation>
 <translation id="8926951137623668982">Полицю завжди сховано</translation>
+<translation id="8929566928381252430">Щоб натиснути клавішу Caps Lock, скористайтеся такою комбінацією:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="8936501819958976551">деактивовано</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>

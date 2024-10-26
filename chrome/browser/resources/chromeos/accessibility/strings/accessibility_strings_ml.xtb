@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">ഗോതമ്പ് നിറം</translation>
 <translation id="1618597272655350600">നിലവിലെ അവസ്ഥയെക്കുറിച്ച് ഒരു പൂർണ്ണമായ വിവരണം പ്രഖ്യാപിക്കുന്നു</translation>
 <translation id="1627222324347828322">ഗോസ്‌റ്റ് വൈറ്റ്</translation>
-<translation id="1632810692616643246">സ്ക്രോൾ മോഡിലേക്ക് പ്രവേശിക്കുക അല്ലെങ്കിൽ പുറത്തുകടക്കുക</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{അവരോഹണ ചിഹ്നം}other{# അവരോഹണ ചിഹ്നങ്ങൾ}}</translation>
 <translation id="1653266918374749391">മുൻ നില 3 ശീർഷകം</translation>
 <translation id="1657616855184033958">ഇവന്റ് സ്‌ട്രീം ഫിൽട്ടറുകൾ കാണിക്കുക</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">അടുത്ത ഒബ്‌ജക്റ്റ്</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox മെനുകളിൽ ബ്രെയ്‌ലി കമാൻഡുകൾ കാണിക്കുക</translation>
-<translation id="1999763610967697511">വലിച്ചിടുക</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ഇടത് ബ്രാക്കറ്റ്}other{# ഇടത് ബ്രാക്കറ്റുകൾ}}</translation>
 <translation id="2009187674653301682">സൂപ്പർസ്‌ക്രി‌പ്‌റ്റ് അല്ല</translation>
 <translation id="2010555995361223825">ChromeVox മെനുകൾ</translation>
@@ -594,7 +592,6 @@
 <translation id="4815668758102003883">പെയിൽ ടർകോയിസ്</translation>
 <translation id="4826415162591436065">മുന്നോട്ട് നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="4827410568042294688">തിരഞ്ഞെടുത്തത് ഒഴിവാക്കി</translation>
-<translation id="483262387981411190">മുഖ നിയന്ത്രണം താൽക്കാലികമായി നിർത്തുകയോ പുനരാരംഭിക്കുകയോ ചെയ്യുക</translation>
 <translation id="4835598628985424375">ചുംബനം നൽകാൻ തയ്യാറാകുന്നത് പോലെ ചുണ്ടുകൾ അമർത്തിപ്പിടിക്കുക</translation>
 <translation id="4838490795649708173">നാല് വിരലുകൾ ഉപയോഗിച്ച് ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4839925464551908214">മുമ്പത്തെ വരിയിലേക്ക് പോവുക</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">വർദ്ധന</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ഉദ്ധരണി}other{# ഉദ്ധരണികൾ}}</translation>
-<translation id="8017004049696748317">കേട്ടെഴുത്ത് ആരംഭിക്കുകയോ നിർത്തുകയോ ചെയ്യുക</translation>
 <translation id="8017588669690167134">സംഭാഷണം ഓഫാക്കുക</translation>
 <translation id="801990297710781303">അടിക്കുറിപ്പ്</translation>
 <translation id="8028833145828956995">ടച്ച്‌സ്‌ക്രീനിനൊപ്പം നിങ്ങൾക്ക് ChromeVox ഉപയോഗിക്കാം</translation>

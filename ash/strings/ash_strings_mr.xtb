@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ते <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> हे <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
+<translation id="2781658180588759579">बिल्ट-इन टचपॅड बंद केले गेले आहे. बदल कन्फर्म करण्यासाठी तुमचा कीबोर्ड किंवा दुसरे पॉइंटर डिव्हाइस वापरा.
+
+अन्यथा <ph name="TIMEOUT_SECONDS" /> मध्ये बिल्ट-इन टचपॅड पुन्हा सुरू केले जाईल.</translation>
 <translation id="2782591952652094792">कॅप्चर मोडमधून बाहेर पडा</translation>
 <translation id="2785499565474703580">एक डिव्हाइस कनेक्ट केलेले आहे</translation>
 <translation id="2791421900609674576">तुम्हाला शिफारशी दिसतील, जेणेकरून तुम्ही जिथे सोडले होते तेथून सुरू ठेवू शकता. तुम्ही शिफारशी काढून टाकण्यासाठी स्पर्श करून धरून ठेवू शकता.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">शेल्फवरील आधीचा आयटम हायलाइट करा</translation>
 <translation id="311799651966070385">नज बंद करा</translation>
 <translation id="3120421559657122717">डिव्हाइस बंद करायचे का?</translation>
+<translation id="3121411970001795539">माउस कनेक्ट केल्यामुळे बिल्ट-इन टचपॅड बंद केले गेले आहे. बदल कन्फर्म करण्यासाठी माउस किंवा कीबोर्ड वापरा.
+
+अन्यथा <ph name="TIMEOUT_SECONDS" /> मध्ये बिल्ट-इन टचपॅड पुन्हा सुरू केले जाईल.</translation>
 <translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3125690294288312932">वर्गपाठाचा प्रकार</translation>
 <translation id="3126026824346185272">Ctrl</translation>

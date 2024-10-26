@@ -157,7 +157,6 @@
 <translation id="1964135212174907577">அடுத்த பொருள்</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox மெனுக்களில் பிரெய்ல் கட்டளைகளைக் காட்டு</translation>
-<translation id="1999763610967697511">இழுத்து விடும்</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{இடது அடைப்புக்குறி}other{# இடது அடைப்புக்குறிகள்}}</translation>
 <translation id="2009187674653301682">சூப்பர்ஸ்கிரிப்ட் அல்ல</translation>
 <translation id="2010555995361223825">ChromeVox மெனுக்கள்</translation>
@@ -587,7 +586,6 @@
 <translation id="4815668758102003883">பேல் டெர்க்காய்ஸ்</translation>
 <translation id="4826415162591436065">முன்னோக்கிச் செல்</translation>
 <translation id="4827410568042294688">தேர்ந்தெடுக்கப்படவில்லை</translation>
-<translation id="483262387981411190">முக பாவனை அம்சத்தை இடைநிறுத்துதல் அல்லது தொடங்குதல்</translation>
 <translation id="4835598628985424375">உதடுகளை ஒன்றாக அழுத்திக் குவித்தல்</translation>
 <translation id="4838490795649708173">நான்கு விரல்களால் தட்டவும்</translation>
 <translation id="4839925464551908214">முந்தைய வரிசைக்குச் செல்லும்</translation>
@@ -1042,7 +1040,6 @@
 <translation id="8004512796067398576">அதிகரி</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{மேற்கோள்}other{# மேற்கோள்கள்}}</translation>
-<translation id="8017004049696748317">சொல்வதை எழுதும் வசதியைத் தொடங்குதல் அல்லது நிறுத்துதல்</translation>
 <translation id="8017588669690167134">பேச்சை முடக்கும்</translation>
 <translation id="801990297710781303">அடிக்குறிப்பு</translation>
 <translation id="8028833145828956995">டச்ஸ்கிரீன் மூலம் ChromeVoxஸைப் பயன்படுத்தலாம்</translation>

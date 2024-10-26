@@ -442,6 +442,7 @@
 <translation id="2530896289327917474">کیرٹ براؤزنگ کو آن یا آف کریں</translation>
 <translation id="2531025035050312891">آلہ سست</translation>
 <translation id="2531107890083353124">ٹیب کو گھسیٹنے کے دوران <ph name="KEY_ONE" /> دبائیں</translation>
+<translation id="2545334090614121435">‏‫Home استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="254900897760075745">منتخب کردہ مواد کو کلپ بورڈ میں کاپی کریں</translation>
 <translation id="2549711466868162843">لائٹنگ کو بہترین بنائیں</translation>
 <translation id="2549985041256363841">ریکارڈنگ شروع کریں</translation>
@@ -500,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
+<translation id="2781658180588759579">پہلے سے شامل ٹچ پیڈ غیر فعال ہو گیا ہے۔ تبدیلی کی تصدیق کرنے کیلئے اپنے کی بورڈ یا دوسرے پوائنٹر آلے کا استعمال کریں۔
+
+بصورت دیگر پہلے سے شامل ٹچ پیڈ کو <ph name="TIMEOUT_SECONDS" /> میں دوبارہ فعال کر دیا جائے گا۔</translation>
 <translation id="2782591952652094792">کیپچر وضع سے باہر نکلیں</translation>
 <translation id="2785499565474703580">1 آلہ منسلک ہے</translation>
 <translation id="2791421900609674576">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے  ٹچ کر کے دبائے رکھ سکتے ہیں۔</translation>
@@ -560,6 +564,7 @@
 <translation id="2985148236010982088">سبھی ایپس دیکھیں</translation>
 <translation id="2992272421330787632">میڈیا کی تمام تجاویز چھپائیں</translation>
 <translation id="2992327365391326550">آلے کا مائیکروفون بٹن آف ہے۔</translation>
+<translation id="2993956882370897557">‏‫End استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
 <translation id="3001391739687111021">اسکرین کے سائز میں ترمیم کریں</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
@@ -596,6 +601,9 @@
 <translation id="3113492864356515707">گزشتہ آئٹم کو شیلف پر نمایاں کریں</translation>
 <translation id="311799651966070385">یاد دہانی بند کریں</translation>
 <translation id="3120421559657122717">آلہ بند کریں؟</translation>
+<translation id="3121411970001795539">پہلے سے شامل ٹچ پیڈ غیر فعال ہو گیا ہے کیونکہ ایک ماؤس منسلک ہے۔ تبدیلی کی تصدیق کرنے کیلئے ماؤس یا کی بورڈ کا استعمال کریں۔
+
+بصورت دیگر پہلے سے شامل ٹچ پیڈ کو <ph name="TIMEOUT_SECONDS" /> میں دوبارہ فعال کر دیا جائے گا۔</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">کلاس ورک کی قسم</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -612,6 +620,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">اندراج کے طریقوں کی ترتیبات</translation>
+<translation id="3174897399179348329">‏‫Page Up استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="3176221688814061633">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے بلوٹوتھ سپر ریزولوشن کو آن کریں یا اندرونی مائیکروفون استعمال کریں۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
@@ -1259,6 +1268,7 @@
 <translation id="5297704307811127955">آف</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5302531370473608800">‏‫YouTube Music استعمال کرنے کے لیے اپنے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" /> فیصد بیٹری باقی ہے۔
 کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
@@ -1816,6 +1826,7 @@
 <translation id="7144942256906679589">بیٹری کا اسٹیٹس</translation>
 <translation id="7145639536026937076">‏بیٹری ‎<ph name="PERCENTAGE" />%‎ ہے اور چارج ہو رہی ہے۔ بیٹری سیور آن ہے۔</translation>
 <translation id="7147587499155271409">براؤزنگ کی کوئی سرگزشت نہیں ہے</translation>
+<translation id="7147657298465433425">‏‫F کلیدوں تک رسائی حاصل کرنے کے لیے، fn کلید + اوپر قطار والی کلیدوں کو دبائیں</translation>
 <translation id="7149149900052329230">‏اپنی مقامی فائلز اور اپنی Google Drive کی فائلز، ان سبھی کا نظم Files ایپ میں کریں۔</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
@@ -1922,6 +1933,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> فی الحال آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7561982940498449837">مینیو بند کریں</translation>
 <translation id="7564874036684306347">ونڈوز کو کسی دوسرے ڈیسک ٹاپ پر منتقل کرنا غیر متوقع برتاؤ کا سبب بن سکتا ہے۔ بعد کی اطلاعات، ونڈوز اور ڈائیلاگز ڈیسک ٹاپ کے بیچ منقسم ہو سکتے ہیں۔</translation>
+<translation id="7568154670718626683">‏‫Delete کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="7568790562536448087">اپ ڈیٹنگ</translation>
 <translation id="7569509451529460200">‏بریل اور ChromeVox فعال ہیں</translation>
 <translation id="7569886975397378678">اپنے فون کی اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
@@ -2124,6 +2136,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> آپ نے ابھی <ph name="FOCUSED_TIME" /> کے لیے فوکس کیا ہے۔ دوبارہ فوکس کرنے کے لیے فوری ترتیبات کھولیں۔</translation>
 <translation id="8203224998425013577">‏مزید ایموجیز اور GIFs دکھائیں</translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
+<translation id="8205469348819768313">‏‫Page Down استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="8214996719228530800">‏Canary چینل</translation>
 <translation id="8219451629189078428">‏اس دوران آپ کے Chromebook کو آن اور پاور سے منسلک رہنے کی ضرورت ہے۔ یقینی بنائیں کہ چارجر یا ایڈاپٹر کیبلز آپ کے Chromebook اور پاور آؤٹ لیٹ دونوں میں مکمل طور پر پلگ کی ہوئی ہیں۔ اپنے Chromebook کو آف نہ کریں۔</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> شامل کریں</translation>
@@ -2316,6 +2329,7 @@
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏Google اسسٹنٹ یہ زبان نہیں بولتا ہے۔</translation>
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>
+<translation id="8929566928381252430">‏‫Caps Lock استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 فائل}other{# فائلز}}</translation>
 <translation id="8936501819958976551">غیر فعال</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>

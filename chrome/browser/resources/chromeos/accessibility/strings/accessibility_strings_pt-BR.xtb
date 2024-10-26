@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="100421257800558142">Pressione a tecla de seta para a direita</translation>
 <translation id="100506692671054486">nenhum comando anterior</translation>
 <translation id="1009046985747440431">Pressione a seta para cima ou para baixo para navegar e Enter para ativar</translation>
 <translation id="1011903154582639569">Encontre uma tecla e levante o dedo para digitá-la</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Botão ativar</translation>
 <translation id="1299774449519412690">Azul-celeste-claro</translation>
 <translation id="1303806948938513162">Toque com quatro dedos para entrar nos menus do ChromeVox</translation>
+<translation id="1304162325618937178">Pressione a tecla de espaço</translation>
 <translation id="1313373992684326101">Mover para a seção anterior. Alguns exemplos são a bandeja de status e o acesso rápido.</translation>
 <translation id="1315077335264761176">Orientação de toque</translation>
 <translation id="1325363694295259631">Botão de opção <ph name="NAME" /> para item de menu desmarcado</translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">Próximo objeto</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostrar comandos de braille nos menus do ChromeVox</translation>
-<translation id="1999763610967697511">Arrastar e soltar</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{colchete esquerdo}one{# colchetes esquerdos}other{# colchetes esquerdos}}</translation>
 <translation id="2009187674653301682">Sem sobrescrito</translation>
 <translation id="2010555995361223825">Menus do ChromeVox</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">Marrom-tulipa</translation>
 <translation id="2199994615414171367">Expressão matemática anterior</translation>
 <translation id="2203046366315513658">Diminuir valor</translation>
+<translation id="2206580811360135054">Mostrar ou ocultar a visão geral das janelas</translation>
 <translation id="2216790501338699346">URL do link: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Recuar um caractere</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
+<translation id="2239819015858077439">Pressione a tecla de seta para baixo</translation>
 <translation id="2243633977138166243">Pressione a seta para a esquerda ou para a direita para navegar e Enter para ativar</translation>
 <translation id="224426591676115802">Não há voz disponível para o idioma: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Parando o modo de aprendizado</translation>
@@ -541,6 +544,7 @@
 <translation id="4432457053224379116">Vermelho-indiano</translation>
 <translation id="4432896207833262240">Conteúdo marcado</translation>
 <translation id="4437615272777527928">Digite para pesquisar nos menus. Use as setas para cima e para baixo para percorrer os resultados. Use as setas para a esquerda e direita para ajustar o cursor de texto e navegar entre os menus.</translation>
+<translation id="4441677939526091190">Pressione a tecla de seta para cima</translation>
 <translation id="4453530046591759283">Para ir para outras partes da tela, como barras de ferramentas ou a bandeja do sistema, pressione Control + F1. F1 é a primeira tecla à direita da tecla Esc.</translation>
 <translation id="4457472090507035117">Selecione a voz atual:</translation>
 <translation id="4476183483923481720">linha nova</translation>
@@ -587,7 +591,6 @@
 <translation id="4815668758102003883">Turquesa-pálido</translation>
 <translation id="4826415162591436065">Navegar para a frente</translation>
 <translation id="4827410568042294688">unselected</translation>
-<translation id="483262387981411190">Pausar ou retomar o controle de rosto</translation>
 <translation id="4835598628985424375">Fazer bico com os lábios</translation>
 <translation id="4838490795649708173">Toque com quatro dedos</translation>
 <translation id="4839925464551908214">Ir para a linha anterior</translation>
@@ -720,6 +723,7 @@
 <translation id="5653397561111110475">Usar recursos de acessibilidade da tela touch do Chromebook</translation>
 <translation id="5655682562155942719">Comandos de avanço e retorno</translation>
 <translation id="56637627897541303">Área de texto</translation>
+<translation id="5666746275818170484">Pressione a tecla de seta para a esquerda</translation>
 <translation id="5669637233317991674">Pressione a tecla de pesquisa + seta para a direita ou a tecla de pesquisa + seta para a esquerda para navegar por esta lição</translation>
 <translation id="5677240841070992068">Local atual</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -926,6 +930,7 @@
 <translation id="7161771961008409533">Botão pop-up</translation>
 <translation id="7167657087543110">eco de caractere</translation>
 <translation id="7173102181852295013">Azul-meia-noite</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="7209751026933045237">Nenhum controle deslizante a seguir</translation>
 <translation id="7218782500591078391">Amarelo-dourado</translation>
@@ -1042,7 +1047,6 @@
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{aspas}one{# indicadores de aspas}other{# indicadores de aspas}}</translation>
-<translation id="8017004049696748317">Começar ou parar o Ditado</translation>
 <translation id="8017588669690167134">Fala desativada</translation>
 <translation id="801990297710781303">Nota de rodapé</translation>
 <translation id="8028833145828956995">Você pode usar o ChromeVox com a tela touchscreen</translation>
@@ -1099,6 +1103,7 @@
 <translation id="8378855320830505539">Região</translation>
 <translation id="8382679411218029383">Preenchimento automático em linha e lista</translation>
 <translation id="8394908167088220973">Reproduzir/pausar mídia</translation>
+<translation id="8409502156784390079">Modo de rolagem ativado</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428603554127842284">nível <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1176,6 +1181,7 @@
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8989104346085848538">Para interromper a fala atual do ChromeVox, pressione a tecla Control.</translation>
 <translation id="9014206344398081366">Tutorial do ChromeVox</translation>
+<translation id="9034592733577768445">Controle facial pausado</translation>
 <translation id="9040132695316389094">Cabeçalho 1</translation>
 <translation id="9061884144798498064">Selecione uma tabela em braille de oito pontos:</translation>
 <translation id="9063946545000394379">ir para o caractere anterior</translation>

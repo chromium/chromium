@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Grâu</translation>
 <translation id="1618597272655350600">Anunță o descriere completă a poziției curente</translation>
 <translation id="1627222324347828322">Alb zincat</translation>
-<translation id="1632810692616643246">Intră sau ieși din modul de derulare</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{semn mai mare}few{# semne mai mare}other{# de semne mai mare}}</translation>
 <translation id="1653266918374749391">Titlul de nivel 3 anterior</translation>
 <translation id="1657616855184033958">Afișează filtrele pentru fluxul de evenimente</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Obiectul următor</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Afișează comenzile Braille în meniurile ChromeVox</translation>
-<translation id="1999763610967697511">Trage și plasează</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{paranteză pătrată stânga}few{# paranteze pătrate stânga}other{# de paranteze pătrate stânga}}</translation>
 <translation id="2009187674653301682">Nu este exponent</translation>
 <translation id="2010555995361223825">Meniuri ChromeVox</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Turcoaz pal</translation>
 <translation id="4826415162591436065">Navigați înainte</translation>
 <translation id="4827410568042294688">neselectat</translation>
-<translation id="483262387981411190">Întrerupe sau reia controlul facial</translation>
 <translation id="4835598628985424375">Strânge buzele</translation>
 <translation id="4838490795649708173">Atinge cu patru degete</translation>
 <translation id="4839925464551908214">Accesează rândul anterior</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Incrementează</translation>
 <translation id="8007540374018858731">titlu 3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ghilimea}few{# ghilimele}other{# de ghilimele}}</translation>
-<translation id="8017004049696748317">Începe sau oprește dictarea</translation>
 <translation id="8017588669690167134">Dezactivează vorbirea</translation>
 <translation id="801990297710781303">Notă de subsol</translation>
 <translation id="8028833145828956995">Poți folosi ChromeVox cu ecranul tactil</translation>

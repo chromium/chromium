@@ -157,7 +157,6 @@
 <translation id="1964135212174907577">Nächstes Objekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Braille-Befehle in den ChromeVox-Menüs anzeigen</translation>
-<translation id="1999763610967697511">Drag-and-drop</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{eckige Klammer links}other{# eckige Klammern links}}</translation>
 <translation id="2009187674653301682">Nicht hochgestellt</translation>
 <translation id="2010555995361223825">ChromeVox-Menüs</translation>
@@ -587,7 +586,6 @@
 <translation id="4815668758102003883">Blasses Türkis</translation>
 <translation id="4826415162591436065">Vorwärts navigieren</translation>
 <translation id="4827410568042294688">nicht ausgewählt</translation>
-<translation id="483262387981411190">Gesichtssteuerung pausieren oder fortsetzen</translation>
 <translation id="4835598628985424375">Kussmund machen</translation>
 <translation id="4838490795649708173">Mit vier Fingern tippen</translation>
 <translation id="4839925464551908214">Zur vorherigen Zeile</translation>
@@ -1042,7 +1040,6 @@
 <translation id="8004512796067398576">Erhöhen</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{Anführungszeichen}other{# Anführungszeichen}}</translation>
-<translation id="8017004049696748317">Spracheingabe starten oder beenden</translation>
 <translation id="8017588669690167134">Sprachausgabe aus</translation>
 <translation id="801990297710781303">Fußnote</translation>
 <translation id="8028833145828956995">Du kannst ChromeVox mit einem Touchscreen verwenden</translation>

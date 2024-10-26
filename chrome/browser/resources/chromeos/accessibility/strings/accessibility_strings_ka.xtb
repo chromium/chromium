@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">ხორბლისფერი</translation>
 <translation id="1618597272655350600">მიმდინარე პოზიციის სრული აღწერის განცხადება</translation>
 <translation id="1627222324347828322">აჩრდილივით თეთრი</translation>
-<translation id="1632810692616643246">გადაადგილების რეჟიმში/რეჟიმიდან შესვლა/გამოსვლა</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ მეტია, ვიდრე}other{# მეტია, ვიდრე ნიშნები}}</translation>
 <translation id="1653266918374749391">წინა მე-3 დონის სათაური</translation>
 <translation id="1657616855184033958">მოვლენათა ნაკადის ფილტრების ჩვენება</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">შემდეგი ობიექტი</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox-ის მენიუებში ბრაილის ბრძანებების ჩვენება</translation>
-<translation id="1999763610967697511">ჩავლებით გადატანა</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{დარჩენილი ფრჩხილი}other{# დარჩენილი ფრჩხილი}}</translation>
 <translation id="2009187674653301682">არ არის ზედა ინდექსი</translation>
 <translation id="2010555995361223825">ChromeVox-ის მენიუები</translation>
@@ -595,7 +593,6 @@
 <translation id="4815668758102003883">მკრთალი ფირუზისფერი</translation>
 <translation id="4826415162591436065">ნავიგაცია წინ</translation>
 <translation id="4827410568042294688">არ არის შერჩეული</translation>
-<translation id="483262387981411190">სახით კონტროლის დაპაუზება ან განახლება</translation>
 <translation id="4835598628985424375">მოპრუწეთ ტუჩები</translation>
 <translation id="4838490795649708173">შეხება ოთხი თითით</translation>
 <translation id="4839925464551908214">წინა მწკრივზე გადასვლა</translation>
@@ -1051,7 +1048,6 @@
 <translation id="8004512796067398576">ზრდა</translation>
 <translation id="8007540374018858731">სათაური 3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ბრჭყალი}other{# ბრჭყალი}}</translation>
-<translation id="8017004049696748317">კარნახის დაწყება ან შეწყვეტა</translation>
 <translation id="8017588669690167134">გახმოვანების გამორთვა</translation>
 <translation id="801990297710781303">სქოლიო</translation>
 <translation id="8028833145828956995">ChromeVox თავსებადია სენსორულ ეკრანებთან</translation>

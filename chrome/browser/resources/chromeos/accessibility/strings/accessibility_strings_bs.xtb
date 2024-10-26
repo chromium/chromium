@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="100421257800558142">Pritisnite tipku sa strelicom udesno</translation>
 <translation id="100506692671054486">nema nijedne prethodne komande</translation>
 <translation id="1009046985747440431">Pritisnite strelicu nagore ili nadolje za kretanje; pritisnite tipku Enter za aktiviranje</translation>
 <translation id="1011903154582639569">Pronađite tipku, a zatim podignite da unesete</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Dugme za uključivanje/isključivanje</translation>
 <translation id="1299774449519412690">Svijetla nebeskoplava</translation>
 <translation id="1303806948938513162">Dodirnite s 4 prsta za ulazak u menije ChromeVoxa</translation>
+<translation id="1304162325618937178">Pritisnite tipku za razmak</translation>
 <translation id="1313373992684326101">Vraćanje na prethodni odjeljak. Primjeri uključuju Statusnu traku i Pokretač.</translation>
 <translation id="1315077335264761176">Orijentacija dodira</translation>
 <translation id="1325363694295259631">Poništen je odabir dugmeta za izbor stavke menija <ph name="NAME" /></translation>
@@ -157,7 +159,6 @@
 <translation id="1964135212174907577">Sljedeći objekat</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Prikaži komande na Braillevom pismu u menijima ChromeVoxa</translation>
-<translation id="1999763610967697511">Prevuci i spusti</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{lijeva zagrada}one{# lijeva zagrada}few{# lijeve zagrade}other{# lijevih zagrada}}</translation>
 <translation id="2009187674653301682">Nije eksponent</translation>
 <translation id="2010555995361223825">ChromeVox meniji</translation>
@@ -185,9 +186,11 @@
 <translation id="2197863150503783129">Tamnosmeđa</translation>
 <translation id="2199994615414171367">Prethodni matematički izraz</translation>
 <translation id="2203046366315513658">Smanji vrijednost</translation>
+<translation id="2206580811360135054">Prikažite ili sakrijte pregled prozora</translation>
 <translation id="2216790501338699346">URL linka: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Pomjeri nazad za jedan znak</translation>
 <translation id="2220529011494928058">Prijavite problem</translation>
+<translation id="2239819015858077439">Pritisnite tipku sa strelicom nadolje</translation>
 <translation id="2243633977138166243">Pritisnite strelicu ulijevo ili udesno da navigirate, a Enter da aktivirate</translation>
 <translation id="224426591676115802">Nije dostupan glas za jezik: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Zaustavljanje načina rada za učenje</translation>
@@ -543,6 +546,7 @@
 <translation id="4432457053224379116">Indijska crvena</translation>
 <translation id="4432896207833262240">Označeni sadržaj</translation>
 <translation id="4437615272777527928">Pišite da pretražite menije. Koristite strelice nagore i nadolje da se krećete po rezultatima. Koristite strelice nalijevo i nadesno da podesite znak za umetanje i da se prebacujete između menija.</translation>
+<translation id="4441677939526091190">Pritisnite tipku sa strelicom nagore</translation>
 <translation id="4453530046591759283">Da pređete na druge dijelove ekrana, kao što su alatne trake ili sistemska traka, pritisnite Ctrl + F1. F1 je prva tipka desno od tipke Esc.</translation>
 <translation id="4457472090507035117">Odaberite trenutni glas:</translation>
 <translation id="4476183483923481720">novi red</translation>
@@ -589,7 +593,6 @@
 <translation id="4815668758102003883">Svijetlotirkizna</translation>
 <translation id="4826415162591436065">Navigiranje naprijed</translation>
 <translation id="4827410568042294688">poništen odabir</translation>
-<translation id="483262387981411190">Pauziranje ili nastavak upravljanja licem</translation>
 <translation id="4835598628985424375">Napućivanje usana stiskanjem</translation>
 <translation id="4838490795649708173">Dodirnite s četiri prsta</translation>
 <translation id="4839925464551908214">Prelazak na prethodni red</translation>
@@ -722,6 +725,7 @@
 <translation id="5653397561111110475">Korištenje funkcija pristupačnosti dodirnog ekrana Chromebook računara</translation>
 <translation id="5655682562155942719">Komande za skakanje</translation>
 <translation id="56637627897541303">Prostor za tekst</translation>
+<translation id="5666746275818170484">Pritisnite tipku sa strelicom ulijevo</translation>
 <translation id="5669637233317991674">Pritisnite tipku za pretraživanje i strelicu udesno ili tipku za pretraživanje i strelicu ulijevo da se krećete kroz ovu lekciju</translation>
 <translation id="5677240841070992068">Trenutna lokacija</translation>
 <translation id="5678161956734658133">urvred</translation>
@@ -928,6 +932,7 @@
 <translation id="7161771961008409533">Skočno dugme</translation>
 <translation id="7167657087543110">eho znaka</translation>
 <translation id="7173102181852295013">Ponoćno plava</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Prošireno</translation>
 <translation id="7209751026933045237">Nema sljedećeg klizača</translation>
 <translation id="7218782500591078391">Zlatno smeđa</translation>
@@ -1044,7 +1049,6 @@
 <translation id="8004512796067398576">Povećavanje</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{navodnik}one{# navodnik}few{# navodnika}other{# navodnika}}</translation>
-<translation id="8017004049696748317">Pokretanje ili zaustavljanje diktiranja</translation>
 <translation id="8017588669690167134">Isključivanje govora</translation>
 <translation id="801990297710781303">Fusnota</translation>
 <translation id="8028833145828956995">Možete koristiti ChromeVox pomoću ekrana na dodir</translation>
@@ -1101,6 +1105,7 @@
 <translation id="8378855320830505539">Regija</translation>
 <translation id="8382679411218029383">Automatsko popunjavanje redova i lista</translation>
 <translation id="8394908167088220973">Reproduciraj/pauziraj medij</translation>
+<translation id="8409502156784390079">Način rada za klizanje je aktivan</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8428603554127842284">nivo <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">trmen</translation>
@@ -1178,6 +1183,7 @@
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8989104346085848538">Da zaustavite govor koji je u toku na ChromeVoxu, pritisnite tipku Ctrl.</translation>
 <translation id="9014206344398081366">Vodič za ChromeVox</translation>
+<translation id="9034592733577768445">Upravljanje licem je pauzirano</translation>
 <translation id="9040132695316389094">Naslov 1</translation>
 <translation id="9061884144798498064">Odaberite tabelu brailovog pisma s 8 tačaka:</translation>
 <translation id="9063946545000394379">prelazak na prethodni znak</translation>

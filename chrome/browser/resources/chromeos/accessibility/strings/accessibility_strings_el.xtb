@@ -115,7 +115,6 @@
 <translation id="1616111909442424068">Σιτάρι</translation>
 <translation id="1618597272655350600">Παρέχει μια πλήρη περιγραφή της τρέχουσας τοποθεσίας</translation>
 <translation id="1627222324347828322">Λευκόγκριζο</translation>
-<translation id="1632810692616643246">Είσοδος ή έξοδος από τη λειτουργία κύλισης</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{σύμβολο "μεγαλύτερο από"}other{# σύμβολα "μεγαλύτερο από"}}</translation>
 <translation id="1653266918374749391">Επικεφαλίδα προηγούμενου επιπέδου 3</translation>
 <translation id="1657616855184033958">Εμφάνιση φίλτρων ροής συμβάντων</translation>
@@ -161,7 +160,6 @@
 <translation id="1964135212174907577">Επόμενο αντικείμενο</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Εμφάνιση εντολών μπράιγ στα μενού του ChromeVox</translation>
-<translation id="1999763610967697511">Μεταφορά και απόθεση</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{αριστερή αγκύλη}other{# αριστερές αγκύλες}}</translation>
 <translation id="2009187674653301682">Δεν είναι εκθέτης</translation>
 <translation id="2010555995361223825">Μενού ChromeVox</translation>
@@ -500,6 +498,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{δευτερόλεπτο}other{δευτερόλεπτα}}</translation>
 <translation id="4161663686871496107">Τα προφορικά σχόλια ChromeVox είναι έτοιμα</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
+<translation id="4176677444195790114">Μεταφορά και απόθεση σε εξέλιξη</translation>
 <translation id="4187322598335821254">Σύρετε προς τα επάνω ή προς τα κάτω για μετακίνηση ανά γραμμή</translation>
 <translation id="4188530942454211480">Προηγούμενη πρόταση</translation>
 <translation id="4191918948604314587">Ένα κουμπί</translation>
@@ -594,7 +593,6 @@
 <translation id="4815668758102003883">Ανοιχτό τιρκουάζ</translation>
 <translation id="4826415162591436065">Μετάβαση προς τα εμπρός</translation>
 <translation id="4827410568042294688">μη επιλεγμένο</translation>
-<translation id="483262387981411190">Παύση ή συνέχιση ελέγχου με το πρόσωπο</translation>
 <translation id="4835598628985424375">Σφίξτε τα χείλη σας</translation>
 <translation id="4838490795649708173">Πατήστε με τέσσερα δάκτυλα</translation>
 <translation id="4839925464551908214">Μετάβαση στην προηγούμενη σειρά</translation>
@@ -1051,7 +1049,6 @@
 <translation id="8004512796067398576">Αύξηση</translation>
 <translation id="8007540374018858731">επικεφαλίδα 3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{εισαγωγικό}other{# εισαγωγικά}}</translation>
-<translation id="8017004049696748317">Έναρξη ή διακοπή της υπαγόρευσης</translation>
 <translation id="8017588669690167134">Απενεργοποίηση ομιλίας</translation>
 <translation id="801990297710781303">Υποσημείωση</translation>
 <translation id="8028833145828956995">Μπορείτε να χρησιμοποιήσετε το ChromeVox με την οθόνη αφής.</translation>

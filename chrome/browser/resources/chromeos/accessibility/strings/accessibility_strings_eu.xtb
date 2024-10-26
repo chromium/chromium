@@ -114,7 +114,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1616111909442424068">Gari-kolorekoa</translation>
 <translation id="1618597272655350600">Oraingo posizioaren azalpen osoa iragartzen du</translation>
 <translation id="1627222324347828322">Zuri gardena</translation>
-<translation id="1632810692616643246">Sartu gora/behera egiteko moduan edo irten bertatik</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{handiago ikurra}other{# handiago ikur}}</translation>
 <translation id="1653266918374749391">3. mailako aurreko goiburua</translation>
 <translation id="1657616855184033958">Erakutsi gertaeren jarioaren iragazkiak</translation>
@@ -160,7 +159,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1964135212174907577">Hurrengo objektua</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Erakutsi braille-aginduak ChromeVox-eko menuetan</translation>
-<translation id="1999763610967697511">Arrastatzea eta jaregitea</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ezkerreko kako zuzena}other{ezkerreko # kako zuzen}}</translation>
 <translation id="2009187674653301682">Ez da goi-indizea</translation>
 <translation id="2010555995361223825">ChromeVox menuak</translation>
@@ -593,7 +591,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4815668758102003883">Turkesa oso argia</translation>
 <translation id="4826415162591436065">Nabigatu aurrera</translation>
 <translation id="4827410568042294688">hautatu gabe</translation>
-<translation id="483262387981411190">Aurpegi-keinuen bidez kontrolatzeko eginbidea pausatzea edo hura erabiltzeari berrekitea</translation>
 <translation id="4835598628985424375">Muxu emateko keinua egitea</translation>
 <translation id="4838490795649708173">Sakatu lau hatzekin</translation>
 <translation id="4839925464551908214">Joan aurreko errenkadara</translation>
@@ -1049,7 +1046,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8004512796067398576">Gehikuntza</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{komatxoak}other{# komatxo}}</translation>
-<translation id="8017004049696748317">Diktaketa hastea edo gelditzea</translation>
 <translation id="8017588669690167134">Desaktibatu hizketa</translation>
 <translation id="801990297710781303">Oin-oharra</translation>
 <translation id="8028833145828956995">Ukipen-pantailarekin ere erabil dezakezu ChromeVox</translation>

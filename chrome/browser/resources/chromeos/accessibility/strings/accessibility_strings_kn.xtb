@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">ಗೋಧಿ ಬಣ್ಣ</translation>
 <translation id="1618597272655350600">ಪ್ರಸ್ತುತ ಸ್ಥಾನದ ಸಂಪೂರ್ಣ ವಿವರಣೆಯನ್ನು ಪ್ರಕಟಿಸುತ್ತದೆ</translation>
 <translation id="1627222324347828322">ಘೋಸ್ಟ್ ವೈಟ್</translation>
-<translation id="1632810692616643246">ಸ್ಕ್ರಾಲ್‌ ಮೋಡ್‌ ಅನ್ನು ಪ್ರವೇಶಿ ಅಥವಾ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{ಹೆಚ್ಚು ಸೂಚಕ}one{# ಹೆಚ್ಚು ಸೂಚಕ ಚಿಹ್ನೆಗಳು}other{# ಹೆಚ್ಚು ಸೂಚಕ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="1653266918374749391">ಹಿಂದಿನ ಹಂತದ 3 ಶಿರೋನಾಮೆ</translation>
 <translation id="1657616855184033958">ಈವೆಂಟ್ ಸ್ಟ್ರೀಮ್ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">ಮುಂದಿನ ವಿಷಯ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ಬ್ರೈಲ್‌ ಕಮಾಂಡ್‌ಗಳನ್ನು ChromeVox ಮೆನುಗಳಲ್ಲಿ ತೋರಿಸಿ</translation>
-<translation id="1999763610967697511">ಎಳೆಯಿರಿ ಮತ್ತು ಬಿಡಿ</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ಎಡ ಆವರಣ}one{# ಎಡ ಆವರಣಗಳು}other{# ಎಡ ಆವರಣಗಳು}}</translation>
 <translation id="2009187674653301682">ಸೂಪರ್‌ಸ್ಕ್ರಿಪ್ಟ್ ಅಲ್ಲ</translation>
 <translation id="2010555995361223825">ChromeVox ಮೆನುಗಳು</translation>
@@ -594,7 +592,6 @@
 <translation id="4815668758102003883">ತಿಳಿ ವೈಢೂರ್ಯನೀಲಿ</translation>
 <translation id="4826415162591436065">ಮುಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="4827410568042294688">ಆಯ್ಕೆ ಮಾಡಲಾಗಿಲ್ಲ</translation>
-<translation id="483262387981411190">ಫೇಸ್ ಕಂಟ್ರೋಲ್‌ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ ಅಥವಾ ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="4835598628985424375">ತುಟಿಗಳನ್ನು ಸ್ಕ್ವೀಜ್‌ ಮಾಡುವ ಮೂಲಕ ಪುಕರ್‌ ಮಾಡುವುದು</translation>
 <translation id="4838490795649708173">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="4839925464551908214">ಹಿಂದಿನ ಸಾಲಿಗೆ ಹೋಗಿ</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">ಹೆಚ್ಚಿಕೆ</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{ಉದ್ದರಣ}one{# ಉದ್ದರಣ ಚಿಹ್ನೆಗಳು}other{# ಉದ್ದರಣ ಚಿಹ್ನೆಗಳು}}</translation>
-<translation id="8017004049696748317">ಡಿಕ್ಟೇಶನ್‌ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ ಅಥವಾ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="8017588669690167134">ಧ್ವನಿ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="801990297710781303">ಅಡಿಟಿಪ್ಪಣಿ</translation>
 <translation id="8028833145828956995">ನೀವು ChromeVox ಅನ್ನು ಟಚ್‌ಸ್ಕ್ರೀನ್‌ನೊಂದಿಗೆ ಬಳಸಬಹುದು</translation>

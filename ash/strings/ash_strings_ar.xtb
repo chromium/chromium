@@ -443,6 +443,7 @@
 <translation id="2530896289327917474">تفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها</translation>
 <translation id="2531025035050312891">الجهاز بطيء</translation>
 <translation id="2531107890083353124">أثناء سحب علامة التبويب، اضغط على <ph name="KEY_ONE" />.</translation>
+<translation id="2545334090614121435">‏هل تحاول استخدام زر Home؟ استخدِم</translation>
 <translation id="254900897760075745">نسخ المحتوى الذي تم اختياره إلى الحافظة</translation>
 <translation id="2549711466868162843">تحسين الإضاءة</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
@@ -561,6 +562,7 @@
 <translation id="2985148236010982088">عرض كل التطبيقات</translation>
 <translation id="2992272421330787632">إخفاء جميع اقتراحات الوسائط</translation>
 <translation id="2992327365391326550">زر ميكروفون الجهاز غير مفعَّل.</translation>
+<translation id="2993956882370897557">‏هل تحاول استخدام مفتاح End؟ استخدِم</translation>
 <translation id="3000461861112256445">صوت أحادي</translation>
 <translation id="3001391739687111021">تعديل حجم الشاشة</translation>
 <translation id="3009178788565917040">الإخراج</translation>
@@ -613,6 +615,7 @@
 <translation id="316356270129335934">يعمل <ph name="MANAGER" /> على إعادة جهاز <ph name="DEVICE_TYPE" /> إلى الإصدار السابق. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
 <translation id="316798519864381606">‏عرض تقديمي من Google</translation>
 <translation id="3171170659304083361">إعدادات أساليب الإدخال</translation>
+<translation id="3174897399179348329">‏هل تحاول استخدام مفتاح Page Up؟ استخدِم</translation>
 <translation id="3176221688814061633">‏يتم حاليًا استخدام إصدار قديم من البلوتوث في جهاز Chromebook أو جهازك الذي يتضمّن بلوتوث. يمكنك تفعيل ميزة Bluetooth Super Resolution أو استخدام الميكروفون الداخلي للحصول على جودة صوت أفضل.</translation>
 <translation id="3181441307743005334">قد تستغرق إعادة التشغيل بعض الوقت</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}many{تم الاتصال بـ # جهازًا}other{تم الاتصال بـ # جهاز}}</translation>
@@ -1261,6 +1264,7 @@
 <translation id="5297704307811127955">غير مُفعَّلة</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5302048478445481009">اللغة</translation>
+<translation id="5302531370473608800">‏يجب تحديث <ph name="DEVICE_TYPE" /> لاستخدام خدمة YouTube Music</translation>
 <translation id="5303319262469238330">‏يتبقى ‎<ph name="PERCENTAGE" />% من شحن البطارية.
 لإطالة عمر البطارية، تم حصر وظائف بعض الميزات.</translation>
 <translation id="5308380583665731573">اتصال</translation>
@@ -1819,6 +1823,7 @@
 <translation id="7144942256906679589">حالة البطارية</translation>
 <translation id="7145639536026937076">‏مستوى البطارية عند ‎<ph name="PERCENTAGE" />% ويجري شحنها. وضع "توفير شحن البطارية" مفعّل.</translation>
 <translation id="7147587499155271409">لا يتوفّر سجلّ تصفُّح</translation>
+<translation id="7147657298465433425">‏للوصول إلى مفاتيح F، اضغط على مفتاح fn مع الضغط على مفاتيح الصف العلوي</translation>
 <translation id="7149149900052329230">‏يمكنك إدارة ملفاتك المحلية وملفاتك على Google Drive في تطبيق "الملفات".</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149">‫<ph name="HOTSPOT" />،
@@ -1926,6 +1931,7 @@
 <translation id="7557816257942363084">يستخدم "<ph name="APP_NAME" />" الميكروفون حاليًا.</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="7564874036684306347">قد ينتج عن نقل النوافذ إلى سطح مكتب آخر سلوك غير متوقع. من الممكن أن يتم تقسيم مربعات الحوار والنوافذ والإشعارات المتتالية بين سطحَي المكتب.</translation>
+<translation id="7568154670718626683">هل تحاول الحذف؟ استخدِم</translation>
 <translation id="7568790562536448087">تحديث</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
 <translation id="7569886975397378678">عدم إعداد ميزة عرض الإشعارات والتطبيقات في هاتفك</translation>
@@ -2128,6 +2134,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> لقد ركزت للتو لمدة <ph name="FOCUSED_TIME" />. افتح "الإعدادات السريعة" للتركيز مرة أخرى.</translation>
 <translation id="8203224998425013577">‏عرض المزيد من رموز الإيموجي وصور GIF</translation>
 <translation id="8203795194971602413">النقر بالزر الأيمن</translation>
+<translation id="8205469348819768313">‏هل تحاول استخدام مفتاح Page Down؟ استخدِم</translation>
 <translation id="8214996719228530800">‏قناة إصدار Canary</translation>
 <translation id="8219451629189078428">‏يجب أن يكون جهاز Chromebook قيد التشغيل ومتّصلاً بمصدر طاقة خلال هذه المدة. ويجب توصيل كابلات الشاحن أو المحوِّل بشكل محكم بكلٍ من جهاز Chromebook والمقبس الكهربائي. يُرجى عدم إيقاف تشغيل جهاز Chromebook.</translation>
 <translation id="8220076512072059941">إضافة <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2320,6 +2327,7 @@
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏لا يتحدث مساعد Google هذه اللغة.</translation>
 <translation id="8926951137623668982">إخفاء الرف دائمًا</translation>
+<translation id="8929566928381252430">‏هل تحاول استخدام مفتاح Caps Lock؟ استخدِم</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>

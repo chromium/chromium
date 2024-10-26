@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Gandum</translation>
 <translation id="1618597272655350600">Mengumumkan huraian lengkap tentang kedudukan semasa</translation>
 <translation id="1627222324347828322">Putih Melepak</translation>
-<translation id="1632810692616643246">Masuk atau keluar daripada mod tatal</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{lebih besar daripada}other{# tanda lebih besar daripada}}</translation>
 <translation id="1653266918374749391">Tajuk tahap 3 sebelumnya</translation>
 <translation id="1657616855184033958">Tunjukkan penapis strim acara</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Objek Seterusnya</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Paparkan perintah braille dalam menu ChromeVox</translation>
-<translation id="1999763610967697511">Seret dan lepas</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{tanda kurung kiri}other{# tanda kurung kiri}}</translation>
 <translation id="2009187674653301682">Bukan superskrip</translation>
 <translation id="2010555995361223825">Menu ChromeVox</translation>
@@ -341,6 +339,7 @@
 <translation id="311015743332597320">Leret empat jari ke kanan</translation>
 <translation id="3112457281078985179">Untuk menghidupkan atau mematikan ChromeVox, gunakan Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Matikan skrin?</translation>
+<translation id="3127625407966660979">Pengimlakan aktif</translation>
 <translation id="3131002934070407451">Baca nombor sebagai:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Hijau Buah Zaitun</translation>
@@ -594,7 +593,6 @@
 <translation id="4815668758102003883">Firus Pucat</translation>
 <translation id="4826415162591436065">Navigasi ke hadapan</translation>
 <translation id="4827410568042294688">dinyahpilih</translation>
-<translation id="483262387981411190">Jeda atau sambung semula kawalan wajah</translation>
 <translation id="4835598628985424375">Muncungkan bibir dengan merapatkan bibir</translation>
 <translation id="4838490795649708173">Ketik dengan empat jari</translation>
 <translation id="4839925464551908214">Pergi ke baris sebelumnya</translation>
@@ -1051,7 +1049,6 @@
 <translation id="8004512796067398576">Kenaikan</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{tanda petikan}other{# tanda petikan}}</translation>
-<translation id="8017004049696748317">Mulakan atau hentikan pengimlakan</translation>
 <translation id="8017588669690167134">Pertuturan dimatikan</translation>
 <translation id="801990297710781303">Nota kaki</translation>
 <translation id="8028833145828956995">Anda boleh menggunakan ChromeVox dengan skrin sentuh</translation>

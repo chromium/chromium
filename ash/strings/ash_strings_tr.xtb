@@ -442,6 +442,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2530896289327917474">Metin imleciyle göz atmayı açma veya kapatma</translation>
 <translation id="2531025035050312891">cihaz yavaş</translation>
 <translation id="2531107890083353124">Sekmeyi sürüklerken <ph name="KEY_ONE" /> tuşuna basın</translation>
+<translation id="2545334090614121435">Home tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
 <translation id="254900897760075745">Seçili içeriği panoya kopyala</translation>
 <translation id="2549711466868162843">Gelişmiş Işık</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
@@ -560,6 +561,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2985148236010982088">Tüm uygulamaları göster</translation>
 <translation id="2992272421330787632">Tüm medya önerilerini gizle</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
+<translation id="2993956882370897557">End tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3001391739687111021">Ekran boyutunu düzenleyin</translation>
 <translation id="3009178788565917040">Çıkış</translation>
@@ -612,6 +614,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekiyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
 <translation id="316798519864381606">Google Slaytı</translation>
 <translation id="3171170659304083361">Giriş yöntemi ayarları</translation>
+<translation id="3174897399179348329">Page Up tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
 <translation id="3176221688814061633">Chromebook veya Bluetooth cihazınızda Bluetooth'un eski bir sürümü kullanılıyor. Daha iyi ses kalitesi için Bluetooth Süper Çözünürlük'ü açın veya cihazın mikrofonunu kullanın.</translation>
 <translation id="3181441307743005334">Yeniden başlatmak biraz zaman alabilir</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Bir cihaza bağlı}other{# cihaza bağlı}}</translation>
@@ -1259,6 +1262,7 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5297704307811127955">Kapalı</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5302048478445481009">Dil</translation>
+<translation id="5302531370473608800">YouTube Music'i kullanmak için <ph name="DEVICE_TYPE" /> cihazınızı güncelleyin</translation>
 <translation id="5303319262469238330">%<ph name="PERCENTAGE" /> pil kaldı.
 Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5308380583665731573">Bağlan</translation>
@@ -1817,6 +1821,7 @@ Yeni yüklenmiş</translation>
 <translation id="7144942256906679589">Pil durumu</translation>
 <translation id="7145639536026937076">Pil %<ph name="PERCENTAGE" /> dolu ve şarj oluyor. Pil Tasarrufu açık.</translation>
 <translation id="7147587499155271409">Tarama geçmişi yok</translation>
+<translation id="7147657298465433425">F tuşlarına erişmek için Fn tuşu + üst sıradaki tuşlara basın</translation>
 <translation id="7149149900052329230">Yerel dosyalarınızı ve Google Drive dosyalarınızı Dosyalar uygulamasında yönetin.</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1923,6 +1928,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7557816257942363084"><ph name="APP_NAME" /> şu anda mikrofonunuzu kullanıyor</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
+<translation id="7568154670718626683">Delete tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
 <translation id="7568790562536448087">Güncelleniyor</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
 <translation id="7569886975397378678">Telefonunuzdaki bildirimleri ve uygulamaları görme seçeneğini ayarlamayı kapatın</translation>
@@ -2125,6 +2131,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="820256110035940528"><ph name="TITLE" /> <ph name="FOCUSED_TIME" /> boyunca odaklandınız. Tekrar odaklanmak için Hızlı Ayarlar'ı açın.</translation>
 <translation id="8203224998425013577">Daha fazla emoji ve GIF göster</translation>
 <translation id="8203795194971602413">Sağ tıklama</translation>
+<translation id="8205469348819768313">Page Down tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
 <translation id="8214996719228530800">Canary Kanalı</translation>
 <translation id="8219451629189078428">Bu süre zarfında Chromebook'unuzun açık ve güç kaynağına bağlı kalması gerekir. Şarj cihazının veya adaptör kablolarının hem Chromebook'unuza hem de prize tam olarak takılı olduğundan emin olun. Chromebook'unuzu kapatmayın.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ekle</translation>
@@ -2317,6 +2324,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Asistan bu dili konuşmuyor.</translation>
 <translation id="8926951137623668982">Raf her zaman gizleniyor</translation>
+<translation id="8929566928381252430">Caps Lock tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>

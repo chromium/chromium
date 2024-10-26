@@ -113,7 +113,6 @@
 <translation id="1616111909442424068">Unrang</translation>
 <translation id="1618597272655350600">Joriy elementning to‘liq ta’rifini e’lon qilish</translation>
 <translation id="1627222324347828322">Sutrang</translation>
-<translation id="1632810692616643246">Varaqlar rejimiga kirish yoki undan chiqish</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{“katta” belgisi}other{# ta “katta” belgisi}}</translation>
 <translation id="1653266918374749391">Avvalgi 3-darajali sarlavha</translation>
 <translation id="1657616855184033958">Oqimli amallar filterterlarini ochish</translation>
@@ -159,7 +158,6 @@
 <translation id="1964135212174907577">Keyingi obyekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox menyusida brayl buyruqlari chiqsin</translation>
-<translation id="1999763610967697511">Tortib tashlash</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{chap qavs}other{# ta chap qavs}}</translation>
 <translation id="2009187674653301682">Ustki satr emas</translation>
 <translation id="2010555995361223825">ChromeVox menyusi</translation>
@@ -592,7 +590,6 @@
 <translation id="4815668758102003883">Xira feruzarang</translation>
 <translation id="4826415162591436065">Oldinga o‘tish</translation>
 <translation id="4827410568042294688">belgilanish bekor qilindi</translation>
-<translation id="483262387981411190">Yuz bilan boshqarishni pauza qilish yoki davom ettirish</translation>
 <translation id="4835598628985424375">Ogʻizni yumib turing</translation>
 <translation id="4838490795649708173">To‘rtta barmoq bilan tegining</translation>
 <translation id="4839925464551908214">Avvalgi qatorga o‘tish</translation>
@@ -1049,7 +1046,6 @@
 <translation id="8004512796067398576">Oshirish</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{qo‘shtirnoq}other{# ta qo‘shtirnoq}}</translation>
-<translation id="8017004049696748317">Ovoz bilan yozishni boshlash yoki toʻxtatish</translation>
 <translation id="8017588669690167134">Ovozli bildirgilar o‘chiq</translation>
 <translation id="801990297710781303">Quyi izoh</translation>
 <translation id="8028833145828956995">ChromeVox sensorli ekranlarda ham ishlaydi</translation>

@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Wheat</translation>
 <translation id="1618597272655350600">Nagpapahayag ng kumpletong paglalarawan sa kasalukuyang posisyon</translation>
 <translation id="1627222324347828322">Ghost White</translation>
-<translation id="1632810692616643246">Pumasok o lumabas sa scroll mode</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{greater than}one{# greater than sign}other{# na greater than sign}}</translation>
 <translation id="1653266918374749391">Nakaraang heading sa antas 3</translation>
 <translation id="1657616855184033958">Ipakita ang mga filter ng stream ng event</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Susunod na Bagay</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Ipakita ang mga command ng braille sa mga menu ng ChromeVox</translation>
-<translation id="1999763610967697511">Mag-drag at drop</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{kaliwang bracket}one{# kaliwang bracket}other{# na kaliwang bracket}}</translation>
 <translation id="2009187674653301682">Hindi superscript</translation>
 <translation id="2010555995361223825">Mga Menu ng ChromeVox</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Pale Turquoise</translation>
 <translation id="4826415162591436065">Mag-navigate pasulong</translation>
 <translation id="4827410568042294688">hindi napili</translation>
-<translation id="483262387981411190">I-pause o ituloy ang pagkontrol gamit ang mukha</translation>
 <translation id="4835598628985424375">Ngumuso gamit ang iyong mga labi</translation>
 <translation id="4838490795649708173">Mag-tap gamit ang apat na daliri</translation>
 <translation id="4839925464551908214">Pumunta sa nakaraang row</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Taasan</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{panipi}one{# panipi}other{# na panipi}}</translation>
-<translation id="8017004049696748317">Simulan o ihinto ang dictation</translation>
 <translation id="8017588669690167134">I-off ang pananalita</translation>
 <translation id="801990297710781303">Footnote</translation>
 <translation id="8028833145828956995">Magagamit mo ang ChromeVox sa touchscreen</translation>

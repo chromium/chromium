@@ -114,7 +114,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1616111909442424068">గోధుమ రంగు</translation>
 <translation id="1618597272655350600">ప్రస్తుత స్థానం యొక్క పూర్తి వివరణను తెలియజేస్తుంది</translation>
 <translation id="1627222324347828322">పిశాచ తెలుపు రంగు</translation>
-<translation id="1632810692616643246">స్క్రోల్ మోడ్‌కు వెళ్లండి లేదా దాని నుండి నిష్క్రమించండి</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{గురుతర గుర్తు}other{# గురుతర గుర్తులు}}</translation>
 <translation id="1653266918374749391">మునుపటి స్థాయి 3 శీర్షిక</translation>
 <translation id="1657616855184033958">ఈవెంట్ ప్రసార ఫిల్టర్‌లను చూపించు</translation>
@@ -160,7 +159,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1964135212174907577">తర్వాత ఆబ్జెక్ట్</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox మెనూలలో బ్రెయిలీ ఆదేశాలను చూపు</translation>
-<translation id="1999763610967697511">లాగి, వదలండి</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{ఎడమ కుండలీకరణ గుర్తు}other{# ఎడమ కుండలీకరణ గుర్తులు}}</translation>
 <translation id="2009187674653301682">సూపర్‌స్క్రిప్ట్ కాదు</translation>
 <translation id="2010555995361223825">ChromeVox మెనూలు</translation>
@@ -500,6 +498,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4161104397932142764">{COUNT,plural, =1{సెకను}other{సెకన్‌లు}}</translation>
 <translation id="4161663686871496107">ChromeVox చదివి వినిపించే అభిప్రాయం సిద్ధంగా ఉంది</translation>
 <translation id="4176463684765177261">డిజేబుల్ చేయబడింది</translation>
+<translation id="4176677444195790114">'లాగి, వదలండి' చర్య ఇంకా ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="4187322598335821254">పంక్తుల వారీగా వెళ్లడం కోసం ఎగువకు లేదా దిగువకు స్వైప్ చేయండి</translation>
 <translation id="4188530942454211480">మునుపటి వాక్యం</translation>
 <translation id="4191918948604314587">బటన్</translation>
@@ -594,7 +593,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4815668758102003883">లేత నీలమణి రంగు</translation>
 <translation id="4826415162591436065">ముందుకు నావిగేట్ చేయండి</translation>
 <translation id="4827410568042294688">ఎంపిక తీసివేయబడింది</translation>
-<translation id="483262387981411190">ఫేస్ కంట్రోల్‌ను పాజ్ చేయండి లేదా కొనసాగించండి</translation>
 <translation id="4835598628985424375">పెదవులను కలిపి నొక్కడం ద్వారా మూతి ముడవటం</translation>
 <translation id="4838490795649708173">నాలుగు వేళ్లతో నొక్కండి</translation>
 <translation id="4839925464551908214">మునుపటి అడ్డు వరుసకు వెళ్లండి</translation>
@@ -1051,7 +1049,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8004512796067398576">పెరుగుదల</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{కోట్ గుర్తు}other{# కోట్ గుర్తులు}}</translation>
-<translation id="8017004049696748317">డిక్టేషన్‌ను ప్రారంభించండి లేదా ఆపండి</translation>
 <translation id="8017588669690167134">ప్రసంగాన్ని ఆఫ్ చేయండి</translation>
 <translation id="801990297710781303">ఫుట్‌నోట్</translation>
 <translation id="8028833145828956995">మీరు టచ్‌స్క్రీన్‌తో ChromeVoxని ఉపయోగించవచ్చు</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="100421257800558142">دائیں تیر کے نشان والی کلید کو دبائیں</translation>
 <translation id="100506692671054486">پچھلا کوئی کمانڈ نہیں</translation>
 <translation id="1009046985747440431">‏نیویگیٹ کرنے کیلئے، اوپر یا نیچے کا تیر کا نشان دبائیں؛ فعال کرنے کیلئے enter دبائیں</translation>
 <translation id="1011903154582639569">ایک کلید تلاش کریں، پھر ٹائپ کرنے کیلئے لفٹ کریں</translation>
@@ -60,6 +61,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1291286136605998134">ٹوگل بٹن</translation>
 <translation id="1299774449519412690">ہلکا آسمانی نیلا</translation>
 <translation id="1303806948938513162">‏ChromeVox مینوز میں داخل ہونے کے لیے 4 انگلیوں سے تھپتھپائیں</translation>
+<translation id="1304162325618937178">اسپیس کلید دبائیں</translation>
 <translation id="1313373992684326101">پچھلے سیکشن پر جائيں۔ مثالوں میں اسٹیٹس ٹرے اور لانچر شامل ہیں۔</translation>
 <translation id="1315077335264761176">ٹچ سمت بندی</translation>
 <translation id="1325363694295259631"><ph name="NAME" />، مینیو آئٹم ریڈیو بٹن کو غیر منتخب کیا گیا ہے</translation>
@@ -158,7 +160,6 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1964135212174907577">اگلا آبجیکٹ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏ChromeVox مینوز میں بریل کی کمانڈز دکھائيں</translation>
-<translation id="1999763610967697511">کھینچ کر ڈالیں</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{بایاں بریکٹ}other{# بائیں بریکٹس}}</translation>
 <translation id="2009187674653301682">سُپر اسکرپٹ نہیں ہے</translation>
 <translation id="2010555995361223825">‏ChromeVox مینوز</translation>
@@ -186,9 +187,11 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="2197863150503783129">سیڈل بھورا</translation>
 <translation id="2199994615414171367">پچھلی ریاضی</translation>
 <translation id="2203046366315513658">قدر گھٹائیں</translation>
+<translation id="2206580811360135054">ونڈوز کا مجموعی جائزہ دکھائیں یا چھپائیں</translation>
 <translation id="2216790501338699346">‏لنک کا URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">ایک حرف پیچھے جائیں</translation>
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
+<translation id="2239819015858077439">نیچے تیر کے نشان والی کلید دبائیں</translation>
 <translation id="2243633977138166243">‏نیویگیٹ کرنے کیلئے بائیں یا دائیں تیر کا نشان، فعال کرنے کیلئے enter دبائیں</translation>
 <translation id="224426591676115802">اس زبان کیلئے کوئی آواز دستیاب نہیں ہے: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">جاننے کی وضع بند کی جا رہی ہے</translation>
@@ -495,6 +498,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4161104397932142764">{COUNT,plural, =1{سیکنڈ}other{سیکنڈز}}</translation>
 <translation id="4161663686871496107">‏ChromeVox کے بولے ہوئے تاثرات تیار ہیں</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
+<translation id="4176677444195790114">کھینچ کر ڈالنے کا عمل پیش رفت میں ہے</translation>
 <translation id="4187322598335821254">لائن کے لحاظ سے حرکت کرنے کے لیے اوپر یا نیچے سوائپ کریں</translation>
 <translation id="4188530942454211480">پچھلا جملہ</translation>
 <translation id="4191918948604314587">ایک بٹن</translation>
@@ -542,6 +546,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4432457053224379116">انڈین سرخ</translation>
 <translation id="4432896207833262240">نشان زد کردہ مواد</translation>
 <translation id="4437615272777527928">مینوز میں تلاش کے لیے ٹائپ کریں۔ ایک نتیجے سے دوسرے نتیجے پر جانے کیلئے اوپر اور نیچے کے تیروں کا استعمال کریں۔ ٹیکسٹ کیرٹ کو ایڈجسٹ اور مینوز کے درمیان کرسر کو حرکت دینے کے لیے دائیں اور بائیں والے تیروں کا استعمال کریں۔</translation>
+<translation id="4441677939526091190">اوپر تیر کے نشان والی کلید کو دبائیں</translation>
 <translation id="4453530046591759283">‏اسکرین کے دیگر حصوں پر جانے کیلئے، جیسے ٹول بارز یا سسٹم ٹرے، Control+F1 دبائیں۔ ‫Escape کلید کی دائیں طرف پہلی کلید F1 ہے۔</translation>
 <translation id="4457472090507035117">موجودہ آواز منتخب کریں:</translation>
 <translation id="4476183483923481720">نئی لکیر</translation>
@@ -588,7 +593,6 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4815668758102003883">ہلکا فیروزی</translation>
 <translation id="4826415162591436065">آگے نیویگیٹ کریں</translation>
 <translation id="4827410568042294688">غیر منتخب کردہ</translation>
-<translation id="483262387981411190">فیس کنٹرول کو موقوف یا دوبارہ شروع کریں</translation>
 <translation id="4835598628985424375">اپنے ہونٹوں کو ملا کر دباتے ہوئے سُکیڑیں</translation>
 <translation id="4838490795649708173">چار انگلیوں سے تھپتھپائیں</translation>
 <translation id="4839925464551908214">پچھلی قطار پر جائیں</translation>
@@ -721,6 +725,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="5653397561111110475">‏Chromebook ٹچ اسکرین کی ایکسیسبیلٹی خصوصیات استعمال کریں</translation>
 <translation id="5655682562155942719">جمپ کمانڈز</translation>
 <translation id="56637627897541303">ٹیکسٹ ایریا</translation>
+<translation id="5666746275818170484">بائیں تیر کے نشان والی کلید کو دبائیں</translation>
 <translation id="5669637233317991674">‏اس سبق کو نیویگیٹ کرنے کیلئے Search + دائیں تیر کا نشان یا Search + بائیں تیر کے نشان کو دبائیں</translation>
 <translation id="5677240841070992068">موجودہ مقام</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -927,6 +932,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7161771961008409533">پاپ اپ بٹن</translation>
 <translation id="7167657087543110">حرف کی ایکو</translation>
 <translation id="7173102181852295013">نصف شب نیلا</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">توسیع کردہ</translation>
 <translation id="7209751026933045237">کوئی اگلا سلائیڈر نہیں ہے</translation>
 <translation id="7218782500591078391">گولڈن راڈ</translation>
@@ -1043,7 +1049,6 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="8004512796067398576">اضافہ</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{اقتباس}other{# اقتباسات}}</translation>
-<translation id="8017004049696748317">ڈکٹیشن شروع کریں یا بند کریں</translation>
 <translation id="8017588669690167134">اسپیچ آف کریں</translation>
 <translation id="801990297710781303">فٹ نوٹ</translation>
 <translation id="8028833145828956995">‏آپ ٹچ اسکرین کے ساتھ ChromeVox کا استعمال کر سکتے ہیں</translation>
@@ -1100,6 +1105,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="8378855320830505539">علاقہ</translation>
 <translation id="8382679411218029383">ان لائن اور فہرست میں خودکار تکمیل</translation>
 <translation id="8394908167088220973">میڈیا چلائیں/موقوف کریں</translation>
+<translation id="8409502156784390079">اسکرول موڈ فعال ہے</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428603554127842284">سطح <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1177,6 +1183,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="8986362086234534611">بھول جائیں</translation>
 <translation id="8989104346085848538">‏کسی بھی موجودہ ChromeVox اسپیچ کو روکنے کیلئے Control کلید دبائیں۔</translation>
 <translation id="9014206344398081366">‏ChromeVox ٹیوٹوریل</translation>
+<translation id="9034592733577768445">فیس کنٹرول موقوف ہو گیا</translation>
 <translation id="9040132695316389094">سرخی 1</translation>
 <translation id="9061884144798498064">8 ڈاٹ والی بریل ٹیبل منتخب کریں:</translation>
 <translation id="9063946545000394379">پچھلے حرف پر لے جائیں</translation>

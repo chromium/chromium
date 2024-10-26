@@ -114,7 +114,6 @@
 <translation id="1616111909442424068">Wheat</translation>
 <translation id="1618597272655350600">Announces a complete description of the current position</translation>
 <translation id="1627222324347828322">Ghost White</translation>
-<translation id="1632810692616643246">Enter or exit scroll mode</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{greater than}other{# greater than signs}}</translation>
 <translation id="1653266918374749391">Previous level 3 heading</translation>
 <translation id="1657616855184033958">Show event stream filters</translation>
@@ -160,7 +159,6 @@
 <translation id="1964135212174907577">Next Object</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Show braille commands in the ChromeVox menus</translation>
-<translation id="1999763610967697511">Drag and drop</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{left bracket}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Not superscript</translation>
 <translation id="2010555995361223825">ChromeVox menus</translation>
@@ -593,7 +591,6 @@
 <translation id="4815668758102003883">Pale Turquoise</translation>
 <translation id="4826415162591436065">Navigate forward</translation>
 <translation id="4827410568042294688">unselected</translation>
-<translation id="483262387981411190">Pause or resume face control</translation>
 <translation id="4835598628985424375">Pucker by squeezing lips together</translation>
 <translation id="4838490795649708173">Tap with four fingers</translation>
 <translation id="4839925464551908214">Go to the previous row</translation>
@@ -1050,7 +1047,6 @@
 <translation id="8004512796067398576">Increment</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8009786657110126785">{COUNT,plural, =1{quote}other{# quotes}}</translation>
-<translation id="8017004049696748317">Start or stop dictation</translation>
 <translation id="8017588669690167134">Speech off</translation>
 <translation id="801990297710781303">Footnote</translation>
 <translation id="8028833145828956995">You can use ChromeVox with the touchscreen</translation>
