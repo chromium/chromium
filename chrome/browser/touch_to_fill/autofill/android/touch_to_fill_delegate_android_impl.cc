@@ -317,11 +317,12 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
     // Virtual credit cards are not persisted in Chrome, modify record type
     // locally.
     manager_->AuthenticateThenFillCreditCardForm(
-        query_form_, query_field_, CreditCard::CreateVirtualCard(*card),
+        query_form_, query_field_.global_id(),
+        CreditCard::CreateVirtualCard(*card),
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   } else {
     manager_->AuthenticateThenFillCreditCardForm(
-        query_form_, query_field_, *card,
+        query_form_, query_field_.global_id(), *card,
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   }
 }

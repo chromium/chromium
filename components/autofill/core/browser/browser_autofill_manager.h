@@ -183,7 +183,7 @@ class BrowserAutofillManager : public AutofillManager {
   // TODO(crbug.com/40227071): Clean up the API.
   virtual void AuthenticateThenFillCreditCardForm(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const CreditCard& credit_card,
       const AutofillTriggerDetails& trigger_details);
 

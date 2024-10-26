@@ -221,7 +221,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
+      form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -270,7 +270,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
 
   // Select the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
+      form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -327,7 +327,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
+      form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -417,7 +417,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().back().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
+      form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -548,7 +548,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
                              SuggestionType::kCreditCardEntry);
   task_environment_.FastForwardBy(base::Seconds(2));
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().front(),
+      form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(
           kTestMaskedCardId),
       {.trigger_source = AutofillTriggerSource::kPopup});
@@ -645,8 +645,8 @@ class CardBenefitFormEventMetricsTest
   void ShowSuggestionsAndSelectCard(const CreditCard* card) {
     ShowCardSuggestions();
     autofill_manager().AuthenticateThenFillCreditCardForm(
-        form(), form().fields()[credit_card_number_field_index()], *card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        form(), form().fields()[credit_card_number_field_index()].global_id(),
+        *card, {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   // Simulating selecting and filling the given `card` from a list of

@@ -1424,7 +1424,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
                      query_field_.global_id(), *credit_card, std::u16string(),
                      trigger_details)
                : manager_->AuthenticateThenFillCreditCardForm(
-                     query_form_, query_field_,
+                     query_form_, query_field_.global_id(),
                      type == SuggestionType::kVirtualCreditCardEntry
                          ? CreditCard::CreateVirtualCard(*credit_card)
                          : *credit_card,

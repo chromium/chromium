@@ -249,7 +249,7 @@ class FormFillerTest : public testing::Test {
 
     EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(AtLeast(1));
     browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
-        form, form.fields().front(), card,
+        form, form.fields().front().global_id(), card,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 

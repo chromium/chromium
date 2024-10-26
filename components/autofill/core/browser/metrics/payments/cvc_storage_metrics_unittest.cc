@@ -173,7 +173,7 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
+      form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -190,7 +190,7 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
 
   // Simulate selecting the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().front(),
+      form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -218,7 +218,7 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
 
   // Simulate filling the suggestion with CVC.
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().front(),
+      form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   if (!using_local_card()) {
@@ -241,7 +241,7 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
 
   // Fill the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().front(),
+      form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   if (!using_local_card()) {
@@ -277,7 +277,7 @@ TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().front(),
+      form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   if (!using_local_card()) {

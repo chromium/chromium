@@ -146,7 +146,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void,
               AuthenticateThenFillCreditCardForm,
               (const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field,
                const CreditCard& credit_card,
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,

@@ -964,7 +964,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                    personal_data().payments_data_manager().GetCreditCardByGUID(
                        guid)) {
       browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
-          form, field, *card, trigger_details);
+          form, field.global_id(), *card, trigger_details);
     }
   }
 
@@ -1065,7 +1065,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     EXPECT_CALL(*autofill_driver_, ApplyFormAction).Times(AtLeast(1));
     browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
-        *form, form->fields()[0], card,
+        *form, form->fields()[0].global_id(), card,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 

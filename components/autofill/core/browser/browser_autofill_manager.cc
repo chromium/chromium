@@ -417,7 +417,6 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
 // current filling flow.
 // TODO(crbug.com/40227496): Only use parsed data.
 bool ShouldFetchCreditCard(const FormData& form,
-                           const FormFieldData& field,
                            const FormStructure& form_structure,
                            const AutofillField& autofill_field,
                            const CreditCard& credit_card) {
@@ -1950,20 +1949,20 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
 
 void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const CreditCard& credit_card,
     const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
   metrics_->last_selected_card = credit_card;
   metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
       credit_card, *form_structure, metrics_->signin_state_for_metrics);
   // If no authentication is needed, directly forward filling to FormFiller.
-  if (!ShouldFetchCreditCard(form, field, *form_structure, *autofill_field,
+  if (!ShouldFetchCreditCard(form, *form_structure, *autofill_field,
                              credit_card)) {
     form_filler_->FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, &credit_card,
@@ -1975,10 +1974,9 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
       credit_card, *form_structure, metrics_->signin_state_for_metrics);
 
   GetCreditCardAccessManager().FetchCreditCard(
-      &credit_card,
-      base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                     weak_ptr_factory_.GetWeakPtr(), form, field.global_id(),
-                     trigger_details.trigger_source));
+      &credit_card, base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
+                                   weak_ptr_factory_.GetWeakPtr(), form,
+                                   field_id, trigger_details.trigger_source));
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
