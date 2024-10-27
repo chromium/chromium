@@ -64,6 +64,10 @@ using OnStyleTransferSupportedCallback = base::OnceCallback<void()>;
 // supported by the board.
 using OnHfpMicSrSupportedCallback = base::OnceCallback<void()>;
 
+// Callback to handle the dbus message for whether spatial_audio is
+// supported by the board.
+using OnSpatialAudioSupportedCallback = base::OnceCallback<void()>;
+
 // This class is not thread safe. The public functions should be called on
 // browser main thread.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
@@ -497,6 +501,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // metrics who changed the hfp_mic_sr state.
   void SetHfpMicSrState(bool hfp_mic_sr_on, AudioSettingsChangeSource source);
 
+  // Returns spatial audio supported.
+  bool IsSpatialAudioSupportedForDevice(uint64_t device_id);
+
+  // Gets if spatial audio is supported by the board.
+  void RequestSpatialAudioSupported(OnSpatialAudioSupportedCallback callback);
+
   // Gets the state of spatial audio state.
   bool GetSpatialAudioState() const;
 
@@ -505,6 +515,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Makes a DBus call to set the state of spatial audio.
   void SetSpatialAudioState(bool state);
+
+  // Simulate spatial audio support in a test.
+  void SetSpatialAudioSupportedForTesting(bool supported);
 
   // Whether there is alternative input/output audio device.
   bool has_alternative_input() const;
@@ -709,6 +722,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Returns number of streams ignoring UI gains.
   int32_t num_stream_ignore_ui_gains() const;
+
+  // Returns if spatial audio is supported in CRAS or not.
+  bool spatial_audio_supported() const;
 
   // Asks  CRAS to resend BluetoothBatteryChanged signal, used in cases when
   // Chrome cleans up the stored battery information but still has the device
@@ -1024,6 +1040,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Handle dbus callback for GetSystemAgcSupported.
   void HandleGetSystemAgcSupported(std::optional<bool> system_agc_supported);
 
+  // Handle dbus callback for IsSpatialAudioSupported.
+  void HandleGetSpatialAudioSupported(
+      OnSpatialAudioSupportedCallback callback,
+      std::optional<bool> spatial_audio_supported);
+
   void OnVideoCaptureStartedOnMainThread(media::VideoFacingMode facing);
   void OnVideoCaptureStoppedOnMainThread(media::VideoFacingMode facing);
 
@@ -1154,6 +1175,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool system_ns_supported_ = false;
   bool system_agc_supported_ = false;
   bool hfp_mic_sr_supported_ = false;
+  bool spatial_audio_supported_ = false;
 
   int num_active_output_streams_ = 0;
   int32_t num_active_nonchrome_output_streams_ = 0;

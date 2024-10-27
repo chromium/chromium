@@ -525,8 +525,18 @@ void FakeCrasAudioClient::GetNumberOfArcStreams(
   std::move(callback).Run(number_arc_streams_);
 }
 
+void FakeCrasAudioClient::SetSpatialAudioSupported(
+    bool spatial_audio_supported) {
+  spatial_audio_supported_ = spatial_audio_supported;
+}
+
 void FakeCrasAudioClient::SetSpatialAudio(bool spatial_audio_enabled) {
   spatial_audio_enabled_ = spatial_audio_enabled;
+}
+
+void FakeCrasAudioClient::GetSpatialAudioSupported(
+    chromeos::DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(spatial_audio_supported_);
 }
 
 }  // namespace ash

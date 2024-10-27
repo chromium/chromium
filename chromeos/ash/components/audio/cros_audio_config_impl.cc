@@ -137,6 +137,10 @@ mojom::AudioEffectState GetSpatialAudioState(const AudioDevice& device) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   CHECK(audio_handler);
 
+  if (!audio_handler->IsSpatialAudioSupportedForDevice(device.id)) {
+    return mojom::AudioEffectState::kNotSupported;
+  }
+
   // Get current device wide preference state from `CrasAudioHandler`.
   return audio_handler->GetSpatialAudioState()
              ? mojom::AudioEffectState::kEnabled

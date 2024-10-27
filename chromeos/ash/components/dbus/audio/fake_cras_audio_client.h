@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   bool GetStyleTransferEnabled();
   void SetHfpMicSrSupported(bool hfp_mic_sr_supported);
   uint32_t GetHfpMicSrEnabled();
+  void SetSpatialAudioSupported(bool spatial_audio_supported);
 
   // CrasAudioClient overrides:
   void AddObserver(Observer* observer) override;
@@ -112,6 +113,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void GetHfpMicSrSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
   void SetSpatialAudio(bool spatial_audio_enabled) override;
+  void GetSpatialAudioSupported(
+      chromeos::DBusMethodCallback<bool> callback) override;
 
   // Sets the number of non chrome audio streams in output mode.
   void SetNumberOfNonChromeOutputStreams(int32_t streams);
@@ -222,6 +225,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   bool hfp_mic_sr_enabled_ = false;
   bool hfp_mic_sr_supported_ = false;
   bool spatial_audio_enabled_ = false;
+  bool spatial_audio_supported_ = false;
   // Maps audio client type to the number of active input streams for clients
   // with the type specified
   ClientTypeToInputStreamCount active_input_streams_;

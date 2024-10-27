@@ -454,6 +454,10 @@ class CrosAudioConfigImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetSpatialAudioSupported(bool supported) {
+    cras_audio_handler_->SetSpatialAudioSupportedForTesting(supported);
+  }
+
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   base::HistogramTester histogram_tester_;
@@ -1522,6 +1526,7 @@ TEST_F(CrosAudioConfigImplTest, SetInputGainHistogram) {
 
 TEST_F(CrosAudioConfigImplTest, SetSpatialAudioState) {
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  SetSpatialAudioSupported(/*supported=*/true);
 
   // By default spatial audio is disabled in this test.
   ASSERT_FALSE(GetSpatialAudioState());

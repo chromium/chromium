@@ -837,6 +837,39 @@ void CrasAudioHandler::SetHfpMicSrState(bool hfp_mic_sr_on,
   }
 }
 
+bool CrasAudioHandler::IsSpatialAudioSupportedForDevice(uint64_t device_id) {
+  if (!spatial_audio_supported()) {
+    return false;
+  }
+
+  const AudioDevice* device = GetDeviceFromId(device_id);
+  if (!device || device->type != AudioDeviceType::kInternalSpeaker) {
+    return false;
+  }
+
+  return true;
+}
+
+void CrasAudioHandler::RequestSpatialAudioSupported(
+    OnSpatialAudioSupportedCallback callback) {
+  CrasAudioClient::Get()->GetSpatialAudioSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetSpatialAudioSupported,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrasAudioHandler::HandleGetSpatialAudioSupported(
+    OnSpatialAudioSupportedCallback callback,
+    std::optional<bool> spatial_audio_supported) {
+  if (!spatial_audio_supported.has_value()) {
+    LOG(ERROR)
+        << "cras_audio_handler: Failed to retrieve spatial audio support";
+  } else {
+    spatial_audio_supported_ = spatial_audio_supported.value();
+  }
+
+  std::move(callback).Run();
+}
+
 bool CrasAudioHandler::GetSpatialAudioState() const {
   return audio_pref_handler_->GetSpatialAudioState();
 }
@@ -856,6 +889,10 @@ void CrasAudioHandler::SetSpatialAudioState(bool state) {
   for (auto& observer : observers_) {
     observer.OnSpatialAudioStateChanged();
   }
+}
+
+void CrasAudioHandler::SetSpatialAudioSupportedForTesting(bool supported) {
+  spatial_audio_supported_ = supported;
 }
 
 void CrasAudioHandler::SetKeyboardMicActive(bool active) {
@@ -1814,6 +1851,8 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
                                                weak_ptr_factory_.GetWeakPtr()));
   RequestHfpMicSrSupported(base::BindOnce(&CrasAudioHandler::GetNodes,
                                           weak_ptr_factory_.GetWeakPtr()));
+  RequestSpatialAudioSupported(base::BindOnce(&CrasAudioHandler::GetNodes,
+                                              weak_ptr_factory_.GetWeakPtr()));
   GetNumberOfOutputStreams();
   GetNumberOfNonChromeOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
@@ -3075,6 +3114,10 @@ bool CrasAudioHandler::hfp_mic_sr_supported() const {
 bool CrasAudioHandler::system_aec_supported() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return system_aec_supported_;
+}
+
+bool CrasAudioHandler::spatial_audio_supported() const {
+  return spatial_audio_supported_;
 }
 
 // GetSystemAecSupported() is only called in the same thread

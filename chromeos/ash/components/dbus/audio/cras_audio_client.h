@@ -315,6 +315,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Sets spatial audio state to |spatial_audio| value.
   virtual void SetSpatialAudio(bool spatial_audio) = 0;
 
+  // Gets if spatial audio is supported.
+  virtual void GetSpatialAudioSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
+
  protected:
   friend class CrasAudioClientTest;
 

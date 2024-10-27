@@ -740,6 +740,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void GetSpatialAudioSupported(
+      chromeos::DBusMethodCallback<bool> callback) override {
+    VLOG(1) << "cras_audio_client: Requesting spatial audio support.";
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kIsSpatialAudioSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetSpatialAudioSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   // Called when the cras signal is initially connected.
   void SignalConnected(const std::string& interface_name,
@@ -1373,6 +1384,26 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(is_hfp_mic_sr_supported);
     VLOG(1) << "cras_audio_client: Retrieved hfp_mic_sr support: "
             << is_hfp_mic_sr_supported;
+  }
+
+  void OnGetSpatialAudioSupported(chromeos::DBusMethodCallback<bool> callback,
+                                  dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << "IsSpatialAudioSupported";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    bool is_spatial_audio_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&is_spatial_audio_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_spatial_audio_supported);
+    VLOG(1) << "cras_audio_client: Retrieved spatial_audio support: "
+            << is_spatial_audio_supported;
   }
 
   bool GetAudioNode(dbus::Response* response,
