@@ -267,7 +267,8 @@ main_rewrite() {
         --tool spanify \
         --generate-compdb \
         -p $OUT_DIR \
-        $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
+        $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out \
+        2>~/scratch/rewriter-"${PLATFORM}".main.err
     touch ~/scratch/rewriter.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
 }
