@@ -21,13 +21,17 @@ enum Direction {
 
 // Clients of the OCR service.
 enum OcrClientType {
+  // To be used only for testing.
   kTest,
+  // Used in PDF Viewer to convert images to interactble text.
   kPdfViewer,
+  // Used in ChromeOS Local Search to make stored images text searchable.
   kLocalSearch,
+  // Ued by ChromeOS Camera app to create interactable PDFs.
   kCameraApp,
-  kPdfSearchify,
+  // Used by ChromeOS Media app to make PDFs accessible.
   kMediaApp,
-  // Used in the ChromeOS screenshot tool to detect text in a user selected
+  // Used by the ChromeOS screenshot tool to detect text in a user selected
   // region.
   kScreenshotTextDetection,
 };

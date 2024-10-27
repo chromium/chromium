@@ -50,15 +50,14 @@ constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// See `screen_ai_service.mojom` for more info.
 enum class OcrClientTypeForMetrics {
   kTest = 0,
   kPdfViewer = 1,
   kLocalSearch = 2,
   kCameraApp = 3,
-  kPdfSearchify = 4,
+  kNotUsed = 4,  // Can be used for a new client.
   kMediaApp = 5,
-  // Used in the ChromeOS screenshot tool to detect text in a user selected
-  // region.
   kScreenshotTextDetection,
   kMaxValue = kScreenshotTextDetection
 };
@@ -74,8 +73,6 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
       return OcrClientTypeForMetrics::kLocalSearch;
     case mojom::OcrClientType::kCameraApp:
       return OcrClientTypeForMetrics::kCameraApp;
-    case mojom::OcrClientType::kPdfSearchify:
-      return OcrClientTypeForMetrics::kPdfSearchify;
     case mojom::OcrClientType::kMediaApp:
       return OcrClientTypeForMetrics::kMediaApp;
     case mojom::OcrClientType::kScreenshotTextDetection:
