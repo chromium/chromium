@@ -79,6 +79,13 @@ class BrowserWindowInterface : public content::PageNavigator {
   // See Browser::IsAttemptingToCloseBrowser() for more details.
   virtual bool IsAttemptingToCloseBrowser() const = 0;
 
+  // Register callbacks invoked when browser has successfully processed its
+  // close request and has been scheduled for deletion.
+  using BrowserDidCloseCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterBrowserDidClose(
+      BrowserDidCloseCallback callback) = 0;
+
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
 

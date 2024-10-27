@@ -27,6 +27,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -34,6 +35,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -982,6 +984,31 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
 
   // Accept the navigation so we end up on a page without a beforeunload hook.
   alert->view()->AcceptAppModalDialog();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
+  const GURL url(base::StrCat({"data:text/html,", kBeforeUnloadHTML}));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::PrepContentsForBeforeUnloadTest(contents);
+
+  // Assert the did close notification is not fired if unload handlers prevent
+  // the browser from closing.
+  base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>
+      browser_did_close_callback;
+  EXPECT_CALL(browser_did_close_callback, Run).Times(0);
+  base::CallbackListSubscription subscription =
+      browser()->RegisterBrowserDidClose(browser_did_close_callback.Get());
+  browser()->window()->Close();
+  EXPECT_FALSE(browser()->is_delete_scheduled());
+  testing::Mock::VerifyAndClearExpectations(&browser_did_close_callback);
+
+  // Close the browser skipping unload handlers, ensure the did close
+  // notification is propagated.
+  EXPECT_CALL(browser_did_close_callback, Run).Times(1);
+  browser()->set_force_skip_warning_user_on_close(true);
+  browser()->window()->Close();
+  EXPECT_TRUE(browser()->is_delete_scheduled());
 }
 
 // TODO(crbug.com/40641945): Test this with implicitly-created links.

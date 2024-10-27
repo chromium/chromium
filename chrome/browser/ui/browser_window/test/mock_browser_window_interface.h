@@ -23,6 +23,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MOCK_METHOD(TabStripModel*, GetTabStripModel, (), (override));
   MOCK_METHOD(bool, IsTabStripVisible, (), (override));
   MOCK_METHOD(bool, ShouldHideUIForFullscreen, (), (const, override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterBrowserDidClose,
+              (BrowserDidCloseCallback callback),
+              (override));
   MOCK_METHOD(bool, IsAttemptingToCloseBrowser, (), (const, override));
   MOCK_METHOD(views::View*, TopContainer, (), (override));
   MOCK_METHOD(base::CallbackListSubscription,
