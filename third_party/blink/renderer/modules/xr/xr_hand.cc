@@ -49,17 +49,18 @@ class XRHandIterationSource final
 };
 
 XRHand::XRHand(const device::mojom::blink::XRHandTrackingData* state,
-               XRInputSource* input_source) {
-  joints_ = MakeGarbageCollected<XRJointVector>(kNumJoints);
+               XRInputSource* input_source)
+    : joints_(MakeGarbageCollected<XRJointVector>()) {
+  joints_->ReserveInitialCapacity(kNumJoints);
   DCHECK_EQ(kNumJoints, V8XRHandJoint::kEnumSize);
   for (unsigned i = 0; i < kNumJoints; ++i) {
     device::mojom::blink::XRHandJoint joint =
         static_cast<device::mojom::blink::XRHandJoint>(i);
     DCHECK_EQ(MojomHandJointToV8Enum(joint),
               static_cast<V8XRHandJoint::Enum>(i));
-    joints_->at(i) = MakeGarbageCollected<XRJointSpace>(
+    joints_->push_back(MakeGarbageCollected<XRJointSpace>(
         this, input_source->session(), nullptr, joint, 0.0f,
-        input_source->xr_handedness());
+        input_source->xr_handedness()));
   }
 
   updateFromHandTrackingData(state, input_source);
