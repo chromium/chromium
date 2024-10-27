@@ -9,18 +9,7 @@
 namespace autofill {
 
 MockAutofillPredictionImprovementsDelegate::
-    MockAutofillPredictionImprovementsDelegate() {
-  // By default make `MaybeImportForm` signal that the form was not imported by
-  // user annotations so that Autofill's usual import logic will run in tests.
-  ON_CALL(*this, MaybeImportForm)
-      .WillByDefault([](std::unique_ptr<autofill::FormStructure> form,
-                        user_annotations::ImportFormCallback callback) {
-        std::move(callback).Run(
-            std::move(form),
-            /*form_annotation_response=*/nullptr,
-            /*prompt_acceptance_callback=*/base::DoNothing());
-      });
-}
+    MockAutofillPredictionImprovementsDelegate() = default;
 
 MockAutofillPredictionImprovementsDelegate::
     ~MockAutofillPredictionImprovementsDelegate() = default;
