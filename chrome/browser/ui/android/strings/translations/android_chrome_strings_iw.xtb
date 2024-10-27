@@ -419,6 +419,7 @@
 <translation id="2942036813789421260">כרטיסיית התצוגה המקדימה סגורה</translation>
 <translation id="2946420957526726953">‏מתבצע עדכון של Chrome כדי להתחבר למכשירים אחרים</translation>
 <translation id="2951071800649516099">מוסיפים דפים לרשימת הקריאה לשלב מאוחר יותר</translation>
+<translation id="2954586176076923855">העברת סרגל הכתובות למעלה</translation>
 <translation id="2956070106555335453">סיכום</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
 <translation id="2972109037780336501">הסרה אוטומטית של הרשאות</translation>
@@ -653,6 +654,7 @@
 <translation id="4095425503313512126">הגלישה והחיפוש מהירים יותר</translation>
 <translation id="4096227151372679484">תהליך שמירת הסימניות שפתוחות בחצי הגובה</translation>
 <translation id="4101475238162928417">אפשר לבצע סנכרון כדי לעדכן את הסיסמאות, הסימניות ונתונים נוספים במכשירים אחרים שלך</translation>
+<translation id="4105527135143631701">‏העדכון של מנהל הסיסמאות של Google נפתח</translation>
 <translation id="4108314971463891922">מעקב</translation>
 <translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
 <translation id="4116038641877404294">הורדת דפים כדי להשתמש בהם אופליין</translation>
@@ -1257,6 +1259,7 @@
 <translation id="6813446258015311409">‏כניסה ל-Chrome, פתוח.</translation>
 <translation id="6817747507826986771">שיתוף הדף הזה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">‏העדכון של מנהל הסיסמאות של Google נסגר</translation>
 <translation id="6822587385560699678">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="ACCOUNT" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
 <translation id="6823561724060793716">בסרגל הכתובות ניתן לפתוח את פרטי הדף כדי לראות מידע נוסף על הדף הפתוח</translation>
 <translation id="6828070228333235514">הפסקת המעקב אחר מחירים</translation>
@@ -1458,6 +1461,7 @@
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
 <translation id="7612989789287281429">מתבצעת כניסה לחשבון…</translation>
 <translation id="7619072057915878432">הורדת <ph name="FILE_NAME" /> נכשלה עקב כשלים ברשת.</translation>
+<translation id="762537095495606755">הסיסמאות יפסיקו לפעול במכשיר הזה</translation>
 <translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
 <translation id="7628417132421583481">מעבר למנהל הסיסמאות</translation>
 <translation id="7630202231528827509">‏כתובת ה-URL של הספק</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8015452622527143194">כל מה שמופיע בדף ישתנה לגודל ברירת המחדל</translation>
 <translation id="8017431260099661477">לא ניתן לפתוח את הקישור להזמנה</translation>
 <translation id="8026238112629815203">שינינו את האופן שבו סיסמאות נשמרות במכשיר הזה</translation>
+<translation id="8027395186860110042">יכול להיות שהסיסמאות יפסיקו לפעול בקרוב</translation>
 <translation id="8027863900915310177">בחירת המיקום להורדה</translation>
 <translation id="8030852056903932865">אישור</translation>
 <translation id="8032569120109842252">במעקב</translation>
@@ -1620,7 +1625,9 @@
 <translation id="8282297628636750033">החלת עיצוב כהה על אתרים, כשאפשר</translation>
 <translation id="8282950411412455249">אל הגדרות האבטחה</translation>
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
+<translation id="8306751933352925837">‏הסיסמאות יפסיקו לפעול במכשיר הזה בקרוב. כדי להמשיך להשתמש בסיסמאות, צריך לעדכן את Google Play Services. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469">הכרטיסייה '<ph name="TAB_NAME" />' הוסרה על ידי <ph name="GIVEN_NAME" /></translation>
+<translation id="8310451567823644042">הסיסמאות יפסיקו לפעול בקרוב</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
@@ -1687,6 +1694,7 @@
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
 <translation id="8582529315803410153">כאן יופיעו הכרטיסיות שפתוחות במכשירים אחרים</translation>
+<translation id="8585103689515290060">שירותי מילוי אוטומטי</translation>
 <translation id="859046281437143747">אפשר לעקוב אחר המחיר באמצעות לחצן האפשרויות הנוספות</translation>
 <translation id="859064343657890103">קבוצת הכרטיסיות <ph name="TAB_GROUP_TITLE" /> נמחקה</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
@@ -1755,6 +1763,7 @@
 <translation id="8963117664422609631">כניסה להגדרות האתר</translation>
 <translation id="8965591936373831584">בהמתנה</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
+<translation id="897061774231912216">‏הסיסמאות יפסיקו לפעול בקרוב כי חבילת Google Play Services לא זמינה. כדי להשתמש בסיסמאות שנשמרו בחשבון Google, צריך להיכנס לחשבון במכשיר אחר או להיכנס לכתובת passwords.google.com.</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>
 <translation id="8982113230057126145">אם סימנת 'לא אהבתי', יישלח אלינו משוב שלא אהבת את הסיכום הזה</translation>
@@ -1804,6 +1813,7 @@
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9157212632995922070">בחירת חשבון להמשך השימוש ב-<ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">שיתוף התוכן בלבד</translation>
+<translation id="9168847423516963845">העברת סרגל הכתובות לתחתית</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>
 <translation id="918419812064856259">‏Chrome בטא</translation>
 <translation id="9190276265094487094">ההיסטוריה תופיע בכל המכשירים המסונכרנים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
