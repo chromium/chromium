@@ -618,8 +618,13 @@ class GuestSessionProfile : public OffTheRecordProfileImpl {
  public:
   explicit GuestSessionProfile(Profile* real_profile)
       : OffTheRecordProfileImpl(real_profile, OTRProfileID::PrimaryID()) {
-    profile_metrics::SetBrowserProfileType(
-        this, profile_metrics::BrowserProfileType::kGuest);
+    if (new_guest_profile_impl_) {
+      CHECK_EQ(profile_metrics::BrowserProfileType::kGuest,
+               profile_metrics::GetBrowserProfileType(this));
+    } else {
+      profile_metrics::SetBrowserProfileType(
+          this, profile_metrics::BrowserProfileType::kGuest);
+    }
   }
 
   void InitChromeOSPreferences() override {

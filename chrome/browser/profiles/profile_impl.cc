@@ -194,6 +194,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
@@ -209,6 +211,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -450,7 +453,21 @@ ProfileImpl::ProfileImpl(
   DCHECK(!path.empty()) << "Using an empty path will attempt to write "
                         << "profile files to the root directory!";
 
-  if (path == ProfileManager::GetGuestProfilePath()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // In ChromeOS Guest Mode, there can be only three profiles, main guest
+  // profile, otr guest profile and sign in profile, and only main and otr ,
+  // which are 'user profile', should be the guest
+  bool is_guest_session = path == ProfileManager::GetGuestProfilePath();
+  if (new_guest_profile_impl_) {
+    is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
+                           ash::switches::kGuestSession) &&
+                       ash::IsUserBrowserContextBaseName(path_.BaseName());
+  }
+#else
+  bool is_guest_session = path == ProfileManager::GetGuestProfilePath();
+#endif
+
+  if (is_guest_session) {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kGuest);
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)

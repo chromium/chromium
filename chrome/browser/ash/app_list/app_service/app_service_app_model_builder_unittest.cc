@@ -220,9 +220,9 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
   void CreateBuilder(bool guest_mode) {
     ResetBuilder();  // Destroy any existing builder in the correct order.
 
-    app_service_test_.UninstallAllApps(profile());
+    app_service_test_.UninstallAllApps(GetAppServiceProfile());
     testing_profile()->SetGuestSession(guest_mode);
-    app_service_test_.SetUp(profile());
+    app_service_test_.SetUp(GetAppServiceProfile());
     // Wait for some default apps added to AppService.
     base::RunLoop().RunUntilIdle();
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
@@ -232,7 +232,7 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
     scoped_callback_ = std::make_unique<
         AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
         builder_.get(), base::BindRepeating(&InitAppPosition));
-    builder_->Initialize(nullptr, profile(), model_updater_.get());
+    builder_->Initialize(nullptr, GetAppServiceProfile(), model_updater_.get());
   }
 
   apps::AppServiceTest app_service_test_;
@@ -256,7 +256,8 @@ class BuiltInAppTest : public AppServiceAppModelBuilderTest {
   void CreateBuilder(bool guest_mode) {
     AppListTestBase::SetUp(guest_mode);
     AppServiceAppModelBuilderTest::CreateBuilder(guest_mode);
-    RemoveApps(apps::AppType::kBuiltIn, profile(), model_updater_.get());
+    RemoveApps(apps::AppType::kBuiltIn, GetAppServiceProfile(),
+               model_updater_.get());
   }
 };
 
@@ -273,7 +274,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
   // Creates a new builder, destroying any existing one.
   void CreateBuilder() {
     AppServiceAppModelBuilderTest::CreateBuilder(false /*guest_mode*/);
-    RemoveApps(apps::AppType::kChromeApp, testing_profile(),
+    RemoveApps(apps::AppType::kChromeApp, GetAppServiceProfile(),
                model_updater_.get());
   }
 
@@ -329,7 +330,8 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   // Creates a new builder, destroying any existing one.
   void CreateBuilder() {
     AppServiceAppModelBuilderTest::CreateBuilder(false /*guest_mode*/);
-    RemoveApps(apps::AppType::kWeb, testing_profile(), model_updater_.get());
+    RemoveApps(apps::AppType::kWeb, GetAppServiceProfile(),
+               model_updater_.get());
   }
 
   std::string CreateWebApp(const std::string& app_name) {
@@ -342,7 +344,8 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
 
-    return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    return web_app::test::InstallWebApp(GetAppServiceProfile(),
+                                        std::move(web_app_info));
   }
 
   void GenerateWebAppIcon(const std::string& app_id,
@@ -362,7 +365,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     }
 
     web_app::WebAppProvider* web_app_provider =
-        web_app::WebAppProvider::GetForTest(profile());
+        web_app::WebAppProvider::GetForTest(GetAppServiceProfile());
     ASSERT_TRUE(web_app_provider);
 
     base::test::TestFuture<std::map<web_app::SquareSizePx, SkBitmap>>
@@ -398,8 +401,8 @@ TEST_F(BuiltInAppTest, Build) {
   // internal_app_metadata.cc. Only count the apps can display in launcher.
   std::string built_in_apps_name;
   CreateBuilder(false);
-  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(&built_in_apps_name,
-                                                         profile()),
+  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(
+                &built_in_apps_name, GetAppServiceProfile()),
             model_updater_->ItemCount());
   EXPECT_EQ(built_in_apps_name,
             base::JoinString(GetModelContent(model_updater_.get()), ","));
@@ -410,8 +413,8 @@ TEST_F(BuiltInAppTest, BuildGuestMode) {
   // internal_app_metadata.cc. Only count the apps can display in launcher.
   std::string built_in_apps_name;
   CreateBuilder(true);
-  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(&built_in_apps_name,
-                                                         profile()),
+  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(
+                &built_in_apps_name, GetAppServiceProfile()),
             model_updater_->ItemCount());
   EXPECT_EQ(built_in_apps_name,
             base::JoinString(GetModelContent(model_updater_.get()), ","));

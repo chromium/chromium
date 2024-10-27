@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 
+#include <sstream>
 #include <string>
 
 #include "base/check_deref.h"
@@ -46,6 +47,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"
 #endif
 
@@ -222,6 +225,11 @@ std::string Profile::OTRProfileID::Serialize() const {
 Profile::Profile(const OTRProfileID* otr_profile_id)
     : otr_profile_id_(otr_profile_id ? std::make_optional(*otr_profile_id)
                                      : std::nullopt) {
+#if BUILDFLAG(IS_CHROMEOS)
+  new_guest_profile_impl_ =
+      base::FeatureList::IsEnabled(chromeos::features::kNewGuestProfile);
+#endif
+
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().insert(this);
@@ -393,14 +401,13 @@ bool Profile::IsIncognitoProfile() const {
 
 bool Profile::IsGuestSession() const {
 #if BUILDFLAG(IS_CHROMEOS)
-  static bool is_guest_session =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kGuestSession);
-  return is_guest_session;
-#else
+  if (!new_guest_profile_impl_) {
+    return base::CommandLine::ForCurrentProcess()->HasSwitch(
+        ash::switches::kGuestSession);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kGuest;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
@@ -552,4 +559,28 @@ base::WeakPtr<const Profile> Profile::GetWeakPtr() const {
 
 base::WeakPtr<Profile> Profile::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+std::string Profile::ToDebugString() {
+  std::ostringstream out;
+  out << "(" << this << "):" << (IsRegularProfile() ? " regular" : "")
+      << (IsIncognitoProfile() ? " incognito" : "")
+      << (IsGuestSession() ? " guest" : "")
+      << (IsSystemProfile() ? " system" : "");
+  if (IsOffTheRecord()) {
+    out << ", otr";
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::IsSigninBrowserContext(this)) {
+    out << ", signin";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (GetOriginalProfile() == this) {
+    out << ", is-original";
+  } else {
+    out << ", original=[" << GetOriginalProfile()->ToDebugString() << "]";
+  }
+
+  return out.str();
 }

@@ -450,14 +450,6 @@ content::BrowserContext* ExtensionServiceTestBase::browser_context() {
 }
 
 Profile* ExtensionServiceTestBase::profile() {
-// TODO(crbug.com/40891982): Refactor this convenience upstream to test callers.
-// Possibly just BuiltInAppTest.BuildGuestMode.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (profile_->IsGuestSession()) {
-    return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   return profile_.get();
 }
 
@@ -495,7 +487,8 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {
-    auto* install_limiter = InstallLimiter::Get(profile());
+    auto* install_limiter =
+        InstallLimiter::Get(profile()->GetOriginalProfile());
     if (install_limiter) {
       install_limiter->DisableForTest();
     }

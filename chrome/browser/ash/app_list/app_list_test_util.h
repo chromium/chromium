@@ -31,6 +31,10 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
 
   web_app::TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 
+ protected:
+  // Returns the profile that should be used for app services.
+  Profile* GetAppServiceProfile();
+
  private:
   void ConfigureWebAppProvider();
 

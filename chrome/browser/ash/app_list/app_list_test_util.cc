@@ -57,8 +57,14 @@ void AppListTestBase::SetUp(bool guest_mode) {
   ASSERT_EQ(4U, registry()->enabled_extensions().size());
 }
 
+Profile* AppListTestBase::GetAppServiceProfile() {
+  return profile()->IsGuestSession()
+             ? profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+             : profile();
+}
+
 void AppListTestBase::ConfigureWebAppProvider() {
-  Profile* testing_profile = profile();
+  Profile* testing_profile = GetAppServiceProfile();
 
   auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
   url_loader_ = url_loader.get();
