@@ -33,7 +33,7 @@ Are you a Google employee? See
 
     The easiest way to get the newest SDK is to use the newest version of Xcode,
     which often requires using the newest version of macOS. We don't use Xcode
-    itself much, so if you're know what you're doing, you can likely get the
+    itself much, so if you know what you're doing, you can likely get the
     build working with an older version of macOS as long as you get a new
     version of the macOS SDK on it.
 *   An APFS-formatted volume (this is the default format for macOS volumes).
