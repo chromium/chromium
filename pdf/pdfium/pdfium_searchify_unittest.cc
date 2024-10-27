@@ -143,4 +143,51 @@ TEST(PdfiumSearchifyTest, CalculateWordMoveMatrix) {
   }
 }
 
+TEST(PdfiumSearchifyTest, GetSpaceRect) {
+  // Empty rects.
+  {
+    gfx::Rect before;
+    gfx::Rect after;
+    gfx::Rect expected;
+
+    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
+  }
+
+  // Horizontal, Left to Right.
+  {
+    gfx::Rect before(10, 10, 100, 10);
+    gfx::Rect after(120, 10, 50, 10);
+    gfx::Rect expected(110, 10, 10, 10);
+
+    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
+  }
+
+  // Horizontal, Right To Left.
+  {
+    gfx::Rect before(120, 10, 50, 10);
+    gfx::Rect after(10, 10, 100, 10);
+    gfx::Rect expected(110, 10, 10, 10);
+
+    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
+  }
+
+  // Vertical, Top to Bottom.
+  {
+    gfx::Rect before(10, 10, 10, 100);
+    gfx::Rect after(10, 120, 10, 50);
+    gfx::Rect expected(10, 110, 10, 10);
+
+    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
+  }
+
+  // Vertical, Bottom to Top.
+  {
+    gfx::Rect before(10, 120, 10, 50);
+    gfx::Rect after(10, 10, 10, 100);
+    gfx::Rect expected(10, 110, 10, 10);
+
+    EXPECT_EQ(GetSpaceRectForTesting(before, after), expected);
+  }
+}
+
 }  // namespace chrome_pdf

@@ -123,20 +123,13 @@ FS_MATRIX CalculateWordMoveMatrix(const SearchifyBoundingBoxOrigin& word_origin,
 void AddWordOnImage(FPDF_DOCUMENT document,
                     FPDF_PAGE page,
                     FPDF_FONT font,
-                    const screen_ai::mojom::WordBoxPtr& word,
+                    const screen_ai::mojom::WordBox& word,
                     base::span<const FS_MATRIX> transform_matrices) {
   ScopedFPDFPageObject text(
-      FPDFPageObj_CreateTextObj(document, font, word->bounding_box.height()));
+      FPDFPageObj_CreateTextObj(document, font, word.bounding_box.height()));
   CHECK(text);
 
-  std::string word_string = word->word;
-  // TODO(crbug.com/41487613): A more accurate width would be the distance
-  // from current word's origin to next word's origin.
-  if (word->has_space_after) {
-    word_string.push_back(' ');
-  }
-
-  std::vector<uint32_t> charcodes = Utf8ToCharcodes(word_string);
+  std::vector<uint32_t> charcodes = Utf8ToCharcodes(word.word);
   if (charcodes.empty()) {
     DLOG(ERROR) << "Got empty word";
     return;
@@ -154,8 +147,8 @@ void AddWordOnImage(FPDF_DOCUMENT document,
   CHECK_GT(text_object_size.width(), 0);
   CHECK_GT(text_object_size.height(), 0);
   const FS_MATRIX text_scale_matrix(
-      word->bounding_box.width() / text_object_size.width(), 0, 0,
-      word->bounding_box.height() / text_object_size.height(), 0, 0);
+      word.bounding_box.width() / text_object_size.width(), 0, 0,
+      word.bounding_box.height() / text_object_size.height(), 0, 0);
   CHECK(FPDFPageObj_TransformF(text.get(), &text_scale_matrix));
 
   for (const auto& matrix : transform_matrices) {
@@ -163,6 +156,66 @@ void AddWordOnImage(FPDF_DOCUMENT document,
   }
 
   FPDFPage_InsertObject(page, text.release());
+}
+
+double IsInRange(double v, double min_value, double max_value) {
+  CHECK_LT(min_value, max_value);
+  return v >= min_value && v <= max_value;
+}
+
+// Returns the rectangle covering the space between the bounding rectangles of
+// two consecutive words.
+gfx::Rect GetSpaceRect(const gfx::Rect& rect1, const gfx::Rect& rect2) {
+  if (rect1.IsEmpty() || rect2.IsEmpty()) {
+    return gfx::Rect();
+  }
+
+  // Compute the angle of text flow from `rect1` to `rect2`, to decide where the
+  // space rectangle should be.
+  gfx::Point c1 = rect1.CenterPoint();
+  gfx::Point c2 = rect2.CenterPoint();
+  double text_flow_angle = base::RadToDeg(
+      gfx::Vector2dF(c2.x() - c1.x(), c2.y() - c1.y()).SlopeAngleRadians());
+
+  int x;
+  int y;
+  int width;
+  int height;
+
+  if (IsInRange(text_flow_angle, -45, 45)) {
+    // Left to Right
+    x = rect1.right();
+    width = rect2.x() - rect1.right();
+    y = std::min(rect1.y(), rect2.y());
+    height = std::max(rect1.bottom(), rect2.bottom()) - y;
+  } else if (IsInRange(text_flow_angle, 45, 135)) {
+    // Top to Bottom.
+    y = rect1.bottom();
+    height = rect2.y() - rect1.bottom();
+    x = std::min(rect1.x(), rect2.x());
+    width = std::max(rect1.right(), rect2.right()) - x;
+  } else if (IsInRange(text_flow_angle, 135, 180) ||
+             IsInRange(text_flow_angle, -180, -135)) {
+    // Right to Left.
+    x = rect2.right();
+    width = rect1.x() - rect2.right();
+    y = std::min(rect1.y(), rect2.y());
+    height = std::max(rect1.bottom(), rect2.bottom()) - y;
+  } else {
+    CHECK(IsInRange(text_flow_angle, -135, -45));
+    // Bottom to Top.
+    y = rect2.bottom();
+    height = rect1.y() - rect2.bottom();
+    x = std::min(rect1.x(), rect2.x());
+    width = std::max(rect1.right(), rect2.right()) - x;
+  }
+
+  // To avoid returning an empty rectangle, width and height are set to at least
+  // one.
+  width = std::max(1, width);
+  height = std::max(1, height);
+
+  return gfx::Rect(x, y, width, height);
 }
 
 }  // namespace
@@ -257,18 +310,40 @@ void AddTextOnImage(FPDF_DOCUMENT document,
         ConvertToPdfOrigin(line->baseline_box, line->baseline_box_angle,
                            image_pixel_size.height());
 
-    for (const auto& word : line->words) {
-      if (word->bounding_box.IsEmpty()) {
+    // If OCR has recognized a space character between two consecutive words,
+    // insert a new word between them to represent it.
+    size_t original_word_count = line->words.size();
+    std::vector<screen_ai::mojom::WordBox> words_and_spaces;
+    words_and_spaces.reserve(original_word_count * 2 + 1);
+
+    for (size_t i = 0; i < original_word_count; i++) {
+      auto& current_word = line->words[i];
+      words_and_spaces.push_back(*current_word);
+      if (current_word->has_space_after && i + 1 < original_word_count) {
+        gfx::Rect space_rect = GetSpaceRect(current_word->bounding_box,
+                                            line->words[i + 1]->bounding_box);
+        if (!space_rect.IsEmpty()) {
+          words_and_spaces.push_back(screen_ai::mojom::WordBox(
+              /*word=*/" ", /*dictionary_word=*/false, current_word->language,
+              /*has_space_after=*/false, space_rect,
+              current_word->bounding_box_angle, current_word->direction,
+              /*confidence=*/1));
+        }
+      }
+    }
+
+    for (const auto& word : words_and_spaces) {
+      if (word.bounding_box.IsEmpty()) {
         continue;
       }
 
       SearchifyBoundingBoxOrigin origin =
-          ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
+          ConvertToPdfOrigin(word.bounding_box, word.bounding_box_angle,
                              image_pixel_size.height());
       move_matrix = CalculateWordMoveMatrix(
           ProjectToBaseline(origin.point, baseline_origin),
-          word->bounding_box.width(),
-          word->direction ==
+          word.bounding_box.width(),
+          word.direction ==
               screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT);
       AddWordOnImage(document, page, font, word, transform_matrices);
     }
@@ -287,6 +362,11 @@ FS_MATRIX CalculateWordMoveMatrixForTesting(
     int word_bounding_box_width,
     bool word_is_rtl) {
   return CalculateWordMoveMatrix(origin, word_bounding_box_width, word_is_rtl);
+}
+
+gfx::Rect GetSpaceRectForTesting(const gfx::Rect& rect1,  // IN-TEST
+                                 const gfx::Rect& rect2) {
+  return GetSpaceRect(rect1, rect2);
 }
 
 ScopedFPDFFont CreateFont(FPDF_DOCUMENT document) {
