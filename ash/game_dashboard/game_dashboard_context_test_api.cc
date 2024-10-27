@@ -13,6 +13,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
+#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
@@ -158,6 +159,13 @@ GameDashboardContextTestApi::GetMainMenuBatteryView() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
   return main_menu_view->battery_view_;
+}
+
+GameDashboardNetworkView*
+GameDashboardContextTestApi::GetMainMenuNetworkView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->network_view_;
 }
 
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {

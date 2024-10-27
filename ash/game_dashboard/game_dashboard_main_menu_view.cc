@@ -14,6 +14,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
+#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
@@ -122,6 +123,8 @@ constexpr gfx::Insets kPrimaryTileIconPadding = gfx::Insets::TLBR(8, 20, 8, 8);
 constexpr gfx::Insets kPrimaryTileLabelPadding = gfx::Insets::TLBR(0, 0, 0, 15);
 // Clock View Padding.
 constexpr gfx::Insets kClockViewPadding = gfx::Insets::VH(10, 0);
+// Network View Padding.
+constexpr gfx::Insets kNetworkViewPadding = gfx::Insets::TLBR(10, 6, 10, 0);
 
 // Row corners used for the top row of a multi-feature row collection.
 constexpr gfx::RoundedCornersF kTopMultiRowCorners =
@@ -1208,6 +1211,10 @@ void GameDashboardMainMenuView::AddUtilityFeatureViews(views::View* container) {
       Shell::Get()->system_tray_model()->clock(), TimeView::kTime));
   clock_view_->SetAmPmClockType(base::AmPmClockType::kKeepAmPm);
   clock_view_->SetProperty(views::kMarginsKey, kClockViewPadding);
+
+  network_view_ =
+      container->AddChildView(std::make_unique<GameDashboardNetworkView>());
+  network_view_->SetProperty(views::kMarginsKey, kNetworkViewPadding);
 
   // Add battery view.
   battery_view_ =

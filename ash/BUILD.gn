@@ -755,6 +755,8 @@ component("ash") {
     "game_dashboard/game_dashboard_main_menu_view.h",
     "game_dashboard/game_dashboard_metrics.cc",
     "game_dashboard/game_dashboard_metrics.h",
+    "game_dashboard/game_dashboard_network_view.cc",
+    "game_dashboard/game_dashboard_network_view.h",
     "game_dashboard/game_dashboard_toolbar_view.cc",
     "game_dashboard/game_dashboard_toolbar_view.h",
     "game_dashboard/game_dashboard_utils.cc",
