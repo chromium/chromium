@@ -500,6 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ৰ পৰা <ph name="KEY_TWO" />লৈ</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
+<translation id="2781658180588759579">বিল্ট-ইন টাচ্চপেড অক্ষম কৰা হৈছে। সালসলনিটো নিশ্চিত কৰিবলৈ আপোনাৰ কীব’ৰ্ড বা আন এটা পইণ্টাৰ ডিভাইচ ব্যৱহাৰ কৰক।
+
+অন্যথা <ph name="TIMEOUT_SECONDS" /> ছেকেণ্ডৰ ভিতৰত বিল্ট-ইন টাচ্চপেড পুনৰ সক্ৰিয় কৰা হ’ব।</translation>
 <translation id="2782591952652094792">কেপচাৰ ম'ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="2785499565474703580">১ টা ডিভাইচ সংযোগ কৰা হৈছে</translation>
 <translation id="2791421900609674576">আপুনি চুপাৰিছ দেখা পাব যাতে আপুনি য'ত এৰিছিল তাৰ পৰাই পুনৰ আৰম্ভ কৰিব পাৰে।  আপুনি চুপাৰিছ আঁতৰাবলৈ স্পর্শ কৰি কিছুসময় ধৰি থাকিব পাৰে।</translation>
@@ -596,6 +599,9 @@
 <translation id="3113492864356515707">শ্বেল্ফত থকা পূৰ্বৱৰ্তী বস্তুটো হাইলাইট কৰক</translation>
 <translation id="311799651966070385">নাজ বন্ধ কৰক</translation>
 <translation id="3120421559657122717">ডিভাইচটো শ্বাট ডাউন কৰিবনে?</translation>
+<translation id="3121411970001795539">এটা মাউছ সংযোগ কৰাৰ বাবে বিল্ট-ইন টাচ্চপেড অক্ষম কৰা হৈছে। সালসলনিটো নিশ্চিত কৰিবলৈ মাউছ বা কীব’ৰ্ড ব্যৱহাৰ কৰক।
+
+অন্যথা <ph name="TIMEOUT_SECONDS" /> ছেকেণ্ডৰ ভিতৰত বিল্ট-ইন টাচ্চপেড পুনৰ সক্ৰিয় কৰা হ’ব।</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">শ্ৰেণীকাৰ্যৰ প্ৰকাৰ</translation>
 <translation id="3126026824346185272">Ctrl</translation>

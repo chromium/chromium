@@ -220,6 +220,7 @@
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
 <translation id="1908394185991500139">חץ שמאלה</translation>
+<translation id="1914144885717544695">ביום שישי</translation>
 <translation id="1923388006036088459">צבעים משניים</translation>
 <translation id="1945403655450283000">מכשיר הקלטה</translation>
 <translation id="1947737735496445907">הודפסה</translation>
@@ -258,6 +259,7 @@
 <translation id="2138109643290557664">צפים ונהנים</translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
 <translation id="2148716181193084225">היום</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
 <translation id="2154460308960858308">ניקוי החיפוש</translation>
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
@@ -376,6 +378,7 @@
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2715723665057727940">נהר</translation>
 <translation id="2717139507051041123">הפעלה של מצב כהה</translation>
+<translation id="2726755229438917165">ביום שני</translation>
 <translation id="2728460467788544679">ניקוי כל היסטוריית ההדפסה</translation>
 <translation id="2731700343119398978">יש להמתין...</translation>
 <translation id="2740531572673183784">אישור</translation>
@@ -419,6 +422,7 @@
 <translation id="3056720590588772262">‏נקודת קצה (endpoint)</translation>
 <translation id="3060579846059757016">נקודות עיקריות</translation>
 <translation id="3061850252076394168">הפעלת התכונה 'הקראה'</translation>
+<translation id="3066772729299747758">ביום שלישי</translation>
 <translation id="3069085583900247081">הבדיקה נכשלה</translation>
 <translation id="3078740164268491126">טבלה</translation>
 <translation id="3081652522083185657">בהיר</translation>
@@ -475,6 +479,7 @@
 <translation id="3361618936611118375">סושי</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">הטפט של זרימה בכדור הארץ</translation>
 <translation id="33736539805963175">האות <ph name="LETTERS_LETTER" /> על רקע בצבע <ph name="LETTERS_COLOR" /></translation>
 <translation id="3383623117265110236">בלעדי</translation>
@@ -622,6 +627,7 @@
 <translation id="4130035430755296270">כשמציבים את העכבר מעל אפשרויות הפריסה אפשר לראות עוד אפשרויות</translation>
 <translation id="4130750466177569591">מקובל עליי</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
+<translation id="4137700675046373159">ביום שבת</translation>
 <translation id="4143226836069425823">כדי לשנות, צריך להקיש על מקש מקלדת אחר</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -644,6 +650,7 @@
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">ביום ראשון</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4251839292699800785">משרד אופנתי</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
@@ -900,6 +907,7 @@
 <translation id="550600468576850160">אחו</translation>
 <translation id="551689408806449779">המכשיר נותק. כדי לבצע את הבדיקה, יש לחבר את המכשיר מחדש.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">אפשרויות המיקרופון</translation>
 <translation id="5534900277405737921">פני השטח</translation>
 <translation id="554067135846762198">קורל ושזוף</translation>
 <translation id="5543701552415191873">נעולה</translation>
@@ -1118,6 +1126,7 @@
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
 <translation id="6535178685492749208">אין לך חיבור לאינטרנט. המשוב יישלח מאוחר יותר.</translation>
 <translation id="6543412779435705598">טאקו</translation>
+<translation id="6550369542114086980">ביום חמישי</translation>
 <translation id="6551839203326557324">תפוחים</translation>
 <translation id="65526652485742171">לחצן האישור מופעל עכשיו</translation>
 <translation id="6557784757915238407">‏ה-APN הוא מסוג <ph name="ATTACH" />.</translation>
@@ -1264,6 +1273,7 @@
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7182063559013288142">נקודת אינטרנט מיידית</translation>
 <translation id="7184043045742675738">כדי להתאים אישית את הלחצן, מקישים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
+<translation id="7187669805838282391">ביום רביעי</translation>
 <translation id="7206979415662233817">תנאים והגבלות</translation>
 <translation id="7210635925306941239">ציאן</translation>
 <translation id="7212547870105584639">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1310,6 +1320,7 @@
 <translation id="7388959671917308825">לוח מגע מובנה</translation>
 <translation id="7397270852490618635">השבתת העיצוב הבהיר</translation>
 <translation id="7401543881546089382">מחק קיצור דרך</translation>
+<translation id="7405493795721832710">המכשיר <ph name="DEVICE_NAME" /> מוכן לעדכון</translation>
 <translation id="741244894080940828">המרה</translation>
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
@@ -1324,6 +1335,7 @@
 <translation id="7500205272584643581">לאפשר למכשיר ההקלטה לזהות דוברים ולהוסיף להם תוויות?</translation>
 <translation id="7501957181231305652">או</translation>
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
+<translation id="7503342217608032738">לא ניתן להשתמש במכשיר</translation>
 <translation id="7507061649493508884">‫<ph name="FLOWER_TYPE" /> בצבע <ph name="FLOWER_COLOR" /> זוהר</translation>
 <translation id="7513770521371759388">חלק תחתון</translation>
 <translation id="7514365320538308">הורדה</translation>
@@ -1336,6 +1348,8 @@
 <translation id="7544853251252956727">ערבוב</translation>
 <translation id="7550715992156305117">תרחישי אבחון</translation>
 <translation id="7551123448725492271">המכשיר הוא התקן אודיו.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />אפשר יהיה להשתמש שוב במכשיר הזה <ph name="DAY" /> בשעה <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">התצוגה המקדימה של צילום המסך</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7561759921596375678">הפעלת השמע</translation>
@@ -1397,6 +1411,7 @@
 <translation id="785170686607360576">צבעוני</translation>
 <translation id="7856267634822906833">‏מסך מגע של Bluetooth</translation>
 <translation id="7859006200041800233">פרח קקטוס</translation>
+<translation id="7865217133132122390">הפעלת המיקרופון</translation>
 <translation id="7869143217755017858">השבתת המצב הכהה</translation>
 <translation id="7878972877380405573">סיכום באמצעות 'עזרה בקריאה'</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1425,6 +1440,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{האפליקציה <ph name="APP_NAME_1" /> הופעלה באופן אוטומטי}one{‫# אפליקציות הופעלו באופן אוטומטי}two{‫# אפליקציות הופעלו באופן אוטומטי}other{‫# אפליקציות הופעלו באופן אוטומטי}}</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>
 <translation id="8004582292198964060">דפדפן</translation>
+<translation id="8010765388850538088">‏מידע נוסף על AI גנרטיבי</translation>
 <translation id="8017679124341497925">קיצור הדרך עבר עריכה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8028993641010258682">גודל</translation>
@@ -1434,6 +1450,7 @@
 <translation id="8045012663542226664">השתקת המיקרופון</translation>
 <translation id="8054112564438735763">בז'</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> בצבע <ph name="CHARACTERS_COLOR" /> על רקע <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">‏ה-APN מחובר.</translation>
 <translation id="8067208048261192356">חום</translation>
 <translation id="8067224607978179455">מחיקת <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1554,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>
+<translation id="8584654835905316966">נדרשת הפעלה מחדש כדי להשלים את התקנת הקושחה של <ph name="DEVICE_NAME" /> לגרסה <ph name="VERSION" />. יכול להיות שייראה כאילו המחשב מופעל מחדש כמה פעמים. זו התנהגות רגילה.</translation>
 <translation id="8593058461203131755">השהיית המדיה</translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
 <translation id="8626489604350149811">עוד פעולות לגבי <ph name="APN_NAME" /></translation>
@@ -1670,6 +1688,7 @@
 <translation id="917720651393141712">בדיקה</translation>
 <translation id="9188992814426075118">אפשר להגדיר התאמה אוטומטית של המקלדת לטפט</translation>
 <translation id="9189000703457422362">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN שזוהו באופן אוטומטי. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">*APN</translation>
 <translation id="9195918315673527512">מקשי הג'ויסטיק שנבחרו הם <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך להקיש על הלחצן</translation>
 <translation id="9204237731135241582">‏לא ניתן ליצור קשר עם השער מאפליקציות ל-Android</translation>
@@ -1690,5 +1709,6 @@
 <translation id="982713511914535780">הפעלת בדיקה של פריקת הסוללה</translation>
 <translation id="98515147261107953">לרוחב</translation>
 <translation id="987264212798334818">כללי</translation>
+<translation id="994473081369871639">כיבוי המיקרופון</translation>
 <translation id="995062385528875723">אי אפשר להשתמש באותיות עם סימנים דיאקריטיים, באותיות לא לטיניות או בסמלים</translation>
 </translationbundle>

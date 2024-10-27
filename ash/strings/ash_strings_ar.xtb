@@ -502,6 +502,7 @@
 <translation id="2774348302533424868">‏‫‎<ph name="MODIFIER" /><ph name="DELIMITER" /> من <ph name="KEY_ONE" /> إلى <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+Search+s</translation>
 <translation id="2778650143428714839">تتم إدارة <ph name="DEVICE_TYPE" /> من خلال <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">تم إيقاف لوحة اللمس المُدمَجة. استخدِم لوحة المفاتيح أو جهاز تأشير آخر لتأكيد التغيير، وإلّا ستتم إعادة تفعيل لوحة اللمس المُدمَجة بعد <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">الخروج من وضع تصوير الشاشة</translation>
 <translation id="2785499565474703580">هناك جهاز واحد متصل.</translation>
 <translation id="2791421900609674576">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر مع الاستمرار لإزالة هذه الاقتراحات.</translation>
@@ -599,6 +600,7 @@
 <translation id="3113492864356515707">تمييز العنصر السابق على الرف</translation>
 <translation id="311799651966070385">إغلاق التذكير التلقائي</translation>
 <translation id="3120421559657122717">هل تريد إيقاف تشغيل الجهاز؟</translation>
+<translation id="3121411970001795539">تم إيقاف لوحة اللمس المُدمجة لأنّ الماوس متصل. استخدِم الماوس أو لوحة المفاتيح لتأكيد التغيير، وإلّا ستتم إعادة تفعيل لوحة اللمس المُدمَجة بعد <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3125690294288312932">نوع الواجب الدراسي</translation>
 <translation id="3126026824346185272">Ctrl</translation>
