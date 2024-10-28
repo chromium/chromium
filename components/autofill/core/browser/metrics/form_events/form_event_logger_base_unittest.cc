@@ -292,7 +292,8 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
   // The manual fallback code assumes that suggestions have been shown before
   // they can be filled. Not showing them will result in a crash.
   autofill_manager().DidShowSuggestions(
-      {SuggestionType::kCreditCardFieldByFieldFilling}, form, form.fields()[0]);
+      {SuggestionType::kCreditCardFieldByFieldFilling}, form,
+      form.fields()[0].global_id());
   autofill_manager().FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       test::GetFullProfile(),

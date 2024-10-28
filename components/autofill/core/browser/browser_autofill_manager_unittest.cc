@@ -920,8 +920,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormData& form,
       size_t field_index = 0,
       SuggestionType type = SuggestionType::kAddressEntry) {
-    browser_autofill_manager_->DidShowSuggestions({type}, form,
-                                                  form.fields()[field_index]);
+    browser_autofill_manager_->DidShowSuggestions(
+        {type}, form, form.fields()[field_index].global_id());
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -6053,7 +6053,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
-      {SuggestionType::kAutocompleteEntry}, form, form.fields().back());
+      {SuggestionType::kAutocompleteEntry}, form,
+      form.fields().back().global_id());
   // No Autofill logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
@@ -6668,7 +6669,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard)
       .Times(IsCreditCardFidoAuthenticationEnabled() ? 1 : 0);
   browser_autofill_manager_->DidShowSuggestions(
-      {SuggestionType::kCreditCardEntry}, form, form.fields()[0]);
+      {SuggestionType::kCreditCardEntry}, form, form.fields()[0].global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -6677,8 +6678,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard).Times(0);
-  browser_autofill_manager_->DidShowSuggestions({SuggestionType::kAddressEntry},
-                                                form, form.fields()[0]);
+  browser_autofill_manager_->DidShowSuggestions(
+      {SuggestionType::kAddressEntry}, form, form.fields()[0].global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {

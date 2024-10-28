@@ -319,10 +319,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
       delete;
 
   MOCK_METHOD(void,
-              OnUserHideSuggestions,
-              (const FormData& form, const FormFieldData& field),
-              (override));
-  MOCK_METHOD(void,
               AuthenticateThenFillCreditCardForm,
               (const FormData& form,
                const FieldGlobalId& field_id,
@@ -376,8 +372,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void,
               OnDidFillAddressFormFillingSuggestion,
               (const AutofillProfile&,
-               const FormData&,
-               const FormFieldData&,
+               const FormGlobalId&,
+               const FieldGlobalId&,
                AutofillTriggerSource),
               (override));
 
@@ -3263,9 +3259,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
           SuggestionType::kAddressFieldByFieldFilling,
           std::optional(NAME_FIRST)));
-  EXPECT_CALL(manager(), OnDidFillAddressFormFillingSuggestion(
-                             Property(&AutofillProfile::guid, profile.guid()),
-                             HasQueriedFormId(), HasQueriedFieldId(), _));
+  EXPECT_CALL(manager(),
+              OnDidFillAddressFormFillingSuggestion(
+                  Property(&AutofillProfile::guid, profile.guid()),
+                  queried_form().global_id(), IsQueriedFieldId(), _));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

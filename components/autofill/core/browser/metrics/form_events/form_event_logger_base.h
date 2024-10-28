@@ -43,9 +43,6 @@ class FormEventLoggerBase {
 
   void OnDidParseForm(const FormStructure& form);
 
-  void OnUserHideSuggestions(const FormStructure& form,
-                             const AutofillField& field);
-
   virtual void OnDidShowSuggestions(const FormStructure& form,
                                     const AutofillField& field,
                                     base::TimeTicks form_parsed_timestamp,

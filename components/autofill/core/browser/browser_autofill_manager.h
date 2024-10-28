@@ -155,8 +155,8 @@ class BrowserAutofillManager : public AutofillManager {
   // merged
   virtual void OnDidFillAddressFormFillingSuggestion(
       const AutofillProfile& profile,
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       AutofillTriggerSource trigger_source);
 
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
@@ -167,7 +167,7 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void DidShowSuggestions(
       DenseSet<SuggestionType> shown_suggestion_types,
       const FormData& form,
-      const FormFieldData& field);
+      const FieldGlobalId& field_id);
 
   // Fills or previews the profile form.
   // Assumes the form and field are valid.
@@ -215,11 +215,6 @@ class BrowserAutofillManager : public AutofillManager {
   void OnSingleFieldSuggestionSelected(const Suggestion& suggestion,
                                        const FormData& form,
                                        const FormFieldData& field);
-
-  // Invoked when the user selects the "Hide Suggestions" item in the
-  // Autocomplete drop-down.
-  virtual void OnUserHideSuggestions(const FormData& form,
-                                     const FormFieldData& field);
 
   const std::string& app_locale() const { return app_locale_; }
 

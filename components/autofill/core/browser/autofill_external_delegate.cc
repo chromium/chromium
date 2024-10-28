@@ -595,7 +595,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   }
 
   manager_->DidShowSuggestions(shown_suggestion_types, query_form_,
-                               query_field_);
+                               query_field_.global_id());
 
   if (shown_suggestion_types.contains(SuggestionType::kShowAccountCards)) {
     autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
@@ -1298,7 +1298,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
         query_form_, query_field_, filling_value, suggestion.type,
         suggestion.field_by_field_filling_type_used);
     manager_->OnDidFillAddressFormFillingSuggestion(
-        profile, query_form_, query_field_,
+        profile, query_form_.global_id(), query_field_.global_id(),
         TriggerSourceFromSuggestionTriggerSource(trigger_source_));
   }
 }

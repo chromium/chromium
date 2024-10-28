@@ -153,7 +153,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               DidShowSuggestions,
               (DenseSet<SuggestionType> shown_suggestion_types,
                const FormData& form,
-               const FormFieldData& field),
+               const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
   MOCK_METHOD(AutofillField*,

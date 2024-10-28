@@ -109,9 +109,9 @@ enum FormEvent {
   FORM_EVENT_DID_PARSE_FORM = 32,
 
   // The user selected the "Hide Suggestions" item.
-  FORM_EVENT_USER_HIDE_SUGGESTIONS = 33,
+  // DEPRECATED_FORM_EVENT_USER_HIDE_SUGGESTIONS = 33,
   // Same as above, but recorded only once per page load.
-  FORM_EVENT_USER_HIDE_SUGGESTIONS_ONCE = 34,
+  // DEPRECATED_FORM_EVENT_USER_HIDE_SUGGESTIONS_ONCE = 34,
 
   // A virtual card suggestion was selected to fill the form.
   FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED = 35,

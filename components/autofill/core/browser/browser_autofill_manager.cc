@@ -2071,13 +2071,13 @@ void BrowserAutofillManager::FillOrPreviewField(
 
 void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
     const AutofillProfile& profile,
-    const FormData& form,
-    const FormFieldData& field,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
     AutofillTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
   metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
@@ -2229,7 +2229,7 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
 void BrowserAutofillManager::DidShowSuggestions(
     DenseSet<SuggestionType> shown_suggestion_types,
     const FormData& form,
-    const FormFieldData& field) {
+    const FieldGlobalId& field_id) {
   NotifyObservers(&Observer::OnSuggestionsShown);
 
   if (!std::ranges::any_of(
@@ -2247,7 +2247,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   const bool has_cached_form_and_field = GetCachedFormAndField(
-      form.global_id(), field.global_id(), &form_structure, &autofill_field);
+      form.global_id(), field_id, &form_structure, &autofill_field);
 
   // Check if Autofill was triggered via manual fallback on a field that was
   // either unclassified or classified differently as the target
@@ -2362,21 +2362,6 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
                 GetEventTypeFromSingleFieldSuggestionType(suggestion.type),
             .associated_country_code = "",
             .timestamp = AutofillClock::Now()});
-  }
-}
-
-void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
-                                                   const FormFieldData& field) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field)) {
-    return;
-  }
-
-  auto* logger = GetEventFormLogger(*autofill_field);
-  if (logger) {
-    logger->OnUserHideSuggestions(*form_structure, *autofill_field);
   }
 }
 
