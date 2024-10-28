@@ -835,7 +835,9 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case ContentSuggestionsModuleType::kSendTabPromo: {
-      [_sendTabPromoMediator disableModule];
+      // The Send Tab Promo has an impression limit of 1, so it's sufficient to
+      // just hide the module.
+      [_sendTabPromoMediator dismissModule];
       break;
     }
     case ContentSuggestionsModuleType::kTipsWithProductImage:
@@ -1248,8 +1250,17 @@ using segmentation_platform::TipIdentifier;
                                     result:
                                         (NotificationsOptInAlertResult)result {
   CHECK_EQ(_notificationsOptInAlertCoordinator, alertCoordinator);
+  std::vector<PushNotificationClientId> clientIds =
+      alertCoordinator.clientIds.value();
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
+  if (result == NotificationsOptInAlertResult::kPermissionGranted ||
+      result == NotificationsOptInAlertResult::kPermissionDenied) {
+    if (std::find(clientIds.begin(), clientIds.end(),
+                  PushNotificationClientId::kSendTab) != clientIds.end()) {
+      [_sendTabPromoMediator dismissModule];
+    }
+  }
 }
 
 #pragma mark - NotificationsOptInCoordinatorDelegate

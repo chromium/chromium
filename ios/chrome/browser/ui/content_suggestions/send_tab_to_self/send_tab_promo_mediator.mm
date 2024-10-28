@@ -49,7 +49,7 @@
   }
 }
 
-- (void)disableModule {
+- (void)dismissModule {
   [_delegate removeSendTabPromoModule];
 }
 

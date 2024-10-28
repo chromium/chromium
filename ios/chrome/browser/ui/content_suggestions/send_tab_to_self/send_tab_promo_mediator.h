@@ -46,8 +46,8 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disables and hides the send tab promo module.
-- (void)disableModule;
+// Hides the send tab promo module.
+- (void)dismissModule;
 
 - (void)disconnect;
 
