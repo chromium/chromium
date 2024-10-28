@@ -10,6 +10,7 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
+import("//build/config/rts.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
 
@@ -362,6 +363,17 @@ template("mixed_test") {
 #      This should be a list of the test names, for example
 #      fuzztests = [ "MyTestClass.MyTestName" ]
 template("test") {
+  # Ensures a test filter file exists and if not, creates a dummy file.
+  # The Regression Test Selection (rts) flag is passed in mb.py and used
+  # to filter out test cases. Flag ensures that a file exists.
+  if (use_rts) {
+    action("${target_name}__rts_filters") {
+      script = "//build/add_rts_filters.py"
+      rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
+      args = [ rebase_path(rts_file, root_build_dir) ]
+      outputs = [ rts_file ]
+    }
+  }
   testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
@@ -460,6 +472,10 @@ template("test") {
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
+
+        if (use_rts) {
+          data_deps += [ ":${invoker.target_name}__rts_filters" ]
+        }
       }
 
       create_native_executable_dist(_dist_target) {
@@ -468,6 +484,12 @@ template("test") {
         deps = [ ":$_exec_target" ]
         if (defined(invoker.extra_dist_files)) {
           extra_files = invoker.extra_dist_files
+        }
+        if (use_rts) {
+          if (!defined(data_deps)) {
+            data_deps = []
+          }
+          data_deps += [ ":${invoker.target_name}__rts_filters" ]
         }
       }
     } else {
@@ -598,6 +620,10 @@ template("test") {
         if (defined(_unwind_table_asset_name)) {
           deps += [ ":${_unwind_table_asset_name}" ]
         }
+
+        if (use_rts) {
+          data_deps = [ ":${invoker.target_name}__rts_filters" ]
+        }
       }
     }
 
@@ -618,6 +644,9 @@ template("test") {
       test_name = _output_name
       test_suite = _output_name
       test_type = "gtest"
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     # Create a wrapper script rather than using a group() in order to ensure
@@ -651,6 +680,9 @@ template("test") {
 
       if (tests_have_location_tags) {
         data = [ "//testing/location_tags.json" ]
+      }
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
   } else if (is_fuchsia) {
@@ -928,6 +960,9 @@ template("test") {
       # Include the generate_wrapper as part of data_deps
       data_deps += [ ":${_wrapper_output_name}" ]
       write_runtime_deps = _runtime_deps_file
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
       if (!defined(deps)) {
         deps = []
       }
@@ -955,6 +990,9 @@ template("test") {
         if (tests_have_location_tags) {
           data = [ "//testing/location_tags.json" ]
         }
+        if (use_rts) {
+          data_deps = [ ":${invoker.target_name}__rts_filters" ]
+        }
       }
     }
 
@@ -981,6 +1019,9 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   } else if (!is_nacl) {
     if (is_mac || is_win) {
@@ -1031,6 +1072,9 @@ template("test") {
       if (fail_on_san_warnings) {
         executable_args += [ "--fail-san=1" ]
       }
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
 
     mixed_test(target_name) {
@@ -1056,6 +1100,9 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   } else {
     # This is a catch-all clause for NaCl toolchains and other random
@@ -1076,6 +1123,9 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
+      if (use_rts) {
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
+      }
     }
   }
 }
@@ -1109,6 +1159,15 @@ template("script_test") {
       is_chromeos && is_chromeos_device
   assert(!(_enable_logdog_wrapper && _enable_cros_wrapper),
          "The logdog and cros_test wrappers are mutually exclusive")
+
+  if (use_rts) {
+    action("${target_name}__rts_filters") {
+      script = "//build/add_rts_filters.py"
+      rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
+      args = [ rebase_path(rts_file, root_build_dir) ]
+      outputs = [ rts_file ]
+    }
+  }
 
   _shared_data = [ invoker.script ]
   if (defined(invoker.data)) {
