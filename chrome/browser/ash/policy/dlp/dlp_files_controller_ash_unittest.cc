@@ -2483,8 +2483,6 @@ INSTANTIATE_TEST_SUITE_P(
                         ::dlp::DlpComponent::CROSTINI),
         std::make_tuple(ui::DataTransferEndpoint(ui::EndpointType::kPluginVm),
                         ::dlp::DlpComponent::PLUGIN_VM),
-        std::make_tuple(ui::DataTransferEndpoint(ui::EndpointType::kLacros),
-                        ::dlp::DlpComponent::UNKNOWN_COMPONENT),
         std::make_tuple(ui::DataTransferEndpoint(ui::EndpointType::kDefault),
                         ::dlp::DlpComponent::UNKNOWN_COMPONENT),
         std::make_tuple(

@@ -235,10 +235,6 @@ void DlpInternalsPageHandler::GetClipboardDataSource(
     case ui::EndpointType::kPluginVm:
       mojom_source->type = dlp_internals::mojom::EndpointType::kPluginVm;
       break;
-
-    case ui::EndpointType::kLacros:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kLacros;
-      break;
   }
 
   if (source->IsUrlType()) {

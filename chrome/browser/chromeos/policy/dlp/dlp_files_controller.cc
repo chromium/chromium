@@ -122,7 +122,6 @@ DlpFileDestination DTEndpointToFileDestination(
     case ui::EndpointType::kPluginVm:
       return DlpFileDestination(data_controls::Component::kPluginVm);
 
-    case ui::EndpointType::kLacros:
     case ui::EndpointType::kDefault:
     case ui::EndpointType::kClipboardHistory:
     case ui::EndpointType::kBorealis:

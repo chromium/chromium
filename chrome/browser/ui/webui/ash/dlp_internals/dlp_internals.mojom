@@ -18,7 +18,6 @@ enum EndpointType {
   kBorealis = 5,
   kCrostini = 6,
   kPluginVm = 7,
-  kLacros = 8,
 };
 
 struct DataTransferEndpoint {

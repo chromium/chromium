@@ -14,7 +14,6 @@ export const EndpointTypeMap = {
   [EndpointType.kBorealis]: 'Borealis',
   [EndpointType.kCrostini]: 'Crostini',
   [EndpointType.kPluginVm]: 'Plugin VM',
-  [EndpointType.kLacros]: 'Lacros',
 };
 
 export const DestinationComponentMap = {

@@ -235,11 +235,6 @@ void Seat::SetSelection(DataSource* source) {
 
   size_t num_data_read_callbacks = DataSource::kMaxDataTypes;
 
-  // Lacros sends additional metadata, in a custom MIME type, to sync clipboard
-  // source metadata,
-  if (endpoint_type == ui::EndpointType::kLacros)
-    ++num_data_read_callbacks;
-
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
       num_data_read_callbacks,
       base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),

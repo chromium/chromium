@@ -27,7 +27,6 @@ enum class EndpointType {
   kBorealis = 5,   // Borealis OS.
   kCrostini = 6,   // Crostini.
   kPluginVm = 7,   // Plugin VM App.
-  kLacros = 8,     // Lacros browser.
 #endif             // BUILDFLAG(IS_CHROMEOS)
 };
 
