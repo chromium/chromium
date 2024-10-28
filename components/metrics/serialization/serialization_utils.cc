@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/serialization/serialization_utils.h"
 
 #include <errno.h>
@@ -44,7 +39,7 @@ bool ReadMessage(int fd, std::string* message) {
 
   int result;
   uint32_t encoded_size;
-  const size_t message_header_size = sizeof(uint32_t);
+  constexpr size_t message_header_size = sizeof(uint32_t);
   // The file containing the metrics does not leave the device so the writer and
   // the reader will always have the same endianness.
   result = HANDLE_EINTR(read(fd, &encoded_size, message_header_size));
@@ -85,7 +80,7 @@ bool ReadMessage(int fd, std::string* message) {
 
   message_size -= message_header_size;  // The message size includes itself.
   char buffer[SerializationUtils::kMessageMaxLength];
-  if (!base::ReadFromFD(fd, base::make_span(buffer, message_size))) {
+  if (!base::ReadFromFD(fd, base::span(buffer).first(message_size))) {
     DPLOG(ERROR) << "reading metrics message body";
     return false;
   }
@@ -176,11 +171,6 @@ void ReadAndTruncateOrDeleteMetricsFromFile(
 }
 
 }  // namespace
-
-// This value is used as a max value in a histogram,
-// Platform.ExternalMetrics.SamplesRead. If it changes, the histogram will need
-// to be renamed.
-const int SerializationUtils::kMaxMessagesPerRead = 100000;
 
 std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
     const std::string& sample) {
