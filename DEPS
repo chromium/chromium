@@ -2344,6 +2344,13 @@ deps = {
         'generation': 1719520814352733,
         'output_file': 'chrome_input_with_frame_view_new.pftrace'
       },
+      {
+        'object_name': 'test_data/scroll_m131.pftrace-14171c9e502a65a454f39fe14fce8b313c7012a2c14394bed496fc93b1644b0d',
+        'sha256sum': '14171c9e502a65a454f39fe14fce8b313c7012a2c14394bed496fc93b1644b0d',
+        'size_bytes': 1247290,
+        'generation': 1729619115836875,
+        'output_file': 'scroll_m131.pftrace'
+      }
     ],
     'dep_type': 'gcs'
   },
