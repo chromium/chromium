@@ -106,7 +106,7 @@ FeedbackCommon::AttachedFile::AttachedFile(const std::string& filename,
                                            std::string data)
     : name(filename), data(std::move(data)) {}
 
-FeedbackCommon::AttachedFile::~AttachedFile() {}
+FeedbackCommon::AttachedFile::~AttachedFile() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FeedbackCommon::
