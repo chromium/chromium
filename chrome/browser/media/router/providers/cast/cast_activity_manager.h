@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -21,8 +22,9 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_sink.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
-#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/debugger.mojom-forward.h"
+#include "components/media_router/common/mojom/logger.mojom-forward.h"
+#include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -70,7 +72,8 @@ class CastActivityManager : public CastActivityManagerBase,
                       CastSessionTracker* session_tracker,
                       cast_channel::CastMessageHandler* message_handler,
                       mojom::MediaRouter* media_router,
-                      mojom::Logger* logger,
+                      mojo::Remote<mojom::Logger>& logger,
+                      mojo::Remote<mojom::Debugger>& debugger,
                       const std::string& hash_token);
   ~CastActivityManager() override;
 
@@ -110,6 +113,9 @@ class CastActivityManager : public CastActivityManagerBase,
       const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(int channel_id,
                          const cast_channel::InternalMessage& message) override;
+  void OnMessageSent(
+      int channel_id,
+      const openscreen::cast::proto::CastMessage& message) override;
 
   // CastSessionTracker::Observer implementation.
   void OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
@@ -345,7 +351,8 @@ class CastActivityManager : public CastActivityManagerBase,
   const raw_ptr<CastSessionTracker> session_tracker_;
   const raw_ptr<cast_channel::CastMessageHandler> message_handler_;
   const raw_ptr<mojom::MediaRouter> media_router_;
-  const raw_ptr<mojom::Logger> logger_;
+  const raw_ref<mojo::Remote<mojom::Logger>> logger_;
+  const raw_ref<mojo::Remote<mojom::Debugger>> debugger_;
 
   const std::string hash_token_;
 

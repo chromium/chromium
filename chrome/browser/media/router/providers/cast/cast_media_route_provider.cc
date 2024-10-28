@@ -165,10 +165,11 @@ void CastMediaRouteProvider::Init(
   receiver_.Bind(std::move(receiver));
   media_router_.Bind(std::move(media_router));
   media_router_->GetLogger(logger_.BindNewPipeAndPassReceiver());
+  media_router_->GetDebugger(debugger_.BindNewPipeAndPassReceiver());
 
   activity_manager_ = std::make_unique<CastActivityManager>(
       media_sink_service_, session_tracker, message_handler_,
-      media_router_.get(), logger_.get(), hash_token);
+      media_router_.get(), logger_, debugger_, hash_token);
 }
 
 CastMediaRouteProvider::~CastMediaRouteProvider() {

@@ -32,6 +32,8 @@
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/mock_logger.h"
@@ -156,9 +158,13 @@ class CastActivityManagerTest : public testing::Test,
     session_tracker_.reset(
         new CastSessionTracker(&media_sink_service_, &message_handler_,
                                socket_service_.task_runner()));
+
+    logger_receiver_ = std::make_unique<mojo::Receiver<mojom::Logger>>(
+        &mock_logger_, logger_.BindNewPipeAndPassReceiver());
+
     manager_ = std::make_unique<CastActivityManager>(
         &media_sink_service_, session_tracker_.get(), &message_handler_,
-        router_remote_.get(), &logger_, "theHashToken");
+        router_remote_.get(), logger_, debugger_, "theHashToken");
 
     ON_CALL(message_handler_, StopSession)
         .WillByDefault(WithArg<3>([this](auto callback) {
@@ -539,9 +545,12 @@ class CastActivityManagerTest : public testing::Test,
   const MediaSource::Id route_query_ = "theRouteQuery";
   std::optional<MediaRoute> updated_route_;
   cast_channel::Result stop_session_callback_arg_ = cast_channel::Result::kOk;
-  NiceMock<MockLogger> logger_;
   mojom::RoutePresentationConnectionPtr presentation_connections_;
   const std::string cast_streaming_app_id_;
+  NiceMock<MockLogger> mock_logger_;
+  mojo::Remote<mojom::Logger> logger_;
+  std::unique_ptr<mojo::Receiver<mojom::Logger>> logger_receiver_;
+  mojo::Remote<mojom::Debugger> debugger_;
 };
 
 TEST_F(CastActivityManagerTest, LaunchAppSession) {

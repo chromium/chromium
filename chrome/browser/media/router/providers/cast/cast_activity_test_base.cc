@@ -49,8 +49,10 @@ MockCastSessionClient::~MockCastSessionClient() {
 std::vector<MockCastSessionClient*> MockCastSessionClient::instances_;
 
 MockCastActivityManager::MockCastActivityManager() = default;
-
 MockCastActivityManager::~MockCastActivityManager() = default;
+
+MockMediaRouterDebugger::MockMediaRouterDebugger() = default;
+MockMediaRouterDebugger::~MockMediaRouterDebugger() = default;
 
 const char* const CastActivityTestBase::kAppId = "theAppId";
 const char* const CastActivityTestBase::kRouteId = "theRouteId";
@@ -89,6 +91,12 @@ void CastActivityTestBase::SetUp() {
   ASSERT_EQ("theSessionId", session->session_id());
   session_ = session.get();
   session_tracker_.SetSessionForTest(kSinkId, std::move(session));
+
+  logger_receiver_ = std::make_unique<mojo::Receiver<mojom::Logger>>(
+      &mock_logger_, logger_.BindNewPipeAndPassReceiver());
+
+  debugger_receiver_ = std::make_unique<mojo::Receiver<mojom::Debugger>>(
+      &mock_debugger_, debugger_.BindNewPipeAndPassReceiver());
 }
 
 void CastActivityTestBase::TearDown() {

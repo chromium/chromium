@@ -5295,6 +5295,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowCastPermissionRejectedErrorName,
      flag_descriptions::kShowCastPermissionRejectedErrorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kShowCastPermissionRejectedError)},
+    {"cast-message-logging", flag_descriptions::kCastMessageLoggingName,
+     flag_descriptions::kCastMessageLoggingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media_router::kCastMessageLogging)},
+
     {"cast-streaming-hardware-h264",
      flag_descriptions::kCastStreamingHardwareH264Name,
      flag_descriptions::kCastStreamingHardwareH264Description, kOsDesktop,

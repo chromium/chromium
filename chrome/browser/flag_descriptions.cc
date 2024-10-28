@@ -2132,6 +2132,11 @@ const char kAtomicMoveAPIDescription[] =
     "by calling Node.moveBefore. See "
     "https://github.com/whatwg/dom/issues/1255.";
 
+const char kCastMessageLoggingName[] = "Enables logging of all Cast messages.";
+const char kCastMessageLoggingDescription[] =
+    "Enables logging of all messages exchanged between websites, Chrome, "
+    "and Cast receivers in chrome://media-router-internals.";
+
 const char kCastStreamingAv1Name[] =
     "Enable AV1 video encoding for Cast Streaming";
 const char kCastStreamingAv1Description[] =

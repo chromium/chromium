@@ -58,6 +58,9 @@ BASE_FEATURE(kDelayMediaSinkDiscovery,
 BASE_FEATURE(kShowCastPermissionRejectedError,
              "ShowCastPermissionRejectedError",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCastMessageLogging,
+             "CastMessageLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1486680): Remove once stopping mirroring routes in the global
 // media controls is implemented on ChromeOS.
@@ -219,6 +222,9 @@ std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {
   return target_playout_delay;
 }
 
+bool IsCastMessageLoggingEnabled() {
+  return base::FeatureList::IsEnabled(kCastMessageLogging);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

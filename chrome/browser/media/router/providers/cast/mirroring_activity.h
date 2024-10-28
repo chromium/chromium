@@ -18,10 +18,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "components/media_router/common/media_route.h"
-#include "components/media_router/common/mojom/debugger.mojom.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
-#include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
@@ -57,14 +54,15 @@ class MirroringActivity : public CastActivity,
                     const std::string& app_id,
                     cast_channel::CastMessageHandler* message_handler,
                     CastSessionTracker* session_tracker,
+                    mojo::Remote<mojom::Logger>& logger,
+                    mojo::Remote<mojom::Debugger>& debugger,
                     content::FrameTreeNodeId frame_tree_node_id,
                     const CastSinkExtraData& cast_data,
                     OnStopCallback callback,
                     OnSourceChangedCallback source_changed_callback);
   ~MirroringActivity() override;
 
-  virtual void CreateMojoBindings(mojom::MediaRouter* media_router);
-
+  virtual void BindChannelToServiceReceiver();
   // `host_factory_for_test` is made as a default parameter. It is only passed
   // when testing, otherwise it is initialized within the function itself.
   void CreateMirroringServiceHost(
@@ -179,17 +177,6 @@ class MirroringActivity : public CastActivity,
   // OnSessionSet() to be called.
   mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
       channel_to_service_receiver_;
-
-  // Remote to the logger owned by the Media Router. Used to log WebRTC messages
-  // sent between the mirroring service and mirroring receiver.
-  // |logger_| should be bound before the CastMessageChannel message pipe is
-  // created.
-  mojo::Remote<mojom::Logger> logger_;
-
-  // Remote to the debugger owned by the Media Router. Used to check if
-  // mirroring stats are enabled on the mirroring session and to receive
-  // mirroring stats from the session.
-  mojo::Remote<mojom::Debugger> debugger_;
 
   // Most recent fetched mirroring stats.
   base::Value::Dict most_recent_mirroring_stats_;

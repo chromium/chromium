@@ -1197,6 +1197,9 @@ extern const char kOutlineSilhouetteIconDescription[];
 extern const char kAtomicMoveAPIName[];
 extern const char kAtomicMoveAPIDescription[];
 
+extern const char kCastMessageLoggingName[];
+extern const char kCastMessageLoggingDescription[];
+
 extern const char kCastStreamingAv1Name[];
 extern const char kCastStreamingAv1Description[];
 
