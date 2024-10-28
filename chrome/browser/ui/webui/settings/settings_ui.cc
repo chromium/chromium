@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -198,6 +199,8 @@
 #endif
 
 namespace settings {
+
+using optimization_guide::UserVisibleFeatureKey;
 
 // static
 void SettingsUI::RegisterProfilePrefs(
@@ -612,38 +615,31 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     // TODO(crbug.com/363968675): Rename this to be clearer.
     html_source->AddBoolean("showAdvancedFeaturesMainControl", show_ai_page);
   } else {
-    optimization_guide::UserVisibleFeatureKey optimization_guide_features[4] = {
-        optimization_guide::UserVisibleFeatureKey::kCompose,
-        optimization_guide::UserVisibleFeatureKey::kTabOrganization,
-        optimization_guide::UserVisibleFeatureKey::kWallpaperSearch,
-        optimization_guide::UserVisibleFeatureKey::kHistorySearch,
-    };
-    bool optimization_guide_feature_visible[5] = {false, false, false, false,
-                                                  false};
+    std::pair<UserVisibleFeatureKey, const std::string_view>
+        optimization_guide_features[4] = {
+            {UserVisibleFeatureKey::kCompose, "showComposeControl"},
+            {UserVisibleFeatureKey::kTabOrganization,
+             "showTabOrganizationControl"},
+            {UserVisibleFeatureKey::kWallpaperSearch,
+             "showWallpaperSearchControl"},
+            {UserVisibleFeatureKey::kHistorySearch, "showHistorySearchControl"},
+        };
+    bool is_any_ai_feature_enabled = false;
 
     auto* optimization_guide_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    for (size_t i = 0; i < 4; i++) {
+    for (auto [key, name] : optimization_guide_features) {
       const bool visible = optimization_guide_service &&
-                           optimization_guide_service->IsSettingVisible(
-                               optimization_guide_features[i]);
-      optimization_guide_feature_visible[i + 1] = visible;
+                           optimization_guide_service->IsSettingVisible(key);
+      html_source->AddBoolean(name, visible);
 
       // The main toggle is visible only if at least one of the sub toggles is
       // visible.
-      optimization_guide_feature_visible[0] |= visible;
+      is_any_ai_feature_enabled |= visible;
     }
 
     html_source->AddBoolean("showAdvancedFeaturesMainControl",
-                            optimization_guide_feature_visible[0]);
-    html_source->AddBoolean("showComposeControl",
-                            optimization_guide_feature_visible[1]);
-    html_source->AddBoolean("showTabOrganizationControl",
-                            optimization_guide_feature_visible[2]);
-    html_source->AddBoolean("showWallpaperSearchControl",
-                            optimization_guide_feature_visible[3]);
-    html_source->AddBoolean("showHistorySearchControl",
-                            optimization_guide_feature_visible[4]);
+                            is_any_ai_feature_enabled);
     // Compare is only shown when Synpase ("AiSettingsPageRefresh") is enabled.
     html_source->AddBoolean("showCompareControl", false);
   }
