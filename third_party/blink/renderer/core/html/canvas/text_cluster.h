@@ -50,8 +50,6 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
 
   void setX(double x) { x_ = x; }
   void setY(double y) { y_ = y; }
-  void setBegin(unsigned begin) { begin_ = begin; }
-  void setEnd(unsigned end) { end_ = end; }
 
   void OffsetPosition(double x_offset, double y_offset);
   void OffsetCharacters(unsigned offset);

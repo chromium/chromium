@@ -2184,12 +2184,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter baseline
 [Worker]     getter begin
 [Worker]     getter end
-[Worker]     getter text
 [Worker]     getter x
 [Worker]     getter y
 [Worker]     method constructor
-[Worker]     setter begin
-[Worker]     setter end
 [Worker]     setter x
 [Worker]     setter y
 [Worker] interface TextDecoder

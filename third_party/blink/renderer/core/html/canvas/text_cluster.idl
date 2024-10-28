@@ -3,11 +3,10 @@
     Exposed=(Window,Worker)
 ]
 interface TextCluster {
-    readonly attribute DOMString text;
     attribute double x;
     attribute double y;
-    attribute unsigned long begin;
-    attribute unsigned long end;
+    readonly attribute unsigned long begin;
+    readonly attribute unsigned long end;
     readonly attribute DOMString align;
     readonly attribute DOMString baseline;
 };

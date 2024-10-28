@@ -9813,12 +9813,9 @@ interface TextCluster
     getter baseline
     getter begin
     getter end
-    getter text
     getter x
     getter y
     method constructor
-    setter begin
-    setter end
     setter x
     setter y
 interface TextDecoder

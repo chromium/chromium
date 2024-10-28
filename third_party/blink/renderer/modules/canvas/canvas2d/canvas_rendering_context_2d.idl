@@ -127,7 +127,7 @@ interface CanvasRenderingContext2D {
     [HighEntropy, MeasureAs="WebDXFeature::kCanvasFillText"] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy, MeasureAs="WebDXFeature::kCanvasFillText"] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy, MeasureAs="WebDXFeature::kCanvasMeasureText"] TextMetrics measureText(DOMString text);
-    [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, optional double x = 0, optional double y = 0);
+    [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y);
 
     // drawing images
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
