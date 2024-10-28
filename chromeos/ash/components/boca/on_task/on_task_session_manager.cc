@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -14,14 +15,18 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace ash::boca {
-
 namespace {
 
 // Delay in seconds before we attempt to add a tab.
@@ -44,7 +49,8 @@ OnTaskSessionManager::OnTaskSessionManager(
           std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
               system_web_app_manager_.get(),
               std::vector<boca::BocaWindowObserver*>{&active_tab_tracker_,
-                                                     this})) {}
+                                                     this})),
+      notifications_manager_(OnTaskNotificationsManager::Create()) {}
 
 OnTaskSessionManager::~OnTaskSessionManager() = default;
 
@@ -79,6 +85,16 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
 
   // Re-enable extensions on session end to prepare for subsequent sessions.
   extensions_manager_->ReEnableExtensions();
+
+  // Surface toast to notify users about session end.
+  OnTaskNotificationsManager::ToastCreateParams toast_create_params(
+      kOnTaskSessionEndNotificationId, ToastCatalogName::kOnTaskSessionEnd,
+      /*text_description_callback=*/
+      base::BindRepeating([](base::TimeDelta countdown_period) {
+        return l10n_util::GetStringUTF16(
+            IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE);
+      }));
+  notifications_manager_->CreateToast(std::move(toast_create_params));
 }
 
 void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
@@ -146,18 +162,39 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     }
   }
 
-  // Disable extensions in the context of OnTask before the window is locked.
-  // Re-enable them otherwise.
   bool should_lock_window = bundle.locked();
   if (should_lock_window) {
+    // Disable extensions as appropriate and surface toast before locking the
+    // window.
     extensions_manager_->DisableExtensions();
+    auto lock_window_callback = base::BindRepeating(
+        &SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindow,
+        base::Unretained(system_web_app_launch_helper_.get()),
+        should_lock_window,
+        /*callback=*/
+        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
+                            weak_ptr_factory_.GetWeakPtr()));
+    OnTaskNotificationsManager::ToastCreateParams toast_create_params(
+        kOnTaskEnterLockedModeNotificationId,
+        ToastCatalogName::kOnTaskEnterLockedMode,
+        /*text_description_callback=*/
+        base::BindRepeating([](base::TimeDelta countdown_period) {
+          return l10n_util::GetStringUTF16(
+              IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE);
+        }),
+        /*completion_callback=*/std::move(lock_window_callback));
+    notifications_manager_->CreateToast(std::move(toast_create_params));
   } else {
+    // Re-enable extensions as well as clear pending toasts before attempting to
+    // unlock the window.
     extensions_manager_->ReEnableExtensions();
+    notifications_manager_->StopProcessingNotification(
+        kOnTaskEnterLockedModeNotificationId);
+    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
+        /*pinned=*/should_lock_window,
+        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
-  system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
-      /*pinned=*/should_lock_window,
-      base::BindOnce(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OnTaskSessionManager::OnAppReloaded() {
@@ -287,7 +324,8 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::RemoveTab(
 }
 
 void OnTaskSessionManager::SystemWebAppLaunchHelper::
-    SetPinStateForActiveSWAWindow(bool pinned, base::OnceClosure callback) {
+    SetPinStateForActiveSWAWindow(bool pinned,
+                                  base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

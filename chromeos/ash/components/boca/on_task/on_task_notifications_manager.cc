@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 
 namespace ash::boca {
 
@@ -74,7 +75,7 @@ void OnTaskNotificationsManager::CreateToast(ToastCreateParams params) {
   }
   auto notification_timer = std::make_unique<base::RepeatingTimer>();
   notification_timer->Start(
-      FROM_HERE, base::Seconds(1),
+      FROM_HERE, kOnTaskNotificationCountdownInterval,
       base::BindRepeating(&OnTaskNotificationsManager::CreateToastInternal,
                           weak_ptr_factory_.GetWeakPtr(),
                           base::OwnedRef(params)));
@@ -109,13 +110,12 @@ void OnTaskNotificationsManager::CreateToastInternal(
   // Display toast.
   ToastData toast_data(
       params.id, params.catalog_name,
-      /*text=*/params.text_description_callback.Run(params.countdown_period),
-      base::Seconds(1));
+      /*text=*/params.text_description_callback.Run(params.countdown_period));
   delegate_->ShowToast(std::move(toast_data));
 
-  // Decrement countdown period by one second before the next toast is
-  // scheduled.
-  params.countdown_period = params.countdown_period - base::Seconds(1);
+  // Decrement countdown period before the next toast is scheduled.
+  params.countdown_period =
+      params.countdown_period - kOnTaskNotificationCountdownInterval;
 }
 
 }  // namespace ash::boca

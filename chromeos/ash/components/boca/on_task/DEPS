@@ -5,5 +5,6 @@ include_rules = [
   "+components/policy/core/browser",
   "+components/sessions/content/session_tab_helper.h",
   "+components/sessions/core/session_id.h",
-  "+content/public/browser/web_contents.h"
+  "+content/public/browser/web_contents.h",
+  "+ui/base/l10n/l10n_util.h"
 ]

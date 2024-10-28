@@ -6861,6 +6861,13 @@
         on Sunday
       </message>
 
+      <!-- Strings for OnTask notifications -->
+      <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE" desc="Toast message telling students that their teachers have locked their screen.">
+        Your teacher has locked your screen
+      </message>
+      <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Toast message telling students that their class session ended.">
+        Your teacher has ended class
+      </message>
     </messages>
   </release>
 </grit>

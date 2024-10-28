@@ -316,7 +316,9 @@ enum class ToastCatalogName {
   kGameDashboardEnterTablet = 50,
   kInformedRestoreOnboarding = 51,
   kTouchpadDisabled = 52,
-  kMaxValue = kTouchpadDisabled
+  kOnTaskEnterLockedMode = 53,
+  kOnTaskSessionEnd = 54,
+  kMaxValue = kOnTaskSessionEnd
 };
 
 }  // namespace ash

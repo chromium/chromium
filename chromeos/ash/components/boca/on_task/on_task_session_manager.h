@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -17,6 +18,7 @@
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "url/gurl.h"
@@ -75,7 +77,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
         base::OnceCallback<void(SessionID)> callback);
     void RemoveTab(const std::set<SessionID>& tab_ids_to_remove,
                    base::OnceClosure callback);
-    void SetPinStateForActiveSWAWindow(bool pinned, base::OnceClosure callback);
+    void SetPinStateForActiveSWAWindow(bool pinned,
+                                       base::RepeatingClosure callback);
 
    private:
     // Callback triggered when the Boca SWA is launched. Normally at the onset
@@ -130,6 +133,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   const std::unique_ptr<OnTaskExtensionsManager> extensions_manager_;
 
   const std::unique_ptr<SystemWebAppLaunchHelper> system_web_app_launch_helper_;
+
+  std::unique_ptr<OnTaskNotificationsManager> notifications_manager_;
 
   base::WeakPtrFactory<OnTaskSessionManager> weak_ptr_factory_{this};
 };

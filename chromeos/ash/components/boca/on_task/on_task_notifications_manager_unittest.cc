@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +25,6 @@ namespace {
 
 constexpr char kTestNotificationId[] = "TestOnTaskNotification";
 constexpr std::u16string_view kToastDescription = u"TestDescription";
-constexpr base::TimeDelta kToastCountdownInterval = base::Seconds(1);
 constexpr base::TimeDelta kToastCountdownPeriod = base::Seconds(5);
 
 // Fake delegate implementation for the `OnTaskNotificationsManager`.
@@ -75,12 +75,12 @@ TEST_F(OnTaskNotificationsManagerTest, CreateToastWithNoCountdownPeriod) {
 
   // Verify toast is shown after a 1 second delay because of the scheduled
   // timer.
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetToastCount(), 1u);
   ASSERT_FALSE(callback_triggered);
 
   // Advance timer by 1 more second and verify callback is triggered.
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(callback_triggered);
 }
 
@@ -101,7 +101,7 @@ TEST_F(OnTaskNotificationsManagerTest,
   notifications_manager_->CreateToast(std::move(create_params_1));
 
   // Verify toast is shown after a 1 second delay.
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetToastCount(), 1u);
 
   // Trigger another toast with the same id.
@@ -140,13 +140,13 @@ TEST_F(OnTaskNotificationsManagerTest, StopProcessingToast) {
   notifications_manager_->CreateToast(std::move(create_params));
 
   // Verify toast is shown after a 1 second delay.
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetToastCount(), 1u);
 
   // Attempt to stop processing notification and verify toast is not shown with
   // subsequent timer advances.
   notifications_manager_->StopProcessingNotification(kTestNotificationId);
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_EQ(fake_delegate_ptr_->GetToastCount(), 1u);
 }
 
@@ -166,12 +166,12 @@ TEST_F(OnTaskNotificationsManagerTest,
   notifications_manager_->CreateToast(std::move(create_params));
 
   // Verify toast is shown after a 1 second delay.
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetToastCount(), 1u);
   ASSERT_FALSE(callback_triggered);
 
   // Toasts remain visible before count down.
-  task_environment_.FastForwardBy(kToastCountdownInterval);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetToastCount(), 2u);
   ASSERT_FALSE(callback_triggered);
 
