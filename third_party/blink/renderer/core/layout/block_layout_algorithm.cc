@@ -331,6 +331,16 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
     }
   }
 
+  // Disable text box trimming if there's intervening border / padding.
+  if (should_text_box_trim_node_start_ &&
+      BorderPadding().block_start != LayoutUnit()) {
+    should_text_box_trim_node_start_ = false;
+  }
+  if (should_text_box_trim_node_end_ &&
+      BorderPadding().block_end != LayoutUnit()) {
+    should_text_box_trim_node_end_ = false;
+  }
+
   // Initialize `text-box-trim` flags from the `ComputedStyle`.
   const ComputedStyle& style = Node().Style();
   if (style.TextBoxTrim() != ETextBoxTrim::kNone) [[unlikely]] {

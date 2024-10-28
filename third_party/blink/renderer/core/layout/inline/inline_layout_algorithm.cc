@@ -264,16 +264,6 @@ InlineLayoutAlgorithm::InlineLayoutAlgorithm(
 // header.
 InlineLayoutAlgorithm::~InlineLayoutAlgorithm() = default;
 
-bool InlineLayoutAlgorithm::HasContainerBorderPaddingAtBlockStart() const {
-  return context_->ContainerBuilder()->BorderPadding().block_start !=
-         LayoutUnit();
-}
-
-bool InlineLayoutAlgorithm::HasContainerBorderPaddingAtBlockEnd() const {
-  return context_->ContainerBuilder()->BorderPadding().block_end !=
-         LayoutUnit();
-}
-
 // Prepare InlineLayoutStateStack for a new line.
 void InlineLayoutAlgorithm::PrepareBoxStates(
     const LineInfo& line_info,
@@ -641,49 +631,41 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
       should_apply_over, should_apply_under, intrinsic_metrics);
 
   if (should_apply_start) {
-    // If there is intervening non-zero padding or borders, there is no effect.
-    if (!HasContainerBorderPaddingAtBlockStart()) {
-      // Apply `text-box-trim: start` if this is the first formatted line.
-      LayoutUnit offset_for_trimming_box;
-      if (is_flipped_line) [[unlikely]] {
-        offset_for_trimming_box =
-            intrinsic_metrics.descent - line_box_metrics.descent;
-      } else {
-        offset_for_trimming_box =
-            intrinsic_metrics.ascent - line_box_metrics.ascent;
-      }
-      container_builder_.SetLineBoxBfcBlockOffset(
-          container_builder_.LineBoxBfcBlockOffset()
-              ? offset_for_trimming_box +
-                    container_builder_.LineBoxBfcBlockOffset().value()
-              : offset_for_trimming_box);
-
-      // Cancel adjusting the block start for the initial letters and Ruby
-      // annotation. The use of the `text-box-trim` accepts the risk of
-      // collisions for the finer control of the alignment of the body text in
-      // the block direction.
-      line_info.SetAnnotationBlockStartAdjustment(LayoutUnit());
-      line_info.SetInitialLetterBlockStartAdjustment(LayoutUnit());
+    // Apply `text-box-trim: start` if this is the first formatted line.
+    LayoutUnit offset_for_trimming_box;
+    if (is_flipped_line) [[unlikely]] {
+      offset_for_trimming_box =
+          intrinsic_metrics.descent - line_box_metrics.descent;
+    } else {
+      offset_for_trimming_box =
+          intrinsic_metrics.ascent - line_box_metrics.ascent;
     }
+    container_builder_.SetLineBoxBfcBlockOffset(
+        container_builder_.LineBoxBfcBlockOffset()
+            ? offset_for_trimming_box +
+                  container_builder_.LineBoxBfcBlockOffset().value()
+            : offset_for_trimming_box);
+
+    // Cancel adjusting the block start for the initial letters and Ruby
+    // annotation. The use of the `text-box-trim` accepts the risk of collisions
+    // for the finer control of the alignment of the body text in the block
+    // direction.
+    line_info.SetAnnotationBlockStartAdjustment(LayoutUnit());
+    line_info.SetInitialLetterBlockStartAdjustment(LayoutUnit());
   }
 
   if (should_apply_end) {
     container_builder_.SetIsBlockEndTrimmableLine();
-    // If there is intervening non-zero padding or borders, there is no effect,
-    // but this is where trimming should have been applied, so we need to report
-    // it as trimmable nevertheless.
-    if (!HasContainerBorderPaddingAtBlockEnd()) [[unlikely]] {
-      // Ask the block layout algorithm to trim the end of the line box.
-      LayoutUnit block_end_to_be_trimmed;
-      if (is_flipped_line) [[unlikely]] {
-        block_end_to_be_trimmed =
-            line_box_metrics.ascent - intrinsic_metrics.ascent;
-      } else {
-        block_end_to_be_trimmed =
-            line_box_metrics.descent - intrinsic_metrics.descent;
-      }
-      container_builder_.SetTrimBlockEndBy(block_end_to_be_trimmed);
+    // Ask the block layout algorithm to trim the end of the line box.
+    LayoutUnit block_end_to_be_trimmed;
+    if (is_flipped_line) [[unlikely]] {
+      block_end_to_be_trimmed =
+          line_box_metrics.ascent - intrinsic_metrics.ascent;
+    } else {
+      block_end_to_be_trimmed =
+          line_box_metrics.descent - intrinsic_metrics.descent;
     }
+    container_builder_.SetTrimBlockEndBy(block_end_to_be_trimmed);
   }
 }
 
