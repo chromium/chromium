@@ -957,6 +957,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.FETAvailabilityOnFRE"
+    enum="BooleanAvailable" expires_after="2025-04-06">
+  <owner>gayane@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Record whether FET was available to record FRE event for default browser
+    promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.GenericPromoDisplayCount"
     units="count" expires_after="2025-04-06">
   <owner>gayane@google.com</owner>

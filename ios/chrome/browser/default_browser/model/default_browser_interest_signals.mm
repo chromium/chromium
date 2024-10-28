@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -199,8 +200,12 @@ void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker) {
   LogFRETimestampMigrationDone();
 
   if (!tracker) {
+    base::UmaHistogramBoolean("IOS.DefaultBrowserPromo.FETAvailabilityOnFRE",
+                              false);
     return;
   }
   tracker->NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown);
+  base::UmaHistogramBoolean("IOS.DefaultBrowserPromo.FETAvailabilityOnFRE",
+                            true);
 }
 }  // namespace default_browser
