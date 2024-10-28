@@ -179,26 +179,6 @@ function test_transferToGPUTexture_untouched_canvas(device, canvas) {
 }
 
 /**
- * transferToGPUTexture() should create a texture from an initialized canvas.
- */
-function test_transferToGPUTexture_initialized_canvas(device, canvas) {
-  // Paint into the canvas to ensure it has a valid Canvas2DLayerBridge.
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, 100, 50);
-
-  // Next, call transferToGPUTexture.
-  const tex = ctx.transferToGPUTexture({device: device,
-                                         label: "hello, webgpu!"});
-
-  // Confirm that we now have a GPU texture that matches our request.
-  assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
-  assert_equals(tex.label, 'hello, webgpu!');
-  assert_equals(tex.width, canvas.width);
-  assert_equals(tex.height, canvas.height);
-}
-
-/**
  * transferToGPUTexture() texture should retain the contents of the canvas, and
  * readback works. Returns a promise.
  */
