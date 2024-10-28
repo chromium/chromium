@@ -813,6 +813,7 @@ blink_core_tests_css = [
   "css_selector_watch_test.cc",
   "css_style_declaration_test.cc",
   "css_style_sheet_test.cc",
+  "css_syntax_definition_test.cc",
   "css_syntax_string_parser_test.cc",
   "css_to_length_conversion_data_test.cc",
   "css_uri_value_test.cc",

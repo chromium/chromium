@@ -169,12 +169,11 @@ CSSSyntaxDefinition CSSSyntaxDefinition::IsolatedCopy() const {
         syntax_component.GetType(), syntax_component.GetString(),
         syntax_component.GetRepeat()));
   }
-  return CSSSyntaxDefinition(std::move(syntax_components_copy), original_text_);
+  return CSSSyntaxDefinition(std::move(syntax_components_copy));
 }
 
-CSSSyntaxDefinition::CSSSyntaxDefinition(Vector<CSSSyntaxComponent> components,
-                                         const String& original_text)
-    : syntax_components_(std::move(components)), original_text_(original_text) {
+CSSSyntaxDefinition::CSSSyntaxDefinition(Vector<CSSSyntaxComponent> components)
+    : syntax_components_(std::move(components)) {
   DCHECK(syntax_components_.size());
 }
 
@@ -182,11 +181,21 @@ CSSSyntaxDefinition CSSSyntaxDefinition::CreateUniversal() {
   Vector<CSSSyntaxComponent> components;
   components.push_back(CSSSyntaxComponent(
       CSSSyntaxType::kTokenStream, g_empty_string, CSSSyntaxRepeat::kNone));
-  return CSSSyntaxDefinition(std::move(components), {});
+  return CSSSyntaxDefinition(std::move(components));
 }
 
 String CSSSyntaxDefinition::ToString() const {
-  return IsUniversal() ? String("*") : original_text_;
+  if (IsUniversal()) {
+    return String("*");
+  }
+  StringBuilder builder;
+  builder.Append(syntax_components_[0].ToString());
+  for (size_t i = 1; i < syntax_components_.size(); i++) {
+    CSSSyntaxComponent component = syntax_components_[i];
+    builder.Append(" | ");
+    builder.Append(component.ToString());
+  }
+  return builder.ToString();
 }
 
 }  // namespace blink
