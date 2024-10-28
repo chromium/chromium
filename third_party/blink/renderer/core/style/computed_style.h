@@ -1293,8 +1293,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool BorderVisuallyEqual(const ComputedStyle& o) const {
     auto BorderSideVisuallyEqual =
         [&](const StyleColor& color, const StyleColor& other_color,
-           EBorderStyle style, EBorderStyle other_style, int width,
-           int other_width) -> bool {
+            EBorderStyle style, EBorderStyle other_style, int width,
+            int other_width) -> bool {
       if (style == EBorderStyle::kNone && other_style == EBorderStyle::kNone) {
         return true;
       }
@@ -3307,6 +3307,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                                    CSSVariableData* value,
                                    bool is_inherited_property) {
     if (is_inherited_property) {
+      // Try to avoid cloning inherited_variables if we haven't already;
+      // taking the extra cost of a lookup and compare here can be worth it
+      // to reduce memory usage if the page sets the same variables
+      // over and over again (e.g. in a universal selector).
+      if (!has_own_inherited_variables_ && InheritedVariables()) {
+        if (auto existing_value = InheritedVariables()->GetData(name);
+            existing_value && base::ValuesEquivalent(*existing_value, value)) {
+          return;
+        }
+      }
       MutableInheritedVariables().SetData(name, value);
     } else {
       MutableNonInheritedVariables().SetData(name, value);
