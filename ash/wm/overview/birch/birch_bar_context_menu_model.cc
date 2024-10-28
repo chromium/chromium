@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -37,8 +38,10 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
   if (type == Type::kExpandedBarMenu) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
-    AddItem(base::to_underlying(CommandId::kCoralSuggestions),
-            u"Suggested group");
+    if (features::IsCoralFeatureEnabled()) {
+      AddItem(base::to_underlying(CommandId::kCoralSuggestions),
+              u"Suggested group");
+    }
 
     bool enabled = IsWeatherAllowedByGeolocation();
     std::u16string weather_label =
