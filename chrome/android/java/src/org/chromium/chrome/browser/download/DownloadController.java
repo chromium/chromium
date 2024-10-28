@@ -51,7 +51,8 @@ public class DownloadController {
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
         if (tab == null
                 || !PdfUtils.shouldOpenPdfInline(tab.isIncognito())
-                || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+                || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)
+                || !downloadInfo.getIsTransient()) {
             return;
         }
         NativePage nativePage = tab.getNativePage();

@@ -570,7 +570,8 @@ public final class DownloadInfo {
             long timeRemainingInMs,
             long lastAccessTime,
             boolean isDangerous,
-            @FailState int failState) {
+            @FailState int failState,
+            boolean isTransient) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 
         Progress progress =
@@ -600,6 +601,7 @@ public final class DownloadInfo {
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
                 .setFailState(failState)
+                .setIsTransient(isTransient)
                 .build();
     }
 }
