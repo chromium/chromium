@@ -5167,7 +5167,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
 TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  FormFieldData* addr1_field = form.FindFieldByNameForTest(u"addr1");
+  FormFieldData* addr1_field = test_api(form).FindFieldByNameForTest(u"addr1");
   ASSERT_TRUE(addr1_field != nullptr);
   addr1_field->set_value(u"Enter your address");
 
@@ -5201,7 +5201,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
 
   // Convert the state field to a <select> popup, to make sure that we only
   // reject default values for text fields.
-  FormFieldData* state_field = form.FindFieldByNameForTest(u"state");
+  FormFieldData* state_field = test_api(form).FindFieldByNameForTest(u"state");
   ASSERT_TRUE(state_field != nullptr);
   state_field->set_form_control_type(form_control_type);
   state_field->set_value(base::UTF8ToUTF16(GetElvisAddressFillData().state));

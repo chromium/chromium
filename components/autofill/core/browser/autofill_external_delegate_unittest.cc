@@ -2035,7 +2035,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
   const std::u16string value_to_fill = u"John";
-  FormFieldData* field_to_fill = form.FindFieldByNameForTest(u"firstname");
+  FormFieldData* field_to_fill =
+      test_api(form).FindFieldByNameForTest(u"firstname");
   ASSERT_TRUE(field_to_fill);
 
   manager().OnFormsSeen({form}, {});
@@ -2089,7 +2090,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
   const std::u16string value_to_fill = u"John";
-  FormFieldData* field_to_fill = form.FindFieldByNameForTest(u"firstname");
+  FormFieldData* field_to_fill =
+      test_api(form).FindFieldByNameForTest(u"firstname");
   ASSERT_TRUE(field_to_fill);
 
   manager().OnFormsSeen({form}, {});

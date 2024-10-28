@@ -164,16 +164,6 @@ const FormFieldData* FormData::FindFieldByGlobalId(
   return fields_it != fields().end() ? &*fields_it : nullptr;
 }
 
-FormFieldData* FormData::FindFieldByNameForTest(
-    std::u16string_view name_or_id) {
-  auto fields_it =
-      base::ranges::find(fields_, name_or_id, &FormFieldData::name);
-
-  // If the field is found, return a pointer to the field, otherwise return
-  // nullptr.
-  return fields_it != fields_.end() ? &*fields_it : nullptr;
-}
-
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);
   pickle->WriteString16(form_data.name());

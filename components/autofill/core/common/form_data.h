@@ -178,11 +178,6 @@ class FormData {
   const FormFieldData* FindFieldByGlobalId(
       const FieldGlobalId& global_id) const;
 
-  // Finds a field in the FormData by its name or id.
-  // Returns a pointer to the field if found, otherwise returns nullptr.
-  // TODO(crbug.com/40100455): Move to FormDataTestApi.
-  FormFieldData* FindFieldByNameForTest(std::u16string_view name_or_id);
-
   // The id attribute of the form.
   const std::u16string& id_attribute() const { return id_attribute_; }
   void set_id_attribute(std::u16string id_attribute) {
