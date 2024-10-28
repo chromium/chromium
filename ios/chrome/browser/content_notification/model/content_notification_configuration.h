@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol SingleSignOnService;
 
@@ -17,9 +16,6 @@ class IdentityManager;
 
 // Configuration object used by the ContentNotificationService.
 @interface ContentNotificationConfiguration : NSObject
-
-// AuthenticationService used by ContentNotificationService.
-@property(nonatomic, assign) AuthenticationService* authService;
 
 // IdentityManager used by ContentNotificationService.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;

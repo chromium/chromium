@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/mailto_handler/mailto_handler_api.h"
@@ -32,7 +31,6 @@ MailtoHandlerServiceFactory::MailtoHandlerServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "MailtoHandlerService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -47,7 +45,6 @@ MailtoHandlerServiceFactory::BuildServiceInstanceFor(
   MailtoHandlerConfiguration* config =
       [[MailtoHandlerConfiguration alloc] init];
 
-  config.authService = AuthenticationServiceFactory::GetForProfile(profile);
   config.identityManager = IdentityManagerFactory::GetForProfile(profile);
   config.accountManager =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
