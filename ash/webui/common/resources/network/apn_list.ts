@@ -10,9 +10,9 @@
 import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 import './network_shared.css.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import '//resources/ash/common/network/apn_list_item.js';
-import '//resources/ash/common/network/apn_detail_dialog.js';
-import '//resources/ash/common/network/apn_selection_dialog.js';
+import './apn_list_item.js';
+import './apn_detail_dialog.js';
+import './apn_selection_dialog.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from '//resources/js/assert.js';

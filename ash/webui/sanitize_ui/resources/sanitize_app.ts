@@ -11,7 +11,7 @@
 import './sanitize_shared.css.js';
 import './sanitize_initial.js';
 import './sanitize_done.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';

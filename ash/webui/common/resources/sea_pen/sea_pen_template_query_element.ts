@@ -10,10 +10,10 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_chip_text_element.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
+import './sea_pen.css.js';
+import './sea_pen_chip_text_element.js';
+import './sea_pen_icons.html.js';
+import './sea_pen_options_element.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';

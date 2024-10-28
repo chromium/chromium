@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './scan_settings_section.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';

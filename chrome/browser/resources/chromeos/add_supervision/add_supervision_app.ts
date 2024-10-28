@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import './add_supervision_ui.js';
-import './supervision/supervised_user_error.js';
-import './supervision/supervised_user_offline.js';
+import '/supervision/supervised_user_error.js';
+import '/supervision/supervised_user_offline.js';
 import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';

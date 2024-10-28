@@ -7,10 +7,10 @@ import './firmware_shared_fonts.css.js';
 import './firmware_confirmation_dialog.js';
 import './firmware_update_dialog.js';
 import './peripheral_updates_list.js';
-import './strings.m.js';
+import '/strings.m.js';
 
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './firmware_update_app.html.js';

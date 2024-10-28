@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/ash/common/network/network_shared.css.js';
-import '//resources/ash/common/i18n_behavior.js';
-import '//resources/ash/common/network/onc_mojo.js';
+import '../network/network_shared.css.js';
+import '../i18n_behavior.js';
+import '../network/onc_mojo.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {TrafficCounter} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';

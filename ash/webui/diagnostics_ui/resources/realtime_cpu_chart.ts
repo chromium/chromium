@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './diagnostics_shared.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/d3/d3.min.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';

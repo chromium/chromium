@@ -6,7 +6,7 @@ import '//resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js'
 import '//resources/ash/common/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

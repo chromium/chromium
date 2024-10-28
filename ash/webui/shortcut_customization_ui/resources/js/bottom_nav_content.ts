@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 

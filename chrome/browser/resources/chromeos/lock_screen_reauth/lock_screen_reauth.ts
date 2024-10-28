@@ -14,10 +14,10 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
-import './components/buttons/oobe_text_button.js';
-import './components/oobe_icons.html.js';
-import './components/oobe_illo_icons.html.js';
-import './gaia_action_buttons/gaia_action_buttons.js';
+import '/components/buttons/oobe_text_button.js';
+import '/components/oobe_icons.html.js';
+import '/components/oobe_illo_icons.html.js';
+import '/gaia_action_buttons/gaia_action_buttons.js';
 import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 

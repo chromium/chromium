@@ -10,7 +10,7 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './firmware_shared.css.js';
 import './firmware_shared_fonts.css.js';
 import './firmware_update.mojom-webui.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';

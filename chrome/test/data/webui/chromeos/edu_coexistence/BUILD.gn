@@ -38,10 +38,11 @@ build_webui_tests("build") {
   ]
 
   ts_definitions = [
-    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
-    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
-    "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",

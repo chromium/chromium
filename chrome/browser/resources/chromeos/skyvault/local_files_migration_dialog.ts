@@ -16,7 +16,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './skyvault_icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 

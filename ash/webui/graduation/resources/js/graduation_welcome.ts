@@ -5,7 +5,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {getImage} from 'chrome://resources/js/icon.js';

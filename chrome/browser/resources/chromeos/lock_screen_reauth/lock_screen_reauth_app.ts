@@ -7,7 +7,7 @@
  * the lock screen.
  */
 
-import './strings.m.js';
+import '/strings.m.js';
 import './lock_screen_reauth.js';
 
 import {$} from 'chrome://resources/ash/common/util.js';

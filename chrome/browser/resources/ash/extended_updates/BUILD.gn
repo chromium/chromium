@@ -32,7 +32,7 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  ts_path_mappings = [ "//chromeos/login/components/*|" + rebase_path(
+  ts_path_mappings = [ "/components/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/chromeos/login/tsc/components/*",
                            target_gen_dir) ]
 

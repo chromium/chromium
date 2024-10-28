@@ -7,11 +7,11 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import 'chrome://resources/cros_components/button/button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './components/android_apps_list.js';
-import './components/common_styles/oobe_dialog_host_styles.css.js';
-import './components/dialogs/oobe_adaptive_dialog.js';
+import '/components/common_styles/oobe_dialog_host_styles.css.js';
+import '/components/dialogs/oobe_adaptive_dialog.js';
 import './icons.html.js';
 
-import type {OobeAdaptiveDialog} from '//chromeos/login/components/dialogs/oobe_adaptive_dialog.js';
+import type {OobeAdaptiveDialog} from '/components/dialogs/oobe_adaptive_dialog.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
