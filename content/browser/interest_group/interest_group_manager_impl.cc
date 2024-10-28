@@ -640,6 +640,9 @@ void InterestGroupManagerImpl::EnqueueRealTimeReports(
   std::map<url::Origin, std::vector<uint8_t>> histograms =
       CalculateRealTimeReportingHistograms(std::move(contributions));
 
+  std::optional<std::string> user_agent_override =
+      MaybeGetUserAgentOverride(frame_tree_node_id);
+
   base::TimeTicks now = base::TimeTicks::Now();
   for (auto& [origin, histogram] : histograms) {
     double quota = GetRealTimeReportingQuota(
@@ -660,6 +663,7 @@ void InterestGroupManagerImpl::EnqueueRealTimeReports(
     report_request->name = "RealTimeReport";
     report_request->url_loader_factory = url_loader_factory;
     report_request->frame_tree_node_id = frame_tree_node_id;
+    report_request->user_agent_override = user_agent_override;
     report_requests_.emplace_back(std::move(report_request));
   }
 

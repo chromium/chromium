@@ -26096,6 +26096,193 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
   }
 }
 
+class RealTimeReportingAndUserAgentOverrideEnabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  RealTimeReportingAndUserAgentOverrideEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeRealTimeReporting,
+                              features::kFledgeEnableUserAgentOverrides},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RealTimeReportingAndUserAgentOverrideEnabledTest,
+                       RealTimeReportingHasUAOverride) {
+  const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
+
+  // Setting a small reporting interval to run the test faster.
+  manager_->set_reporting_interval_for_testing(base::Milliseconds(1));
+  manager_->set_max_report_queue_length_for_testing(50);
+  manager_->set_max_active_report_requests_for_testing(50);
+
+  URLLoaderMonitor url_loader_monitor;
+
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("overridden-user-agent"),
+      /*override_in_new_tabs=*/false);
+  web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  GURL test_url =
+      embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+  url::Origin test_origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL(kHostB, "/echo"));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  kHostA,
+                  "/interest_group/bidding_logic_with_real_time_reporting.js"))
+              .SetAds({{{ad_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$3],
+    sellerRealTimeReportingConfig: {type: 'default-local-reporting'},
+    perBuyerRealTimeReportingConfig: {
+      $3: {type: 'default-local-reporting'},
+    }
+  })";
+
+  std::string auction_config = JsReplace(
+      kConfigTemplate, test_origin_b,
+      embedded_https_test_server().GetURL(
+          kHostB, "/interest_group/decision_logic_with_real_time_reporting.js"),
+      test_origin);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  const auto kExpectedReportUrls = std::to_array<GURL>({
+      embedded_https_test_server().GetURL(
+          "a.test", "/.well-known/interest-group/real-time-report"),
+      embedded_https_test_server().GetURL(
+          "b.test", "/.well-known/interest-group/real-time-report"),
+  });
+
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
+
+    std::optional<network::ResourceRequest> request =
+        url_loader_monitor.WaitForUrl(expected_report_url);
+    ASSERT_TRUE(request);
+    EXPECT_FALSE(request->headers.IsEmpty());
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+                "overridden-user-agent");
+  }
+}
+
+class RealTimeReportingEnabledAndUserAgentOverrideDisabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  RealTimeReportingEnabledAndUserAgentOverrideDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeRealTimeReporting},
+        /*disabled_features=*/{features::kFledgeEnableUserAgentOverrides});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledAndUserAgentOverrideDisabledTest,
+                       RealTimeReportingHasNoUAOverride) {
+  const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
+
+  // Setting a small reporting interval to run the test faster.
+  manager_->set_reporting_interval_for_testing(base::Milliseconds(1));
+  manager_->set_max_report_queue_length_for_testing(50);
+  manager_->set_max_active_report_requests_for_testing(50);
+
+  URLLoaderMonitor url_loader_monitor;
+
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("overridden-user-agent"),
+      /*override_in_new_tabs=*/false);
+  web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  GURL test_url =
+      embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+  url::Origin test_origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL(kHostB, "/echo"));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  kHostA,
+                  "/interest_group/bidding_logic_with_real_time_reporting.js"))
+              .SetAds({{{ad_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$3],
+    sellerRealTimeReportingConfig: {type: 'default-local-reporting'},
+    perBuyerRealTimeReportingConfig: {
+      $3: {type: 'default-local-reporting'},
+    }
+  })";
+
+  std::string auction_config = JsReplace(
+      kConfigTemplate, test_origin_b,
+      embedded_https_test_server().GetURL(
+          kHostB, "/interest_group/decision_logic_with_real_time_reporting.js"),
+      test_origin);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  const auto kExpectedReportUrls = std::to_array<GURL>({
+      embedded_https_test_server().GetURL(
+          "a.test", "/.well-known/interest-group/real-time-report"),
+      embedded_https_test_server().GetURL(
+          "b.test", "/.well-known/interest-group/real-time-report"),
+  });
+
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
+
+    std::optional<network::ResourceRequest> request =
+        url_loader_monitor.WaitForUrl(expected_report_url);
+    ASSERT_TRUE(request);
+    EXPECT_FALSE(request->headers.IsEmpty());
+    EXPECT_NE(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+              "overridden-user-agent");
+  }
+}
+
 class RealTimeReportingEnabledTest : public InterestGroupBrowserTest {
  public:
   RealTimeReportingEnabledTest() {
