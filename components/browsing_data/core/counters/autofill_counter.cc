@@ -187,6 +187,6 @@ AutofillCounter::AutofillResult::AutofillResult(
       num_addresses_(num_addresses),
       num_user_annotation_entries_(num_user_annotation_entries) {}
 
-AutofillCounter::AutofillResult::~AutofillResult() {}
+AutofillCounter::AutofillResult::~AutofillResult() = default;
 
 }  // namespace browsing_data
