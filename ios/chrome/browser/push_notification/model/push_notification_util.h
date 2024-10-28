@@ -26,7 +26,8 @@ enum class SettingsAuthorizationStatus {
   AUTHORIZED,
   PROVISIONAL,
   EPHEMERAL,
-  kMaxValue = EPHEMERAL
+  INVALID,
+  kMaxValue = INVALID
 };
 }  // namespace push_notification
 

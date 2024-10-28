@@ -244,6 +244,10 @@ const UNAuthorizationOptions kAuthorizationOptions =
       // The authorization status is this case Chrome can receive
       // notifications for a limited amount of time.
       return SettingsAuthorizationStatus::EPHEMERAL;
+      // Handles the case where the authorization status received from iOS is
+      // invalid/unknown.
+    default:
+      return SettingsAuthorizationStatus::INVALID;
   }
 }
 

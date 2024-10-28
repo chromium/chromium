@@ -1203,6 +1203,7 @@ the generic promo launch. -->
   <int value="2" label="Authorized"/>
   <int value="3" label="Provisional"/>
   <int value="4" label="Ephemeral"/>
+  <int value="5" label="Invalid"/>
 </enum>
 
 <enum name="TextSelectionDetectedEntityType">
