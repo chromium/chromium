@@ -63,6 +63,8 @@ void DeviceDisabledScreenHandler::DeclareLocalizedValues(
                IDS_DEVICE_DISABLED_HEADING_RESTRICTION_SCHEDULE);
   builder->Add("deviceDisabledExplanationRestrictionSchedule",
                IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE);
+  builder->Add("deviceDisabledExplanationRestrictionScheduleTime",
+               IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME);
 }
 
 }  // namespace ash

@@ -199,23 +199,18 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
    * deviceRestrictionScheduleEnabled flag indicating if the device was disabled
    *     because the device is in restriction schedule.
    * deviceName The name of the ChromeOS device.
-   * restrictionScheduleEndDay The day at which the restriction schedule ends.
-   * restrictionScheduleEndTime The time at which the restriction schedule ends.
    * return The internationalized explanation.
    */
   private disabledText(
       locale: string, serial: string, domain: string,
-      deviceRestrictionScheduleEnabled: boolean, deviceName: string,
-      restrictionScheduleEndDay: string,
-      restrictionScheduleEndTime: string): TrustedHTML {
+      deviceRestrictionScheduleEnabled: boolean,
+      deviceName: string): TrustedHTML {
     if (deviceRestrictionScheduleEnabled) {
       return this.i18nAdvancedDynamic(
           locale, 'deviceDisabledExplanationRestrictionSchedule', {
             substitutions: [
               domain,
               deviceName,
-              restrictionScheduleEndDay,
-              restrictionScheduleEndTime,
             ],
           });
     }
@@ -227,6 +222,25 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
     return this.i18nAdvancedDynamic(
         locale, 'deviceDisabledExplanationWithoutDomain',
         {substitutions: [serial]});
+  }
+
+  /**
+   * Updates the detailed message shown to the user.
+   * locale The i18n locale.
+   * restrictionScheduleEndDay The day at which the restriction schedule ends.
+   * restrictionScheduleEndTime The time at which the restriction schedule ends.
+   * return The internationalized explanation.
+   */
+  private disabledMessage(
+      locale: string, restrictionScheduleEndDay: string,
+      restrictionScheduleEndTime: string): TrustedHTML {
+    return this.i18nAdvancedDynamic(
+        locale, 'deviceDisabledExplanationRestrictionScheduleTime', {
+          substitutions: [
+            restrictionScheduleEndDay,
+            restrictionScheduleEndTime,
+          ],
+        });
   }
 }
 
