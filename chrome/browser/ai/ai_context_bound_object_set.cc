@@ -25,8 +25,7 @@ class AIContextBoundObjectSetSupportsUserData
     : public AIContextBoundObjectSet,
       public base::SupportsUserData::Data {
  public:
-  explicit AIContextBoundObjectSetSupportsUserData(base::SupportsUserData* host)
-      : host_(host) {}
+  AIContextBoundObjectSetSupportsUserData() = default;
   ~AIContextBoundObjectSetSupportsUserData() override = default;
 
   static AIContextBoundObjectSetSupportsUserData* GetOrCreateFor(
@@ -35,14 +34,11 @@ class AIContextBoundObjectSetSupportsUserData
     if (!host->GetUserData(kAIContextBoundObjectSetUserDataKey)) {
       host->SetUserData(
           kAIContextBoundObjectSetUserDataKey,
-          std::make_unique<AIContextBoundObjectSetSupportsUserData>(host));
+          std::make_unique<AIContextBoundObjectSetSupportsUserData>());
     }
     return static_cast<AIContextBoundObjectSetSupportsUserData*>(
         host->GetUserData(kAIContextBoundObjectSetUserDataKey));
   }
-
- private:
-  raw_ptr<base::SupportsUserData> host_;
 };
 
 class AIContextBoundObjectSetDocumentUserData
