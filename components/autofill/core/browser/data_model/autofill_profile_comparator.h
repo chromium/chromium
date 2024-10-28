@@ -317,16 +317,18 @@ class AutofillProfileComparator {
                               const AutofillProfile& p2) const;
 
  private:
-  // Returns true if `name_1` and `name_2` are equivalent for the
+  // Returns true if `full_name_1` and `full_name_2` are equivalent for the
   // purposes of merging two profiles. This means one of the names is
   // empty, the names are the same, or one name is a variation of the other.
   // The name comparison is insensitive to case, punctuation and diacritics.
   // Can be used for both regular and alternative (e.g. phonetic) names.
+  // This method contains the shared logic between `HaveMergeableNames` and
+  // `HaveMergeableAlternativeNames`.
   //
   // Note that this method does not provide any guidance on actually merging
   // the names.
-  bool AreNamesMergeable(const std::u16string& name_1,
-                         const std::u16string& name_2) const;
+  bool AreNamesMergeable(const std::u16string& full_name_1,
+                         const std::u16string& full_name_2) const;
 
   // Populates |name_info| with the result of merging the `name_type` names in
   // |p1| and |p2|. Returns true if successful. Expects that |p1| and |p2| have

@@ -398,7 +398,8 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
 bool AutofillProfileComparator::MergeNames(const AutofillProfile& p1,
                                            const AutofillProfile& p2,
                                            NameInfo& name_info) const {
-  DCHECK(HaveMergeableNames(p1, p2) && HaveMergeableAlternativeNames(p1, p2));
+  DCHECK(HaveMergeableNames(p1, p2));
+  DCHECK(HaveMergeableAlternativeNames(p1, p2));
 
   auto name_full = std::make_unique<NameFull>();
   auto alternative_full_name = std::make_unique<AlternativeFullName>();
@@ -893,21 +894,22 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
 }
 
 bool AutofillProfileComparator::AreNamesMergeable(
-    const std::u16string& name_1,
-    const std::u16string& name_2) const {
-  if (HasOnlySkippableCharacters(name_1) ||
-      HasOnlySkippableCharacters(name_2) || Compare(name_1, name_2)) {
+    const std::u16string& full_name_1,
+    const std::u16string& full_name_2) const {
+  if (HasOnlySkippableCharacters(full_name_1) ||
+      HasOnlySkippableCharacters(full_name_2) ||
+      Compare(full_name_1, full_name_2)) {
     return true;
   }
 
   // If the two names are just a permutation of each other, they are mergeable
   // for structured names.
-  if (AreStringTokenEquivalent(name_1, name_2)) {
+  if (AreStringTokenEquivalent(full_name_1, full_name_2)) {
     return true;
   }
 
-  std::u16string canon_full_name_1 = NormalizeForComparison(name_1);
-  std::u16string canon_full_name_2 = NormalizeForComparison(name_2);
+  std::u16string canon_full_name_1 = NormalizeForComparison(full_name_1);
+  std::u16string canon_full_name_2 = NormalizeForComparison(full_name_2);
 
   // Is it reasonable to merge the names from p1 and p2.
   bool result = IsNameVariantOf(canon_full_name_1, canon_full_name_2) ||
@@ -938,7 +940,7 @@ bool AutofillProfileComparator::MergeNamesImpl(
   if (HasOnlySkippableCharacters(full_name_1)) {
     return true;
   }
-  // Vice verse set name to the one of |p1| if |p2| has an empty name
+  // Vice versa set name to the one of |p1| if |p2| has an empty name
   if (HasOnlySkippableCharacters(full_name_2)) {
     name_component.CopyFrom(*p1.GetNameInfo().GetNodeForType(name_type));
     return true;
