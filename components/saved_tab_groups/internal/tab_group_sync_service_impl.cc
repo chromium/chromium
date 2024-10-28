@@ -42,6 +42,10 @@ namespace tab_groups {
 namespace {
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Seconds(10);
 
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+constexpr bool is_desktop = !(is_android || is_ios);
+
 void OnCanApplyOptimizationCompleted(
     TabGroupSyncService::UrlRestrictionCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
@@ -133,6 +137,7 @@ void TabGroupSyncServiceImpl::SetCoordinator(
 
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncServiceImpl::CreateScopedLocalObserverPauser() {
+  CHECK(coordinator_);
   return coordinator_->CreateScopedLocalObserverPauser();
 }
 
@@ -420,6 +425,7 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
 }
 
 void TabGroupSyncServiceImpl::SaveGroup(SavedTabGroup group) {
+  CHECK(is_desktop);
   const base::Uuid sync_id = group.saved_guid();
   const LocalTabGroupID local_id = group.local_group_id().value();
   AddGroup(std::move(group));
@@ -427,6 +433,7 @@ void TabGroupSyncServiceImpl::SaveGroup(SavedTabGroup group) {
 }
 
 void TabGroupSyncServiceImpl::UnsaveGroup(const LocalTabGroupID& local_id) {
+  CHECK(is_desktop);
   std::optional<SavedTabGroup> group = GetGroup(local_id);
   CHECK(group);
   coordinator_->DisconnectLocalTabGroup(local_id);
@@ -495,6 +502,7 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds()
 void TabGroupSyncServiceImpl::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
+  CHECK(coordinator_);
   VLOG(2) << __func__;
   coordinator_->HandleOpenTabGroupRequest(sync_group_id, std::move(context));
 }
@@ -569,6 +577,7 @@ void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id,
     OpeningSource opening_source) {
+  CHECK(coordinator_);
   if (!is_initialized_) {
     VLOG(2) << __func__ << " Invoked before init";
     pending_actions_.emplace_back(base::BindOnce(
