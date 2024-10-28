@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
+#import "ios/chrome/browser/ui/page_info/page_info_history_mutator.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -138,6 +139,17 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   [self loadModel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  if (IsPageInfoLastVisitedIOSEnabled()) {
+    // The Last Visited timestamp needs to be updated when the view is first
+    // loaded and subsequencenly since there could have been deletions performed
+    // on the Last Visited or History UI.
+    [self.pageInfoHistoryMutator lastVisitedTimestampNeedsUpdate];
+  }
+}
+
 #pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
@@ -165,7 +177,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierSecurityContent) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurity) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurity) ]
+             intoSectionWithIdentifier:@(SectionIdentifierSecurityContent)];
 
   // Permissions section.
   for (NSNumber* permission in self.permissionsInfo.allKeys) {
@@ -181,7 +194,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   if (IsPageInfoLastVisitedIOSEnabled() && _lastVisitedTimestamp) {
     [snapshot
         appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
-    [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]];
+    [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]
+               intoSectionWithIdentifier:@(SectionIdentifierLastVisited)];
   }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -548,27 +562,44 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
 #pragma mark - PageInfoHistoryConsumer
 
-- (void)setLastVisitedTimestamp:(base::Time)lastVisited {
+- (void)setLastVisitedTimestamp:(std::optional<base::Time>)lastVisited {
   CHECK(IsPageInfoLastVisitedIOSEnabled());
-  std::string timestamp = base::UTF16ToUTF8(
-      page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
-          lastVisited));
-  _lastVisitedTimestamp = [NSString stringWithUTF8String:timestamp.c_str()];
+
+  if (lastVisited.has_value()) {
+    _lastVisitedTimestamp = base::SysUTF16ToNSString(
+        page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
+            lastVisited.value()));
+  } else {
+    _lastVisitedTimestamp = nil;
+  }
 
   NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
       [_dataSource snapshot];
 
-  // It was observed that the Last Visited timestamp is usually available before
-  // the view is displayed. If that is the case, then we can just store the
-  // value of the timestamp and rely on `loadModel` to display the Last Visited
-  // row.
+  // The Last Visited timestamp can be available before the view is loaded. If
+  // that occurs, just store the value of the timestamp and rely on `loadModel`
+  // to add the Last Visited section and row to the snapshot.
   if (!_dataSource || !snapshot) {
     return;
   }
 
-  // Append cell for the Last Visited row.
-  [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]];
+  // Update or remove the Last Visited section based on the timestamp.
+  if (_lastVisitedTimestamp) {
+    if ([snapshot indexOfSectionIdentifier:@(SectionIdentifierLastVisited)] ==
+        NSNotFound) {
+      // Add the Last Visited section.
+      [snapshot
+          appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
+      [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]
+                 intoSectionWithIdentifier:@(SectionIdentifierLastVisited)];
+    }
+    // If the section already exists, no need to update the snapshot.
+    // The timestamp change will be handled when the cell is configured.
+  } else {
+    // Remove the Last Visited section.
+    [snapshot
+        deleteSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
+  }
 
   // Update the UI.
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];

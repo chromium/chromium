@@ -7,10 +7,11 @@
 
 #import "components/history/core/browser/history_service.h"
 #import "ios/chrome/browser/ui/page_info/page_info_history_consumer.h"
+#import "ios/chrome/browser/ui/page_info/page_info_history_mutator.h"
 #import "url/gurl.h"
 
 // Manage the fetch of the Last Visited timestamp.
-@interface PageInfoHistoryMediator : NSObject
+@interface PageInfoHistoryMediator : NSObject <PageInfoHistoryMutator>
 
 @property(nonatomic, weak) id<PageInfoHistoryConsumer> consumer;
 

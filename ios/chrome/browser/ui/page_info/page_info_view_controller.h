@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 
 @protocol PageInfoCommands;
+@protocol PageInfoHistoryMutator;
 @protocol PageInfoPresentationCommands;
 @protocol PermissionsDelegate;
 
@@ -45,6 +46,9 @@
 
 // Delegate used to handle permission actions.
 @property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate;
+
+// Mutator for Page Info History.
+@property(nonatomic, weak) id<PageInfoHistoryMutator> pageInfoHistoryMutator;
 
 @end
 

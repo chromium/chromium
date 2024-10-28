@@ -509,7 +509,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   // results. This only observes local changes to history, i.e. removing
   // history via delete browsing data.
   self.filterQueryResult = YES;
-  [self showHistoryMatchingQuery:nil];
+  [self showHistoryMatchingQuery:_currentQuery];
 }
 
 #pragma mark - HistoryEntriesStatusItemDelegate

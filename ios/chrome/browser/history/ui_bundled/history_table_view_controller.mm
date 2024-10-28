@@ -377,6 +377,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
 }
 
+- (void)historyWasDeleted {
+  // If history has been deleted, reload history filtering for the current
+  // results. This only observes local changes to history, i.e. removing
+  // history via delete browsing data.
+  self.filterQueryResult = YES;
+  [self showHistoryMatchingQuery:nil];
+}
+
 #pragma mark - UISearchResultsUpdating
 
 - (void)updateSearchResultsForSearchController:

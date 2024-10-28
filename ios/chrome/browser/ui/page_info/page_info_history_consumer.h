@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_HISTORY_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_HISTORY_CONSUMER_H_
 
+#import <optional>
+
 #import "base/time/time.h"
 
 // Consumer protocol for the PageInfoHistoryMediator to provide the Last Visited
@@ -12,7 +14,7 @@
 @protocol PageInfoHistoryConsumer <NSObject>
 
 // Displays the Last Visited Row on Page Info.
-- (void)setLastVisitedTimestamp:(base::Time)lastVisited;
+- (void)setLastVisitedTimestamp:(std::optional<base::Time>)lastVisited;
 
 @end
 

@@ -128,12 +128,11 @@
 
     const GURL& siteURL =
         webState->GetNavigationManager()->GetVisibleItem()->GetURL();
-
     _pageInfoHistoryMediator =
         [[PageInfoHistoryMediator alloc] initWithHistoryService:historyService
                                                         siteURL:siteURL];
-
     _pageInfoHistoryMediator.consumer = self.viewController;
+    self.viewController.pageInfoHistoryMutator = _pageInfoHistoryMediator;
   }
 
   [self.baseViewController presentViewController:self.navigationController

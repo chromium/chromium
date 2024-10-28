@@ -24,17 +24,13 @@
   _historyDataSource.reset();
 }
 
-#pragma mark - Properties
+#pragma mark - PageInfoHistoryMutator
 
-- (void)setConsumer:(id<PageInfoHistoryConsumer>)consumer {
-  _consumer = consumer;
-
+- (void)lastVisitedTimestampNeedsUpdate {
   __weak PageInfoHistoryMediator* weakSelf = self;
   _historyDataSource->GetLastVisitedTimestamp(
       base::BindOnce(^(std::optional<base::Time> lastVisited) {
-        if (lastVisited.has_value()) {
-          [weakSelf.consumer setLastVisitedTimestamp:lastVisited.value()];
-        }
+        [weakSelf.consumer setLastVisitedTimestamp:lastVisited];
       }));
 }
 

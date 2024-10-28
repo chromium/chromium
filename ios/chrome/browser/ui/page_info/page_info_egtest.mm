@@ -517,7 +517,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
   AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
 
-  // Visit `url` and open Page Info.
+  // Visit `URL` and open Page Info.
   [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
@@ -531,6 +531,54 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                    IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests if the Last Visited UIs, i.e. the Last Visited page and Last Visited
+// row, are correctly updated when history entries get deleted.
+- (void)testLastVisitedUpdatesOnDeletion {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Create an entry in History which took place one day ago on `URL`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `URL` and open Page Info.
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Wait for the Last Visited row to be displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text(l10n_util::GetNSString(
+                                              IDS_PAGE_INFO_HISTORY))];
+
+  // Check that the Last Visited summary displays "Yesterday".
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Delete all history visits.
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  // Wait for the Last Visited page to update to the empty view.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kHistoryTableViewIdentifier)];
+  [ChromeEarlGreyUI assertHistoryHasNoEntries];
+
+  // Go back to Page Info and wait for the Last Visited row to disappear.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      grey_text(l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY))];
 }
 
 // Tests that tapping on the Last Visited row reveals the Last Visited subpage.

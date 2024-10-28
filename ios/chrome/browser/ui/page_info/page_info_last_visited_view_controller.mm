@@ -46,10 +46,6 @@ enum ItemType : NSInteger {
 
 #pragma mark - Superclass overrides
 
-- (void)filterResults:(NSMutableArray*)resultsItems
-          searchQuery:(NSString*)searchQuery {
-}
-
 - (void)updateEntriesStatusMessageWithMessage:(NSString*)message
                        messageWillContainLink:(BOOL)messageWillContainLink {
   if (self.shouldShowNoticeAboutOtherFormsOfBrowsingHistory) {
