@@ -37,6 +37,19 @@ base::Value::Dict Name::ToDict() && {
   return dict;
 }
 
+base::Value::Dict PhoneNumber::ToDict() && {
+  base::Value::Dict dict;
+
+  if (!value.empty()) {
+    dict.Set("value", std::move(value));
+  }
+  if (!type.empty()) {
+    dict.Set("type", std::move(type));
+  }
+
+  return dict;
+}
+
 Contact::Contact() = default;
 Contact::Contact(const Contact&) = default;
 Contact& Contact::operator=(const Contact&) = default;
@@ -58,6 +71,12 @@ base::Value::Dict Contact::ToDict() && {
     auto names = base::Value::List::with_capacity(1);
     names.Append(std::move(name_dict));
     dict.Set("names", std::move(names));
+  }
+  if (!phone_numbers.empty()) {
+    base::Value::List phones = base::ToValueList(
+        phone_numbers,
+        [](PhoneNumber& phone) { return std::move(phone).ToDict(); });
+    dict.Set("phoneNumbers", std::move(phones));
   }
 
   return dict;
