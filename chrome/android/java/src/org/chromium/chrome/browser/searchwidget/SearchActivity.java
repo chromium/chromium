@@ -218,12 +218,6 @@ public class SearchActivity extends AsyncInitializationActivity
     // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
     @SearchType Integer mSearchType;
 
-    /** Whether the user is now allowed to perform searches. */
-    private boolean mIsActivityUsable;
-
-    /** Input submitted before before the native library was loaded. */
-    private OmniboxLoadUrlParams mQueuedParams;
-
     private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
 
@@ -545,14 +539,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     void finishDeferredInitialization() {
-        assert !mIsActivityUsable
-                : "finishDeferredInitialization() incorrectly called multiple times";
-        mIsActivityUsable = true;
-        if (mQueuedParams != null) {
-            // SearchActivity does not support incognito operation.
-            loadUrl(mQueuedParams, /* isIncognito= */ false);
-        }
-
         mSearchBox.onDeferredStartup(mSearchType, getWindowAndroid());
         getActivityDelegate().onFinishDeferredInitialization();
     }
@@ -679,12 +665,6 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void loadUrlInChromeBrowser(@NonNull OmniboxLoadUrlParams params) {
-        if (!mIsActivityUsable) {
-            // Wait until native has loaded.
-            mQueuedParams = params;
-            return;
-        }
-
         Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
         if (intent == null) return;
 
@@ -848,10 +828,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /* package */ LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBarCoordinator;
-    }
-
-    /* package */ void setActivityUsableForTesting(boolean isUsable) {
-        mIsActivityUsable = isUsable;
     }
 
     /* package */ SearchBoxDataProvider getSearchBoxDataProviderForTesting() {

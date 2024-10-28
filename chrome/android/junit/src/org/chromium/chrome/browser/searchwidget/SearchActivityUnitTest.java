@@ -213,7 +213,6 @@ public class SearchActivityUnitTest {
         mProfileSupplier = mActivity.getProfileSupplierForTesting();
 
         SearchActivity.setDelegateForTests(mDelegate);
-        mActivity.setActivityUsableForTesting(true);
         mActivity.setLocationBarLayoutForTesting(mLocationBar);
         mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mProfileProviderSupplier = mActivity.createProfileProvider();
@@ -291,17 +290,6 @@ public class SearchActivityUnitTest {
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
         assertNotNull(mShadowActivity.getNextStartedActivity());
-    }
-
-    @Test
-    public void loadUrl_noActionWhenActivityIsNotReady() {
-        mActivity.setActivityUsableForTesting(false);
-        mActivity.handleNewIntent(
-                buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET), false);
-
-        mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
-        verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
-        assertNull(mShadowActivity.getNextStartedActivity());
     }
 
     @Test
