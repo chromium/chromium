@@ -1,2 +1,4 @@
 mmourgos@chromium.org
 tbarzic@chromium.org
+
+per-file *coral*=file://ash/wm/coral/OWNERS
