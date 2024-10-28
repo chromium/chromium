@@ -179,36 +179,6 @@ function test_transferToGPUTexture_untouched_canvas(device, canvas) {
 }
 
 /**
- * transferToGPUTexture() texture should retain the contents of the canvas, and
- * readback works. Returns a promise.
- */
-function test_transferToGPUTexture_texture_readback(device, canvas) {
-  // Fill the canvas with a color containing distinct values in each channel.
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = "#4080C0";
-  ctx.fillRect(0, 0, 50, 50);
-
-  // Convert the canvas to a texture.
-  const tex = ctx.transferToGPUTexture({device: device,
-                                     usage: GPUTextureUsage.COPY_SRC});
-
-  // Copy the top-left pixel from the texture into a buffer.
-  const buf = copyOnePixelFromTextureAndSubmit(device, tex);
-
-  // Map the buffer and read it back.
-  return buf.mapAsync(GPUMapMode.READ).then(() => {
-    const data = new Uint8Array(buf.getMappedRange());
-
-    if (tex.format == 'rgba8unorm') {
-      assert_array_equals(data, [64, 128, 192, 255]);
-    } else {
-      assert_equals(tex.format, 'bgra8unorm');
-      assert_array_equals(data, [192, 128, 64, 255]);
-    }
-  });
-};
-
-/**
  * Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
  * texture.
  */
