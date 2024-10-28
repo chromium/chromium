@@ -4533,6 +4533,15 @@ class SavedTabGroupSessionRestoreTest
   SavedTabGroupSessionRestoreTest& operator=(
       const SavedTabGroupSessionRestoreTest&) = delete;
 
+  void WaitForPostedTasks() {
+    // Post a dummy task in the current thread and wait for its completion so
+    // that any already posted tasks are completed.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -4554,6 +4563,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
   // for now.
   browser()->tab_strip_model()->AddToGroupForRestore(
       {0}, tab_groups::TabGroupId::GenerateNew());
+  WaitForPostedTasks();
 
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
@@ -4596,6 +4606,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
 
   // Add the tab to a new group.
   browser()->tab_strip_model()->AddToNewGroup({0});
+  WaitForPostedTasks();
 
   // Expect the newly created to be saved at this point.
   EXPECT_EQ(1u, service->GetAllGroups().size());

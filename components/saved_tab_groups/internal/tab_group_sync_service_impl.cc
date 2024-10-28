@@ -645,20 +645,64 @@ void TabGroupSyncServiceImpl::SavedTabGroupRemovedLocally(
 
 void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
                                                   TriggerSource source) {
-  VLOG(2) << __func__;
-  const SavedTabGroup* saved_tab_group = model_->Get(guid);
+  if (!is_initialized_) {
+    return;
+  }
 
+  const SavedTabGroup* saved_tab_group = model_->Get(guid);
   if (!saved_tab_group) {
     return;
   }
 
   if (saved_tab_group->saved_tabs().empty()) {
-    // Wait for another sync update with tabs before notifying the UI.
     empty_groups_.emplace(guid);
+    // Wait for another sync update with tabs before notifying the UI.
     return;
   }
 
+  // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
+  // details.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupAdded,
+                                weak_ptr_factory_.GetWeakPtr(), guid, source));
+}
+
+void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
+    const base::Uuid& group_guid,
+    const std::optional<base::Uuid>& tab_guid,
+    TriggerSource source) {
   if (!is_initialized_) {
+    return;
+  }
+
+  const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
+  if (!saved_tab_group || saved_tab_group->saved_tabs().empty()) {
+    return;
+  }
+
+  if (base::Contains(empty_groups_, group_guid)) {
+    empty_groups_.erase(group_guid);
+    // This is the first time we are notifying the observers about the group as
+    // it was empty before.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupAdded,
+                       weak_ptr_factory_.GetWeakPtr(), group_guid, source));
+    return;
+  }
+
+  // Post task is used here to avoid reentrancy. See crbug.com/373500807 for
+  // details.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), group_guid, source));
+}
+
+void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
+                                                  TriggerSource source) {
+  const SavedTabGroup* saved_tab_group = model_->Get(guid);
+  if (!saved_tab_group || saved_tab_group->saved_tabs().empty()) {
     return;
   }
 
@@ -667,28 +711,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
   }
 }
 
-void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
-    const base::Uuid& group_guid,
-    const std::optional<base::Uuid>& tab_guid,
-    TriggerSource source) {
-  VLOG(2) << __func__;
-  const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
-
-  if (!saved_tab_group) {
-    return;
-  }
-
-  if (saved_tab_group->saved_tabs().empty()) {
-    return;
-  }
-
-  if (base::Contains(empty_groups_, group_guid)) {
-    empty_groups_.erase(group_guid);
-    HandleTabGroupAdded(group_guid, source);
-    return;
-  }
-
-  if (!is_initialized_) {
+void TabGroupSyncServiceImpl::NotifyTabGroupUpdated(const base::Uuid& guid,
+                                                    TriggerSource source) {
+  const SavedTabGroup* saved_tab_group = model_->Get(guid);
+  if (!saved_tab_group || saved_tab_group->saved_tabs().empty()) {
     return;
   }
 
