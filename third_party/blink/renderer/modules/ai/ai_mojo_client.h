@@ -56,8 +56,8 @@ class AIMojoClient : public ContextLifecycleObserver {
     return resolver_;
   }
 
-  virtual void Cleanup() {
-    context_client_.Clear();
+  void Cleanup() {
+    ResetReceiver();
     resolver_ = nullptr;
     keep_alive_.Clear();
     if (abort_handle_) {
@@ -65,6 +65,8 @@ class AIMojoClient : public ContextLifecycleObserver {
       abort_handle_ = nullptr;
     }
   }
+
+  virtual void ResetReceiver() = 0;
 
  private:
   // `ContextLifecycleObserver` implementation

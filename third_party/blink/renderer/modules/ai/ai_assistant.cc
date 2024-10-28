@@ -77,6 +77,8 @@ class CloneAssistantClient
     Cleanup();
   }
 
+  void ResetReceiver() override { receiver_.reset(); }
+
  private:
   base::PassKey<AIAssistant> pass_key_;
   Member<AIAssistant> assistant_;
@@ -125,6 +127,9 @@ class CountPromptTokensClient
     GetResolver()->Resolve(number_of_tokens);
     Cleanup();
   }
+
+ protected:
+  void ResetReceiver() override { receiver_.reset(); }
 
  private:
   Member<AIAssistant> assistant_;

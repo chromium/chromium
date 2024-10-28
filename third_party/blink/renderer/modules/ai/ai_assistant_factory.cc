@@ -110,6 +110,8 @@ class CreateAssistantClient
     Cleanup();
   }
 
+  void ResetReceiver() override { receiver_.reset(); }
+
  private:
   Member<AI> ai_;
   // The `CreateAssistantClient` owns the `AICreateMonitor`, so the

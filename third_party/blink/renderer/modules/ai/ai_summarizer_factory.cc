@@ -112,6 +112,8 @@ class CreateSummarizerClient
     Cleanup();
   }
 
+  void ResetReceiver() override { receiver_.reset(); }
+
  private:
   Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateSummarizerClient,

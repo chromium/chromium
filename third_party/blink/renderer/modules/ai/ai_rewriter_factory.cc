@@ -101,6 +101,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
     Cleanup();
   }
 
+  void ResetReceiver() override { receiver_.reset(); }
+
  private:
   Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateRewriterClient,

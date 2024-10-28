@@ -69,6 +69,8 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
     Cleanup();
   }
 
+  void ResetReceiver() override { receiver_.reset(); }
+
  private:
   Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateWriterClient,
