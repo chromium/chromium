@@ -443,9 +443,6 @@ TEST_P(V4l2CaptureDelegateGPUMemoryBufferTest, CameraCaptureOneCopy) {
   fake_v4l2_->AddDevice(stub_device_id, FakeV4L2DeviceConfig(descriptor, fmt));
   std::unique_ptr<VideoCaptureDevice> device =
       device_factory_->CreateDevice(descriptor).ReleaseDevice();
-  auto fake_gmb_support = std::make_unique<FakeGpuMemoryBufferSupport>();
-  ((VideoCaptureDeviceLinux*)device.get())
-      ->SetGPUEnvironmentForTesting(std::move(fake_gmb_support));
   received_frame_count_ = 0;
 
   std::unique_ptr<MockV4l2GpuClient> client =

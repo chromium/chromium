@@ -91,11 +91,7 @@ libyuv::RotationMode TranslateRotation(int rotation_degrees) {
 
 }  // namespace
 
-V4L2CaptureDelegateGpuHelper::V4L2CaptureDelegateGpuHelper(
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
-    : gmb_support_(gmb_support
-                       ? std::move(gmb_support)
-                       : std::make_unique<gpu::GpuMemoryBufferSupport>()) {}
+V4L2CaptureDelegateGpuHelper::V4L2CaptureDelegateGpuHelper() = default;
 
 V4L2CaptureDelegateGpuHelper::~V4L2CaptureDelegateGpuHelper() = default;
 

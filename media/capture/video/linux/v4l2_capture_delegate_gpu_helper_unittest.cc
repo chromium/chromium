@@ -138,20 +138,13 @@ class V4l2CaptureDelegateGpuHelperTest
     test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         test_sii_);
+    v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>();
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
-  void SetUpWithFakeGpuMemoryBufferSupport() {
-    std::unique_ptr<FakeGpuMemoryBufferSupport> gbm_support =
-        std::make_unique<FakeGpuMemoryBufferSupport>();
-    v4l2_gpu_helper_ =
-        std::make_unique<V4L2CaptureDelegateGpuHelper>(std::move(gbm_support));
-  }
-
   void SetUpNullSharedImageInterface() {
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(nullptr);
-    v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>();
   }
 
   std::unique_ptr<std::vector<uint8_t>> ReadSampleData(
@@ -187,7 +180,6 @@ class V4l2CaptureDelegateGpuHelperTest
 };
 
 TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsInvalidClient) {
-  SetUpWithFakeGpuMemoryBufferSupport();
   constexpr int kRotation = 0;
   const base::TimeTicks reference_time = base::TimeTicks::Now();
   const base::TimeDelta timestamp = reference_time - reference_time;
@@ -203,7 +195,6 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsInvalidClient) {
 
 TEST_F(V4l2CaptureDelegateGpuHelperTest,
        FailureAsInvalidMJPEGCaptureSampleData) {
-  SetUpWithFakeGpuMemoryBufferSupport();
   constexpr int kRotation = 0;
   const base::TimeTicks reference_time = base::TimeTicks::Now();
   const base::TimeDelta timestamp = reference_time - reference_time;
@@ -244,7 +235,6 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
 }
 
 TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsReserveOutputBufferErr) {
-  SetUpWithFakeGpuMemoryBufferSupport();
   constexpr int kRotation = 0;
   const base::TimeTicks reference_time = base::TimeTicks::Now();
   const base::TimeDelta timestamp = reference_time - reference_time;
@@ -310,7 +300,6 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsInvalidSharedImageInterface) {
 }
 
 TEST_F(V4l2CaptureDelegateGpuHelperTest, SuccessRotationIsNotZero) {
-  SetUpWithFakeGpuMemoryBufferSupport();
   constexpr int kRotation = 180;
   const base::TimeTicks reference_time = base::TimeTicks::Now();
   const base::TimeDelta timestamp = reference_time - reference_time;
@@ -342,7 +331,6 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, SuccessRotationIsNotZero) {
 }
 
 TEST_P(V4l2CaptureDelegateGpuHelperTest, SuccessConvertWithCaptureParam) {
-  SetUpWithFakeGpuMemoryBufferSupport();
   constexpr int kRotation = 0;
   const base::TimeTicks reference_time = base::TimeTicks::Now();
   const base::TimeDelta timestamp = reference_time - reference_time;

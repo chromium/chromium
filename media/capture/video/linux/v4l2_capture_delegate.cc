@@ -453,8 +453,7 @@ void V4L2CaptureDelegate::AllocateAndStart(
 
 #if BUILDFLAG(IS_LINUX)
   if (use_gpu_buffer_) {
-    v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>(
-        std::move(gmb_support_test_));
+    v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>();
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -792,11 +791,6 @@ void V4L2CaptureDelegate::SetRotation(int rotation) {
 
 base::WeakPtr<V4L2CaptureDelegate> V4L2CaptureDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void V4L2CaptureDelegate::SetGPUEnvironmentForTesting(
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support) {
-  gmb_support_test_ = std::move(gmb_support);
 }
 
 V4L2CaptureDelegate::~V4L2CaptureDelegate() = default;
