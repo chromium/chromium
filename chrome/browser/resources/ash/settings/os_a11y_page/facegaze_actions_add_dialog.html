@@ -153,13 +153,18 @@
     margin-inline-end: 10px;
   }
 
-  iron-icon[icon='cr:warning'] {
-    fill: var(--cros-icon-color-warning);
+  iron-icon[icon='cr20:warning'] {
+    --iron-icon-fill-color: var(--cros-sys-on_warning_container);
   }
 
   #warningContainer {
+    background-color: var(--icon-holder-bg, var(--cros-sys-warning_container));
     display: flex;
     gap: 8px;
+  }
+
+  #warningText {
+    color: var(--cros-sys-on_surface);
   }
 
 </style>
@@ -301,7 +306,7 @@
     <template is="dom-if"
         if="[[getWarningDisplayText_(selectedGesture_)]]" restamp>
       <div id="warningContainer" tabindex="-1" slot="footer">
-        <iron-icon icon="cr:warning"></iron-icon>
+        <iron-icon icon="cr20:warning"></iron-icon>
         <div id="warningText">[[getWarningDisplayText_(selectedGesture_)]]</div>
       </div>
     </template>
