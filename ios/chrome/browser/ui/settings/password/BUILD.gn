@@ -33,6 +33,7 @@ source_set("password") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/settings/password/password_checkup",
     "//ios/chrome/browser/ui/settings/password/password_details",

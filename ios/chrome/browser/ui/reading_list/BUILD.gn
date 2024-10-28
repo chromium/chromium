@@ -60,6 +60,8 @@ source_set("reading_list") {
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/side_swipe/ui_bundled",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/authentication",

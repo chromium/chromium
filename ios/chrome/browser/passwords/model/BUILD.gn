@@ -153,7 +153,7 @@ source_set("store_factory") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/web/public",
@@ -177,7 +177,6 @@ source_set("infobar_delegates") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin/model",
     "//ui/base",
   ]
 }

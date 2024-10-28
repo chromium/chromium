@@ -105,7 +105,6 @@ source_set("model") {
   allow_circular_includes_from = [
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model/glue",
   ]
 }
@@ -184,6 +183,7 @@ source_set("sync_error_browser_agent") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ui/base",
@@ -206,7 +206,6 @@ source_set("test_support") {
     "//components/keyed_service/ios",
     "//components/sync",
     "//components/sync:test_support",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
     "//ui/base",
   ]

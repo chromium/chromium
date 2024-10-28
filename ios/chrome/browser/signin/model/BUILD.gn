@@ -20,14 +20,6 @@ source_set("model") {
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
-    "authentication_service.h",
-    "authentication_service.mm",
-    "authentication_service_delegate.h",
-    "authentication_service_factory.h",
-    "authentication_service_factory.mm",
-    "authentication_service_observer.h",
-    "authentication_service_observer_bridge.h",
-    "authentication_service_observer_bridge.mm",
     "chrome_account_manager_service.h",
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",
@@ -128,20 +120,58 @@ source_set("model") {
   allow_circular_includes_from = [ ":system_identity_util" ]
 }
 
-# This target is currently empty, but will eventually become a souce_set().
-# It will contain AuthenticationService related source files, but since it
-# is used in the internal repository, moving the files in the CL adding the
-# target would cause build failures.
-group("authentication_service") {
-  public_deps = [ ":model" ]
+source_set("authentication_service") {
+  sources = [
+    "authentication_service.h",
+    "authentication_service.mm",
+    "authentication_service_delegate.h",
+    "authentication_service_observer.h",
+    "authentication_service_observer_bridge.h",
+    "authentication_service_observer_bridge.mm",
+  ]
+  deps = [
+    ":model",
+    ":signin_util",
+    ":system_identity",
+    ":system_identity_manager",
+    ":system_identity_util",
+    "//base",
+    "//components/browser_sync",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/ios/browser:features",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//google_apis",
+    "//ios/chrome/browser/bookmarks/model:model_utils",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+  ]
 }
 
-# This target is currently empty, but will eventually become a souce_set().
-# It will contain AuthenticationService related source files, but since it
-# is used in the internal repository, moving the files in the CL adding the
-# target would cause build failures.
-group("authentication_service_factory") {
-  public_deps = [ ":model" ]
+source_set("authentication_service_factory") {
+  sources = [
+    "authentication_service_factory.h",
+    "authentication_service_factory.mm",
+  ]
+  deps = [
+    ":authentication_service",
+    ":model",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/sync/model",
+  ]
 }
 
 source_set("signin_util") {
@@ -371,6 +401,7 @@ source_set("test_support") {
     "identity_test_environment_browser_state_adaptor.mm",
   ]
   deps = [
+    ":authentication_service",
     ":model",
     ":system_identity",
     ":trusted_vault",
@@ -414,6 +445,8 @@ source_set("unit_tests") {
     "signin_util_unittest.mm",
   ]
   deps = [
+    ":authentication_service",
+    ":authentication_service_factory",
     ":capabilities_types",
     ":fake_system_identity",
     ":fake_system_identity_manager",

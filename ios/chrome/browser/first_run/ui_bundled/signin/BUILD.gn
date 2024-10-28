@@ -25,6 +25,8 @@ source_set("signin") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",

@@ -37,7 +37,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

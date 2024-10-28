@@ -111,7 +111,6 @@ source_set("model_internal") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands:commands",
-    "//ios/chrome/browser/signin/model",
     "//third_party/leveldatabase",
     "//ui/gfx/geometry",
     "//url",
