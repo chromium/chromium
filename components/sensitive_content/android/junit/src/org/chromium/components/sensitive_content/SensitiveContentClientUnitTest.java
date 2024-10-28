@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sensitive_content;
+package org.chromium.components.sensitive_content;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
