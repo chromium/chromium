@@ -212,7 +212,7 @@ using segmentation_platform::TipIdentifier;
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
 
-  if (!data) {
+  if (data.length == 0) {
     return;
   }
 
