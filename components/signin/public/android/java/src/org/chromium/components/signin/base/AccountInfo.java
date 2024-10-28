@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
@@ -85,9 +84,9 @@ public class AccountInfo extends CoreAccountInfo {
     private final @Nullable Bitmap mAccountImage;
     private AccountCapabilities mAccountCapabilities;
 
-    @VisibleForTesting
+    /** Used from JNI to marshal `AccountInfo` from C++ to Java. */
     @CalledByNative
-    public AccountInfo(
+    private AccountInfo(
             CoreAccountId id,
             String email,
             String gaiaId,
