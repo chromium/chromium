@@ -16,5 +16,5 @@ proto_library("test_proto") {
 
   sources = [ "test_request.proto" ]
 
-  link_deps = [ ":proto" ]
+  deps = [ ":proto" ]
 }

@@ -11,7 +11,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "app_install.proto" ]
 
-  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+  deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }
 
 source_set("app_install") {
