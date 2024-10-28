@@ -10,11 +10,6 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/user_annotations/user_annotations_types.h"
-
-namespace optimization_guide::proto {
-class UserAnnotationsEntry;
-}
 
 namespace autofill {
 
@@ -74,11 +69,23 @@ class AutofillPredictionImprovementsDelegate {
       const FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
 
-  // Forwards `form` and `callback` to the user annotations service which calls
-  // `callback` with its response.
+  // Displays an import bubble for `form` if Autofill Prediction Improvements is
+  // interested in the form and then calls `autofill_callback`.
+  //
+  // CAUTION: `autofill_callback` *must* be called, independent of whether
+  // Autofill Prediction Improvements is interested in the form or not.
+  //
+  // The purpose of `autofill_callback` is to allow Autofill to import the form
+  // on its own and/or send votes, for example. If Autofill Prediction
+  // Improvements has imported the form,
+  // `attempt_to_import_into_form_data_importer` is set to false; this is to
+  // avoid conflicting import bubbles. The call happens synchronously or
+  // asynchronously.
   virtual void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form_structure,
-      user_annotations::ImportFormCallback callback) = 0;
+      base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+                              bool attempt_to_import_into_form_data_importer)>
+          autofill_callback) = 0;
 
   // Checks if there is any data stored in the profile's user annotations that
   // can be used for filling and runs the `callback` accordingly.

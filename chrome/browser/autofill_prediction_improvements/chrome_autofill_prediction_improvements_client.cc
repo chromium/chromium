@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -181,6 +182,33 @@ void ChromeAutofillPredictionImprovementsClient::
           ui::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
+}
+
+void ChromeAutofillPredictionImprovementsClient::
+    ShowSaveAutofillPredictionImprovementsBubble(
+        std::unique_ptr<user_annotations::FormAnnotationResponse>
+            form_annotation_response,
+        user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller =
+          autofill::SaveAutofillPredictionImprovementsController::GetOrCreate(
+              &*web_contents_)) {
+    controller->OfferSave(
+        std::move(form_annotation_response->to_be_upserted_entries),
+        std::move(prompt_acceptance_callback),
+        base::BindRepeating(
+            &autofill_prediction_improvements::
+                AutofillPredictionImprovementsManager::UserClickedLearnMore,
+            prediction_improvements_manager_.GetWeakPtr()),
+        base::BindRepeating(&autofill_prediction_improvements::
+                                AutofillPredictionImprovementsManager::
+                                    SaveAutofillPredictionsUserFeedbackReceived,
+                            prediction_improvements_manager_.GetWeakPtr(),
+                            form_annotation_response->model_execution_id));
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  std::move(prompt_acceptance_callback).Run({/*prompt_was_accepted=*/false});
 }
 
 bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {

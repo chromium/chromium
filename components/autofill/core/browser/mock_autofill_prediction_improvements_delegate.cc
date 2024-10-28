@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-
 namespace autofill {
 
 MockAutofillPredictionImprovementsDelegate::

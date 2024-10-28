@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"  //nogncheck
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/user_annotations/user_annotations_types.h"
@@ -54,6 +53,7 @@ class SaveUpdateAddressProfileFlowManager;
 #endif
 
 class AutofillOptimizationGuide;
+class AutofillPredictionImprovementsDelegate;
 class FormFieldData;
 enum class SuggestionType;
 
@@ -103,7 +103,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  autofill_prediction_improvements::AutofillPredictionImprovementsManager*
+  AutofillPredictionImprovementsDelegate*
   GetAutofillPredictionImprovementsDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
@@ -186,11 +186,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AutofillClient::IphFeature feature) override;
   void HideAutofillFieldIph() override;
   void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override;
-  void ShowSaveAutofillPredictionImprovementsBubble(
-      std::unique_ptr<user_annotations::FormAnnotationResponse>
-          form_annotation_response,
-      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
-      override;
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
   PasswordFormClassification ClassifyAsPasswordForm(

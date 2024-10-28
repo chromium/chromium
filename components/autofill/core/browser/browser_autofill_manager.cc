@@ -133,7 +133,6 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -974,48 +973,32 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     delegate->MaybeImportForm(
         std::move(submitted_form),
         base::BindOnce(
-            [](base::WeakPtr<AutofillClient> client,
-               base::WeakPtr<BrowserAutofillManager> manager,
+            [](base::WeakPtr<BrowserAutofillManager> manager,
                const FormData& form, SubmissionSource source,
                base::TimeTicks form_submitted_timestamp,
                std::unique_ptr<FormStructure> submitted_form,
-               std::unique_ptr<user_annotations::FormAnnotationResponse>
-                   form_annotation_response,
-               user_annotations::PromptAcceptanceCallback
-                   prompt_acceptance_callback) {
+               bool attempt_to_import_into_form_data_importer) {
               // The manager may have been destroyed already.
               // See crbug.com/373831707#comment5.
-              const bool should_show_prediction_improvements_bubble =
-                  form_annotation_response &&
-                  !form_annotation_response->to_be_upserted_entries.empty();
-              if (client && should_show_prediction_improvements_bubble) {
-                client->ShowSaveAutofillPredictionImprovementsBubble(
-                    std::move(form_annotation_response),
-                    std::move(prompt_acceptance_callback));
-              }
               if (manager) {
                 manager->MaybeImportFromSubmittedForm(
                     form, submitted_form.get(),
-                    /*attempt_to_import_into_form_data_importer=*/
-                    !should_show_prediction_improvements_bubble);
+                    attempt_to_import_into_form_data_importer);
                 manager->OnFormSubmittedAfterImport(
                     form, std::move(submitted_form), source,
                     form_submitted_timestamp);
               }
             },
-            client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(), form, source,
+            weak_ptr_factory_.GetWeakPtr(), form, source,
             form_submitted_timestamp));
   } else {
-    // TODO(crbug.com/40100455): Refactor this:
-    // - It's impossible to know that OnUserAnnotationsMaybeImportableFormFound
-    //   calls MaybeImportFromSubmittedForm and OnFormSubmittedAfterImport.
-    //   These calls should not be repeated in different part of the code base.
-    // - If possible, OnFormSubmittedAfterImport should only be referenced in
-    //   OnFormSubmittedImpl and to build an opening and closing bracket around
-    //   some executed code.
-    // - OnUserAnnotationsMaybeImportableFormFound is a bad name because it
-    //   creates the assumption that it's called if and only if a
-    //   "MaybeImportableForm" was found.
+    // TODO(crbug.com/376016569): Refactor this:
+    // - MaybeImportFromSubmittedForm() and OnFormSubmittedAfterImport() should
+    //   not be called in multiple parts of the codebase. Currently they're
+    //   called below and in the lambda above.
+    // - It should be guaranteed that they are always called. Currently, it is
+    //   hard to see that all codepaths in
+    //   AutofillPredictionImprovementsDelegate::MaybeImportForm() calls it.
     MaybeImportFromSubmittedForm(
         form, submitted_form.get(),
         /*attempt_to_import_into_form_data_importer=*/true);

@@ -43,11 +43,16 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Not;
 using ::testing::Pair;
+using ::testing::Pointee;
+using ::testing::Pointer;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
+using ::testing::Truly;
 using ::testing::VariantWith;
 
 auto HasType(SuggestionType expected_type) {
@@ -935,10 +940,11 @@ class AutofillPredictionImprovementsManagerImportFormTest
     feature_list_.InitAndEnableFeatureWithParameters(
         kAutofillPredictionImprovements,
         {{"should_extract_ax_tree_for_forms_annotations",
-          std::get<1>(GetParam()) ? "true" : "false"}});
+          should_extract_ax_tree() ? "true" : "false"}});
   }
 
-  bool ShouldExtractAXTree() { return std::get<1>(GetParam()); }
+  bool should_import_form_data() const { return std::get<0>(GetParam()); }
+  bool should_extract_ax_tree() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -968,29 +974,37 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
 #endif
-  base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
-  if (ShouldExtractAXTree()) {
+  if (should_extract_ax_tree()) {
     EXPECT_CALL(client_, GetAXTree)
         .WillOnce(MoveArg<0>(&axtree_received_callback));
   } else {
     EXPECT_CALL(client_, GetAXTree).Times(0);
   }
-  user_annotations_service_.SetShouldImportFormData(
-      /*should_import_form_data=*/std::get<0>(GetParam()));
+  user_annotations_service_.SetShouldImportFormData(should_import_form_data());
 
-  std::unique_ptr<user_annotations::FormAnnotationResponse>
-      form_annotation_response;
-  EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(MoveArg<1>(&form_annotation_response));
+  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+                              bool attempt_to_import_into_form_data_importer)>
+      autofill_callback;
+  if (should_import_form_data()) {
+    EXPECT_CALL(client_,
+                ShowSaveAutofillPredictionImprovementsBubble(
+                    Pointee(Field(&user_annotations::FormAnnotationResponse::
+                                      to_be_upserted_entries,
+                                  Not(IsEmpty()))),
+                    _));
+    EXPECT_CALL(autofill_callback,
+                Run(Pointer(eligible_form_structure.get()), false));
+  } else {
+    EXPECT_CALL(client_, ShowSaveAutofillPredictionImprovementsBubble).Times(0);
+    EXPECT_CALL(autofill_callback,
+                Run(Pointer(eligible_form_structure.get()), true));
+  }
   manager_->MaybeImportForm(std::move(eligible_form_structure),
-                            import_form_callback.Get());
-  if (ShouldExtractAXTree()) {
+                            autofill_callback.Get());
+  if (should_extract_ax_tree()) {
     std::move(axtree_received_callback).Run({});
   }
-  EXPECT_THAT(!form_annotation_response ||
-                  form_annotation_response->to_be_upserted_entries.empty(),
-              !std::get<0>(GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1024,20 +1038,21 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
 #endif
-  base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
   user_annotations_service_.SetShouldImportFormData(
       /*should_import_form_data=*/true);
 
-  std::unique_ptr<user_annotations::FormAnnotationResponse>
-      form_annotation_response;
-  EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(MoveArg<1>(&form_annotation_response));
+  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+                              bool attempt_to_import_into_form_data_importer)>
+      autofill_callback;
+  EXPECT_CALL(client_, ShowSaveAutofillPredictionImprovementsBubble).Times(0);
   EXPECT_CALL(client_, GetAXTree).Times(0);
   EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
       .WillOnce(Return(false));
+  EXPECT_CALL(autofill_callback,
+              Run(Pointer(eligible_form_structure.get()), true))
+      .Times(1);
   manager_->MaybeImportForm(std::move(eligible_form_structure),
-                            import_form_callback.Get());
-  EXPECT_FALSE(form_annotation_response);
+                            autofill_callback.Get());
 }
 
 // Tests that `import_form_callback` is run with an empty list of entries when
@@ -1048,16 +1063,18 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillPredictionImprovements,
       {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
-  base::MockCallback<user_annotations::ImportFormCallback> import_form_callback;
+  auto ineligible_form_structure =
+      std::make_unique<autofill::FormStructure>(autofill::FormData());
 
-  std::unique_ptr<user_annotations::FormAnnotationResponse>
-      form_annotation_response;
-  EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(MoveArg<1>(&form_annotation_response));
-  manager_->MaybeImportForm(
-      std::make_unique<autofill::FormStructure>(autofill::FormData()),
-      import_form_callback.Get());
-  EXPECT_FALSE(form_annotation_response);
+  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+                              bool attempt_to_import_into_form_data_importer)>
+      autofill_callback;
+  EXPECT_CALL(client_, ShowSaveAutofillPredictionImprovementsBubble).Times(0);
+  EXPECT_CALL(autofill_callback,
+              Run(Pointer(ineligible_form_structure.get()), true))
+      .Times(1);
+  manager_->MaybeImportForm(std::move(ineligible_form_structure),
+                            autofill_callback.Get());
 }
 
 // Tests that the callback passed to `HasDataStored()` is called with

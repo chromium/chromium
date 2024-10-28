@@ -56,6 +56,11 @@ class ChromeAutofillPredictionImprovementsClient
       const std::string& autofill_profile_guid,
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) override;
+  void ShowSaveAutofillPredictionImprovementsBubble(
+      std::unique_ptr<user_annotations::FormAnnotationResponse>
+          form_annotation_response,
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
+      override;
 
  private:
   explicit ChromeAutofillPredictionImprovementsClient(

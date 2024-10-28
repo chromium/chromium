@@ -559,13 +559,6 @@ class MockAutofillClient : public TestAutofillClient {
               GetAutofillPredictionImprovementsDelegate,
               (),
               (override));
-  MOCK_METHOD(
-      void,
-      ShowSaveAutofillPredictionImprovementsBubble,
-      (std::unique_ptr<user_annotations::FormAnnotationResponse>
-           form_annotation_response,
-       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback),
-      (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -7271,12 +7264,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
-  user_annotations::ImportFormCallback import_form_callback;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
-  EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(MoveArg<1>(&import_form_callback));
 
   // Fill the form.
   FormData response_data =
@@ -7289,29 +7279,18 @@ TEST_F(BrowserAutofillManagerTest,
   // that the profile should be imported again which it's not because of
   // prediction improvements.
   adm.ClearProfiles();
-  EXPECT_TRUE(adm.GetProfiles().empty());
+  ASSERT_TRUE(adm.GetProfiles().empty());
+  EXPECT_CALL(delegate, MaybeImportForm)
+      .WillOnce(
+          [](std::unique_ptr<autofill::FormStructure> form,
+             base::OnceCallback<void(
+                 std::unique_ptr<autofill::FormStructure> form,
+                 bool attempt_to_import_into_form_data_importer)> callback) {
+            std::move(callback).Run(
+                std::move(form),
+                /*attempt_to_import_into_form_data_importer=*/false);
+          });
   FormSubmitted(response_data);
-  UserAnnotationsEntry entry;
-  entry.set_entry_id(1LL);
-  entry.set_key("key");
-  entry.set_value("value");
-  std::unique_ptr<user_annotations::FormAnnotationResponse>
-      form_annotation_response;
-  EXPECT_CALL(autofill_client_, ShowSaveAutofillPredictionImprovementsBubble)
-      .WillOnce(MoveArg<0>(&form_annotation_response));
-  user_annotations::UserAnnotationsEntries entries{entry};
-  std::move(import_form_callback)
-      .Run(std::make_unique<FormStructure>(response_data),
-           std::make_unique<user_annotations::FormAnnotationResponse>(
-               std::move(entries),
-               /*model_execution_id=*/std::string()),
-           /*prompt_acceptance_callback=*/base::DoNothing());
-  EXPECT_THAT(
-      form_annotation_response->to_be_upserted_entries,
-      ElementsAre(
-          AllOf(Property(&UserAnnotationsEntry::entry_id, Eq(entry.entry_id())),
-                Property(&UserAnnotationsEntry::key, Eq(entry.key())),
-                Property(&UserAnnotationsEntry::value, Eq(entry.value())))));
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
 
@@ -7327,16 +7306,6 @@ TEST_F(BrowserAutofillManagerTest,
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
-  // This simulates that UserAnnotations failed to import data from the
-  // submitted form.
-  ON_CALL(delegate, MaybeImportForm)
-      .WillByDefault([](std::unique_ptr<autofill::FormStructure> form,
-                        user_annotations::ImportFormCallback callback) {
-        std::move(callback).Run(
-            std::move(form),
-            /*form_annotation_response=*/nullptr,
-            /*prompt_acceptance_callback=*/base::DoNothing());
-      });
 
   // Fill the form.
   FormData response_data =
@@ -7348,7 +7317,17 @@ TEST_F(BrowserAutofillManagerTest,
   // `personal_data()`'s auto accept imports for testing is enabled, expect
   // that the profile is imported again.
   adm.ClearProfiles();
-  EXPECT_TRUE(adm.GetProfiles().empty());
+  ASSERT_TRUE(adm.GetProfiles().empty());
+  EXPECT_CALL(delegate, MaybeImportForm)
+      .WillOnce(
+          [](std::unique_ptr<autofill::FormStructure> form,
+             base::OnceCallback<void(
+                 std::unique_ptr<autofill::FormStructure> form,
+                 bool attempt_to_import_into_form_data_importer)> callback) {
+            std::move(callback).Run(
+                std::move(form),
+                /*attempt_to_import_into_form_data_importer=*/true);
+          });
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
 }

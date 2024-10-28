@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 class GURL;
 
@@ -98,6 +99,14 @@ class AutofillPredictionImprovementsClient {
       const std::string& autofill_profile_guid,
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) = 0;
+
+  // Shows a bubble asking whether the user wants to save prediction
+  // improvements data.
+  virtual void ShowSaveAutofillPredictionImprovementsBubble(
+      std::unique_ptr<user_annotations::FormAnnotationResponse>
+          form_annotation_response,
+      user_annotations::PromptAcceptanceCallback
+          prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_prediction_improvements

@@ -305,7 +305,7 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
       web_contents()->GetBrowserContext());
 }
 
-autofill_prediction_improvements::AutofillPredictionImprovementsManager*
+AutofillPredictionImprovementsDelegate*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
@@ -861,32 +861,6 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
       web_contents()->GetBrowserContext())
       ->NotifyUsedEvent(GetFeature(feature));
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
-    std::unique_ptr<user_annotations::FormAnnotationResponse>
-        form_annotation_response,
-    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (SaveAutofillPredictionImprovementsController* controller =
-          SaveAutofillPredictionImprovementsController::GetOrCreate(
-              web_contents())) {
-    controller->OfferSave(
-        std::move(form_annotation_response->to_be_upserted_entries),
-        std::move(prompt_acceptance_callback),
-        base::BindRepeating(
-            &AutofillPredictionImprovementsDelegate::UserClickedLearnMore,
-            GetAutofillPredictionImprovementsDelegate()->GetWeakPtr()),
-        base::BindRepeating(
-            &autofill_prediction_improvements::
-                AutofillPredictionImprovementsManager::
-                    SaveAutofillPredictionsUserFeedbackReceived,
-            GetAutofillPredictionImprovementsDelegate()->GetWeakPtr(),
-            form_annotation_response->model_execution_id));
-    return;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_acceptance_callback).Run({/*prompt_was_accepted=*/false});
 }
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)

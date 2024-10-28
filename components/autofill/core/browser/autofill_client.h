@@ -37,7 +37,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
-#include "components/user_annotations/user_annotations_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/window_open_disposition.h"
@@ -528,13 +527,6 @@ class AutofillClient {
 
   // Notifies the IPH code that `feature` was used.
   virtual void NotifyIphFeatureUsed(AutofillClient::IphFeature feature);
-
-  // Shows a bubble asking whether the user wants to save prediction
-  // improvements data.
-  virtual void ShowSaveAutofillPredictionImprovementsBubble(
-      std::unique_ptr<user_annotations::FormAnnotationResponse>
-          form_annotation_response,
-      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback);
 
   // Stores test addresses provided by devtools and used to help developers
   // debug their forms with a list of well formatted addresses. Differently from

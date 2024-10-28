@@ -11,7 +11,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/user_annotations/user_annotations_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -49,11 +48,14 @@ class MockAutofillPredictionImprovementsDelegate
                const autofill::FormFieldData& trigger_field,
                UpdateSuggestionsCallback update_suggestions_callback),
               (override));
-  MOCK_METHOD(void,
-              MaybeImportForm,
-              (std::unique_ptr<autofill::FormStructure> form,
-               user_annotations::ImportFormCallback callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      MaybeImportForm,
+      (std::unique_ptr<autofill::FormStructure> form,
+       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+                               bool attempt_to_import_into_form_data_importer)>
+           callback),
+      (override));
   MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
   MOCK_METHOD(bool,
               ShouldDisplayIph,
