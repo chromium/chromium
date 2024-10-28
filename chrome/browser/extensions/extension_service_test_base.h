@@ -161,7 +161,10 @@ class ExtensionServiceTestBase : public testing::Test {
 
   content::BrowserContext* browser_context();
   Profile* profile();
-  TestingProfile* testing_profile() { return profile_.get(); }
+
+  // Turn on/off the guest session on the main profile.
+  void SetGuestSessionOnProfile(bool guest_sesion);
+
   sync_preferences::TestingPrefServiceSyncable* testing_pref_service();
   ExtensionService* service() { return service_; }
   ExtensionRegistry* registry() { return registry_; }

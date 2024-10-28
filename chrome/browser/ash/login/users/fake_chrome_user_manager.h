@@ -62,7 +62,7 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
       const AccountId& account_id,
       bool is_affiliated,
       user_manager::UserType user_type,
-      TestingProfile* profile);
+      Profile* profile);
 
   // Sets the user profile created flag to simulate finishing user
   // profile loading. Note this does not create a profile.

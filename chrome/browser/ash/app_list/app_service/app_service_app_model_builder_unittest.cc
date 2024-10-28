@@ -221,7 +221,7 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
     ResetBuilder();  // Destroy any existing builder in the correct order.
 
     app_service_test_.UninstallAllApps(GetAppServiceProfile());
-    testing_profile()->SetGuestSession(guest_mode);
+    SetGuestSessionOnProfile(guest_mode);
     app_service_test_.SetUp(GetAppServiceProfile());
     // Wait for some default apps added to AppService.
     base::RunLoop().RunUntilIdle();
@@ -699,7 +699,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     AppServiceAppModelBuilderTest::SetUp();
-    test_helper_ = std::make_unique<CrostiniTestHelper>(testing_profile());
+    test_helper_ = std::make_unique<CrostiniTestHelper>(profile());
     test_helper_->ReInitializeAppServiceIntegration();
     CreateBuilder();
   }
@@ -791,14 +791,14 @@ TEST_F(CrostiniAppTest, EnableAndDisableCrostini) {
   ResetBuilder();
   test_helper_.reset();
   test_helper_ = std::make_unique<CrostiniTestHelper>(
-      testing_profile(), /*enable_crostini=*/false);
+      profile(), /*enable_crostini=*/false);
   CreateBuilder();
 
   EXPECT_EQ(0u, GetModelItemCount());
 
-  CrostiniTestHelper::EnableCrostini(testing_profile());
+  CrostiniTestHelper::EnableCrostini(profile());
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
-  CrostiniTestHelper::DisableCrostini(testing_profile());
+  CrostiniTestHelper::DisableCrostini(profile());
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
 }
 
@@ -900,7 +900,7 @@ TEST_F(CrostiniAppTest, DisableCrostini) {
   // to false, so we need to do that explicitly too.
   RegistryService()->ClearApplicationList(guest_os::VmType::TERMINA,
                                           crostini::kCrostiniDefaultVmName, "");
-  CrostiniTestHelper::DisableCrostini(testing_profile());
+  CrostiniTestHelper::DisableCrostini(profile());
   EXPECT_EQ(0u, GetModelItemCount());
 }
 

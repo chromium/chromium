@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -324,7 +323,7 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
 TEST_F(AppSearchProviderTest, WebApp) {
   const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      testing_profile(), kWebAppName, GURL(kWebAppUrl));
+      profile(), kWebAppName, GURL(kWebAppUrl));
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -361,7 +360,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
 
 TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
   // This both allows Crostini UI and enables Crostini.
-  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
   InitializeSearchProvider();
 
@@ -389,7 +388,7 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
   // Set a non-latin locale, which don't support fuzzy matching.
   base::i18n::SetICUDefaultLocale("sr");
   // This both allows Crostini UI and enables Crostini.
-  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
   InitializeSearchProvider();
 

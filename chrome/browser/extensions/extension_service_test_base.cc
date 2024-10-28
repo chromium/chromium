@@ -453,6 +453,10 @@ Profile* ExtensionServiceTestBase::profile() {
   return profile_.get();
 }
 
+void ExtensionServiceTestBase::SetGuestSessionOnProfile(bool guest_session) {
+  profile_->SetGuestSession(guest_session);
+}
+
 sync_preferences::TestingPrefServiceSyncable*
 ExtensionServiceTestBase::testing_pref_service() {
   return profile_->GetTestingPrefService();

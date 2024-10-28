@@ -8,7 +8,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -52,9 +51,9 @@ void ExtensionServiceUserTestBase::LoginChromeOSAshUser(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ExtensionServiceUserTestBase::MaybeSetUpTestUser(bool is_guest) {
-  testing_profile()->SetGuestSession(is_guest);
+  SetGuestSessionOnProfile(is_guest);
 
-  ASSERT_EQ(is_guest, testing_profile()->IsGuestSession());
+  ASSERT_EQ(is_guest, profile()->IsGuestSession());
 
 #if BUILDFLAG(IS_CHROMEOS)
   user_manager::User* user;

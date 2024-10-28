@@ -13,7 +13,6 @@
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/disable_reason.h"
@@ -603,7 +602,7 @@ class ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest
     }
 
     sync_preferences::TestingPrefServiceSyncable* pref_service =
-        testing_profile()->GetTestingPrefService();
+        testing_pref_service();
     pref_service->SetManagedPref(pref_names::kManifestV2Availability,
                                  base::Value(static_cast<int>(pref_value)));
   }
@@ -611,14 +610,14 @@ class ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest
   // Clears the MV2 policy.
   void ClearMV2Policy() {
     sync_preferences::TestingPrefServiceSyncable* pref_service =
-        testing_profile()->GetTestingPrefService();
+        testing_pref_service();
     pref_service->RemoveManagedPref(pref_names::kManifestV2Availability);
   }
 
   void AddPolicyInstalledMV2Extension(const ExtensionId& id,
                                       mojom::ManifestLocation location) {
     sync_preferences::TestingPrefServiceSyncable* pref_service =
-        testing_profile()->GetTestingPrefService();
+        testing_pref_service();
     const base::Value* existing_value =
         pref_service->GetManagedPref(pref_names::kExtensionManagement);
     base::Value::Dict new_value;

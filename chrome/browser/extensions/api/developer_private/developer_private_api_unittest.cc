@@ -45,7 +45,6 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/features.h"
@@ -1517,7 +1516,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
 
   {
     ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
-        pref_updater(testing_profile()->GetTestingPrefService());
+        pref_updater(testing_pref_service());
     pref_updater.SetBlocklistedByDefault(true);
   }
 
@@ -1526,7 +1525,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
   EXPECT_TRUE(extension_management->BlocklistedByDefault());
   EXPECT_FALSE(extension_management->HasAllowlistedExtension());
 
-  auto info = DeveloperPrivateAPI::CreateProfileInfo(testing_profile());
+  auto info = DeveloperPrivateAPI::CreateProfileInfo(profile());
   EXPECT_FALSE(info->can_load_unpacked);
 
   auto function =
@@ -1545,7 +1544,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   {
     ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
-        pref_updater(testing_profile()->GetTestingPrefService());
+        pref_updater(testing_pref_service());
     pref_updater.SetBlocklistedByDefault(true);
     pref_updater.SetIndividualExtensionInstallationAllowed(kGoodCrx, true);
   }
@@ -1558,7 +1557,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       ExtensionManagementFactory::GetForBrowserContext(browser_context())
           ->HasAllowlistedExtension());
 
-  auto info = DeveloperPrivateAPI::CreateProfileInfo(testing_profile());
+  auto info = DeveloperPrivateAPI::CreateProfileInfo(profile());
 
   EXPECT_TRUE(info->can_load_unpacked);
 }

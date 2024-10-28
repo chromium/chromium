@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
@@ -42,7 +41,7 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
   void AddExtensionAsPolicyInstalled(const ExtensionId& id) {
     base::Value::Dict extension_entry =
         base::Value::Dict().Set("installation_mode", "allowed");
-    testing_profile()->GetTestingPrefService()->SetManagedPref(
+    testing_pref_service()->SetManagedPref(
         pref_names::kExtensionManagement,
         base::Value::Dict().Set(id, std::move(extension_entry)));
     EXPECT_TRUE(ExtensionManagementFactory::GetForBrowserContext(profile())
@@ -134,8 +133,8 @@ TEST_F(InstallVerifierTest, ForceInstalledExtensionBehaviorWithTrustLevels) {
   base::Value::Dict forced_list_pref;
   ExternalPolicyLoader::AddExtension(forced_list_pref, forced_extension->id(),
                                      "http://example.com/update_url");
-  testing_profile()->GetTestingPrefService()->SetManagedPref(
-      pref_names::kInstallForceList, forced_list_pref.Clone());
+  testing_pref_service()->SetManagedPref(pref_names::kInstallForceList,
+                                         forced_list_pref.Clone());
 
   {
     // Set up a low-trust environment.
