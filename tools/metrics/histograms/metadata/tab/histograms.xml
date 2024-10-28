@@ -3212,7 +3212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.Tasks.OrderValidOnStartup" enum="Boolean"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@chromium.org</owner>
   <summary>
@@ -3222,7 +3222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" enum="Boolean"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@chromium.org</owner>
   <summary>
