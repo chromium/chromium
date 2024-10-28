@@ -33,6 +33,10 @@ namespace webapps {
 enum class InstallResultCode;
 }
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace web_app {
 
 struct ExternalInstallOptions;
@@ -192,6 +196,9 @@ enum class ClickMethod {
 void SimulateClickOnElement(content::WebContents* contents,
                             std::string element_id,
                             ClickMethod click);
+
+// Wait for all available `WebContents` when this is called to finish loading.
+void CompletePageLoadForAllWebContents();
 
 }  // namespace test
 

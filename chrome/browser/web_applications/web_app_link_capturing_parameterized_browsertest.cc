@@ -58,6 +58,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -683,17 +684,12 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 static const base::flat_set<std::string> disabled_flaky_tests = {
 // TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome` tests
 // on MacOS.
-// TODO(crbug.com/375317754): Fix flakiness for ServerSideViaX A2B tests on Win.
 #if BUILDFLAG(IS_MAC)
     "AppWnd_ScopeA2X_ServerSideViaB_ViaLink_ShiftClick_WithOpener_TargetBlank",
     "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_TargetBlank",
     "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_TargetBlank",
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
-    "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_"
-    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #elif BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/359600606): Enable on CrOS if navigation capturing needs
     // to be supported.
@@ -884,7 +880,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     WaitForLoadStop(browser->tab_strip_model()->GetActiveWebContents());
   }
 
-  void WaitForNewContentsAndPropagationOfLaunchParams(
+  void GetNewContentsAndPropagationOfLaunchParams(
       WebContentsCreationMonitor& monitor) {
     content::WebContents* handled_contents =
         monitor.GetLastSeenWebContentsAndStopMonitoring();
@@ -1437,7 +1433,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
       }
     }
 
-    WaitForNewContentsAndPropagationOfLaunchParams(monitor);
+    // Ensure that all `WebContents` has finished loading or has been destroyed
+    // as needed.
+    test::CompletePageLoadForAllWebContents();
+    GetNewContentsAndPropagationOfLaunchParams(monitor);
 
     if (ShouldRebaseline()) {
       RecordActualResults(GetExpectationsFileConfigFromTestConfig(GetParam()));
@@ -2056,7 +2055,7 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
-    Redirection_Capturable_FinalFocusExisting,
+    Redirect_FocusExisting,
     NavigationCapturingTestWithAppBLaunched,
     testing::Combine(
         testing::Values(
@@ -2069,6 +2068,25 @@ INSTANTIATE_TEST_SUITE_P(
             RedirectType::kServerSideViaA,
             RedirectType::kServerSideViaB,
             RedirectType::kServerSideViaX),  // Final navigation is A->A->B
+        testing::Values(
+            NavigationElement::kElementLink),  // Navigate via element.
+        testing::Values(
+            test::ClickMethod::kLeftClick),  // Simulate left-mouse click.
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    Redirect_FocusExisting_Browser,
+    NavigationCapturingTestWithAppBLaunched,
+    testing::Combine(
+        testing::Values(ClientModeCombination::kBothFocusExisting),
+        testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                        AppUserDisplayMode::kBothBrowser),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),  // Navigate A -> B
+        testing::Values(RedirectType::kServerSideViaA),
         testing::Values(
             NavigationElement::kElementLink),  // Navigate via element.
         testing::Values(
