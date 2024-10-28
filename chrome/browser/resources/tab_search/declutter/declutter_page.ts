@@ -94,15 +94,13 @@ export class DeclutterPageElement extends CrLitElement {
       this.onAvailableHeightChange_();
     }
     if (changedPrivateProperties.has('staleTabDatas_')) {
+      this.maybeAddScrollListener_();
       this.updateScroll_();
     }
   }
 
   override firstUpdated() {
-    const scrollable = this.shadowRoot!.querySelector('#scrollable');
-    if (scrollable) {
-      scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
-    }
+    this.maybeAddScrollListener_();
   }
 
   logCtrValue(event: DeclutterCTREvent) {
@@ -121,6 +119,13 @@ export class DeclutterPageElement extends CrLitElement {
     const scrollable = this.shadowRoot!.querySelector('#scrollable');
     if (scrollable) {
       this.updateScroll_();
+    }
+  }
+
+  private async maybeAddScrollListener_() {
+    const scrollable = this.shadowRoot!.querySelector('#scrollable');
+    if (scrollable) {
+      scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
     }
   }
 
