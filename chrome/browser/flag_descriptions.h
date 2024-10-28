@@ -4184,6 +4184,9 @@ extern const char kPerformantSplitViewResizingDescription[];
 extern const char kPhoneHubCallNotificationName[];
 extern const char kPhoneHubCallNotificationDescription[];
 
+extern const char kPompanoName[];
+extern const char kPompanoDescritpion[];
+
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 

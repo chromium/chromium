@@ -17943,6 +17943,7 @@ from previous Chrome versions.
   <int value="-893625763" label="AutofillEnableManualFallbackIPH:disabled"/>
   <int value="-893505053"
       label="AccessibilityMagnifierFollowsChromeVox:disabled"/>
+  <int value="-892468335" label="Pompano:disabled"/>
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
@@ -18345,6 +18346,7 @@ from previous Chrome versions.
   <int value="-726485467" label="FilesArchivemount:enabled"/>
   <int value="-726176676" label="AudioHFPNbsWarning:disabled"/>
   <int value="-725264428" label="CompositingBasedThrottling:enabled"/>
+  <int value="-723353720" label="Pompano:enabled"/>
   <int value="-723224470" label="enable-password-force-saving:enabled"/>
   <int value="-722635250" label="ChromeRefresh2023NTB:disabled"/>
   <int value="-722474177" label="browser-side-navigation:disabled"/>

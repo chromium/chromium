@@ -10786,6 +10786,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSparkyServerUrlDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kSparkyServerUrl, "")},
 
+    {"pompano", flag_descriptions::kPompanoName,
+     flag_descriptions::kPompanoDescritpion, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kPompano)},
+
     {"ash-picker-always-show-feature-tour",
      flag_descriptions::kAshPickerAlwaysShowFeatureTourName,
      flag_descriptions::kAshPickerAlwaysShowFeatureTourDescription, kOsCrOS,
