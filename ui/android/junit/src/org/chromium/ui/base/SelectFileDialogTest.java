@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests logic in the SelectFileDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,6 +72,7 @@ import java.util.List;
     UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
     UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT
 })
+@EnableFeatures({UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE})
 @LooperMode(LooperMode.Mode.PAUSED)
 public class SelectFileDialogTest {
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
@@ -680,6 +682,62 @@ public class SelectFileDialogTest {
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         assertEquals(callCount, mOnActionCallback.getCallCount());
+        selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    @Test
+    public void testVideoCaptureRequestPermissionSuccess() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        when(windowAndroid.hasPermission(Manifest.permission.CAMERA))
+                .thenReturn(false)
+                .thenReturn(true);
+
+        IntentArgumentMatcher videoCaptureIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(MediaStore.ACTION_VIDEO_CAPTURE));
+        when(windowAndroid.canResolveActivity(
+                        ArgumentMatchers.argThat(videoCaptureIntentArgumentMatcher)))
+                .thenReturn(true);
+
+        // Setup the request callback to simulate an interrupted permission flow.
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            PermissionCallback callback =
+                                    (PermissionCallback) invocation.getArguments()[1];
+                            callback.onRequestPermissionsResult(
+                                    new String[] {Manifest.permission.CAMERA},
+                                    new int[] {PackageManager.PERMISSION_GRANTED});
+                            return null;
+                        })
+                .when(windowAndroid)
+                .requestPermissions(
+                        aryEq(new String[] {Manifest.permission.CAMERA}),
+                        (PermissionCallback) any());
+
+        AtomicBoolean cameraIntentShow = new AtomicBoolean(false);
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(MediaStore.ACTION_VIDEO_CAPTURE));
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            cameraIntentShow.set(true);
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Ensure permission request in selectFile can handle interrupted permission flow.
+        selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"video/*"},
+                /* capture= */ true,
+                /* multiple= */ false,
+                windowAndroid);
+
+        assertTrue(cameraIntentShow.get());
         selectFileDialog.resetFileSelectionAttempts();
     }
 

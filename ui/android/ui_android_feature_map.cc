@@ -26,6 +26,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
     &ui::kCheckIntentCallerPermission,
+    &ui::kDisablePhotoPickerForVideoCapture,
 };
 
 // static

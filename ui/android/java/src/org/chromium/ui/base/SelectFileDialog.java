@@ -690,14 +690,18 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     /**
      * Determines whether the photo picker should be used for this select file request. To be
-     * applicable for the photo picker, the following must be true:
-     * 1.) Only media types were requested in the file request
-     * 2.) The file request did not explicitly ask to capture camera directly.
-     * 3.) The photo picker is supported by the embedder (i.e. Chrome).
-     * 4.) There is a valid Android Activity associated with the file request.
+     * applicable for the photo picker, the following must be true: 1.) Only media types were
+     * requested in the file request 2.) The file request did not explicitly ask to capture camera
+     * directly. 3.) The photo picker is supported by the embedder (i.e. Chrome). 4.) There is a
+     * valid Android Activity associated with the file request.
      */
     private boolean shouldUsePhotoPicker() {
+        boolean isSupportedVideoType =
+                !UiAndroidFeatureMap.isEnabled(
+                                UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE)
+                        || !captureVideo();
         return !captureImage()
+                && isSupportedVideoType
                 && isSupportedPhotoPickerTypes(mMimeTypes)
                 && shouldShowPhotoPicker()
                 && mWindowAndroid.getActivity().get() != null;

@@ -52,6 +52,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
 // When launching an intent, check whether the caller has the permission to
 // access a URI before returning the result.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckIntentCallerPermission);
+
+// Whether photo picker should be disabled for video capture.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDisablePhotoPickerForVideoCapture);
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_
