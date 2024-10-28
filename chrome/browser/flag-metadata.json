@@ -1083,12 +1083,12 @@
   {
     "name": "borealis-big-gl",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-dgpu",
     "owners": [ "dbehr@google.com", "chromeos-gfx-gpu@google.com", "buganizer-system+995569@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-enable-unsupported-hardware",
@@ -1101,42 +1101,42 @@
   {
     "name": "borealis-enabled",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-force-beta-client",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-force-double-scale",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-linux-mode",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-provision",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-scale-client-by-dpi",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-web-ui-installer",
     "owners": [ "philpearson@google.com", "borealis-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "borealis-zink-gl-driver",
     "owners": [ "justonli@google.com", "cros-gfx-virtualization-team@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 150
   },
   {
     "name": "bottom-browser-controls-refactor",
