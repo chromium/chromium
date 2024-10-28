@@ -135,6 +135,23 @@ suite('HeaderTest', () => {
     assertEquals(subtitle, input.value);
   });
 
+  test('cursor moves back to the end of the input on blur', async () => {
+    header.subtitle = 'foo bar baz';
+    header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
+    await waitAfterNextRender(header);
+
+    // Select a middle section of the input text.
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    input.select(5, 9);
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(header);
+
+    // Ensure the cursor is at the end of the input.
+    assertTrue(input.$.input.selectionStart === input.value.length);
+    assertTrue(input.$.input.selectionEnd === input.value.length);
+  });
+
   test('`name-change` event is fired on input blur', async () => {
     const subtitle = $$(header, '#subtitle');
     assertTrue(!!subtitle);
