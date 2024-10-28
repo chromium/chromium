@@ -316,6 +316,7 @@ source_set("promo_module_ui") {
     "//base",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",

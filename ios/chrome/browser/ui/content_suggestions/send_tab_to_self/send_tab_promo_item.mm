@@ -24,7 +24,7 @@ const CGFloat kSymbolSize = 10;
 #pragma mark - StandaloneModuleItem
 
 - (UIImage*)fallbackSymbolImage {
-  return CustomSymbolWithPointSize(kIPhoneAndArrowForwardSymbol, kSymbolSize);
+  return DefaultSymbolWithPointSize(kIPhoneAndArrowForwardSymbol, kSymbolSize);
 }
 
 - (NSString*)titleText {

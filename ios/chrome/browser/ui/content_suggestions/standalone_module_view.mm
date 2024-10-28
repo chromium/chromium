@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/icon_detail_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/standalone_module_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/standalone_module_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -22,20 +23,20 @@ const CGFloat kVerticalStackSpacing = 15.0f;
 // Spacing between items stacked horizontally (image and text stack
 // (which contains title, description and allow label)).
 const CGFloat kHorizontalStackSpacing = 16.0f;
-// Alpha for top of gradient overlay.
-const CGFloat kGradientOverlayTopAlpha = 0.0;
-// Alpha for bottom of gradienet overlay.
-const CGFloat kGradientOverlayBottomAlpha = 0.14;
 // Inset for image fallback from the UIImageView boundary.
 const CGFloat kImageFallbackInset = 10.0f;
 // Radius of background circle of image fallback.
 const CGFloat kImageFallbackCornerRadius = 25.0;
 // Height and width of image fallback.
 const CGFloat kImageFallbackSize = 28.0;
-// Rounded corners of the image radius.
-const CGFloat kImageCornerRadius = 8.0;
+// Corner radius for the larger image views. Used for the favicon container.
+const CGFloat kLargeCornerRadius = 10.0;
+// Corner radius for the medium sized image views. Used for the favicon image.
+const CGFloat kMediumCornerRadius = 4.0;
 // Width and height of image.
 const CGFloat kImageWidthHeight = 48.0;
+// Width and height of the favicon.
+const CGFloat kFaviconWidthHeight = 26.0;
 // Separator height.
 const CGFloat kSeparatorHeight = 0.5;
 
@@ -59,7 +60,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
   _titleLabel = [self titleLabel];
   _descriptionLabel = [self descriptionLabel];
-  UIView* iconImage = [self iconImage];
+  UIView* iconView = [self iconView];
   _button = [self button];
 
   UIView* separator = [[UIView alloc] init];
@@ -81,7 +82,7 @@ const CGFloat kSeparatorHeight = 0.5;
   ]];
 
   UIStackView* contentStack =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ iconImage, textStack ]];
+      [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, textStack ]];
   contentStack.translatesAutoresizingMaskIntoConstraints = NO;
   contentStack.spacing = kHorizontalStackSpacing;
   contentStack.alignment = UIStackViewAlignmentTop;
@@ -143,67 +144,70 @@ const CGFloat kSeparatorHeight = 0.5;
 // Creates and returns the icon image view for the view. Uses the `faviconImage`
 // from the config if it is set. Otherwise, uses the the `fallbackSymbolImage`
 // from the config.
-- (UIView*)iconImage {
-  UIView* iconImage = [[UIView alloc] init];
+- (UIView*)iconView {
   UIImage* faviconImage = _config.faviconImage;
-  if (faviconImage) {
-    UIImageView* imageView = [[UIImageView alloc] init];
-    imageView.image = faviconImage;
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    imageView.layer.borderWidth = 0;
-    imageView.layer.cornerRadius = kImageCornerRadius;
-    imageView.layer.masksToBounds = YES;
-    imageView.backgroundColor = UIColor.whiteColor;
+  return faviconImage ? [self faviconImageView] : [self fallbackImageView];
+}
 
-    GradientView* gradientOverlay = [[GradientView alloc]
-        initWithTopColor:[[UIColor blackColor]
-                             colorWithAlphaComponent:kGradientOverlayTopAlpha]
-             bottomColor:
-                 [[UIColor blackColor]
-                     colorWithAlphaComponent:kGradientOverlayBottomAlpha]];
-    gradientOverlay.translatesAutoresizingMaskIntoConstraints = NO;
-    gradientOverlay.layer.cornerRadius = kImageCornerRadius;
-    gradientOverlay.layer.zPosition = 1;
+// Creates the icon view using the `faviconImage` from the config.
+- (UIView*)faviconImageView {
+  UIImageView* faviconImageView = [[UIImageView alloc] init];
+  faviconImageView.image = _config.faviconImage;
+  faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
+  faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconImageView.layer.borderWidth = 0;
+  faviconImageView.layer.masksToBounds = NO;
+  faviconImageView.backgroundColor = UIColor.whiteColor;
 
-    [NSLayoutConstraint activateConstraints:@[
-      [iconImage.heightAnchor constraintEqualToConstant:kImageWidthHeight],
-      [iconImage.widthAnchor constraintEqualToAnchor:iconImage.heightAnchor],
-      [imageView.heightAnchor constraintEqualToConstant:kImageWidthHeight],
-      [imageView.widthAnchor constraintEqualToAnchor:imageView.heightAnchor],
-      [gradientOverlay.heightAnchor
-          constraintEqualToConstant:kImageWidthHeight],
-      [gradientOverlay.widthAnchor
-          constraintEqualToAnchor:gradientOverlay.heightAnchor],
-    ]];
+  [NSLayoutConstraint activateConstraints:@[
+    [faviconImageView.heightAnchor
+        constraintEqualToConstant:kFaviconWidthHeight],
+    [faviconImageView.widthAnchor
+        constraintEqualToAnchor:faviconImageView.heightAnchor],
+  ]];
 
-    [iconImage addSubview:imageView];
-    [imageView addSubview:gradientOverlay];
+  faviconImageView.layer.masksToBounds = YES;
+  faviconImageView.layer.cornerRadius = kMediumCornerRadius;
+  faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  } else {
-    UIImageView* fallbackImageView = [[UIImageView alloc] init];
-    fallbackImageView.image = _config.fallbackSymbolImage;
-    fallbackImageView.contentMode = UIViewContentModeScaleAspectFit;
-    fallbackImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    fallbackImageView.layer.borderWidth = 0;
+  UIView* iconContainerView = [[UIView alloc] init];
+  iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  iconContainerView.layer.cornerRadius = kLargeCornerRadius;
+  iconContainerView.layer.masksToBounds = NO;
+  iconContainerView.clipsToBounds = YES;
+  [iconContainerView addSubview:faviconImageView];
+  AddSameCenterConstraints(faviconImageView, iconContainerView);
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainerView.widthAnchor constraintEqualToConstant:kImageWidthHeight],
+    [iconContainerView.widthAnchor
+        constraintEqualToAnchor:iconContainerView.heightAnchor],
+  ]];
+  return iconContainerView;
+}
 
-    [NSLayoutConstraint activateConstraints:@[
-      [fallbackImageView.widthAnchor
-          constraintEqualToConstant:kImageFallbackSize],
-      [fallbackImageView.widthAnchor
-          constraintEqualToAnchor:fallbackImageView.heightAnchor],
-    ]];
+// Creates the icon view using the `fallbackSymbolImage` from the config.
+- (UIView*)fallbackImageView {
+  UIView* iconView = [[UIView alloc] init];
+  UIImageView* fallbackImageView = [[UIImageView alloc] init];
+  fallbackImageView.image = _config.fallbackSymbolImage;
+  fallbackImageView.contentMode = UIViewContentModeScaleAspectFit;
+  fallbackImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  fallbackImageView.layer.borderWidth = 0;
 
-    iconImage.layer.cornerRadius = kImageFallbackCornerRadius;
-    iconImage.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  [NSLayoutConstraint activateConstraints:@[
+    [fallbackImageView.widthAnchor
+        constraintEqualToConstant:kImageFallbackSize],
+    [fallbackImageView.widthAnchor
+        constraintEqualToAnchor:fallbackImageView.heightAnchor],
+  ]];
 
-    [iconImage addSubview:fallbackImageView];
+  iconView.layer.cornerRadius = kImageFallbackCornerRadius;
+  iconView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
 
-    AddSameConstraintsWithInset(fallbackImageView, iconImage,
-                                kImageFallbackInset);
-  }
+  [iconView addSubview:fallbackImageView];
 
-  return iconImage;
+  AddSameConstraintsWithInset(fallbackImageView, iconView, kImageFallbackInset);
+  return iconView;
 }
 
 // Creates and returns the action button for the view.
