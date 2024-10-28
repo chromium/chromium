@@ -22,6 +22,9 @@ class Browser;
 // If YES, the view will offer a sign-out button.
 @property(nonatomic, assign) BOOL showSignoutButton;
 
+// If YES, the view will offer a sign-out button. Default to YES.
+@property(nonatomic, assign) BOOL showAddAccountButton;
+
 // Initializes ManageAccountsCoordinator to present its controller modally.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -33,8 +36,8 @@ class Browser;
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
-    NS_DESIGNATED_INITIALIZER;
+                       closeSettingsOnAddAccount:
+                           (BOOL)closeSettingsOnAddAccount;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
