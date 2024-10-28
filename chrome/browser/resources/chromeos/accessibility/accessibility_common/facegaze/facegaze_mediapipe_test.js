@@ -15,8 +15,10 @@ FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
-    // TODO(b/309121742): change `failOnConsoleError` to true and specify
-    // allowed messages from mediapipe wasm.
+    // The mediapipe wasm emits console messages when the FaceLandmarker is
+    // initialized. Some of these messages are variable because they include
+    // information about time, so we cannot set a static list of allowed
+    // messages. As a result, we set `failOnConsoleError` to false.
     super.testGenPreambleCommon(
         /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
         /*failOnConsoleError=*/ false);
