@@ -136,7 +136,9 @@ bool PlatformTestExtensionLoader::CheckInstallWarnings(
 bool PlatformTestExtensionLoader::WaitForExtensionReady(
     const Extension& extension) {
   // TODO(crbug.com/373434594): Support content scripts.
-  CHECK(ContentScriptsInfo::GetContentScripts(&extension).empty());
+  if (!ContentScriptsInfo::GetContentScripts(&extension).empty()) {
+    NOTIMPLEMENTED() << "Content scripts not yet supported.";
+  }
 
   const int num_processes =
       content::RenderProcessHost::GetCurrentRenderProcessCountForTesting();
