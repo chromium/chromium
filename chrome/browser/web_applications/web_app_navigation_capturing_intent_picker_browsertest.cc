@@ -95,7 +95,7 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
         "'launchParamsTargetUrls' in window ? launchParamsTargetUrls : []");
     EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
     base::Value::List launchParamsTargetUrls =
-        launchParamsResults.ExtractList().TakeList();
+        launchParamsResults.ExtractList();
     if (!launchParamsTargetUrls.empty()) {
       for (const base::Value& url : launchParamsTargetUrls) {
         launch_params.push_back(GURL(url.GetString()));

@@ -791,7 +791,7 @@ struct EvalJsResult {
   [[nodiscard]] int ExtractInt() const;
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
-  [[nodiscard]] base::Value ExtractList() const;
+  [[nodiscard]] base::Value::List ExtractList() const;
 };
 
 // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:

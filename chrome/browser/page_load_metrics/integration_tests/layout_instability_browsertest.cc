@@ -61,17 +61,21 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   base::Value::List expectations;
   if (frame == ShiftFrame::LayoutShiftOnlyInMainFrame ||
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
-    base::Value value = EvalJs(web_contents(), "cls_run_tests").ExtractList();
-    for (auto& d : value.GetList())
+    base::Value::List value =
+        EvalJs(web_contents(), "cls_run_tests").ExtractList();
+    for (auto& d : value) {
       expectations.Append(std::move(d));
+    }
   }
   if (frame == ShiftFrame::LayoutShiftOnlyInSubFrame ||
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
     content::RenderFrameHost* child_frame =
         content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
-    base::Value value = EvalJs(child_frame, "cls_run_tests").ExtractList();
-    for (auto& d : value.GetList())
+    base::Value::List value =
+        EvalJs(child_frame, "cls_run_tests").ExtractList();
+    for (auto& d : value) {
       expectations.Append(std::move(d));
+    }
   }
 
   waiter->Wait();
@@ -261,9 +265,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   Load("/simple_div_movement.html");
 
   // Extract the startTime and score list from watcher_entry_record.
-  base::Value entry_records =
+  base::Value::List entry_records_list =
       EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
-  auto& entry_records_list = entry_records.GetList();
 
   // Verify that the entry_records_list has exactly 1 records.
   EXPECT_EQ(1ul, entry_records_list.size());
@@ -329,9 +332,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   Load("/one_second_gap.html");
 
   // Extract the startTime and score list from watcher_entry_record.
-  base::Value entry_records =
+  base::Value::List entry_records_list =
       EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
-  auto& entry_records_list = entry_records.GetList();
 
   // Verify that the entry_records_list has exactly 2 records.
   EXPECT_EQ(2ul, entry_records_list.size());
@@ -380,9 +382,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "shifter");
 
   // Extract the startTime and score list from watcher_entry_record.
-  base::Value entry_records =
+  base::Value::List entry_records_list =
       EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
-  auto& entry_records_list = entry_records.GetList();
 
   // Verify that the entry_records_list has exactly 2 records.
   EXPECT_EQ(2ul, entry_records_list.size());

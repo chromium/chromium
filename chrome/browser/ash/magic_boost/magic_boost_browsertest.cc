@@ -145,9 +145,7 @@ class MagicBoostBrowserTest
         content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         "getTextfieldBound();");
     ASSERT_TRUE(result.error.empty());
-    auto value = result.ExtractList();
-    ASSERT_TRUE(value.is_list());
-    const base::Value::List bounds_as_list = std::move(value).TakeList();
+    const base::Value::List bounds_as_list = result.ExtractList();
     ASSERT_EQ(bounds_as_list.size(), 4u);
     const double left = bounds_as_list[0].GetDouble();
     const double top = bounds_as_list[1].GetDouble();

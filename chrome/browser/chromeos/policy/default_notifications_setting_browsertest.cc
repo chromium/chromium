@@ -99,10 +99,8 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
                                   "radiosChecked.push(radios[1].checked);"
                                   "radiosChecked.push(radios[2].checked);"
                                   "radiosChecked;";
-  base::Value radios_checked =
+  base::Value::List radios_checked_list =
       content::EvalJs(web_contents, kGetRadiosChecked).ExtractList();
-  ASSERT_TRUE(radios_checked.is_list());
-  const base::Value::List& radios_checked_list = radios_checked.GetList();
 
   std::string kGetRadiosEnabled = kGetRadios +
                                   "let radiosEnabled = [];"
@@ -110,10 +108,8 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
                                   "radiosEnabled.push(!radios[1].disabled);"
                                   "radiosEnabled.push(!radios[2].disabled);"
                                   "radiosEnabled;";
-  base::Value radios_enabled =
+  base::Value::List radios_enabled_list =
       content::EvalJs(web_contents, kGetRadiosEnabled).ExtractList();
-  ASSERT_TRUE(radios_enabled.is_list());
-  const base::Value::List& radios_enabled_list = radios_enabled.GetList();
 
   switch (GetParam()) {
     case 0:

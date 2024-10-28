@@ -251,9 +251,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
          "'});"
          "return paths; })())"});
     auto response = content::EvalJs(dialog_contents_.get(), js_expression);
-
-    base::Value response_list = response.ExtractList();
-    return response_list.GetList().Clone();
+    return response.ExtractList();
   }
 
   // Helper to invoke the `getSyncingPaths` method on chrome://manage-mirrorsync

@@ -580,12 +580,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 
   // Calculate the DIP size from the bounds in pixel. Follow exactly what is
   // done in `WebFrameWidgetImpl`.
-  const base::Value eval_result =
+  const base::Value::List eval_result =
       EvalJs(wc, "getSelectionBounds();").ExtractList();
-  const int x = floor(eval_result.GetList()[0].GetDouble());
-  const int right = ceil(eval_result.GetList()[1].GetDouble());
-  const int y = floor(eval_result.GetList()[2].GetDouble());
-  const int bottom = ceil(eval_result.GetList()[3].GetDouble());
+  const int x = floor(eval_result[0].GetDouble());
+  const int right = ceil(eval_result[1].GetDouble());
+  const int y = floor(eval_result[2].GetDouble());
+  const int bottom = ceil(eval_result[3].GetDouble());
   const int expected_dip_width = floor(right / scale()) - ceil(x / scale());
   const int expected_dip_height = floor(bottom / scale()) - ceil(y / scale());
 

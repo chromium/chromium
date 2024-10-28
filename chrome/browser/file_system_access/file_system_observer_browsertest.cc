@@ -306,8 +306,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
         SupportsChangeInfo() ? "modified" : "unknown";
 
     // Expect that we received at least one "modified" event.
-    ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-    EXPECT_THAT(records.GetList().front().GetString(),
+    ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+    EXPECT_THAT(records.front().GetString(),
                 testing::StrEq(expected_change_type));
   }
 
@@ -319,9 +319,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
     auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
 
     // Expect that we received only one "errored" event.
-    ASSERT_THAT(records.GetList(), testing::SizeIs(1));
-    EXPECT_THAT(records.GetList().front().GetString(),
-                testing::StrEq("errored"));
+    ASSERT_THAT(records, testing::SizeIs(1));
+    EXPECT_THAT(records.front().GetString(), testing::StrEq("errored"));
   }
 
   {
@@ -330,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
     auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
 
     // Expect that no more events are received after it's errored.
-    ASSERT_THAT(records.GetList(), testing::IsEmpty());
+    ASSERT_THAT(records, testing::IsEmpty());
   }
 }
 
@@ -387,8 +386,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
         SupportsChangeInfo() ? "appeared" : "unknown";
 
     // We expect to receive an "appeared" event when the file is created.
-    ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-    EXPECT_THAT(records.GetList().front().GetString(),
+    ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
+    EXPECT_THAT(records.front().GetString(),
                 testing::StrEq(expected_change_type));
   }
 
@@ -400,9 +399,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
 
     // Expect that we received an "errored" event due to the active grants being
     // revoked.
-    ASSERT_THAT(records.GetList(), testing::SizeIs(1));
-    EXPECT_THAT(records.GetList().front().GetString(),
-                testing::StrEq("errored"));
+    ASSERT_THAT(records, testing::SizeIs(1));
+    EXPECT_THAT(records.front().GetString(), testing::StrEq("errored"));
   }
 
   {
@@ -411,6 +409,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
     auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
 
     // Expect that no more events are received after it's errored.
-    ASSERT_THAT(records.GetList(), testing::IsEmpty());
+    ASSERT_THAT(records, testing::IsEmpty());
   }
 }
