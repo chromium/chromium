@@ -4803,7 +4803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.WebDXFeatures" enum="WebDXFeatureObserver"
-    expires_after="2025-05-10">
+    expires_after="never">
 <!-- expires-never: used by Chrome Platform Status dashboard, etc -->
 
 <!-- https://chromestatus.com -->
