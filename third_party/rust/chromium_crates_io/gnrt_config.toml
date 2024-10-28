@@ -105,6 +105,12 @@ group = 'test'
 [crate.base64]
 group = 'test'
 
+[crate.bstr]
+ban_features = [
+    # The unicode feature is not audited for UB-Risk-2.
+    'unicode'
+]
+
 [crate.bytes]
 group = 'test'
 

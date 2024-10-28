@@ -62,6 +62,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bitflags:2.6.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."bstr:1.10.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."bytemuck:1.19.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 

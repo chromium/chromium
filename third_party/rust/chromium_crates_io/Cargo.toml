@@ -50,6 +50,12 @@ strum = "0.25.0"
 strum_macros = "0.25.3"
 wycheproof = "0.4"
 
+[dependencies.bstr]
+version = "1"
+# Disables the 'unicode' feature. See https://crrev.com/c/5925797
+default-features = false
+features = ["serde", "std"]
+
 [dependencies.png]
 version = "0.17"
 features = ["unstable"]  # For `std::simd`.

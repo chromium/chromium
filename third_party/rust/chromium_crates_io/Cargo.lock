@@ -41,6 +41,15 @@ version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "bstr"
+version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "memchr",
+ "serde",
+]
+
+[[package]]
 name = "bytemuck"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -88,6 +97,7 @@ dependencies = [
  "anyhow",
  "base64",
  "bitflags 2.6.0",
+ "bstr",
  "bytemuck",
  "bytes",
  "cfg-if",

@@ -268,6 +268,19 @@ criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 delta = "2.5.0 -> 2.6.0"
 notes = "The changes from the previous version are negligible and thus it retains the same properties."
 
+[[audits.bstr]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.10.0"
+notes = """
+WARNING: This certification is a result of a **partial** audit.  The
+`unicode` feature has **not** been audited.  The unicode feature has
+soundness that depends on the correctness of regex automata that are
+shipped as binary blobs. They have not been reviewed here.Ability to
+track partial audits is tracked in
+https://github.com/mozilla/cargo-vet/issues/380.
+"""
+
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"
