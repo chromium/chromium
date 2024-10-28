@@ -371,6 +371,24 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   validate_labels(/*active=*/false, "Toggle off session again");
 }
 
+// Use a touch event to start focus mode after editing the timer.
+// https://crbug.com/371635929
+TEST_F(FocusModeDetailedViewTest, TapButtonAfterTimerChange) {
+  // Enter '11' into the timer field.
+  SystemTextfield* timer_textfield = GetTimerSettingTextfield();
+  LeftClickOn(timer_textfield);
+  ASSERT_TRUE(timer_textfield->IsActive());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DELETE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1);
+  EXPECT_EQ(u"11", timer_textfield->GetText());
+
+  // Tap on the start button.
+  GestureTapOn(GetToggleRowButton());
+
+  EXPECT_EQ(FocusModeController::Get()->session_duration().InMinutes(), 11);
+}
+
 // Tests how the textfield for the timer setting view handles valid and invalid
 // inputs.
 TEST_F(FocusModeDetailedViewTest, TimerSettingViewTextfield) {

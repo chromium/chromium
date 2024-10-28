@@ -539,10 +539,8 @@ void FocusModeDetailedView::CreateToggleView() {
   }
 
   auto toggle_button = std::make_unique<PillButton>(
-      base::BindRepeating(
-          &FocusModeController::ToggleFocusMode,
-          base::Unretained(focus_mode_controller),
-          focus_mode_histogram_names::ToggleSource::kFocusPanel),
+      base::BindRepeating(&FocusModeDetailedView::HandleToggleButton,
+                          weak_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(
           in_focus_session
               ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL
@@ -568,6 +566,21 @@ void FocusModeDetailedView::CreateToggleView() {
   // Set a valid role for this view to avoid announcing the role for
   // `toggle_view_`.
   view_accessibility.SetRole(ax::mojom::Role::kRow);
+}
+
+void FocusModeDetailedView::HandleToggleButton() {
+  auto* focus_mode_controller = FocusModeController::Get();
+  if (!focus_mode_controller) {
+    return;
+  }
+  const bool in_focus_session = focus_mode_controller->in_focus_session();
+  if (!in_focus_session) {
+    // About to start a focus session. Clear all focus before starting the
+    // session.
+    GetFocusManager()->ClearFocus();
+  }
+  focus_mode_controller->ToggleFocusMode(
+      focus_mode_histogram_names::ToggleSource::kFocusPanel);
 }
 
 void FocusModeDetailedView::UpdateToggleButtonAccessibility(
