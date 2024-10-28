@@ -264,8 +264,8 @@ class LensOverlayController : public LensSearchboxClient,
     // this state will apply to all tabs.
     kOff,
 
-    // In the process of closing the side panel that was open when the overlay
-    // was invoked so we can make a full page screenshot
+    // Waiting for reflow after closing side panel before taking a full page
+    // screenshot.
     kClosingOpenedSidePanel,
 
     // In the process of taking a screenshot to transition to kOverlay.
@@ -804,8 +804,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // SidePanelViewStateObserver:
   void OnSidePanelDidOpen() override;
-  void OnSidePanelCloseInterrupted() override;
-  void OnSidePanelDidClose() override;
+
+  // Called to continue the screenshot process while opening lens overlay.
+  void FinishedWaitingForReflow();
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(

@@ -3695,73 +3695,28 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
-// TODO(b/340886492, b/349876638): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_OverlaySidePanelEdgeCaseInteractions) {
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelOpen) {
   WaitForPaint();
 
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // First, test the flow if the user has a side panel open, we request to close
-  // it, and then a new side panel opens before the close is finished.
-  // Open the side panel
+  // Wait for side panel to fully open.
   auto* side_panel_coordinator =
       browser()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_coordinator->IsSidePanelShowing();
-  }));  // issue here
+    return browser()->GetBrowserView().unified_side_panel()->state() ==
+           SidePanel::State::kOpen;
+  }));
 
-  // Wait for the side panel to open fully.
-  SidePanel* side_panel =
-      BrowserView::GetBrowserViewForBrowser(browser())->unified_side_panel();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return side_panel->GetAnimationValue() >= 1; }));
-
-  //   Showing UI should eventually result in overlay state. When the overlay is
-  //   bound, it should start the query flow which returns a response for the
-  //   interaction data callback.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_TRUE(controller->state() == State::kClosingOpenedSidePanel);
-
-  // Wait for the side panel to start closing.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return side_panel->IsClosing(); }));
-
-  // Reshow the side panel to prevent the side panel from closing.
-  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
-
-  // Verify the overlay returns to kOff state.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
-
-  // Secondly, test the flow if the side panel is open with our results, if we
-  // close our UI and request the close the side panel, we gracefully handle a
-  // new side panel opening which prevents our requested close.
+  auto* controller = GetLensOverlayController();
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
 
+  // Overlay should eventually show.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
-  // Open our results panel
-  controller->IssueTextSelectionRequestForTesting("test query",
-                                                  /*selection_start_index=*/0,
-                                                  /*selection_end_index=*/0);
-
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlayAndResults; }));
-
-  // Request a close which will start to close the side panel.
-  controller->CloseUIAsync(LensOverlayDismissalSource::kOverlayBackgroundClick);
-  ASSERT_TRUE(controller->state() == State::kClosingSidePanel);
-
-  // Reshow the side panel to prevent a the side panel from closing.
-  side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
-
-  // The overlay eventually returns to kOff state.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
+  // And the side-panel should be hidden.
+  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->state(),
+            SidePanel::State::kClosed);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, FindBarClosesOverlay) {

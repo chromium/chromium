@@ -504,13 +504,6 @@ void SidePanelCoordinator::Show(
 
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
 
-  // If the side panel was in the process of closing, notify observers that the
-  // close was cancelled.
-  if (browser_view_->unified_side_panel()->IsClosing()) {
-    view_state_observers_.Notify(
-        &SidePanelViewStateObserver::OnSidePanelCloseInterrupted);
-  }
-
   // If the side panel is already showing, cancel all loads and do nothing.
   if (current_key_ && *current_key_ == input) {
     waiter_->ResetLoadingEntryIfNecessary();
