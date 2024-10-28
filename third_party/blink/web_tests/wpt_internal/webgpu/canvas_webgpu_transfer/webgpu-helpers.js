@@ -256,43 +256,6 @@ async function test_transferToGPUTexture_unbalanced_access(
 }
 
 /**
- * transferToGPUTexture() should allow repeated calls after a call to
- * transferBackFromGPUTexture().
- */
-function test_transferToGPUTexture_balanced_access(device, canvas) {
-  const ctx = canvas.getContext('2d');
-
-  // Draw to the canvas via the canvas2D API to ensure that the SharedImage
-  // backing the canvas is created before doing any transfers to WebGPU. This
-  // ensures that this SharedImage will be created without WebGPU usage, which
-  // the first test below assumes as a precondition.
-  const w = ctx.canvas.width;
-  const h = ctx.canvas.height;
-  ctx.fillStyle = "#00FF00";
-  ctx.fillRect(0, 0, w, h / 2);
-
-  // An initial transfer incurs a copy as the canvas resource's SharedImage
-  // doesn't have WebGPU usage by default. Validate that `requireZeroCopy` is
-  // getting forwarded properly by verifying that passing `true` causes an
-  // exception to be raised.
-  try {
-    const tex = ctx.transferToGPUTexture({device: device, requireZeroCopy: true});
-    assert_unreached('transferToGPUTexture should have thrown.');
-  } catch (ex) {
-    assert_true(ex instanceof DOMException);
-    assert_equals(ex.name, 'InvalidStateError');
-    assert_true(ex.message.includes('Transferring canvas to GPU was not zero-copy'));
-  }
-
-  // Begin and end a WebGPU access session several times. No further transfers
-  // on this canvas should incur a copy.
-  for (let count = 0; count < 10; ++count) {
-    const tex = ctx.transferToGPUTexture({device: device, requireZeroCopy: true});
-    ctx.transferBackFromGPUTexture();
-  }
-}
-
-/**
  * Tests that a transfer in one canvas either does or does not result in an
  * initial transfer in a second canvas being zero-copy depending on whether the
  * canvases are in-DOM canvas elements or offscreen canvases.
