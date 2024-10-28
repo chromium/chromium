@@ -875,7 +875,7 @@ class AutocompleteMediator
         if (mAutocompleteInput.isInZeroPrefixContext()) {
             clearSuggestions();
             startCachedZeroSuggest();
-        } else if (mDataProvider.hasTab()) {
+        } else {
             boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
             int cursorPosition =
                     mUrlBarEditingTextProvider.getSelectionStart()
@@ -1114,7 +1114,7 @@ class AutocompleteMediator
         mNewOmniboxEditSessionTimestamp = -1;
         startMeasuringSuggestionRequestToUiModelTime();
 
-        if (mDelegate.isUrlBarFocused() && mDataProvider.hasTab()) {
+        if (mDelegate.isUrlBarFocused()) {
             mAutocomplete.ifPresent(
                     a -> {
                         if (mAutocompleteInput.getPageClassification().isEmpty()) return;
@@ -1178,16 +1178,14 @@ class AutocompleteMediator
     /** Trigger autocomplete for the given query. */
     void startAutocompleteForQuery(@NonNull String query) {
         stopAutocomplete(false);
-        if (mDataProvider.hasTab()) {
-            mAutocomplete.ifPresent(
-                    a ->
-                            a.start(
-                                    mDataProvider.getCurrentGurl(),
-                                    mDataProvider.getPageClassification(false),
-                                    query,
-                                    -1,
-                                    false));
-        }
+        mAutocomplete.ifPresent(
+                a ->
+                        a.start(
+                                mDataProvider.getCurrentGurl(),
+                                mDataProvider.getPageClassification(false),
+                                query,
+                                -1,
+                                false));
     }
 
     /**

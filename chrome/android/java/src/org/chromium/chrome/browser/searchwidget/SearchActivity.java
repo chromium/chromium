@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -62,9 +61,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBuilder;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -76,9 +72,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
@@ -232,7 +225,6 @@ public class SearchActivity extends AsyncInitializationActivity
     private SearchActivityLocationBarLayout mSearchBox;
 
     private SnackbarManager mSnackbarManager;
-    private Tab mTab;
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     // SearchBoxDataProvider and LocationBarEmbedderUiOverrides are passed to several child
@@ -518,21 +510,10 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void finishNativeInitializationWithProfile(Profile profile) {
         refinePageClassWithProfile(profile);
-        WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
-        mTab =
-                new TabBuilder(profile)
-                        .setWindow(getWindowAndroid())
-                        .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
-                        .setWebContents(webContents)
-                        .setDelegateFactory(new SearchActivityTabDelegateFactory())
-                        .build();
-        mTab.loadUrl(new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
         if (ChromeFeatureList.sAndroidHubSearch.isEnabled() && mIntentOrigin == IntentOrigin.HUB) {
             setHubSearchBoxUrlBarElements();
         }
-
-        mSearchBoxDataProvider.onNativeLibraryReady(mTab);
 
         // Force the user to choose a search engine if they have to.
         final Callback<Boolean> onSearchEngineFinalizedCallback =
@@ -651,7 +632,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     protected void onDestroy() {
-        if (mTab != null && mTab.isInitialized()) mTab.destroy();
         if (mLocationBarCoordinator != null && mLocationBarCoordinator.getOmniboxStub() != null) {
             mLocationBarCoordinator.getOmniboxStub().removeUrlFocusChangeListener(this);
             mLocationBarCoordinator.destroy();

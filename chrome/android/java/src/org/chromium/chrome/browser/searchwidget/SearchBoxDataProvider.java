@@ -22,18 +22,8 @@ import org.chromium.url.GURL;
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private /* PageClassification */ int mPageClassification;
     private @ColorInt int mPrimaryColor;
-    private Tab mTab;
     private GURL mGurl;
     private boolean mIsIncognito;
-
-    /**
-     * Called when native library is loaded and a tab has been initialized.
-     *
-     * @param tab The tab to use.
-     */
-    public void onNativeLibraryReady(Tab tab) {
-        mTab = tab;
-    }
 
     /**
      * Initialize this instance of the SearchBoxDataProvider.
@@ -80,12 +70,12 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
 
     @Override
     public Tab getTab() {
-        return mTab;
+        return null;
     }
 
     @Override
     public boolean hasTab() {
-        return mTab != null;
+        return false;
     }
 
     @Override
