@@ -23,7 +23,8 @@ LobsterBubbleCoordinator::~LobsterBubbleCoordinator() {
 }
 
 void LobsterBubbleCoordinator::LoadUI(Profile* profile,
-                                      std::optional<std::string_view> query) {
+                                      std::optional<std::string_view> query,
+                                      LobsterMode mode) {
   if (IsShowingUI()) {
     contents_wrapper_->CloseUI();
   }
@@ -34,6 +35,11 @@ void LobsterBubbleCoordinator::LoadUI(Profile* profile,
     url = net::AppendOrReplaceQueryParameter(url, kLobsterPromptParamKey,
                                              query.value());
   }
+
+  url = net::AppendOrReplaceQueryParameter(url, kLobsterModeParamKey,
+                                           mode == LobsterMode::kInsert
+                                               ? kLobsterInsertModeValue
+                                               : kLobsterDownloadModeValue);
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       url, profile, IDS_ACCNAME_ORCA,

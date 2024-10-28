@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
@@ -72,7 +73,10 @@ class MockLobsterClient : public LobsterClient {
               (const std::string& image_bytes,
                StatusCallback insert_status_callback),
               (override));
-  MOCK_METHOD(void, LoadUI, (std::optional<std::string> query), (override));
+  MOCK_METHOD(void,
+              LoadUI,
+              (std::optional<std::string> query, LobsterMode mode),
+              (override));
   MOCK_METHOD(void, ShowUI, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
 };

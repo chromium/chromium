@@ -227,8 +227,9 @@ void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
   std::move(callback).Run(result);
 }
 
-void LobsterSessionImpl::LoadUI(std::optional<std::string> query) {
-  client_->LoadUI(query);
+void LobsterSessionImpl::LoadUI(std::optional<std::string> query,
+                                LobsterMode mode) {
+  client_->LoadUI(query, mode);
 }
 
 void LobsterSessionImpl::ShowUI() {

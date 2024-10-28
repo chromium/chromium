@@ -29,11 +29,13 @@ constexpr std::string_view kLobsterKey(
 
 LobsterController::Trigger::Trigger(LobsterController* controller,
                                     std::unique_ptr<LobsterClient> client,
-                                    LobsterEntryPoint entry_point)
+                                    LobsterEntryPoint entry_point,
+                                    LobsterMode mode)
     : controller_(controller),
       client_(std::move(client)),
       state_(State::kReady),
-      entry_point_(entry_point) {}
+      entry_point_(entry_point),
+      mode_(mode) {}
 
 LobsterController::Trigger::~Trigger() = default;
 
@@ -43,7 +45,8 @@ void LobsterController::Trigger::Fire(std::optional<std::string> query) {
   }
 
   state_ = State::kDisabled;
-  controller_->StartSession(std::move(client_), std::move(query), entry_point_);
+  controller_->StartSession(std::move(client_), std::move(query), entry_point_,
+                            mode_);
 }
 
 LobsterController::LobsterController() = default;
@@ -66,7 +69,8 @@ void LobsterController::SetClientFactory(LobsterClientFactory* client_factory) {
 }
 
 std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
-    LobsterEntryPoint entry_point) {
+    LobsterEntryPoint entry_point,
+    bool support_image_insertion) {
   if (client_factory_ == nullptr) {
     return nullptr;
   }
@@ -78,18 +82,22 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
 
   LobsterSystemState system_state = client->GetSystemState();
   return system_state.status != LobsterStatus::kBlocked
-             ? std::make_unique<Trigger>(this, std::move(client), entry_point)
+             ? std::make_unique<Trigger>(this, std::move(client), entry_point,
+                                         support_image_insertion
+                                             ? LobsterMode::kInsert
+                                             : LobsterMode::kDownload)
              : nullptr;
 }
 
 void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query,
-                                     LobsterEntryPoint entry_point) {
+                                     LobsterEntryPoint entry_point,
+                                     LobsterMode mode) {
   LobsterClient* lobster_client_ptr = client.get();
   active_session_ =
       std::make_unique<LobsterSessionImpl>(std::move(client), entry_point);
   lobster_client_ptr->SetActiveSession(active_session_.get());
-  active_session_->LoadUI(query);
+  active_session_->LoadUI(query, mode);
 }
 
 }  // namespace ash

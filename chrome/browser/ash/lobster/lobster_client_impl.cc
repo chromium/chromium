@@ -46,8 +46,9 @@ bool LobsterClientImpl::SubmitFeedback(const std::string& query,
                                   image_bytes);
 }
 
-void LobsterClientImpl::LoadUI(std::optional<std::string> query) {
-  service_->LoadUI(query);
+void LobsterClientImpl::LoadUI(std::optional<std::string> query,
+                               ash::LobsterMode mode) {
+  service_->LoadUI(query, mode);
 }
 
 void LobsterClientImpl::ShowUI() {

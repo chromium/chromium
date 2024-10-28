@@ -12,5 +12,5 @@ LobsterSystemStateProvider::LobsterSystemStateProvider() = default;
 LobsterSystemStateProvider::~LobsterSystemStateProvider() = default;
 
 ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState() {
-  return ash::LobsterSystemState(ash::LobsterStatus::kBlocked, {});
+  return ash::LobsterSystemState(ash::LobsterStatus::kEnabled, {});
 }

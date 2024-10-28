@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ash {
@@ -25,7 +26,8 @@ class ASH_EXPORT LobsterController {
    public:
     explicit Trigger(LobsterController* controller,
                      std::unique_ptr<LobsterClient> client,
-                     LobsterEntryPoint entry_point);
+                     LobsterEntryPoint entry_point,
+                     LobsterMode mode);
     ~Trigger();
 
     void Fire(std::optional<std::string> query);
@@ -45,6 +47,8 @@ class ASH_EXPORT LobsterController {
     State state_;
 
     LobsterEntryPoint entry_point_;
+
+    LobsterMode mode_;
   };
 
   LobsterController();
@@ -54,14 +58,16 @@ class ASH_EXPORT LobsterController {
 
   void SetClientFactory(LobsterClientFactory* client_factory);
 
-  std::unique_ptr<Trigger> CreateTrigger(LobsterEntryPoint entry_point);
+  std::unique_ptr<Trigger> CreateTrigger(LobsterEntryPoint entry_point,
+                                         bool support_image_insertion);
 
  private:
   friend class Trigger;
 
   void StartSession(std::unique_ptr<LobsterClient> client,
                     std::optional<std::string> query,
-                    LobsterEntryPoint entry_point);
+                    LobsterEntryPoint entry_point,
+                    LobsterMode mode);
 
   // Not owned by this class.
   raw_ptr<LobsterClientFactory> client_factory_;

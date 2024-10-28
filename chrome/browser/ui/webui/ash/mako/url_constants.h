@@ -30,6 +30,12 @@ extern const char kOrcaMagicBoostParamKey[];
 
 extern const char kLobsterPromptParamKey[];
 
+extern const char kLobsterModeParamKey[];
+
+extern const char kLobsterDownloadModeValue[];
+
+extern const char kLobsterInsertModeValue[];
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MAKO_URL_CONSTANTS_H_

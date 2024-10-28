@@ -596,21 +596,23 @@ PickerController::Session::~Session() {
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
+  ui::TextInputClient* focused_text_input_client = GetFocusedTextInputClient();
   show_editor_callback_ = client_->CacheEditorContext();
-  show_lobster_callback_ = client_->GetShowLobsterCallback();
-
-  ui::TextInputClient* focused_client = GetFocusedTextInputClient();
+  show_lobster_callback_ = client_->CacheLobsterContext(
+      /*support_image_insertion=*/focused_text_input_client &&
+      focused_text_input_client->CanInsertImage());
   input_method::ImeKeyboard& keyboard = GetImeKeyboard();
 
-  if (focused_client &&
-      focused_client->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD) {
+  if (focused_text_input_client &&
+      focused_text_input_client->GetTextInputType() ==
+          ui::TEXT_INPUT_TYPE_PASSWORD) {
     bool should_enable = !keyboard.IsCapsLockEnabled();
     keyboard.SetCapsLockEnabled(should_enable);
     return;
   }
 
   session_ = std::make_unique<Session>(
-      GetPrefs(), focused_client, &keyboard,
+      GetPrefs(), focused_text_input_client, &keyboard,
       show_editor_callback_.is_null()
           ? QuickInsertModel::EditorStatus::kDisabled
           : QuickInsertModel::EditorStatus::kEnabled,

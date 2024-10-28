@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_feedback_preview.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
@@ -41,7 +42,7 @@ class ASH_PUBLIC_EXPORT LobsterSession {
   virtual bool SubmitFeedback(int candidate_id,
                               const std::string& description) = 0;
 
-  virtual void LoadUI(std::optional<std::string> query) = 0;
+  virtual void LoadUI(std::optional<std::string> query, LobsterMode mode) = 0;
   virtual void ShowUI() = 0;
   virtual void CloseUI() = 0;
   virtual void RecordWebUIMetricEvent(LobsterMetricState metric_state) = 0;

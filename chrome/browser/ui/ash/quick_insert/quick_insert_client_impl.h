@@ -67,7 +67,8 @@ class PickerClientImpl
   void StopCrosQuery() override;
   bool IsEligibleForEditor() override;
   ShowEditorCallback CacheEditorContext() override;
-  ShowLobsterCallback GetShowLobsterCallback() override;
+  ShowLobsterCallback CacheLobsterContext(
+      bool support_image_insertion) override;
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(size_t max_files,

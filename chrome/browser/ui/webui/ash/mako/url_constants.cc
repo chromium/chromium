@@ -30,4 +30,10 @@ const char kChromeUILobsterURL[] = "chrome-untrusted://mako/lobster.html";
 
 const char kLobsterPromptParamKey[] = "prompt";
 
+const char kLobsterModeParamKey[] = "mode";
+
+const char kLobsterDownloadModeValue[] = "download";
+
+const char kLobsterInsertModeValue[] = "insert";
+
 }  // namespace ash

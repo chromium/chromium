@@ -63,8 +63,9 @@ bool LobsterService::SubmitFeedback(const std::string& query,
                              /*image_bytes=*/image_bytes);
 }
 
-void LobsterService::LoadUI(std::optional<std::string> query) {
-  bubble_coordinator_.LoadUI(profile_, query);
+void LobsterService::LoadUI(std::optional<std::string> query,
+                            ash::LobsterMode mode) {
+  bubble_coordinator_.LoadUI(profile_, query, mode);
 }
 
 void LobsterService::ShowUI() {

@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/base64.h"
@@ -63,7 +64,7 @@ class FakeLobsterSession : public LobsterSession {
                       const std::string& description) override {
     return feedback_submission_status_;
   }
-  void LoadUI(std::optional<std::string> query) override {}
+  void LoadUI(std::optional<std::string> query, LobsterMode mode) override {}
   void ShowUI() override {}
   void CloseUI() override {}
   void RecordWebUIMetricEvent(LobsterMetricState metric_state) override {

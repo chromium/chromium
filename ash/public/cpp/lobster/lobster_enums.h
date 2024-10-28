@@ -9,6 +9,11 @@
 
 namespace ash {
 
+enum class ASH_PUBLIC_EXPORT LobsterMode {
+  kInsert,
+  kDownload,
+};
+
 enum class ASH_PUBLIC_EXPORT LobsterStatus {
   kEnabled,
   kBlocked,

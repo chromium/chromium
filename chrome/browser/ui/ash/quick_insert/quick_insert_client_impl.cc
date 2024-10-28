@@ -384,22 +384,31 @@ PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
                         weak_factory_.GetWeakPtr());
 }
 
-PickerClientImpl::ShowLobsterCallback
-PickerClientImpl::GetShowLobsterCallback() {
+PickerClientImpl::ShowLobsterCallback PickerClientImpl::CacheLobsterContext(
+    bool support_image_insertion) {
   if (!ash::features::IsLobsterEnabled() ||
       !ash::LobsterController::IsEnabled()) {
-    return {};
+    return base::NullCallback();
   }
+
+  ash::LobsterController* lobster_controller =
+      ash::Shell::Get()->lobster_controller();
   LobsterService* lobster_service =
       LobsterServiceProvider::GetForProfile(profile_);
 
-  if (lobster_service &&
-      lobster_service->system_state_provider()->GetSystemState().status ==
-          ash::LobsterStatus::kEnabled) {
-    return base::BindOnce(&PickerClientImpl::ShowLobster,
-                          weak_factory_.GetWeakPtr());
+  if (lobster_controller == nullptr || lobster_service == nullptr) {
+    return base::NullCallback();
   }
-  return {};
+
+  lobster_trigger_ = lobster_controller->CreateTrigger(
+      ash::LobsterEntryPoint::kPicker, support_image_insertion);
+
+  if (!lobster_trigger_) {
+    return base::NullCallback();
+  }
+
+  return base::BindOnce(&PickerClientImpl::ShowLobster,
+                        weak_factory_.GetWeakPtr());
 }
 
 void PickerClientImpl::GetSuggestedEditorResults(
@@ -599,19 +608,6 @@ void PickerClientImpl::ShowEditor(std::optional<std::string> preset_query_id,
 }
 
 void PickerClientImpl::ShowLobster(std::optional<std::string> query) {
-  if (!ash::features::IsLobsterEnabled() ||
-      !ash::LobsterController::IsEnabled()) {
-    return;
-  }
-
-  ash::LobsterController* lobster_controller =
-      ash::Shell::Get()->lobster_controller();
-  if (lobster_controller == nullptr) {
-    return;
-  }
-
-  lobster_trigger_ =
-      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kPicker);
   if (lobster_trigger_ != nullptr) {
     lobster_trigger_->Fire(query);
   }

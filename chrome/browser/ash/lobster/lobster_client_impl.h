@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
@@ -38,7 +39,7 @@ class LobsterClientImpl : public ash::LobsterClient {
                       const std::string& image_bytes) override;
   void QueueInsertion(const std::string& image_bytes,
                       StatusCallback insert_status_callback) override;
-  void LoadUI(std::optional<std::string> query) override;
+  void LoadUI(std::optional<std::string> query, ash::LobsterMode mode) override;
   void ShowUI() override;
   void CloseUI() override;
 

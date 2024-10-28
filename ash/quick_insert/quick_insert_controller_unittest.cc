@@ -840,7 +840,7 @@ TEST_F(QuickInsertControllerTest, ShowEditorCallsCallbackFromClient) {
 
 TEST_F(QuickInsertControllerTest, ShowLobsterCallsCallbackFromClient) {
   base::test::TestFuture<std::optional<std::string>> show_lobster_future;
-  EXPECT_CALL(client(), GetShowLobsterCallback)
+  EXPECT_CALL(client(), CacheLobsterContext)
       .WillOnce(Return(show_lobster_future.GetCallback()));
 
   controller().ToggleWidget();

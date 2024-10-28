@@ -76,7 +76,8 @@ class ASH_EXPORT PickerClient {
   // Editor. If Editor is not available, this returns a null callback.
   virtual ShowEditorCallback CacheEditorContext() = 0;
 
-  virtual ShowLobsterCallback GetShowLobsterCallback() = 0;
+  virtual ShowLobsterCallback CacheLobsterContext(
+      bool support_image_insertion) = 0;
 
   virtual void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) = 0;

@@ -39,7 +39,10 @@ class ASH_EXPORT MockPickerClient : public PickerClient {
   MOCK_METHOD(void, StopCrosQuery, (), (override));
   MOCK_METHOD(bool, IsEligibleForEditor, (), (override));
   MOCK_METHOD(ShowEditorCallback, CacheEditorContext, (), (override));
-  MOCK_METHOD(ShowLobsterCallback, GetShowLobsterCallback, (), (override));
+  MOCK_METHOD(ShowLobsterCallback,
+              CacheLobsterContext,
+              (bool support_image_insertion),
+              (override));
   MOCK_METHOD(void,
               GetSuggestedEditorResults,
               (SuggestedEditorResultsCallback callback),

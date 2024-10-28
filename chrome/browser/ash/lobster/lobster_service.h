@@ -53,7 +53,7 @@ class LobsterService : public KeyedService, public LobsterEventSink {
                       const std::string& description,
                       const std::string& image_bytes);
 
-  void LoadUI(std::optional<std::string> query);
+  void LoadUI(std::optional<std::string> query, ash::LobsterMode mode);
 
   void ShowUI();
 
