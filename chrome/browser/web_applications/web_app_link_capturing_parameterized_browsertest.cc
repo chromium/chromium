@@ -963,12 +963,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // from the test parameters. If no entry exists for the test, a new one is
   // created.
   base::Value::Dict& GetTestCaseDataFromParam() {
-    std::string full_test_params = TupleToParamString(GetParam());
     std::string shortened_name =
         TupleToParamString(GetShortenedConfigFromTestConfig(GetParam()));
     base::Value::Dict* result =
         test_expectations().EnsureDict("tests")->EnsureDict(shortened_name);
-    result->Set("_params", full_test_params);
     // Temporarily check expectations for the test name before redirect mode was
     // a separate parameter as well to make it easier to migrate expectations.
     // TODO(mek): Remove this migration code.
@@ -1064,14 +1062,25 @@ class WebAppLinkCapturingParameterizedBrowserTest
     // doing a rebaseline.
     base::ScopedClosureRunner lock = LockExpectationsFile(file_config);
 
-    base::Value::Dict& test_case = GetTestCaseDataFromParam();
+    base::Value::Dict& test_case_to_be_updated = GetTestCaseDataFromParam();
+    base::Value::Dict saved_test_case = test_case_to_be_updated.Clone();
+
+    std::string full_test_params = TupleToParamString(GetParam());
+    test_case_to_be_updated.Set("_params", full_test_params);
     // If this is a new test case, start it out as disabled until we've manually
     // verified the expectations are correct.
-    if (!test_case.contains("expected_state")) {
-      test_case.Set("disabled", true);
+    if (!test_case_to_be_updated.contains("expected_state")) {
+      test_case_to_be_updated.Set("disabled", true);
     }
-    test_case.Set("expected_state", CaptureCurrentState());
-    SaveExpectations(file_config);
+    test_case_to_be_updated.Set("expected_state", CaptureCurrentState());
+    if (saved_test_case == test_case_to_be_updated) {
+      // This prevents file save churn when rebaselining, to reduce flakiness
+      // when reading the file on test initialization.
+      LOG(INFO) << "No changes detected for test case " << full_test_params
+                << ", not saving file.";
+    } else {
+      SaveExpectations(file_config);
+    }
   }
 
   void SaveExpectations(ExpectationsFileConfig file_config) {
@@ -1549,8 +1558,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         })";
     }
     test_expectations_ = base::JSONReader::Read(json_data);
-    ASSERT_TRUE(test_expectations_)
-        << "Unable to read test expectation file: " << json_data;
+    ASSERT_TRUE(test_expectations_) << "Unable to read test expectation file";
     ASSERT_TRUE(test_expectations_.value().is_dict());
   }
 

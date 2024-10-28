@@ -258,12 +258,20 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   LaunchWebAppDebugValueCallback callback);
 
 // Searches all browsers and tabs to find an applicable browser for the given
-// `requested_display_mode` and `app_id`. Then, the tabs in that browser are
-// searched for one that matches the given `app_id`. This will prioritize
-// returning where both a browser & tab are found. If an applicable browser was
-// found with out an applicable tab, then the first applicable browser found is
-// returned with `-1` as the tab index. If no browser is found, then
-// std::nullopt is returned.
+// `requested_display_mode` and `app_id`, specifically for use with navigation
+// capturing. The tabs in each browser are searched for one that matches the
+// given `app_id`. This is the priority order of returned items:
+// - If a tab is found for `app_id` in a browser that matches the
+//   `requested_display_mode`, then that is returned.
+// - If the `requested_display_mode` is for a standalone PWA:
+//   - Fall back to look for the first normal browser with a tab matching
+//     `app_id`.
+//   - Otherwise return `std::nullopt`.
+// - If the `requested_display_mode` is `kBrowser`:
+//   - Fall back to returning the first normal browser window, and `-1` for the
+//     tab.
+//   - Otherwise return `std::nullopt`.
+// - Return `std::nullopt` for all other cases.
 std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,

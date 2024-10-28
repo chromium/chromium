@@ -1158,7 +1158,35 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,
     blink::mojom::DisplayMode requested_display_mode) {
-  Browser* first_applicable_browser = nullptr;
+  std::optional<std::pair<Browser*, int>> first_app_browser_match;
+  std::optional<std::pair<Browser*, int>> first_browser_tab_match;
+  // These are the type `std::optional<std::pair<Browser*, int>>` for easy usage
+  // later when returning.
+  std::optional<std::pair<Browser*, int>> first_normal_browser;
+
+  auto GetTabForAppInBrowser = [](Browser* browser,
+                                  const webapps::AppId& app_id)
+      -> std::optional<std::pair<Browser*, int>> {
+    // The active web contents should have preference if it is in scope.
+    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
+      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
+          browser->tab_strip_model()->GetActiveWebContents());
+      if (tab_app_id && *tab_app_id == app_id) {
+        return {{browser, browser->tab_strip_model()->active_index()}};
+      }
+    }
+    // Otherwise, use the first one for the app.
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
+      if (tab_app_id && *tab_app_id == app_id) {
+        return {{browser, i}};
+      }
+    }
+    return {};
+  };
+
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
       continue;
@@ -1169,62 +1197,48 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     if (browser->profile() != &profile) {
       continue;
     }
-    switch (requested_display_mode) {
-      case blink::mojom::DisplayMode::kUndefined:
-      case blink::mojom::DisplayMode::kBrowser:
+    if (AppBrowserController::IsWebApp(browser)) {
+      if (!first_app_browser_match) {
+        first_app_browser_match = GetTabForAppInBrowser(browser, app_id);
+      }
+    } else {
+      if (!first_normal_browser.has_value()) {
+        first_normal_browser = {browser, -1};
+      }
+      if (!first_browser_tab_match) {
+        first_browser_tab_match = GetTabForAppInBrowser(browser, app_id);
+      }
+    }
 
-        if (!(browser->is_type_normal())) {
-          continue;
-        }
-        if (AppBrowserController::IsWebApp(browser)) {
-          continue;
-        }
-        break;
-      case blink::mojom::DisplayMode::kMinimalUi:
-      case blink::mojom::DisplayMode::kStandalone:
-      case blink::mojom::DisplayMode::kWindowControlsOverlay:
-      case blink::mojom::DisplayMode::kBorderless:
-        if (!(browser->is_type_app())) {
-          continue;
-        }
-        if (!AppBrowserController::IsForWebApp(browser, app_id)) {
-          continue;
-        }
-        break;
-      case blink::mojom::DisplayMode::kTabbed:
-        // TODO(crbug.com/375504532): Support tabbed mode on desktop.
-        NOTREACHED_NORETURN();
-      case blink::mojom::DisplayMode::kFullscreen:
-      case blink::mojom::DisplayMode::kPictureInPicture:
-        NOTREACHED_NORETURN();
-    }
-    if (!first_applicable_browser) {
-      first_applicable_browser = browser;
-    }
-    // The active web contents should have preference if it is in scope.
-    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
-          browser->tab_strip_model()->GetActiveWebContents());
-      if (tab_app_id && *tab_app_id == app_id) {
-        return std::pair(browser, browser->tab_strip_model()->active_index());
-      }
-    }
-    // Otherwise, use the first one for the app.
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
-      if (tab_app_id && *tab_app_id == app_id) {
-        return std::pair(browser, i);
-      }
+    if (first_browser_tab_match.has_value() &&
+        first_app_browser_match.has_value()) {
+      break;
     }
   }
-  // If no tab was found, at least return the first applicable browser, if there
-  // was one. This would then be the most recently used applicable browser.
-  if (first_applicable_browser) {
-    return {{first_applicable_browser, -1}};
+  switch (requested_display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+    case blink::mojom::DisplayMode::kBrowser:
+      if (first_browser_tab_match) {
+        return first_browser_tab_match;
+      }
+      return first_normal_browser;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+    case blink::mojom::DisplayMode::kBorderless:
+      if (first_app_browser_match) {
+        return first_app_browser_match;
+      }
+      if (first_browser_tab_match) {
+        return first_browser_tab_match;
+      }
+      return std::nullopt;
+      // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+    case blink::mojom::DisplayMode::kTabbed:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      NOTREACHED_NORETURN();
   }
-  return std::nullopt;
 }
 
 AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {

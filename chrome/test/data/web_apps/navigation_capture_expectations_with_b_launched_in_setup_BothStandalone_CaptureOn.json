@@ -384,7 +384,7 @@
       },
       "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
          "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": "The history of the navigated tab is consistently flaky.",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
