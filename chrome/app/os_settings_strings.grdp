@@ -1364,9 +1364,6 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECT_GESTURE_TITLE" desc="Title for dialog page to select a gesture for a given action in the action settings.">
     Select a gesture for <ph name="SELECTED_ACTION">$1<ex>Click a mouse button</ex></ph>
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECT_GESTURE_SUBTITLE" desc="Subtitle for dialog page to select a gesture for a given action in the action settings.">
-    Selecting an already assigned gesture will remove it from its original action
-  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_TITLE" desc="Title for dialog page to set the confidence threshold for a gesture.">
     Gesture setting: <ph name="SELECTED_GESTURE">$1<ex>Eyes blink</ex></ph>
   </message>
@@ -1583,14 +1580,20 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_MAX_LABEL" desc="Label for the 'Stable' side of the FaceGaze velocity threshold slider.'">
     Stable
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CONFLICTING_GESTURES_SINGLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with another gesture.">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_GESTURE_ALREADY_ASSIGNED_LABEL" desc="Label that is shown when the user is attempting to bind a gesture that is already assigned.">
+    Selecting an already assigned gesture will remove it from its original action.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_SINGLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with another gesture.">
     "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE">$2<ex>Squint left eye</ex></ph>". If possible, try picking a different gesture.
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CONFLICTING_GESTURES_DOUBLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with two other gestures.">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_DOUBLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with two other gestures.">
     "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE_ONE">$2<ex>Squint left eye</ex></ph>" and "<ph name="CONFLICTING_GESTURE_TWO">$3<ex>Squint right eye</ex></ph>". If possible, try picking a different gesture.
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CONFLICTING_GESTURES_TRIPLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with three other gestures.">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_TRIPLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with three other gestures.">
     "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE_ONE">$2<ex>Squint left eye</ex></ph>", "<ph name="CONFLICTING_GESTURE_TWO">$3<ex>Squint right eye</ex></ph>", and "<ph name="CONFLICTING_GESTURE_THREE">$4<ex>Blink eyes</ex></ph>". If possible, try picking a different gesture.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_COMBINED_LABEL" desc="Label that is shown when the user is attempting to bind a gesture that is already assigned and conflicts with other gestures.">
+    <ph name="ALREADY_ASSIGNED_MESSAGE">$1<ex>Selecting an already assigned gesture will remove it from its original action.</ex></ph> <ph name="CONFLICTING_GESTURES_MESSAGE">$2<ex>Smile may overlap with squint left eye. If possible, try picking a different gesture.</ex></ph>
   </message>
   <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL" desc="The label of a setting that flashes the screen in a color when a notification is received.">
     Flash notifications

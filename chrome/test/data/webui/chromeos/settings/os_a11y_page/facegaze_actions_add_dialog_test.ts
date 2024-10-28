@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, AssignedKeyCombo, ConflictingGestures, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
@@ -28,6 +28,11 @@ declare global {
     'facegaze-command-pair-added': CustomEvent<FaceGazeCommandPair>;
   }
 }
+
+const gestureAlreadyAssignedWarning = 'Selecting an already assigned ' +
+    'gesture will remove it from its original action';
+const gestureConflictsWarningPart = 'If possible, try picking a different ' +
+    'gesture';
 
 suite('<facegaze-actions-add-dialog>', () => {
   let faceGazeAddActionDialog: FaceGazeAddActionDialogElement;
@@ -253,11 +258,11 @@ suite('<facegaze-actions-add-dialog>', () => {
     return previousButton;
   }
 
-  function getConflictingGestureContainer(): HTMLElement|null {
-    const text: HTMLElement|null =
+  function getWarningContainer(): HTMLElement|null {
+    const container: HTMLElement|null =
         faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLElement>(
-            '#conflictingGestureContainer');
-    return text;
+            '#warningContainer');
+    return container;
   }
 
   function getThresholdPreviousButton(): CrButtonElement {
@@ -964,7 +969,28 @@ suite('<facegaze-actions-add-dialog>', () => {
         assertEquals('30%', sliderBar.style.width);
       });
 
-  test('conflicting gesture text visible', async () => {
+  test(
+      'no warning text because conflicting gestures not assigned', async () => {
+        await initPage();
+        setActionsListSelectionToMouseClick();
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        await flushTasks();
+
+        assertGesturesListNoSelection();
+
+        // No gestures are selected yet, so there should be no warning.
+        assertFalse(!!getWarningContainer());
+
+        for (const gesture of Object.values(FacialGesture)) {
+          setGesturesListSelection(gesture);
+          await flushTasks();
+          assertFalse(!!getWarningContainer());
+        }
+      });
+
+  test('warning text because gesture already assigned', async () => {
     await initPage();
     setActionsListSelectionToMouseClick();
     const actionNextButton = getActionNextButton();
@@ -974,20 +1000,63 @@ suite('<facegaze-actions-add-dialog>', () => {
 
     assertGesturesListNoSelection();
 
-    for (const gesture of Object.keys(ConflictingGestures)) {
-      // Ensure a valid string is displayed for all gestures that have
-      // conflicts.
-      setGesturesListSelection(gesture as FacialGesture);
-      await flushTasks();
+    // No gestures are selected yet, so there should be no warning.
+    let container = getWarningContainer();
+    assertFalse(!!container);
 
-      const container = getConflictingGestureContainer();
-      assertTrue(!!container);
-      assertFalse(container.hidden);
-      assertTrue(Boolean(container.innerText));
-    }
+    // Select an already assigned gesture.
+    faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+        .value[FacialGesture.BROW_INNER_UP] = MacroName.MOUSE_CLICK_RIGHT;
+    setGesturesListSelection(FacialGesture.BROW_INNER_UP);
+
+    await flushTasks();
+
+    container = getWarningContainer();
+    assertTrue(!!container);
+    assertTrue(isVisible(container));
+    // Ensure that only the already assigned warning is visible.
+    assertTrue(container.innerText.includes(gestureAlreadyAssignedWarning));
+    assertFalse(container.innerText.includes(gestureConflictsWarningPart));
   });
 
-  test('conflicting gesture text hidden', async () => {
+  test(
+      'warning text because gesture already assigned and has conflicting gesture',
+      async () => {
+        await initPage();
+        setActionsListSelectionToMouseClick();
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        await flushTasks();
+
+        assertGesturesListNoSelection();
+
+        // No gestures are selected yet, so there should be no warning.
+        let container = getWarningContainer();
+        assertFalse(!!container);
+
+        // Set gesture to macro bindings.
+        faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+            .value[FacialGesture.MOUTH_SMILE] = MacroName.MOUSE_CLICK_RIGHT;
+        faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+            .value[FacialGesture.EYE_SQUINT_LEFT] =
+            MacroName.OPEN_FACEGAZE_SETTINGS;
+
+        // Select an already assigned gesture that also has conflicts assigned.
+        setGesturesListSelection(FacialGesture.MOUTH_SMILE);
+
+        await flushTasks();
+
+        container = getWarningContainer();
+        assertTrue(!!container);
+        assertTrue(isVisible(container));
+        // Ensure that both the already assigned warning and conflicting gesture
+        // warning are visible.
+        assertTrue(container.innerText.includes(gestureAlreadyAssignedWarning));
+        assertTrue(container.innerText.includes(gestureConflictsWarningPart));
+      });
+
+  test('warning text because conflicting gesture is assigned', async () => {
     await initPage();
     setActionsListSelectionToMouseClick();
     const actionNextButton = getActionNextButton();
@@ -997,15 +1066,25 @@ suite('<facegaze-actions-add-dialog>', () => {
 
     assertGesturesListNoSelection();
 
-    for (const gesture of Object.values(FacialGesture)) {
-      if (gesture in ConflictingGestures) {
-        continue;
-      }
+    // No gestures are selected yet, so there should be no warning.
+    let container = getWarningContainer();
+    assertFalse(!!container);
 
-      // Ensure text is hidden for gestures that don't have conflicts.
-      setGesturesListSelection(gesture as FacialGesture);
-      await flushTasks();
-      assertFalse(!!getConflictingGestureContainer());
-    }
+    // Set gesture to macro bindings.
+    faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+        .value[FacialGesture.EYE_SQUINT_LEFT] =
+        MacroName.OPEN_FACEGAZE_SETTINGS;
+
+    // Select a gesture that has conflicts assigned.
+    setGesturesListSelection(FacialGesture.MOUTH_SMILE);
+
+    await flushTasks();
+
+    container = getWarningContainer();
+    assertTrue(!!container);
+    assertTrue(isVisible(container));
+    // Ensure that only the gesture conflict warning is visible.
+    assertTrue(container.innerText.includes(gestureConflictsWarningPart));
+    assertFalse(container.innerText.includes(gestureAlreadyAssignedWarning));
   });
 });

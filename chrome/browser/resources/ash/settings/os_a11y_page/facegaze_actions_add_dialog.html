@@ -157,13 +157,7 @@
     fill: var(--cros-icon-color-warning);
   }
 
-  #headerContainer {
-    align-items: center;
-    display: flex;
-    gap: 4px;
-  }
-
-  #conflictingGestureContainer {
+  #warningContainer {
     display: flex;
     gap: 8px;
   }
@@ -260,10 +254,6 @@
     <div id="title" tabindex="-1" slot="title">
       [[localizedSelectGestureTitle_]]
     </div>
-    <div id="headerContainer" slot="header">
-      <iron-icon icon="cr:warning"></iron-icon>
-      <div>$i18n{faceGazeActionsDialogSelectGestureSubtitle}</div>
-    </div>
     <div id="dialogBody" slot="body" scrollable>
       <iron-list id="faceGazeAvailableGesturesList"
           scroll-target="dialogBody"
@@ -308,12 +298,11 @@
         </cr-button>
       </div>
     </div>
-
     <template is="dom-if"
-        if="[[getConflictingGestureDisplayText_(selectedGesture_)]]" restamp>
-      <div id="conflictingGestureContainer" tabindex="-1" slot="footer">
+        if="[[getWarningDisplayText_(selectedGesture_)]]" restamp>
+      <div id="warningContainer" tabindex="-1" slot="footer">
         <iron-icon icon="cr:warning"></iron-icon>
-        <div>[[getConflictingGestureDisplayText_(selectedGesture_)]]</div>
+        <div id="warningText">[[getWarningDisplayText_(selectedGesture_)]]</div>
       </div>
     </template>
   </template>
