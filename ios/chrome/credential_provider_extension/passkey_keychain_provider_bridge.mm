@@ -13,14 +13,9 @@ typedef void (^FetchKeysCompletionBlock)(
 
 namespace {
 
-// Returns the security domain secret from the vault keys.
-NSData* GetSecurityDomainSecret(
-    const PasskeyKeychainProvider::SharedKeyList& keyList) {
-  if (keyList.empty()) {
-    return nil;
-  }
-  // TODO(crbug.com/355041765): Do we need to handle multiple keys?
-  return [NSData dataWithBytes:keyList[0].data() length:keyList[0].size()];
+// Returns the security domain secret from the vault key.
+NSData* GetSecurityDomainSecret(const PasskeyKeychainProvider::SharedKey key) {
+  return [NSData dataWithBytes:key.data() length:key.size()];
 }
 
 }  // namespace
@@ -196,9 +191,11 @@ NSData* GetSecurityDomainSecret(
                  keyList:(const PasskeyKeychainProvider::SharedKeyList&)keyList
        canReauthenticate:(BOOL)canReauthenticate {
   if (!keyList.empty()) {
+    // TODO(crbug.com/355041765): Do we need to handle multiple keys?
+    const PasskeyKeychainProvider::SharedKey key = std::move(keyList[0]);
     // On success, check degraded recoverability.
     auto degradedRecoverabilityCompletion = ^(NSError* error) {
-      completion(error ? nil : GetSecurityDomainSecret(keyList));
+      completion(error ? nil : GetSecurityDomainSecret(std::move(key)));
     };
     [self checkDegradedRecoverabilityForGaia:gaia
                                   completion:degradedRecoverabilityCompletion];
