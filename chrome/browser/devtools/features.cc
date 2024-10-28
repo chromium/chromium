@@ -85,6 +85,22 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         /*default_value=*/DevToolsFreestylerUserTier::kBeta,
         &devtools_freestyler_user_tier_options};
 
+// Whether the DevTools resource explainer assistant is enabled.
+BASE_FEATURE(kDevToolsAiAssistanceNetworkAgent,
+             "DevToolsAiAssistanceNetworkAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kDevToolsAiAssistanceNetworkAgentModelId{
+    &kDevToolsAiAssistanceNetworkAgent, "aida_model_id",
+    /*default_value=*/""};
+const base::FeatureParam<double> kDevToolsAiAssistanceNetworkAgentTemperature{
+    &kDevToolsAiAssistanceNetworkAgent, "aida_temperature",
+    /*default_value=*/-1};
+const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiAssistanceNetworkAgentUserTier{
+        &kDevToolsAiAssistanceNetworkAgent, "user_tier",
+        /*default_value=*/DevToolsFreestylerUserTier::kPublic,
+        &devtools_freestyler_user_tier_options};
+
 // Whether the DevTools AI Assistance Performance Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistancePerformanceAgentDogfood,
              "DevToolsAiAssistancePerformanceAgentDogfood",
@@ -103,6 +119,24 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         /*default_value=*/DevToolsFreestylerUserTier::kBeta,
         &devtools_freestyler_user_tier_options};
 
+// Whether the DevTools AI Assistance Performance Agent is enabled.
+BASE_FEATURE(kDevToolsAiAssistancePerformanceAgent,
+             "DevToolsAiAssistancePerformanceAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string>
+    kDevToolsAiAssistancePerformanceAgentModelId{
+        &kDevToolsAiAssistancePerformanceAgent, "aida_model_id",
+        /*default_value=*/""};
+const base::FeatureParam<double>
+    kDevToolsAiAssistancePerformanceAgentTemperature{
+        &kDevToolsAiAssistancePerformanceAgent, "aida_temperature",
+        /*default_value=*/-1};
+const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiAssistancePerformanceAgentUserTier{
+        &kDevToolsAiAssistancePerformanceAgent, "user_tier",
+        /*default_value=*/DevToolsFreestylerUserTier::kPublic,
+        &devtools_freestyler_user_tier_options};
+
 // Whether the DevTools AI Assistance File Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceFileAgentDogfood,
              "DevToolsAiAssistanceFileAgentDogfood",
@@ -119,6 +153,22 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsAiAssistanceFileAgentDogfoodUserTier{
         &kDevToolsAiAssistanceFileAgentDogfood, "user_tier",
         /*default_value=*/DevToolsFreestylerUserTier::kBeta,
+        &devtools_freestyler_user_tier_options};
+
+// Whether the DevTools AI Assistance File Agent is enabled.
+BASE_FEATURE(kDevToolsAiAssistanceFileAgent,
+             "DevToolsAiAssistanceFileAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kDevToolsAiAssistanceFileAgentModelId{
+    &kDevToolsAiAssistanceFileAgent, "aida_model_id",
+    /*default_value=*/""};
+const base::FeatureParam<double> kDevToolsAiAssistanceFileAgentTemperature{
+    &kDevToolsAiAssistanceFileAgent, "aida_temperature",
+    /*default_value=*/-1};
+const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiAssistanceFileAgentUserTier{
+        &kDevToolsAiAssistanceFileAgent, "user_tier",
+        /*default_value=*/DevToolsFreestylerUserTier::kPublic,
         &devtools_freestyler_user_tier_options};
 
 // Whether an infobar is shown when the process is shared.
