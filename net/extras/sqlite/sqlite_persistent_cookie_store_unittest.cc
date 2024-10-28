@@ -34,8 +34,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "crypto/encryptor.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/aes_cbc.h"
 #include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
@@ -85,22 +84,22 @@ class CookieCryptor : public CookieCryptoDelegate {
   bool init_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool initing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<crypto::SymmetricKey> key_;
-  crypto::Encryptor encryptor_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CookieCryptor> weak_ptr_factory_{this};
 };
 
-CookieCryptor::CookieCryptor()
-    : key_(crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES,
-          "password",
-          "saltiest",
-          1000,
-          256)) {
-  std::string iv("the iv: 16 bytes");
-  encryptor_.Init(key_.get(), crypto::Encryptor::CBC, iv);
+constexpr std::array<uint8_t, 32> kFixedKey{
+    'c', 'o', 'o', 'k', 'i', 'e', 'c', 'r', 'y', 'p', 't',
+    'o', 'r', 'i', 's', 'a', 'u', 's', 'e', 'f', 'u', 'l',
+    't', 'e', 's', 't', 'c', 'l', 'a', 's', 's', '!',
+};
+constexpr std::array<uint8_t, 16> kFixedIv{
+    't', 'h', 'e', ' ', 'i', 'v', ':', ' ',
+    '1', '6', ' ', 'b', 'y', 't', 'e', 's',
+};
+
+CookieCryptor::CookieCryptor() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -142,7 +141,10 @@ bool CookieCryptor::EncryptString(const std::string& plaintext,
     ciphertext->clear();
     return true;
   }
-  return encryptor_.Encrypt(plaintext, ciphertext);
+  auto result = crypto::aes_cbc::Encrypt(kFixedKey, kFixedIv,
+                                         base::as_byte_span(plaintext));
+  ciphertext->assign(result.begin(), result.end());
+  return true;
 }
 
 bool CookieCryptor::DecryptString(const std::string& ciphertext,
@@ -155,7 +157,14 @@ bool CookieCryptor::DecryptString(const std::string& ciphertext,
     plaintext->clear();
     return true;
   }
-  return encryptor_.Decrypt(ciphertext, plaintext);
+  auto result = crypto::aes_cbc::Decrypt(kFixedKey, kFixedIv,
+                                         base::as_byte_span(ciphertext));
+  if (result.has_value()) {
+    plaintext->assign(result->begin(), result->end());
+    return true;
+  }
+
+  return false;
 }
 
 void CookieCryptor::InitComplete() {
