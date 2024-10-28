@@ -623,7 +623,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUsePLAddressModel,
       features::kAutofillEnableExpirationDateImprovements,
       // Other improvements.
-      features::kAutofillEnableCacheForRegexMatching};
+      features::kAutofillEnableCacheForRegexMatching,
+      features::kAutofillEnableSupportForParsingWithSharedLabels};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
