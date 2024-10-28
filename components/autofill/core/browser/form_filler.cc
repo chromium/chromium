@@ -519,7 +519,6 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
     FormStructure& form_structure,
     const AutofillField& autofill_trigger_field,
     const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
-  LOG(ERROR) << "\n\n\n" << __func__ << "\n\n\n";
   std::vector<FormFieldData> result_fields = form.fields();
   // Previously, the following if statement wasn't there and instead a CHECK
   // expecting equal number of fields in `form` and `form_structure`. However,
