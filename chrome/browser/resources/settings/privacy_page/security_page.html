@@ -166,6 +166,9 @@
             </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingStandard"
+            no-collapse="[[computeSafeBrowsingStandardNoCollapse_(
+                            hideExtendedReportingRadioButton_,
+                            enablePasswordLeakToggleMove_)]]"
             name="[[safeBrowsingSettingEnum_.STANDARD]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingStandard}"

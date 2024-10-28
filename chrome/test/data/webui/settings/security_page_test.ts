@@ -1179,6 +1179,68 @@ suite('SafeBrowsing', function() {
 
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionNoCollapse', async function() {
+    // The Standard Protection radio button should not have a dropdown when
+    // these two flags are BOTH enabled and when the PasswordLeakToggleMove
+    // feature is enabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: true,
+      hashPrefixRealTimeLookupsSamplePing: true,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertTrue(page.$.safeBrowsingStandard.noCollapse);
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionCollapseVisibleCase1', async function() {
+    // The Standard Protection radio button should have a dropdown if any
+    // one of these flags are disabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: false,
+      hashPrefixRealTimeLookupsSamplePing: true,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertFalse(page.$.safeBrowsingStandard.noCollapse);
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionCollapseVisibleCase2', async function() {
+    // The Standard Protection radio button should have a dropdown if any
+    // one of these flags are disabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: true,
+      hashPrefixRealTimeLookupsSamplePing: false,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertFalse(page.$.safeBrowsingStandard.noCollapse);
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionCollapseVisibleCase3', async function() {
+    // The Standard Protection radio button should have a dropdown if the
+    // PasswordLeakToggleMove is disabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: true,
+      hashPrefixRealTimeLookupsSamplePing: true,
+      enablePasswordLeakToggleMove: false,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertFalse(page.$.safeBrowsingStandard.noCollapse);
+  });
 });
 
 async function clickCancelOnDisableSafebrowsingDialog(

@@ -499,6 +499,11 @@ export class SettingsSecurityPageElement extends
     return subLabel;
   }
 
+  private computeSafeBrowsingStandardNoCollapse_(): boolean {
+    return this.hideExtendedReportingRadioButton_ &&
+        this.enablePasswordLeakToggleMove_;
+  }
+
   // Conversion helper for binding Integer pref values as String values.
   // For ControlledRadioButton elements, the name attribute must be of String
   // type in order to correctly match for the PrefControlMixin.
