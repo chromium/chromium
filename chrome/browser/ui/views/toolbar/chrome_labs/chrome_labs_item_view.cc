@@ -224,7 +224,13 @@ ChromeLabsItemView::ChromeLabsItemView(
                           0, 0))
                   .SetProperty(
                       views::kFlexBehaviorKey,
+                      // FlexSpecification has multiple constructors, and if no
+                      // direction is specified, the settings will be used in
+                      // both horizontal and vertical directions. Therefore, we
+                      // must specify the horizontal direction. Otherwise, the
+                      // vertical height will be stretched.
                       views::FlexSpecification(
+                          views::LayoutOrientation::kHorizontal,
                           views::MinimumFlexSizeRule::kPreferred,
                           views::MaximumFlexSizeRule::kUnbounded)
                           .WithAlignment(views::LayoutAlignment::kEnd)))
