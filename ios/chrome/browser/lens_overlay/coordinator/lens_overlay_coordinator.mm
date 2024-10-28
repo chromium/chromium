@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/lens/lens_overlay_first_interaction_type.h"
 #import "components/lens/lens_overlay_metrics.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -161,6 +163,8 @@ const CGFloat kMenuSymbolSize = 18;
   LensOverlayPanTracker* _windowPanTracker;
   /// Used to monitor the results sheet position relative to the container.
   CADisplayLink* _displayLink;
+  /// Command handler for loadQueryCommands.
+  id<LoadQueryCommands> _loadQueryHandler;
 
   /// Orchestrates the change in detents of the associated bottom sheet.
   LensOverlayDetentsManager* _detentsManager;
@@ -271,6 +275,8 @@ const CGFloat kMenuSymbolSize = 18;
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensOverlayCommands)];
+  _loadQueryHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), LoadQueryCommands);
 }
 
 - (void)stop {
@@ -312,7 +318,7 @@ const CGFloat kMenuSymbolSize = 18;
   // The instance that creates the Lens UI designates itself as the command
   // handler for the associated tab.
   _associatedTabHelper->SetLensOverlayCommandsHandler(self);
-  _associatedTabHelper->SetLensOverlayShown(true);
+  _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(true);
 
   __weak __typeof(self) weakSelf = self;
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
@@ -441,7 +447,7 @@ const CGFloat kMenuSymbolSize = 18;
   // The reason the UI is destroyed can be that Omnient gets associated to a
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
-    _associatedTabHelper->SetLensOverlayShown(false);
+    _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(false);
     _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
     _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
@@ -651,7 +657,12 @@ const CGFloat kMenuSymbolSize = 18;
   _associatedTabHelper->RecordViewportSnaphot();
   _associatedTabHelper->RecordSheetDimensionState(
       _detentsManager.sheetDimension);
-  [self openURLInNewTab:URL];
+  if (IsLensOverlaySameTabNavigationEnabled()) {
+    [_loadQueryHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
+                     immediately:YES];
+  } else {
+    [self openURLInNewTab:URL];
+  }
 }
 
 #pragma mark - LensOverlayResultConsumer

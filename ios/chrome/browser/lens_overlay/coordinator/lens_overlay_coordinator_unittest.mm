@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -109,6 +110,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
 
+    load_query_handler_ = OCMProtocolMock(@protocol(LoadQueryCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:load_query_handler_
+                     forProtocol:@protocol(LoadQueryCommands)];
+
     // Tab helper
     web_state_ = std::make_unique<web::FakeWebState>();
     LensOverlayTabHelper::CreateForWebState(web_state_.get());
@@ -191,6 +197,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id dispatcher_;
   raw_ptr<LensOverlayTabHelper> tab_helper_;
   id<ApplicationCommands> application_handler_;
+  id<LoadQueryCommands> load_query_handler_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
@@ -207,7 +214,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldMarkOverlayShownWhenUICreated) {
   [coordinator_ start];
 
   // Then the UI should not be shown to the user.
-  EXPECT_FALSE(tab_helper_->IsLensOverlayShown());
+  EXPECT_FALSE(tab_helper_->IsLensOverlayUIAttachedAndAlive());
 
   // When the coordinator is asked to create and show the UI.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
@@ -216,7 +223,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldMarkOverlayShownWhenUICreated) {
                completion:nil];
 
   // Then the UI should appear created and shown to the user.
-  EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
+  EXPECT_TRUE(tab_helper_->IsLensOverlayUIAttachedAndAlive());
 }
 
 // When the UI is destroyed the overlay should not appear shown.
@@ -231,7 +238,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDestroyTheUIUponRequest) {
                completion:nil];
 
   // Then the UI should appear created and shown to the user.
-  EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
+  EXPECT_TRUE(tab_helper_->IsLensOverlayUIAttachedAndAlive());
 
   // When the destroy command is dispatched.
   [HandlerForProtocol(dispatcher_, LensOverlayCommands)
@@ -239,7 +246,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDestroyTheUIUponRequest) {
              reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 
   // Then the UI should not appear shown anymore.
-  EXPECT_FALSE(tab_helper_->IsLensOverlayShown());
+  EXPECT_FALSE(tab_helper_->IsLensOverlayUIAttachedAndAlive());
 }
 
 // When the UI is not created the `show` command should do nothing.
@@ -359,7 +366,7 @@ TEST_F(LensOverlayCoordinatorTest,
       }));
 
   // Then the UI should appear created and shown to the user.
-  EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
+  EXPECT_TRUE(tab_helper_->IsLensOverlayUIAttachedAndAlive());
   EXPECT_TRUE([coordinator_ isUICreated]);
 
   // When UIKit delivers a low-memory warning notification.

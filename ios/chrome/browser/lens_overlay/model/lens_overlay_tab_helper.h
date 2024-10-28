@@ -35,13 +35,11 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // be invoked with `nil`.
   void CaptureFullscreenSnapshot(SnapshotCallback callback);
 
-  // Whether the lens overlay is displayed by the current tab helper.
-  bool IsLensOverlayShown() { return is_showing_lens_overlay_; }
+  // Whether the lens overlay UI is alive and attached to the tab helper.
+  bool IsLensOverlayUIAttachedAndAlive() { return is_ui_attached_and_alive_; }
 
-  // Whether the lens overlay is displayed by the current tab helper.
-  void SetLensOverlayShown(bool is_showing_lens_overlay) {
-    is_showing_lens_overlay_ = is_showing_lens_overlay;
-  }
+  // Whether the lens overlay UI is alive and attached to the tab helper.
+  void SetLensOverlayUIAttachedAndAlive(bool is_ui_attached_and_alive);
 
   // Whether there is an ongoing snapshot capture.
   bool IsCapturingLensOverlaySnapshot() {
@@ -114,8 +112,8 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // Responsible for taking snapshots for the lens overlay
   std::unique_ptr<LensOverlaySnapshotController> snapshot_controller_;
 
-  // Tracks if lens overlay is displayed by the current tab helper
-  bool is_showing_lens_overlay_ = false;
+  // Tracks if lens overlay UI is alive and attached to the this tab helper.
+  bool is_ui_attached_and_alive_ = false;
 
   // Tracks whether there is a snapshot capture in progress.
   bool is_capturing_lens_overlay_snapshot_ = false;
@@ -128,6 +126,10 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   SheetDimensionState sheet_dimension_state_ = SheetDimensionStateHidden;
 
   UIImage* viewport_snapshot_;
+
+  // Stores the navigation id at which the lens overlay is invoked.
+  int invokation_navigation_id_ = 0;
+
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;

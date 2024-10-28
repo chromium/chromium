@@ -3460,9 +3460,9 @@ enum class ToolbarKind {
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
 
-  BOOL webStateHasLensOverlay = IsLensOverlayAvailable() &&
-                                lensOverlayTabHelper &&
-                                lensOverlayTabHelper->IsLensOverlayShown();
+  BOOL webStateHasLensOverlay =
+      IsLensOverlayAvailable() && lensOverlayTabHelper &&
+      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 

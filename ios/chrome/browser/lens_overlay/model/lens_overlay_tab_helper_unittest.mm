@@ -76,7 +76,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
 
 // Test that web state destruction causes lens UI to destroy with no animation.
 TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestruction) {
-  helper_->SetLensOverlayShown(true);
+  helper_->SetLensOverlayUIAttachedAndAlive(true);
   OCMExpect([mock_commands_handler_
       destroyLensUI:NO
              reason:lens::LensOverlayDismissalSource::kTabClosed]);
@@ -90,7 +90,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldNotDestroyUIOnWebStateDestruction) {
   [[[mock_commands_handler_ reject] ignoringNonObjectArgs]
       destroyLensUI:[OCMArg any]
              reason:lens::LensOverlayDismissalSource::kTabClosed];
-  helper_->SetLensOverlayShown(false);
+  helper_->SetLensOverlayUIAttachedAndAlive(false);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
@@ -98,7 +98,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldNotDestroyUIOnWebStateDestruction) {
 // Tests that a change in the web state is propagated to the commands handler.
 TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
   // Given a shown lens overlay state.
-  helper_->SetLensOverlayShown(true);
+  helper_->SetLensOverlayUIAttachedAndAlive(true);
   // Then the Lens UI should be shown.
   OCMExpect([mock_commands_handler_ showLensUI:YES]);
   // When the tab helper is notify of a change in the web state.
@@ -110,7 +110,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
 // Tests that a change in the web state is propagated to the commands handler.
 TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
   // Given a shown lens overlay state.
-  helper_->SetLensOverlayShown(true);
+  helper_->SetLensOverlayUIAttachedAndAlive(true);
   // Then the Lens UI should be hidden.
   OCMExpect([mock_commands_handler_ hideLensUI:YES]);
   // When the tab helper is notify of a change in the web state.
@@ -123,7 +123,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
 // handler when the lens overlay is not shown.
 TEST_F(LensOverlayTabHelperTest, ShouldNotChangeUIStateWhenOverlayIsNotShown) {
   // Given a lens overlay not show.
-  helper_->SetLensOverlayShown(false);
+  helper_->SetLensOverlayUIAttachedAndAlive(false);
   // Then the Lens UI methods should not be called.
   OCMReject([mock_commands_handler_ showLensUI:YES]);
   OCMReject([mock_commands_handler_ hideLensUI:YES]);
