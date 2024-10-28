@@ -179,33 +179,6 @@ function test_transferToGPUTexture_untouched_canvas(device, canvas) {
 }
 
 /**
- * Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
- * texture.
- */
-async function test_transferToGPUTexture_unbalanced_access(
-      adapterInfo, device, canvas) {
-  // Skip this test on Mac Swiftshader.
-  if (isMacSwiftShader(adapterInfo)) {
-    return;
-  }
-
-  // Begin a WebGPU access session.
-  const ctx = canvas.getContext('2d');
-  const tex1 = ctx.transferToGPUTexture({device: device,
-                                      usage: GPUTextureUsage.COPY_DST |
-                                             GPUTextureUsage.COPY_SRC});
-
-  // Start a second WebGPU access session, destroying the first texture.
-  const tex2 = ctx.transferToGPUTexture({device: device,
-                                      usage: GPUTextureUsage.COPY_DST |
-                                             GPUTextureUsage.COPY_SRC});
-
-  // Only the second texture should remain in an undestroyed state.
-  assert_true(await isTextureDestroyed(device, tex1));
-  assert_false(await isTextureDestroyed(device, tex2));
-}
-
-/**
 /**
  * transferToGPUTexture() should create a texture which honors the requested
  * usage flags.
