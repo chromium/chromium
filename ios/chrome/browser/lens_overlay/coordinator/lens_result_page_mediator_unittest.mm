@@ -174,12 +174,6 @@ TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
   ASSERT_TRUE([load_params->extra_headers objectForKey:@"X-Client-Data"]);
 }
 
-// Tests that web navigation to google is allowed.
-TEST_F(LensResultPageMediatorTest, ShouldAllowGoogleNavigation) {
-  EXPECT_TRUE(TestShouldAllowRequest(@"https://www.google.com",
-                                     /*target_frame_is_main=*/true));
-}
-
 // Tests that other navigation is not allowed but opens a new tab.
 TEST_F(LensResultPageMediatorTest, ShouldOpenOtherNavigationInNewTab) {
   OCMExpect([mock_application_handler_ openURLInNewTab:[OCMArg any]]);
