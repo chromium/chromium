@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
@@ -30,6 +31,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.url.GURL;
 
@@ -82,6 +84,13 @@ public class AuxiliarySearchProvider {
                     MAX_FAVICON_NUMBER_PARAM,
                     DEFAULT_FAVICON_NUMBER);
 
+    private static final String USE_LARGE_FAVICON_PARAM = "use_large_favicon";
+    public static final BooleanCachedFieldTrialParameter USE_LARGE_FAVICON =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
+                    USE_LARGE_FAVICON_PARAM,
+                    false);
+
     private final Context mContext;
     private final Profile mProfile;
     private final AuxiliarySearchBridge mAuxiliarySearchBridge;
@@ -102,8 +111,11 @@ public class AuxiliarySearchProvider {
         mTabModelSelector = tabModelSelector;
         mTabMaxAgeMillis = getTabsMaxAgeMs();
         mFaviconHelper = new FaviconHelper();
+        Resources resources = mContext.getResources();
         mDefaultFaviconSize =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
+                USE_LARGE_FAVICON.getValue()
+                        ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
+                        : resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
         mMaxFaviconNumber = MAX_FAVICON_NUMBER.getValue();
     }

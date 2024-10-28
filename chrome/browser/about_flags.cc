@@ -2663,6 +2663,16 @@ const FeatureEntry::FeatureVariation
          std::size(kPhotoPickerAdoptionStudyChromePickerWithoutBrowse),
          nullptr}};
 
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_UseLargeFavicon[] = {
+        {"use_large_favicon", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kAndroidAppIntegrationWithFaviconVariations[] = {
+        {"Use large favicon", kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
+         std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon),
+         nullptr}};
+
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
     {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
@@ -6222,7 +6232,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationWithFaviconName,
      flag_descriptions::kAndroidAppIntegrationWithFaviconDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegrationWithFavicon)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidAppIntegrationWithFavicon,
+         kAndroidAppIntegrationWithFaviconVariations,
+         "AndroidAppIntegrationWithFavicon")},
+
     {"android-bottom-toolbar", flag_descriptions::kAndroidBottomToolbarName,
      flag_descriptions::kAndroidBottomToolbarDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidBottomToolbar)},
