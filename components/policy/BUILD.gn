@@ -248,7 +248,7 @@ proto_library("chrome_settings_proto_generated_compile_proto") {
   component_build_force_source_set = true
   defines = [ "POLICY_CHROME_SETTINGS_PROTO_COMPILATION" ]
 
-  link_deps =
+  deps =
       [ "//components/policy/proto:policy_common_definitions_compile_proto" ]
   proto_deps = [ ":policy_code_generate" ]
 }
