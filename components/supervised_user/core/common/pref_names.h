@@ -128,14 +128,6 @@ inline constexpr char kSupervisedUserSharedSettings[] =
 inline constexpr char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";
 
-// An integer pref that stores the current state of the interstitial banner for
-// a supervised user (SupervisedUserFilter::FirstTimeInterstitialBannerState):
-// 0: kNeedToShow
-// 1: kSetupComplete
-// 2: kUnknown
-inline constexpr char kFirstTimeInterstitialBannerState[] =
-    "profile.managed.banner_state";
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // An integer pref that stores the current state of the local extension

@@ -53,9 +53,6 @@ void SupervisedUserService::Init() {
       prefs::kSupervisedUserId,
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
                           base::Unretained(this)));
-  user_prefs_->SetInteger(
-      prefs::kFirstTimeInterstitialBannerState,
-      static_cast<int>(FirstTimeInterstitialBannerState::kSetupComplete));
   SetActive(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
 }
 

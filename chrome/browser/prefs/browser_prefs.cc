@@ -1128,6 +1128,10 @@ inline constexpr char kWallpaperSeaPenMigrationStatus[] =
     "ash.wallpaper.sea_pen.migration_status";
 #endif
 
+// Deprecated 10/2024
+inline constexpr char kFirstTimeInterstitialBannerState[] =
+    "profile.managed.banner_state";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1594,6 +1598,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2024
   registry->RegisterBooleanPref(kDocumentSuggestEnabled, true);
+
+  // Deprecated 10/2024
+  registry->RegisterIntegerPref(kFirstTimeInterstitialBannerState, 0);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2946,6 +2953,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2024
   profile_prefs->ClearPref(kDocumentSuggestEnabled);
+
+  // Added 10/2024
+  profile_prefs->ClearPref(kFirstTimeInterstitialBannerState);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
