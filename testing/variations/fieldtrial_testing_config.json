@@ -15927,27 +15927,6 @@
             ]
         }
     ],
-    "OptimizeParsingDataUrls": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240711",
-                    "enable_features": [
-                        "OptimizeParsingDataUrls"
-                    ]
-                }
-            ]
-        }
-    ],
     "OrcaEnabled": [
         {
             "platforms": [
@@ -22454,28 +22433,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SigninInterceptSimpleButtons"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SimplifyLoadingTransparentPlaceholderImage": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240610",
-                    "enable_features": [
-                        "OptimizeLoadingDataUrls",
-                        "SimplifyLoadingTransparentPlaceholderImage"
                     ]
                 }
             ]
