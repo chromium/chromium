@@ -3495,7 +3495,7 @@ fuzzer_test("disk_cache_lpm_fuzzer") {
 proto_library("backoff_entry_serializer_fuzzer_input") {
   proto_in_dir = "//"
   sources = [ "base/backoff_entry_serializer_fuzzer_input.proto" ]
-  link_deps = [ "//testing/libfuzzer/proto:json_proto" ]
+  deps = [ "//testing/libfuzzer/proto:json_proto" ]
 }
 
 fuzzer_test("net_backoff_entry_serializer_fuzzer") {
