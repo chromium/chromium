@@ -42,6 +42,11 @@ viewer-toolbar {
   }
 }
 
+#bottom {
+  display: flex;
+  justify-content: center;
+}
+
 #sidenav-container {
   overflow: hidden;
   transition: transform 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;

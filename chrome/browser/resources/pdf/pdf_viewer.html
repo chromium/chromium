@@ -65,9 +65,17 @@
     </div>
     <div id="content-focus-rectangle" ?hidden="${!this.documentHasFocus_}">
     </div>
+    <if expr="enable_pdf_ink2">
+      ${this.shouldShowInkBottomToolbar_() ? html`
+        <div id="bottom">
+          <viewer-bottom-toolbar .currentType="${this.currentBrushType_}"
+              @current-type-changed="${this.onBrushTypeChanged_}">
+          </viewer-bottom-toolbar>
+        </div>` : ''}
+    </if>
   </div>
   <if expr="enable_pdf_ink2">
-    ${this.inInk2AnnotationMode_() ? html`
+    ${this.shouldShowInkSidePanel_() ? html`
       <viewer-side-panel .currentColor="${this.currentBrushColor_}"
             .currentSize="${this.currentBrushSize_}"
             .currentType="${this.currentBrushType_}"

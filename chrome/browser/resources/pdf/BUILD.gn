@@ -109,6 +109,8 @@ build_webui("build") {
 
   if (enable_pdf_ink2) {
     non_web_component_files += [
+      "elements/viewer_bottom_toolbar.html.ts",
+      "elements/viewer_bottom_toolbar.ts",
       "elements/viewer_side_panel.html.ts",
       "elements/viewer_side_panel.ts",
       "elements/ink_brush_selector.html.ts",
@@ -147,6 +149,7 @@ build_webui("build") {
 
   if (enable_pdf_ink2) {
     css_files += [
+      "elements/viewer_bottom_toolbar.css",
       "elements/viewer_side_panel.css",
       "elements/ink_brush_selector.css",
       "elements/ink_color_selector.css",

@@ -7,8 +7,8 @@
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
+import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {BeforeUnloadProxy, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -452,6 +452,61 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
   });
   return mockPlugin;
 }
+
+/**
+ * Sets the reply to any getAnnotationBrush messages to `mockPlugin`.
+ * @param mockPlugin The mock plugin receiving and replying to messages.
+ * @param type The brush type in the reply message.
+ * @param size The brush size in the reply message.
+ * @param color The brush color in the reply message.
+ */
+export function setGetAnnotationBrushReply(
+    mockPlugin: MockPdfPluginElement, type: AnnotationBrushType, size: number,
+    color?: {r: number, g: number, b: number}) {
+  mockPlugin.setMessageReply('getAnnotationBrush', {data: {type, size, color}});
+}
+
+/**
+ * Tests that the current annotation brush matches `expectedBrush`. Clears all
+ * messages from `mockPlugin` after, otherwise subsequent calls would continue
+ * to find and use the same message.
+ * @param mockPlugin The mock plugin receiving messages.
+ * @param expectedBrush The expected brush that the current annotation brush
+ * should match.
+ */
+export function assertAnnotationBrush(
+    mockPlugin: MockPdfPluginElement, expectedBrush: AnnotationBrush) {
+  const setAnnotationBrushMessage =
+      mockPlugin.findMessage('setAnnotationBrush');
+  chrome.test.assertTrue(setAnnotationBrushMessage !== undefined);
+  chrome.test.assertEq('setAnnotationBrush', setAnnotationBrushMessage.type);
+  chrome.test.assertEq(expectedBrush.type, setAnnotationBrushMessage.data.type);
+  const hasColor = expectedBrush.color !== undefined;
+  chrome.test.assertEq(
+      hasColor, setAnnotationBrushMessage.data.color !== undefined);
+  if (hasColor) {
+    chrome.test.assertEq(
+        expectedBrush.color!.r, setAnnotationBrushMessage.data.color.r);
+    chrome.test.assertEq(
+        expectedBrush.color!.g, setAnnotationBrushMessage.data.color.g);
+    chrome.test.assertEq(
+        expectedBrush.color!.b, setAnnotationBrushMessage.data.color.b);
+  }
+  chrome.test.assertEq(expectedBrush.size, setAnnotationBrushMessage.data.size);
+
+  mockPlugin.clearMessages();
+}
+
+/**
+ * @param parentElement The parent element containing the
+ *     InkBrushSelectorElement.
+ * @returns The non-null brush type selector.
+ */
+export function getBrushSelector(parentElement: HTMLElement):
+    InkBrushSelectorElement {
+  return getRequiredElement(parentElement, 'ink-brush-selector');
+}
+
 
 /**
  * Helper to get a non-empty list of brush size buttons.

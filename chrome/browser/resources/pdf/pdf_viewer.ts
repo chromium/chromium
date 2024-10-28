@@ -8,6 +8,7 @@ import './elements/viewer_ink_host.js';
 // </if>
 import './elements/viewer_password_dialog.js';
 // <if expr="enable_pdf_ink2">
+import './elements/viewer_bottom_toolbar.js';
 import './elements/viewer_side_panel.js';
 // </if>
 import './elements/viewer_pdf_sidenav.js';
@@ -311,6 +312,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.onErrorDialog_();
     }
   }
+
+  // <if expr="enable_pdf_ink2">
+  override connectedCallback() {
+    super.connectedCallback();
+    this.tracker.add(window, 'resize', this.onResize_.bind(this));
+  }
+
+  override disconnectedCallback() {
+    this.tracker.removeAll();
+    super.disconnectedCallback();
+  }
+  // </if>
 
   getBackgroundColor(): number {
     return this.pdfCr23Enabled ? CR23_BACKGROUND_COLOR : BACKGROUND_COLOR;
@@ -1332,9 +1345,35 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_pdf_ink2">
   /**
+   * @return Whether the Ink bottom toolbar should be shown. It should never be
+   *     shown if the Ink side panel is shown.
+   */
+  protected shouldShowInkBottomToolbar_(): boolean {
+    return this.inInk2AnnotationMode_() && !this.shouldShowInkSidePanel_();
+  }
+
+  /**
+   * @return Whether the Ink side panel should be shown. It should never be
+   *     shown if the Ink bottom toolbar is shown. It should be shown if the
+   *     window width is at least a certain width.
+   */
+  protected shouldShowInkSidePanel_(): boolean {
+    return this.inInk2AnnotationMode_() && window.innerWidth >= 960;
+  }
+
+  /**
+   * On resize, request updates so that the correct Ink elements will be shown.
+   */
+  private onResize_() {
+    if (this.inInk2AnnotationMode_()) {
+      this.requestUpdate();
+    }
+  }
+
+  /**
    * @returns Whether the PDF viewer has Ink2 enabled and is in annotation mode.
    */
-  protected inInk2AnnotationMode_() {
+  private inInk2AnnotationMode_(): boolean {
     return this.pdfInk2Enabled_ && this.annotationMode_;
   }
   // </if>
