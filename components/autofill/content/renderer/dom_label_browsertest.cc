@@ -88,39 +88,39 @@ std::vector<TestCase> GetTests() {
 std::string LabelSourceToString(FormFieldData::LabelSource source) {
   switch (source) {
     case FormFieldData::LabelSource::kUnknown:
-      return "unknown";
+      return "NoLabel";
     case FormFieldData::LabelSource::kLabelTag:
-      return "labelTag";
+      return "LabelTag";
     case FormFieldData::LabelSource::kPTag:
-      return "pTag";
+      return "PTag";
     case FormFieldData::LabelSource::kDivTable:
-      return "divTable";
+      return "DivTable";
     case FormFieldData::LabelSource::kTdTag:
-      return "tdTag";
+      return "TdTag";
     case FormFieldData::LabelSource::kDdTag:
-      return "ddTag";
+      return "DdTag";
     case FormFieldData::LabelSource::kLiTag:
-      return "liTag";
+      return "LiTag";
     case FormFieldData::LabelSource::kPlaceHolder:
-      return "placeholder";
+      return "Placeholder";
     case FormFieldData::LabelSource::kAriaLabel:
-      return "ariaLabel";
+      return "AriaLabel";
     case FormFieldData::LabelSource::kCombined:
-      return "combined";
+      return "Combined";
     case FormFieldData::LabelSource::kValue:
-      return "value";
+      return "Value";
     case FormFieldData::LabelSource::kForId:
-      return "forId";
+      return "ForId";
     case FormFieldData::LabelSource::kForName:
-      return "forName";
+      return "ForName";
     case FormFieldData::LabelSource::kForShadowHostId:
-      return "forShadowHostId";
+      return "ForShadowHostId";
     case FormFieldData::LabelSource::kForShadowHostName:
-      return "forShadowHostName";
+      return "ForShadowHostName";
     case FormFieldData::LabelSource::kOverlayingLabel:
-      return "overlayingLabel";
+      return "OverlayingLabel";
     case FormFieldData::LabelSource::kDefaultSelectText:
-      return "defaultSelectText";
+      return "DefaultSelectText";
   }
 }
 

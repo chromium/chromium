@@ -1,33 +1,33 @@
 [ {
-   "heuristic": "forId",
+   "heuristic": "ForId",
    "label": "Nested input",
    "name": "input1"
 }, {
-   "heuristic": "forId",
+   "heuristic": "ForId",
    "label": "Label for",
    "name": "input2"
 }, {
-   "heuristic": "combined",
+   "heuristic": "Combined",
    "label": "Preceding text node",
    "name": "input3"
 }, {
-   "heuristic": "placeholder",
+   "heuristic": "Placeholder",
    "label": "placeholder",
    "name": "input4"
 }, {
-   "heuristic": "overlayingLabel",
+   "heuristic": "OverlayingLabel",
    "label": "poor man's placeholder",
    "name": "input5"
 }, {
-   "heuristic": "ariaLabel",
+   "heuristic": "AriaLabel",
    "label": "aria-label",
    "name": "input6"
 }, {
-   "heuristic": "divTable",
+   "heuristic": "DivTable",
    "label": "sibling/ancestor",
    "name": "input7"
 }, {
-   "heuristic": "defaultSelectText",
+   "heuristic": "DefaultSelectText",
    "label": "Select country",
    "name": "input8"
 } ]
