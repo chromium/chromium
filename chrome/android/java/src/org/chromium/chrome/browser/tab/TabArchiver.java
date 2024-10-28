@@ -182,7 +182,11 @@ public class TabArchiver implements TabWindowManager.Observer {
         RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
 
         for (Tab archivedTab : archivedTabs) {
-            initializePersistedTabData(archivedTab);
+            // Post initializing the tab data to prevent more work in an already heavy function.
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        initializePersistedTabData(archivedTab);
+                    });
         }
     }
 

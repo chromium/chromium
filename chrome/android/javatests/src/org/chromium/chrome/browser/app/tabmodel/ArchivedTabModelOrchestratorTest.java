@@ -170,9 +170,12 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
+        CriteriaHelper.pollUiThread(() -> mOrchestrator.getSkipSaveTabListForTesting());
         CriteriaHelper.pollUiThread(() -> 2 == mTaskRunner.mDelayedTasks.size());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
+
+        CriteriaHelper.pollUiThread(() -> !mOrchestrator.getSkipSaveTabListForTesting());
     }
 
     @Test
