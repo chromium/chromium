@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
     std::unique_ptr<ExtensionViewHost> host =
         ExtensionViewHostFactory::CreateSidePanelHost(
             extension->url(), /*browser=*/nullptr,
-            browser()->tab_strip_model()->GetActiveWebContents());
+            browser()->tab_strip_model()->GetActiveTab());
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
     EXPECT_EQ(browser(), host->GetBrowser());

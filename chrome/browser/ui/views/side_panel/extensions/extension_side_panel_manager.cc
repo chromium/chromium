@@ -34,7 +34,7 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
     SidePanelRegistry* registry)
     : profile_(browser->profile()),
       browser_(browser),
-      web_contents_(nullptr),
+      tab_interface_(nullptr),
       registry_(registry),
       for_tab_(false) {
   InitializeActions();
@@ -43,11 +43,11 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
 
 ExtensionSidePanelManager::ExtensionSidePanelManager(
     Profile* profile,
-    content::WebContents* web_contents,
+    tabs::TabInterface* tab_interface,
     SidePanelRegistry* tab_registry)
     : profile_(profile),
       browser_(nullptr),
-      web_contents_(web_contents),
+      tab_interface_(tab_interface),
       registry_(tab_registry),
       for_tab_(true) {
   InitializeActions();
@@ -159,20 +159,14 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
   MaybeRemoveActionItemForExtension(extension);
 }
 
-void ExtensionSidePanelManager::WillDiscard() {
-  for (auto& it : coordinators_) {
-    it.second->DeregisterEntry();
-  }
-}
-
 void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(
     const Extension* extension) {
   if (extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
-    coordinators_.emplace(
-        extension->id(),
-        std::make_unique<ExtensionSidePanelCoordinator>(
-            profile_, browser_, web_contents_, extension, registry_, for_tab_));
+    coordinators_.emplace(extension->id(),
+                          std::make_unique<ExtensionSidePanelCoordinator>(
+                              profile_, browser_, tab_interface_, extension,
+                              registry_, for_tab_));
   }
 }
 

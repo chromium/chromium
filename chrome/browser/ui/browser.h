@@ -871,6 +871,7 @@ class Browser : public TabStripModelObserver,
   BrowserUserEducationInterface* GetUserEducationInterface() override;
   web_app::AppBrowserController* GetAppBrowserController() override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
+  Browser* GetBrowserForMigrationOnly() override;
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();

@@ -66,6 +66,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               GetAllTabInterfaces,
               (),
               (override));
+  MOCK_METHOD(Browser*, GetBrowserForMigrationOnly, (), (override));
 
   // PageNavigator methods
   MOCK_METHOD(content::WebContents*,

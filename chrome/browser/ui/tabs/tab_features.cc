@@ -131,7 +131,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(
-          profile, tab.GetContents(), side_panel_registry_.get());
+          profile, &tab, side_panel_registry_.get());
 
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
@@ -197,10 +197,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // scoped.
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
-  extension_side_panel_manager_->WillDiscard();
-  extension_side_panel_manager_ =
-      std::make_unique<extensions::ExtensionSidePanelManager>(
-          profile, new_contents, side_panel_registry_.get());
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();

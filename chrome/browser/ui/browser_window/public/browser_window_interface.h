@@ -36,6 +36,7 @@ namespace web_modal {
 class WebContentsModalDialogHost;
 }  // namespace web_modal
 
+class Browser;
 class BrowserActions;
 class BrowserUserEducationInterface;
 class BrowserWindowFeatures;
@@ -193,6 +194,11 @@ class BrowserWindowInterface : public content::PageNavigator {
   // This is used by features that need to operate on most or all tabs in the
   // browser window. Do not use this method to find a specific tab.
   virtual std::vector<tabs::TabInterface*> GetAllTabInterfaces() = 0;
+
+  // Downcasts to a Browser*. The only valid use for this method is when
+  // migrating a large chunk of code to BrowserWindowInterface, to allow
+  // incremental migration.
+  virtual Browser* GetBrowserForMigrationOnly() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

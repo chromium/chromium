@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -16,8 +17,12 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_icon_image.h"
 
-class Browser;
+class BrowserWindowInterface;
 class SidePanelRegistry;
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace content {
 class WebContents;
@@ -41,8 +46,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
                                       public SidePanelService::Observer {
  public:
   explicit ExtensionSidePanelCoordinator(Profile* profile,
-                                         Browser* browser,
-                                         content::WebContents* web_contents,
+                                         BrowserWindowInterface* browser,
+                                         tabs::TabInterface* tab_interface,
                                          const Extension* extension,
                                          SidePanelRegistry* registry,
                                          bool for_tab);
@@ -100,9 +105,14 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // later retrieved by the side panel coordinator to show the side panel.
   void UpdateActionItemIcon();
 
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
   // Returns `browser_` if it is a global coordinator and otherwise it returns
   // the browser associated with `web_contents_`.
-  Browser* GetBrowser();
+  BrowserWindowInterface* GetBrowser();
 
   // The profile associated with either `browser_` or `web_contents_`.
   raw_ptr<Profile> profile_;
@@ -110,13 +120,13 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // The browser that owns `registry_` and the ExtensionSidePanelManager that
   // owns this class. A reference for this is kept so the side panel can be
   // closed when window.close() is called from the extension's side panel page.
-  // Only one of `browser_` or `web_contents_` should be defined.
-  raw_ptr<Browser> browser_;
+  // Only one of `browser_` or `tab_interface_` should be defined.
+  raw_ptr<BrowserWindowInterface> browser_;
 
-  // The WebContents that owns `registry_` and the ExtensionSidePanelManager
+  // The TabInterface that owns `registry_` and the ExtensionSidePanelManager
   // that owns this class. Refer to the comment for `browser_` on why this
   // reference needs to be kept.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<tabs::TabInterface> tab_interface_;
 
   // The extension that registered the side panel content that's managed by this
   // class.
@@ -142,10 +152,16 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Whether this coordinator is tab-scoped or window-scoped.
   const bool for_tab_;
 
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
       scoped_view_observation_{this};
   base::ScopedObservation<SidePanelService, SidePanelService::Observer>
       scoped_service_observation_{this};
+
+  // Must be the last member.
+  base::WeakPtrFactory<ExtensionSidePanelCoordinator> weak_factory_{this};
 };
 
 }  // namespace extensions

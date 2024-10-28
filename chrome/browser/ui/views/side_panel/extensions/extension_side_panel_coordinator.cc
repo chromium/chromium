@@ -48,20 +48,20 @@ bool IsSidePanelEnabled(const api::side_panel::PanelOptions& options) {
 
 ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     Profile* profile,
-    Browser* browser,
-    content::WebContents* web_contents,
+    BrowserWindowInterface* browser,
+    tabs::TabInterface* tab_interface,
     const Extension* extension,
     SidePanelRegistry* registry,
     bool for_tab)
     : profile_(profile),
       browser_(browser),
-      web_contents_(web_contents),
+      tab_interface_(tab_interface),
       extension_(extension),
       registry_(registry),
       for_tab_(for_tab) {
-  // Only one of `browser` or `web_contents` should be defined when constructing
-  // this class.
-  DCHECK(browser != nullptr ^ web_contents != nullptr);
+  // Only one of `browser` or `tab_interface` should be defined when
+  // constructing this class.
+  DCHECK(browser != nullptr ^ tab_interface != nullptr);
 
   // The registry should always be available for this class.
   DCHECK(registry_);
@@ -79,11 +79,18 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
         IsGlobalCoordinator()
             ? service->GetOptions(*extension, /*tab_id=*/std::nullopt)
             : service->GetSpecificOptionsForTab(
-                  *extension, ExtensionTabUtil::GetTabId(web_contents));
+                  *extension,
+                  ExtensionTabUtil::GetTabId(tab_interface_->GetContents()));
     if (IsSidePanelEnabled(options)) {
       side_panel_url_ = extension->GetResourceURL(*options.path);
       CreateAndRegisterEntry();
     }
+  }
+
+  if (tab_interface_) {
+    tab_subscriptions_.push_back(tab_interface_->RegisterWillDiscardContents(
+        base::BindRepeating(&ExtensionSidePanelCoordinator::WillDiscardContents,
+                            weak_factory_.GetWeakPtr())));
   }
 }
 
@@ -128,9 +135,9 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
 
   // Ignore changes that don't pertain to this tab id.
   std::optional<int> tab_id =
-      IsGlobalCoordinator()
-          ? std::nullopt
-          : std::make_optional(ExtensionTabUtil::GetTabId(web_contents_));
+      IsGlobalCoordinator() ? std::nullopt
+                            : std::make_optional(ExtensionTabUtil::GetTabId(
+                                  tab_interface_->GetContents()));
   if (tab_id != updated_options.tab_id) {
     return;
   }
@@ -197,7 +204,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
   host_ = ExtensionViewHostFactory::CreateSidePanelHost(
-      side_panel_url_, browser_, web_contents_);
+      side_panel_url_, browser_, tab_interface_);
 
   // `host_` could be null if `side_panel_url_` is invalid or if the extension
   // is not currently enabled. The latter can happen when the extension has
@@ -229,7 +236,7 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
     ExtensionHost* host) {
   DCHECK_EQ(host, host_.get());
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   DCHECK(browser);
 
   auto* coordinator = browser->GetFeatures().side_panel_coordinator();
@@ -286,7 +293,7 @@ void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
   std::optional<actions::ActionId> extension_action_id =
       actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
   CHECK(extension_action_id.has_value());
-  BrowserActions* browser_actions = browser_->browser_actions();
+  BrowserActions* browser_actions = browser_->GetActions();
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       extension_action_id.value(), browser_actions->root_action_item());
   if (action_item) {
@@ -294,9 +301,20 @@ void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
   }
 }
 
-Browser* ExtensionSidePanelCoordinator::GetBrowser() {
-  return IsGlobalCoordinator() ? static_cast<Browser*>(browser_)
-                               : chrome::FindBrowserWithTab(web_contents_);
+void ExtensionSidePanelCoordinator::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  DeregisterEntry();
+
+  // As this is a tab that is about to be discarded there are not yet any panel
+  // options. The entry will be reregistered in OnPanelOptionsChanged if
+  // necessary.
+}
+
+BrowserWindowInterface* ExtensionSidePanelCoordinator::GetBrowser() {
+  return IsGlobalCoordinator() ? browser_.get()
+                               : tab_interface_->GetBrowserWindowInterface();
 }
 
 }  // namespace extensions

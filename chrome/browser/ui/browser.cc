@@ -1215,6 +1215,10 @@ std::vector<tabs::TabInterface*> Browser::GetAllTabInterfaces() {
   return results;
 }
 
+Browser* Browser::GetBrowserForMigrationOnly() {
+  return this;
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);
