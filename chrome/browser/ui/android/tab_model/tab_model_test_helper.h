@@ -27,7 +27,10 @@ class TestTabModel : public TabModel {
                              NavigateParams* params) override;
   content::WebContents* CreateNewTabForDevTools(const GURL& url) override;
   bool IsSessionRestoreInProgress() const override;
+
   bool IsActiveModel() const override;
+  void SetIsActiveModel(bool is_active);
+
   TabAndroid* GetTabAt(int index) const override;
   void SetActiveIndex(int index) override;
   void CloseTabAt(int index) override;
@@ -47,6 +50,7 @@ class TestTabModel : public TabModel {
  private:
   // A fake value for the current number of tabs.
   int tab_count_ = 0;
+  bool is_active_ = false;
 
   raw_ptr<TabModelObserver> observer_ = nullptr;
   std::vector<raw_ptr<content::WebContents>> web_contents_list_;

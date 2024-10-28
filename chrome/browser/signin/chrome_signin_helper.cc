@@ -39,6 +39,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/android/view_android.h"
 #else
@@ -174,6 +176,38 @@ class ManageAccountsHeaderReceivedUserData
     : public base::SupportsUserData::Data {};
 
 #if BUILDFLAG(ENABLE_MIRROR)
+bool IsWebContentsForemost(Profile* profile,
+                           content::WebContents* web_contents,
+                           GAIAServiceType service_type) {
+#if BUILDFLAG(IS_CHROMEOS)
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  // Do not do anything if the navigation happened in the "background".
+  if (!browser || !browser->window()->IsActive()) {
+    return false;
+  }
+
+  // Record the service type.
+  base::UmaHistogramEnumeration("AccountManager.ManageAccountsServiceType",
+                                service_type);
+
+  // Ignore response to background request from another profile, so dialogs are
+  // not displayed in the wrong profile when using ChromeOS multiprofile mode.
+  if (profile != ProfileManager::GetActiveUserProfile()) {
+    return false;
+  }
+  return true;
+#elif BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kIgnoreMirrorHeadersInBackgoundTabs)) {
+    return true;
+  }
+  TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
+  return tab_model && tab_model->IsActiveModel() &&
+         tab_model->GetActiveWebContents() == web_contents;
+#else
+  return true;  // Neither ChromeOS nor Android, always consider as foremost.
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 // Processes the mirror response header on the UI thread. Currently depending
 // on the value of |header_value|, it either shows the profile avatar menu, or
 // opens an incognito window/tab.
@@ -222,26 +256,13 @@ void ProcessMirrorHeader(
       AccountReconcilorFactory::GetForProfile(profile);
   account_reconcilor->OnReceivedManageAccountsResponse(service_type);
 
-#if BUILDFLAG(IS_CHROMEOS)
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  // Do not do anything if the navigation happened in the "background".
-  if (!browser || !browser->window()->IsActive()) {
+  if (!IsWebContentsForemost(profile, web_contents, service_type)) {
+    // Don't show any UIs if the header is received in background.
     return;
   }
-
-  // Record the service type.
-  base::UmaHistogramEnumeration("AccountManager.ManageAccountsServiceType",
-                                service_type);
-
-  // Ignore response to background request from another profile, so dialogs are
-  // not displayed in the wrong profile when using ChromeOS multiprofile mode.
-  if (profile != ProfileManager::GetActiveUserProfile()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // At this point, all the early-returns have been passed, and the header is
   // actually going to be handled. So record it as such.

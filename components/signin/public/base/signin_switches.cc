@@ -217,3 +217,9 @@ extern const base::FeatureParam<bool>
         &kForceSigninFlowInProfilePicker, /*name=*/"reauth_use_add_session",
         /*default_value=*/false};
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,
+             "IgnoreMirrorHeadersInBackgoundTabs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif

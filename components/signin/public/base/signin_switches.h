@@ -183,4 +183,9 @@ extern const base::FeatureParam<bool>
     kForceSigninReauthInProfilePickerUseAddSession;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs);
+#endif
+
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_
