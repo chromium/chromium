@@ -193,14 +193,15 @@ void Resource::SetLoader(ResourceLoader* loader) {
 void Resource::CheckResourceIntegrity() {
   // Skip the check and reuse the previous check result, especially on
   // successful revalidation.
-  if (IntegrityDisposition() != ResourceIntegrityDisposition::kNotChecked)
+  if (integrity_disposition_ != ResourceIntegrityDisposition::kNotChecked) {
     return;
+  }
 
   // Loading error occurred? Then result is uncheckable.
   integrity_report_info_.Clear();
   if (ErrorOccurred()) {
     CHECK(!Data());
-    integrity_disposition_ = ResourceIntegrityDisposition::kFailed;
+    integrity_disposition_ = ResourceIntegrityDisposition::kNetworkError;
     return;
   }
 
@@ -214,10 +215,11 @@ void Resource::CheckResourceIntegrity() {
           IntegrityMetadata(), Data(), Url(), *this, integrity_report_info_)) {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
-    integrity_disposition_ = ResourceIntegrityDisposition::kFailed;
+    integrity_disposition_ =
+        ResourceIntegrityDisposition::kFailedIntegrityMetadata;
   }
 
-  DCHECK_NE(IntegrityDisposition(), ResourceIntegrityDisposition::kNotChecked);
+  DCHECK_NE(integrity_disposition_, ResourceIntegrityDisposition::kNotChecked);
 }
 
 void Resource::NotifyFinished() {

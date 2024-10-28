@@ -433,17 +433,10 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   SubresourceIntegrityHelper::DoReport(*execution_context,
                                        resource->IntegrityReportInfo());
 
-  // It is possible to get back a script resource with integrity metadata
-  // for a request with an empty integrity attribute. In that case, the
-  // integrity check should be skipped, as the integrity may not have been
-  // "meant" for this specific request. If the resource is being served from
-  // the preload cache however, we know any associated integrity metadata and
-  // checks were destined for this request, so we cannot skip the integrity
-  // check.
   bool integrity_failure = false;
-  if (!options_.GetIntegrityMetadata().empty() || resource->IsLinkPreload()) {
-    integrity_failure = resource->IntegrityDisposition() !=
-                        ResourceIntegrityDisposition::kPassed;
+  if (!options_.GetIntegrityMetadata().empty() ||
+      resource->ForceIntegrityChecks()) {
+    integrity_failure = !resource->PassedIntegrityChecks();
   }
 
   if (intervened_) {

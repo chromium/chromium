@@ -84,10 +84,8 @@ LinkLoader::LinkLoader(LinkLoaderClient* client) : client_(client) {
 }
 
 void LinkLoader::NotifyFinished(Resource* resource) {
-  if (resource->ErrorOccurred() ||
-      (resource->IsLinkPreload() &&
-       resource->IntegrityDisposition() ==
-           ResourceIntegrityDisposition::kFailed)) {
+  if (resource->ErrorOccurred() || (resource->ForceIntegrityChecks() &&
+                                    !resource->PassedIntegrityChecks())) {
     client_->LinkLoadingErrored();
   } else {
     client_->LinkLoaded();
