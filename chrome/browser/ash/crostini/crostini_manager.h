@@ -857,7 +857,7 @@ class CrostiniManager : public KeyedService,
 
   // Tries to query Concierge for the type of disk the named VM has then emits a
   // metric logging the type. Mostly happens async and best-effort.
-  void EmitVmDiskTypeMetric(const std::string vm_name);
+  void EmitVmDiskTypeMetric(const std::string& vm_name);
 
   // Runs things that should happened whenever a container shutdowns e.g.
   // triggering observers.

@@ -420,7 +420,7 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::GetRoots() const {
 }
 
 ArcTracingModel::TracingEventPtrs ArcTracingModel::Select(
-    const std::string query) const {
+    const std::string& query) const {
   ArcTracingModel::TracingEventPtrs collector;
   const std::vector<std::unique_ptr<ArcTracingEventMatcher>> selector =
       BuildSelector(query);
@@ -433,7 +433,7 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::Select(
 
 ArcTracingModel::TracingEventPtrs ArcTracingModel::Select(
     const ArcTracingEvent* event,
-    const std::string query) const {
+    const std::string& query) const {
   ArcTracingModel::TracingEventPtrs collector;
   for (const auto& child : event->children()) {
     SelectRecursively(0, child.get(), BuildSelector(query), &collector);

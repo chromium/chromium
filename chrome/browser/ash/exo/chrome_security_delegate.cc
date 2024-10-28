@@ -110,7 +110,7 @@ base::FilePath GetVmMount(const std::string& vm_name) {
 }
 
 // Translate |vm_paths| from |source| VM to host paths.
-std::vector<FileInfo> TranslateVMToHost(const std::string vm_name,
+std::vector<FileInfo> TranslateVMToHost(const std::string& vm_name,
                                         std::vector<ui::FileInfo> vm_paths) {
   std::vector<FileInfo> file_infos;
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();

@@ -155,7 +155,7 @@ void EditorSystemActuator::OnFocus(int context_id) {
   }
 }
 
-void EditorSystemActuator::QueueTextInsertion(const std::string pending_text) {
+void EditorSystemActuator::QueueTextInsertion(std::string pending_text) {
   // The text cannot be immediately inserted as the target input is not focused
   // at this point, the WebUI is focused. After closing the WebUI focus will
   // return to the original text input.

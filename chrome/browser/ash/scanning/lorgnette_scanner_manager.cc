@@ -539,7 +539,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // `list_response` based on `open_response` and will call `VerifyScanners`
   // once that has happened to verify any remaining scanners.
   void OnVerifyScanner(
-      const std::string client_id,
+      std::string client_id,
       std::vector<lorgnette::ScannerInfo> scanners_to_verify,
       lorgnette::ListScannersResponse list_response,
       GetScannerInfoListCallback callback,

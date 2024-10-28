@@ -511,13 +511,13 @@ void VolumeManager::AddSshfsCrostiniVolume(
 }
 
 void VolumeManager::AddSftpGuestOsVolume(
-    const std::string display_name,
+    std::string display_name,
     const base::FilePath& sftp_mount_path,
     const base::FilePath& remote_mount_path,
     const guest_os::VmType vm_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DoMountEvent(Volume::CreateForSftpGuestOs(display_name, sftp_mount_path,
-                                            remote_mount_path, vm_type));
+  DoMountEvent(Volume::CreateForSftpGuestOs(
+      std::move(display_name), sftp_mount_path, remote_mount_path, vm_type));
 }
 
 void VolumeManager::RemoveSshfsCrostiniVolume(

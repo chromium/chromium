@@ -192,7 +192,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // Notification sent when requested SDP search has completed.
     virtual void SdpSearchComplete(const FlossDeviceId device,
                                    const device::BluetoothUUID uuid,
-                                   const std::vector<BtSdpRecord> records) {}
+                                   const std::vector<BtSdpRecord>& records) {}
 
     // Notification sent when an SDP record has finished being created and
     // assigned a handle.

@@ -103,7 +103,7 @@ class ImageAnnotationWorker {
   void RemoveOldDirectory();
 
   // Removes deleted images from the annotation storage.
-  void FindAndRemoveDeletedFiles(const std::vector<base::FilePath> images);
+  void FindAndRemoveDeletedFiles(std::vector<base::FilePath> images);
 
   // For testing. File name annotator.
   void RunFakeImageAnnotator(ImageInfo image_info);

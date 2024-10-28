@@ -67,7 +67,7 @@ constexpr bool kStripDiacritics = true;
 // Returns:
 //    The priority rank 0, 1, ... if the app is a default app.
 //    -1 if the app is not a default app.
-int GetDefaultAppRank(const std::string app_id) {
+int GetDefaultAppRank(const std::string& app_id) {
   for (size_t i = 0; i < std::size(ranked_default_app_ids); ++i) {
     if (app_id == ranked_default_app_ids[i]) {
       return i;

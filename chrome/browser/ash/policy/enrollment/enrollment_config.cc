@@ -58,22 +58,22 @@ bool IsEnrollingAfterRollback() {
 
 // Returns the license type to use based on the license type, assigned
 // upgrade type and the license packaged from device state.
-LicenseType GetLicenseTypeToUse(const std::string license_type,
-                                const bool is_license_packaged_with_device,
-                                const std::string assigned_upgrade_type) {
+LicenseType GetLicenseTypeToUse(const std::string& license_type,
+                                bool is_license_packaged_with_device,
+                                const std::string& assigned_upgrade_type) {
   if (license_type == kDeviceStateLicenseTypeEnterprise) {
     return LicenseType::kEnterprise;
-  } else if (license_type == kDeviceStateLicenseTypeEducation) {
+  }
+  if (license_type == kDeviceStateLicenseTypeEducation) {
     return LicenseType::kEducation;
-  } else if (license_type == kDeviceStateLicenseTypeTerminal) {
+  }
+  if (license_type == kDeviceStateLicenseTypeTerminal) {
     return LicenseType::kTerminal;
   }
-
   if (!is_license_packaged_with_device &&
       assigned_upgrade_type == kDeviceStateAssignedUpgradeTypeKiosk) {
     return LicenseType::kTerminal;
   }
-
   return LicenseType::kNone;
 }
 

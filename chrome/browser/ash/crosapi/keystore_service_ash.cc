@@ -309,7 +309,7 @@ void KeystoreServiceAsh::GetKeyStores(GetKeyStoresCallback callback) {
 // static
 void KeystoreServiceAsh::DidGetKeyStores(
     GetKeyStoresCallback callback,
-    const std::vector<TokenId> platform_keys_token_ids,
+    std::vector<TokenId> platform_keys_token_ids,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

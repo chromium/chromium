@@ -613,7 +613,7 @@ void ImageAnnotationWorker::OnPerformIca(
 }
 
 void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
-    const std::vector<base::FilePath> files) {
+    std::vector<base::FilePath> files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(

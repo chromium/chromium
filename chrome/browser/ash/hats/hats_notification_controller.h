@@ -63,8 +63,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
       Profile* profile,
       const HatsConfig& config,
       const base::flat_map<std::string, std::string>& product_specific_data,
-      const std::u16string title,
-      const std::u16string body);
+      std::u16string title,
+      std::u16string body);
 
   // |product_specific_data| is meant to allow attaching extra runtime data that
   // is specific to the survey, e.g. a survey about the log-in experience might

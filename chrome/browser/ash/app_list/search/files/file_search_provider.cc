@@ -94,9 +94,9 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
     const base::FilePath& root_path,
     const std::u16string& query,
     const base::TimeTicks& query_start_time,
-    const std::vector<base::FilePath> trash_paths,
-    const int file_type,
-    const base::span<const std::string> allowed_extensions) {
+    std::vector<base::FilePath> trash_paths,
+    int file_type,
+    base::span<const std::string> allowed_extensions) {
   base::FileEnumerator enumerator(
       root_path,
       /*recursive=*/true, file_type, CreateFnmatchQuery(query),

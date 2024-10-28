@@ -68,7 +68,7 @@ class ArcSurveyService : public KeyedService, public ArcAppListPrefs::Observer {
   const PackageNameMap* GetPackageNameMapForTesting();
   const TaskIdMap* GetTaskIdMapForTesting();
   const std::set<std::string>* GetAllowedPackagesForTesting();
-  void AddAllowedPackageNameForTesting(const std::string package_name);
+  void AddAllowedPackageNameForTesting(const std::string& package_name);
 
   static void EnsureFactoryBuilt();
 

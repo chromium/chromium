@@ -131,7 +131,7 @@ class VolumeManager
 
   // Add sftp Guest OS volume mounted at `sftp_mount_path`. Note: volume must be
   // removed on unmount (including Guest OS shutdown).
-  void AddSftpGuestOsVolume(const std::string display_name,
+  void AddSftpGuestOsVolume(std::string display_name,
                             const base::FilePath& sftp_mount_path,
                             const base::FilePath& remote_mount_path,
                             const guest_os::VmType vm_type);

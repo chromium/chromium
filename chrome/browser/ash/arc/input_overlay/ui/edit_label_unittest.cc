@@ -71,7 +71,7 @@ class EditLabelTest : public OverlayViewTestBase {
                    ActionType expect_action_type,
                    const std::vector<ui::DomCode>& expected_code,
                    const std::vector<std::u16string>& expected_labels,
-                   const std::u16string expected_name) {
+                   const std::u16string& expected_name) {
     DCHECK(action);
     ShowButtonOptionsMenu(action);
 

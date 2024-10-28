@@ -23,7 +23,7 @@ namespace arc {
 namespace {
 
 ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
-    const std::string package_name) {
+    const std::string& package_name) {
   return ArcAppListPrefs::AppInfo(
       package_name, package_name, "" /* activity */, "" /* intent_uri */,
       "" /* icon_resource_id */, std::nullopt /* version_name */,

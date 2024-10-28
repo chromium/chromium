@@ -278,7 +278,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
                model_updater_.get());
   }
 
-  void GenerateExtensionAppIcon(const std::string app_id,
+  void GenerateExtensionAppIcon(const std::string& app_id,
                                 gfx::ImageSkia& output_image_skia) {
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile());
@@ -297,8 +297,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
         apps::CreateStandardIconImage(image_future.Take().AsImageSkia());
   }
 
-  std::vector<uint8_t> GenerateExtensionAppCompressedIcon(
-      const std::string app_id) {
+  std::vector<uint8_t> GenerateExtensionAppCompressedIcon(std::string app_id) {
     gfx::ImageSkia image_skia;
     GenerateExtensionAppIcon(app_id, image_skia);
 

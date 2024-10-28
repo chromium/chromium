@@ -4109,7 +4109,7 @@ void CrostiniManager::DeallocateForwardedPortsCallback(
       ->DeactivateAllActivePorts(container_id);
 }
 
-void CrostiniManager::EmitVmDiskTypeMetric(const std::string vm_name) {
+void CrostiniManager::EmitVmDiskTypeMetric(const std::string& vm_name) {
   if ((time_of_last_disk_type_metric_ + base::Hours(12)) > base::Time::Now()) {
     // Only bother doing this once every 12 hours. We care about the number of
     // users in each histogram bucket, not the number of times restarted. We

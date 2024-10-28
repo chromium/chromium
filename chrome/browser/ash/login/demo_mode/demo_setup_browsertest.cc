@@ -493,7 +493,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   std::string GetQueryForCountrySelectOptionFromCountryCode(
-      const std::string country_code) {
+      std::string_view country_code) {
     return base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
                          ".shadowRoot.querySelector('option[value=\"",
                          country_code, "\"]').innerHTML"});

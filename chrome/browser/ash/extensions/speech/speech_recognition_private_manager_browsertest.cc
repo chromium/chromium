@@ -73,7 +73,7 @@ class SpeechRecognitionPrivateManagerTest
   }
 
   void DispatchOnResultEvent(const std::string& key,
-                             const std::u16string transcript,
+                             const std::u16string& transcript,
                              bool is_final) {
     manager_->HandleSpeechRecognitionResult(key, transcript, is_final);
   }

@@ -48,7 +48,7 @@ class ArcFlossBridge : public ArcBluetoothBridge,
   void SdpSearchComplete(
       const floss::FlossDeviceId device,
       const device::BluetoothUUID uuid,
-      const std::vector<floss::BtSdpRecord> records) override;
+      const std::vector<floss::BtSdpRecord>& records) override;
 
   void SdpRecordCreated(const floss::BtSdpRecord record,
                         const int32_t handle) override;

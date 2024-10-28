@@ -116,7 +116,7 @@ void RecordActionMetric(IMEPKLongpressDiacriticAction action) {
       .Record(ukm::UkmRecorder::Get());
 }
 
-void RecordAcceptanceCharCodeMetric(const std::u16string diacritic) {
+void RecordAcceptanceCharCodeMetric(const std::u16string& diacritic) {
   // Recording -1 as default value just in case there are issues with
   // encoding in utf-16 that means some character isn't
   // properly captured in one utf-16 char (for example if emojis are added in

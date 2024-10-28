@@ -609,14 +609,14 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   }
 
   void ValidateHaveShortcuts(
-      const std::vector<arc::mojom::ShortcutInfo> shortcuts) {
+      const std::vector<arc::mojom::ShortcutInfo>& shortcuts) {
     ValidateHaveAppsAndShortcuts(std::vector<arc::mojom::AppInfoPtr>(),
                                  shortcuts);
   }
 
   void ValidateHaveAppsAndShortcuts(
       const std::vector<arc::mojom::AppInfoPtr>& apps,
-      const std::vector<arc::mojom::ShortcutInfo> shortcuts) {
+      const std::vector<arc::mojom::ShortcutInfo>& shortcuts) {
     ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
     ASSERT_NE(nullptr, prefs);
     const std::vector<std::string> ids = prefs->GetAppIds();
@@ -735,7 +735,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
   // Validate that requested shortcuts have required ready state
   void ValidateShortcutReadyState(
-      const std::vector<arc::mojom::ShortcutInfo> shortcuts,
+      const std::vector<arc::mojom::ShortcutInfo>& shortcuts,
       bool ready) {
     ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
     ASSERT_NE(nullptr, prefs);

@@ -284,7 +284,7 @@ class AppServiceFileTasksTest : public testing::Test {
   }
 
   // Load an extension from the supplied manifest, then add intent filters.
-  void LoadExtension(const std::string manifest) {
+  void LoadExtension(std::string_view manifest) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("file handlers").AddJSON(manifest).Build();
     auto filters = apps_util::CreateIntentFiltersForExtension(extension.get());

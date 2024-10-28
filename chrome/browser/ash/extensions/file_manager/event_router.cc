@@ -497,7 +497,7 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 
 // Returns a map from the given `files` to their parent directory.
 std::map<base::FilePath, std::vector<base::FilePath>>
-MapFilePathsToParentDirectory(const std::vector<base::FilePath> files) {
+MapFilePathsToParentDirectory(const std::vector<base::FilePath>& files) {
   std::map<base::FilePath, std::vector<base::FilePath>> dir_files_map;
   for (const auto& file : files) {
     dir_files_map[file.DirName()].push_back(file);

@@ -59,11 +59,11 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
 
   // Create a new auth token. Returns nullopt if something went wrong, probably
   // because the provided password is incorrect.
-  std::optional<std::string> MakeAuthToken(const std::string password) {
+  std::optional<std::string> MakeAuthToken(std::string password) {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     CHECK(profile);
-    extensions::QuickUnlockPrivateGetAuthTokenHelper token_helper(profile,
-                                                                  password);
+    extensions::QuickUnlockPrivateGetAuthTokenHelper token_helper(
+        profile, std::move(password));
     base::test::TestFuture<std::optional<TokenInfo>,
                            std::optional<AuthenticationError>>
         result;

@@ -144,7 +144,7 @@ bool IsPredictiveWritingEnabled(PrefService* pref_service,
           IsUsEnglishEngine(engine_id));
 }
 
-std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
+std::string NormalizeRuleBasedEngineId(const std::string& engine_id) {
   // For legacy reasons, |engine_id| starts with "vkd_" in the input method
   // manifest, but the InputEngineManager expects the prefix "m17n:".
   // TODO(https://crbug.com/1012490): Migrate to m17n prefix and remove this.

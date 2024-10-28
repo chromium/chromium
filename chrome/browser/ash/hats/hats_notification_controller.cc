@@ -175,8 +175,8 @@ HatsNotificationController::HatsNotificationController(
     Profile* profile,
     const HatsConfig& hats_config,
     const base::flat_map<std::string, std::string>& product_specific_data,
-    const std::u16string title,
-    const std::u16string body)
+    std::u16string title,
+    std::u16string body)
     : profile_(profile),
       hats_config_(hats_config),
       product_specific_data_(product_specific_data),

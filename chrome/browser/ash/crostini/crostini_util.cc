@@ -239,7 +239,7 @@ void LaunchCrostiniAppImpl(
           [](Profile* profile, const std::string& app_id,
              guest_os::GuestOsRegistryService::Registration registration,
              const guest_os::GuestId& container_id, int64_t display_id,
-             const std::vector<guest_os::LaunchArg> args,
+             std::vector<guest_os::LaunchArg> args,
              crostini::CrostiniSuccessCallback callback,
              crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
