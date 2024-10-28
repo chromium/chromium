@@ -606,6 +606,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3902562446536395999">Mengisih mengikut A hingga Z</translation>
 <translation id="3908308510347173149">Kemas kini <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Mengisih mengikut Z hingga A</translation>
+<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> dihidupkan</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
@@ -692,6 +693,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="433213510553688132">Mengikuti…</translation>
 <translation id="4335835283689002019">Penyemakan Imbas Selamat dimatikan</translation>
 <translation id="4351244548802238354">Tutup dialog</translation>
+<translation id="4352287748243729941">Gunakan kata laluan <ph name="PROVIDER" /> anda?</translation>
 <translation id="4355272626458588338">Anda boleh kembali pada halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Sekilas pandang tentang keselamatan</translation>
@@ -851,6 +853,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5005498671520578047">Salin kata laluan</translation>
 <translation id="5010886807652684893">Paparan visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin menyambung</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> dan <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> nampaknya berkaitan. Pastikan anda mempercayai <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> sebelum menggunakan kata laluan anda.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">15 minit yang lalu</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
@@ -904,6 +907,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5304593522240415983">Medan ini tidak boleh kosong</translation>
 <translation id="5306014156308790439">Tambahkan pada koleksi dilumpuhkan</translation>
 <translation id="5308380583665731573">Sambung</translation>
+<translation id="5310963254742922113">Kata laluan telah digunakan.</translation>
 <translation id="5316947901395241499">Penyimpanan kata laluan dimatikan oleh pentadbir anda</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319359161174645648">Google mengesyorkan Chrome</translation>

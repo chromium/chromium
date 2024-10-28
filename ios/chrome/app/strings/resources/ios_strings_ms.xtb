@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Dilog keluar. Log masuk semula untuk menggunakan penanda halaman, kata laluan dan banyak lagi dalam akaun anda.</translation>
 <translation id="1054745118061919935">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK" />Syarat Perkhidmatan<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Tidak pernah disimpan</translation>
+<translation id="1062138828266376352">PIN anda tidak ditukar. Periksa sambungan Internet anda, kemudian cuba lagi</translation>
 <translation id="1066060668811609597">Urus Penyegerakan</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
@@ -676,6 +677,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="421070604241073551">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data disimpan pada peranti ini sahaja.</translation>
 <translation id="4224534474590365556">Tutup 99+ tab yang tidak aktif?</translation>
 <translation id="422474357428465195">Anda mempunyai beberapa masalah kata laluan yang boleh mendedahkan keselamatan anda kepada risiko.</translation>
+<translation id="422477017457571619">Perlindungan masa nyata yang dikuasakan AI terhadap laman, muat turun dan sambungan yang berbahaya berdasarkan data semakan imbas anda yang dihantar kepada Google</translation>
 <translation id="4231395118547300571">Pemberitahuan Semakan Keselamatan dihidupkan</translation>
 <translation id="4237377247299956313">Ketik <ph name="BEGIN_BOLD" />Apl Penyemak Imbas Lalai<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Buka tetapan</translation>

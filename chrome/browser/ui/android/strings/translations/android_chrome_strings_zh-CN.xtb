@@ -375,6 +375,7 @@
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
 <translation id="2789486458103222910">确定</translation>
+<translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 发现了 1 个重复使用的密码，建议您改进}other{Chrome 发现了 # 个重复使用的密码，建议您改进}}</translation>
 <translation id="2800066122460699237">系统将会关闭标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" />中保存的密码</translation>
@@ -429,6 +430,7 @@
 <translation id="2981364137500752533">您最多只能打开 5 个窗口。</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
 <translation id="2984978667043170458">将上下文内容纳入到 Google 搜索查询中</translation>
+<translation id="2988638966064514052">强化密码</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2992473221983447149">图片说明</translation>
 <translation id="2996291259634659425">创建密码</translation>
@@ -1684,6 +1686,7 @@
 <translation id="8754448020583829686">复制但不含链接</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
+<translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome 发现了 1 个安全系数低的密码，建议您改进}other{Chrome 发现了 # 个安全系数低的密码，建议您改进}}</translation>
 <translation id="8766529642647037772">创建一个像这样指向突出显示的文本的链接？</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8788968922598763114">重新打开上次关闭的标签页</translation>

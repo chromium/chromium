@@ -3075,7 +3075,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3182749001423093222">Kontrolli drejtshkrimor</translation>
 <translation id="3183139917765991655">Importuesi i profilit</translation>
 <translation id="3183143381919926261">Rrjetet e të dhënave celulare</translation>
-<translation id="3183613134231754987">Ky çelës kalimi do të ruhet vetëm në Windows Hello. Ai do të qëndrojë në këtë pajisje pasi t'i mbyllësh të gjitha dritaret e fshehta.</translation>
 <translation id="3183700187146209259">Softueri i skanerit nuk mund të instalohet</translation>
 <translation id="3183944777708523606">Sistemimi i monitorit</translation>
 <translation id="3184536091884214176">Konfiguro ose menaxho printerët CUPS. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -8185,7 +8184,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6941937518557314510">Identifikohu te <ph name="TOKEN_NAME" /> për t'u verifikuar te <ph name="HOST_NAME" /> me certifikatën tënde.</translation>
 <translation id="6943060957016121200">Aktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="6943939122536910181">E shkëputur nga <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Ky çelës kalimi do të ruhet vetëm në Windows Hello</translation>
 <translation id="6944750221184785444">Ky profil nuk mund të instalohet. Për mbështetje teknike, kontakto me operatorin tënd celular.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="694592694773692225">Ridrejtimi u bllokua në këtë faqe.</translation>

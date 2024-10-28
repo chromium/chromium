@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />~<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" />에서 관리하는 <ph name="DEVICE_TYPE" /></translation>
+<translation id="2781658180588759579">내장 터치패드가 사용 중지되었습니다. 키보드 또는 다른 포인팅 기기를 사용하여 변경사항을 확인하세요.
+
+그렇지 않으면 <ph name="TIMEOUT_SECONDS" /> 후에 내장 터치패드가 다시 사용 설정됩니다.</translation>
 <translation id="2782591952652094792">캡처 모드 종료</translation>
 <translation id="2785499565474703580">기기 1대 연결됨</translation>
 <translation id="2791421900609674576">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 길게 터치하세요.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">앱 표시줄의 이전 항목 강조 표시</translation>
 <translation id="311799651966070385">알림 닫기</translation>
 <translation id="3120421559657122717">기기를 종료할까요?</translation>
+<translation id="3121411970001795539">마우스가 연결되어 있으므로 내장 터치패드가 사용 중지되었습니다. 마우스 또는 키보드를 사용하여 변경사항을 확인합니다.
+
+그렇지 않으면 <ph name="TIMEOUT_SECONDS" /> 후에 내장 터치패드가 다시 사용 설정됩니다.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">수업 과제 유형</translation>
 <translation id="3126026824346185272">Ctrl</translation>

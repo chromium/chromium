@@ -3114,7 +3114,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3182749001423093222">Gwirio sillafu</translation>
 <translation id="3183139917765991655">Mewnforiwr Proffiliau</translation>
 <translation id="3183143381919926261">Rhwydweithiau data symudol</translation>
-<translation id="3183613134231754987">Bydd y cod pas hwn yn cael ei gadw yn Windows Hello yn unig. Bydd yn aros ar y ddyfais hon ar ôl i chi gau pob ffenestr Anhysbys.</translation>
 <translation id="3183700187146209259">Methu â gosod meddalwedd sganiwr</translation>
 <translation id="3183944777708523606">Trefniant monitorau</translation>
 <translation id="3184536091884214176">Gosod neu reoli argraffwyr CUPS. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
@@ -8270,7 +8269,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6941937518557314510">Mewngofnodwch i <ph name="TOKEN_NAME" /> i ddilysu i <ph name="HOST_NAME" /> gyda'ch tystysgrif.</translation>
 <translation id="6943060957016121200">Galluogi Rhannu Cysylltiad Sydyn</translation>
 <translation id="6943939122536910181">Wedi datgysylltu o <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Bydd y cod pas hwn yn cael ei gadw yn Windows Hello yn unig</translation>
 <translation id="6944750221184785444">Methu â gosod y proffil hwn. I gael cymorth technegol, cysylltwch â'ch cludydd.</translation>
 <translation id="6945221475159498467">Dewis</translation>
 <translation id="694592694773692225">Mae ailgyfeirio wedi'i rwystro ar y dudalen hon.</translation>

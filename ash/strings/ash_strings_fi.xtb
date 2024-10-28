@@ -501,6 +501,9 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> – <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+haku+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Sisäänrakennettu kosketuslevy on poistettu käytöstä. Vahvista muutos näppäimistöllä tai toisella osoitinlaitteella.
+
+Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph name="TIMEOUT_SECONDS" /> on kulunut.</translation>
 <translation id="2782591952652094792">Sulje tallennustila</translation>
 <translation id="2785499565474703580">1 laite yhdistetty</translation>
 <translation id="2791421900609674576">Näet suosituksia, joten voit jatkaa siitä, mihin jäit. Suosituksia voi poistaa koskettamalla pitkään.</translation>
@@ -598,6 +601,9 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3113492864356515707">Korosta edellinen kohde hyllyssä</translation>
 <translation id="311799651966070385">Sulje automaattinen muistutus</translation>
 <translation id="3120421559657122717">Sammutetaanko laite?</translation>
+<translation id="3121411970001795539">Sisäänrakennettu kosketuslevy on poistettu käytöstä, koska hiiri on kytkettynä. Vahvista muutos hiirellä tai näppäimistöllä.
+
+Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph name="TIMEOUT_SECONDS" /> on kulunut.</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3125690294288312932">Tehtävätyyppi</translation>
 <translation id="3126026824346185272">Ctrl</translation>

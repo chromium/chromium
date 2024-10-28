@@ -3100,7 +3100,6 @@
 <translation id="3182749001423093222">જોડણીની તપાસ</translation>
 <translation id="3183139917765991655">પ્રોફાઇલ આયાતકાર</translation>
 <translation id="3183143381919926261">મોબાઇલ ડેટા નેટવર્ક</translation>
-<translation id="3183613134231754987">આ પાસકી માત્ર Windows Helloમાં સાચવવામાં આવશે. તમે બધી છૂપી વિન્ડો બંધ કરો પછી, તે આ ડિવાઇસ પર જ રહેશે.</translation>
 <translation id="3183700187146209259">સ્કૅનર સૉફ્ટવેર ઇન્સ્ટૉલ કરી શકતા નથી</translation>
 <translation id="3183944777708523606">મૉનિટરની ગોઠવણી</translation>
 <translation id="3184536091884214176">CUPS પ્રિન્ટર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -4523,6 +4522,7 @@
 <translation id="4195378859392041564">તમારા માઉસ વડે કોઈપણ કી પર ક્લિક કરો, પછી કસ્ટમાઇઝ કરવા માટે કીબોર્ડની કી દબાવો</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
+<translation id="4196350776737072374">કોઈ પ્રશ્ન ઉપલબ્ધ નથી. "આ પેજનો સારાંશ આપો" અથવા તમારા પોતાના પ્રશ્ન જેવી વસ્તુઓ પૂછવાનો પ્રયાસ કરો.</translation>
 <translation id="4198268995694216131">વધારાની સાઇટ</translation>
 <translation id="4200609364258658652">વીડિયો ફ્રેમ કૉપિ કરો</translation>
 <translation id="4200689466366162458">કસ્ટમ શબ્દો</translation>
@@ -6962,6 +6962,7 @@ USB ડિવાઇસ</translation>
 <translation id="5992225669837656567">તમામ માઉસ ડિસ્કનેક્ટ કરવામાં આવ્યા છે</translation>
 <translation id="5992652489368666106">કોઇ કિનારી નથી</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 સાઇટ માટે રિવ્યૂ પૂર્ણ છે}one{{NUM_SITES} સાઇટ માટે રિવ્યૂ પૂર્ણ છે}other{{NUM_SITES} સાઇટ માટે રિવ્યૂ પૂર્ણ છે}}</translation>
+<translation id="5996490984199062729">તમારી પ્રોફાઇલનું સેટઅપ કરવામાં આવ્યું નથી</translation>
 <translation id="5997337190805127100">સાઇટ ઍક્સેસ વિશે વધુ જાણો</translation>
 <translation id="5998458948782718639">ઑટોમૅટિક રીતે ભરવાની સુવિધા બહેતર બનાવવાની રીત</translation>
 <translation id="5998976983953384016">કન્ફર્મ કરો અને ચાલુ કરો</translation>
@@ -8260,7 +8261,6 @@ USB ડિવાઇસ</translation>
 <translation id="6941937518557314510">તમારા પ્રમાણપત્ર સાથે <ph name="HOST_NAME" /> ને અધિકૃત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
 <translation id="6943060957016121200">ઝટપટ ઇન્ટરનેટ શેર કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" />થી ડિસ્કનેક્ટ થયું છે</translation>
-<translation id="6944708469742828051">આ પાસકીને માત્ર Windows Helloમાં સાચવવામાં આવશે</translation>
 <translation id="6944750221184785444">આ પ્રોફાઇલ ઇન્સ્ટૉલ કરી શકાતી નથી. ટેક્નિકલ સપોર્ટ માટે, કૃપા કરીને તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="694592694773692225">આ પેજ પર રીડાયરેક્ટ કરવાનું બ્લૉક કર્યું.</translation>

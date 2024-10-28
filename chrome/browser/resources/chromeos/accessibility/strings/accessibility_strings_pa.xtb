@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">ਆਕਾਰ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ਕੋਰਡ</translation>
 <translation id="1923956950274750765">ਮੱਧਮ ਜਾਮਨੀ</translation>
+<translation id="1926147969119007125">ਫ਼ੇਸ ਕੰਟਰੋਲ ਨੂੰ ਰੋਕੋ</translation>
 <translation id="1928932365747995741">ਕੋਈ ਪਿਛਲਾ ਸੰਪਾਦਨਯੋਗ ਲਿਖਤ ਖੇਤਰ ਨਹੀਂ</translation>
 <translation id="1964135212174907577">ਅਗਲਾ ਔਬਜੈਕਟ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">ਅਗਲੀ ਫੋਕਸ ਕਰਨ ਵਾਲੀ ਆਈਟਮ 'ਤੇ ਜਾਓ</translation>
 <translation id="2756452585631602151">ਕੋਈ ਵਿਉਂਤਬੱਧ ਲੇਬਲ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2766299274563946262">ਕੋਈ ਸੈੱਲ ਬਾਕੀ ਨਹੀਂ</translation>
+<translation id="2770947749427257887">ਸਕ੍ਰੋਲ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ਤੁਸੀਂ ਪਿਛਲੀ ਆਈਟਮ 'ਤੇ ਜਾਣ ਲਈ ਇੱਕ ਉਂਗਲ ਨਾਲ ਸੱਜੇ ਤੋ ਖੱਬੇ ਸਵਾਈਪ ਵੀ ਕਰ ਸਕਦੇ ਹੋ। ਹੁਣੇ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="280499067616661124">ਪੰਨੇ ਵਿੱਚ ChromeVox ਲੱਭਤ</translation>
@@ -402,6 +404,7 @@
 <translation id="3466530247399808663">ਕੋਈ ਅਵੈਧ ਕੁੰਜੀ ਦਬਾਉਣਾ</translation>
 <translation id="3468959318854349468">ਕੋਈ ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="3469413619751135069">ਫਿੱਕਾ ਹਰਾ</translation>
+<translation id="3473744269398144689">ਡਿਕਟੇਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="3490765818161916458">ਸੂਚੀ ਗ੍ਰਿਡ</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{ਸੱਜੀ ਬ੍ਰੈਕਟ}one{# ਸੱਜੀਆਂ ਬ੍ਰੈਕਟਾਂ}other{# ਸੱਜੀਆਂ ਬ੍ਰੈਕਟਾਂ}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -657,6 +660,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
 <translation id="5290220123487191192">ਆਓ ਉਹਨਾਂ ਇਸ਼ਾਰਿਆਂ ਨਾਲ ਸ਼ੁਰੂ ਕਰੀਏ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋਗੇ। ਜੇ ਤੁਸੀਂ ਉਸ ਆਈਟਮ ਤੱਕ ਪਹੁੰਚ ਜਾਂਦੇ ਹੋ ਜਿਸਨੂੰ ਤੁਸੀਂ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕ ਉਂਗਲ ਨਾਲ ਡਬਲ ਟੈਪ ਕਰੋ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਹੁਣੇ ਡਬਲ ਟੈਪ ਕਰੋ।</translation>
+<translation id="5291860916305032607">ਫ਼ੇਸ ਕੰਟਰੋਲ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5302089807023311274">ਪੁਸਤਕ ਮਾਲਾ ਦਾ ਹਵਾਲਾ</translation>
 <translation id="530391007967514163">ਹੇਠਾਂ ਲਿਖਤ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਿਰਲੇਖ ਰਾਹੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ਟੈਬ</translation>
@@ -682,6 +686,7 @@
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
 <translation id="5402367795255837559">ਬ੍ਰੇਲ</translation>
 <translation id="5402791055281059602">ਇੱਕ ਵਿਧੀਗਤ  ਚਿਤਾਵਨੀ </translation>
+<translation id="5406272775687194041">ਘਸੀਟਣਾ ਅਤੇ ਛੱਡਣਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{ਅਰਧਵਿਰਾਮ}one{# ਅਰਧਵਿਰਾਮ}other{# ਅਰਧਵਿਰਾਮ}}</translation>
 <translation id="5420259671171615858">ਮੀਨੂ ਖੋਜ</translation>
 <translation id="5435274640623994081">ਇਅਰਕੋਨ ਲੌਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -749,6 +754,7 @@
 <translation id="5824976764713185207">ਪੰਨੇ ਦੇ ਲੋਡ ਹੋਣ ਤੋਂ ਬਾਅਦ ਇਸਨੂੰ ਸਵੈਚਲਿਤ ਰੂਪ ਵਿੱਚ ਪੜ੍ਹੋ</translation>
 <translation id="5826479389509458994">ਰੋ <ph name="ROW" /> ਕਾੱਲਮ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ਕੋਈ ARIA ਭੂਮੀ ਚਿੰਨ੍ਹ ਨਹੀਂ</translation>
+<translation id="584044465500042213">ਸਕ੍ਰੋਲ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="5842625257683688671">ਕੋਈ ਅਗਲਾ ਗ੍ਰਾਫ਼ਿਕ ਨਹੀਂ</translation>
 <translation id="5847883414085148048">ਸਮਰਪਣ</translation>
 <translation id="5850707923114094062">ਪੈਨ ਬੈਕਵਾਰਡ</translation>
@@ -951,6 +957,7 @@
 <translation id="7285387653379749618">ਟੇਬਲ</translation>
 <translation id="7289186959554153431">ਸਿਰਲੇਖ 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">ਘਸੀਟਣਾ ਅਤੇ ਛੱਡਣਾ ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="7308519659008003150">ਕੋਈ ਪਿਛਲਾ ਫ਼ਾਰਮ ਖੇਤਰ ਨਹੀਂ</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">ਮਦਦ</translation>
@@ -1157,6 +1164,7 @@
 <translation id="8775203254697638994">ਕਈ ਵਾਰ ਤੁਹਾਨੂੰ ਡ੍ਰੌਪ-ਡਾਊਨ ਸੂਚੀ ਵਿੱਚੋਂ ਕਿਸੇ ਆਈਟਮ ਦੀ ਚੋਣ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ। ਅਜਿਹਾ ਕਰਨ ਲਈ, Search + Space ਦਬਾਕੇ ਪਹਿਲਾਂ ਸੂਚੀ ਦਾ ਵਿਸਤਾਰ ਕਰੋ। ਫਿਰ ਕਿਸੇ ਆਈਟਮ ਦੀ ਚੋਣ ਕਰਨ ਲਈ, ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਦੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ। ਅੰਤ ਵਿੱਚ, Search + Space ਦਬਾਕੇ ਸੂਚੀ ਨੂੰ ਸਮੇਟੋ।</translation>
 <translation id="8779057862865475116">ਕੋਈ ਪਿਛਲਾ ਲਿੰਕ ਨਹੀਂ</translation>
 <translation id="8796411681063377102">ਅਗਲਾ ਪੱਧਰ 3 ਦਾ ਹੈਡਿੰਗ</translation>
+<translation id="8821891849214789910">ਡਿਕਟੇਸ਼ਨ ਬੰਦ ਕਰੋ</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" /> ਵਿੱਚੋਂ ਪੰਨਾ <ph name="CURRENTPAGE" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">ਮੁੱਖ</translation>

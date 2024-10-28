@@ -3099,7 +3099,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3182749001423093222">Revisión ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfiles</translation>
 <translation id="3183143381919926261">Redes de datos móviles</translation>
-<translation id="3183613134231754987">Esta llave de acceso solo se guardará en Windows Hello. Seguirá en este dispositivo después de cerrar todas las ventanas de Incógnito.</translation>
 <translation id="3183700187146209259">No se puede instalar el software del escáner</translation>
 <translation id="3183944777708523606">Disposición del monitor</translation>
 <translation id="3184536091884214176">Configurar o gestionar impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -4519,6 +4518,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4195378859392041564">Haz clic en cualquier tecla con el ratón y, a continuación, pulsa una tecla del teclado para personalizarla</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4195814663415092787">Continúa por donde lo dejaste</translation>
+<translation id="4196350776737072374">No hay preguntas disponibles. Prueba a pedir cosas como "resume esta página" o haz tu propia pregunta.</translation>
 <translation id="4198268995694216131">Más sitios</translation>
 <translation id="4200609364258658652">C&amp;opiar fotograma</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
@@ -6949,6 +6949,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5992225669837656567">Todos los ratones se han desconectado</translation>
 <translation id="5992652489368666106">Sin bordes</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Revisión de 1 sitio completada}other{Revisión de {NUM_SITES} sitios completada}}</translation>
+<translation id="5996490984199062729">Tu perfil no se ha configurado</translation>
 <translation id="5997337190805127100">Más información sobre el acceso del sitio web</translation>
 <translation id="5998458948782718639">Ayuda a mejorar Autocompletar</translation>
 <translation id="5998976983953384016">Confirmar y activar</translation>
@@ -8244,7 +8245,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6941937518557314510">Inicia sesión en <ph name="TOKEN_NAME" /> para identificarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
 <translation id="6943060957016121200">Habilitar conexión compartida instantánea</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Esta llave de acceso solo se guardará en Windows Hello</translation>
 <translation id="6944750221184785444">No se ha podido instalar este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se ha bloqueado la redirección bloqueada en esta página.</translation>

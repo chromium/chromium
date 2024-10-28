@@ -3098,7 +3098,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3182749001423093222">Ortografia-zuzentzailea</translation>
 <translation id="3183139917765991655">Profil-inportatzailea</translation>
 <translation id="3183143381919926261">Datu-konexio bidezko sareak</translation>
-<translation id="3183613134231754987">Sarbide-gakoa Windows Hello-n soilik gordeko da. Gailuan jarraituko du ezkutuko moduko leiho guztiak itxi ondoren.</translation>
 <translation id="3183700187146209259">Ezin da instalatu eskanerraren softwarea</translation>
 <translation id="3183944777708523606">Monitorearen antolaketa</translation>
 <translation id="3184536091884214176">Konfiguratu edo instalatu CUPS inprimagailuak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -8239,7 +8238,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6941937518557314510"><ph name="HOST_NAME" /> ostalarian zure ziurtagiriarekin autentifikatzeko, hasi saioa <ph name="TOKEN_NAME" /> zerbitzuan.</translation>
 <translation id="6943060957016121200">Gaitu konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> gailutik deskonektatuta</translation>
-<translation id="6944708469742828051">Sarbide-gakoa Windows Hello-n gordeko da soilik</translation>
 <translation id="6944750221184785444">Ezin da instalatu profila. Laguntza teknikoa eskuratzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="694592694773692225">Blokeatu egin da birbideratzeko ekintza orri honetan.</translation>

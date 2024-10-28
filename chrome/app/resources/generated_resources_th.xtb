@@ -615,6 +615,7 @@
 <translation id="1436671784520050284">ตั้งค่าต่อ</translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
 <translation id="1437986450143295708">อธิบายปัญหาอย่างละเอียด</translation>
+<translation id="1438630805136563416">นำการดำเนินการ <ph name="REMOVED_ACTION" /> ออกแล้ว</translation>
 <translation id="1439671507542716852">การสนับสนุนระยะยาว</translation>
 <translation id="1440090277117135316">ลงทะเบียนโรงเรียนเรียบร้อยแล้ว</translation>
 <translation id="144283815522798837">เลือกไว้ <ph name="NUMBER_OF_ITEMS_SELECTED" /> รายการ</translation>
@@ -980,6 +981,7 @@
 <translation id="1677306805708094828">เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />ไม่ได้</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1678849866171627536">การสแกนไม่สำเร็จ ไฟล์นี้อาจเป็นไวรัสหรือมัลแวร์</translation>
+<translation id="1678919064276516737">อีเมลและ PIN ที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="1679068421605151609">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="1679810534535368772">คุณแน่ใจไหมว่าต้องการออก</translation>
 <translation id="167983332380191032">บริการการจัดการแสดงข้อผิดพลาด HTTP</translation>
@@ -1426,6 +1428,7 @@
 <translation id="1981434377190976112">อ่านข้อมูลทั้งหมดของคุณในทุกเว็บไซต์</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}และ{field_2}}other{{field_1} {field_2} และ{field_3}}}</translation>
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
+<translation id="198507684520034826">ความช่วยเหลือ</translation>
 <translation id="1986836014090708999">การตั้งค่าตำแหน่งขั้นสูง</translation>
 <translation id="1987317783729300807">บัญชี</translation>
 <translation id="1987574314042117472">เลือกและติดตั้งแอปยอดนิยม</translation>
@@ -2921,6 +2924,7 @@
 <translation id="3029466929721441205">แสดงเครื่องมือสไตลัสในชั้นวาง</translation>
 <translation id="3029808567601324798">เวลาที่จะล็อก</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณดาวน์โหลดอัปเดตวันนี้ ระบบจะดาวน์โหลดอัปเดตโดยอัตโนมัติเมื่อคุณเชื่อมต่ออินเทอร์เน็ต}other{<ph name="MANAGER" /> กำหนดให้คุณดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด ระบบจะดาวน์โหลดอัปเดตโดยอัตโนมัติเมื่อคุณเชื่อมต่ออินเทอร์เน็ต}}</translation>
+<translation id="3030772324014024606">แก้ไข</translation>
 <translation id="3030967311408872958">พระอาทิตย์ตกถึงพระอาทิตย์ขึ้น</translation>
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031532026314193077">ใช้ทัชแพดและแป้นพิมพ์เพื่อคลิกขวา</translation>
@@ -3104,7 +3108,6 @@
 <translation id="3182749001423093222">ตรวจตัวสะกด</translation>
 <translation id="3183139917765991655">ตัวนำเข้าโปรไฟล์</translation>
 <translation id="3183143381919926261">เครือข่ายอินเทอร์เน็ตมือถือ</translation>
-<translation id="3183613134231754987">ระบบจะบันทึกพาสคีย์นี้เฉพาะใน Windows Hello และพาสคีย์จะยังคงอยู่ในอุปกรณ์นี้หลังจากที่คุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="3183700187146209259">ติดตั้งซอฟต์แวร์เครื่องสแกนไม่ได้</translation>
 <translation id="3183944777708523606">การจัดตำแหน่งจอภาพ</translation>
 <translation id="3184536091884214176">ตั้งค่าหรือจัดการเครื่องพิมพ์ CUPS <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -4027,6 +4030,7 @@
 <translation id="3824621460022590830">โทเค็นการลงทะเบียนอุปกรณ์ไม่ถูกต้อง โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">ลงชื่อเข้าใช้เพื่อดูแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทนี้ <ph name="FILE_TYPES" />}other{จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทต่อไปนี้ <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">ดู</translation>
 <translation id="3825635794653163640">แสดงจุดบนไอคอนแอปสำหรับการแจ้งเตือนของแอป</translation>
 <translation id="3826071569074535339">ได้รับอนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="3826086052025847742">บันทึก ChromeOS Flex</translation>
@@ -4138,6 +4142,7 @@
 <translation id="3905761538810670789">ซ่อมแอป</translation>
 <translation id="3908288065506437185">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3908501907586732282">เปิดใช้งานส่วนขยาย</translation>
+<translation id="3909456989251621103">หากคุณลบใบรับรองเซิร์ฟเวอร์ Chrome จะไม่ใช้ใบรับรองดังกล่าวเพื่อระบุเซิร์ฟเวอร์อีกต่อไป</translation>
 <translation id="3909701002594999354">แสดงตัวควบคุมทั้งหมด</translation>
 <translation id="3909791450649380159">&amp;ตัด</translation>
 <translation id="39103738135459590">รหัสเปิดใช้งาน</translation>
@@ -5057,6 +5062,7 @@
 <translation id="4581774856936278355">เกิดข้อผิดพลาดขณะคืนค่า Linux</translation>
 <translation id="4582297591746054421">โดยปกติแล้วเว็บไซต์จะอ่านคลิปบอร์ดของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น คงการจัดรูปแบบข้อความที่คุณคัดลอกไว้</translation>
 <translation id="4582563038311694664">รีเซ็ตการตั้งค่าทั้งหมด</translation>
+<translation id="4584770411839426377">หน้าต่าง</translation>
 <translation id="4585793705637313973">แก้ไขหน้า</translation>
 <translation id="4586275095964870617"><ph name="URL" /> เปิดในเบราว์เซอร์สำรองไม่ได้ โปรดติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
@@ -5449,6 +5455,7 @@
 <translation id="4872192066608821120">หากต้องการนำเข้ารหัสผ่าน ให้เลือกไฟล์ CSV</translation>
 <translation id="4872212987539553601">ตั้งค่าการเข้ารหัสในอุปกรณ์</translation>
 <translation id="4873312501243535625">ตัวตรวจสอบไฟล์สื่อ</translation>
+<translation id="4875690134140862902">แท็บ</translation>
 <translation id="4876273079589074638">ช่วยวิศวกรของเราตรวจสอบและแก้ไขข้อขัดข้องนี้ ระบุขั้นตอนที่แน่นอนหากทำได้ ไม่มีรายละเอียดใดที่ไร้ประโยชน์!</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
 <translation id="4876327226315760474">การตั้งค่านี้หมายความว่าฟีเจอร์ของเว็บไซต์ควรทำงานตามที่คาดไว้ แต่การปกป้องขณะท่องเว็บอาจลดลง</translation>
@@ -5561,6 +5568,7 @@
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4951966678293618079">ไม่บันทึกรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="4953808748584563296">รูปโปรไฟล์เริ่มต้นสีส้ม</translation>
+<translation id="4954652437333037880">ไฟล์</translation>
 <translation id="4955707703665801001">ระดับการเข้าถึงของ<ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">เลือก PIN ของคุณ</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7814,6 +7822,7 @@
 <translation id="6635674640674343739">ไม่สามารถเริ่มการเชื่อมต่อเครือข่าย ตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</translation>
 <translation id="663569763553406962">ดูว่าส่วนขยายใดอ่านหรือเปลี่ยนแปลงเว็บไซต์ได้</translation>
 <translation id="6635944431854494329">เจ้าของสามารถควบคุมฟีเจอร์นี้ได้จากการตั้งค่า &gt; ขั้นสูง &gt; ส่งข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
+<translation id="6636258750460740634">ประวัติ</translation>
 <translation id="6636623428211296678">สำรวจดูการตั้งค่าเพิ่มเติมด้านล่างหรือสิ้นสุดการตรวจสอบเลย</translation>
 <translation id="6639554308659482635">หน่วยความจำ SQLite</translation>
 <translation id="6640268266988685324">แท็บที่เปิดอยู่</translation>
@@ -8256,7 +8265,6 @@
 <translation id="6941937518557314510">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อตรวจสอบสิทธิ์กับ <ph name="HOST_NAME" /> ด้วยใบรับรองของคุณ</translation>
 <translation id="6943060957016121200">เปิดใช้การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="6943939122536910181">ยกเลิกการเชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
-<translation id="6944708469742828051">ระบบจะบันทึกพาสคีย์นี้ไว้ใน Windows Hello เท่านั้น</translation>
 <translation id="6944750221184785444">ติดตั้งโปรไฟล์นี้ไม่ได้ โปรดติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="694592694773692225">มีการบล็อกการเปลี่ยนเส้นทางในหน้านี้</translation>

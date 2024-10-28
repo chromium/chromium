@@ -3098,7 +3098,6 @@
 <translation id="3182749001423093222">Ուղղագրության ստուգում</translation>
 <translation id="3183139917765991655">Պրոֆիլի ներմուծիչ</translation>
 <translation id="3183143381919926261">Տվյալների փոխանցման ցանցեր</translation>
-<translation id="3183613134231754987">Այս մուտքի բանալին կպահվի միայն Windows Hello-ում։ Երբ փակեք բոլոր ինկոգնիտո պատուհանները, այն կպահպանվի այս սարքում։</translation>
 <translation id="3183700187146209259">Չհաջողվել տեղադրել սկաների ծրագիրը</translation>
 <translation id="3183944777708523606">Փոխել դիրքը</translation>
 <translation id="3184536091884214176">CUPS տպիչների կարգավորում և կառավարում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -8242,7 +8241,6 @@
 <translation id="6941937518557314510">Մուտք գործեք, <ph name="TOKEN_NAME" />, որպեսզի իսկորոշվեք <ph name="HOST_NAME" />-ում ձեր վկայագրի միջոցով:</translation>
 <translation id="6943060957016121200">Միացնել մուտքի ակնթարթային կետը</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> սարքի հետ կապն ընդհատվել է</translation>
-<translation id="6944708469742828051">Այս մուտքի բանալին կպահվի միայն Windows Hello-ում</translation>
 <translation id="6944750221184785444">Հնարավոր չէ տեղադրել այս պրոֆիլը։ Տեխնիկական աջակցության համար կապվեք օպերատորի հետ։</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="694592694773692225">Այս էջում վերահասցեավորումն արգելափակված է:</translation>

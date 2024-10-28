@@ -2268,6 +2268,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5087286274860437796">Certifikat poslužitelja trenutačno nije važeći.</translation>
 <translation id="5087580092889165836">Dodajte karticu</translation>
 <translation id="5088142053160410913">Poruka operateru</translation>
+<translation id="5089791650329866127">Ta značajka upotrebljava podatke koje ste već spremili pomoću automatskog popunjavanja, na primjer vašu adresu</translation>
 <translation id="5090647584136241764">Dodajte kartice sa sličnim proizvodima da biste jednostavno usporedili pojedinosti koje su vam važne</translation>
 <translation id="5093232627742069661">Cik-cak presavijanje</translation>
 <translation id="5094747076828555589">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; Chromium smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
@@ -4544,6 +4545,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9211461151375991073">Utipkajte @ za pretraživanje <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Prilagodi izgled</translation>
 <translation id="9215416866750762878">Aplikacija sprječava sigurno povezivanje Chromea s ovom web-lokacijom</translation>
+<translation id="921738974253889319">Ta značajka upotrebljava podatke koje ste već spremili pomoću automatskog popunjavanja, na primjer vašu adresu. Na ovoj stranici možete pregledati te podatke i upravljati njima.</translation>
 <translation id="92178312226016010">Pratite ovaj proizvod.</translation>
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>

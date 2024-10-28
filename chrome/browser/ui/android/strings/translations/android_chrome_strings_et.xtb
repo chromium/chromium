@@ -849,6 +849,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5010886807652684893">Visuaalne vaade</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> soovib ühenduse luua</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> ja <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> tunduvad olema seotud. Enne oma parooli kasutamist veenduge, et usaldaksite saiti <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Viimased 15 minutit</translation>
 <translation id="5032430150487044192">QR-koodi ei saa luua</translation>

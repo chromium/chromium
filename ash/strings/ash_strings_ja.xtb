@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />～<ph name="KEY_TWO" /> キーを押す</translation>
 <translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
+<translation id="2781658180588759579">内蔵タッチパッドを無効にします。キーボードまたは別のポインタ デバイスを使用して変更を確定します。
+
+無効にしない場合は <ph name="TIMEOUT_SECONDS" /> 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">シェルフで前のアイテムをハイライト表示します</translation>
 <translation id="311799651966070385">アクションの提案を閉じる</translation>
 <translation id="3120421559657122717">デバイスをシャットダウンしますか？</translation>
+<translation id="3121411970001795539">マウスが接続されているため、内蔵タッチパッドを無効にします。マウスまたはキーボードを使用して変更を確定します。
+
+無効にしない場合は <ph name="TIMEOUT_SECONDS" /> 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">授業の種類</translation>
 <translation id="3126026824346185272">Ctrl</translation>

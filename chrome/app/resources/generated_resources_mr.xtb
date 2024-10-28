@@ -3114,7 +3114,6 @@
 <translation id="3182749001423093222">स्पेल चेक</translation>
 <translation id="3183139917765991655">प्रोफाईल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
-<translation id="3183613134231754987">ही पासकी फक्त Windows Hello. वर सेव्ह केली जाईल. तुम्ही सर्व गुप्त विंडो बंद केल्यानंतर, ती या डिव्हाइसवर राहील.</translation>
 <translation id="3183700187146209259">स्कॅनर सॉफ्टवेअर इंस्टॉल करू शकत नाही</translation>
 <translation id="3183944777708523606">मॉनिटर व्यवस्था</translation>
 <translation id="3184536091884214176">CUPS प्रिंटर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -8273,7 +8272,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6941937518557314510">कृपया तुमच्या सर्टिफिकेटसह <ph name="HOST_NAME" /> चे ऑथेंटिकेशन करण्यासाठी <ph name="TOKEN_NAME" /> मध्ये साइन इन करा.</translation>
 <translation id="6943060957016121200">इंस्टंट टेदरिंग सुरू करा</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> वरून डिस्कनेक्ट केले आहे</translation>
-<translation id="6944708469742828051">ही पासकी फक्त Windows Hello मध्ये सेव्ह केली जाईल</translation>
 <translation id="6944750221184785444">ही प्रोफाइल इंस्टॉल करता आली नाही. तांत्रिक सपोर्टसाठी, कृपया तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="694592694773692225">या पेजवर रीडिरेक्‍ट ब्लॉक केले.</translation>

@@ -606,6 +606,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3902562446536395999">Sortiranje od A do Ž</translation>
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sortiranje od Ž do A</translation>
+<translation id="3918415141610210050">Kartica</translation>
 <translation id="3924911262913579434">Uključen je način <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombiniraj moje podatke</translation>
@@ -692,6 +693,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="433213510553688132">Praćenje...</translation>
 <translation id="4335835283689002019">Sigurno je pregledavanje isključeno</translation>
 <translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
+<translation id="4352287748243729941">Želite li upotrijebiti zaporku za <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Kratki pregled sigurnosti</translation>
@@ -904,6 +906,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5304593522240415983">To polje ne može biti prazno</translation>
 <translation id="5306014156308790439">Onemogućeno Dodaj u zbirku</translation>
 <translation id="5308380583665731573">Poveži</translation>
+<translation id="5310963254742922113">Zaporka je upotrijebljena.</translation>
 <translation id="5316947901395241499">Administrator je isključio spremanje zaporki</translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>

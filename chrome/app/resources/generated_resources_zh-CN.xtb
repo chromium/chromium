@@ -428,6 +428,7 @@
 <translation id="1291421198328146277">重置键</translation>
 <translation id="1292849930724124745">插入智能卡以保持登录状态</translation>
 <translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
+<translation id="1293360286536751243">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE_ONE" />”“<ph name="CONFLICTING_GESTURE_TWO" />”和“<ph name="CONFLICTING_GESTURE_THREE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1294807885394205587">此过程可能需要几分钟的时间。正在启动容器管理器。</translation>
 <translation id="12951065153783848">贵组织负责管理您的账号</translation>
@@ -2606,6 +2607,7 @@
 <translation id="2806372837663997957">目标设备未接受您的文件分享请求</translation>
 <translation id="2806891468525657116">快捷方式已存在</translation>
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
+<translation id="2808985063107661499">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE_ONE" />”和“<ph name="CONFLICTING_GESTURE_TWO" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="2811205483104563968">账号</translation>
 <translation id="2812049959647166806">Thunderbolt 不受支持</translation>
 <translation id="2812171980080389735">已保存的网络和密码，方便您立即连接</translation>
@@ -3094,7 +3096,6 @@
 <translation id="3182749001423093222">拼写检查</translation>
 <translation id="3183139917765991655">个人资料导入应用</translation>
 <translation id="3183143381919926261">移动数据网络</translation>
-<translation id="3183613134231754987">此通行密钥只会保存在 Windows Hello 中。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="3183700187146209259">无法安装扫描仪软件</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -4338,6 +4339,7 @@
 <translation id="404894744863342743">用完下载的文件后，请删除它，以免使用此设备的他人看到您的密码。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“附近分享”功能与这个联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="4050225813016893843">身份验证方法</translation>
+<translation id="4050379682069019014">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="4050534976465737778">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。如果您的分享对象是一部不在您通讯录中的 Chromebook，请确保已为它开启“附近分享”的高可见度模式（先打开状态区，然后开启“附近分享”的高可见度模式）。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">若要切换到上次使用的输入法，请按 <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">搜索键 + 向右键</translation>
@@ -8242,7 +8244,6 @@
 <translation id="6941937518557314510">请登录“<ph name="TOKEN_NAME" />”，使用证书向 <ph name="HOST_NAME" /> 验证身份。</translation>
 <translation id="6943060957016121200">启用“即时网络共享”</translation>
 <translation id="6943939122536910181">已断开与“<ph name="DEVICE" />”的连接</translation>
-<translation id="6944708469742828051">此通行密钥只会保存在 Windows Hello 中</translation>
 <translation id="6944750221184785444">无法安装此配置文件。如需技术支持，请与您的运营商联系。</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="694592694773692225">已在此网页上阻止重定向。</translation>

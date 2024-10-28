@@ -3105,7 +3105,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3182749001423093222">Stavekontroll</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Mobildatanettverk</translation>
-<translation id="3183613134231754987">Denne tilgangsnøkkelen lagres bare i Windows Hello. Den blir værende på denne enheten når du har lukket alle inkognitovinduer.</translation>
 <translation id="3183700187146209259">Kan ikke installere skannerprogramvaren</translation>
 <translation id="3183944777708523606">Skjermoppsett</translation>
 <translation id="3184536091884214176">Konfigurer eller administrer CUPS-skrivere. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -8248,7 +8247,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6941937518557314510">Logg på <ph name="TOKEN_NAME" /> for å godkjenne <ph name="HOST_NAME" /> med sertifikatet ditt.</translation>
 <translation id="6943060957016121200">Slå på umiddelbar internettdeling</translation>
 <translation id="6943939122536910181">Koblet fra <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Denne tilgangsnøkkelen lagres bare i Windows Hello</translation>
 <translation id="6944750221184785444">Kan ikke installere denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="694592694773692225">Viderekobling er blokkert på denne siden.</translation>

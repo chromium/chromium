@@ -3100,7 +3100,6 @@
 <translation id="3182749001423093222">Проверка правописания</translation>
 <translation id="3183139917765991655">Импорт профилей</translation>
 <translation id="3183143381919926261">Мобильные сети</translation>
-<translation id="3183613134231754987">Ключ доступа будет сохранен только в Windows Hello. Когда вы закроете все окна в режиме инкогнито, он останется на этом устройстве.</translation>
 <translation id="3183700187146209259">Не удалось установить ПО для сканера</translation>
 <translation id="3183944777708523606">Расположение мониторов</translation>
 <translation id="3184536091884214176">Настройте принтеры CUPS. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -8253,7 +8252,6 @@
 <translation id="6941937518557314510">Войдите в <ph name="TOKEN_NAME" />, чтобы авторизоваться на <ph name="HOST_NAME" /> при помощи своего сертификата.</translation>
 <translation id="6943060957016121200">Включить мгновенную точку доступа</translation>
 <translation id="6943939122536910181">Отключено устройство "<ph name="DEVICE" />"</translation>
-<translation id="6944708469742828051">Ключ доступа будет сохранен только в Windows Hello.</translation>
 <translation id="6944750221184785444">Не удалось установить профиль. За технической поддержкой обратитесь к своему оператору.</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="694592694773692225">Попытка переадресации на этой странице заблокирована</translation>

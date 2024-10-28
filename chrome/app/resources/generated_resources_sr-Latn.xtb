@@ -617,6 +617,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1436671784520050284">Nastavi sa podešavanjem</translation>
 <translation id="1436784010935106834">Uklonjeno</translation>
 <translation id="1437986450143295708">Detaljno opišite problem</translation>
+<translation id="1438630805136563416">Radnja <ph name="REMOVED_ACTION" /> je uklonjena</translation>
 <translation id="1439671507542716852">dugoročna podrška</translation>
 <translation id="1440090277117135316">Registracija za školu je završena</translation>
 <translation id="144283815522798837">Izabranih stavki: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
@@ -979,6 +980,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1677306805708094828">Nismo uspeli da dodamo: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
 <translation id="1678849866171627536">Skeniranje nije uspelo. Ovaj fajl je možda virus ili malver.</translation>
+<translation id="1678919064276516737">Imejl i PIN koje ste uneli se ne podudaraju</translation>
 <translation id="1679068421605151609">Alatke za programere</translation>
 <translation id="1679810534535368772">Želite li stvarno da izađete?</translation>
 <translation id="167983332380191032">Usluga upravljanja je poslala HTTP grešku.</translation>
@@ -1425,6 +1427,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1981434377190976112">da čita sve vaše podatke na svim veb-sajtovima</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} i {field_2}}one{{field_1}, {field_2} i {field_3}}few{{field_1}, {field_2} i {field_3}}other{{field_1}, {field_2} i {field_3}}}</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
+<translation id="198507684520034826">Pomoć</translation>
 <translation id="1986836014090708999">Napredna podešavanja lokacije</translation>
 <translation id="1987317783729300807">Nalozi</translation>
 <translation id="1987574314042117472">Izaberi i instaliraj popularne aplikacije</translation>
@@ -2919,6 +2922,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3029466929721441205">Prikažite alatke za pisaljku na polici</translation>
 <translation id="3029808567601324798">Vreme do zaključavanja</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva da danas preuzmete ažuriranje. Ažuriranje će se automatski preuzeti kada se povežete na internet.}one{<ph name="MANAGER" /> zahteva da preuzmete ažuriranje pre nego što istekne rok. Ažuriranje će se automatski preuzeti kada se povežete na internet.}few{<ph name="MANAGER" /> zahteva da preuzmete ažuriranje pre nego što istekne rok. Ažuriranje će se automatski preuzeti kada se povežete na internet.}other{<ph name="MANAGER" /> zahteva da preuzmete ažuriranje pre nego što istekne rok. Ažuriranje će se automatski preuzeti kada se povežete na internet.}}</translation>
+<translation id="3030772324014024606">Izmena</translation>
 <translation id="3030967311408872958">Od zalaska do izlaska sunca</translation>
 <translation id="3031417829280473749">Agent Iks</translation>
 <translation id="3031532026314193077">Koristite tačped i tastaturu da biste kliknuli desnim tasterom</translation>
@@ -3102,7 +3106,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3182749001423093222">Provera pravopisa</translation>
 <translation id="3183139917765991655">Uvoz profila</translation>
 <translation id="3183143381919926261">Mobilne mreže za prenos podataka</translation>
-<translation id="3183613134231754987">Ovaj pristupni kôd će se sačuvati samo u funkciji Windows Hello. On će ostati na ovom uređaju kada zatvorite sve prozore bez arhiviranja.</translation>
 <translation id="3183700187146209259">Instaliranje softvera za skener nije uspelo</translation>
 <translation id="3183944777708523606">Raspored monitora</translation>
 <translation id="3184536091884214176">Podesite CUPS štampače ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -4027,6 +4030,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3824621460022590830">Token za registraciju uređaja je nevažeći. Obratite se vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se da biste videli kartice sa drugih uređaja</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamti moj izbor za ovaj tip fajla: <ph name="FILE_TYPES" />}one{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}few{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}other{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Pregled</translation>
 <translation id="3825635794653163640">Prikazuje tačku na ikoni aplikacije za obaveštenja o aplikaciji</translation>
 <translation id="3826071569074535339">Dozvoljeno im je korišćenje senzora pokreta</translation>
 <translation id="3826086052025847742">ChromeOS Flex evidencije</translation>
@@ -4138,6 +4142,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
 <translation id="3908288065506437185">Blokiraj kolačiće treće strane u režimu bez arhiviranja</translation>
 <translation id="3908501907586732282">Omogući dodatak</translation>
+<translation id="3909456989251621103">Ako izbrišete serverski sertifikat, Chrome ga više neće koristiti za identifikaciju servera.</translation>
 <translation id="3909701002594999354">Prikaži sve &amp;kontrole</translation>
 <translation id="3909791450649380159">Is&amp;eci</translation>
 <translation id="39103738135459590">Aktivacioni kôd</translation>
@@ -5057,6 +5062,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4581774856936278355">Greška pri vraćanju Linux-a</translation>
 <translation id="4582297591746054421">Sajtovi obično čitaju privremenu memoriju za potrebe funkcija poput zadržavanja formatiranja teksta koji ste kopirali</translation>
 <translation id="4582563038311694664">Resetuj sva podešavanja</translation>
+<translation id="4584770411839426377">Prozor</translation>
 <translation id="4585793705637313973">Izmeni stranicu</translation>
 <translation id="4586275095964870617">Nismo uspeli da otvorimo <ph name="URL" /> u alternativnom pregledaču. Kontaktirajte administratora sistema.</translation>
 <translation id="4587589328781138893">Sajtovi</translation>
@@ -5450,6 +5456,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4872192066608821120">Da biste uvezli lozinke, izaberite CSV fajl</translation>
 <translation id="4872212987539553601">Podesite šifrovanje na uređaju</translation>
 <translation id="4873312501243535625">Provera medijskih datoteka</translation>
+<translation id="4875690134140862902">Kartica</translation>
 <translation id="4876273079589074638">Pomozite inženjerima da istraže i reše probleme sa otkazivanjem. Navedite tačne korake ako možete. Nijedan detalj nije nevažan!</translation>
 <translation id="4876305945144899064">Nema korisničkog imena</translation>
 <translation id="4876327226315760474">To znači da bi funkcije sajta trebalo da rade na očekivani način, ali možda ćete imati manje zaštite pri pregledanju.</translation>
@@ -5562,6 +5569,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4951966678293618079">Nikada ne čuvaj lozinke za ovaj sajt</translation>
 <translation id="4953808748584563296">Podrazumevani narandžasti avatar</translation>
+<translation id="4954652437333037880">Fajl</translation>
 <translation id="4955707703665801001">Vidljivost za <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Odaberite PIN</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7822,6 +7830,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6635674640674343739">Uspostavljanje mrežne veze nije uspelo. Proverite mrežnu vezu i probajte ponovo.</translation>
 <translation id="663569763553406962">Pogledajte koji dodaci mogu da čitaju ili menjaju sajt</translation>
 <translation id="6635944431854494329">Vlasnik može da upravlja ovom funkcijom u odeljku Podešavanja &gt; Napredno &gt; Automatski šalji Google-u dijagnostiku i podatke o korišćenju.</translation>
+<translation id="6636258750460740634">Istorija</translation>
 <translation id="6636623428211296678">Istražite još podešavanja u nastavku ili završite</translation>
 <translation id="6639554308659482635">SQLite memorija</translation>
 <translation id="6640268266988685324">Otvorena kartica</translation>
@@ -8264,7 +8273,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6941937518557314510">Prijavite se na <ph name="TOKEN_NAME" /> da biste potvrdili identitet hostu <ph name="HOST_NAME" /> pomoću sertifikata.</translation>
 <translation id="6943060957016121200">Omogući trenutno privezivanje</translation>
 <translation id="6943939122536910181">Prekinuta je veza sa uređajem <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Ovaj pristupni kôd će se sačuvati samo u funkciji Windows Hello</translation>
 <translation id="6944750221184785444">Instaliranje ovog profila nije uspelo. Obratite se mobilnom operateru radi tehničke podrške.</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="694592694773692225">Preusmeravanje je blokirano na ovoj stranici.</translation>

@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">ა-დან ჰ-მდე დალაგება</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />-ის განახლება</translation>
 <translation id="3911609878849982353">ჰ-დან ა-მდე დალაგება</translation>
+<translation id="3918415141610210050">ჩანართი</translation>
 <translation id="3924911262913579434">„<ph name="SAFE_BROWSING_MODE" />“ ჩართულია</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ჩემი მონაცემების კომბინირება</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">მიმდინარეობს თვალის მიდევნება...</translation>
 <translation id="4335835283689002019">Safe Browsing გამორთულია</translation>
 <translation id="4351244548802238354">დიალოგის დახურვა</translation>
+<translation id="4352287748243729941">გამოიყენებთ <ph name="PROVIDER" /> პაროლს?</translation>
 <translation id="4355272626458588338">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">უსაფრთხოების მოკლე მიმოხილვა</translation>
@@ -851,6 +853,7 @@
 <translation id="5005498671520578047">პაროლის კოპირება</translation>
 <translation id="5010886807652684893">ვიზუალური ხედი</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> დაკავშირებას ითხოვს</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> და <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" />, როგორც ჩანს, დაკავშირებულია ერთმანეთთან. დარწმუნდით, რომ <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> სანდოა, სანამ თქვენს პაროლს გამოიყენებთ.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">ბოლო 15 წუთი</translation>
 <translation id="5032430150487044192">QR კოდის შექმნა ვერ მოხერხდა</translation>
@@ -904,6 +907,7 @@
 <translation id="5304593522240415983">ეს ველი არ შეიძლება იყოს ცარიელი</translation>
 <translation id="5306014156308790439">გათიშულია კოლექციაში დამატება</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
+<translation id="5310963254742922113">პაროლი გამოყენებულია.</translation>
 <translation id="5316947901395241499">პაროლის შენახვა გამორთულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319359161174645648">Google გირჩევთ Chrome-ს</translation>

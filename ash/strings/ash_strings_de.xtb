@@ -500,6 +500,9 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> bis <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Strg + Suchtaste + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Das integrierte Touchpad ist deaktiviert. Bestätige die Änderung mit der Tastatur oder einem anderen Zeigegerät.
+
+Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder aktiviert.</translation>
 <translation id="2782591952652094792">Aufnahmemodus beenden</translation>
 <translation id="2785499565474703580">1 Gerät verbunden</translation>
 <translation id="2791421900609674576">Empfehlungen werden angezeigt, damit du dort fortfahren kannst, wo du aufgehört hast. Durch Gedrückthalten kannst du Empfehlungen entfernen.</translation>
@@ -596,6 +599,9 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3113492864356515707">Vorheriges Element in der Ablage hervorheben</translation>
 <translation id="311799651966070385">Erinnerung schließen</translation>
 <translation id="3120421559657122717">Gerät herunterfahren?</translation>
+<translation id="3121411970001795539">Das integrierte Touchpad ist deaktiviert, weil eine Maus angeschlossen ist. Bestätige die Änderung mit der Maus oder Tastatur.
+
+Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder aktiviert.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Kursaufgabentyp</translation>
 <translation id="3126026824346185272">Strg</translation>

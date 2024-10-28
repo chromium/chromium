@@ -10266,6 +10266,23 @@ Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan 
 
       Jika kebijakan ini dinonaktifkan atau tidak disetel, hanya profil lokal reguler yang akan digunakan.</translation>
 <translation id="8417305981081876834">Setel panjang maksimal PIN layar kunci</translation>
+<translation id="8418020431103978663">Menyetel kebijakan akan menentukan daftar aplikasi dan ekstensi yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna melalui antarmuka <ph name="PRODUCT_NAME" />. Izin akan diberikan secara implisit, termasuk untuk API ekstensi enterprise.deviceAttributes dan enterprise.platformKeys. (Dua API ini tidak tersedia untuk aplikasi dan ekstensi yang tidak diinstal otomatis.)
+
+Meskipun <ph name="PRODUCT_NAME" /> bertujuan untuk mencegah pengguna meng-uninstal ekstensi ini, beberapa sistem operasi membuat <ph name="PRODUCT_NAME" /> tidak dapat melindungi dengan baik dari ekstensi yang dimodifikasi secara eksternal, sehingga pencegahan ini adalah upaya terbaik.
+
+Jika kebijakan tidak disetel, tidak ada aplikasi atau ekstensi yang diinstal otomatis, dan pengguna dapat meng-uninstal aplikasi atau ekstensi apa pun di <ph name="PRODUCT_NAME" />.
+
+Kebijakan ini menggantikan kebijakan <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Jika aplikasi atau ekstensi yang sebelumnya diinstal otomatis dihapus dari daftar ini, <ph name="PRODUCT_NAME" /> akan otomatis meng-uninstal-nya.
+
+Kode sumber ekstensi apa pun dapat diubah oleh pengguna melalui alat developer, yang berpotensi menyebabkan ekstensi tersebut tidak berfungsi lagi. Jika hal ini menjadi masalah, setel kebijakan <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+Setiap item daftar kebijakan merupakan string yang berisi ID ekstensi dan, terkadang, URL update yang dipisahkan titik koma (;). ID ekstensi adalah string 32 huruf yang ditemukan, misalnya, di chrome://extensions saat dalam mode Developer. Jika ditentukan, URL update akan mengarah ke dokumen XML Manifes Update ( https://developer.chrome.com/extensions/autoupdate ). URL update harus menggunakan salah satu skema berikut: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, atau <ph name="FILE_SCHEME" />. Secara default, URL update Chrome Web Store akan digunakan. URL update yang disetel dalam kebijakan ini hanya digunakan untuk penginstalan awal; update ekstensi berikutnya akan menggunakan URL update dalam manifes ekstensi. URL update untuk update berikutnya dapat diganti menggunakan kebijakan <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Lihat http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
+
+Di instance <ph name="MS_WIN_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Di instance <ph name="MAC_OS_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Catatan: Kebijakan ini tidak berlaku untuk mode Samaran. Baca tentang ekstensi hosting (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="841977920223099909">Pemicu peringatan perlindungan sandi</translation>
 <translation id="8419965165591256432">Interval pengumpulan status aktivitas perangkat di perangkat terdaftar untuk pengguna terafiliasi. Batas minimum yang diizinkan adalah 1 menit.
 

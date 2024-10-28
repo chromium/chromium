@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> تا <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">‏مهار+جستجو+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> تحت مدیریت <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">صفحه لمسی داخلی غیرفعال شد. از صفحه‌کلید یا دستگاه اشاره‌گر دیگری برای تأیید این تغییر استفاده کنید.
+
+درغیراین‌صورت، صفحه لمسی داخلی پس‌از <ph name="TIMEOUT_SECONDS" /> دوباره فعال می‌شود.</translation>
 <translation id="2782591952652094792">خروج از حالت ضبط</translation>
 <translation id="2785499565474703580">یک دستگاه متصل است</translation>
 <translation id="2791421900609674576">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید لمس کنید و نگه دارید.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">برجسته کردن مورد قبلی در قفسه</translation>
 <translation id="311799651966070385">بستن یادآوری خودکار</translation>
 <translation id="3120421559657122717">دستگاه خاموش شود؟</translation>
+<translation id="3121411970001795539">صفحه لمسی داخلی غیرفعال شد زیرا موشواره متصل شده است. از موشواره یا صفحه‌کلید برای تأیید این تغییر استفاده کنید.
+
+درغیراین‌صورت، صفحه لمسی داخلی پس‌از <ph name="TIMEOUT_SECONDS" /> دوباره فعال می‌شود.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">نوع کار کلاسی</translation>
 <translation id="3126026824346185272">Ctrl</translation>

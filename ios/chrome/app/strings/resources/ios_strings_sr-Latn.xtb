@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Odjavljeni ste. Ponovo se prijavite da biste koristili obeleživače, lozinke i drugi sadržaj na nalogu.</translation>
 <translation id="1054745118061919935">Ako nastavite, prihvatate <ph name="BEGIN_LINK" />Uslove korišćenja usluge<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nikada se ne čuva</translation>
+<translation id="1062138828266376352">PIN nije promenjen. Proverite internet vezu i probajte ponovo</translation>
 <translation id="1066060668811609597">Upravljajte sinhronizacijom</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} kartica}one{{count} kartica}few{{count} kartice}other{{count} kartica}}</translation>
@@ -676,6 +677,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="421070604241073551">Kada je uključeno, podaci se čuvaju na Google nalogu. Kada je isključeno, podaci se čuvaju samo na ovom uređaju.</translation>
 <translation id="4224534474590365556">Želite da zatvorite više od 99 neaktivnih kartica?</translation>
 <translation id="422474357428465195">Imate nekoliko problema sa lozinkama koji mogu da ugroze bezbednost.</translation>
+<translation id="422477017457571619">Zaštita u realnom vremenu koju omogućava veštačka inteligencija od opasnih sajtova, preuzimanja i dodataka koja se zasniva na podacima pregledanja koji se šalju Google-u</translation>
 <translation id="4231395118547300571">Obaveštenja Provere bezbednosti su uključena</translation>
 <translation id="4237377247299956313">Dodirnite <ph name="BEGIN_BOLD" />Podrazumevana aplikacija za pregledanje<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>

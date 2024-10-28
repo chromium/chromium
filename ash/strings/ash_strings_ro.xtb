@@ -501,6 +501,9 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> până la <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + căutare + s</translation>
 <translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Touchpadul încorporat este dezactivat. Folosește tastatura sau alt dispozitiv de indicat pentru a confirma modificarea.
+
+În caz contrar, touchpadul încorporat va fi reactivat în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Ieși din modul de capturare</translation>
 <translation id="2785499565474703580">Un dispozitiv conectat</translation>
 <translation id="2791421900609674576">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți să atingi lung ca să elimini recomandările.</translation>
@@ -598,6 +601,9 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3113492864356515707">Evidențiază elementul anterior de pe raft</translation>
 <translation id="311799651966070385">Închide reafișarea</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
+<translation id="3121411970001795539">Touchpadul încorporat este dezactivat deoarece este conectat un mouse. Folosește mouse-ul sau tastatura pentru a confirma modificarea.
+
+În caz contrar, touchpadul încorporat va fi reactivat în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipul activității la curs</translation>
 <translation id="3126026824346185272">Ctrl</translation>

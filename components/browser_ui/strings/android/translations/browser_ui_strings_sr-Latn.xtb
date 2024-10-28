@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Otvori onlajn</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
+<translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Još</translation>
 <translation id="6064125863973209585">Dovršena preuzimanja</translation>
 <translation id="6071501408666570960">Možda ćete biti odjavljeni sa ovog sajta</translation>
+<translation id="6085954183010297841">Želite da izbrišete dozvolu za izmene fajlova? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kada je uključeno, sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj. Kada je isključeno, sajtovi ne mogu da znaju kada aktivno koristite uređaj.</translation>
 <translation id="6140839633433422817">Želite stvarno da resetujete dozvole i izbrišete kolačiće i podatke o sajtovima?</translation>
 <translation id="6165508094623778733">Saznajte više</translation>

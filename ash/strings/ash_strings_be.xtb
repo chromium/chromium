@@ -1147,6 +1147,7 @@
 <translation id="4902797682482387055">Прапанаваная задача, на якой трэба сканцэнтраваць увагу</translation>
 <translation id="490375751687810070">Вертыкальна</translation>
 <translation id="490788395437447240">Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">Гэта эксперыментальная функцыя на аснове AI, якая не заўсёды ўсё робіць правільна.</translation>
 <translation id="491504982845934899">Каб актываваць сетку "<ph name="NETWORK_NAME" />", спачатку наладзьце прыладу</translation>
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4918086044614829423">Прыняць</translation>
@@ -2009,6 +2010,7 @@
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7807067443225230855">Пошук і Памочнік</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Націскам на кнопку "Падабаецца" вы адпраўляеце водгук пра тое, што вам спадабалася гэта прапанова</translation>
 <translation id="7825412704590278437">З падзеі ў календары, якая павінна адбыцца</translation>
 <translation id="7829386189513694949">Моцны сігнал</translation>
 <translation id="7830453190047749513">Вы можаце персаналізаваць дзеянні, якія выконваюцца пры націсканні кнопак на прыладзе "<ph name="PERIPHERAL_NAME" />", а таксама хуткасць курсора</translation>
@@ -2163,6 +2165,7 @@
 <translation id="830868413617744215">Бэта-версія</translation>
 <translation id="8314772463905284467">CAPS LOCK уключаны</translation>
 <translation id="8315514906653279104">Ідзе ўключэнне…</translation>
+<translation id="8319634750346253957">Націскам на кнопку "Не падабаецца" вы адпраўляеце водгук пра тое, што вам не спадабалася гэта прапанова</translation>
 <translation id="8331351032546853669">Чакаецца спампоўванне</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

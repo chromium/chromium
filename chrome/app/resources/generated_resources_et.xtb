@@ -3102,7 +3102,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3182749001423093222">Õigekirjakontroll</translation>
 <translation id="3183139917765991655">Profiili importija</translation>
 <translation id="3183143381919926261">Mobiilsidevõrgud</translation>
-<translation id="3183613134231754987">See pääsuvõti salvestatakse ainult teenusesse Windows Hello. Pärast kõigi inkognito akende sulgemist jääb see sellesse seadmesse.</translation>
 <translation id="3183700187146209259">Skanneri tarkvara ei saa installida</translation>
 <translation id="3183944777708523606">Kuvari paigutus</translation>
 <translation id="3184536091884214176">CUPS-printerite seadistamine või haldamine. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -8250,7 +8249,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6941937518557314510">Logige rakendusse <ph name="TOKEN_NAME" /> oma hosti <ph name="HOST_NAME" /> sertifikaadi autentimiseks.</translation>
 <translation id="6943060957016121200">Automaatse jagamise lubamine</translation>
 <translation id="6943939122536910181">Ühendus seadmega <ph name="DEVICE" /> on katkestatud</translation>
-<translation id="6944708469742828051">See pääsuvõti salvestatakse ainult teenusesse Windows Hello</translation>
 <translation id="6944750221184785444">Seda profiili ei saa installida. Tehnilise toe saamiseks võtke ühendust operaatoriga.</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="694592694773692225">Ümbersuunamine on sellel lehel blokeeritud.</translation>

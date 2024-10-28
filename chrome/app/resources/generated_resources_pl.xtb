@@ -3088,7 +3088,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3182749001423093222">Sprawdzanie pisowni</translation>
 <translation id="3183139917765991655">Importer profilów</translation>
 <translation id="3183143381919926261">Sieci komórkowe</translation>
-<translation id="3183613134231754987">Ten klucz zostanie zapisany tylko w funkcji Windows Hello. Po zamknięciu wszystkich okien incognito klucz pozostanie na tym urządzeniu.</translation>
 <translation id="3183700187146209259">Nie można zainstalować oprogramowania skanera</translation>
 <translation id="3183944777708523606">Rozmieszczanie monitorów</translation>
 <translation id="3184536091884214176">Skonfiguruj drukarki CUPS lub zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -8242,7 +8241,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6941937518557314510">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby za pomocą swojego certyfikatu wykonać uwierzytelnianie w witrynie <ph name="HOST_NAME" />.</translation>
 <translation id="6943060957016121200">Włącz błyskawiczne połączenie w tetheringu</translation>
 <translation id="6943939122536910181">Rozłączono z: <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Ten klucz zostanie zapisany tylko w funkcji Windows Hello</translation>
 <translation id="6944750221184785444">Nie udało się zainstalować tego profilu. Aby uzyskać pomoc techniczną, skontaktuj się ze swoim operatorem.</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="694592694773692225">Przekierowanie zostało zablokowane na tej stronie.</translation>

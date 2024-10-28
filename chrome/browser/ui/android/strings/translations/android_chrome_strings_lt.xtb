@@ -851,6 +851,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5010886807652684893">Vizualinis rodinys</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> nori prisijungti</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> ir <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> atrodo susiję. Įsitikinkite, kad pasitikite <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />, prieš naudodami slaptažodį.</translation>
 <translation id="5016205925109358554">Su užraitais</translation>
 <translation id="5017529052065664584">Pastarosios penkiolika minučių</translation>
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>

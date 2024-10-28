@@ -3078,7 +3078,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3182749001423093222">Correcteur orthographique</translation>
 <translation id="3183139917765991655">Importation de profils</translation>
 <translation id="3183143381919926261">Réseaux de données mobiles</translation>
-<translation id="3183613134231754987">Elle ne sera enregistrée que dans Windows Hello. Elle restera sur cet appareil une fois que vous aurez fermé toutes les fenêtres de navigation privée.</translation>
 <translation id="3183700187146209259">Impossible d'installer le logiciel du scanner</translation>
 <translation id="3183944777708523606">Mode d'affichage du moniteur</translation>
 <translation id="3184536091884214176">Configurer ou gérer des imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -8191,7 +8190,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6941937518557314510">Connectez-vous à <ph name="TOKEN_NAME" /> pour vous authentifier auprès de <ph name="HOST_NAME" /> avec votre certificat.</translation>
 <translation id="6943060957016121200">Activer le partage de connexion instantané</translation>
 <translation id="6943939122536910181">Déconnecté de <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Elle ne sera enregistrée que dans Windows Hello</translation>
 <translation id="6944750221184785444">Impossible d'installer ce profil. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="694592694773692225">Redirection bloquée sur cette page.</translation>

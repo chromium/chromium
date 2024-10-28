@@ -3110,7 +3110,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3182749001423093222">Helyesírás-ellenőrzés</translation>
 <translation id="3183139917765991655">Profilimportáló</translation>
 <translation id="3183143381919926261">Mobiladat-hálózatok</translation>
-<translation id="3183613134231754987">Ezt az azonosítókulcsot csak a Windows Hello szolgáltatásba menti majd a rendszer. Az azonosítókulcs ezen az eszközön marad az összes inkognitó ablak bezárása után.</translation>
 <translation id="3183700187146209259">Nem sikerült telepíteni a szkennerszoftvert</translation>
 <translation id="3183944777708523606">Monitorelrendezés</translation>
 <translation id="3184536091884214176">CUPS-nyomtatók beállítása és kezelése. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
@@ -8258,7 +8257,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6941937518557314510">Tanúsítvánnyal történő azonosításhoz jelentkezzen be a(z) <ph name="TOKEN_NAME" /> szolgáltatásba a <ph name="HOST_NAME" /> webhelyen.</translation>
 <translation id="6943060957016121200">Azonnali internetmegosztás engedélyezése</translation>
 <translation id="6943939122536910181">Leválasztva a következőről: <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Ezt az azonosítókulcsot csak a Windows Hello menti majd</translation>
 <translation id="6944750221184785444">Nem sikerült telepíteni ezt a profilt. Műszaki segítségért forduljon a szolgáltatóhoz.</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="694592694773692225">Átirányítás letiltva ezen az oldalon.</translation>

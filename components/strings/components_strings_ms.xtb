@@ -2270,6 +2270,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5087286274860437796">Sijil pelayan tidak sah pada masa ini.</translation>
 <translation id="5087580092889165836">Tambah kad</translation>
 <translation id="5088142053160410913">Mesej kepada pengendali</translation>
+<translation id="5089791650329866127">Ciri ini menggunakan maklumat yang telah anda simpan dengan autolengkap, seperti alamat anda</translation>
 <translation id="5090647584136241764">Tambahkan tab dengan produk yang sama untuk membandingkan butiran yang penting bagi anda dengan mudah</translation>
 <translation id="5093232627742069661">Lipatan Z</translation>
 <translation id="5094747076828555589">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chromium. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
@@ -4546,6 +4547,7 @@ Butiran tambahan:
 <translation id="9211461151375991073">Taip @ untuk membuat carian <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Sesuaikan rupa</translation>
 <translation id="9215416866750762878">Satu aplikasi menghalang Chrome daripada menyambung ke tapak ini dengan selamat</translation>
+<translation id="921738974253889319">Ciri ini menggunakan maklumat yang telah anda simpan dengan autolengkap, seperti alamat anda. Anda boleh menyemak dan mengurus data ini pada halaman ini.</translation>
 <translation id="92178312226016010">Anda menjejaki produk ini.</translation>
 <translation id="9218430445555521422">Tetapkan sebagai lalai</translation>
 <translation id="9219103736887031265">Imej</translation>

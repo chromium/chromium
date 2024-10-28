@@ -3104,7 +3104,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3182749001423093222">Spellingcontrole</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Mobiele datanetwerken</translation>
-<translation id="3183613134231754987">Deze toegangssleutel wordt alleen opgeslagen in Windows Hello. De sleutel blijft op dit apparaat staan nadat je alle incognitovensters hebt gesloten.</translation>
 <translation id="3183700187146209259">Kan scannersoftware niet installeren</translation>
 <translation id="3183944777708523606">Monitorindeling</translation>
 <translation id="3184536091884214176">CUPS-printers instellen of beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -8255,7 +8254,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6941937518557314510">Log in bij <ph name="TOKEN_NAME" /> om uzelf bij <ph name="HOST_NAME" /> te verifiëren met je certificaat.</translation>
 <translation id="6943060957016121200">Instant tethering aanzetten</translation>
 <translation id="6943939122536910181">Verbinding met <ph name="DEVICE" /> verbroken</translation>
-<translation id="6944708469742828051">Deze toegangssleutel wordt alleen opgeslagen in Windows Hello</translation>
 <translation id="6944750221184785444">Kan dit profiel niet installeren. Neem contact op met je provider voor technische support.</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="694592694773692225">Omleiding geblokkeerd op deze pagina.</translation>

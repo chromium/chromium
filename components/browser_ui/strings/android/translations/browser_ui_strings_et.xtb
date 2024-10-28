@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Ava veebis</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
+<translation id="1070329623210597193">Failid, mida see sait saab vaadata või muuta</translation>
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1178581264944972037">Peata</translation>
@@ -333,6 +334,7 @@
 <translation id="6042308850641462728">Rohkem</translation>
 <translation id="6064125863973209585">Lõpetatud allalaadimised</translation>
 <translation id="6071501408666570960">Teid võidakse sellel saidil välja logida</translation>
+<translation id="6085954183010297841">Kas kustutada faili muutmise luba? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kui see on sisse lülitatud, võivad saidid küsida luba selle teadmiseks, millal seadet aktiivselt kasutate. Kui see on välja lülitatud, ei saa saidid teada, millal seadet aktiivselt kasutate.</translation>
 <translation id="6140839633433422817">Kas olete kindel, et soovite load lähtestada ning küpsisefailid ja saidi andmed kustutada?</translation>
 <translation id="6165508094623778733">Lisateave</translation>

@@ -3101,7 +3101,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3182749001423093222">Correcteur orthographique</translation>
 <translation id="3183139917765991655">Importateur de profils</translation>
 <translation id="3183143381919926261">Réseaux de données cellulaires</translation>
-<translation id="3183613134231754987">Cette clé d'accès ne sera enregistrée que dans Windows Hello. Elle restera sur cet appareil après la fermeture de toutes les fenêtres de navigation privée.</translation>
 <translation id="3183700187146209259">Impossible d'installer le logiciel du numériseur</translation>
 <translation id="3183944777708523606">Position des moniteurs</translation>
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -8251,7 +8250,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6941937518557314510">Veuillez vous connecter à <ph name="TOKEN_NAME" /> pour vous authentifier auprès de <ph name="HOST_NAME" /> avec votre certificat.</translation>
 <translation id="6943060957016121200">Activer le partage de connexion instantané</translation>
 <translation id="6943939122536910181">Déconnecté de <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Cette clé d'accès ne sera enregistrée que dans Windows Hello</translation>
 <translation id="6944750221184785444">Impossible d'installer ce profil. Pour obtenir de l'assistance technique, veuillez communiquer avec votre fournisseur de services.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="694592694773692225">Redirection bloquée sur cette page.</translation>

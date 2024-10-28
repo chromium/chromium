@@ -3111,7 +3111,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3182749001423093222">Stavningskontroll</translation>
 <translation id="3183139917765991655">Profilimportör</translation>
 <translation id="3183143381919926261">Mobildatanätverk</translation>
-<translation id="3183613134231754987">Den här nyckeln sparas bara i Windows Hello. Den finns kvar på enheten när du stänger alla inkognitofönster.</translation>
 <translation id="3183700187146209259">Det går inte att installera mjukvaran för skannern</translation>
 <translation id="3183944777708523606">Skärmuppställning</translation>
 <translation id="3184536091884214176">Konfigurera eller hantera CUPS-skrivare. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -8259,7 +8258,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6941937518557314510">Logga in på <ph name="TOKEN_NAME" /> om du vill autentisera till <ph name="HOST_NAME" /> med ditt certifikat.</translation>
 <translation id="6943060957016121200">Aktivera direktinternetdelning</translation>
 <translation id="6943939122536910181">Frånkopplad från <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Den här nyckeln sparas bara i Windows Hello</translation>
 <translation id="6944750221184785444">Det gick inte att installera profilen. Kontakta operatören för teknisk support.</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="694592694773692225">Omdirigering blockerad på den här sidan.</translation>

@@ -3111,7 +3111,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3182749001423093222">Орфографиялык текшерүү</translation>
 <translation id="3183139917765991655">Профиль импорттогуч</translation>
 <translation id="3183143381919926261">Мобилдик трафиктин тармактары</translation>
-<translation id="3183613134231754987">Бул киргизүүчү ачкыч Windows Hello функциясында гана сакталат. Бардык Жашыруун терезелер жабылгандан кийин ал ушул түзмөктө сакталып калат.</translation>
 <translation id="3183700187146209259">Сканердин программасы орнотулбай жатат</translation>
 <translation id="3183944777708523606">Мониторлорду жайгаштыруу</translation>
 <translation id="3184536091884214176">CUPS принтерлерин жөндөө же башкаруу. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
@@ -8259,7 +8258,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6941937518557314510">Тастыктамаңыз менен <ph name="HOST_NAME" /> аныктыгыңызды текшертүү үчүн <ph name="TOKEN_NAME" /> кириңиз.</translation>
 <translation id="6943060957016121200">Ыкчам байланыш түйүнүн иштетүү</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> түзмөгүнөн ажыратылды</translation>
-<translation id="6944708469742828051">Бул киргизүүчү ачкыч Windows Hello функциясында гана сакталат</translation>
 <translation id="6944750221184785444">Бул профилди орнотуу мүмкүн эмес. Техникалык колдоо көрүү үчүн байланыш операторуна кайрылыңыз.</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
 <translation id="694592694773692225">Бул баракта багыттоо бөгөттөлгөн.</translation>

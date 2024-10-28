@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Учитавање странице није успело јер програмеров модул корисничког интерфејса (dev_ui) није инсталиран</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> систем</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Картица</translation>
 <translation id="5613020302032141669">Стрелица налево</translation>
 <translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}one{# мин}few{# мин}other{# мин}}</translation>

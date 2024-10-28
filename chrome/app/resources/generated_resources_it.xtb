@@ -3100,7 +3100,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3182749001423093222">Controllo ortografico</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Reti di dati mobili</translation>
-<translation id="3183613134231754987">Questa passkey verrà salvata solo in Windows Hello. Rimarrà su questo dispositivo dopo la chiusura di tutte le finestre di navigazione in incognito.</translation>
 <translation id="3183700187146209259">Impossibile installare il software dello scanner</translation>
 <translation id="3183944777708523606">Disposizione del monitor</translation>
 <translation id="3184536091884214176">Configura o gestisci le stampanti CUPS. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
@@ -4522,6 +4521,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4195378859392041564">Fai clic su un tasto qualsiasi con il mouse, quindi premi un tasto della tastiera per personalizzarlo</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4195814663415092787">Continua dal punto in cui avevi interrotto</translation>
+<translation id="4196350776737072374">Nessuna domanda disponibile. Prova a fare richieste come: "Riassumi questa pagina" o a porre la tua domanda.</translation>
 <translation id="4198268995694216131">Altri siti</translation>
 <translation id="4200609364258658652">Copia frame</translation>
 <translation id="4200689466366162458">Parole del dizionario personale</translation>
@@ -6950,6 +6950,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5992225669837656567">Tutti i mouse sono stati disconnessi</translation>
 <translation id="5992652489368666106">Senza bordo</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Controllo completo di 1 sito}other{Controllo completo di {NUM_SITES} siti}}</translation>
+<translation id="5996490984199062729">Il tuo profilo non è stato configurato</translation>
 <translation id="5997337190805127100">Ulteriori informazioni sull'accesso ai siti</translation>
 <translation id="5998458948782718639">Contribuisci a migliorare la compilazione automatica</translation>
 <translation id="5998976983953384016">Conferma e attiva</translation>
@@ -8245,7 +8246,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6941937518557314510">Accedi a <ph name="TOKEN_NAME" /> per autenticarti su <ph name="HOST_NAME" /> con il tuo certificato.</translation>
 <translation id="6943060957016121200">Abilita tethering istantaneo</translation>
 <translation id="6943939122536910181">Disconnesso da <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Questa passkey verrà salvata solo in Windows Hello</translation>
 <translation id="6944750221184785444">Impossibile installare questo profilo. Per assistenza tecnica, contatta il tuo operatore.</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="694592694773692225">Reindirizzamento bloccato in questa pagina.</translation>

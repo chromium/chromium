@@ -9980,6 +9980,23 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
+<translation id="8418020431103978663">Questo criterio consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti tramite l'interfaccia <ph name="PRODUCT_NAME" />. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app e le estensioni senza installazione forzata.
+
+Sebbene <ph name="PRODUCT_NAME" /> abbia l'obiettivo di impedire agli utenti di disinstallare queste estensioni, alcuni sistemi operativi non consentono a <ph name="PRODUCT_NAME" /> di difendersi in modo efficace contro la modifica esterna delle estensioni, quindi questa è la soluzione migliore.
+
+Se il criterio non viene configurato, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.
+
+Questo criterio prevale sul criterio <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se un'app o un'estensione di cui è stata precedentemente forzata l'installazione viene rimossa da questo elenco, questa app o estensione viene disinstallata automaticamente da <ph name="PRODUCT_NAME" />.
+
+Il codice sorgente di qualsiasi estensione può essere modificato dagli utenti tramite gli strumenti per sviluppatori, causando potenzialmente il malfunzionamento dell'estensione. Per evitare un problema di questo tipo, imposta il criterio <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+Ogni elemento nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL di aggiornamento separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL di aggiornamento deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). L'URL di aggiornamento deve utilizzare uno dei seguenti schemi: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL di aggiornamento impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione. È possibile eseguire l'override dell'URL di aggiornamento per gli aggiornamenti successivi utilizzando il criterio <ph name="EXTENSION_SETTINGS_POLICY_NAME" />; vedi http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
+
+Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Nota: questo criterio non viene applicato alla modalità di navigazione in incognito. Leggi maggiori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="841977920223099909">Attivazione dell'avviso di protezione tramite password</translation>
 <translation id="8419965165591256432">La frequenza del rilevamento dello stato dell'attività del dispositivo su dispositivi registrati di utenti affiliati. Il valore minimo consentito è 1 minuto.
 

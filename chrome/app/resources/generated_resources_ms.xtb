@@ -615,6 +615,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1436671784520050284">Teruskan persediaan</translation>
 <translation id="1436784010935106834">Dibuang</translation>
 <translation id="1437986450143295708">Terangkan isu itu secara terperinci</translation>
+<translation id="1438630805136563416">Tindakan <ph name="REMOVED_ACTION" /> dialih keluar</translation>
 <translation id="1439671507542716852">sokongan jangka panjang</translation>
 <translation id="1440090277117135316">Pendaftaran sekolah selesai</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> dipilih</translation>
@@ -981,6 +982,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1677306805708094828">Tidak dapat menambah <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Imbasan gagal. Fail ini mungkin virus atau perisian hasad.</translation>
+<translation id="1678919064276516737">E-mel dan PIN yang anda masukkan tidak sepadan</translation>
 <translation id="1679068421605151609">Alat Pembangun</translation>
 <translation id="1679810534535368772">Adakah anda pasti mahu keluar?</translation>
 <translation id="167983332380191032">Perkhidmatan pengurusan menghantar ralat HTTP.</translation>
@@ -1436,6 +1438,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1981434377190976112">Baca semua data anda pada semua laman web</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} dan {field_2}}other{{field_1}, {field_2} dan {field_3}}}</translation>
 <translation id="1984417487208496350">Tiada perlindungan (tidak disyorkan)</translation>
+<translation id="198507684520034826">Bantuan</translation>
 <translation id="1986836014090708999">Tetapan lokasi lanjutan</translation>
 <translation id="1987317783729300807">Akaun</translation>
 <translation id="1987574314042117472">Pilih dan pasang apl popular</translation>
@@ -2934,6 +2937,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3029466929721441205">Tunjukkan alatan stilus dalam rak</translation>
 <translation id="3029808567601324798">Masa untuk mengunci</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> menghendaki anda memuat turun kemaskinian hari ini. Kemaskinian akan dimuat turun secara automatik apabila anda menyambung kepada Internet.}other{<ph name="MANAGER" /> menghendaki anda memuat turun kemaskinian sebelum tarikh akhir. Kemaskinian akan dimuat turun secara automatik apabila anda menyambung kepada Internet.}}</translation>
+<translation id="3030772324014024606">Edit</translation>
 <translation id="3030967311408872958">Matahari terbenam hingga terbit</translation>
 <translation id="3031417829280473749">Ejen X</translation>
 <translation id="3031532026314193077">Gunakan pad sentuh dan papan kekunci untuk klik kanan</translation>
@@ -3117,7 +3121,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3182749001423093222">Semakan ejaan</translation>
 <translation id="3183139917765991655">Pengimport Profil</translation>
 <translation id="3183143381919926261">Rangkaian data mudah alih</translation>
-<translation id="3183613134231754987">Kunci laluan ini hanya akan disimpan dalam Windows Hello. Kunci ini akan kekal pada peranti ini selepas anda menutup semua tetingkap inkognito.</translation>
 <translation id="3183700187146209259">Tidak dapat memasang perisian pengimbas</translation>
 <translation id="3183944777708523606">Susunan monitor</translation>
 <translation id="3184536091884214176">Sediakan atau urus pencetak CUPS. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -4042,6 +4045,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log masuk untuk melihat tab daripada peranti lain</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}other{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Lihat</translation>
 <translation id="3825635794653163640">Tunjukkan titik pada ikon apl untuk makluman apl</translation>
 <translation id="3826071569074535339">Dibenarkan untuk menggunakan penderia gerakan</translation>
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
@@ -4153,6 +4157,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3905761538810670789">Baiki apl</translation>
 <translation id="3908288065506437185">Sekat kuki pihak ketiga dalam mod Inkognito</translation>
 <translation id="3908501907586732282">Dayakan sambungan</translation>
+<translation id="3909456989251621103">Jika anda memadamkan sijil pelayan, Chrome tidak akan menggunakan sijil tersebut untuk mengenal pasti pelayan lagi.</translation>
 <translation id="3909701002594999354">Paparkan Semua &amp;Kawalan</translation>
 <translation id="3909791450649380159">Po&amp;tong</translation>
 <translation id="39103738135459590">Kod pengaktifan</translation>
@@ -5072,6 +5077,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4581774856936278355">Ralat semasa memulihkan Linux</translation>
 <translation id="4582297591746054421">Tapak biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4582563038311694664">Tetapkan semula semua tetapan</translation>
+<translation id="4584770411839426377">Tetingkap</translation>
 <translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4586275095964870617"><ph name="URL" /> tidak dapat dibuka dalam penyemak imbas alternatif. Sila hubungi pentadbir sistem anda.</translation>
 <translation id="4587589328781138893">Tapak</translation>
@@ -5465,6 +5471,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4872192066608821120">Untuk mengimport kata laluan, pilih fail CSV</translation>
 <translation id="4872212987539553601">Sediakan penyulitan pada peranti</translation>
 <translation id="4873312501243535625">Penyemak Fail Media</translation>
+<translation id="4875690134140862902">Tab</translation>
 <translation id="4876273079589074638">Bantu jurutera kami menyiasat dan menyelesaikan ranap ini. Senaraikan langkah sebenar jika boleh. Setiap butiran penting!</translation>
 <translation id="4876305945144899064">Tiada nama pengguna</translation>
 <translation id="4876327226315760474">Perkara ini bermakna ciri laman harus berfungsi seperti yang dijangkakan tetapi mungkin perlindungan penyemakan imbas anda berkurangan.</translation>
@@ -5577,6 +5584,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4951966678293618079">Jangan simpan kata laluan untuk laman ini</translation>
 <translation id="4953808748584563296">Avatar jingga lalai</translation>
+<translation id="4954652437333037880">Fail</translation>
 <translation id="4955707703665801001">Keterlihatan <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Pilih PIN anda</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7834,6 +7842,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6635674640674343739">Sambungan rangkaian tidak dapat diwujudkan. Semak sambungan rangkaian anda, kemudian cuba lagi.</translation>
 <translation id="663569763553406962">Lihat perkara yang sambungan boleh baca atau ubah pada laman</translation>
 <translation id="6635944431854494329">Pemilik boleh mengawal ciri ini daripada Tetapan &gt; Terperinci &gt; Menghantar data diagnostik dan penggunaan kepada Google secara automatik.</translation>
+<translation id="6636258750460740634">Sejarah</translation>
 <translation id="6636623428211296678">Terokai lebih banyak tetapan di bawah atau selesaikan sekarang</translation>
 <translation id="6639554308659482635">Memori SQLite</translation>
 <translation id="6640268266988685324">Buka Tab</translation>
@@ -8276,7 +8285,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6941937518557314510">Sila log masuk ke <ph name="TOKEN_NAME" /> untuk mengesahkan <ph name="HOST_NAME" /> dengan sijil anda.</translation>
 <translation id="6943060957016121200">Dayakan Penambatan Segera</translation>
 <translation id="6943939122536910181">Diputuskan sambungan daripada <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Kunci laluan ini hanya akan disimpan dalam Windows Hello</translation>
 <translation id="6944750221184785444">Tidak dapat memasang profil ini. Untuk mendapatkan sokongan teknikal, sila hubungi pembawa anda.</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="694592694773692225">Ubah hala disekat pada halaman ini.</translation>

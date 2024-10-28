@@ -3105,7 +3105,6 @@ Quer pará-lo?</translation>
 <translation id="3182749001423093222">Verificação ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfis</translation>
 <translation id="3183143381919926261">Redes de dados móveis</translation>
-<translation id="3183613134231754987">Esta token de acesso só é guardada no Windows Hello. Permanece neste dispositivo após fechar todas as janelas de navegação anónima.</translation>
 <translation id="3183700187146209259">Não é possível instalar o software de leitor</translation>
 <translation id="3183944777708523606">Posicionamento do monitor</translation>
 <translation id="3184536091884214176">Configure ou efetue a gestão de impressoras CUPS. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
@@ -8265,7 +8264,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6941937518557314510">Inicie sessão no <ph name="TOKEN_NAME" /> para autenticar em <ph name="HOST_NAME" /> com o seu certificado.</translation>
 <translation id="6943060957016121200">Ativar Ligação (à Internet) via telemóvel instantânea</translation>
 <translation id="6943939122536910181">Desligado de <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Esta token de acesso só é guardada no Windows Hello</translation>
 <translation id="6944750221184785444">Não é possível instalar este perfil. Para receber apoio técnico, contacte o seu operador.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">O redirecionamento está bloqueado nesta página.</translation>

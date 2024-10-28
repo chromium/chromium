@@ -501,6 +501,9 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hadi <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> inadhibitiwa na <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Padi ya kugusa iliyojumuishwa kwenye kifaa imezimwa. Tumia kibodi yako au kifaa kingine kinachosogeza kishale ili uthibitishe mabadiliko.
+
+Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Funga hali ya kupiga picha</translation>
 <translation id="2785499565474703580">Kifaa 1 kimeunganishwa</translation>
 <translation id="2791421900609674576">Utaona mapendekezo ili uweze kuendelea ulipoachia. Unaweza kugusa na ushikilie ili kuondoa mapendekezo.</translation>
@@ -598,6 +601,9 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="3113492864356515707">Angazia kipengee kilichotangulia kwenye rafu</translation>
 <translation id="311799651966070385">Funga dokezo</translation>
 <translation id="3120421559657122717">Je, ungependa kuzima kifaa?</translation>
+<translation id="3121411970001795539">Padi ya kugusa iliyojumuishwa kwenye kifaa imezimwa kwa sababu kipanya kimeunganishwa. Tumia kipanya au kibodi ili uthibitishe mabadiliko.
+
+Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Aina ya kazi ya darasani</translation>
 <translation id="3126026824346185272">Ctrl</translation>

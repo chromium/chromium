@@ -501,6 +501,9 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> od <ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + iskanje + s</translation>
 <translation id="2778650143428714839">Napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />.</translation>
+<translation id="2781658180588759579">Vgrajena sledilna ploščica je onemogočena. S tipkovnico ali drugo kazalno napravo potrdite spremembo.
+
+V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Zapiranje načina zajema</translation>
 <translation id="2785499565474703580">1 naprava je povezana</translation>
 <translation id="2791421900609674576">Prikazana bodo priporočila, da boste lahko nadaljevali tam, kjer ste končali. Priporočila lahko odstranite tako, da se dotaknete in pridržite.</translation>
@@ -598,6 +601,9 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3113492864356515707">Označevanje prejšnjega elementa na polici</translation>
 <translation id="311799651966070385">Zapiranje dregljaja</translation>
 <translation id="3120421559657122717">Želite zaustaviti napravo?</translation>
+<translation id="3121411970001795539">Vgrajena sledilna ploščica je onemogočena, ker je priključena miška. S tipkovnico ali miško potrdite spremembo.
+
+V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3125690294288312932">Vrsta šolskega dela</translation>
 <translation id="3126026824346185272">CTRL</translation>

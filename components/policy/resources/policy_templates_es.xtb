@@ -9910,6 +9910,23 @@ Si la política no se define o el valor es 0, al ir a una URL designada se abrir
 
       Si se inhabilita esta política o no se le asigna ningún valor, solo se usarán los perfiles locales habituales.</translation>
 <translation id="8417305981081876834">Definir la longitud máxima del PIN para la pantalla de bloqueo</translation>
+<translation id="8418020431103978663">Si se define esta política, se especificará una lista de aplicaciones y extensiones que se instalarán de forma silenciosa, sin intervención del usuario, y que los usuarios no podrán desinstalar ni desactivar a través de la interfaz de <ph name="PRODUCT_NAME" />. Los permisos se concederán de forma implícita, incluidas las APIs de extensiones enterprise.deviceAttributes y enterprise.platformKeys. Estas dos APIs no estarán disponibles para las aplicaciones y extensiones que no se instalen de manera forzada.
+
+Aunque el objetivo de <ph name="PRODUCT_NAME" /> es evitar que los usuarios desinstalen estas extensiones, algunos sistemas operativos hacen imposible que <ph name="PRODUCT_NAME" /> ofrezca una protección eficaz frente a las extensiones que se modifican externamente. Por lo tanto, esta prevención es la mejor solución.
+
+Si no se asigna ningún valor a esta política, no se instalará automáticamente ninguna aplicación ni extensión y los usuarios podrán desinstalar cualquier aplicación o extensión en <ph name="PRODUCT_NAME" />.
+
+Esta política sustituye a la política <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Si una aplicación o extensión que se haya instalado anteriormente de manera forzada se quita de esta lista, <ph name="PRODUCT_NAME" /> la desinstalará automáticamente.
+
+Los usuarios pueden modificar el código fuente de las extensiones mediante las herramientas para desarrolladores, lo que podría provocar que la extensión no funcione correctamente. Si te preocupa, configura la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+Cada elemento de la lista de la política es una cadena que contiene un ID de extensión y, opcionalmente, una URL de actualización separados por punto y coma (;). El ID de extensión es la cadena de 32 letras que aparece, por ejemplo, en chrome://extensions si está habilitado el modo Desarrollador. Si se especifica, la URL de actualización debe dirigir a un documento XML de un archivo de manifiesto de actualización (https://developer.chrome.com/extensions/autoupdate). La URL de actualización debería usar uno de los siguientes esquemas: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. De forma predeterminada, se usa la URL de actualización de Chrome Web Store. La URL de actualización definida en esta política solo se usará en la instalación inicial. Las actualizaciones posteriores de la extensión usarán la URL de actualización indicada en el archivo de manifiesto de la extensión. La URL de actualización de las actualizaciones posteriores se puede anular con la política <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Consulta http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
+
+En instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones externas a Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Nota: Esta política no se aplica al modo Incógnito. Consulta más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="841977920223099909">Activar advertencia de protección de contraseña</translation>
 <translation id="8419965165591256432">Frecuencia con la que se recoge el estado de actividad de los dispositivos registrados de los usuarios afiliados. El valor mínimo permitido es 1 minuto.
 

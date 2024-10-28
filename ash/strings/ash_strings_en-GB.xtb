@@ -501,6 +501,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> to <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
+
+Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Exit capture mode</translation>
 <translation id="2785499565474703580">One device connected</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
@@ -598,6 +601,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="3113492864356515707">Highlight previous item on shelf</translation>
 <translation id="311799651966070385">Close nudge</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
+<translation id="3121411970001795539">The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
+
+Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Classwork type</translation>
 <translation id="3126026824346185272">Ctrl</translation>

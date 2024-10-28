@@ -3095,7 +3095,6 @@
 <translation id="3182749001423093222">Емле тексеру</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
 <translation id="3183143381919926261">Мобильдік интернет желілері</translation>
-<translation id="3183613134231754987">Бұл кіру кілті тек Windows Hello-да сақталады. Барлық инкогнито терезесін жапқаннан кейін, ол осы құрылғыда қалады.</translation>
 <translation id="3183700187146209259">Сканердің бағдарламалық құралын орнату мүмкін емес</translation>
 <translation id="3183944777708523606">Мониторды реттеу</translation>
 <translation id="3184536091884214176">CUPS принтерлерін реттеу және басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -8236,7 +8235,6 @@
 <translation id="6941937518557314510"><ph name="TOKEN_NAME" /> хостына сертификатыңыз арқылы аутентификациялау үшін <ph name="HOST_NAME" /> таңбалауышына кіріңіз.</translation>
 <translation id="6943060957016121200">Жылдам тетерингті қосу</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> құрылғысынан ажыратылды</translation>
-<translation id="6944708469742828051">Бұл кіру кілті тек Windows Hello-да сақталады.</translation>
 <translation id="6944750221184785444">Бұл профильді орнату мүмкін болмады. Техникалық қолдау керек болса, операторға хабарласыңыз.</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="694592694773692225">Бұл бетте бағыттауға тыйым салынған.</translation>

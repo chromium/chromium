@@ -3111,7 +3111,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3182749001423093222">Verificação ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfil</translation>
 <translation id="3183143381919926261">Redes de dados móveis</translation>
-<translation id="3183613134231754987">Esta senha de acesso é salva apenas no Windows Hello. Ela continua neste dispositivo depois que você fecha todas as janelas anônimas.</translation>
 <translation id="3183700187146209259">Não é possível instalar o software do scanner</translation>
 <translation id="3183944777708523606">Disposição do monitor</translation>
 <translation id="3184536091884214176">Configurar ou gerenciar impressoras CUPS. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -8263,7 +8262,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6941937518557314510">Faça login no <ph name="TOKEN_NAME" /> para autenticar seu certificado no <ph name="HOST_NAME" />.</translation>
 <translation id="6943060957016121200">Ativar tethering instantâneo</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Esta senha de acesso vai ser salva apenas no Windows Hello.</translation>
 <translation id="6944750221184785444">Não foi possível instalar esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">Redirecionamento bloqueado nesta página.</translation>

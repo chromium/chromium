@@ -501,6 +501,9 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hanggang <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /></translation>
+<translation id="2781658180588759579">Naka-disable ang naka-built in na touchpad. Gamitin ang iyong keyboard o ibang device na panturo para kumpirmahin ang pagbabago.
+
+Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Lumabas sa capture mode</translation>
 <translation id="2785499565474703580">1 device ang nakakonekta</translation>
 <translation id="2791421900609674576">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang pumindot nang matagal para alisin ang mga rekomendasyon.</translation>
@@ -598,6 +601,9 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3113492864356515707">I-highlight ang nakaraang item sa shelf</translation>
 <translation id="311799651966070385">Isara ang nudge</translation>
 <translation id="3120421559657122717">I-shut down ang device?</translation>
+<translation id="3121411970001795539">Naka-disable ang naka-built in na touchpad dahil nakakonekta ang mouse. Gamitin ang mouse o keyboard para kumpirmahin ang pagbabago.
+
+Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Uri ng classwork</translation>
 <translation id="3126026824346185272">Ctrl</translation>

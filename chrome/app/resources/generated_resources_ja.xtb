@@ -39,6 +39,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">このデバイスは <ph name="DOMAIN" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="1022719295563085177">ネットワークのデフォルト</translation>
+<translation id="1026196234862089732">パスキーを更新しました</translation>
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1026959648338730078">Windows Hello または外部セキュリティ キー</translation>
@@ -143,6 +144,7 @@
 パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> でいつでも確認できます。</translation>
 <translation id="1084824384139382525">リンクのアドレスをコピー(&amp;E)</translation>
 <translation id="1085064499066015002">すべてのサイトで常に許可</translation>
+<translation id="1085618740036066768">「<ph name="ITEM" />」は選択されていません。全 <ph name="COUNT" /> 件のうち、<ph name="INDEX" /> 番目です。選択するには検索+Space キーを押してください。</translation>
 <translation id="1085697365578766383">仮想マシンの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
@@ -210,6 +212,7 @@
 <translation id="1142713751288681188">用紙の種類</translation>
 <translation id="1143142264369994168">証明書の署名者</translation>
 <translation id="1145593918056169051">プリンタが停止しました</translation>
+<translation id="114715166554490743">ヘッド ポインター</translation>
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
 <translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
@@ -2374,6 +2377,7 @@
 <translation id="2654553774144920065">印刷リクエスト</translation>
 <translation id="265748523151262387">スマートフォンと常に接続</translation>
 <translation id="2657612187216250073">ポインタのユーザー補助設定</translation>
+<translation id="2658510146844889864">パスキーとセキュリティ キー</translation>
 <translation id="2658941648214598230">元のコンテンツを表示しますか？</translation>
 <translation id="2659694935349347275">ウィンドウを右下に移動しました</translation>
 <translation id="2659971421398561408">Crostini のディスクサイズ変更</translation>
@@ -3092,7 +3096,6 @@
 <translation id="3182749001423093222">スペルチェック</translation>
 <translation id="3183139917765991655">プロフィール インポーター</translation>
 <translation id="3183143381919926261">モバイルデータ ネットワーク</translation>
-<translation id="3183613134231754987">このパスキーは Windows Hello にのみ保存されます。すべてのシークレット ウィンドウを閉じた後も、パスキーはこのデバイスには残ります。</translation>
 <translation id="3183700187146209259">スキャナ ソフトウェアをインストールできません</translation>
 <translation id="3183944777708523606">モニターの配置</translation>
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -3201,6 +3204,7 @@
 <translation id="3266022278425892773">Linux 開発環境</translation>
 <translation id="3266030505377585301">このデバイスからのみ閲覧履歴データを削除して Google アカウントにはデータを残しておく場合は、<ph name="BEGIN_LINK" />ログアウト<ph name="END_LINK" />してください。</translation>
 <translation id="3266274118485960573">安全チェックを実行しています。</translation>
+<translation id="3266688867683447361"><ph name="ITEM" /> を選択しました。全 <ph name="COUNT" /> 件のうち、<ph name="INDEX" /> 番目です。選択を解除するには検索+Space キーを押してください。</translation>
 <translation id="3267726687589094446">複数ファイルの自動ダウンロードを今後も許可する</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3269093882174072735">画像を読み込む</translation>
@@ -3443,6 +3447,7 @@
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="344537926140058498">このファイルには機密または危険なコンテンツが含まれているため、組織でブロックされました。所有者に修正するよう依頼してください。</translation>
+<translation id="3445465968953598059">フェイス コントロール</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
@@ -4509,6 +4514,7 @@
 <translation id="4195378859392041564">カスタマイズするには、マウスで任意のキーをクリックしてから、キーボードのキーを押してください</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
+<translation id="4196350776737072374">質問が指定されていません。「このページを要約」など好きな表現で質問してみてください。</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
 <translation id="4200609364258658652">動画フレームをコピー(&amp;Y)</translation>
 <translation id="4200689466366162458">カスタムの単語</translation>
@@ -4995,6 +5001,7 @@
 <translation id="4558426062282641716">自動起動の許可の要求</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" /> で開いています</translation>
 <translation id="4558946868955275132">言語の選択に対応しているアプリのみが表示されます</translation>
+<translation id="4559063558809888563">顔の動き</translation>
 <translation id="4559617833001311418">このサイトはモーション センサーまたは光センサーにアクセスしています。</translation>
 <translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> ブックマークのその他のオプション</translation>
 <translation id="4561893854334016293">最近変更した権限はありません</translation>
@@ -5026,6 +5033,7 @@
 <translation id="4575614183318795561"><ph name="FEATURE_NAME" /> を設定</translation>
 <translation id="4576541033847873020">Bluetooth デバイスのペア設定</translation>
 <translation id="4576763597586015380">Google アカウントでパスワードの保存を続行するには、本人確認を行ってください</translation>
+<translation id="457679137538302799">自分でインストール</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - アクティブでないタブ</translation>
 <translation id="4577995939477504370">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスでマイクを使用できます</translation>
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
@@ -5864,6 +5872,7 @@
 <translation id="5194256020863090856">この操作はシークレット ウィンドウのみに影響します</translation>
 <translation id="5195074424945754995">これらのルールに一致する URL は、ブラウザの切り替えをトリガーせず、<ph name="BROWSER_NAME" /> または <ph name="ALTERNATIVE_BROWSER_NAME" /> のどちらでも開くことができます。</translation>
 <translation id="5195863934285556588"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />[設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [セキュリティと現在地情報] &gt; [現在地情報] から随時、このデバイスの Android 位置情報機能をオフにできます。また、同じメニューで [Google 位置情報の精度] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="5196790039230503600">ジェスチャーを行ってから、頭を動かしてアイテムをドロップする場所を示します。ジェスチャーをもう一度行って、アイテムをドロップします。</translation>
 <translation id="5197150086680615104">タブグループの候補はいつでも確認できます</translation>
 <translation id="5197255632782567636">インターネット</translation>
 <translation id="5198430103906431024">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
@@ -5933,6 +5942,7 @@
 <translation id="5247051749037287028">表示名（省略可）</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> を選択</translation>
 <translation id="5249624017678798539">ダウンロードの完了前にブラウザで問題が発生しました。</translation>
+<translation id="5249818097095743806">セキュリティ キーを使用する</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> は、ユーザーの現在地情報を使用して地域のコンテンツを提供します。この設定は [<ph name="SETTINGS_LINK" />] で変更できます。</translation>
 <translation id="5252496130205799136">Google アカウントを使用してパスワードを保存、入力しますか？</translation>
 <translation id="5252653240322147470">PIN は <ph name="MAXIMUM" /> 桁未満で指定してください</translation>
@@ -6639,6 +6649,7 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> として同期</translation>
 <translation id="5781120434102258025">学校用アカウントのデータを個人アカウントに移動します</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
+<translation id="5783346913439924978">ヘッド トラッキング</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784291589716625675">アプリの言語を変更</translation>
 <translation id="5785583009707899920">Chrome ファイル ユーティリティ</translation>
@@ -6936,6 +6947,7 @@
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
 <translation id="5992652489368666106">余白なし</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 件のサイトの確認が完了しました}other{{NUM_SITES} 件のサイトの確認が完了しました}}</translation>
+<translation id="5996490984199062729">プロフィールが設定されていません</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="5998458948782718639">自動入力の改善にご協力ください</translation>
 <translation id="5998976983953384016">確定して有効にする</translation>
@@ -7744,6 +7756,7 @@
 <translation id="6597324406048772521">拡張機能はこのサイトで許可されていません</translation>
 <translation id="6597331566371766302">次の拡張機能は管理者によってブロックされました。</translation>
 <translation id="659894938503552850">新しい順</translation>
+<translation id="6599829027342135752"><ph name="APP_NAME" /> でセキュリティ キーを使用するには、セキュリティ キーを差し込んでタッチしてください</translation>
 <translation id="6601262427770154296">単語リストの管理</translation>
 <translation id="6602173570135186741">自動入力とパスワード</translation>
 <translation id="6602336931411102724">ブックマーク バーにタブグループを表示する</translation>
@@ -8229,7 +8242,6 @@
 <translation id="6941937518557314510">証明書で <ph name="HOST_NAME" /> の認証を受けるには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="6943060957016121200">インスタント テザリングを有効にする</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> との接続を解除しました</translation>
-<translation id="6944708469742828051">このパスキーは Windows Hello にのみ保存されます</translation>
 <translation id="6944750221184785444">このプロファイルをインストールできません。テクニカル サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="694592694773692225">このページでリダイレクトがブロックされました。</translation>
@@ -8527,6 +8539,7 @@
 <translation id="7159953856712257647">デフォルトでインストール</translation>
 <translation id="7160182524506337403">スマートフォンの通知を表示できるようになりました</translation>
 <translation id="7160911207516219534">サイドパネル</translation>
+<translation id="716210145227921528">削除したパスキー</translation>
 <translation id="7165263843655074092">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」はチェックした場所にある画像、動画、音声の各ファイルを読み取ることができます。</translation>
 <translation id="7166815366658507447">アクセス ポイントを有効にしました</translation>
@@ -8751,6 +8764,7 @@
 <translation id="7333669215417470379">アプリや設定のバックアップと復元</translation>
 <translation id="7335974957018254119">スペルチェックを使用する言語</translation>
 <translation id="7336799713063880535">通知をブロックしました。</translation>
+<translation id="7337258336304389677">スマートフォンまたはタブレットを使用する</translation>
 <translation id="7338630283264858612">デバイスのシリアル番号が無効です。</translation>
 <translation id="7339763383339757376">PKCS #7、単一の証明書</translation>
 <translation id="7339785458027436441">入力中にスペルチェック</translation>
@@ -9167,6 +9181,7 @@
 <translation id="7640256527901510478">デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="7640308610547854367">ChromeOS を以前のバージョンに戻しました。アップデートを入手するには、次のバージョンが公開されるまでお待ちください。</translation>
 <translation id="7641513591566880111">新しいプロファイル名</translation>
+<translation id="7641720519047586765">このパスキーをこのサイトから削除しました</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> を追加しました</translation>
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>
@@ -10016,6 +10031,7 @@
 <translation id="8226222018808695353">アクセスできません</translation>
 <translation id="8226619461731305576">キュー</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
+<translation id="8227793900613581774"><ph name="APP_NAME" /> の設定を行うには、セキュリティ キーを差し込んでタッチしてください</translation>
 <translation id="8228783756378591900">組織のセキュリティ ポリシーに沿ってこのドキュメントをチェックしています...</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> を削除</translation>
@@ -10530,6 +10546,7 @@
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{拡張機能を管理}other{拡張機能を管理}}</translation>
 <translation id="8599681327221583254">正しく設定されていないポリシーがあります。管理者にお問い合わせください</translation>
 <translation id="8599864823732014237">企業の登録をスキップしますか？</translation>
+<translation id="8600362954032151088">パスワードとパスキーは <ph name="GOOGLE_PASSWORD_MANAGER" /> で管理できます</translation>
 <translation id="8601206103050338563">TLS WWW クライアント認証</translation>
 <translation id="8602674530529411098">アプリ（ベータ版）</translation>
 <translation id="8602851771975208551">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるアプリが追加されました。</translation>
@@ -10966,6 +10983,7 @@
 <translation id="8894761918470382415">周辺機器のデータアクセス保護</translation>
 <translation id="8895454554629927345">ブックマーク リスト</translation>
 <translation id="8896830132794747524">マウスをより速く動かすとカーソルの移動幅が大きくなります</translation>
+<translation id="8897537894864195436"><ph name="APP_NAME" /> で使用するパスキーが設定されているデバイスのカメラで、この QR コードをスキャンしてください</translation>
 <translation id="8898786835233784856">次のタブを選択</translation>
 <translation id="8898790559170352647">Microsoft アカウントを追加する</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
@@ -11098,6 +11116,7 @@
 <translation id="8988539543012086784">このページは <ph name="BOOKMARK_FOLDER" /> に保存されています</translation>
 <translation id="8989034257029389285">「OK Google、この曲はなに？」と話しかけます。</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
+<translation id="8990243615717080992">パスワードまたはその他の復元方法でログインできます</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="8991694323904646277">カメラがありません</translation>
 <translation id="8991766915726096402">ローカルデータの復元</translation>
@@ -11359,6 +11378,7 @@
       <ph name="LIST_ITEM" />Wi-Fi に接続しなおす
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics を実行する
     <ph name="END_LIST" /></translation>
+<translation id="9165856803582999927"><ph name="APP_NAME" /> で使用するパスキーを作成して保存するデバイスのカメラで、この QR コードをスキャンしてください</translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
 <translation id="9166253503936244008"><ph name="APP_NAME" /> で使用するパスキーを持つデバイスで、この QR コードをスキャンしてください</translation>
 <translation id="9167063903968449027">リーディング リストを表示</translation>

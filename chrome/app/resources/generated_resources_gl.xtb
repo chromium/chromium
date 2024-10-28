@@ -3076,7 +3076,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3182749001423093222">Corrector ortográfico</translation>
 <translation id="3183139917765991655">Importador de perfís</translation>
 <translation id="3183143381919926261">Redes de datos móbiles</translation>
-<translation id="3183613134231754987">Esta clave de acceso só se gardará en Windows Hello. Permanecerá neste dispositivo despois de que peches todas as ventás do modo de incógnito.</translation>
 <translation id="3183700187146209259">Non se puido instalar o software do escáner</translation>
 <translation id="3183944777708523606">Disposición do monitor</translation>
 <translation id="3184536091884214176">Configurar ou xestionar impresoras CUPS. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -8190,7 +8189,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6941937518557314510">Inicia sesión en <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> co teu certificado.</translation>
 <translation id="6943060957016121200">Activar Conexión compartida instantánea</translation>
 <translation id="6943939122536910181">Desconectado de: <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Esta clave de acceso só se gardará en Windows Hello</translation>
 <translation id="6944750221184785444">Non se puido instalar este perfil. Para obter asistencia técnica, ponte en contacto co teu operador.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Bloqueouse a redirección nesta páxina.</translation>

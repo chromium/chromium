@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ຫາ <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">ແຜ່ນສຳຜັດໃນຕົວຖືກປິດການນຳໃຊ້. ກະລຸນາໃຊ້ແປ້ນພິມ ຫຼື ອຸປະກອນຕົວຊີ້ຕຳແໜ່ງອື່ນຂອງທ່ານເພື່ອຢືນຢັນການປ່ຽນແປງ.
+
+ບໍ່ດັ່ງນັ້ນ, ແຜ່ນສຳຜັດໃນຕົວຈະເປີດການນຳໃຊ້ອີກຄັ້ງພາຍໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">ອອກຈາກໂໝດຖ່າຍຮູບ</translation>
 <translation id="2785499565474703580">ເຊື່ອມຕໍ່ 1 ອຸປະກອນແລ້ວ</translation>
 <translation id="2791421900609674576">ທ່ານຈະເຫັນການແນະນຳເພື່ອໃຫ້ທ່ານສາມາດສືບຕໍ່ຈາກບ່ອນທີ່ເປີດຄ້າງໄວ້ໄດ້. ທ່ານສາມາດແຕະຄ້າງໄວ້ເພື່ອລຶບການແນະນຳອອກໄດ້.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">ໄຮໄລ້ລາຍການກ່ອນໜ້າຢູ່ຖ້ານ</translation>
 <translation id="311799651966070385">ປິດສະກິດ</translation>
 <translation id="3120421559657122717">ປິດອຸປະກອນບໍ?</translation>
+<translation id="3121411970001795539">ແຜ່ນສຳຜັດໃນຕົວຖືກປິດການນຳໃຊ້ເນື່ອງຈາກມີການເຊື່ອມຕໍ່ເມົ້າຢູ່. ກະລຸນາໃຊ້ເມົ້າ ຫຼື ແປ້ນພິມເພື່ອຢືນຢັນການປ່ຽນແປງ.
+
+ບໍ່ດັ່ງນັ້ນ, ແຜ່ນສຳຜັດໃນຕົວຈະເປີດການນຳໃຊ້ອີກຄັ້ງພາຍໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ປະເພດວຽກຫ້ອງ</translation>
 <translation id="3126026824346185272">Ctrl</translation>

@@ -849,6 +849,7 @@
 <translation id="5005498671520578047">ਪਾਸਵਰਡ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="5010886807652684893">ਦ੍ਰਿਸ਼ਟੀਗਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ਕਨੈਕਟ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> ਅਤੇ <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> ਸੰਬੰਧਿਤ ਲੱਗਦੇ ਹਨ। ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਨੂੰ <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> 'ਤੇ ਭਰੋਸਾ ਹੈ।</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">ਪਿਛਲੇ 15 ਮਿੰਟ</translation>
 <translation id="5032430150487044192">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>

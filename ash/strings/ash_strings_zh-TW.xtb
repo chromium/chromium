@@ -501,6 +501,9 @@
 <translation id="2774348302533424868">按下 <ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /> 鍵</translation>
 <translation id="2778197796481941784">Ctrl + 搜尋鍵 + S 鍵</translation>
 <translation id="2778650143428714839">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理</translation>
+<translation id="2781658180588759579">內建觸控板已停用，請使用鍵盤或其他指標裝置確認變更。
+
+如未在 <ph name="TIMEOUT_SECONDS" /> 秒內確認，內建觸控板將重新啟用。</translation>
 <translation id="2782591952652094792">結束擷取模式</translation>
 <translation id="2785499565474703580">已與 1 部裝置連線</translation>
 <translation id="2791421900609674576">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要按住建議項目即可移除。</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">醒目顯示檔案櫃中的前一個項目</translation>
 <translation id="311799651966070385">關閉自動提醒</translation>
 <translation id="3120421559657122717">要關機嗎？</translation>
+<translation id="3121411970001795539">裝置已接上滑鼠，因此內建觸控板已停用。請使用滑鼠或鍵盤確認變更。
+
+如未在 <ph name="TIMEOUT_SECONDS" /> 秒內確認，內建觸控板將重新啟用。</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">課堂作業類型</translation>
 <translation id="3126026824346185272">Ctrl</translation>

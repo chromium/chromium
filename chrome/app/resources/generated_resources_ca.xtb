@@ -3098,7 +3098,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3182749001423093222">Corrector ortogràfic</translation>
 <translation id="3183139917765991655">Importador de perfils</translation>
 <translation id="3183143381919926261">Xarxes de dades mòbils</translation>
-<translation id="3183613134231754987">Aquesta clau d'accés només es desarà a Windows Hello. Es conservarà en aquest dispositiu després que tanquis totes les finestres d'incògnit.</translation>
 <translation id="3183700187146209259">No es pot instal·lar el programari de l'escàner</translation>
 <translation id="3183944777708523606">Disposició del monitor</translation>
 <translation id="3184536091884214176">Configura o gestiona les impressores CUPS. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -4516,6 +4515,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4195378859392041564">Fes clic en qualsevol tecla amb el ratolí i, a continuació, prem una tecla del teclat per personalitzar-la</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4195814663415092787">Continua des d'on ho vaig deixar</translation>
+<translation id="4196350776737072374">No hi ha cap pregunta disponible. Prova de demanar coses com ara "resumeix aquesta pàgina" o fes la teva pròpia pregunta.</translation>
 <translation id="4198268995694216131">Llocs web addicionals</translation>
 <translation id="4200609364258658652">Copia&amp; el fotograma</translation>
 <translation id="4200689466366162458">Paraules personalitzades</translation>
@@ -6945,6 +6945,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5992225669837656567">S'han desconnectat tots els ratolins</translation>
 <translation id="5992652489368666106">Sense vores</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{S'ha completat la revisió d'1 lloc web}other{S'ha completat la revisió de {NUM_SITES} llocs web}}</translation>
+<translation id="5996490984199062729">El teu perfil no s'ha configurat</translation>
 <translation id="5997337190805127100">Més informació sobre l'accés als llocs web</translation>
 <translation id="5998458948782718639">Ajuda a millorar la funció Emplenament automàtic</translation>
 <translation id="5998976983953384016">Confirma i activa</translation>
@@ -8240,7 +8241,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6941937518557314510">Inicieu la sessió a <ph name="TOKEN_NAME" /> per autenticar-vos a <ph name="HOST_NAME" /> amb el vostre certificat.</translation>
 <translation id="6943060957016121200">Activa la compartició de xarxa instantània</translation>
 <translation id="6943939122536910181">S'ha desconnectat del dispositiu <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Aquesta clau d'accés només es desarà a Windows Hello</translation>
 <translation id="6944750221184785444">No s'ha pogut instal·lar aquest perfil. Per obtenir assistència tècnica, contacta amb el teu operador.</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="694592694773692225">S'ha bloquejat la redirecció en aquesta pàgina.</translation>

@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">Saiz <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">kord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orkid Sederhana</translation>
+<translation id="1926147969119007125">Jeda kawalan wajah</translation>
 <translation id="1928932365747995741">Tiada medan teks boleh edit sebelumnya</translation>
 <translation id="1964135212174907577">Objek Seterusnya</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">Langkau ke item boleh fokus seterusnya</translation>
 <translation id="2756452585631602151">Masukkan label tersuai</translation>
 <translation id="2766299274563946262">Tiada sel di kiri</translation>
+<translation id="2770947749427257887">Masuk mod tatal</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Anda juga boleh leret satu jari dari kanan ke kiri untuk beralih ke item sebelumnya. Cubalah sekarang.</translation>
 <translation id="280499067616661124">Cari dalam halaman Chromevox</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">Tekanan kekunci tidak sah</translation>
 <translation id="3468959318854349468">Tiada tajuk</translation>
 <translation id="3469413619751135069">Hijau Pucat</translation>
+<translation id="3473744269398144689">Mulakan pengimlakan</translation>
 <translation id="3490765818161916458">Grid senarai</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{tanda kurung kanan}other{# tanda kurung kanan}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">End</translation>
 <translation id="5290220123487191192">Mari mulakan dengan beberapa gerak isyarat yang akan anda gunakan dengan kerap. Jika anda sampai ke item yang ingin diaktifkan, ketik skrin dua kali dengan satu jari. Untuk meneruskan, ketik dua kali sekarang.</translation>
+<translation id="5291860916305032607">Sambung semula kawalan wajah</translation>
 <translation id="5302089807023311274">Rujukan bibliografi</translation>
 <translation id="530391007967514163">Cuba lompat mengikut tajuk untuk menavigasi teks di bawah.</translation>
 <translation id="5304943142864553931">Tab, <ph name="TITLE" /></translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Makluman mod</translation>
+<translation id="5406272775687194041">Mulakan seret dan lepas</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{koma bertitik}other{# koma bertitik}}</translation>
 <translation id="5420259671171615858">Cari dalam menu</translation>
 <translation id="5435274640623994081">Dayakan pengelogan ikon audio</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">Baca halaman secara automatik selepas selesai dimuatkan</translation>
 <translation id="5826479389509458994">baris <ph name="ROW" /> lajur <ph name="COL" /></translation>
 <translation id="5833044594931167190">Tiada tanda tempat ARIA</translation>
+<translation id="584044465500042213">Keluar daripada mod tatal</translation>
 <translation id="5842625257683688671">Tiada grafik seterusnya</translation>
 <translation id="5847883414085148048">Dedikasi</translation>
 <translation id="5850707923114094062">Sorot ke belakang</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">Jadual</translation>
 <translation id="7289186959554153431">Tajuk 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Tamatkan seret dan lepas</translation>
 <translation id="7308519659008003150">Tiada medan borang sebelumnya</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">bantuan</translation>
@@ -1159,6 +1166,7 @@
 <translation id="8775203254697638994">Kadangkala anda perlu memilih satu item daripada senarai lungsur. Untuk berbuat demikian, kembangkan senarai dahulu dengan menekan Carian + Ruang. Kemudian gunakan kekunci Anak panah ke atas dan Anak panah ke bawah untuk memilih item. Akhir sekali, runtuhkan senarai itu dengan menekan Carian + Ruang.</translation>
 <translation id="8779057862865475116">Tiada pautan sebelumnya</translation>
 <translation id="8796411681063377102">Tajuk tahap 3 seterusnya</translation>
+<translation id="8821891849214789910">Hentikan pengimlakan</translation>
 <translation id="8823311177246872527">Halaman <ph name="CURRENTPAGE" /> daripada <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">utama</translation>

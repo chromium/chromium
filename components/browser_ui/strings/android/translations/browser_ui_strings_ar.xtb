@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1240190568154816272">‏معلومات بشأن استخدام متصفّح Chrome</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">انقر على "التطبيقات"  &gt; "التطبيقات التلقائية"</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1289742167380433257">‏لحفظ بياناتك، حسَّنت Google الصور في هذه الصفحة.</translation>
 <translation id="129382876167171263">تظهر هنا الملفات التي تحفظها المواقع الإلكترونية</translation>
@@ -191,6 +192,7 @@
 <translation id="3908288065506437185">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="3913461097001554748">‫<ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">قد لا تعمل بعض الميزات، ولكن لا يزال بإمكان المواقع الإلكترونية ذات الصلة استخدام ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
+<translation id="3922092564198021702">افتح تطبيق "الإعدادات" على هاتفك</translation>
 <translation id="3933121352599513978">تصغير الطلبات غير المرغوب فيها (خيار مُقترَح)</translation>
 <translation id="3955193568934677022">السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي (مُستحسَن)</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
@@ -348,6 +350,7 @@
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6207207788774442484">حذف البيانات وإعادة ضبط الأذونات</translation>
 <translation id="6231752747840485235">هل تريد إلغاء تثبيت "<ph name="APP_NAME" />"؟</translation>
+<translation id="6234351944623978659">‏انقر على تطبيق المتصفِّح &gt; Chrome</translation>
 <translation id="6262191102408817757">استنادًا إلى علامة التبويب الأخيرة</translation>
 <translation id="6262279340360821358">تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>

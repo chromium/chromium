@@ -3099,7 +3099,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3182749001423093222">Corrector ortográfico</translation>
 <translation id="3183139917765991655">Importador de perfiles</translation>
 <translation id="3183143381919926261">Redes de datos móviles</translation>
-<translation id="3183613134231754987">Esta llave de acceso solo se guardará en Windows Hello. Permanecerá en este dispositivo cuando cierres todas las ventanas de incógnito.</translation>
 <translation id="3183700187146209259">No se puede instalar el software del escáner</translation>
 <translation id="3183944777708523606">Configuración del monitor</translation>
 <translation id="3184536091884214176">Configura o administra impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -8257,7 +8256,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6941937518557314510">Accede a <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
 <translation id="6943060957016121200">Habilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Esta llave de acceso solo se guardará en Windows Hello</translation>
 <translation id="6944750221184785444">No se puede instalar este perfil. Para obtener asistencia técnica, comunícate con tu operador.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se bloqueó el redireccionamiento en esta página.</translation>

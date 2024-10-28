@@ -3115,7 +3115,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3182749001423093222">Kiểm tra chính tả</translation>
 <translation id="3183139917765991655">Trình nhập hồ sơ</translation>
 <translation id="3183143381919926261">Mạng dữ liệu di động</translation>
-<translation id="3183613134231754987">Khoá truy cập này sẽ chỉ được lưu trong Windows Hello. Khoá truy cập sẽ vẫn được lưu trên thiết bị này sau khi bạn đóng tất cả cửa sổ ẩn danh.</translation>
 <translation id="3183700187146209259">Không cài đặt được phần mềm của máy quét</translation>
 <translation id="3183944777708523606">Sắp xếp màn hình</translation>
 <translation id="3184536091884214176">Thiết lập hoặc quản lý máy in CUPS. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -8275,7 +8274,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6941937518557314510">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xác thực đến <ph name="HOST_NAME" /> bằng chứng chỉ của bạn.</translation>
 <translation id="6943060957016121200">Bật tính năng Chia sẻ Internet tức thì</translation>
 <translation id="6943939122536910181">Đã ngắt kết nối khỏi <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Khoá truy cập này sẽ chỉ được lưu trong Windows Hello</translation>
 <translation id="6944750221184785444">Không thể cài đặt hồ sơ này. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng.</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="694592694773692225">Đã chặn chuyển hướng trên trang này.</translation>
@@ -8929,7 +8927,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="741906494724992817">Ứng dụng này không yêu cầu quyền truy cập đặc biệt.</translation>
 <translation id="7419142833919893307">Chưa thêm tên người dùng nào</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{Mã PIN không đúng. Bạn còn 1 lần thử.}other{Mã PIN không đúng. Bạn còn # lần thử.}}</translation>
-<translation id="7419565702166471774">Luôn sử dụng kết nối an toàn</translation>
+<translation id="7419565702166471774">Luôn sử dụng kết nối bảo mật</translation>
 <translation id="742130257665691897">Đã xóa dấu trang</translation>
 <translation id="7421925624202799674">&amp;Xem Nguồn Trang</translation>
 <translation id="7422192691352527311">Lựa chọn ưu tiên...</translation>

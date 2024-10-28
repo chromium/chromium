@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> በ<ph name="KEY_TWO" /> በኩል</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው</translation>
+<translation id="2781658180588759579">አብሮገነብ የመዳሰሻ ሰሌዳው ተሰናክሏል። ለውጡን ለማረጋገጥ የቁልፍ ሰሌዳ ወይም ሌላ ጠቋሚ መሣሪያ ይጠቀሙ።
+
+አለበለዚያ አብሮገነብ የመዳሰሻ ሰሌዳው በ<ph name="TIMEOUT_SECONDS" /> ሰከንዶች ውስጥ ዳግም ይነቃል።</translation>
 <translation id="2782591952652094792">ከማንሳት ሁነታ ውጣ</translation>
 <translation id="2785499565474703580">1 መሣሪያ ተገናኝቷል</translation>
 <translation id="2791421900609674576">ካቆሙበት መቀጠል እንዲችሉ ምክሮችን ይመለከታሉ። ምክሮችን ለማስወገድ መንካት እና መያዝ ይችላሉ።</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">ቀዳሚ ንጥልን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="311799651966070385">ገፋ ማድረግ ዝጋ</translation>
 <translation id="3120421559657122717">መሣሪያ ይዘጋ?</translation>
+<translation id="3121411970001795539">መዳፊት ስለተገናኘ አብሮገነብ የመዳሰሻ ሰሌዳው ተሰናክሏል። ለውጡን ለማረጋገጥ መዳፊት ወይም የቁልፍ ሰሌዳ ይጠቀሙ።
+
+አለበለዚያ አብሮገነብ የመዳሰሻ ሰሌዳው በ<ph name="TIMEOUT_SECONDS" /> ሰከንዶች ውስጥ ዳግም ይነቃል።</translation>
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3125690294288312932">የክፍል ሥራ ዓይነት</translation>
 <translation id="3126026824346185272">Ctrl</translation>

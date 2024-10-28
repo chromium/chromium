@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Atidaryti prisijungus</translation>
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
+<translation id="1070329623210597193">Failai, kuriuos ši svetainė gali peržiūrėti arba redaguoti</translation>
 <translation id="1073417869336441572">Padėkite mums tobulinti „Chrome“ nurodydami, kodėl leidote trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Daugiau</translation>
 <translation id="6064125863973209585">Baigti atsisiuntimai</translation>
 <translation id="6071501408666570960">Galite būti atjungti šioje svetainėje</translation>
+<translation id="6085954183010297841">Ištrinti failo redagavimo leidimą? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Įjungus svetainėse gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį. Išjungus svetainės nežino, kada aktyviai naudojate įrenginį.</translation>
 <translation id="6140839633433422817">Ar tikrai norite nustatyti leidimus iš naujo ir ištrinti slapukus bei svetainių duomenis?</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>

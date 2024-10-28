@@ -3100,7 +3100,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3182749001423093222">Kontrola pravopisu</translation>
 <translation id="3183139917765991655">Nástroj na import profilů</translation>
 <translation id="3183143381919926261">Mobilní datové sítě</translation>
-<translation id="3183613134231754987">Tento přístupový klíč bude uložen pouze ve službě Windows Hello. Zůstane v tomto zařízení i po zavření všech anonymních oken.</translation>
 <translation id="3183700187146209259">Software skeneru nelze nainstalovat</translation>
 <translation id="3183944777708523606">Uspořádání monitorů</translation>
 <translation id="3184536091884214176">Nastavení nebo správa tiskáren CUPS. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -8244,7 +8243,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6941937518557314510">Chcete-li provést ověření hostitele <ph name="HOST_NAME" /> pomocí svého certifikátu, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
 <translation id="6943060957016121200">Aktivovat dynamický tethering</translation>
 <translation id="6943939122536910181">Odpojeno od zařízení <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Tento přístupový klíč se uloží pouze do služby Windows Hello</translation>
 <translation id="6944750221184785444">Tento profil nelze nainstalovat. Se žádostmi o technickou podporu se obracejte na svého operátora.</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="694592694773692225">Na této stránce bylo zablokováno přesměrování.</translation>

@@ -501,6 +501,9 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hingga <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+penelusuran+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Touchpad bawaan dinonaktifkan. Gunakan keyboard atau perangkat penunjuk lainnya untuk mengonfirmasi perubahan.
+
+Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Keluar dari mode tangkapan layar</translation>
 <translation id="2785499565474703580">1 perangkat terhubung</translation>
 <translation id="2791421900609674576">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat menyentuh lama untuk menghapus rekomendasi.</translation>
@@ -598,6 +601,9 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3113492864356515707">Tandai item sebelumnya di rak</translation>
 <translation id="311799651966070385">Tutup saran tindak lanjut</translation>
 <translation id="3120421559657122717">Matikan perangkat?</translation>
+<translation id="3121411970001795539">Touchpad bawaan dinonaktifkan karena mouse terhubung. Gunakan mouse atau keyboard untuk mengonfirmasi perubahan.
+
+Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Jenis tugas kelas</translation>
 <translation id="3126026824346185272">Ctrl</translation>

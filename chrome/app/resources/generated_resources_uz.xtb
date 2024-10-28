@@ -3100,7 +3100,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3182749001423093222">Imlo tekshiruvi</translation>
 <translation id="3183139917765991655">Profillar importi</translation>
 <translation id="3183143381919926261">Mobil internet tarmoqlari</translation>
-<translation id="3183613134231754987">Bu kod faqat Windows Helloda saqlanadi. Barcha inkognito oynalari yopilganidan keyin kod shu qurilmada qoladi.</translation>
 <translation id="3183700187146209259">Skaner dasturi oʻrnatilmadi</translation>
 <translation id="3183944777708523606">Monitor joylashuv tartibi</translation>
 <translation id="3184536091884214176">CUPS printerlarni sozlash va boshqarish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -8245,7 +8244,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6941937518557314510"><ph name="TOKEN_NAME" />’ga kirib, sertifikat bilan <ph name="HOST_NAME" />’ga shaxsingizni tasdiqlang.</translation>
 <translation id="6943060957016121200">Tezkor modem rejimini yoqish</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> qurilmasidan uzildi</translation>
-<translation id="6944708469742828051">Bu kod faqatgina Windows Helloga saqlanadi</translation>
 <translation id="6944750221184785444">Bu profil oʻrnatilmadi. Texnik yordam uchun mobil aloqa operatoringizga murojaat qiling.</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="694592694773692225">Bu sahifada yo‘naltirish bloklandi.</translation>

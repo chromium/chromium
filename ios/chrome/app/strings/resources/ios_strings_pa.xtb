@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਵਰਤਣ ਲਈ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1054745118061919935">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="10614374240317010">ਕਦੇ ਵੀ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ</translation>
+<translation id="1062138828266376352">ਤੁਹਾਡਾ ਪਿੰਨ ਬਦਲਿਆ ਨਹੀਂ ਗਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="1066060668811609597">ਸਿੰਕ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1076421457278169141">ਕੋਡ ਸਕੈਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ਟੈਬ}one{{count} ਟੈਬ}other{{count} ਟੈਬਾਂ}}</translation>
@@ -676,6 +677,7 @@
 <translation id="421070604241073551">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਬੰਦ ਹੋਣ 'ਤੇ, ਡਾਟਾ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="4224534474590365556">ਕੀ 99+ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="422474357428465195">ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਸੰਬੰਧੀ ਕਈ ਸਮੱਸਿਆਵਾਂ ਹਨ ਜੋ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਖਤਰੇ ਵਿੱਚ ਪਾ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="422477017457571619">ਉਨ੍ਹਾਂ ਖਤਰਨਾਕ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੇ ਵਿਰੁੱਧ ਅਸਲ-ਸਮੇਂ ਦੀ, AI-ਸੰਚਾਲਿਤ ਸੁਰੱਖਿਆ ਜੋ ਕਿ Google ਨੂੰ ਭੇਜੇ ਜਾਣ ਵਾਲੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ 'ਤੇ ਆਧਾਰਿਤ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="4231395118547300571">ਸੁਰੱਖਿਆ ਜਾਂਚ ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹਨ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਐਪ<ph name="END_BOLD" /> 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -912,6 +914,7 @@
 <translation id="5295239312320826323">ਕੀ ਖਾਤਾ <ph name="USER_EMAIL" /> ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5311061401280561833">ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
+<translation id="531209241254508943">ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ਵਿੱਚੋਂ <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318298563956633672">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰ ਰਹੇ ਹੋ।</translation>

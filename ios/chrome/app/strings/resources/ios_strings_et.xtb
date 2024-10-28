@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Välja logitud. Oma konto järjehoidjate, paroolide ja muu sisu kasutamiseks logige uuesti sisse.</translation>
 <translation id="1054745118061919935">Jätkates kinnitate, et nõustute <ph name="BEGIN_LINK" />teenusetingimustega<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Ei ole kunagi salvestatud</translation>
+<translation id="1062138828266376352">Teie PIN-koodi ei muudetud. Kontrollige internetiühendust ja proovige uuesti</translation>
 <translation id="1066060668811609597">Sünkroonimise haldamine</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} vaheleht}other{{count} vahelehte}}</translation>
@@ -676,6 +677,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="421070604241073551">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse.</translation>
 <translation id="4224534474590365556">Kas sulgeda 99+ inaktiivset vahelehte?</translation>
 <translation id="422474357428465195">On mitmeid parooliprobleeme, mis võivad teie turvalisuse ohtu seada.</translation>
+<translation id="422477017457571619">Reaalajas ja AI-põhine kaitse ohtlike saitide, allalaadimiste ja laienduste eest, mis põhineb teie sirvimisandmetel, mis saadetakse Google'ile</translation>
 <translation id="4231395118547300571">Ohutuskontrolli märguanded on sisse lülitatud</translation>
 <translation id="4237377247299956313">Puudutage valikut <ph name="BEGIN_BOLD" />Vaikebrauserirakendus<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Ava seaded</translation>
