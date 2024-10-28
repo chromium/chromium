@@ -201,21 +201,6 @@ void DesktopWindowTreeHostLacros::OnOverviewModeChanged(bool in_overview) {
   UpdateWindowHints();
 }
 
-void DesktopWindowTreeHostLacros::OnTooltipShownOnServer(
-    const std::u16string& text,
-    const gfx::Rect& bounds) {
-  if (tooltip_controller()) {
-    tooltip_controller()->OnTooltipShownOnServer(GetContentWindow(), text,
-                                                 bounds);
-  }
-}
-
-void DesktopWindowTreeHostLacros::OnTooltipHiddenOnServer() {
-  if (tooltip_controller()) {
-    tooltip_controller()->OnTooltipHiddenOnServer();
-  }
-}
-
 void DesktopWindowTreeHostLacros::OnBoundsChanged(const BoundsChange& change) {
   // DesktopWindowTreeHostPlatform::OnBoundsChanged() may result in |this| being
   // deleted. As an extra safety guard, keep track of `this` with a weak

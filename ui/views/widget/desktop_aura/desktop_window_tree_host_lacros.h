@@ -67,9 +67,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void OnFullscreenTypeChanged(ui::PlatformFullscreenType old_type,
                                ui::PlatformFullscreenType new_type) override;
   void OnOverviewModeChanged(bool in_overview) override;
-  void OnTooltipShownOnServer(const std::u16string& text,
-                              const gfx::Rect& bounds) override;
-  void OnTooltipHiddenOnServer() override;
   void OnBoundsChanged(const BoundsChange& change) override;
 
   // DesktopWindowTreeHostPlatform overrides:

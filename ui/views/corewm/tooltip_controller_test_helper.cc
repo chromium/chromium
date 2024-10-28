@@ -29,14 +29,6 @@ TooltipControllerTestHelper::~TooltipControllerTestHelper() {
   }
 }
 
-bool TooltipControllerTestHelper::UseServerSideTooltip() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-#else
-  return false;
-#endif
-}
-
 const std::u16string& TooltipControllerTestHelper::GetTooltipText() {
   return state_manager()->tooltip_text();
 }
@@ -67,15 +59,6 @@ void TooltipControllerTestHelper::UpdateIfRequired(TooltipTrigger trigger) {
 
 void TooltipControllerTestHelper::FireHideTooltipTimer() {
   state_manager()->HideAndReset();
-}
-
-void TooltipControllerTestHelper::AddObserver(wm::TooltipObserver* observer) {
-  controller_->AddObserver(observer);
-}
-
-void TooltipControllerTestHelper::RemoveObserver(
-    wm::TooltipObserver* observer) {
-  controller_->RemoveObserver(observer);
 }
 
 bool TooltipControllerTestHelper::IsWillShowTooltipTimerRunning() {

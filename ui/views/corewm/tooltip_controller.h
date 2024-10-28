@@ -11,11 +11,12 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "base/time/time.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/views_export.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -25,12 +26,7 @@ namespace aura {
 class Window;
 }
 
-namespace base {
-class TimeDelta;
-}
-
 namespace gfx {
-class Point;
 class Rect;
 }  // namespace gfx
 
@@ -109,15 +105,6 @@ class VIEWS_EXPORT TooltipController
 
   // Sets show tooltip delay for `target` window.
   void SetShowTooltipDelay(aura::Window* target, base::TimeDelta delay);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when tooltip is shown/hidden on server.
-  // This is only used for Lacros whose tooltip is handled on server-side.
-  void OnTooltipShownOnServer(aura::Window* window,
-                              const std::u16string& text,
-                              const gfx::Rect& bounds);
-  void OnTooltipHiddenOnServer();
-#endif  // BUILDFLA(IS_CHROMEOS_LACROS)
 
  private:
   friend class test::TooltipControllerTestHelper;

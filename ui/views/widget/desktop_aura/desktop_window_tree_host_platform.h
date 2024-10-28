@@ -30,10 +30,6 @@ class PaintContext;
 
 namespace views {
 
-namespace corewm {
-class TooltipController;
-}
-
 class VIEWS_EXPORT DesktopWindowTreeHostPlatform
     : public aura::WindowTreeHostPlatform,
       public DesktopWindowTreeHost,
@@ -212,8 +208,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   Widget* GetWidget();
   const Widget* GetWidget() const;
-
-  views::corewm::TooltipController* tooltip_controller();
 
   void ScheduleRelayout();
 
