@@ -92,14 +92,22 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
 
   if (enabled) {
     DCHECK(!shield_view_);
+    // TODO(crbug.com/374034250): Remove the shield layer once the bug is fixed and
+    // the compositor can fallback to solid color background for missing tiles.
     shield_view_ = new views::View();
     parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
+    // Mark the layer transparent to make sure that the compositor will draw the
+    // solid color even if the texture for the wallpaper is missing.  This will
+    // increase the overdraw, but the impact on the performance should be
+    // minimum.
+    layer()->SetFillsBoundsOpaquely(false);
   } else {
     DCHECK(shield_view_);
+    layer()->SetFillsBoundsOpaquely(true);
     parent()->RemoveChildViewT(shield_view_.get());
     shield_view_ = nullptr;
   }

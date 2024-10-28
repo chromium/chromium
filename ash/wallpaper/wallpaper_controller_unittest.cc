@@ -1096,7 +1096,7 @@ TEST_P(WallpaperControllerTest, Client) {
   EXPECT_EQ(1u, client_.open_count());
 }
 
-TEST_P(WallpaperControllerTest, BasicReparenting) {
+TEST_P(WallpaperControllerTest, BasicReparentingAndLayerOpacity) {
   WallpaperControllerImpl* controller = Shell::Get()->wallpaper_controller();
   controller->CreateEmptyWallpaperForTesting();
 
@@ -1104,18 +1104,22 @@ TEST_P(WallpaperControllerTest, BasicReparenting) {
   // the lock screen wallpaper container.
   EXPECT_EQ(1, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(0, ChildCountForContainer(kLockScreenWallpaperId));
+  EXPECT_TRUE(wallpaper_view()->layer()->fills_bounds_opaquely());
 
   controller->OnSessionStateChanged(session_manager::SessionState::LOCKED);
 
   // One window is moved from desktop to lock container.
   EXPECT_EQ(0, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(1, ChildCountForContainer(kLockScreenWallpaperId));
+  // The wallpaper's layer should be non opaque in locked state.
+  EXPECT_FALSE(wallpaper_view()->layer()->fills_bounds_opaquely());
 
   controller->OnSessionStateChanged(session_manager::SessionState::ACTIVE);
 
   // One window is moved from lock to desktop container.
   EXPECT_EQ(1, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(0, ChildCountForContainer(kLockScreenWallpaperId));
+  EXPECT_TRUE(wallpaper_view()->layer()->fills_bounds_opaquely());
 }
 
 TEST_P(WallpaperControllerTest, SwitchWallpapersWhenNewWallpaperAnimationEnds) {
