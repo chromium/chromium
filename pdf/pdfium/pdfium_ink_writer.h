@@ -18,16 +18,16 @@ namespace chrome_pdf {
 
 // Writes `stroke` into `page` in `document`.
 //
-// Returns whether the operation succeeded or not. If the operation fails, then
-// both `document` and `page` are left unchanged.
+// Returns a handle to the page object if the operation is successful.  If the
+// operation fails, then both `document` and `page` are left unchanged.
 //
-// - If either `document` or `page` is null, then return false.
+// - If either `document` or `page` is null, then return nullptr.
 // - If `document` is not associated with `page`, then the behavior is
 //   undefined.
-// - If the provided `stroke` is empty, then return false.
-bool WriteStrokeToPage(FPDF_DOCUMENT document,
-                       FPDF_PAGE page,
-                       const ink::Stroke& stroke);
+// - If the provided `stroke` is empty, then return nullptr.
+FPDF_PAGEOBJECT WriteStrokeToPage(FPDF_DOCUMENT document,
+                                  FPDF_PAGE page,
+                                  const ink::Stroke& stroke);
 
 }  // namespace chrome_pdf
 

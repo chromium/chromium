@@ -130,29 +130,30 @@ void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
 
 }  // namespace
 
-bool WriteStrokeToPage(FPDF_DOCUMENT document,
-                       FPDF_PAGE page,
-                       const ink::Stroke& stroke) {
+FPDF_PAGEOBJECT WriteStrokeToPage(FPDF_DOCUMENT document,
+                                  FPDF_PAGE page,
+                                  const ink::Stroke& stroke) {
   if (!document || !page) {
-    return false;
+    return nullptr;
   }
 
   ScopedFPDFPageObject path =
       WriteShapeToNewPathOnPage(stroke.GetShape(), page);
   if (!path) {
-    return false;
+    return nullptr;
   }
 
+  FPDF_PAGEOBJECT page_obj = path.get();
   FPDF_PAGEOBJECTMARK mark =
-      FPDFPageObj_AddMark(path.get(), kInkAnnotationIdentifierKey);
+      FPDFPageObj_AddMark(page_obj, kInkAnnotationIdentifierKey);
   CHECK(mark);
 
-  SetBrushPropertiesForPath(stroke.GetBrush(), path.get());
+  SetBrushPropertiesForPath(stroke.GetBrush(), page_obj);
 
   // Path is ready for the page.
   FPDFPage_InsertObject(page, path.release());
 
-  return true;
+  return page_obj;
 }
 
 }  // namespace chrome_pdf
