@@ -22,18 +22,12 @@ PrivacySandboxNoticeServiceFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-// The same profile selection rules that apply for the existing
-// PrivacySandboxService must also apply to the PrivacySandboxNoticeService to
-// ensure accurate pref migration.
-// LINT.IfChange(PrivacySandboxNoticeService)
+// This notice service must be created for regular profiles. Currently, it
+// created for all regular non OTR-Incognito profiles (as per the default
+// setting).
 PrivacySandboxNoticeServiceFactory::PrivacySandboxNoticeServiceFactory()
     : ProfileKeyedServiceFactory("PrivacySandboxNoticeService",
-                                 ProfileSelections::Builder()
-                                     // Excluding Ash Internal profiles such as
-                                     // the signin or the lockscreen profile.
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {}
-// LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.cc:PrivacySandboxService)
+                                 ProfileSelections::Builder().Build()) {}
 
 std::unique_ptr<KeyedService>
 PrivacySandboxNoticeServiceFactory::BuildServiceInstanceForBrowserContext(
