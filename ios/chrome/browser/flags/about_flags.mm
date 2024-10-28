@@ -902,11 +902,11 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::features::kPriceTrackingPromoForceOverride},
+     segmentation_platform::kPriceTrackingNotificationPromo},
 };
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::features::kPriceTrackingPromoForceOverride},
+     segmentation_platform::kPriceTrackingNotificationPromo},
 };
 
 // Address Bar Position
@@ -981,11 +981,11 @@ const FeatureEntry::FeatureParam kTipsSavePasswordsForceHideArm[] = {
 
 const FeatureEntry::FeatureParam kSendTabPromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::features::kSendTabPromoForceOverride},
+     segmentation_platform::kSendTabNotificationPromo},
 };
 const FeatureEntry::FeatureParam kSendTabPromoForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::features::kSendTabPromoForceOverride},
+     segmentation_platform::kSendTabNotificationPromo},
 };
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =

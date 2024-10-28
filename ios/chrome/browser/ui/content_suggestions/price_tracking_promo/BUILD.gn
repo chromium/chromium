@@ -98,6 +98,7 @@ source_set("eg2_tests") {
     ":price_tracking_promo_constants",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
+    "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public:public",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
