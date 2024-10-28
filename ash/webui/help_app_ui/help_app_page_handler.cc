@@ -86,12 +86,19 @@ void HelpAppPageHandler::OpenSettings(
 }
 
 void HelpAppPageHandler::SetHasCompletedNewDeviceChecklist() {
-  pref_service_->SetBoolean(
-      help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist, true);
+  if (pref_service_->FindPreference(
+          help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist)) {
+    pref_service_->SetBoolean(
+        help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist, true);
+  }
 }
 
 void HelpAppPageHandler::SetHasVisitedHowToPage() {
-  pref_service_->SetBoolean(help_app::prefs::kHelpAppHasVisitedHowToPage, true);
+  if (pref_service_->FindPreference(
+          help_app::prefs::kHelpAppHasVisitedHowToPage)) {
+    pref_service_->SetBoolean(help_app::prefs::kHelpAppHasVisitedHowToPage,
+                              true);
+  }
 }
 
 }  // namespace ash

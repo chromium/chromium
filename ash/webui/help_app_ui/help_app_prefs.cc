@@ -4,13 +4,18 @@
 
 #include "ash/webui/help_app_ui/help_app_prefs.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash::help_app::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kHelpAppHasCompletedNewDeviceChecklist, false);
-  registry->RegisterBooleanPref(kHelpAppHasVisitedHowToPage, false);
+  if (base::FeatureList::IsEnabled(features::kHelpAppOnboardingRevamp)) {
+    registry->RegisterBooleanPref(kHelpAppHasCompletedNewDeviceChecklist,
+                                  false);
+    registry->RegisterBooleanPref(kHelpAppHasVisitedHowToPage, false);
+  }
 }
 
 }  // namespace ash::help_app::prefs

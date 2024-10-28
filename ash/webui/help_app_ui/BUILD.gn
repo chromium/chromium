@@ -74,7 +74,10 @@ static_library("help_app_ui_pref") {
     "help_app_prefs.h",
   ]
 
-  deps = [ "//components/prefs" ]
+  deps = [
+    "//ash/constants",
+    "//components/prefs",
+  ]
 }
 
 mojom("mojo_bindings") {
