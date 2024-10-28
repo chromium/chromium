@@ -1682,7 +1682,7 @@
     },
     {
       name: "EventTimingHandleKeyboardEventSimulatedClick",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EventTimingInteractionCount",
