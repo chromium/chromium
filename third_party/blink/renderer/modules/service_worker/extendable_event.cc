@@ -80,9 +80,9 @@ void ExtendableEvent::waitUntil(ScriptState* script_state,
 
   observer_->WaitUntil(
       script_state,
-      script_promise.ThenTyped(script_state,
-                               MakeGarbageCollected<WaitUntilFulfill>(),
-                               MakeGarbageCollected<WaitUntilReject>()),
+      script_promise.Then(script_state,
+                          MakeGarbageCollected<WaitUntilFulfill>(),
+                          MakeGarbageCollected<WaitUntilReject>()),
       exception_state);
 }
 

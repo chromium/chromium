@@ -139,9 +139,8 @@ bool WaitUntilObserver::WaitUntil(
   // 3. `Add f to the extend lifetime promises.`
   // 4. `Increment the pending promises count by one.`
   IncrementPendingPromiseCount();
-  script_promise.ThenTyped(script_state,
-                           MakeGarbageCollected<ThenFulfilled>(this),
-                           MakeGarbageCollected<ThenRejected>(this));
+  script_promise.Then(script_state, MakeGarbageCollected<ThenFulfilled>(this),
+                      MakeGarbageCollected<ThenRejected>(this));
   return true;
 }
 

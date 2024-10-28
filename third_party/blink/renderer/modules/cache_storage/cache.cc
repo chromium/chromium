@@ -1094,7 +1094,7 @@ ScriptPromise<IDLUndefined> Cache::AddAllImpl(
     auto* on_reject =
         MakeGarbageCollected<FetchRejectHandler>(barrier_callback);
     scoped_fetcher_->Fetch(script_state, info, init, exception_state)
-        .ThenTyped(script_state, on_resolve, on_reject);
+        .Then(script_state, on_resolve, on_reject);
   }
 
   return promise;

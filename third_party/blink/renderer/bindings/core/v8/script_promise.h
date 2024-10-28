@@ -83,7 +83,7 @@ struct ToV8Traits<IDLPromise<T>> {
   }
 };
 
-// Base class for passing in to ScriptPromise::ThenTyped()/React(), and being
+// Base class for passing in to ScriptPromise::Then()/React(), and being
 // notified of promise resolution. Handles v8->blink type conversions, and
 // converts type mismatches into rejections.
 // All subclasses must implement `React()`, taking a ScriptState*, and the
@@ -92,7 +92,7 @@ struct ToV8Traits<IDLPromise<T>> {
 // `IDLType` must match ScriptPromise<IDLType>::Then()/React().
 // `Derived` is the name of your derived class.
 // `ThenReturnType` is the return type of your React() function. Only required
-// when calling `ThenTyped()`, and your React() handling must return a blink
+// when calling `Then()`, and your React() handling must return a blink
 // type that ToV8Traits<> knows how to convert to `ThenReturnType`.
 template <typename IDLType,
           typename Derived,
@@ -191,9 +191,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
 
   ~ScriptPromiseUntyped() = default;
 
-  ScriptPromise<IDLAny> Then(ScriptFunction* on_fulfilled,
-                             ScriptFunction* on_rejected = nullptr);
-
   v8::Local<v8::Value> V8Value() const { return promise_.V8Value(); }
   v8::Local<v8::Promise> V8Promise() const {
     // This is safe because `promise_` always stores a promise value as long
@@ -289,7 +286,7 @@ class ScriptPromise : public ScriptPromiseUntyped {
 
   template <typename ReturnPromiseResolveType = IDLResolvedType,
             typename ResolveClass>
-  ScriptPromise<ReturnPromiseResolveType> ThenTyped(
+  ScriptPromise<ReturnPromiseResolveType> Then(
       ScriptState* script_state,
       ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
           on_fulfilled) const {
@@ -305,7 +302,7 @@ class ScriptPromise : public ScriptPromiseUntyped {
             typename ReturnPromiseRejectType = IDLUndefined,
             typename ResolveClass,
             typename RejectClass>
-  ScriptPromise<ReturnPromiseResolveType> ThenTyped(
+  ScriptPromise<ReturnPromiseResolveType> Then(
       ScriptState* script_state,
       ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
           on_fulfilled,
@@ -322,7 +319,7 @@ class ScriptPromise : public ScriptPromiseUntyped {
 
   // For chaining promises in ThenCallable<>::React().
   template <typename ReturnPromiseResolveType, typename ResolveClass>
-  ScriptPromise<ReturnPromiseResolveType> ThenTyped(
+  ScriptPromise<ReturnPromiseResolveType> Then(
       ScriptState* script_state,
       ThenCallable<IDLResolvedType,
                    ResolveClass,

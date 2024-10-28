@@ -41,8 +41,8 @@ class MODULES_EXPORT RespondWithObserver
     }
     has_started_ = true;
     auto next_promise =
-        script_promise.ThenTyped(script_state, on_fulfill,
-                                 MakeGarbageCollected<RespondWithReject>(this));
+        script_promise.Then(script_state, on_fulfill,
+                            MakeGarbageCollected<RespondWithReject>(this));
     // 3. `Add r to the extend lifetime promises.`
     // 4. `Increment the pending promises count by one.`
     // This is accomplised by WaitUntil().

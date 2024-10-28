@@ -206,7 +206,7 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
   auto* resolve2 = MakeGarbageCollected<AnyCallable>();
   auto* reject1 = MakeGarbageCollected<AnyChainingCallable>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
-  auto promise2 = promise.ThenTyped(scope.GetScriptState(), throwing, reject1);
+  auto promise2 = promise.Then(scope.GetScriptState(), throwing, reject1);
   promise2.React(scope.GetScriptState(), resolve2, reject2);
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -239,7 +239,7 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
   auto* resolve1 = MakeGarbageCollected<AnyChainingCallable>();
   auto* resolve2 = MakeGarbageCollected<AnyCallable>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
-  auto promise2 = promise.ThenTyped(scope.GetScriptState(), resolve1, throwing);
+  auto promise2 = promise.Then(scope.GetScriptState(), resolve1, throwing);
   promise2.React(scope.GetScriptState(), resolve2, reject2);
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -305,7 +305,7 @@ TEST(ScriptPromiseTest, CastNonPromise) {
       ToResolvedPromise<IDLAny>(scope.GetScriptState(), value);
   auto* resolve1 = MakeGarbageCollected<AnyChainingCallable>();
   auto* reject1 = MakeGarbageCollected<AnyChainingCallable>();
-  promise1.ThenTyped(scope.GetScriptState(), resolve1, reject1);
+  promise1.Then(scope.GetScriptState(), resolve1, reject1);
   auto* resolve2 = MakeGarbageCollected<AnyCallable>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();
   promise2.React(scope.GetScriptState(), resolve2, reject2);
@@ -417,7 +417,7 @@ TEST(ScriptPromiseTest, ChainPromisesWithDifferentResolveTypes) {
   auto* resolve1 = MakeGarbageCollected<ConvertAnyToStringCallable>();
   auto* reject1 = MakeGarbageCollected<AnyChainingCallable>();
   auto promise2 =
-      promise.ThenTyped<IDLString>(scope.GetScriptState(), resolve1, reject1);
+      promise.Then<IDLString>(scope.GetScriptState(), resolve1, reject1);
 
   auto* resolve2 = MakeGarbageCollected<ResolveString>();
   auto* reject2 = MakeGarbageCollected<AnyCallable>();

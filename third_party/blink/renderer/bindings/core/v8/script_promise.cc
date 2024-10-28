@@ -49,16 +49,6 @@ ScriptPromiseUntyped::ScriptPromiseUntyped(const ScriptPromiseUntyped& other) {
   promise_ = other.promise_;
 }
 
-ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
-                                                 ScriptFunction* on_rejected) {
-  DCHECK(on_fulfilled || on_rejected);
-  ScriptState* script_state = on_fulfilled ? on_fulfilled->GetScriptState()
-                                           : on_rejected->GetScriptState();
-  return ScriptPromise<IDLAny>::FromV8Promise(
-      script_state->GetIsolate(),
-      ThenRaw(script_state, on_fulfilled, on_rejected));
-}
-
 v8::Local<v8::Promise> ScriptPromiseUntyped::ThenRaw(
     ScriptState* script_state,
     ScriptFunction* on_fulfilled,

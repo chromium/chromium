@@ -133,7 +133,7 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Next(
     //     onSettled, afterOngoingPromiseCapability).
     // step 10.4. Set object's ongoing promise to
     //     afterOngoingPromiseCapability.[[Promise]].
-    ongoing_promise_ = ongoing_promise_.ThenTyped(
+    ongoing_promise_ = ongoing_promise_.Then(
         script_state, on_settled_function_.Get(), on_settled_function_.Get());
   } else {
     // step 11. Otherwise:
@@ -160,7 +160,7 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     // step 11.4. Set object's ongoing promise to
     //     afterOngoingPromiseCapability.[[Promise]].
     ongoing_promise_ =
-        ongoing_promise_.ThenTyped(script_state, on_settled, on_settled);
+        ongoing_promise_.Then(script_state, on_settled, on_settled);
   } else {
     // step 11. Otherwise:
     // step 11.1. Set object's ongoing promise to the result of
@@ -173,7 +173,7 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
       this, ScriptValue(script_state->GetIsolate(), value));
   // step 14. Perform PerformPromiseThen(object's ongoing promise, onFulfilled,
   //     undefined, returnPromiseCapability).
-  return_steps_promise = ongoing_promise_.ThenTyped(script_state, on_fulfilled);
+  return_steps_promise = ongoing_promise_.Then(script_state, on_fulfilled);
   // step 15. Return returnPromiseCapability.[[Promise]].
   return return_steps_promise.V8Promise();
 }
@@ -219,8 +219,8 @@ ScriptPromise<IDLAny> AsyncIterationSourceBase::RunNextSteps(
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
   auto promise = pending_promise_resolver_->Promise();
   GetNextIterationResult();
-  return promise.ThenTyped(script_state, on_fulfilled_function_.Get(),
-                           on_rejected_function_.Get());
+  return promise.Then(script_state, on_fulfilled_function_.Get(),
+                      on_rejected_function_.Get());
 }
 
 // step 8.5. Let fulfillSteps be the following steps, given next:

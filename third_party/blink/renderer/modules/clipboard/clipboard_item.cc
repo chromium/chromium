@@ -104,7 +104,7 @@ ScriptPromise<Blob> ClipboardItem::getType(
     ExceptionState& exception_state) const {
   for (const auto& item : representations_) {
     if (type == item.first) {
-      return item.second.ThenTyped(
+      return item.second.Then(
           script_state,
           MakeGarbageCollected<UnionToBlobResolverFunction>(type));
     }

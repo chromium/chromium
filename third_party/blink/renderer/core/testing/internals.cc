@@ -3399,8 +3399,8 @@ ScriptPromise<IDLAny> Internals::createRejectedPromise(
 ScriptPromise<IDLLong> Internals::addOneToPromise(
     ScriptState* script_state,
     ScriptPromise<IDLLong> promise) {
-  return promise.ThenTyped(script_state, MakeGarbageCollected<AddOneFunction>(),
-                           MakeGarbageCollected<AddOneTypeMismatch>());
+  return promise.Then(script_state, MakeGarbageCollected<AddOneFunction>(),
+                      MakeGarbageCollected<AddOneTypeMismatch>());
 }
 
 ScriptPromise<IDLAny> Internals::promiseCheck(ScriptState* script_state,

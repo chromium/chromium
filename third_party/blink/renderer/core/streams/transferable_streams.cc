@@ -822,9 +822,9 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         resolver_->Resolve(
             source_->source2_
                 ->StartWrapper(script_state, controller, exception_state)
-                .ThenTyped(script_state,
-                           MakeGarbageCollected<PullSource2>(
-                               source_, exception_state.GetContext())));
+                .Then(script_state,
+                      MakeGarbageCollected<PullSource2>(
+                          source_, exception_state.GetContext())));
       } else {
         // TODO(crbug.com/1418910): Investigate how to handle cases when the
         // controller is cleared.

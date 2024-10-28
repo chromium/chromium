@@ -91,7 +91,7 @@ class ScriptPromise;
 //       // `GetNextValue()` again if the result is not done.
 //       ThenCallableDerived* on_fulfilled = ...;
 //       ThenCallableDerived* on_rejected = ...;
-//       next_promise_.ThenTyped(script_State, on_fulfilled, on_rejected);
+//       next_promise_.Then(script_State, on_fulfilled, on_rejected);
 //     }
 //
 //    private:

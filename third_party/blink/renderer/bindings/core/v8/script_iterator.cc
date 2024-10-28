@@ -376,7 +376,7 @@ ScriptPromise<IDLAny> ScriptIterator::CloseAsync(
   // documentation).
   auto* on_fulfilled = MakeGarbageCollected<AsyncIteratorCloseFulfillFunction>(
       exception_context);
-  return return_promise.ThenTyped(script_state, on_fulfilled);
+  return return_promise.Then(script_state, on_fulfilled);
 }
 
 }  // namespace blink
