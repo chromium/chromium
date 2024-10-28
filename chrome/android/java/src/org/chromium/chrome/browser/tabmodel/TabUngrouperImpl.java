@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -17,7 +18,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.List;
 
 /** Implementation of the {@link TabUngrouper} interface. */
-public class TabUngrouperImpl extends TabModelActor implements TabUngrouper {
+public class TabUngrouperImpl implements TabUngrouper {
+    private final TabModelRemover mTabModelRemover;
+
     /**
      * @param context The activity context.
      * @param modalDialogManager The manager to use for warning dialogs.
@@ -27,7 +30,12 @@ public class TabUngrouperImpl extends TabModelActor implements TabUngrouper {
             @NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        super(context, modalDialogManager, tabGroupModelFilterSupplier);
+        this(new TabModelRemover(context, modalDialogManager, tabGroupModelFilterSupplier));
+    }
+
+    @VisibleForTesting
+    TabUngrouperImpl(@NonNull TabModelRemover tabModelRemover) {
+        mTabModelRemover = tabModelRemover;
     }
 
     @Override
@@ -38,7 +46,8 @@ public class TabUngrouperImpl extends TabModelActor implements TabUngrouper {
             @Nullable TabModelActionListener listener) {
         // TODO(crbug.com/347981662, crbug.com/347981397, crbug.com/345854441): Show a dialog and
         // create NTPs if needed.
-        PassthroughTabUngrouper.doUngroupTabs(getTabGroupModelFilter(), tabs, trailing);
+        PassthroughTabUngrouper.doUngroupTabs(
+                mTabModelRemover.getTabGroupModelFilter(), tabs, trailing);
         if (listener != null) {
             listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
