@@ -8,6 +8,7 @@
 #include "ash/system/focus_mode/sounds/youtube_music/request_signer.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_client.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/version_info/version_info.h"
@@ -22,6 +23,11 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace {
+
+// Force Focus Mode to report an old version string for testing.
+BASE_FEATURE(kFocusModeOldVersion,
+             "FocusModeOldVersion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Amount of time between now and certificate expiration which will trigger a
 // refresh. Certificates are generally issued with lifetimes of about 1 year so
@@ -96,7 +102,12 @@ class RequestSignerImpl : public ash::RequestSigner {
   void PrepareDeviceInfo() {
     signature_builder_->SetBrand("ChromeOS");
     signature_builder_->SetModel("Chromebook");
-    signature_builder_->SetSoftwareVersion(version_info::GetVersionNumber());
+    if (!base::FeatureList::IsEnabled(kFocusModeOldVersion)) {
+      signature_builder_->SetSoftwareVersion(version_info::GetVersionNumber());
+    } else {
+      // Report a previous stable version to verify minimum version behavior.
+      signature_builder_->SetSoftwareVersion("129.0.6668.112");
+    }
     signature_builder_->SetDeviceId(device_id_);
   }
 
