@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
-#include "chrome/browser/ash/accessibility/live_caption/user_microphone_caption_service_factory.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -151,15 +150,18 @@ class SystemLiveCaptionServiceTestBase
                 }));
     fake_speech_recognition_service_->AddObserver(this);
 
+    // Init the user microphone system live caption service, as it
+    // is no longer owned by a keyed service factory.
+    user_microphone_service_ = std::make_unique<SystemLiveCaptionService>(
+        primary_profile_,
+        SystemLiveCaptionService::AudioSource::kUserMicrophone);
     // Pass in an inert audio system backend.
     SystemLiveCaptionServiceFactory::GetInstance()
         ->GetForProfile(primary_profile_)
         ->set_audio_system_factory_for_testing(
             base::BindRepeating(&CreateStubAudioSystem));
-    UserMicrophoneCaptionServiceFactory::GetInstance()
-        ->GetForProfile(primary_profile_)
-        ->set_audio_system_factory_for_testing(
-            base::BindRepeating(&CreateStubAudioSystem));
+    user_microphone_service_->set_audio_system_factory_for_testing(
+        base::BindRepeating(&CreateStubAudioSystem));
 
     // Don't actually try to download SODA.
     speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
@@ -172,6 +174,8 @@ class SystemLiveCaptionServiceTestBase
         prefs::kUserMicrophoneCaptionLanguageCode,
         kDefaultBabelOrcaLanguageName);
   }
+
+  void TearDownOnMainThread() override { user_microphone_service_.reset(); }
 
   ::captions::CaptionBubbleController* GetCaptionBubbleController(
       Profile* profile) const {
@@ -244,6 +248,10 @@ class SystemLiveCaptionServiceTestBase
   raw_ptr<speech::FakeSpeechRecognitionService, DanglingUntriaged>
       fake_speech_recognition_service_;
 
+  // Since removing the UserMicrophoneCaptionServiceFactory we now need
+  // to own the service that handles user microphone input.
+  std::unique_ptr<SystemLiveCaptionService> user_microphone_service_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -261,8 +269,7 @@ class SystemLiveCaptionServiceTest
         return SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(
             primary_profile_);
       case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        return UserMicrophoneCaptionServiceFactory::GetInstance()
-            ->GetForProfile(primary_profile_);
+        return user_microphone_service_.get();
     }
   }
 
@@ -330,12 +337,6 @@ class SystemLiveCaptionServiceTest
     }
   }
 
-  // For CQ some tests in this suite need to be disabled until
-  // the full BabelOrca Mic integration implementation is complete
-  // in the next CL.
-  //
-  // TODO(next): Add test coverage for Babel Orca back in once
-  // its implementation is complete.
   bool IsTestingLiveCaption() {
     return GetParam() == SystemLiveCaptionService::AudioSource::kLoopback;
   }
@@ -519,12 +520,6 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EarlyStopping) {
 
 // Test that the UI is closed when transcription is complete.
 IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, EndOfStream) {
-  // Once again skip this as we haven't implemented this for babel
-  // orca yet. See TODO on `IsTestingLiveCaption`
-  if (!IsTestingLiveCaption()) {
-    return;
-  }
-
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
