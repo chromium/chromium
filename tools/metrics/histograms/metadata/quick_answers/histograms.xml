@@ -95,8 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
-    expires_after="2024-09-29">
-  <owner>angelaxiao@chromium.org</owner>
+    expires_after="2025-10-28">
   <owner>yawano@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -104,7 +103,8 @@ chromium-metrics-reviews@google.com.
     menu, whether or not that menu included any Quick Answers. Recorded when the
     menu is closed. This metric can be used as a baseline for Quick Answers
     engagement metrics, which record whether users click on context menus that
-    *do* include a Quick Answers card. Recorded on ChromeOS only.
+    *do* include a Quick Answers card. Recorded on ChromeOS only. Warning: this
+    histogram was expired from 2024-09-29 to 2024-10-28; data may be missing.
   </summary>
 </histogram>
 
@@ -302,14 +302,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.TextToSpeech.EngineEvent"
-    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2024-09-22">
-  <owner>angelaxiao@chromium.org</owner>
+    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2025-10-28">
   <owner>yawano@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     Reports the various TTS engine events received by the quick answers TTS
     utterance event delegate. Records every time TTS audio is used in quick
-    answers results. ChromeOS only.
+    answers results. ChromeOS only. Warning: this histogram was expired from
+    2024-09-22 to 2025-10-28; data may be missing.
   </summary>
 </histogram>
 

@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2024-11-03">
+    expires_after="2025-10-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -74,8 +74,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.HotwordEnableNotification" enum="BooleanHit"
-    expires_after="2024-10-31">
-  <owner>updowndota@chromium.org</owner>
+    expires_after="2025-10-28">
+  <owner>yawano@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     Counts the number of times user click the hotword enable notification to
@@ -205,8 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceStartTime" units="ms"
-    expires_after="2024-12-17">
-  <owner>updowndota@chromium.org</owner>
+    expires_after="2025-10-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>Amount of time spent in starting Assistant service.</summary>
@@ -223,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
-    expires_after="2024-11-12">
+    expires_after="2025-10-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
