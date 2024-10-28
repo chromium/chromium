@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
@@ -28,6 +29,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -1187,6 +1192,61 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   WaitForSidePanelToolbarCloseButtonVisibility(false);
+}
+
+class ExtensionSidePanelPWABrowserTest : public ExtensionSidePanelBrowserTest {
+ public:
+  ExtensionSidePanelPWABrowserTest() = default;
+  ~ExtensionSidePanelPWABrowserTest() override = default;
+
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration override_registration_;
+};
+
+// Tests that moving an extension side panel in a PWA app window to a normal
+// browser window does not crash.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelPWABrowserTest, OpenInChrome) {
+  // Load side-panel extension.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+
+  // Make a PWA app window.
+  GURL example_url("https://example.com");
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app_info->title = u"A Web App";
+  webapps::AppId app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  Browser* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // Call setOptions({enabled: true}) with a tab ID and new path, and wait for
+  // the extension's SidePanelEntry to be registered. This simulates the
+  // extension registering a tab-specific side panel.
+  // This logic needs to be scoped so that waiter leaves scope before the call
+  // to chrome::OpenInChrome. This avoids a dangling reference to the
+  // side_panel_registry.
+  // Note that side-panel is not supported in PWAs. However, that does not
+  // prevent extensions from running and setting state, which will be carried
+  // over when the WebContents is moved to a normal browser window.
+  {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    ExtensionSidePanelRegistryWaiter waiter(browser->GetActiveTabInterface()
+                                                ->GetTabFeatures()
+                                                ->side_panel_registry(),
+                                            extension->id());
+    RunSetOptions(*extension, tab_id, "panel_1.html",
+                  /*enabled=*/true);
+    waiter.WaitForRegistration();
+  }
+
+  // Should not crash.
+  chrome::OpenInChrome(browser);
 }
 
 class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
