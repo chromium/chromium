@@ -32,6 +32,7 @@ source_set("profile_controller") {
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":certificate_policy_profile_agent",
     ":docking_promo_profile_agent",
     ":first_run_profile_agent",
     ":identity_confirmation_app_agent",
@@ -44,6 +45,24 @@ source_set("profile_controller") {
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/device_orientation",
+  ]
+}
+
+source_set("certificate_policy_profile_agent") {
+  sources = [
+    "certificate_policy_profile_agent.h",
+    "certificate_policy_profile_agent.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
   ]
 }
 
@@ -170,6 +189,7 @@ source_set("test_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "certificate_policy_profile_agent_unittest.mm",
     "observing_profile_agent_unittest.mm",
     "post_restore_profile_agent_unittest.mm",
     "profile_controller_unittest.mm",
@@ -177,6 +197,7 @@ source_set("unit_tests") {
     "scene_observing_profile_agent_unittest.mm",
   ]
   deps = [
+    ":certificate_policy_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":profile_controller",
@@ -193,7 +214,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:fake_system_identity",
@@ -201,7 +224,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
     "//ios/web/public/test",
+    "//net:test_support",
     "//testing/gtest",
   ]
 }

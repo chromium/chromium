@@ -10,8 +10,6 @@ source_set("model") {
   sources = [
     "blocked_popup_tab_helper.h",
     "blocked_popup_tab_helper.mm",
-    "certificate_policy_app_agent.h",
-    "certificate_policy_app_agent.mm",
     "error_page_util.h",
     "error_page_util.mm",
     "invalid_url_tab_helper.h",
@@ -155,7 +153,6 @@ source_set("tab_helper_delegates") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "certificate_policy_app_agent_unittest.mm",
     "error_page_util_unittest.mm",
     "invalid_url_tab_helper_unittest.mm",
     "load_timing_tab_helper_unittest.mm",

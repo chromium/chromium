@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
+#import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 
 #import "base/functional/bind.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -30,50 +31,46 @@
 #import "net/cert/x509_certificate.h"
 #import "net/test/cert_test_util.h"
 #import "net/test/test_data_directory.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::SpinRunLoopWithMaxDelay;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-// Test fixture for the cert policy app agent. The APIs under test operate on
-// the UI thread (hence the task environment setup). The app agent updates the
-// cert cache based on the contents of multiple browsers, so most test cases
-// involve setting up web states with various session caches in multiple
-// browsers, and then inducing the app agent to update the global cache.
-class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
+// Test fixture for the cert policy profile agent. The APIs under test operate
+// on the UI thread (hence the task environment setup). The profile agent
+// updates the cert cache based on the contents of multiple browsers, so most
+// test cases involve setting up web states with various session caches in
+// multiple browsers, and then inducing the profile agent to update the global
+// cache.
+class CertificatePolicyProfileStateAgentTest : public BlockCleanupTest {
  protected:
-  CertificatePolicyAppStateAgentTest()
+  CertificatePolicyProfileStateAgentTest()
       : cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       "ok_cert.pem")),
         status_(net::CERT_STATUS_REVOKED) {
-    // Mock for AppState dependencies.
-    startup_information_mock_ =
-        [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-
     profile_ =
         profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
-    BrowserList* browser_list =
-        BrowserListFactory::GetForProfile(profile_.get());
-
-    app_state_ =
-        [[AppState alloc] initWithStartupInformation:startup_information_mock_];
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_.profile = profile_.get();
+    SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
 
     // Create two regular and one OTR browsers.
     regular_browser_1_ = std::make_unique<TestBrowser>(profile_.get());
     regular_browser_2_ = std::make_unique<TestBrowser>(profile_.get());
     incognito_browser_ =
         std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
+
+    BrowserList* browser_list =
+        BrowserListFactory::GetForProfile(profile_.get());
     browser_list->AddBrowser(regular_browser_1_.get());
     browser_list->AddBrowser(regular_browser_2_.get());
     browser_list->AddBrowser(incognito_browser_.get());
 
-    // Finally, create the app agent being tested and attach it to the app
+    // Finally, create the profile agent being tested and attach it to the app
     // state.
-    app_agent_ = [[CertificatePolicyAppAgent alloc] init];
-    [app_state_ addAgent:app_agent_];
+    profile_agent_ = [[CertificatePolicyProfileAgent alloc] init];
+    profile_agent_.profileState = profile_state_;
   }
 
   // Adds a web state with `host` as the active URL to `browser`.
@@ -131,12 +128,17 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   // Triggers certificate cache updates in the app agent under test, and wait
   // for updates to complete.
   void TriggerCertCacheUpdate() {
-    [app_agent_ appDidEnterBackground];
+    SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+
+    [profile_state_ sceneStateConnected:scene_state];
+    scene_state.activationLevel = SceneActivationLevelForegroundInactive;
+    scene_state.activationLevel = SceneActivationLevelBackground;
+
     // Cache clearing is on the IO thread, and cache reconstruction is posted
     // to the main thread, so both a wait and a RunUntilIdle() are needed.
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
       base::RunLoop().RunUntilIdle();
-      return !app_agent_.working;
+      return !profile_agent_.working;
     }));
   }
 
@@ -218,23 +220,20 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  AppState* app_state_;
-  CertificatePolicyAppAgent* app_agent_;
+  CertificatePolicyProfileAgent* profile_agent_;
   raw_ptr<ProfileIOS> profile_;
+  ProfileState* profile_state_;
   std::unique_ptr<TestBrowser> regular_browser_1_;
   std::unique_ptr<TestBrowser> regular_browser_2_;
   std::unique_ptr<TestBrowser> incognito_browser_;
 
   scoped_refptr<net::X509Certificate> cert_;
   net::CertStatus status_;
-
-  // Mock for AppState dependencies.
-  id startup_information_mock_;
 };
 
 // Test that updating an empty cache with no webstates results in an empty
 // cache.
-TEST_F(CertificatePolicyAppStateAgentTest, EmptyCacheNoWebstates) {
+TEST_F(CertificatePolicyProfileStateAgentTest, EmptyCacheNoWebstates) {
   // Empty cache, no webstates.
   TriggerCertCacheUpdate();
   // Expect nothing is in the cache.
@@ -248,7 +247,7 @@ TEST_F(CertificatePolicyAppStateAgentTest, EmptyCacheNoWebstates) {
 
 // Test that updating an populated cache with no webstates results in an empty
 // cache.
-TEST_F(CertificatePolicyAppStateAgentTest, PopulatedCacheNoWebstates) {
+TEST_F(CertificatePolicyProfileStateAgentTest, PopulatedCacheNoWebstates) {
   // Populated caches.
   PopulatePolicyCache({"a.com", "b.com"}, RegularPolicyCache());
   PopulatePolicyCache({"a.com", "b.com"}, IncognitoPolicyCache());
@@ -264,7 +263,7 @@ TEST_F(CertificatePolicyAppStateAgentTest, PopulatedCacheNoWebstates) {
 
 // Test that updating an empty cache with webstates having no certs results in
 // an empty cache.
-TEST_F(CertificatePolicyAppStateAgentTest, EmptyCacheNoCertedWebstates) {
+TEST_F(CertificatePolicyProfileStateAgentTest, EmptyCacheNoCertedWebstates) {
   // Empty cache.
   // Webstates without certs:
   PopulateWebStatesWithNoCerts();
@@ -283,7 +282,7 @@ TEST_F(CertificatePolicyAppStateAgentTest, EmptyCacheNoCertedWebstates) {
 // Test that updating an empty cache with webstates having certs results in all
 // webstate entries being in the cache. (Also incidentally tests that populating
 // test fixture web states doesn't also populate the cache).
-TEST_F(CertificatePolicyAppStateAgentTest, EmptyCacheCertedWebstates) {
+TEST_F(CertificatePolicyProfileStateAgentTest, EmptyCacheCertedWebstates) {
   // Fully populated webstates, empty cache.
   PopulateWebStates();
 
@@ -307,7 +306,7 @@ TEST_F(CertificatePolicyAppStateAgentTest, EmptyCacheCertedWebstates) {
 }
 
 // Tests that entries in a cache that aren't in the webstates are removed.
-TEST_F(CertificatePolicyAppStateAgentTest, CacheHasExtraCerts) {
+TEST_F(CertificatePolicyProfileStateAgentTest, CacheHasExtraCerts) {
   // Fully populated web states.
   PopulateWebStates();
 
@@ -336,7 +335,7 @@ TEST_F(CertificatePolicyAppStateAgentTest, CacheHasExtraCerts) {
 // Tests that a cache containing some (but not all) of the entries in the web
 // states, and some extra entries, is properly updates to contain all and only
 // the entries in the web states.
-TEST_F(CertificatePolicyAppStateAgentTest, CacheAndWebstatesDiffer) {
+TEST_F(CertificatePolicyProfileStateAgentTest, CacheAndWebstatesDiffer) {
   // Fully populated web states.
   PopulateWebStates();
 

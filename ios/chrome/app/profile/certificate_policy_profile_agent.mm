@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
+#import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/single_thread_task_runner.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -26,12 +26,12 @@ namespace {
 // cache.
 void UpdateCertificatePolicyCacheFromWebState(const web::WebState* web_state) {
   DCHECK(web_state);
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // The WebState install its certificate policy cache upon realization, so
   // unrealized WebState can be skipped (to avoid forcing their realization).
-  if (!web_state->IsRealized())
+  if (!web_state->IsRealized()) {
     return;
+  }
 
   web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache();
 }
@@ -43,7 +43,6 @@ void UpdateCertificatePolicyCacheFromWebState(const web::WebState* web_state) {
 void RestoreCertificatePolicyCacheFromBrowsers(
     base::WeakPtr<ProfileIOS> weak_profile,
     bool incognito) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
   // If the ProfileIOS is destroyed, it's too late to do anything.
   ProfileIOS* profile = weak_profile.get();
   if (!profile) {
@@ -88,9 +87,12 @@ void CleanCertificatePolicyCache(
 
 }  // anonymous namespace
 
-@implementation CertificatePolicyAppAgent {
+@implementation CertificatePolicyProfileAgent {
   // Used to ensure thread-safety of the certificate policy management code.
   base::CancelableTaskTracker _clearPoliciesTaskTracker;
+
+  // Whether one scene reached foreground since last background.
+  BOOL _hasForegroundScenes;
 }
 
 - (void)dealloc {
@@ -102,24 +104,46 @@ void CleanCertificatePolicyCache(
   return static_cast<BOOL>(_clearPoliciesTaskTracker.HasTrackedTasks());
 }
 
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level >= SceneActivationLevelForegroundInactive) {
+    _hasForegroundScenes = YES;
+    return;
+  }
+
+  if (self.profileState.initStage < ProfileInitStage::kFinal) {
+    return;
+  }
+
+  CHECK_LE(level, SceneActivationLevelBackground);
+  if (self.profileState.foregroundScenes.count == 0 && _hasForegroundScenes) {
+    _hasForegroundScenes = NO;
+    [self appDidEnterBackground];
+  }
+}
+
+#pragma mark - Private
+
 - (void)appDidEnterBackground {
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    // Evict all the certificate policies except for the current entries of the
-    // active sessions, for the regular and incognito browsers.
+  ProfileIOS* profile = self.profileState.profile;
+  CHECK(profile);
+
+  // Evict all the certificate policies except for the current entries of the
+  // active sessions, for the regular and incognito browsers.
+  CleanCertificatePolicyCache(
+      &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
+      web::BrowserState::GetCertificatePolicyCache(profile),
+      profile->AsWeakPtr(),
+      /*incognito=*/false);
+
+  if (profile->HasOffTheRecordProfile()) {
+    ProfileIOS* incognitoProfile = profile->GetOffTheRecordProfile();
     CleanCertificatePolicyCache(
         &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
-        web::BrowserState::GetCertificatePolicyCache(profile),
-        profile->AsWeakPtr(),
-        /*incognito=*/false);
-
-    if (profile->HasOffTheRecordProfile()) {
-      ProfileIOS* incognitoBrowserState = profile->GetOffTheRecordProfile();
-      CleanCertificatePolicyCache(
-          &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
-          web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
-          profile->AsWeakPtr(), /*incognito=*/true);
-    }
+        web::BrowserState::GetCertificatePolicyCache(incognitoProfile),
+        profile->AsWeakPtr(), /*incognito=*/true);
   }
 }
 
