@@ -373,23 +373,6 @@ function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2,
 }
 
 /**
- * transferBackFromGPUTexture() should cause the GPUTexture returned by
- * transferToGPUTexture() to enter a destroyed state.
- */
-async function test_transferBackFromGPUTexture_destroys_texture(
-    device, canvas) {
-  // Briefly begin a WebGPU access session.
-  const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToGPUTexture({device: device,
-                                     usage: GPUTextureUsage.COPY_SRC |
-                                            GPUTextureUsage.COPY_DST});
-  ctx.transferBackFromGPUTexture();
-
-  // `tex` should be in a destroyed state.
-  assert_true(await isTextureDestroyed(device, tex));
-}
-
-/**
  * transferToGPUTexture() should create a texture which honors the requested
  * usage flags.
  */
