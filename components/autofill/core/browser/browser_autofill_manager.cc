@@ -2097,8 +2097,6 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
                              &autofill_field)) {
     return;
   }
-  // TODO(crbug.com/324557053): Trigger email override notification for single
-  // field filling.
   metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
       profile, *form_structure, *autofill_field, trigger_source);
 }
@@ -2866,6 +2864,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         client().GetPlusAddressDelegate()->IsPlusAddress(
             base::UTF16ToUTF8(potential_email_override)) &&
         original_email != potential_email_override) {
+      // TODO(crbug.com/324557053): Filter out notifications for suggestion type
+      // `SuggestionType::kFillFullEmail`.
       client().ShowPlusAddressEmailOverrideNotification(
           base::UTF16ToUTF8(original_email),
           base::BindOnce(&BrowserAutofillManager::OnEmailOverrideUndone,
@@ -2895,8 +2895,6 @@ void BrowserAutofillManager::OnEmailOverrideUndone(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       *autofill_field, autofill_field, original_email, FillingProduct::kAddress,
       EMAIL_ADDRESS);
-
-  // TODO(crbug.com/324557053): Add metrics.
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
