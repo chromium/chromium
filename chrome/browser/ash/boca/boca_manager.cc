@@ -5,9 +5,12 @@
 #include "chrome/browser/ash/boca/boca_manager.h"
 
 #include <memory>
+#include <utility>
 
+#include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
@@ -26,11 +29,53 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/user_manager/user.h"
 #include "google_apis/google_api_keys.h"
 
 namespace ash {
+namespace {
+
+std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
+    Profile* profile,
+    bool is_consumer) {
+  // TODO(crbug.com/373692250): Check only for producer once we remove the
+  // recognition dependency for the consumer.
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kOnDeviceSpeechRecognition)) {
+    return nullptr;
+  }
+
+  auto translation_dispatcher =
+      std::make_unique<::captions::TranslationDispatcher>(
+          google_apis::GetBocaAPIKey(), profile);
+  // Passing `DoNothing` since we do not currently show settings for BabelOrca.
+  auto caption_bubble_context =
+      std::make_unique<captions::CaptionBubbleContextAsh>(base::DoNothing());
+  if (is_consumer) {
+    const AccountId& account_id = ash::BrowserContextHelper::Get()
+                                      ->GetUserByBrowserContext(profile)
+                                      ->GetAccountId();
+    return boca::BabelOrcaManager::CreateAsConsumer(
+        std::move(translation_dispatcher),
+        IdentityManagerFactory::GetForProfile(profile),
+        profile->GetURLLoaderFactory(),
+        ::captions::LiveCaptionControllerFactory::GetForProfile(profile),
+        std::move(caption_bubble_context), account_id.GetGaiaId());
+  }
+  // Producer
+  auto speech_recognizer =
+      std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(profile);
+  return boca::BabelOrcaManager::CreateAsProducer(
+      std::move(translation_dispatcher),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory(),
+      ::captions::LiveCaptionControllerFactory::GetForProfile(profile),
+      std::move(caption_bubble_context), std::move(speech_recognizer));
+}
+
+}  // namespace
 
 BocaManager::BocaManager(
     std::unique_ptr<boca::OnTaskSessionManager> on_task_session_manager,
@@ -52,18 +97,9 @@ BocaManager::BocaManager(Profile* profile)
       session_client_impl_.get(), ash::BrowserContextHelper::Get()
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId());
-  babel_orca_speech_recognizer_ = nullptr;
-  if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
-    babel_orca_speech_recognizer_ =
-        std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(profile);
-  }
-  babel_orca_manager_ = std::make_unique<boca::BabelOrcaManager>(
-      std::make_unique<::captions::TranslationDispatcher>(
-          google_apis::GetBocaAPIKey(), profile),
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory(), babel_orca_speech_recognizer_.get());
-
-  if (ash::boca_util::IsConsumer()) {
+  bool is_consumer = ash::boca_util::IsConsumer();
+  babel_orca_manager_ = CreateBabelOrcaManager(profile, is_consumer);
+  if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
         std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
@@ -93,10 +129,13 @@ void BocaManager::Shutdown() {
   for (auto& obs : boca_session_manager_->observers()) {
     boca_session_manager_->RemoveObserver(&obs);
   }
+  babel_orca_manager_.reset();
 }
 
 void BocaManager::AddObservers() {
-  boca_session_manager_->AddObserver(babel_orca_manager_.get());
+  if (babel_orca_manager_) {
+    boca_session_manager_->AddObserver(babel_orca_manager_.get());
+  }
   if (ash::boca_util::IsConsumer()) {
     boca_session_manager_->AddObserver(on_task_session_manager_.get());
   }

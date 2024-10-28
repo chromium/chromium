@@ -7,9 +7,14 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
+#include "chromeos/ash/components/boca/babelorca/token_manager.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -108,6 +113,15 @@ class BocaManagerTest : public testing::Test {
             AccountId::FromUserEmail(kTestEmail), boca_session_manager_.get(),
             session_client_impl_.get());
   }
+
+  boca::BabelOrcaManager::ControllerFactory GetBabelOrcaControllerFactory() {
+    return base::BindLambdaForTesting(
+        [](babelorca::TokenManager*, babelorca::TachyonRequestDataProvider*)
+            -> std::unique_ptr<babelorca::BabelOrcaController> {
+          return nullptr;
+        });
+  }
+
   // BocaSessionManager require task_env for mojom binding.
   base::test::TaskEnvironment task_environment_;
 
@@ -137,7 +151,8 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::make_unique<boca::BabelOrcaManager>(
             /*translation_dispatcher=*/nullptr,
             identity_test_env_.identity_manager(),
-            url_loader_factory_.GetSafeWeakWrapper(), nullptr));
+            url_loader_factory_.GetSafeWeakWrapper(),
+            GetBabelOrcaControllerFactory()));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -176,7 +191,8 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::make_unique<boca::BabelOrcaManager>(
             /*translation_dispatcher=*/nullptr,
             identity_test_env_.identity_manager(),
-            url_loader_factory_.GetSafeWeakWrapper(), nullptr));
+            url_loader_factory_.GetSafeWeakWrapper(),
+            GetBabelOrcaControllerFactory()));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };

@@ -19,6 +19,7 @@ static_library("boca") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/boca/babelorca",
@@ -31,6 +32,7 @@ static_library("boca") {
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper",
     "//components/gcm_driver",
+    "//components/live_caption",
     "//components/live_caption:live_translate",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
@@ -53,6 +55,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/session_api",
     "//components/gcm_driver",
     "//components/gcm_driver:test_support",

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
@@ -18,9 +18,19 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "components/live_caption/translation_dispatcher.h"
 
+namespace ash::babelorca {
+class BabelOrcaController;
+class LiveCaptionControllerWrapper;
+}  // namespace ash::babelorca
+
 namespace boca {
 class UserIdentity;
 }  // namespace boca
+
+namespace captions {
+class CaptionBubbleContext;
+class LiveCaptionController;
+}  // namespace captions
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -37,19 +47,48 @@ namespace ash::boca {
 class BabelOrcaManager : public BocaSessionManager::Observer,
                          public babelorca::TachyonRequestDataProvider {
  public:
+  using ControllerFactory =
+      base::OnceCallback<std::unique_ptr<babelorca::BabelOrcaController>(
+          babelorca::TokenManager*,
+          babelorca::TachyonRequestDataProvider*)>;
+
+  static std::unique_ptr<BabelOrcaManager> CreateAsProducer(
+      std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      captions::LiveCaptionController* live_caption_controller,
+      std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+      std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer);
+
+  static std::unique_ptr<BabelOrcaManager> CreateAsConsumer(
+      std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      captions::LiveCaptionController* live_caption_controller,
+      std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+      const std::string& gaia_id);
+
   BabelOrcaManager(
       std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      babelorca::BabelOrcaSpeechRecognizer* speech_recognizer_);
+      ControllerFactory controller_factory);
+
   BabelOrcaManager(const BabelOrcaManager&) = delete;
   BabelOrcaManager& operator=(const BabelOrcaManager&) = delete;
+
   ~BabelOrcaManager() override;
 
   // BocaSessionManager::Observer:
   void OnSessionStarted(const std::string& session_id,
                         const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
+  void OnSessionCaptionConfigUpdated(
+      const std::string& group_name,
+      const ::boca::CaptionsConfig& config,
+      const std::string& tachyon_group_id) override;
+  void OnLocalCaptionConfigUpdated(
+      const ::boca::CaptionsConfig& config) override;
 
   bool IsCaptioningAvailable();
 
@@ -67,14 +106,14 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   babelorca::TokenManagerImpl token_manager_;
   babelorca::TachyonAuthedClientImpl authed_client_;
   babelorca::TachyonRegistrar registrar_;
+  std::unique_ptr<babelorca::LiveCaptionControllerWrapper>
+      caption_controller_wrapper_;
 
   std::optional<std::string> session_id_;
   std::optional<std::string> group_id_;
   std::optional<std::string> sender_email_;
 
-  // This manager and the speech_recognizer_ are both owned by the same
-  // class so their lifetimes are shared, hence the raw pointer here.
-  raw_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer_;
+  std::unique_ptr<babelorca::BabelOrcaController> babel_orca_controller_;
 };
 
 }  // namespace ash::boca
