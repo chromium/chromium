@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
@@ -16,6 +17,15 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 
 namespace blink {
+
+namespace {
+
+void RecordReadTensorTime(base::ElapsedTimer read_tensor_timer) {
+  base::UmaHistogramMediumTimes("WebNN.MLTensor.TimingMs.Read",
+                                read_tensor_timer.Elapsed());
+}
+
+}  // namespace
 
 MLTensor::MLTensor(
     ExecutionContext* execution_context,
@@ -114,9 +124,10 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  remote_tensor_->ReadTensor(
-      WTF::BindOnce(&MLTensor::OnDidReadTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver)));
+  base::ElapsedTimer read_tensor_timer;
+  remote_tensor_->ReadTensor(WTF::BindOnce(
+      &MLTensor::OnDidReadTensor, WrapPersistent(this), std::move(scoped_trace),
+      WrapPersistent(resolver), std::move(read_tensor_timer)));
 
   return resolver->Promise();
 }
@@ -143,10 +154,11 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
+  base::ElapsedTimer read_tensor_timer;
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(dst_data)));
+                    WrapPersistent(dst_data), std::move(read_tensor_timer)));
   return resolver->Promise();
 }
 
@@ -172,16 +184,18 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
+  base::ElapsedTimer read_tensor_timer;
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByobView, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(dst_data)));
+                    WrapPersistent(dst_data), std::move(read_tensor_timer)));
   return resolver->Promise();
 }
 
 void MLTensor::OnDidReadTensor(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+    base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_resolvers_.erase(resolver);
 
@@ -193,12 +207,15 @@ void MLTensor::OnDidReadTensor(
     return;
   }
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
 void MLTensor::OnDidReadTensorByob(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferBase* dst_data,
+    base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
 
@@ -221,12 +238,15 @@ void MLTensor::OnDidReadTensorByob(
   // `dst_data` is a SharedArrayBuffer).
   dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
   resolver->Resolve();
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
 void MLTensor::OnDidReadTensorByobView(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferView* dst_data,
+    base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
 
@@ -249,6 +269,8 @@ void MLTensor::OnDidReadTensorByobView(
   // `dst_data` is a SharedArrayBuffer).
   dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
   resolver->Resolve();
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
 void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,

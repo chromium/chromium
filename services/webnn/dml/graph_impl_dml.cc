@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -5632,6 +5633,10 @@ HRESULT GraphImplDml::RecordGraphExecution(
     const PersistentResource* persistent_resource,
     const GraphBufferBindingInfo& graph_buffer_binding_info) {
   TRACE_EVENT0("gpu", "dml::GraphImpl::RecordGraphExecution");
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "WebNN.DML.TimingMs.RecordGraphExecutionOnMainThread");
+
   // Open the command recorder for recording the graph execution commands.
   RETURN_IF_FAILED(compute_resources->command_recorder->Open());
 
@@ -6016,6 +6021,9 @@ GraphImplDml::RecordGraphExecutionOnBackgroundThread(
     GraphBufferBindingInfo graph_buffer_binding_info) {
   TRACE_EVENT0("gpu",
                "dml::GraphImplDml::RecordGraphExecutionOnBackgroundThread");
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "WebNN.DML.TimingMs.RecordGraphExecutionOnBackgroundThread");
 
   RETURN_UNEXPECTED_IF_FAILED(RecordGraphExecution(
       adapter.get(), compiled_operator.Get(), compute_resources.get(),

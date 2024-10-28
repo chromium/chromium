@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
@@ -106,14 +107,17 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // OS machine learning APIs.
   void OnDidReadTensor(ScopedMLTrace scoped_trace,
                        ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+                       base::ElapsedTimer read_tensor_timer,
                        webnn::mojom::blink::ReadTensorResultPtr result);
   void OnDidReadTensorByob(ScopedMLTrace scoped_trace,
                            ScriptPromiseResolver<IDLUndefined>* resolver,
                            DOMArrayBufferBase* dst_data,
+                           base::ElapsedTimer read_tensor_timer,
                            webnn::mojom::blink::ReadTensorResultPtr result);
   void OnDidReadTensorByobView(ScopedMLTrace scoped_trace,
                                ScriptPromiseResolver<IDLUndefined>* resolver,
                                DOMArrayBufferView* dst_data,
+                               base::ElapsedTimer read_tensor_timer,
                                webnn::mojom::blink::ReadTensorResultPtr result);
 
   void OnConnectionError();

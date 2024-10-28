@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
@@ -50,6 +51,33 @@ WebNNContextProviderImpl::BackendForTesting* g_backend_for_testing = nullptr;
 using webnn::mojom::CreateContextOptionsPtr;
 using webnn::mojom::WebNNContextProvider;
 
+// These values are persisted to logs. Entries should not be renumbered or
+// removed and numeric values should never be reused.
+// Please keep in sync with DeviceTypeUma in
+// //tools/metrics/histograms/metadata/webnn/enums.xml.
+enum class DeviceTypeUma {
+  kCpu = 0,
+  kGpu = 1,
+  kNpu = 2,
+  kMaxValue = kNpu,
+};
+
+void RecordDeviceType(const mojom::CreateContextOptions::Device device) {
+  DeviceTypeUma uma_value;
+  switch (device) {
+    case mojom::CreateContextOptions::Device::kCpu:
+      uma_value = DeviceTypeUma::kCpu;
+      break;
+    case mojom::CreateContextOptions::Device::kGpu:
+      uma_value = DeviceTypeUma::kGpu;
+      break;
+    case mojom::CreateContextOptions::Device::kNpu:
+      uma_value = DeviceTypeUma::kNpu;
+      break;
+  }
+  base::UmaHistogramEnumeration("WebNN.DeviceType", uma_value);
+}
+
 #if BUILDFLAG(IS_WIN)
 base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
     gpu::SharedContextState* shared_context_state,
@@ -88,9 +116,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
   CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
   return dml::Adapter::GetGpuInstance(std::move(dxgi_adapter));
 }
-#endif
 
-#if BUILDFLAG(IS_WIN)
 bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
   switch (options.device) {
     case mojom::CreateContextOptions::Device::kCpu:
@@ -201,6 +227,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   WebNNContextImpl* context_impl = nullptr;
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
+
+  RecordDeviceType(options->device);
 
 #if BUILDFLAG(IS_WIN)
   if (ShouldCreateDmlContext(*options)) {
