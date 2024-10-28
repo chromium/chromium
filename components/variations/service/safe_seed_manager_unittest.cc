@@ -42,13 +42,15 @@ base::Time GetTestFetchTime() {
 class FakeSeedStore : public VariationsSeedStore {
  public:
   explicit FakeSeedStore(TestingPrefServiceSimple* local_state)
-      : VariationsSeedStore(
-            local_state,
-            /*initial_seed=*/nullptr,
-            /*signature_verification_enabled=*/true,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
-            version_info::Channel::UNKNOWN,
-            /*seed_file_dir=*/base::FilePath()) {
+      : VariationsSeedStore(local_state,
+                            /*initial_seed=*/nullptr,
+                            /*signature_verification_enabled=*/true,
+                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                                local_state,
+                                version_info::Channel::UNKNOWN,
+                                /*seed_file_dir=*/base::FilePath()),
+                            version_info::Channel::UNKNOWN,
+                            /*seed_file_dir=*/base::FilePath()) {
     VariationsSeedStore::RegisterPrefs(local_state->registry());
   }
 

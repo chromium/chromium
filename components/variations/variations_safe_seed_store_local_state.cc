@@ -9,10 +9,25 @@
 #include "components/variations/pref_names.h"
 
 namespace variations {
+namespace {
+
+// The name of the seed file that stores the safe seed data.
+const base::FilePath::CharType kSafeSeedFilename[] =
+    FILE_PATH_LITERAL("VariationsSafeSeedV1");
+
+}  // namespace
 
 VariationsSafeSeedStoreLocalState::VariationsSafeSeedStoreLocalState(
-    PrefService* local_state)
-    : local_state_(local_state) {}
+    PrefService* local_state,
+    const version_info::Channel channel,
+    const base::FilePath& seed_file_dir)
+    : local_state_(local_state),
+      seed_reader_writer_(std::make_unique<SeedReaderWriter>(
+          local_state,
+          seed_file_dir,
+          kSafeSeedFilename,
+          channel,
+          prefs::kVariationsSafeCompressedSeed)) {}
 
 VariationsSafeSeedStoreLocalState::~VariationsSafeSeedStoreLocalState() =
     default;
@@ -45,13 +60,16 @@ void VariationsSafeSeedStoreLocalState::SetTimeForStudyDateChecks(
 }
 
 std::string VariationsSafeSeedStoreLocalState::GetCompressedSeed() const {
+  // TODO(crbug.com/374947675): Support reading the compressed unencoded seed
+  // from the new seed file.
   return local_state_->GetString(prefs::kVariationsSafeCompressedSeed);
 }
 
 void VariationsSafeSeedStoreLocalState::SetCompressedSeed(
-    const std::string& safe_compressed) {
-  local_state_->SetString(prefs::kVariationsSafeCompressedSeed,
-                          safe_compressed);
+    const std::string& safe_compressed,
+    const std::string& base64_safe_compressed) {
+  seed_reader_writer_->StoreValidatedSeed(safe_compressed,
+                                          base64_safe_compressed);
 }
 
 std::string VariationsSafeSeedStoreLocalState::GetSignature() const {
@@ -96,8 +114,13 @@ void VariationsSafeSeedStoreLocalState::SetSessionConsistencyCountry(
                           session_consistency_country);
 }
 
+void VariationsSafeSeedStoreLocalState::SetSeedReaderWriterForTesting(
+    std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
+  seed_reader_writer_ = std::move(seed_reader_writer);
+}
+
 void VariationsSafeSeedStoreLocalState::ClearState() {
-  local_state_->ClearPref(prefs::kVariationsSafeCompressedSeed);
+  seed_reader_writer_->ClearSeed();
   local_state_->ClearPref(prefs::kVariationsSafeSeedDate);
   local_state_->ClearPref(prefs::kVariationsSafeSeedFetchTime);
   local_state_->ClearPref(prefs::kVariationsSafeSeedLocale);

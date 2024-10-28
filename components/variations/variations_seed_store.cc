@@ -502,6 +502,17 @@ std::optional<std::string> VariationsSeedStore::SeedBytesToCompressedBase64Seed(
   return base::Base64Encode(compressed_seed_data);
 }
 
+void VariationsSeedStore::SetSeedReaderWriterForTesting(
+    std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
+  seed_reader_writer_ = std::move(seed_reader_writer);
+}
+
+void VariationsSeedStore::SetSafeSeedReaderWriterForTesting(
+    std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
+  safe_seed_store_->SetSeedReaderWriterForTesting(  // IN-TEST
+      std::move(seed_reader_writer));
+}
+
 LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
     VariationsSeed* seed,
     const std::string& seed_data,
@@ -730,7 +741,8 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
       local_state_->SetString(prefs::kVariationsCompressedSeed,
                               previous_safe_seed);
     }
-    safe_seed_store_->SetCompressedSeed(seed.base64_seed_data);
+    safe_seed_store_->SetCompressedSeed(seed.compressed_seed_data,
+                                        seed.base64_seed_data);
   }
 
   safe_seed_store_->SetSignature(seed.base64_seed_signature);

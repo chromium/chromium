@@ -112,10 +112,8 @@ INSTANTIATE_TEST_SUITE_P(
     SeedReaderWriterPreStableTest,
     ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
         ::testing::Combine(
-            ::testing::Values(prefs::kVariationsCompressedSeed
-                              // TODO(crbug.com/365079796) Add when we begin
-                              // writing the safe seed.
-                              /*,prefs::kVariationsSafeCompressedSeed*/),
+            ::testing::Values(prefs::kVariationsCompressedSeed,
+                              prefs::kVariationsSafeCompressedSeed),
             ::testing::Values(version_info::Channel::CANARY,
                               version_info::Channel::DEV,
                               version_info::Channel::BETA))));
@@ -150,10 +148,8 @@ INSTANTIATE_TEST_SUITE_P(
     SeedReaderWriterStableAndUnknownTest,
     ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
         ::testing::Combine(
-            ::testing::Values(prefs::kVariationsCompressedSeed
-                              // TODO(crbug.com/365079796) Add when we begin
-                              // writing the safe seed.
-                              /*,prefs::kVariationsSafeCompressedSeed*/),
+            ::testing::Values(prefs::kVariationsCompressedSeed,
+                              prefs::kVariationsSafeCompressedSeed),
             ::testing::Values(version_info::Channel::STABLE,
                               version_info::Channel::UNKNOWN))));
 
@@ -214,10 +210,8 @@ INSTANTIATE_TEST_SUITE_P(
     SeedReaderWriterTest,
     ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
         ::testing::Combine(
-            ::testing::Values(prefs::kVariationsCompressedSeed
-                              // TODO(crbug.com/365079796) Add when we begin
-                              // writing the safe seed.
-                              /*,prefs::kVariationsSafeCompressedSeed*/),
+            ::testing::Values(prefs::kVariationsCompressedSeed,
+                              prefs::kVariationsSafeCompressedSeed),
             ::testing::Values(version_info::Channel::CANARY,
                               version_info::Channel::DEV,
                               version_info::Channel::BETA,

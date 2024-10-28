@@ -219,9 +219,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Sets |seed_reader_writer_| to the given SeedReaderWriter for testing.
   void SetSeedReaderWriterForTesting(
-      std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
-    seed_reader_writer_ = std::move(seed_reader_writer);
-  }
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer);
+
+  // Sets |safe_seed_store_| SeedReaderWriter to the given one for testing.
+  void SetSafeSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer);
 
  protected:
   // Verify an already-loaded |seed_data| along with its |base64_seed_signature|

@@ -100,7 +100,9 @@ std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
   return std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
       /*signature_verification_enabled=*/true,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
+      std::make_unique<VariationsSafeSeedStoreLocalState>(
+          local_state, version_info::Channel::UNKNOWN,
+          /*seed_file_dir=*/base::FilePath()),
       version_info::Channel::UNKNOWN,
       /*seed_file_dir=*/base::FilePath());
 }
@@ -359,13 +361,15 @@ class MockVariationsServiceClient : public TestVariationsServiceClient {
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(PrefService* local_state)
-      : VariationsSeedStore(
-            local_state,
-            /*initial_seed=*/nullptr,
-            /*signature_verification_enabled=*/true,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
-            version_info::Channel::UNKNOWN,
-            /*seed_file_dir=*/base::FilePath()) {}
+      : VariationsSeedStore(local_state,
+                            /*initial_seed=*/nullptr,
+                            /*signature_verification_enabled=*/true,
+                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                                local_state,
+                                version_info::Channel::UNKNOWN,
+                                /*seed_file_dir=*/base::FilePath()),
+                            version_info::Channel::UNKNOWN,
+                            /*seed_file_dir=*/base::FilePath()) {}
 
   TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
   TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
@@ -985,7 +989,9 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
       /*signature_verification_enabled=*/false,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()),
+      std::make_unique<VariationsSafeSeedStoreLocalState>(
+          local_state(), version_info::Channel::UNKNOWN,
+          /*seed_file_dir=*/base::FilePath()),
       version_info::Channel::UNKNOWN, /*seed_file_dir=*/base::FilePath());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),

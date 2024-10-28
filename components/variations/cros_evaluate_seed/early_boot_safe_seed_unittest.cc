@@ -131,7 +131,7 @@ TEST(EarlyBootSafeSeed, MutatorsDontCrash) {
   early_boot_safe_seed.SetFetchTime(base::Time::Now());
   early_boot_safe_seed.SetMilestone(100);
   early_boot_safe_seed.SetTimeForStudyDateChecks(base::Time::Now());
-  early_boot_safe_seed.SetCompressedSeed("data");
+  early_boot_safe_seed.SetCompressedSeed("data", "base64_data");
   early_boot_safe_seed.SetSignature("signature");
   early_boot_safe_seed.SetLocale("locale");
   early_boot_safe_seed.SetPermanentConsistencyCountry("us");

@@ -903,7 +903,9 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
           GetSharedState().local_state.get(), std::move(initial_seed),
           /*signature_verification_enabled=*/true,
           std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-              GetSharedState().local_state.get()),
+              GetSharedState().local_state.get(),
+              variations_service_client.GetChannelForVariations(),
+              variations_service_client.GetVariationsSeedFileDir()),
           variations_service_client.GetChannelForVariations(),
           variations_service_client.GetVariationsSeedFileDir()),
       variations::UIStringOverrider(),

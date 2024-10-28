@@ -359,7 +359,10 @@ VariationsService::VariationsService(
               local_state,
               MaybeImportFirstRunSeed(client_.get(), local_state),
               /*signature_verification_enabled=*/true,
-              std::make_unique<VariationsSafeSeedStoreLocalState>(local_state),
+              std::make_unique<VariationsSafeSeedStoreLocalState>(
+                  local_state,
+                  client_.get()->GetChannelForVariations(),
+                  client_.get()->GetVariationsSeedFileDir()),
               client_.get()->GetChannelForVariations(),
               client_.get()->GetVariationsSeedFileDir()),
           ui_string_overrider,
