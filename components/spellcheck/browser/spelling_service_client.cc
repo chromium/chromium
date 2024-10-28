@@ -309,7 +309,8 @@ SpellingServiceClient::TextCheckCallbackData::TextCheckCallbackData(
       callback(std::move(callback)),
       text(text) {}
 
-SpellingServiceClient::TextCheckCallbackData::~TextCheckCallbackData() {}
+SpellingServiceClient::TextCheckCallbackData::~TextCheckCallbackData() =
+    default;
 
 void SpellingServiceClient::OnSimpleLoaderComplete(
     SpellCheckLoaderList::iterator it,
