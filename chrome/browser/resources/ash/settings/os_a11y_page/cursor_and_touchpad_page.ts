@@ -618,7 +618,7 @@ export class SettingsCursorAndTouchpadPageElement extends
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
   }
 
-  private showTrackpadEnableMessage_(trackpadMode: number): boolean {
+  private showTouchpadEnableMessage_(trackpadMode: number): boolean {
     return trackpadMode !== DisableTouchpadMode.NEVER;
   }
 }
