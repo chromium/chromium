@@ -625,7 +625,7 @@ void SimpleIndex::WriteToDisk(IndexWriteToDiskReason reason) {
     return;
 
   // Cancel any pending writes since we are about to write to disk now.
-  write_to_disk_timer_.AbandonAndStop();
+  write_to_disk_timer_.Stop();
 
   base::OnceClosure after_write;
   if (cleanup_tracker_) {

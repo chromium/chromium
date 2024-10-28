@@ -229,7 +229,7 @@ void DnsConfigService::OnTimeout() {
 }
 
 void DnsConfigService::OnCompleteConfig() {
-  timer_.AbandonAndStop();
+  timer_.Stop();
   if (!need_update_)
     return;
   need_update_ = false;
