@@ -11359,14 +11359,30 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "AnswersInOmniboxScoped": "true",
                         "ContentVisibilityThreshold": "0.0",
+                        "EnableSidePanel": "true",
                         "OmniboxScoped": "true",
                         "SearchPassageMinimumWordCount": "5",
-                        "SearchQueryMinimumWordCount": "2"
+                        "SearchQueryMinimumWordCount": "2",
+                        "SendQualityLog": "true",
+                        "SendQualityLogV2": "true",
+                        "TrimAfterHostInResults": "true",
+                        "UseMlAnswerer": "true",
+                        "WordMatchLimit": "5",
+                        "WordMatchMaxTermCount": "10",
+                        "WordMatchMinEmbeddingScore": "0.7",
+                        "WordMatchMinTermLength": "0",
+                        "WordMatchRequiredTermRatio": "1.0",
+                        "WordMatchScoreBoostFactor": "0.2",
+                        "WordMatchSmoothingFactor": "0",
+                        "allow_unsigned_user": "true",
+                        "enable_feature_when_main_toggle_on": "false"
                     },
                     "enable_features": [
                         "HistoryEmbeddings",
-                        "HistoryEmbeddingsAnswers"
+                        "HistoryEmbeddingsAnswers",
+                        "HistorySearchSettingsVisibility"
                     ]
                 }
             ]
