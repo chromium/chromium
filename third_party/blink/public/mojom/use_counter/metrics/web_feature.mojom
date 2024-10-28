@@ -4502,6 +4502,8 @@ enum WebFeature {
   kHttpParsersParseDateFromUTCStringDifferent = 5128,
   kHttpParsersParseDateFromStringDifferent = 5129,
   kMediaQueryRangeSyntax = 5130,
+  kParseHTMLSafe = 5131,
+  kSetHTMLSafe = 5132,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

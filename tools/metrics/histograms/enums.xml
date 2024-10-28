@@ -10776,6 +10776,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5128" label="HttpParsersParseDateFromUTCStringDifferent"/>
   <int value="5129" label="HttpParsersParseDateFromStringDifferent"/>
   <int value="5130" label="MediaQueryRangeSyntax"/>
+  <int value="5131" label="ParseHTMLSafe"/>
+  <int value="5132" label="SetHTMLSafe"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

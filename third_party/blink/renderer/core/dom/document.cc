@@ -322,6 +322,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -9314,9 +9315,11 @@ void Document::ScheduleSelectionchangeEvent() {
 }
 
 // static
-Document* Document::parseHTMLUnsafe(ExecutionContext* context,
-                                    const String& html) {
-  UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
+Document* Document::parseHTMLInternal(ExecutionContext* context,
+                                      const String& html,
+                                      SetHTMLOptions* options,
+                                      bool safe,
+                                      ExceptionState& exception_state) {
   Document* doc = DocumentInit::Create()
                       .WithTypeFrom(keywords::kTextHtml)
                       .WithExecutionContext(context)
@@ -9325,7 +9328,46 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
   doc->setAllowDeclarativeShadowRoots(true);
   doc->SetContent(html);
   doc->SetMimeType(keywords::kTextHtml);
+  if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
+    if (safe) {
+      SanitizerAPI::SanitizeSafeInternal(doc->body(), options, exception_state);
+    } else {
+      SanitizerAPI::SanitizeUnsafeInternal(doc->body(), options,
+                                           exception_state);
+    }
+  }
+
   return doc;
+}
+
+// static
+Document* Document::parseHTMLUnsafe(ExecutionContext* context,
+                                    const String& html,
+                                    ExceptionState& exception_state) {
+  UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
+  return parseHTMLInternal(context, html, /*options=*/nullptr, /*safe=*/false,
+                           exception_state);
+}
+
+// static
+Document* Document::parseHTMLUnsafe(ExecutionContext* context,
+                                    const String& html,
+                                    SetHTMLOptions* options,
+                                    ExceptionState& exception_state) {
+  UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
+  CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
+  return parseHTMLInternal(context, html, options, /*safe=*/false,
+                           exception_state);
+}
+
+// static
+Document* Document::parseHTML(ExecutionContext* context,
+                              const String& html,
+                              SetHTMLOptions* options,
+                              ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
+  return parseHTMLInternal(context, html, options, /*safe=*/true,
+                           exception_state);
 }
 
 void Document::SetOverrideSiteForCookiesForCSPMedia(bool value) {

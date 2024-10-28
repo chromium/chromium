@@ -121,6 +121,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   String innerHTML() const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
   void setHTMLUnsafe(const String& html, ExceptionState&);
+  void setHTMLUnsafe(const String& html, SetHTMLOptions*, ExceptionState&);
+  void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
 
   Node* Clone(Document& factory,
               NodeCloningData& data,

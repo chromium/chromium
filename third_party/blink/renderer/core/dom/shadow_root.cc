@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -148,6 +149,37 @@ void ShadowRoot::setHTMLUnsafe(const String& html,
           html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kParse,
           Element::ForceHtml::kDontForce, exception_state)) {
+    if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
+      SanitizerAPI::SanitizeUnsafeInternal(fragment, nullptr, exception_state);
+    }
+    ReplaceChildrenWithFragment(this, fragment, exception_state);
+  }
+}
+
+void ShadowRoot::setHTMLUnsafe(const String& html,
+                               SetHTMLOptions* options,
+                               ExceptionState& exception_state) {
+  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+          html, &host(), kAllowScriptingContent,
+          Element::ParseDeclarativeShadowRoots::kParse,
+          Element::ForceHtml::kDontForce, exception_state)) {
+    if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
+      SanitizerAPI::SanitizeUnsafeInternal(fragment, options, exception_state);
+    }
+    ReplaceChildrenWithFragment(this, fragment, exception_state);
+  }
+}
+
+void ShadowRoot::setHTML(const String& html,
+                         SetHTMLOptions* options,
+                         ExceptionState& exception_state) {
+  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+          html, &host(), kAllowScriptingContent,
+          Element::ParseDeclarativeShadowRoots::kParse,
+          Element::ForceHtml::kDontForce, exception_state)) {
+    if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
+      SanitizerAPI::SanitizeSafeInternal(fragment, options, exception_state);
+    }
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
 }

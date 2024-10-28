@@ -89,6 +89,9 @@ interface ShadowRoot : DocumentFragment {
                             (DOMString or ElementCreationOptions) options);
 
     [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString string);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html, SetHTMLOptions options);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
+
 };
 
 ShadowRoot includes DocumentOrShadowRoot;

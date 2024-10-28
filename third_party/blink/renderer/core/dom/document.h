@@ -239,6 +239,7 @@ class ScriptedAnimationController;
 class SecurityOrigin;
 class SelectorQueryCache;
 class SerializedScriptValue;
+class SetHTMLOptions;
 class Settings;
 class SlotAssignmentEngine;
 class StyleEngine;
@@ -2080,7 +2081,22 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // https://github.com/whatwg/html/pull/9538
   static Document* parseHTMLUnsafe(ExecutionContext* context,
-                                   const String& html);
+                                   const String& html,
+                                   ExceptionState& exception_state);
+
+  // https://wicg.github.io/sanitizer-api/#framework
+  //
+  // parseHTMLUnsafe uses an overload, so that we can separately enable/disable
+  // the |options| parameter. Long-term, the two parseHTMLUnsage methods
+  // should be merged.
+  static Document* parseHTMLUnsafe(ExecutionContext* context,
+                                   const String& html,
+                                   SetHTMLOptions* options,
+                                   ExceptionState& exception_state);
+  static Document* parseHTML(ExecutionContext* context,
+                             const String& html,
+                             SetHTMLOptions* options,
+                             ExceptionState& exception_state);
 
   // Delays execution of pending async scripts until a milestone is reached.
   // Used in conjunction with kDelayAsyncScriptExecution experiment.
@@ -2362,6 +2378,14 @@ class CORE_EXPORT Document : public ContainerNode,
   // Initiates data loading for print that is dependent on style or layout.
   // Returns true if data loading has started.
   bool InitiateStyleOrLayoutDependentLoadForPrint();
+
+  // https://wicg.github.io/sanitizer-api/#framework
+  // Common implementation for parseHTML and parseHTMLUnsafe.
+  static Document* parseHTMLInternal(ExecutionContext* context,
+                                     const String& html,
+                                     SetHTMLOptions* options,
+                                     bool safe,
+                                     ExceptionState& exception_state);
 
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.
