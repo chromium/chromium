@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -554,12 +553,7 @@ public class SearchActivity extends AsyncInitializationActivity
             loadUrl(mQueuedParams, /* isIncognito= */ false);
         }
 
-        // TODO(tedchoc): Warmup triggers the CustomTab layout to be inflated, but this widget
-        //                will navigate to Tabbed mode.  Investigate whether this can inflate
-        //                the tabbed mode layout in the background instead of CCTs.
-        CustomTabsConnection.getInstance().warmup(0);
         mSearchBox.onDeferredStartup(mSearchType, getWindowAndroid());
-
         getActivityDelegate().onFinishDeferredInitialization();
     }
 
