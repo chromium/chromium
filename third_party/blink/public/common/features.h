@@ -1642,6 +1642,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageCrossOriginScript);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageCreateWorkletUseContextOriginByDefault);
 
+// For the Shared Storage API, allows saved queries in `selectURL()`.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageSelectURLSavedQueries);
+
 // Enables WAL (write-ahead-logging) mode for the Shared Storage API SQLite
 // database backend.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIEnableWALForDatabase);
