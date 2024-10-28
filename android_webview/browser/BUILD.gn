@@ -203,6 +203,8 @@ source_set("browser") {
     "permission/simple_permission_request.h",
     "popup_touch_handle_drawable.cc",
     "popup_touch_handle_drawable.h",
+    "prefetch/aw_prefetch_service_delegate.cc",
+    "prefetch/aw_prefetch_service_delegate.h",
     "renderer_host/auto_login_parser.cc",
     "renderer_host/auto_login_parser.h",
     "renderer_host/aw_render_view_host_ext.cc",
