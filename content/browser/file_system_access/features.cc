@@ -33,5 +33,5 @@ BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
 // the blocklist check on child file handles.
 BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
              "FileSystemAccessDirectoryIterationBlocklistCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace content::features
