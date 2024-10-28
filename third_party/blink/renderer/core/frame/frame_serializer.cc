@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 
+#include <optional>
+
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
@@ -86,8 +89,12 @@
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -99,6 +106,33 @@
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
+
+namespace internal {
+// TODO(crbug.com/363289333): Try to add this functionality to wtf::String.
+String ReplaceAllCaseInsensitive(
+    String source,
+    const String& from,
+    base::FunctionRef<String(const String&)> transform) {
+  size_t offset = 0;
+  size_t pos;
+  StringBuilder builder;
+  for (;;) {
+    pos = source.Find(from, offset,
+                      TextCaseSensitivity::kTextCaseASCIIInsensitive);
+    if (pos == kNotFound) {
+      break;
+    }
+    builder.Append(source.Substring(offset, pos - offset));
+    builder.Append(transform(source.Substring(pos, from.length())));
+    offset = pos + from.length();
+  }
+  if (builder.empty()) {
+    return source;
+  }
+  builder.Append(source.Substring(offset));
+  return builder.ToString();
+}
+}  // namespace internal
 
 namespace {
 
@@ -131,42 +165,53 @@ void AppendLinkElement(StringBuilder& markup, const KURL& url) {
   markup.Append("\" />");
 }
 
-}  // namespace
-
-namespace internal {
-// TODO(crbug.com/363289333): Try to add this functionality to wtf::String.
-String ReplaceAllCaseInsensitive(
-    String source,
-    const String& from,
-    base::FunctionRef<String(const String&)> transform) {
-  size_t offset = 0;
-  size_t pos;
-  StringBuilder builder;
-  for (;;) {
-    pos = source.Find(from, offset,
-                      TextCaseSensitivity::kTextCaseASCIIInsensitive);
-    if (pos == kNotFound) {
-      break;
-    }
-    builder.Append(source.Substring(offset, pos - offset));
-    builder.Append(transform(source.Substring(pos, from.length())));
-    offset = pos + from.length();
-  }
-  if (builder.empty()) {
-    return source;
-  }
-  builder.Append(source.Substring(offset));
-  return builder.ToString();
+// There are several improvements being added behind this flag. So far, it
+// covers:
+// * Serialize adopted stylesheets
+// * Serialize styleSheets on shadow roots
+// * Retain stylesheet order, previously order of stylesheets
+//   was sometimes wrong.
+// * Serialize <style> nodes as <style> nodes instead of <link> nodes.
+// * Leave <style> nodes alone if their stylesheet is unmodified.
+// * Injects a script into the serialized HTML to define custom elements to
+//   ensure the same custom element names are defined.
+// * Fonts are fetched.
+bool MHTMLImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements);
 }
-}  // namespace internal
+
+class MultiResourcePacker;
+
+// A `RawResourceClient` that waits for the resource to load.
+class ResourceWaiter : public GarbageCollected<ResourceWaiter>,
+                       public RawResourceClient {
+ public:
+  explicit ResourceWaiter(MultiResourcePacker* packer) : packer_(packer) {}
+
+  void NotifyFinished(Resource* resource) override;
+
+  void Trace(Visitor* visitor) const override;
+
+  std::optional<SerializedResource> TakeResource() {
+    return std::move(serialized_resource_);
+  }
+
+  String DebugName() const override { return "FrameSerializerResourceWaiter"; }
+
+ private:
+  Member<MultiResourcePacker> packer_;
+  std::optional<SerializedResource> serialized_resource_;
+};
 
 // Stores the list of serialized resources which constitute the frame. The
 // first resource should be the frame's content (usually HTML).
-class MultiResourcePacker {
+class MultiResourcePacker : public GarbageCollected<MultiResourcePacker> {
  public:
   explicit MultiResourcePacker(
       WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate)
       : web_delegate_(web_delegate) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(resource_waiters_); }
 
   bool HasResource(const KURL& url) const {
     return resource_urls_.Contains(url);
@@ -177,7 +222,8 @@ class MultiResourcePacker {
                        const KURL& url) {
     // The main resource must be first.
     // We do not call `ShouldAddURL()` for the main resource.
-    resources_.push_front(SerializedResource(url, mime_type, std::move(data)));
+    resources_.emplace_front(
+        SerializedResource(url, mime_type, std::move(data)));
   }
 
   void AddToResources(SerializedResource serialized_resource) {
@@ -193,7 +239,8 @@ class MultiResourcePacker {
     }
     CHECK(resource_urls_.Contains(url))
         << "ShouldAddURL() not called before AddToResources";
-    resources_.push_back(SerializedResource(url, mime_type, std::move(data)));
+    resources_.emplace_front(
+        SerializedResource(url, mime_type, std::move(data)));
   }
 
   void AddImageToResources(ImageResourceContent* image, const KURL& url) {
@@ -225,7 +272,7 @@ class MultiResourcePacker {
     return should_add;
   }
 
-  void AddFontToResources(FontResource& font) {
+  void OldAddFontToResources(FontResource& font) {
     if (!font.IsLoaded() || !font.ResourceBuffer()) {
       return;
     }
@@ -237,17 +284,116 @@ class MultiResourcePacker {
                    font.Url());
   }
 
-  Deque<SerializedResource> FinishAndTakeResources() && {
-    return std::move(resources_);
+  void AddFontToResources(Document& document, FontResource& font) {
+    if (!MHTMLImprovementsEnabled()) {
+      OldAddFontToResources(font);
+      return;
+    }
+
+    // Check if the font is loaded. Loaded fonts may not have raw resource data,
+    // so we ignore `font.ResourceBuffer()`.
+    if (!font.GetCustomFontData()) {
+      return;
+    }
+
+    if (!ShouldAddURL(font.Url())) {
+      return;
+    }
+
+    // Add a resource entry pointing to the new `ResourceWaiter`.
+    ResourceEntry entry;
+    entry.waiter_index = resource_waiters_.size();
+    resources_.push_back(std::move(entry));
+
+    // Start fetching the font data.
+    ResourceLoaderOptions loader_options(
+        document.GetExecutionContext()->GetCurrentWorld());
+    loader_options.synchronous_policy =
+        SynchronousPolicy::kRequestAsynchronously;
+    ResourceRequest request(font.Url());
+    // MHTML serialization is run frequently on Android Chrome to save pages
+    // after they are loaded, so that they can be restored later without an
+    // internet connection. `kForceCache` avoids adding additional network
+    // requests that could impact performance. If a font isn't cached, the
+    // fallback font is typically usable.
+    request.SetCacheMode(mojom::blink::FetchCacheMode::kForceCache);
+    request.SetRequestContext(mojom::blink::RequestContextType::FONT);
+    FetchParameters fetch_params(std::move(request), loader_options);
+    auto* waiter = MakeGarbageCollected<ResourceWaiter>(this);
+    RawResource::Fetch(fetch_params, document.Fetcher(), waiter);
+
+    resource_waiters_.push_back(waiter);
+  }
+
+  void Finish(base::OnceCallback<void(Deque<SerializedResource>)>
+                  resources_ready_callback) {
+    resources_ready_callback_ = std::move(resources_ready_callback);
+    finished_ = true;
+    CallReadyIfFinished();
+  }
+
+  void ResourceFetchComplete() {
+    ++resource_done_count_;
+    CallReadyIfFinished();
   }
 
  private:
+  struct ResourceEntry {
+    ResourceEntry() = default;
+    explicit ResourceEntry(std::optional<SerializedResource> r)
+        : resource(std::move(r)) {}
+
+    // The serialized resource. May be nullopt for resources loaded
+    // asynchronously.
+    std::optional<SerializedResource> resource;
+    // For asynchronously loaded resources, this is the index into
+    // `resource_waiters_`.
+    std::optional<wtf_size_t> waiter_index;
+  };
+
+  void CallReadyIfFinished() {
+    if (finished_ && resource_done_count_ == resource_waiters_.size()) {
+      Deque<SerializedResource> resources;
+      for (ResourceEntry& entry : resources_) {
+        if (entry.waiter_index) {
+          entry.resource =
+              resource_waiters_[*entry.waiter_index]->TakeResource();
+        }
+        if (entry.resource) {
+          resources.push_back(std::move(*entry.resource));
+        }
+      }
+      resources_.clear();
+      std::move(resources_ready_callback_).Run(std::move(resources));
+    }
+  }
+
   // This hashset is only used for de-duplicating resources to be serialized.
   HashSet<KURL> resource_urls_;
-
-  Deque<SerializedResource> resources_;
+  Deque<ResourceEntry> resources_;
   WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate_;
+  // Whether `Finish()` has been called.
+  bool finished_ = false;
+  // Number of `ResourceWaiter`s that have completed.
+  wtf_size_t resource_done_count_ = 0;
+  HeapVector<Member<ResourceWaiter>> resource_waiters_;
+  base::OnceCallback<void(Deque<SerializedResource>)> resources_ready_callback_;
 };
+
+void ResourceWaiter::Trace(Visitor* visitor) const {
+  RawResourceClient::Trace(visitor);
+  visitor->Trace(packer_);
+}
+
+void ResourceWaiter::NotifyFinished(Resource* resource) {
+  if (!resource->ErrorOccurred() && resource->ResourceBuffer()) {
+    serialized_resource_ =
+        SerializedResource(resource->Url(), resource->GetResponse().MimeType(),
+                           resource->ResourceBuffer());
+  }
+  packer_->ResourceFetchComplete();
+  resource->RemoveClient(this);
+}
 
 class SerializerMarkupAccumulator : public MarkupAccumulator {
   STACK_ALLOCATED();
@@ -1107,6 +1253,7 @@ function main(metadata) {
       }
 
       resource_serializer_->AddFontToResources(
+          document,
           font_face_src_value->Fetch(document.GetExecutionContext(), nullptr));
     } else if (const auto* css_value_list =
                    DynamicTo<CSSValueList>(css_value)) {
@@ -1114,20 +1261,6 @@ function main(metadata) {
         RetrieveResourcesForCSSValue(css_value_list->Item(i), document);
       }
     }
-  }
-
-  // There are several improvements being added behind this flag. So far, it
-  // covers:
-  // * Serialize adopted stylesheets
-  // * Serialize styleSheets on shadow roots
-  // * Retain stylesheet order, previously order of stylesheets
-  //   was sometimes wrong.
-  // * Serialize <style> nodes as <style> nodes instead of <link> nodes.
-  // * Leave <style> nodes alone if their stylesheet is unmodified.
-  // * Injects a script into the serialized HTML to define custom elements to
-  //   ensure the same custom element names are defined.
-  bool MHTMLImprovementsEnabled() const {
-    return base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements);
   }
 
   MultiResourcePacker* resource_serializer_;
@@ -1149,6 +1282,8 @@ function main(metadata) {
       style_elements_to_replace_contents_;
 };
 
+}  // namespace
+
 // TODO(tiger): Right now there is no support for rewriting URLs inside CSS
 // documents which leads to bugs like <https://crbug.com/251898>. Not being
 // able to rewrite URLs inside CSS documents means that resources imported from
@@ -1165,31 +1300,30 @@ void FrameSerializer::SerializeFrame(
   DCHECK(frame.GetDocument());
   Document& document = *frame.GetDocument();
   KURL url = document.Url();
-  MultiResourcePacker resource_serializer(&web_delegate);
+  auto* resource_serializer =
+      MakeGarbageCollected<MultiResourcePacker>(&web_delegate);
+  auto callback = std::move(done_callback);
   // If frame is an image document, add the image and don't continue
   if (auto* image_document = DynamicTo<ImageDocument>(document)) {
-    resource_serializer.AddImageToResources(image_document->CachedImage(), url);
-    std::move(done_callback)
-        .Run(std::move(resource_serializer).FinishAndTakeResources());
+    resource_serializer->AddImageToResources(image_document->CachedImage(),
+                                             url);
+    resource_serializer->Finish(std::move(callback));
     return;
   }
 
   {
     TRACE_EVENT0("page-serialization", "FrameSerializer::serializeFrame HTML");
-    SerializerMarkupAccumulator accumulator(&resource_serializer, &web_delegate,
+    SerializerMarkupAccumulator accumulator(resource_serializer, &web_delegate,
                                             document);
     String text =
         accumulator.SerializeNodes<EditingStrategy>(document, kIncludeNode);
 
     std::string frame_html =
         document.Encoding().Encode(text, WTF::kEntitiesForUnencodables);
-    resource_serializer.AddMainResource(
+    resource_serializer->AddMainResource(
         document.SuggestedMIMEType(),
         SharedBuffer::Create(frame_html.c_str(), frame_html.length()), url);
-
-    // TODO(crbug.com/363289333): Add async fetching of fonts.
-    std::move(done_callback)
-        .Run(std::move(resource_serializer).FinishAndTakeResources());
+    resource_serializer->Finish(std::move(callback));
   }
 }
 
