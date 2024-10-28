@@ -45,12 +45,3 @@ void TrustedVaultClientBackend::NotifyRecoverabilityChanged(
     observer.OnTrustedVaultRecoverabilityChanged();
   }
 }
-
-void TrustedVaultClientBackend::UpdateGPMPinForAccount(
-    id<SystemIdentity> identity,
-    trusted_vault::SecurityDomainId security_domain_id,
-    UINavigationController* navigationController,
-    UIView* brandedNavigationItemTitleView,
-    UpdateGPMPinCompletionCallback completion) {
-  NOTREACHED_NORETURN();
-}

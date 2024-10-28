@@ -132,7 +132,7 @@ class TrustedVaultClientBackend : public KeyedService {
       trusted_vault::SecurityDomainId security_domain_id,
       UINavigationController* navigationController,
       UIView* brandedNavigationItemTitleView,
-      UpdateGPMPinCompletionCallback completion);
+      UpdateGPMPinCompletionCallback completion) = 0;
 
  protected:
   // Functions to notify observers.
