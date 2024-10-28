@@ -752,6 +752,13 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
         internal::DirectMapAllocationGranularity());
   }
 
+  PA_ALWAYS_INLINE bool IsDirectMapped(
+      partition_alloc::internal::SlotSpanMetadata<
+          partition_alloc::internal::MetadataKind::kReadOnly>* slot_span)
+      const {
+    return IsDirectMappedBucket(slot_span->bucket);
+  }
+
   PA_ALWAYS_INLINE size_t AdjustSize0IfNeeded(size_t size) const {
     // There are known cases where allowing size 0 would lead to problems:
     // 1. If extras are present only before allocation (e.g. in-slot metadata),

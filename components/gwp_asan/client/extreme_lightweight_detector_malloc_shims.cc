@@ -180,6 +180,16 @@ inline bool Quarantine(void* object) {
     return false;
   }
 
+  if (lightweight_quarantine_partition_root->IsDirectMapped(slot_span))
+      [[unlikely]] {
+    // Direct-mapped allocations get immediately unmapped when being
+    // deallocated, so the following accesses to the memory will cause crash
+    // unless the address gets re-mapped again. Plus, direct-mapped allocations
+    // tend to be very large, and zapping is more costful. So, we don't
+    // quarantine the direct-mapped allocations.
+    return false;
+  }
+
   size_t usable_size = root->GetSlotUsableSize(slot_span);
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
