@@ -27,6 +27,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.h"
@@ -239,6 +240,12 @@ std::ostream& operator<<(std::ostream& out,
   base::Value::Dict dict;
   v.Serialize(dict);
   return out << dict;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AggregatableDebugReportingContribution& v) {
+  return out << "{key_piece=" << HexEncodeAggregationKey(v.key_piece())
+             << ",value=" << v.value() << "}";
 }
 
 }  // namespace attribution_reporting
