@@ -97,8 +97,8 @@ class IpProtectionProxyConfigManagerImpl
   // Source of proxy list, when needed.
   raw_ref<IpProtectionConfigGetter> config_getter_;
 
-  // The last time this instance began refreshing the proxy list.
-  base::Time last_proxy_list_refresh_;
+  // The last time this instance began refreshing the proxy list successfully.
+  base::Time last_successful_proxy_list_refresh_;
 
   // The min age of the proxy list before an additional refresh is allowed.
   const base::TimeDelta proxy_list_min_age_;

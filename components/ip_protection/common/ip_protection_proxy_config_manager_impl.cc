@@ -100,7 +100,7 @@ void IpProtectionProxyConfigManagerImpl::RequestRefreshProxyList() {
   // If list is not older than min interval, schedule refresh as soon as
   // possible.
   base::TimeDelta time_since_last_refresh =
-      base::Time::Now() - last_proxy_list_refresh_;
+      base::Time::Now() - last_successful_proxy_list_refresh_;
 
   base::TimeDelta delay = proxy_list_min_age_ - time_since_last_refresh;
   ScheduleRefreshProxyList(delay.is_negative() ? base::TimeDelta() : delay);
@@ -112,7 +112,7 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
   }
 
   fetching_proxy_list_ = true;
-  last_proxy_list_refresh_ = base::Time::Now();
+  last_successful_proxy_list_refresh_ = base::Time::Now();
   const base::TimeTicks refresh_start_time_for_metrics = base::TimeTicks::Now();
 
   config_getter_->GetProxyConfig(base::BindOnce(
@@ -146,6 +146,12 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
       current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
       ip_protection_core_->GeoObserved(current_geo_id_);
     }
+  } else {
+    // The request was not successful, so do not count this toward the
+    // minimum time between refreshes. Note that the proxy config fetcher
+    // implements its own backoff on errors, so this does not risk overwhelming
+    // the server.
+    last_successful_proxy_list_refresh_ = base::Time();
   }
 
   base::TimeDelta fuzzed_proxy_list_refresh_interval =
@@ -172,7 +178,8 @@ base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
 }
 
 bool IpProtectionProxyConfigManagerImpl::IsProxyListOlderThanMinAge() const {
-  return base::Time::Now() - last_proxy_list_refresh_ >= proxy_list_min_age_;
+  return base::Time::Now() - last_successful_proxy_list_refresh_ >=
+         proxy_list_min_age_;
 }
 
 void IpProtectionProxyConfigManagerImpl::

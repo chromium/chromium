@@ -301,6 +301,38 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
   EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kMountainViewGeoId);
 }
 
+// If a failure occurs, the minimum time between fetches does not apply.
+TEST_F(IpProtectionProxyConfigManagerImplTest,
+       ProxyListMinTimeIgnoredWhenRefreshFails) {
+  SetUpIpProtectionProxyConfigManager(kEnableTokenCacheByGeo);
+
+  // Called once for the proxy list refresh after the first refresh fails.
+  EXPECT_CALL(mock_core_, GeoObserved(testing::_)).Times(1);
+
+  mock_.ExpectGetProxyConfigCallFailure();
+  QuitClosureOnRefresh();
+  ipp_proxy_list_->RequestRefreshProxyList();
+  WaitTillClosureQuit();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // First refresh was failure, but next refresh should occur when requested.
+  EXPECT_FALSE(ipp_proxy_list_->IsProxyListAvailable());
+
+  GetProxyConfigCall expected_call =
+      GetProxyConfigCall{.proxy_chains = std::vector{MakeChain({"b-proxy"})},
+                         .geo_id = kMountainViewGeoId};
+  mock_.ExpectGetProxyConfigCall(expected_call);
+  QuitClosureOnRefresh();
+  ipp_proxy_list_->RequestRefreshProxyList();
+  WaitTillClosureQuit();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // After a successful call, the proxy list should be available.
+  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kMountainViewGeoId);
+}
+
 // The manager refreshes the proxy list on demand, but only once even if
 // `RequestRefreshProxyList()` is called repeatedly.
 TEST_F(IpProtectionProxyConfigManagerImplTest,
