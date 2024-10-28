@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -18,8 +19,12 @@ namespace blink {
 DOMTaskContinuation::DOMTaskContinuation(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     AbortSignal* signal,
-    DOMScheduler::DOMTaskQueue* task_queue)
-    : resolver_(resolver), signal_(signal), task_queue_(task_queue) {
+    DOMScheduler::DOMTaskQueue* task_queue,
+    uint64_t task_id_for_tracing)
+    : resolver_(resolver),
+      signal_(signal),
+      task_queue_(task_queue),
+      task_id_for_tracing_(task_id_for_tracing) {
   CHECK(task_queue_);
 
   if (signal_ && signal_->CanAbort()) {
@@ -31,8 +36,13 @@ DOMTaskContinuation::DOMTaskContinuation(
   task_handle_ = PostCancellableTask(
       task_queue_->GetTaskRunner(), FROM_HERE,
       WTF::BindOnce(&DOMTaskContinuation::Invoke, WrapPersistent(this)));
-  async_task_context_.Schedule(
-      ExecutionContext::From(resolver->GetScriptState()), "yield");
+
+  auto* context = ExecutionContext::From(resolver->GetScriptState());
+  CHECK(context);
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "ScheduleYieldContinuation", inspector_scheduler_schedule_event::Data,
+      context, task_id_for_tracing_, task_queue_->GetPriority());
+  async_task_context_.Schedule(context, "yield");
 }
 
 void DOMTaskContinuation::Trace(Visitor* visitor) const {
@@ -45,6 +55,9 @@ void DOMTaskContinuation::Trace(Visitor* visitor) const {
 void DOMTaskContinuation::Invoke() {
   CHECK(resolver_);
   if (ExecutionContext* context = resolver_->GetExecutionContext()) {
+    DEVTOOLS_TIMELINE_TRACE_EVENT(
+        "RunYieldContinuation", inspector_scheduler_run_event::Data, context,
+        task_id_for_tracing_, task_queue_->GetPriority());
     probe::AsyncTask async_task(context, &async_task_context_);
     resolver_->Resolve();
   }
@@ -68,6 +81,13 @@ void DOMTaskContinuation::OnAbort() {
   // Switch to the resolver's context to let DOMException pick up the resolver's
   // JS stack.
   ScriptState::Scope script_state_scope(resolver_script_state);
+
+  auto* context = ExecutionContext::From(resolver_script_state);
+  CHECK(context);
+  DEVTOOLS_TIMELINE_TRACE_EVENT("AbortYieldContinuation",
+                                inspector_scheduler_abort_event::Data, context,
+                                task_id_for_tracing_);
+
   // TODO(crbug.com/1293949): Add an error message.
   CHECK(signal_);
   resolver_->Reject(

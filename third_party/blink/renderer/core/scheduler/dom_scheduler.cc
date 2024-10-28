@@ -139,9 +139,9 @@ ScriptPromise<IDLAny> DOMScheduler::postTask(
       GetTaskQueue(priority_source, WebSchedulingQueueType::kTaskQueue);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
-  MakeGarbageCollected<DOMTask>(resolver, callback_function, signal_option,
-                                priority_source, task_queue,
-                                base::Milliseconds(options->delay()));
+  MakeGarbageCollected<DOMTask>(
+      resolver, callback_function, signal_option, priority_source, task_queue,
+      base::Milliseconds(options->delay()), NextIdForTracing());
   return resolver->Promise();
 }
 
@@ -183,7 +183,8 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
       GetTaskQueue(priority_source, WebSchedulingQueueType::kContinuationQueue);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  MakeGarbageCollected<DOMTaskContinuation>(resolver, abort_source, task_queue);
+  MakeGarbageCollected<DOMTaskContinuation>(resolver, abort_source, task_queue,
+                                            NextIdForTracing());
   return resolver->Promise();
 }
 

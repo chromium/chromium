@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
@@ -618,6 +619,28 @@ namespace inspector_handle_post_message_event {
 void Data(perfetto::TracedValue context,
           ExecutionContext* execution_context,
           const MessageEvent& event);
+}
+
+namespace inspector_scheduler_schedule_event {
+void Data(perfetto::TracedValue trace_context,
+          ExecutionContext* execution_context,
+          uint64_t task_id,
+          WebSchedulingPriority priority,
+          std::optional<double> delay = std::nullopt);
+}
+
+namespace inspector_scheduler_run_event {
+void Data(perfetto::TracedValue trace_context,
+          ExecutionContext* execution_context,
+          uint64_t task_id,
+          WebSchedulingPriority priority,
+          std::optional<double> delay = std::nullopt);
+}
+
+namespace inspector_scheduler_abort_event {
+void Data(perfetto::TracedValue trace_context,
+          ExecutionContext* execution_context,
+          uint64_t task_id);
 }
 
 CORE_EXPORT String ToHexString(const void* p);

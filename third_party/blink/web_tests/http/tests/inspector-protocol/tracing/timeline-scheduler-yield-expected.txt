@@ -1,0 +1,76 @@
+Test trace events for scheduler.yield()
+Recording started
+Tracing complete
+Number of ScheduleYieldContinuation events found: 2
+Schedule event 1 priority: user-blocking
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			taskId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Schedule event 2 priority: background
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			taskId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Number of RunYieldContinuation events found: 1
+RunYieldContinuation priority: user-blocking
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			taskId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Number of AbortYieldContinuation events found: 1
+Object: {
+	args: {
+		data: {
+			frame: string
+			taskId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Schedule event ids are different: true
+First schedule and run event have same id: true
+Second schedule and abort event have same id: true
+
