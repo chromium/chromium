@@ -59,7 +59,7 @@ import java.util.List;
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SensitiveContentTest {
-    private static class TestSensitiveContentClientObserver
+    private static final class TestSensitiveContentClientObserver
             implements SensitiveContentClient.Observer {
         private boolean mContentIsSensitive;
 
@@ -79,11 +79,11 @@ public class SensitiveContentTest {
             "/chrome/test/data/autofill/autocomplete_simple_form.html";
 
     @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
+    public final BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
             new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     private WebPageStation mPage;
@@ -167,7 +167,7 @@ public class SensitiveContentTest {
                 getContentViewOfCurrentTab().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_AUTO);
 
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
 
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
@@ -191,7 +191,7 @@ public class SensitiveContentTest {
     public void testRegularTabSwitcherBecomesSensitive() throws Exception {
         // Open a second tab.
         PageStation page = mPage.openGenericAppMenu().openNewTab();
-        Tab secondTab = page.getLoadedTab();
+        final Tab secondTab = page.getLoadedTab();
         // Load sensitive content only into the second tab.
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTab.getTabHasSensitiveContent());
@@ -225,7 +225,7 @@ public class SensitiveContentTest {
         PageStation page = mPage.openGenericAppMenu().openNewIncognitoTab();
         // Open the second incognito tab.
         page = page.openGenericAppMenu().openNewIncognitoTab();
-        Tab secondIncognitoTab = page.getLoadedTab();
+        final Tab secondIncognitoTab = page.getLoadedTab();
         // Load sensitive content only into the second incognito tab.
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
@@ -256,10 +256,10 @@ public class SensitiveContentTest {
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testRegularTabSwitcherBecomesSensitiveWithTabGroups() throws Exception {
-        Tab firstTab = mPage.getLoadedTab();
+        final Tab firstTab = mPage.getLoadedTab();
         // Open a second tab.
-        PageStation page = mPage.openGenericAppMenu().openNewTab();
-        Tab secondTab = page.getLoadedTab();
+        final PageStation page = mPage.openGenericAppMenu().openNewTab();
+        final Tab secondTab = page.getLoadedTab();
         // Load sensitive content only into the second tab.
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTab.getTabHasSensitiveContent());
@@ -267,7 +267,7 @@ public class SensitiveContentTest {
         TabUiTestHelper.createTabGroup(
                 sActivityTestRule.getActivity(), false, List.of(firstTab, secondTab));
         // Open the tab switcher.
-        RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
+        final RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is sensitive.
         assertEquals(
                 getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
@@ -284,10 +284,10 @@ public class SensitiveContentTest {
     public void testIncognitoTabSwitcherBecomesSensitiveWithTabGroups() throws Exception {
         // Open the first incognito tab.
         PageStation page = mPage.openGenericAppMenu().openNewIncognitoTab();
-        Tab firstIncognitoTab = page.getLoadedTab();
+        final Tab firstIncognitoTab = page.getLoadedTab();
         // Open the second incognito tab.
         page = page.openGenericAppMenu().openNewIncognitoTab();
-        Tab secondIncognitoTab = page.getLoadedTab();
+        final Tab secondIncognitoTab = page.getLoadedTab();
         // Load sensitive content only into the second incognito tab.
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
@@ -297,7 +297,7 @@ public class SensitiveContentTest {
                 true,
                 List.of(firstIncognitoTab, secondIncognitoTab));
         // Open the incognito tab switcher.
-        IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
+        final IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is sensitive.
         assertEquals(
                 getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
@@ -313,12 +313,12 @@ public class SensitiveContentTest {
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() throws Exception {
         // Load sensitive content only into the first tab.
-        Tab firstTab = mPage.getLoadedTab();
+        final Tab firstTab = mPage.getLoadedTab();
         sActivityTestRule.loadUrl(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> firstTab.getTabHasSensitiveContent());
         // Open a second tab.
-        PageStation page = mPage.openGenericAppMenu().openNewTab();
-        Tab secondTab = page.getLoadedTab();
+        final PageStation page = mPage.openGenericAppMenu().openNewTab();
+        final Tab secondTab = page.getLoadedTab();
         // Group the tabs.
         TabUiTestHelper.createTabGroup(
                 sActivityTestRule.getActivity(), false, List.of(firstTab, secondTab));
@@ -346,7 +346,8 @@ public class SensitiveContentTest {
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() throws Exception {
         // Set up.
-        View contentContainer = sActivityTestRule.getActivity().findViewById(android.R.id.content);
+        final View contentContainer =
+                sActivityTestRule.getActivity().findViewById(android.R.id.content);
         // Open a second tab.
         mPage.openGenericAppMenu().openNewTab();
 

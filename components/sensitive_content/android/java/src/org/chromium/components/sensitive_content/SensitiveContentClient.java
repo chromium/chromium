@@ -133,7 +133,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     @CalledByNative
     @VisibleForTesting
     void setContentSensitivity(boolean contentIsSensitive) {
-        ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
+        final ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
         if (mLastViewAndroidDelegate.get() != viewAndroidDelegate) {
             if (mLastViewAndroidDelegate.get() != null) {
                 mLastViewAndroidDelegate.get().removeObserver(this);
@@ -193,7 +193,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      * @param contentIsSensitive True if the content is sensitive.
      */
     private void notifyObserversAboutSensitivityChange(boolean contentIsSensitive) {
-        for (Observer observer : mObservers) {
+        for (final Observer observer : mObservers) {
             observer.onContentSensitivityChanged(contentIsSensitive);
         }
     }

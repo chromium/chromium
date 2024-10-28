@@ -30,7 +30,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SensitiveContentClientUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
     private ViewAndroidDelegate mViewAndroidDelegate;
@@ -62,7 +62,7 @@ public class SensitiveContentClientUnitTest {
     }
 
     @Test
-    public void sensitiveContent_updateContentSensitivity() {
+    public void updateContentSensitivity() {
         mClient.setContentSensitivity(/* contentIsSensitive= */ true);
         verify(mContentSensitivitySetter).setContentSensitivity(mFirstContainerView, true);
         mClient.setContentSensitivity(/* contentIsSensitive= */ false);
@@ -70,13 +70,13 @@ public class SensitiveContentClientUnitTest {
     }
 
     @Test
-    public void sensitiveContent_updateContainerView() {
+    public void updateContainerView() {
         mViewAndroidDelegate.setContainerView(mSecondContainerView);
         verify(mContentSensitivitySetter).setContentSensitivity(mSecondContainerView, false);
     }
 
     @Test
-    public void sensitiveContent_updateViewAndroidDelegate() {
+    public void updateViewAndroidDelegate() {
         when(mWebContents.getViewAndroidDelegate())
                 .thenAnswer(
                         invocation -> {
@@ -95,7 +95,7 @@ public class SensitiveContentClientUnitTest {
     }
 
     @Test
-    public void sensitiveContent_observersNotifiedOnSensitivityChange() {
+    public void observersNotifiedOnSensitivityChange() {
         mClient.setContentSensitivity(/* contentIsSensitive= */ true);
         verify(mObserver).onContentSensitivityChanged(true);
         mClient.setContentSensitivity(/* contentIsSensitive= */ false);
