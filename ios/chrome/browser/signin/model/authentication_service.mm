@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/system_identity_util.h"
 
 namespace {
 
@@ -289,18 +290,8 @@ bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
 
 id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
-  // There is no authenticated identity if there is no signed in user or if the
-  // user signed in via the client login flow.
-  if (!identity_manager_->HasPrimaryAccount(consent_level)) {
-    return nil;
-  }
-
-  std::string authenticated_gaia_id =
-      identity_manager_->GetPrimaryAccountInfo(consent_level).gaia;
-  if (authenticated_gaia_id.empty())
-    return nil;
-
-  return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
+  return GetPrimarySystemIdentity(consent_level, identity_manager_,
+                                  account_manager_service_);
 }
 
 void AuthenticationService::SignIn(id<SystemIdentity> identity,

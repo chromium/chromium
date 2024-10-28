@@ -65,6 +65,7 @@ source_set("model") {
     ":capabilities_types",
     ":system_identity",
     ":system_identity_manager",
+    ":system_identity_util",
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
@@ -123,6 +124,8 @@ source_set("model") {
     ":constants",
     ":signin_util",
   ]
+
+  allow_circular_includes_from = [ ":system_identity_util" ]
 }
 
 # This target is currently empty, but will eventually become a souce_set().
@@ -198,6 +201,18 @@ source_set("signin_util_internal") {
 source_set("system_identity") {
   sources = [ "system_identity.h" ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("system_identity_util") {
+  sources = [
+    "system_identity_util.h",
+    "system_identity_util.mm",
+  ]
+  deps = [
+    ":system_identity",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+  ]
 }
 
 source_set("system_identity_manager") {
