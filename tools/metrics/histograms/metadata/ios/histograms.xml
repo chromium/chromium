@@ -5055,18 +5055,6 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.Variations.CreateTrials.SeedExpiry"
-    enum="VariationsSeedExpiry" expires_after="2024-10-06">
-  <owner>ginnyhuang@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records the state of the variations seed stored from a previous launch of
-    Chrome iOS, e.g. not expired. Recorded after the seed is loaded and before
-    trials are created from the seed. Note that seeds for which this metric is
-    recorded may not be applied, e.g. when the seed has expired.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Variations.FirstRun.SeedApplicationStage"
     enum="VariationsFirstRunSeedApplicationStage" expires_after="2025-03-30">
   <owner>ginnyhuang@chromium.org</owner>
