@@ -94,6 +94,12 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     kCollapsedSummaryView,
     kAppIconViewContainer,
     kLargeImageView,
+    kMainView,
+    kIconView,
+    kInlineSettingsRow,
+    kExpandButton,
+    kLeftContent,
+    kImageContainerView,
   };
 
   NotificationViewBase(const NotificationViewBase&) = delete;

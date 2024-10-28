@@ -314,6 +314,7 @@ views::Builder<views::BoxLayoutView>
 NotificationViewBase::CreateLeftContentBuilder() {
   DCHECK(!left_content_);
   return views::Builder<views::BoxLayoutView>()
+      .SetID(ViewId::kLeftContent)
       .CopyAddressTo(&left_content_)
       .SetOrientation(views::BoxLayout::Orientation::kVertical);
 }
@@ -336,6 +337,7 @@ views::Builder<views::BoxLayoutView>
 NotificationViewBase::CreateInlineSettingsBuilder() {
   DCHECK(!settings_row_);
   return views::Builder<views::BoxLayoutView>()
+      .SetID(ViewId::kInlineSettingsRow)
       .CopyAddressTo(&settings_row_)
       .SetVisible(false);
 }
@@ -352,6 +354,7 @@ views::Builder<views::View>
 NotificationViewBase::CreateImageContainerBuilder() {
   DCHECK(!image_container_view_);
   return views::Builder<views::View>()
+      .SetID(ViewId::kImageContainerView)
       .CopyAddressTo(&image_container_view_)
       .SetUseDefaultFillLayout(true);
 }
@@ -582,6 +585,7 @@ void NotificationViewBase::CreateOrUpdateIconView(
   if (!icon_view_) {
     icon_view_ = right_content_->AddChildView(
         std::make_unique<ProportionalImageView>(GetIconViewSize()));
+    icon_view_->SetID(ViewId::kIconView);
   }
 
   bool apply_rounded_corners = false;
