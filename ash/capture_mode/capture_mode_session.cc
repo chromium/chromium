@@ -1446,7 +1446,7 @@ void CaptureModeSession::AddActionButton(
 
   // Add the new action button to the vector so it can also be sorted.
   action_buttons.push_back(std::make_unique<ActionButtonView>(
-      std::move(callback), text, &kCaptureModeImageIcon, rank));
+      std::move(callback), text, icon, rank));
 
   // Sort the buttons by rank.
   auto rank_sort = [](const std::unique_ptr<ActionButtonView>& lhs,
