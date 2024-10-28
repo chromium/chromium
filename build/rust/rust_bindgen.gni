@@ -78,14 +78,14 @@ template("rust_bindgen") {
                                  "output_name",
                                ] + TESTONLY_AND_VISIBILITY)
 
-    # This will allow the rust_static_library to depend on the `rust_bindgen_generator`
-    # through visibility.
+    # This will allow the rust_static_library to depend on the
+    # `rust_bindgen_generator` through visibility.
     library_name = target_name
 
-    # We know the library that is going to consume this rust_bindgen and we're sure
-    # that only a single bindgen is there. So rename the bindings to avoid passing
-    # envflags.
-    # envflags are usually problematic for Cronet as Soong does not support it (b/181221467).
+    # We know the library that is going to consume this rust_bindgen and we're
+    # sure that only a single bindgen is there. So rename the bindings to avoid
+    # passing envflags. envflags are usually problematic for Cronet as Soong
+    # does not support it (b/181221467).
     output_name = "bindings"
   }
 
