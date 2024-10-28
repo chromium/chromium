@@ -649,6 +649,12 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuppressReason suppress_reason);
 
+  // Triggered when the user undoes the filling of an address profile using an
+  // email override.
+  void OnEmailOverrideUndone(const std::u16string& original_email,
+                             const FormGlobalId& form_id,
+                             const FieldGlobalId& field_id);
+
   // The function receives a the list of `suggestions` from
   // `GenerateSuggestionsAndMaybeShowUIPhase2` and displays them if
   // `show_suggestions` is true (via the `external_delegate_`). It also logs

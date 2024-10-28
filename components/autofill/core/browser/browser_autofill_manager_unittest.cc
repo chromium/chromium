@@ -559,6 +559,10 @@ class MockAutofillClient : public TestAutofillClient {
               GetAutofillPredictionImprovementsDelegate,
               (),
               (override));
+  MOCK_METHOD(void,
+              ShowPlusAddressEmailOverrideNotification,
+              (const std::string&, AutofillClient::EmailOverrideUndoCallback),
+              (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -8506,6 +8510,136 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                                        u"plus+remote@plus.plus")),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
+// Tests that an address suggestion with an email override is filled when
+// selected. In addition, if the undo operation is called, the original profile
+// without the email override is filled.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       FillsEmailOverrideAndShowsUserNotification) {
+  // Set up gaia email.
+  const std::string gaia_email = "theking@gmail.com";
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      gaia_email, signin::ConsentLevel::kSignin);
+
+  // Set up profile.
+  personal_data().test_address_data_manager().ClearProfiles();
+  AutofillProfile profile =
+      FillDataToAutofillProfile(GetElvisAddressFillData());
+  profile.set_guid(kElvisProfileGuid);
+  personal_data().address_data_manager().AddProfile(profile);
+
+  // Plus address suggestions request.
+  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
+  const std::vector<std::string> plus_addresses = {kDummyPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
+      .WillOnce(RunOnceCallback<1>(plus_addresses));
+  ON_CALL(plus_address_delegate(), IsPlusAddress)
+      .WillByDefault([&](const std::string& address) {
+        return address == kDummyPlusAddress;
+      });
+
+  // Set up form.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+
+  browser_autofill_manager_->AddSeenForm(
+      form, {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS});
+
+  std::vector<FieldGlobalId> global_ids;
+  for (const auto& field : form.fields()) {
+    global_ids.push_back(field.global_id());
+  }
+
+  AutofillClient::EmailOverrideUndoCallback undo_callback;
+  {
+    InSequence s;
+    EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+        .WillOnce(Return(global_ids));
+    EXPECT_CALL(autofill_client_,
+                ShowPlusAddressEmailOverrideNotification(gaia_email, _))
+        .WillOnce(MoveArg<1>(&undo_callback));
+    EXPECT_CALL(
+        autofill_client_,
+        HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+    EXPECT_CALL(*autofill_driver_,
+                ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                                 mojom::ActionPersistence::kFill, global_ids[2],
+                                 base::UTF8ToUTF16(gaia_email)));
+  }
+
+  GetAutofillSuggestions(form, form.fields()[2]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  // Select an option to trigger Autofill. This should trigger a call to hide
+  // the popup since we've selected an option.
+  external_delegate()->DidAcceptSuggestion(
+      external_delegate()->suggestions().front(), {});
+
+  // Call the undo operation.
+  ASSERT_TRUE(undo_callback);
+  std::move(undo_callback).Run();
+}
+
+// Tests that when an address suggestion with an email override is filled, a
+// user notification is not shown if an email field was never filled.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       FillsEmailOverrideNoNotificationIfNoEmailIsFilled) {
+  // Set up gaia email.
+  const std::string gaia_email = "theking@gmail.com";
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      gaia_email, signin::ConsentLevel::kSignin);
+
+  // Set up profile.
+  personal_data().test_address_data_manager().ClearProfiles();
+  AutofillProfile profile =
+      FillDataToAutofillProfile(GetElvisAddressFillData());
+  profile.set_guid(kElvisProfileGuid);
+  personal_data().address_data_manager().AddProfile(profile);
+
+  // Plus address suggestions request.
+  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
+  const std::vector<std::string> plus_addresses = {kDummyPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
+      .WillOnce(RunOnceCallback<1>(plus_addresses));
+  ON_CALL(plus_address_delegate(), IsPlusAddress)
+      .WillByDefault([&](const std::string& address) {
+        return address == kDummyPlusAddress;
+      });
+
+  // Set up form.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = ADDRESS_HOME_CITY}}});
+
+  browser_autofill_manager_->AddSeenForm(
+      form, {NAME_FIRST, NAME_LAST, ADDRESS_HOME_CITY});
+
+  std::vector<FieldGlobalId> global_ids;
+  for (const auto& field : form.fields()) {
+    global_ids.push_back(field.global_id());
+  }
+
+  AutofillClient::EmailOverrideUndoCallback undo_callback;
+  {
+    InSequence s;
+    EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+        .WillOnce(Return(global_ids));
+    EXPECT_CALL(autofill_client_, ShowPlusAddressEmailOverrideNotification)
+        .Times(0);
+    EXPECT_CALL(
+        autofill_client_,
+        HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+  }
+
+  GetAutofillSuggestions(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  // Select an option to trigger Autofill. This should trigger a call to hide
+  // the popup since we've selected an option.
+  external_delegate()->DidAcceptSuggestion(
+      external_delegate()->suggestions().front(), {});
 }
 
 }  // namespace autofill

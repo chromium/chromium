@@ -717,6 +717,40 @@ bool WasEmailOverrideAppliedOnSuggestions(
       });
 }
 
+// Lookup an email field from the list of filled fields. Returns `nullptr` if
+// not found.
+const FormFieldData* FindEmailField(
+    const FormStructure& form_structure,
+    base::span<const FormFieldData*> safe_filled_fields,
+    base::span<const AutofillField*> cached_autofill_fields) {
+  const auto IsEmailField =
+      [&form_structure](const autofill::FormFieldData* field) {
+        const AutofillField* autofill_field =
+            form_structure.GetFieldById(field->global_id());
+        return autofill_field &&
+               autofill_field->Type().GetStorableType() == EMAIL_ADDRESS;
+      };
+
+  // TODO(crbug.com/40227496): Remove branch once `kAutofillFixValueSemantics`
+  // launches.
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillFixValueSemantics)) {
+    if (auto email_field_it =
+            base::ranges::find_if(safe_filled_fields, IsEmailField);
+        email_field_it != safe_filled_fields.end()) {
+      return *email_field_it;
+    }
+  } else {
+    if (auto email_field_it =
+            base::ranges::find_if(cached_autofill_fields, IsEmailField);
+        email_field_it != cached_autofill_fields.end()) {
+      return *email_field_it;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -2063,6 +2097,8 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
                              &autofill_field)) {
     return;
   }
+  // TODO(crbug.com/324557053): Trigger email override notification for single
+  // field filling.
   metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
       profile, *form_structure, *autofill_field, trigger_source);
 }
@@ -2778,35 +2814,89 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           .RecordUseOfCard(
               absl::get<const CreditCard*>(profile_or_credit_card));
     }
-  } else {
-    CHECK(absl::holds_alternative<const AutofillProfile*>(
-        profile_or_credit_card));
-    const AutofillProfile* profile =
-        absl::get<const AutofillProfile*>(profile_or_credit_card);
-    if (!trigger_autofill_field
-             .ShouldSuppressSuggestionsAndFillingByDefault()) {
-      if (is_refill) {
-        metrics_->address_form_event_logger.OnDidRefill(form_structure);
-      } else {
-        metrics_->address_form_event_logger.RecordFillingOperation(
-            form_structure.global_id(), safe_filled_fields,
-            safe_filled_autofill_fields);
-        metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
-            *profile, form_structure, trigger_autofill_field,
-            trigger_details.trigger_source);
-      }
-    } else if (!is_refill) {
+    return;
+  }
+  const AutofillProfile* filled_profile = CHECK_DEREF(
+      absl::get_if<const AutofillProfile*>(&profile_or_credit_card));
+  if (!trigger_autofill_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
+    if (is_refill) {
+      metrics_->address_form_event_logger.OnDidRefill(form_structure);
+    } else {
       metrics_->address_form_event_logger.RecordFillingOperation(
           form_structure.global_id(), safe_filled_fields,
           safe_filled_autofill_fields);
-      metrics_->autocomplete_unrecognized_fallback_logger
-          .OnDidFillFormFillingSuggestion();
+      metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
+          *filled_profile, form_structure, trigger_autofill_field,
+          trigger_details.trigger_source);
     }
-    if (!is_refill) {
-      client().GetPersonalDataManager()->address_data_manager().RecordUseOf(
-          *profile);
+  } else if (!is_refill) {
+    metrics_->address_form_event_logger.RecordFillingOperation(
+        form_structure.global_id(), safe_filled_fields,
+        safe_filled_autofill_fields);
+    metrics_->autocomplete_unrecognized_fallback_logger
+        .OnDidFillFormFillingSuggestion();
+  }
+  if (!is_refill) {
+    client().GetPersonalDataManager()->address_data_manager().RecordUseOf(
+        *filled_profile);
+  }
+
+  const AutofillProfile* original_profile =
+      client()
+          .GetPersonalDataManager()
+          ->address_data_manager()
+          .GetProfileByGUID(filled_profile->guid());
+
+  if (!original_profile) {
+    return;
+  }
+
+  // Look for the email field in the list of filled fields.
+  if (const FormFieldData* email_field = FindEmailField(
+          form_structure, safe_filled_fields, safe_filled_autofill_fields)) {
+    const std::u16string original_email =
+        original_profile->GetRawInfo(EMAIL_ADDRESS);
+    // Note that the filled `profile` could have been updated with a plus
+    // address email override.
+    const std::u16string potential_email_override =
+        filled_profile->GetRawInfo(EMAIL_ADDRESS);
+    // If the user has selected a plus address email override, show a
+    // notification.
+    if (client().GetPlusAddressDelegate() &&
+        client().GetPlusAddressDelegate()->IsPlusAddress(
+            base::UTF16ToUTF8(potential_email_override)) &&
+        original_email != potential_email_override) {
+      client().ShowPlusAddressEmailOverrideNotification(
+          base::UTF16ToUTF8(original_email),
+          base::BindOnce(&BrowserAutofillManager::OnEmailOverrideUndone,
+                         weak_ptr_factory_.GetWeakPtr(), original_email,
+                         form_structure.global_id(), email_field->global_id()));
     }
   }
+}
+
+void BrowserAutofillManager::OnEmailOverrideUndone(
+    const std::u16string& original_email,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
+                             &autofill_field)) {
+    return;
+  }
+
+  if (autofill_field->Type().GetStorableType() != EMAIL_ADDRESS) {
+    return;
+  }
+
+  // Fill the address profile's original email.
+  form_filler_->FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      *autofill_field, autofill_field, original_email, FillingProduct::kAddress,
+      EMAIL_ADDRESS);
+
+  // TODO(crbug.com/324557053): Add metrics.
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
