@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
+#include "content/common/service_worker/race_network_request_simple_buffer_manager.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -221,6 +222,11 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   void SetFetchHandlerEndTiming(base::TimeTicks fetch_handler_end_time,
                                 bool is_fallback);
 
+  void CloneResponse();
+  void CloneResponseForFetchHandler();
+  void OnCloneCompleted();
+  void OnCloneCompletedForFetchHandler();
+
   State state_ = State::kWaitForBody;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const network::ResourceRequest request_;
@@ -231,6 +237,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   std::optional<mojo_base::BigBuffer> cached_metadata_;
 
   std::optional<RaceNetworkRequestReadBufferManager> read_buffer_manager_;
+  std::optional<RaceNetworkRequestSimpleBufferManager> simple_buffer_manager_;
   RaceNetworkRequestWriteBufferManager
       write_buffer_manager_for_race_network_request_;
   RaceNetworkRequestWriteBufferManager write_buffer_manager_for_fetch_handler_;

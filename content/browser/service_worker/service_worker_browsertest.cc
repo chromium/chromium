@@ -5087,7 +5087,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
 // Browser test for the Static Routing API's `race-network-and-fetch-handler`
 // source.
 class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
-    : public ServiceWorkerBrowserTest {
+    : public ServiceWorkerBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   static constexpr char kSwScriptUrl[] =
       "/service_worker/static_router_race_match_all.js";
@@ -5095,6 +5096,12 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
   ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest()
       : https_server_(std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)) {
+    if (IsRaceNetworkRequestPerformanceImprovementEnabled()) {
+      feature_list_.InitWithFeatures(
+          {{features::
+                kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement}},
+          {});
+    }
     RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
         1024);
   }
@@ -5157,6 +5164,10 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
     StartServerAndNavigateToSetup();
     return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server(),
                                                    script_url);
+  }
+
+  bool IsRaceNetworkRequestPerformanceImprovementEnabled() {
+    return std::get<0>(GetParam());
   }
 
  private:
@@ -5269,7 +5280,12 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5311,7 +5327,7 @@ IN_PROC_BROWSER_TEST_F(
           network::mojom::ServiceWorkerRouterSourceType::kNetwork));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5354,11 +5370,18 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
+
+  // TODO(crbug.com/374606637): Speculative fix for the test flakiness. It looks
+  // the serviceworker.controller is sometimes lost and that causes the test
+  // failure. Explicitly reload and check if that the page is controlled.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
 
   // The network request wins, fetch() will be executed with some delay.
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
@@ -5387,7 +5410,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_MarkedAsSecure) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5412,7 +5435,7 @@ IN_PROC_BROWSER_TEST_F(
   CheckPageIsMarkedSecure(shell(), https_server()->GetCertificate());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_MimeTypeSniffed) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5446,7 +5469,7 @@ IN_PROC_BROWSER_TEST_F(
             GetInnerText());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_Fetch_No_Respond) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5464,7 +5487,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/40074498) Add tests for
 // kURLLoadOptionSendSSLInfoForCertificateError
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_NotFound_FetchHandler_Respond) {
   SetupAndRegisterServiceWorker();
@@ -5482,7 +5505,7 @@ IN_PROC_BROWSER_TEST_F(
             GetInnerText());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_NotFound_FetchHandler_NotRespond) {
   SetupAndRegisterServiceWorker();
@@ -5504,7 +5527,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_NetworkRequest_Wins_FetchHandler_Fallback \
   NetworkRequest_Wins_FetchHandler_Fallback
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_NetworkRequest_Wins_FetchHandler_Fallback) {
   // If RaceNetworkRequest comes first, there is a network error, and the fetch
@@ -5529,7 +5552,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
   SetupAndRegisterServiceWorker();
@@ -5544,7 +5567,7 @@ IN_PROC_BROWSER_TEST_F(
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     NetworkRequest_Wins_Post) {
   SetupAndRegisterServiceWorker();
@@ -5571,7 +5594,7 @@ IN_PROC_BROWSER_TEST_F(
 #else
 #define MAYBE_NetworkRequest_Wins_Redirect NetworkRequest_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
@@ -5601,7 +5624,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_NetworkRequest_Wins_Redirect_PassThrough \
   NetworkRequest_Wins_Redirect_PassThrough
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_NetworkRequest_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
@@ -5624,7 +5647,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
@@ -5664,7 +5687,7 @@ IN_PROC_BROWSER_TEST_F(
           network::mojom::ServiceWorkerRouterSourceType::kFetchEvent));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
@@ -5687,7 +5710,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(NavigateToURL(shell(), slow_url));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     FetchHandler_Wins_NotFound) {
   SetupAndRegisterServiceWorker();
@@ -5706,7 +5729,7 @@ IN_PROC_BROWSER_TEST_F(
 #else
 #define MAYBE_FetchHandler_Wins_Redirect FetchHandler_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
@@ -5733,7 +5756,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_FetchHandler_Wins_Redirect_PassThrough \
   FetchHandler_Wins_Redirect_PassThrough
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_FetchHandler_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
@@ -5756,7 +5779,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     FetchHandler_PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5787,7 +5810,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     FetchHandler_PassThrough_Clone) {
   // Register the ServiceWorker and navigate to the in scope URL.
@@ -5823,7 +5846,7 @@ IN_PROC_BROWSER_TEST_F(
 #else
 #define MAYBE_Subresource_NetworkRequest_Wins Subresource_NetworkRequest_Wins
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_NetworkRequest_Wins) {
   SetupAndRegisterServiceWorker();
@@ -5838,7 +5861,7 @@ IN_PROC_BROWSER_TEST_F(
              "=> response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_Fetch_No_Respond) {
   SetupAndRegisterServiceWorker();
@@ -5852,7 +5875,7 @@ IN_PROC_BROWSER_TEST_F(
              "=> response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_NotFound) {
   SetupAndRegisterServiceWorker();
@@ -5875,7 +5898,7 @@ IN_PROC_BROWSER_TEST_F(
                         "server_notfound').then(response => response.status)"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
   SetupAndRegisterServiceWorker();
@@ -5888,7 +5911,7 @@ IN_PROC_BROWSER_TEST_F(
                    "response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_FetchHandler_Fallback_LargeData) {
   SetupAndRegisterServiceWorker();
@@ -5899,7 +5922,7 @@ IN_PROC_BROWSER_TEST_F(
                    "response.headers.get('X-Response-From'))"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_FetchHandler_Fallback_Redirect) {
   SetupAndRegisterServiceWorker();
@@ -5925,7 +5948,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_NetworkRequest_Wins_Post) {
   SetupAndRegisterServiceWorker();
@@ -5945,7 +5968,7 @@ IN_PROC_BROWSER_TEST_F(
             EvalJs(GetPrimaryMainFrame(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_Redirect_Multiple) {
   SetupAndRegisterServiceWorker();
@@ -5977,7 +6000,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
   Subresource_NetworkRequest_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
@@ -6006,7 +6029,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough \
   Subresource_NetworkRequest_Wins_Redirect_PassThrough
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
@@ -6030,7 +6053,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
@@ -6046,7 +6069,7 @@ IN_PROC_BROWSER_TEST_F(
                    "response.text())"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
@@ -6072,7 +6095,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(ExecJs(GetPrimaryMainFrame(), "fetch('" + relative_url + "')"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_FetchHandler_Wins_Fallback_Redirect) {
   SetupAndRegisterServiceWorker();
@@ -6097,7 +6120,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_FetchHandler_Wins_NotFound) {
   SetupAndRegisterServiceWorker();
@@ -6122,7 +6145,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect \
   Subresource_FetchHandler_Wins_Redirect
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
@@ -6151,7 +6174,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough \
   Subresource_FetchHandler_Wins_Redirect_PassThrough
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
@@ -6176,7 +6199,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
     Subresource_FetchHandler_PassThrough) {
   SetupAndRegisterServiceWorker();
@@ -6223,7 +6246,11 @@ class ServiceWorkerAutoPreloadBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerAutoPreloadBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6256,7 +6283,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   // Capture the response head.
@@ -6280,7 +6307,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        PassThrough_LargeData) {
   SetupAndRegisterServiceWorker();
   const std::string relative_url =
@@ -6305,7 +6332,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        NetworkRequest_Wins_FetchHandler_Fallback) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6327,7 +6354,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        FetchHandler_Wins_Fallback) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6348,7 +6375,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadBrowserTest,
     Subresource_NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
   SetupAndRegisterServiceWorker();
@@ -6371,7 +6398,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_PassThrough) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6392,7 +6419,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_PassThrough_LargeData) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6412,7 +6439,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6430,7 +6457,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        Subresource_FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6478,7 +6505,11 @@ class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
                        BlockedHosts) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6517,7 +6548,12 @@ class ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
     Disabled) {
   SetupAndRegisterServiceWorker();
@@ -6574,7 +6610,12 @@ class ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
     NotRunning) {
   // Ensure the ServiceWorker is stopped.
@@ -6601,7 +6642,7 @@ IN_PROC_BROWSER_TEST_F(
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
     Running) {
   // Ensure the ServiceWorker is running.
@@ -6627,8 +6668,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class ServiceWorkerAutoPreloadAllowListBrowserTest
-    : public ServiceWorkerAutoPreloadBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public ServiceWorkerAutoPreloadBrowserTest {
  public:
   ServiceWorkerAutoPreloadAllowListBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
@@ -6647,7 +6687,7 @@ class ServiceWorkerAutoPreloadAllowListBrowserTest
   }
 
  protected:
-  bool ShouldUseValidChecksum() { return GetParam(); }
+  bool ShouldUseValidChecksum() { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -6658,7 +6698,7 @@ class ServiceWorkerAutoPreloadAllowListBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(ALL,
                          ServiceWorkerAutoPreloadAllowListBrowserTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadAllowListBrowserTest,
                        EnableAutoPreloadIfScriptIsAllowed) {
@@ -6696,7 +6736,11 @@ class ServiceWorkerAutoPreloadOptOutBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadOptOutBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadOptOutBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadOptOutBrowserTest,
                        MainResourceFetchHandlerShouldNotRace) {
   SetupAndRegisterServiceWorker();
   const std::string relative_url = "/service_worker/no_race?sw_slow&sw_respond";
@@ -6723,7 +6767,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadOptOutBrowserTest,
   EXPECT_EQ(0, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadOptOutBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadOptOutBrowserTest,
                        SubresourceFetchHandlerShouldNotRace) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());

@@ -60,6 +60,11 @@ uint32_t RaceNetworkRequestWriteBufferManager::GetDataPipeCapacityBytes() {
           network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
 }
 
+mojo::ScopedDataPipeProducerHandle
+RaceNetworkRequestWriteBufferManager::ReleaseProducerHandle() {
+  return std::move(producer_);
+}
+
 mojo::ScopedDataPipeConsumerHandle
 RaceNetworkRequestWriteBufferManager::ReleaseConsumerHandle() {
   return std::move(consumer_);
