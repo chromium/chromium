@@ -195,14 +195,12 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
 
   // Triggered from a tab and not an app window.
   EXPECT_FALSE(redirection_info.app_id_source_browser().has_value());
-  EXPECT_EQ(NavigationHandlingInitialResult::kNavigateCaptured,
+  EXPECT_EQ(NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow,
             redirection_info.initial_nav_handling_result());
   EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
             redirection_info.disposition());
   EXPECT_TRUE(redirection_info.first_navigation_app_id().has_value());
   EXPECT_EQ(app_id, *redirection_info.first_navigation_app_id());
-  EXPECT_EQ(InitialNavigationCapturedBehavior::kNavigatedNew,
-            redirection_info.effective_launch_handling_mode());
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(
@@ -231,14 +229,12 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
 
   // Triggered from a tab and not an app window.
   EXPECT_FALSE(redirection_info.app_id_source_browser().has_value());
-  EXPECT_EQ(NavigationHandlingInitialResult::kNavigateCaptured,
+  EXPECT_EQ(NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow,
             redirection_info.initial_nav_handling_result());
   EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
             redirection_info.disposition());
   EXPECT_TRUE(redirection_info.first_navigation_app_id().has_value());
   EXPECT_EQ(app_id, *redirection_info.first_navigation_app_id());
-  EXPECT_EQ(InitialNavigationCapturedBehavior::kNavigatedNew,
-            redirection_info.effective_launch_handling_mode());
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(
@@ -295,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   // Navigation capturing only extends to left clicks creating a capturable
   // experience, and does not extend to user modified clicks like shift and
   // middle clicks.
-  EXPECT_EQ(NavigationHandlingInitialResult::kForcedNewAppContext,
+  EXPECT_EQ(NavigationHandlingInitialResult::kForcedNewAppContextAppWindow,
             redirection_info.initial_nav_handling_result());
   EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW, redirection_info.disposition());
   ASSERT_TRUE(redirection_info.first_navigation_app_id().has_value());
@@ -326,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   // Triggered from an app window for app_id.
   ASSERT_TRUE(redirection_info.app_id_source_browser().has_value());
   EXPECT_EQ(app_id, redirection_info.app_id_source_browser().value());
-  EXPECT_EQ(NavigationHandlingInitialResult::kForcedNewAppContext,
+  EXPECT_EQ(NavigationHandlingInitialResult::kForcedNewAppContextAppWindow,
             redirection_info.initial_nav_handling_result());
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
             redirection_info.disposition());

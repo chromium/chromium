@@ -83,6 +83,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
@@ -253,8 +254,11 @@ bool ShouldEnqueueNavigationHandlingInfoForRedirects(
     const NavigationHandlingInitialResult initial_result) {
   switch (initial_result) {
     case NavigationHandlingInitialResult::kBrowserTab:
-    case NavigationHandlingInitialResult::kNavigateCaptured:
-    case NavigationHandlingInitialResult::kForcedNewAppContext:
+    case NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab:
+    case NavigationHandlingInitialResult::kForcedNewAppContextAppWindow:
+    case NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab:
+    case NavigationHandlingInitialResult::kNavigateCapturingNavigateExisting:
+    case NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow:
     // To prevent the 'v1' throttle from enabling, still attach the navigation
     // handling info for aux contexts.
     case NavigationHandlingInitialResult::kAuxContext:
@@ -288,10 +292,28 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
 bool IsNavigationCapturingReimplExperimentEnabled(
     const std::optional<webapps::AppId>& current_browser_app_id,
     const GURL& url,
-    const std::optional<webapps::AppId>& controlling_app_id) {
+    const std::optional<webapps::AppId>& controlling_app_id,
+    const std::optional<blink::mojom::DisplayMode>& display_mode) {
   // Enabling the generic flag turns it on for all navigations.
   if (apps::features::IsNavigationCapturingReimplEnabled()) {
     return true;
+  }
+  if (display_mode.has_value()) {
+    // Explicitly disable link capturing on display modes that aren't supported.
+    // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+    switch (*display_mode) {
+      case blink::mojom::DisplayMode::kUndefined:
+      case blink::mojom::DisplayMode::kTabbed:
+      case blink::mojom::DisplayMode::kPictureInPicture:
+        return false;
+      case blink::mojom::DisplayMode::kBrowser:
+      case blink::mojom::DisplayMode::kFullscreen:
+      case blink::mojom::DisplayMode::kMinimalUi:
+      case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      case blink::mojom::DisplayMode::kBorderless:
+      case blink::mojom::DisplayMode::kStandalone:
+        break;
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -359,6 +381,7 @@ AppNavigationResult AppNavigationResult::AuxiliaryContextInAppWindow(
     WindowOpenDisposition disposition,
     Browser* app_browser,
     base::Value::Dict debug_data) {
+  CHECK(app_browser->app_controller());
   return AppNavigationResult(
       /*capturing_feature_enabled=*/true,
       /*browser_tab_override=*/{{app_browser, -1}},
@@ -388,17 +411,21 @@ AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
 AppNavigationResult AppNavigationResult::ForcedNewAppContext(
     std::optional<webapps::AppId> source_browser_app_id,
     const webapps::AppId capturing_app_id,
-    Browser* app_browser,
+    blink::mojom::DisplayMode new_client_display_mode,
+    Browser* host_browser,
     WindowOpenDisposition disposition,
     base::Value::Dict debug_data) {
+  CHECK((new_client_display_mode != blink::mojom::DisplayMode::kBrowser) ==
+        (!!host_browser->app_controller()));
   CHECK(disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
         disposition == WindowOpenDisposition::NEW_WINDOW);
   return AppNavigationResult(
       /*capturing_feature_enabled=*/true,
-      /*browser_tab_override=*/{{app_browser, -1}},
+      /*browser_tab_override=*/{{host_browser, -1}},
       /*perform_app_handling_tasks_in_web_contents=*/true,
       NavigationCapturingRedirectionInfo::ForcedNewContext(
-          source_browser_app_id, capturing_app_id, disposition),
+          source_browser_app_id, capturing_app_id, new_client_display_mode,
+          disposition),
       std::move(debug_data));
 }
 
@@ -406,16 +433,20 @@ AppNavigationResult AppNavigationResult::ForcedNewAppContext(
 AppNavigationResult AppNavigationResult::CapturedNewClient(
     std::optional<webapps::AppId> source_browser_app_id,
     const webapps::AppId capturing_app_id,
-    Browser* app_browser,
+    blink::mojom::DisplayMode new_client_display_mode,
+    Browser* host_browser,
     WindowOpenDisposition disposition,
     base::Value::Dict debug_data) {
+  CHECK((new_client_display_mode != blink::mojom::DisplayMode::kBrowser) ==
+        (!!host_browser->app_controller()));
   CHECK(disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB);
   return AppNavigationResult(
       /*capturing_feature_enabled=*/true,
-      /*browser_tab_override=*/{{app_browser, -1}},
+      /*browser_tab_override=*/{{host_browser, -1}},
       /*perform_app_handling_tasks_in_web_contents=*/true,
       NavigationCapturingRedirectionInfo::CapturedNewContext(
-          source_browser_app_id, capturing_app_id, disposition),
+          source_browser_app_id, capturing_app_id, new_client_display_mode,
+          disposition),
       std::move(debug_data));
 }
 
@@ -453,7 +484,23 @@ AppNavigationResult::AppNavigationResult(
       perform_app_handling_tasks_in_web_contents_(
           perform_app_handling_tasks_in_web_contents),
       redirection_info_(redirection_info),
-      debug_value_(std::move(debug_value)) {}
+      debug_value_(std::move(debug_value)) {
+  debug_value_.Set("redirection_info", redirection_info_.ToDebugData());
+  debug_value_.Set(
+      "result",
+      base::Value::Dict()
+          .Set("capturing_feature_enabled", capturing_feature_enabled_)
+          .Set("browser_tab_override",
+               browser_tab_override_.has_value()
+                   ? base::Value(
+                         base::Value::Dict()
+                             .Set("browser", base::ToString(std::get<Browser*>(
+                                                 *browser_tab_override_)))
+                             .Set("tab", std::get<int>(*browser_tab_override_)))
+                   : base::Value("<none>"))
+          .Set("perform_app_handling_tasks_in_web_contents",
+               perform_app_handling_tasks_in_web_contents_));
+}
 
 base::Value::Dict AppNavigationResult::TakeDebugData() {
   return std::move(debug_value_);
@@ -580,11 +627,12 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
   }
 }
 
-bool MaybeHandleFocusExistingOrNavigateExisting(Profile* profile,
-                                                const GURL& launch_url,
-                                                content::WebContents* contents,
-                                                const webapps::AppId& app_id,
-                                                WebAppRegistrar& registrar) {
+bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
+    Profile* profile,
+    const GURL& launch_url,
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    WebAppRegistrar& registrar) {
   LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
                                               ->launch_handler()
                                               .value_or(LaunchHandler())
@@ -595,14 +643,13 @@ bool MaybeHandleFocusExistingOrNavigateExisting(Profile* profile,
   }
 
   blink::mojom::DisplayMode display_mode =
-      registrar.GetEffectiveDisplayModeFromManifest(app_id);
+      registrar.GetAppEffectiveDisplayMode(app_id);
   CHECK(display_mode != blink::mojom::DisplayMode::kBrowser);
   CHECK(display_mode != blink::mojom::DisplayMode::kTabbed);
 
   // Look for a pre-existing app in the background.
   std::optional<std::pair<Browser*, int>> existing_browser_and_tab =
-      GetAppHostForCapturing(*profile, app_id,
-                             mojom::UserDisplayMode::kStandalone);
+      GetAppHostForCapturing(*profile, app_id, display_mode);
   if (!existing_browser_and_tab.has_value()) {
     return false;
   }
@@ -679,15 +726,18 @@ Browser* ReparentWebContentsIntoAppBrowser(
   RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
                       apps::LaunchSource::kFromReparenting, launch_url,
                       contents);
+  blink::mojom::DisplayMode display_mode =
+      registrar.GetAppEffectiveDisplayMode(app_id);
 
   // The current browser, in this situation, is a browser tab, so std::nullopt
   // is appropriate for `current_browser_app_id`.
   if (IsNavigationCapturingReimplExperimentEnabled(
-          /*current_browser_app_id=*/std::nullopt, launch_url, app_id)) {
+          /*current_browser_app_id=*/std::nullopt, launch_url, app_id,
+          display_mode)) {
     // The Intent Picker needs to respect kFocusExisting and kNavigateExisting,
     // by focusing such apps in the background instead of re-parenting the
     // current contents.
-    if (MaybeHandleFocusExistingOrNavigateExisting(
+    if (MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
             profile, launch_url, contents, app_id, registrar)) {
       return nullptr;
     }
@@ -1107,7 +1157,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
 std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,
-    const mojom::UserDisplayMode requested_display_mode) {
+    blink::mojom::DisplayMode requested_display_mode) {
   Browser* first_applicable_browser = nullptr;
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
@@ -1120,7 +1170,9 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
       continue;
     }
     switch (requested_display_mode) {
-      case mojom::UserDisplayMode::kBrowser:
+      case blink::mojom::DisplayMode::kUndefined:
+      case blink::mojom::DisplayMode::kBrowser:
+
         if (!(browser->is_type_normal())) {
           continue;
         }
@@ -1128,14 +1180,23 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
           continue;
         }
         break;
-      case mojom::UserDisplayMode::kStandalone:
-      case mojom::UserDisplayMode::kTabbed:
+      case blink::mojom::DisplayMode::kMinimalUi:
+      case blink::mojom::DisplayMode::kStandalone:
+      case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      case blink::mojom::DisplayMode::kBorderless:
         if (!(browser->is_type_app())) {
           continue;
         }
         if (!AppBrowserController::IsForWebApp(browser, app_id)) {
           continue;
         }
+        break;
+      case blink::mojom::DisplayMode::kTabbed:
+        // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+        NOTREACHED_NORETURN();
+      case blink::mojom::DisplayMode::kFullscreen:
+      case blink::mojom::DisplayMode::kPictureInPicture:
+        NOTREACHED_NORETURN();
     }
     if (!first_applicable_browser) {
       first_applicable_browser = browser;
@@ -1254,16 +1315,12 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
           ? std::optional(params.browser->app_controller()->app_id())
           : std::nullopt;
-  std::optional<DisplayMode> controlling_app_display_mode;
   std::optional<webapps::AppId> controlling_app_id =
       registrar.FindAppThatCapturesLinksInScope(params.url);
-  std::optional<std::pair<Browser*, int>> controlling_app_host_browser_and_tab;
+  std::optional<DisplayMode> controlling_app_display_mode;
   if (controlling_app_id) {
     controlling_app_display_mode =
         registrar.GetAppEffectiveDisplayMode(*controlling_app_id);
-    controlling_app_host_browser_and_tab = GetAppHostForCapturing(
-        *profile, controlling_app_id.value(),
-        *registrar.GetAppUserDisplayMode(*controlling_app_id));
   }
 
   // Only proceed as below if the navigation capturing is enabled. The flag in
@@ -1271,8 +1328,14 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // logic in `OnWebAppNavigationAfterWebContentsCreation()` is skipped when not
   // needed.
   if (!IsNavigationCapturingReimplExperimentEnabled(
-          source_browser_app_id, params.url, controlling_app_id)) {
+          source_browser_app_id, params.url, controlling_app_id,
+          controlling_app_display_mode)) {
     return AppNavigationResult::CapturingDisabled();
+  }
+  std::optional<std::pair<Browser*, int>> controlling_app_host_browser_and_tab;
+  if (controlling_app_id) {
+    controlling_app_host_browser_and_tab = GetAppHostForCapturing(
+        *profile, controlling_app_id.value(), *controlling_app_display_mode);
   }
 
   content::WebContents* source_contents = params.source_contents;
@@ -1356,20 +1419,21 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   }
   CHECK(controlling_app_display_mode);
   const webapps::AppId& app_id = *controlling_app_id;
+  blink::mojom::DisplayMode app_display_mode = *controlling_app_display_mode;
 
   // Case: User-modified clicks.
   if (is_user_modified_click) {
     // The default behavior is only modified if the source is an app browser or
     // the controlling app's display mode is 'browser'.
     if (!source_browser_app_id.has_value() &&
-        controlling_app_display_mode != DisplayMode::kBrowser) {
+        app_display_mode != DisplayMode::kBrowser) {
       return AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
           source_browser_app_id, params.disposition, std::move(debug_data));
     }
     // Case: Shift-clicks with a new top level browsing context.
     if (params.disposition == WindowOpenDisposition::NEW_WINDOW) {
       Browser* app_host_window;
-      if (controlling_app_display_mode == DisplayMode::kBrowser) {
+      if (app_display_mode == DisplayMode::kBrowser) {
         app_host_window = Browser::Create(
             Browser::CreateParams(profile, params.user_gesture));
       } else {
@@ -1377,8 +1441,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
             CreateWebAppWindowFromNavigationParams(app_id, params);
       }
       return AppNavigationResult::ForcedNewAppContext(
-          source_browser_app_id, app_id, app_host_window, params.disposition,
-          std::move(debug_data));
+          source_browser_app_id, app_id, app_display_mode, app_host_window,
+          params.disposition, std::move(debug_data));
     }
 
     bool is_in_source_app_with_url_in_scope =
@@ -1388,7 +1452,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
     // Case: Middle clicks with a new top level browsing context.
     if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-        (controlling_app_display_mode == DisplayMode::kBrowser ||
+        (app_display_mode == DisplayMode::kBrowser ||
          (app_id == source_browser_app_id &&
           is_in_source_app_with_url_in_scope))) {
       if (source_browser_app_id.has_value() &&
@@ -1396,11 +1460,11 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         // Apps that support tabbed mode can open a new tab in the current app
         // browser itself.
         return AppNavigationResult::ForcedNewAppContext(
-            source_browser_app_id, app_id, params.browser, params.disposition,
-            std::move(debug_data));
+            source_browser_app_id, app_id, app_display_mode, params.browser,
+            params.disposition, std::move(debug_data));
       }
       Browser* app_host_window;
-      if (controlling_app_display_mode == DisplayMode::kBrowser) {
+      if (app_display_mode == DisplayMode::kBrowser) {
         // For a 'new tab' with the 'browser' requested display mode, prefer
         // using an existing browser window.
         app_host_window = controlling_app_host_browser_and_tab.has_value()
@@ -1412,8 +1476,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
             CreateWebAppWindowFromNavigationParams(app_id, params);
       }
       return AppNavigationResult::ForcedNewAppContext(
-          source_browser_app_id, app_id, app_host_window, params.disposition,
-          std::move(debug_data));
+          source_browser_app_id, app_id, app_display_mode, app_host_window,
+          params.disposition, std::move(debug_data));
     }
     return AppNavigationResult::NoInitialActionRedirectionHandlingEligible(
         source_browser_app_id, params.disposition, std::move(debug_data));
@@ -1424,8 +1488,6 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   }
   // Case: Left click, non-user-modified. Capturable.
 
-  blink::mojom::DisplayMode app_display_mode =
-      registrar.GetAppEffectiveDisplayMode(app_id);
   // Opening in non-browser-tab requires OS integration. Since os integration
   // cannot be triggered synchronously, treat this as opening in browser.
   if (registrar.GetInstallState(app_id) ==
@@ -1538,9 +1600,9 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       NOTREACHED_NORETURN();
   }
 
-  return AppNavigationResult::CapturedNewClient(source_browser_app_id, app_id,
-                                                host_window, params.disposition,
-                                                std::move(debug_data));
+  return AppNavigationResult::CapturedNewClient(
+      source_browser_app_id, app_id, app_display_mode, host_window,
+      params.disposition, std::move(debug_data));
 }
 
 void EnqueueLaunchParams(content::WebContents* contents,
@@ -1596,12 +1658,6 @@ void OnWebAppNavigationAfterWebContentsCreation(
   std::tuple<Browser*, int> browser_tab_override =
       *app_navigation_result.browser_tab_override();
   debug_value.Set("handled_by_app", true);
-  debug_value.Set("result.browser",
-                  base::ToString(std::get<Browser*>(browser_tab_override)));
-  debug_value.Set("result.tab_index", std::get<int>(browser_tab_override));
-  debug_value.Set(
-      "result.perform_app_handling_tasks_in_web_contents",
-      app_navigation_result.perform_app_handling_tasks_in_web_contents());
   debug_value.Set("params.navigated_or_inserted_contents",
                   base::ToString(params.navigated_or_inserted_contents));
   provider->navigation_capturing_log().StoreNavigationCapturedDebugData(

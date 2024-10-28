@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
 #include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -176,6 +178,10 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::optional<webapps::AppId> target_app_id =
       registrar.FindAppThatCapturesLinksInScope(final_url);
+  std::optional<blink::mojom::DisplayMode> target_display_mode =
+      target_app_id.has_value()
+          ? std::optional(registrar.GetAppEffectiveDisplayMode(*target_app_id))
+          : std::nullopt;
 
   // "Same first navigation state" case:
   // First, we can exit early if the first navigation app id matches the target
@@ -210,7 +216,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
       (link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) ||
       (link_click_disposition == WindowOpenDisposition::NEW_WINDOW);
   if (initial_nav_handling_result ==
-      NavigationHandlingInitialResult::kForcedNewAppContext) {
+      NavigationHandlingInitialResult::kForcedNewAppContextAppWindow) {
     CHECK(redirection_info.app_id_source_browser().has_value());
     // TODO(crbug.com/336371044): This is no longer true due to apps being
     // open-in-browser-tab too for this case. Fix here (or verify this can't
@@ -233,8 +239,14 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // See
   // https://bit.ly/pwa-navigation-capturing?tab=t.0#bookmark=id.ugh0e993wsl8
   // for more information.
-  if (initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kBrowserTab &&
+  // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
+  // redirection.
+  if ((initial_nav_handling_result ==
+           NavigationHandlingInitialResult::kBrowserTab ||
+       initial_nav_handling_result ==
+           NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab ||
+       initial_nav_handling_result ==
+           NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab) &&
       is_user_modified && target_app_id.has_value() &&
       source_app_id.has_value()) {
     if ((link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
@@ -269,18 +281,15 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // triggered via a non user modified.
   std::optional<std::pair<Browser*, int>> existing_app_host = std::nullopt;
   if (target_app_id) {
-    std::optional<mojom::UserDisplayMode> requested_app_user_display_mode =
-        registrar.GetAppUserDisplayMode(target_app_id.value());
-    CHECK(requested_app_user_display_mode.has_value());
-    existing_app_host =
-        GetAppHostForCapturing(profile_.get(), *target_app_id,
-                               requested_app_user_display_mode.value());
+    CHECK(target_display_mode.has_value());
+    existing_app_host = GetAppHostForCapturing(profile_.get(), *target_app_id,
+                                               *target_display_mode);
   }
 
+  // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
+  // redirection.
   if (initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kNavigateCaptured &&
-      redirection_info.effective_launch_handling_mode() ==
-          InitialNavigationCapturedBehavior::kNavigatedNew) {
+      NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
     if (!target_app_id) {
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
                                          link_click_disposition);
@@ -301,9 +310,15 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // the result of the initial navigation handling. This involves only 2
   // use-cases, where the intermediary result is either a browser tab, or an app
   // window that opened as a result of a capturable navigation.
+  // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
+  // redirection.
   bool final_navigation_can_be_capturable =
       initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kNavigateCaptured ||
+          NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow ||
+      initial_nav_handling_result ==
+          NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab ||
+      initial_nav_handling_result ==
+          NavigationHandlingInitialResult::kNavigateCapturingNavigateExisting ||
       initial_nav_handling_result ==
           NavigationHandlingInitialResult::kBrowserTab;
   if (!final_navigation_can_be_capturable) {
@@ -342,8 +357,10 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
     // navigation to mimic the behavior where the redirected url matches an
     // outcome without redirection. Any residual app windows or tabs that were
     // there before the current navigation started shouldn't be closed.
-    if (redirection_info.effective_launch_handling_mode() ==
-            InitialNavigationCapturedBehavior::kNavigatedNew ||
+    if (initial_nav_handling_result ==
+            NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow ||
+        initial_nav_handling_result ==
+            NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab ||
         initial_nav_handling_result ==
             NavigationHandlingInitialResult::kBrowserTab) {
       web_contents_for_navigation->ClosePage();

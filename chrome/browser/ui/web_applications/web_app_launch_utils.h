@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
@@ -96,13 +97,11 @@ class AppNavigationResult {
 
   // Create AppNavigationResult for a navigation triggered by user modified link
   // clicks that creates a new app container.
-  // TODO(crbug.com/370856876): Possibly merge this with `CapturedNewClient`, if
-  // this enum in the redirection info has equivalent behavior to the captured
-  // one for navigate-new (and possibly merge enums).
   static AppNavigationResult ForcedNewAppContext(
       std::optional<webapps::AppId> source_browser_app_id,
       const webapps::AppId capturing_app_id,
-      Browser* app_browser,
+      blink::mojom::DisplayMode new_client_display_mode,
+      Browser* host_browser,
       WindowOpenDisposition disposition,
       base::Value::Dict debug_data);
 
@@ -112,7 +111,8 @@ class AppNavigationResult {
   static AppNavigationResult CapturedNewClient(
       std::optional<webapps::AppId> source_browser_app_id,
       const webapps::AppId capturing_app_id,
-      Browser* app_browser,
+      blink::mojom::DisplayMode new_client_display_mode,
+      Browser* host_browser,
       WindowOpenDisposition disposition,
       base::Value::Dict debug_data);
 
@@ -267,7 +267,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
 std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,
-    const mojom::UserDisplayMode requested_display_mode);
+    blink::mojom::DisplayMode requested_display_mode);
 
 // Returns an AppNavigationResult with pertinent details on how to handle a
 // navigation if the web app system can do so. If not, the
