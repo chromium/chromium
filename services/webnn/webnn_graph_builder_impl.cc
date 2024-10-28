@@ -19,6 +19,13 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_utils.h"
 
+// Evaluate `condition`, and if it returns false then return false.
+#define RETURN_IF_FALSE(condition) \
+  do {                             \
+    if (!(condition))              \
+      return false;                \
+  } while (0)
+
 namespace webnn {
 
 namespace {
@@ -516,7 +523,8 @@ bool ValidateUnaryOperation(
   operand_to_dependent_operations[operation.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(operation.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(operation.output_operand_id).second);
 
   const auto* input =
       GetMojoOperand(id_to_operand_map, operation.input_operand_id);
@@ -548,7 +556,8 @@ bool ValidateCastOperation(
   operand_to_dependent_operations[operation.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(operation.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(operation.output_operand_id).second);
 
   const auto* input =
       GetMojoOperand(id_to_operand_map, operation.input_operand_id);
@@ -595,7 +604,8 @@ bool ValidateBatchNormalization(
   operand_to_dependent_operations[batch_normalization.variance_operand_id]
       .insert(operation_id);
 
-  processed_operands.insert(batch_normalization.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(batch_normalization.output_operand_id).second);
 
   const auto* input =
       GetMojoOperand(id_to_operand_map, batch_normalization.input_operand_id);
@@ -659,7 +669,8 @@ bool ValidateArgMinMax(
   operand_to_dependent_operations[arg_min_max.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(arg_min_max.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(arg_min_max.output_operand_id).second);
 
   const auto* input =
       GetMojoOperand(id_to_operand_map, arg_min_max.input_operand_id);
@@ -738,7 +749,7 @@ bool ValidateConcat(const ContextProperties& context_properties,
   if (validated_output != output->descriptor) {
     return false;
   }
-  processed_operands.insert(concat.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(concat.output_operand_id).second);
 
   return true;
 }
@@ -789,7 +800,7 @@ bool ValidateConv2d(const ContextProperties& context_properties,
     }
     bias_operand = bias_operand_iterator->second->descriptor;
   }
-  processed_operands.insert(conv2d.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(conv2d.output_operand_id).second);
 
   std::optional<base::expected<OperandDescriptor, std::string>>
       validated_output;
@@ -876,7 +887,8 @@ bool ValidateDequantizeLinear(
   operand_to_dependent_operations[dequantize_linear.zero_point_operand_id]
       .insert(operation_id);
 
-  processed_operands.insert(dequantize_linear.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(dequantize_linear.output_operand_id).second);
 
   auto* input =
       GetMojoOperand(id_to_operand_map, dequantize_linear.input_operand_id);
@@ -993,7 +1005,8 @@ bool ValidateElementWiseBinary(
   operand_to_dependent_operations[operation.rhs_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(operation.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(operation.output_operand_id).second);
 
   auto* a = GetMojoOperand(id_to_operand_map, operation.lhs_operand_id);
   auto* b = GetMojoOperand(id_to_operand_map, operation.rhs_operand_id);
@@ -1141,7 +1154,7 @@ bool ValidateExpand(const ContextProperties& context_properties,
   }
   operand_to_dependent_operations[expand.input_operand_id].insert(operation_id);
 
-  processed_operands.insert(expand.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(expand.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, expand.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, expand.output_operand_id);
@@ -1183,7 +1196,7 @@ bool ValidateGather(const ContextProperties& context_properties,
   operand_to_dependent_operations[gather.indices_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(gather.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(gather.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, gather.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, gather.output_operand_id);
@@ -1222,7 +1235,8 @@ bool ValidateGatherElements(
   operand_to_dependent_operations[gather_elements.indices_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(gather_elements.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(gather_elements.output_operand_id).second);
 
   auto* input =
       GetMojoOperand(id_to_operand_map, gather_elements.input_operand_id);
@@ -1262,7 +1276,8 @@ bool ValidateGatherND(const ContextProperties& context_properties,
   operand_to_dependent_operations[gather_nd.indices_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(gather_nd.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(gather_nd.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, gather_nd.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, gather_nd.output_operand_id);
@@ -1298,7 +1313,7 @@ bool ValidateGemm(const ContextProperties& context_properties,
   operand_to_dependent_operations[gemm.a_operand_id].insert(operation_id);
   operand_to_dependent_operations[gemm.b_operand_id].insert(operation_id);
 
-  processed_operands.insert(gemm.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(gemm.output_operand_id).second);
 
   auto* a = GetMojoOperand(id_to_operand_map, gemm.a_operand_id);
   auto* b = GetMojoOperand(id_to_operand_map, gemm.b_operand_id);
@@ -1394,7 +1409,7 @@ bool ValidateGru(const ContextProperties& context_properties,
         initial_hidden_state_operand_id == output_operand_id) {
       return false;
     }
-    processed_operands.insert(output_operand_id);
+    RETURN_IF_FALSE(processed_operands.insert(output_operand_id).second);
   }
 
   const auto validated_outputs = ValidateGruAndInferOutput(
@@ -1482,7 +1497,7 @@ bool ValidateGruCell(const ContextProperties& context_properties,
       gru_cell.output_operand_id == recurrent_bias_operand_id) {
     return false;
   }
-  processed_operands.insert(gru_cell.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(gru_cell.output_operand_id).second);
 
   const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateGruCellAndInferOutput(
@@ -1539,7 +1554,8 @@ bool ValidateLayerNormalization(
   operand_to_dependent_operations[layer_normalization.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(layer_normalization.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(layer_normalization.output_operand_id).second);
 
   const auto* input =
       GetMojoOperand(id_to_operand_map, layer_normalization.input_operand_id);
@@ -1711,7 +1727,7 @@ bool ValidateLstm(const ContextProperties& context_properties,
          initial_cell_state_operand_id.value() == output_operand_id)) {
       return false;
     }
-    processed_operands.insert(output_operand_id);
+    RETURN_IF_FALSE(processed_operands.insert(output_operand_id).second);
   }
 
   const auto validated_outputs = ValidateLstmAndInferOutput(
@@ -1814,7 +1830,7 @@ bool ValidateLstmCell(const ContextProperties& context_properties,
         output_operand_id == lstm_cell.cell_state_operand_id) {
       return false;
     }
-    processed_operands.insert(output_operand_id);
+    RETURN_IF_FALSE(processed_operands.insert(output_operand_id).second);
   }
 
   const base::expected<std::vector<webnn::OperandDescriptor>, std::string>
@@ -1856,7 +1872,9 @@ bool ValidateInstanceNormalization(
   operand_to_dependent_operations[instance_normalization.input_operand_id]
       .insert(operation_id);
 
-  processed_operands.insert(instance_normalization.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(instance_normalization.output_operand_id)
+          .second);
 
   const auto* input = GetMojoOperand(id_to_operand_map,
                                      instance_normalization.input_operand_id);
@@ -1916,7 +1934,7 @@ bool ValidateMatmul(const ContextProperties& context_properties,
   operand_to_dependent_operations[matmul.a_operand_id].insert(operation_id);
   operand_to_dependent_operations[matmul.b_operand_id].insert(operation_id);
 
-  processed_operands.insert(matmul.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(matmul.output_operand_id).second);
 
   auto* a = GetMojoOperand(id_to_operand_map, matmul.a_operand_id);
   auto* b = GetMojoOperand(id_to_operand_map, matmul.b_operand_id);
@@ -1948,7 +1966,7 @@ bool ValidatePad(const ContextProperties& context_properties,
   }
   operand_to_dependent_operations[pad.input_operand_id].insert(operation_id);
 
-  processed_operands.insert(pad.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(pad.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, pad.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, pad.output_operand_id);
@@ -1981,7 +1999,7 @@ bool ValidatePool2d(const ContextProperties& context_properties,
   }
   operand_to_dependent_operations[pool2d.input_operand_id].insert(operation_id);
 
-  processed_operands.insert(pool2d.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(pool2d.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, pool2d.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, pool2d.output_operand_id);
@@ -2020,7 +2038,7 @@ bool ValidatePrelu(const ContextProperties& context_properties,
   operand_to_dependent_operations[prelu.input_operand_id].insert(operation_id);
   operand_to_dependent_operations[prelu.slope_operand_id].insert(operation_id);
 
-  processed_operands.insert(prelu.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(prelu.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, prelu.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, prelu.output_operand_id);
@@ -2061,7 +2079,8 @@ bool ValidateQuantizeLinear(
   operand_to_dependent_operations[quantize_linear.zero_point_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(quantize_linear.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(quantize_linear.output_operand_id).second);
 
   auto* input =
       GetMojoOperand(id_to_operand_map, quantize_linear.input_operand_id);
@@ -2103,7 +2122,8 @@ bool ValidateResample2d(
   operand_to_dependent_operations[resample2d.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(resample2d.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(resample2d.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, resample2d.input_operand_id);
   auto* output =
@@ -2172,7 +2192,7 @@ bool ValidateReshape(const ContextProperties& context_properties,
   operand_to_dependent_operations[reshape.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(reshape.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(reshape.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, reshape.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, reshape.output_operand_id);
@@ -2215,7 +2235,8 @@ bool ValidateScatterElements(
   operand_to_dependent_operations[scatter_elements.updates_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(scatter_elements.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(scatter_elements.output_operand_id).second);
 
   auto* input =
       GetMojoOperand(id_to_operand_map, scatter_elements.input_operand_id);
@@ -2262,7 +2283,8 @@ bool ValidateScatterND(
   operand_to_dependent_operations[scatter_nd.updates_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(scatter_nd.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(scatter_nd.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, scatter_nd.input_operand_id);
   auto* indices =
@@ -2300,7 +2322,7 @@ bool ValidateSlice(const ContextProperties& context_properties,
   }
   operand_to_dependent_operations[slice.input_operand_id].insert(operation_id);
 
-  processed_operands.insert(slice.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(slice.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, slice.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, slice.output_operand_id);
@@ -2334,7 +2356,7 @@ bool ValidateSoftmax(const ContextProperties& context_properties,
   operand_to_dependent_operations[softmax.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(softmax.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(softmax.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, softmax.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, softmax.output_operand_id);
@@ -2382,7 +2404,7 @@ bool ValidateSplit(const ContextProperties& context_properties,
       return false;
     }
     splits.push_back(output->descriptor.shape()[split.axis]);
-    processed_operands.insert(output_id);
+    RETURN_IF_FALSE(processed_operands.insert(output_id).second);
   }
 
   auto validated_output = ValidateSplitAndInferOutput(
@@ -2420,7 +2442,7 @@ bool ValidateTile(const ContextProperties& context_properties,
   }
   operand_to_dependent_operations[tile.input_operand_id].insert(operation_id);
 
-  processed_operands.insert(tile.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(tile.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, tile.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, tile.output_operand_id);
@@ -2454,7 +2476,8 @@ bool ValidateTranspose(
   operand_to_dependent_operations[transpose.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(transpose.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(transpose.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, transpose.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, transpose.output_operand_id);
@@ -2489,7 +2512,8 @@ bool ValidateTriangular(
   operand_to_dependent_operations[triangular.input_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(triangular.output_operand_id);
+  RETURN_IF_FALSE(
+      processed_operands.insert(triangular.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, triangular.input_operand_id);
   auto* output =
@@ -2530,7 +2554,7 @@ bool ValidateWhere(const ContextProperties& context_properties,
   operand_to_dependent_operations[where.false_value_operand_id].insert(
       operation_id);
 
-  processed_operands.insert(where.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(where.output_operand_id).second);
 
   auto* condition =
       GetMojoOperand(id_to_operand_map, where.condition_operand_id);
@@ -2569,7 +2593,7 @@ bool ValidateReduce(const ContextProperties& context_properties,
   }
   operand_to_dependent_operations[reduce.input_operand_id].insert(operation_id);
 
-  processed_operands.insert(reduce.output_operand_id);
+  RETURN_IF_FALSE(processed_operands.insert(reduce.output_operand_id).second);
 
   auto* input = GetMojoOperand(id_to_operand_map, reduce.input_operand_id);
   auto* output = GetMojoOperand(id_to_operand_map, reduce.output_operand_id);
