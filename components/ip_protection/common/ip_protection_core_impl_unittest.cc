@@ -108,16 +108,6 @@ class MockIpProtectionProxyConfigManager
     proxy_list_ = std::move(proxy_list);
   }
 
-  // Set the geo id returned from `CurrentGeo()`.
-  void RefreshProxyListForGeoChange() override {
-    if (on_force_refresh_proxy_list_) {
-      if (!geo_id_to_change_on_refresh_.empty()) {
-        geo_id_ = geo_id_to_change_on_refresh_;
-      }
-      std::move(on_force_refresh_proxy_list_).Run();
-    }
-  }
-
   void SetOnRequestRefreshProxyList(
       base::OnceClosure on_force_refresh_proxy_list,
       std::string geo_id = "") {

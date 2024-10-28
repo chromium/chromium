@@ -244,7 +244,7 @@ void IpProtectionCoreImpl::GeoObserved(const std::string& geo_id) {
 
   if (ipp_proxy_config_manager_ != nullptr &&
       ipp_proxy_config_manager_->CurrentGeo() != geo_id) {
-    ipp_proxy_config_manager_->RefreshProxyListForGeoChange();
+    ipp_proxy_config_manager_->RequestRefreshProxyList();
   }
 
   for (auto& [_, token_manager] : ipp_token_managers_) {

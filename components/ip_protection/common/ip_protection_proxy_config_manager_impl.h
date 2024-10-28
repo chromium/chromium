@@ -35,7 +35,6 @@ class IpProtectionProxyConfigManagerImpl
   bool IsProxyListAvailable() override;
   const std::vector<net::ProxyChain>& ProxyList() override;
   const std::string& CurrentGeo() override;
-  void RefreshProxyListForGeoChange() override;
   void RequestRefreshProxyList() override;
 
   // Set a callback to occur when the proxy list has been refreshed.

@@ -91,11 +91,7 @@ const std::string& IpProtectionProxyConfigManagerImpl::CurrentGeo() {
   return current_geo_id_;
 }
 
-void IpProtectionProxyConfigManagerImpl::RefreshProxyListForGeoChange() {
-  if (!enable_token_caching_by_geo_) {
-    return;
-  }
-
+void IpProtectionProxyConfigManagerImpl::RequestRefreshProxyList() {
   if (IsProxyListOlderThanMinAge()) {
     RefreshProxyList();
     return;
@@ -108,15 +104,6 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyListForGeoChange() {
 
   base::TimeDelta delay = proxy_list_min_age_ - time_since_last_refresh;
   ScheduleRefreshProxyList(delay.is_negative() ? base::TimeDelta() : delay);
-}
-
-void IpProtectionProxyConfigManagerImpl::RequestRefreshProxyList() {
-  // Do not refresh the list too frequently.
-  if (!IsProxyListOlderThanMinAge()) {
-    return;
-  }
-
-  RefreshProxyList();
 }
 
 void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
