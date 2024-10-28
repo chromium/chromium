@@ -121,7 +121,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   // Force traversal to find ancestor
   may_have_fieldset_ancestor_ = true;
   data_list_ancestor_state_ = DataListAncestorState::kUnknown;
-  UpdateWillValidateCache();
+  UpdateWillValidateCache(WillValidateReason::kForInsertionOrRemoval);
 
   if (!form_was_set_by_parser_ || !form_ ||
       NodeTraversal::HighestAncestorOrSelf(insertion_point) !=
@@ -171,7 +171,7 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
   } else {
     ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
     data_list_ancestor_state_ = DataListAncestorState::kUnknown;
-    UpdateWillValidateCache();
+    UpdateWillValidateCache(WillValidateReason::kForInsertionOrRemoval);
   }
 
   HTMLElement& element = ToHTMLElement();
@@ -364,7 +364,7 @@ bool ListedElement::WillValidate() const {
   return will_validate_;
 }
 
-void ListedElement::UpdateWillValidateCache() {
+void ListedElement::UpdateWillValidateCache(WillValidateReason reason) {
   // We need to recalculate willValidate immediately because willValidate change
   // can causes style change.
   bool new_will_validate = RecalcWillValidate();
@@ -372,20 +372,37 @@ void ListedElement::UpdateWillValidateCache() {
     return;
   will_validate_initialized_ = true;
   will_validate_ = new_will_validate;
-  // Needs to force SetNeedsValidityCheck() to invalidate validity state of
-  // FORM/FIELDSET. If this element updates willValidate twice and
-  // IsValidElement() is not called between them, the second call of this
-  // function still has validity_is_dirty_==true, which means
-  // SetNeedsValidityCheck() doesn't invalidate validity state of
-  // FORM/FIELDSET.
-  validity_is_dirty_ = false;
-  SetNeedsValidityCheck();
-  // No need to trigger style recalculation here because
-  // SetNeedsValidityCheck() does it in the right away. This relies on
-  // the assumption that Valid() is always true if willValidate() is false.
 
-  if (!will_validate_)
-    HideVisibleValidationMessage();
+  if (reason != WillValidateReason::kForInsertionOrRemoval) {
+    // Needs to force SetNeedsValidityCheck() to invalidate validity state of
+    // FORM/FIELDSET. If this element updates willValidate twice and
+    // IsValidElement() is not called between them, the second call of this
+    // function still has validity_is_dirty_==true, which means
+    // SetNeedsValidityCheck() doesn't invalidate validity state of
+    // FORM/FIELDSET.
+    validity_is_dirty_ = false;
+    SetNeedsValidityCheck();
+    // No need to trigger style recalculation here because
+    // SetNeedsValidityCheck() does it in the right away. This relies on
+    // the assumption that Valid() is always true if willValidate() is false.
+
+    if (!will_validate_) {
+      HideVisibleValidationMessage();
+    }
+  } else {
+    // We don't need to do any of the work above for insertion or removal,
+    // because:
+    //
+    // * We don't need to notify that pseudo-states on this element have
+    //   changed because it wasn't previously in the tree (or won't be in the
+    //   tree shortly).
+    // * FormOwnerSetNeedsValidityCheck is also called when changing the form
+    // * FieldSetAncestorsSetNeedsValidityCheck is also called on insertion
+    //   and removal
+    // * RemovedFrom already hides the validation message, so we don't need to
+    //   update or hide it.
+    validity_is_dirty_ = true;
+  }
 }
 
 bool ListedElement::CustomError() const {

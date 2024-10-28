@@ -187,8 +187,14 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   virtual void WillChangeForm();
   virtual void DidChangeForm();
 
+  enum class WillValidateReason {
+    kDefault,
+    kForInsertionOrRemoval,
+  };
+
   // This must be called any time the result of WillValidate() has changed.
-  void UpdateWillValidateCache();
+  void UpdateWillValidateCache(
+      WillValidateReason = WillValidateReason::kDefault);
   virtual bool RecalcWillValidate() const;
 
   String CustomValidationMessage() const;
