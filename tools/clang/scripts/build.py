@@ -774,8 +774,19 @@ def main():
       # TODO(crbug.com/341936875): Remove after debugging.
       GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
                     '72112845b8e37ba5296858d0224f916f0afbf88b')
+
+      # Apply https://github.com/zmodem/llvm-project/commit/723a2efebddf which
+      # tries to speed up the runtime by removing calls to GetModuleFileName and
+      # VPrintfs for contigous_containers.
+      # TODO(crbug.com/341936875): Remove after debugging.
       GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
                     '723a2efebddf250b58c2dd3bd064c1cd0f57b85f')
+
+      # Apply https://github.com/zmodem/llvm-project/commit/a86b7e95a8a7 which
+      # adds proper clamping of {min,max}_addr in AllocateTrampolineRegion.
+      # TODO(crbug.com/341936875): Remove after debugging.
+      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                    'a86b7e95a8a7a7de750d19e4d189e9a9497e31e8')
 
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
