@@ -12,6 +12,7 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/content_notification/model/constants.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -21,8 +22,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
 
@@ -158,6 +158,14 @@ void LogHistogramForEligibilityType(ContentNotificationEligibilityType type) {
   base::UmaHistogramEnumeration("ContentNotifications.EligibilityType", type);
 }
 
+// Returns whether the `profile` has a primary account.
+bool IsProfileSignedIn(ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
 }  // namespace
 
 bool IsContentNotificationEnabled(ProfileIOS* profile) {
@@ -169,10 +177,7 @@ bool IsContentNotificationEnabled(ProfileIOS* profile) {
     return false;
   }
 
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
-                                            signin::ConsentLevel::kSignin);
+  BOOL user_signed_in = IsProfileSignedIn(profile);
 
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForProfile(profile)
@@ -199,10 +204,7 @@ bool IsContentNotificationRegistered(ProfileIOS* profile) {
     return false;
   }
 
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
-                                            signin::ConsentLevel::kSignin);
+  BOOL user_signed_in = IsProfileSignedIn(profile);
 
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForProfile(profile)
