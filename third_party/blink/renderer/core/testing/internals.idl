@@ -323,8 +323,8 @@ interface Internals {
 
     boolean isInCanvasFontCache(Document document, DOMString fontString);
     unsigned long canvasFontCacheMaxFonts();
-    void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
-    void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
+    void forceLoseCanvasContext(CanvasRenderingContext2D ctx);
+    void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
     void disableCanvasAcceleration(HTMLCanvasElement canvas);
 
     DictionaryTest dictionaryTest();

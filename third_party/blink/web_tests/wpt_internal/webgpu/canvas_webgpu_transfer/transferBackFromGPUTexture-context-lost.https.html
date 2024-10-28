@@ -28,7 +28,7 @@ canvasPromiseTest(async (canvas) => {
 
   // Forcibly lose the canvas context.
   assert_true(!!self.internals, 'Internal APIs unavailable.');
-  self.internals.forceLoseCanvasContext(canvas, '2d');
+  self.internals.forceLoseCanvasContext(ctx);
   assert_true(ctx.isContextLost());
 
   // End the WebGPU access session. Nothing should be thrown.

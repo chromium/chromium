@@ -43,6 +43,7 @@ namespace blink {
 
 class Animation;
 class CallbackFunctionTest;
+class CanvasRenderingContext;
 class DOMArrayBuffer;
 class DOMPoint;
 class DOMRect;
@@ -73,7 +74,6 @@ class LocalFrame;
 class Location;
 class Node;
 class OriginTrialsTest;
-class OffscreenCanvas;
 class Page;
 class Range;
 class ReadableStream;
@@ -503,11 +503,7 @@ class Internals final : public ScriptWrappable {
 
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
-  void forceLoseCanvasContext(HTMLCanvasElement* canvas,
-                              const String& context_type);
-
-  void forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
-                              const String& context_type);
+  void forceLoseCanvasContext(CanvasRenderingContext* context);
   void disableCanvasAcceleration(HTMLCanvasElement* canvas);
 
   String selectedHTMLForClipboard();

@@ -12,5 +12,5 @@ interface WorkerInternals {
 
     [CallWith=ScriptState] void collectGarbage();
 
-    [CallWith=ScriptState] void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
+    void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
 };

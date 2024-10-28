@@ -144,10 +144,11 @@ async function testCanvas2DContextLoss(alphaContext) {
   var canvas = document.getElementById('canvas-' + contextType);
 
   await doCanvasCaptureAndCheckRgba(contextType, RED, alphaContext)
-  internals.forceLoseCanvasContext(canvas, "2d")
+  const ctx = canvas.getContext(contextType);
+  internals.forceLoseCanvasContext(ctx);
   // For the canvas to realize its Graphics context was lost we must try
   // to use the contents of the canvas.
-  var imageData = canvas.getContext(contextType).getImageData(0, 0, 1, 1);
+  var imageData = ctx.getImageData(0, 0, 1, 1);
   await doCanvasCaptureAndCheckRgba(contextType, BLUE, alphaContext);
 }
 
