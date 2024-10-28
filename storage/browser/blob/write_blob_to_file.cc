@@ -126,7 +126,9 @@ bool CopyFileContentsWithOffsetAndSize(base::File* infile,
       span_to_write = span_to_write.subspan(bytes_written_partial.value());
       *bytes_copied += bytes_written_partial.value();
     }
-    return true;
+    if (checked_max_size.ValueOrDie() == 0) {
+      return true;
+    }
   }
 
   NOTREACHED_IN_MIGRATION();
