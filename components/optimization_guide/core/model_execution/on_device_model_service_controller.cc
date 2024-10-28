@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -23,6 +24,8 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
+#include "components/optimization_guide/core/model_execution/safety_checker.h"
+#include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -47,7 +50,7 @@ namespace {
 
 proto::OnDeviceModelVersions GetModelVersions(
     const OnDeviceModelMetadata& model_metadata,
-    const SafetyModelInfo* safety_model_info,
+    const SafetyClient& safety_client,
     std::optional<int64_t> adaptation_version) {
   proto::OnDeviceModelVersions versions;
   auto* on_device_model_version =
@@ -58,8 +61,9 @@ proto::OnDeviceModelVersions GetModelVersions(
   on_device_model_version->mutable_on_device_base_model_metadata()
       ->set_base_model_version(model_metadata.model_spec().model_version);
 
-  if (safety_model_info) {
-    versions.set_text_safety_model_version(safety_model_info->GetVersion());
+  if (safety_client.safety_model_info()) {
+    versions.set_text_safety_model_version(
+        safety_client.safety_model_info()->GetVersion());
   }
 
   if (adaptation_version) {
@@ -79,7 +83,8 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
     : access_controller_(std::move(access_controller)),
       on_device_component_state_manager_(
           std::move(on_device_component_state_manager)),
-      service_client_(launch_fn) {}
+      service_client_(launch_fn),
+      safety_client_(service_client_.GetWeakPtr()) {}
 
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
@@ -122,24 +127,10 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
   }
   // Check safety info.
-  if (features::ShouldUseTextSafetyClassifierModel() &&
-      !adapter->CanSkipTextSafety()) {
-    if (!safety_model_info_) {
-      return OnDeviceModelEligibilityReason::kSafetyModelNotAvailable;
-    }
-
-    std::optional<proto::FeatureTextSafetyConfiguration> safety_config =
-        safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
-    if (!safety_config) {
-      return OnDeviceModelEligibilityReason::
-          kSafetyConfigNotAvailableForFeature;
-    }
-
-    if (!safety_config->allowed_languages().empty() &&
-        !language_detection_model_path_) {
-      return OnDeviceModelEligibilityReason::
-          kLanguageDetectionModelNotAvailable;
-    }
+  auto checker =
+      safety_client_.MakeSafetyChecker(feature, adapter->CanSkipTextSafety());
+  if (!checker.has_value()) {
+    return checker.error();
   }
 
   return access_controller_->ShouldStartNewSession();
@@ -176,20 +167,6 @@ OnDeviceModelServiceController::CreateSession(
   auto adapter = GetFeatureAdapter(feature);
   CHECK(adapter);
 
-  auto ts_params = PopulateTextSafetyParams();
-  std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
-  if (features::ShouldUseTextSafetyClassifierModel() &&
-      !adapter->CanSkipTextSafety()) {
-    CHECK(safety_model_info_);
-    safety_config =
-        safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
-    CHECK(safety_config);
-    CHECK(ts_params.ts_paths);
-    if (!safety_config->allowed_languages().empty()) {
-      CHECK(ts_params.language_paths);
-    }
-  }
-
   std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
   std::optional<int64_t> adaptation_version;
   auto adaptation_metadata_it = model_adaptation_metadata_.find(feature);
@@ -202,14 +179,14 @@ OnDeviceModelServiceController::CreateSession(
 
   SessionImpl::OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
-      feature, weak_ptr_factory_.GetWeakPtr(), ts_params, model_paths,
-      adaptation_assets);
-  opts.model_versions = GetModelVersions(
-      *model_metadata_, safety_model_info_.get(), adaptation_version);
+      feature, weak_ptr_factory_.GetWeakPtr(), model_paths, adaptation_assets);
+  opts.model_versions =
+      GetModelVersions(*model_metadata_, safety_client_, adaptation_version);
+  opts.safety_checker = std::move(
+      safety_client_.MakeSafetyChecker(feature, adapter->CanSkipTextSafety())
+          .value());
+  opts.token_limits = adapter->GetTokenLimits();
   opts.adapter = std::move(adapter);
-  opts.safety_checker =
-      std::make_unique<SafetyChecker>(SafetyConfig(safety_config));
-  opts.token_limits = GetFeatureAdapter(feature)->GetTokenLimits();
 
   base::WeakPtr<ModelQualityLogsUploaderService> log_uploader =
       (config_params && config_params->logging_mode ==
@@ -262,31 +239,6 @@ OnDeviceModelServiceController::GetOrCreateModelRemote(
   return it->second.GetOrCreateModelRemote(*adaptation_assets);
 }
 
-mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-OnDeviceModelServiceController::GetTextSafetyModelRemote(
-    const on_device_model::TextSafetyLoaderParams& params) {
-  if (ts_model_remote_) {
-    return ts_model_remote_;
-  }
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadTextSafetyParams, params),
-      base::BindOnce(&OnDeviceModelServiceController::OnTextSafetyParamsLoaded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     ts_model_remote_.BindNewPipeAndPassReceiver()));
-  ts_model_remote_.reset_on_disconnect();  // Maybe track disconnects?
-  ts_model_remote_.reset_on_idle_timeout(
-      features::GetOnDeviceModelIdleTimeout());
-  return ts_model_remote_;
-}
-
-void OnDeviceModelServiceController::OnTextSafetyParamsLoaded(
-    mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model,
-    on_device_model::mojom::TextSafetyModelParamsPtr params) {
-  service_client_.Get()->LoadTextSafetyModel(std::move(params),
-                                             std::move(model));
-}
-
 void OnDeviceModelServiceController::MaybeCreateBaseModelRemote(
     const on_device_model::ModelAssetPaths& model_paths) {
   if (base_model_remote_) {
@@ -330,23 +282,12 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
-  if (!model_info.has_value()) {
-    language_detection_model_path_.reset();
-    return;
-  }
-  ts_model_remote_.reset();  // The remote's assets are outdated.
-  language_detection_model_path_ = model_info->GetModelFilePath();
+  safety_client_.SetLanguageDetectionModel(model_info);
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
-  auto new_info = SafetyModelInfo::Load(model_info);
-  if (!new_info) {
-    safety_model_info_.reset();
-    return;
-  }
-  ts_model_remote_.reset();  // The remote's assets are outdated.
-  safety_model_info_ = std::move(new_info);
+  safety_client_.MaybeUpdateSafetyModel(model_info);
 }
 
 on_device_model::ModelAssetPaths
@@ -354,23 +295,6 @@ OnDeviceModelServiceController::PopulateModelPaths() {
   on_device_model::ModelAssetPaths model_paths;
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
   return model_paths;
-}
-
-on_device_model::TextSafetyLoaderParams
-OnDeviceModelServiceController::PopulateTextSafetyParams() const {
-  on_device_model::TextSafetyLoaderParams params;
-  // Populate the model paths even if they are not needed for the current
-  // feature, since the base model remote could be used for subsequent features.
-  if (safety_model_info_) {
-    params.ts_paths.emplace();
-    params.ts_paths->data = safety_model_info_->GetDataPath();
-    params.ts_paths->sp_model = safety_model_info_->GetSpModelPath();
-  }
-  if (language_detection_model_path_) {
-    params.language_paths.emplace();
-    params.language_paths->model = *language_detection_model_path_;
-  }
-  return params;
 }
 
 void OnDeviceModelServiceController::UpdateModel(
@@ -507,14 +431,12 @@ void OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected(
 OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
     ModelBasedCapabilityKey feature,
     base::WeakPtr<OnDeviceModelServiceController> controller,
-    const on_device_model::TextSafetyLoaderParams& ts_params,
     const on_device_model::ModelAssetPaths& model_paths,
     base::optional_ref<const on_device_model::AdaptationAssetPaths>
         adaptation_assets)
     : feature_(feature),
       controller_(controller),
       model_paths_(model_paths),
-      ts_params_(ts_params),
       adaptation_assets_(adaptation_assets.CopyAsOptional()) {}
 
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
@@ -530,12 +452,6 @@ mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 OnDeviceModelServiceController::OnDeviceModelClient::GetModelRemote() {
   return controller_->GetOrCreateModelRemote(feature_, model_paths_,
                                              adaptation_assets_);
-}
-
-mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-OnDeviceModelServiceController::OnDeviceModelClient::
-    GetTextSafetyModelRemote() {
-  return controller_->GetTextSafetyModelRemote(ts_params_);
 }
 
 void OnDeviceModelServiceController::OnDeviceModelClient::

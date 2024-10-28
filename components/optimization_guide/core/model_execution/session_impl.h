@@ -43,17 +43,14 @@ using ExecuteRemoteFn = base::RepeatingCallback<void(
 class SessionImpl : public OptimizationGuideModelExecutor::Session,
                     public on_device_model::mojom::StreamingResponder {
  public:
-  class OnDeviceModelClient : public TextSafetyClient {
+  class OnDeviceModelClient {
    public:
-    ~OnDeviceModelClient() override = 0;
+    virtual ~OnDeviceModelClient() = 0;
     // Called to check whether this client is still usable.
     virtual bool ShouldUse() = 0;
     // Called to retrieve connection the managed model.
     virtual mojo::Remote<on_device_model::mojom::OnDeviceModel>&
     GetModelRemote() = 0;
-    // Called to retrieve connection the managed model.
-    mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-    GetTextSafetyModelRemote() override = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
     // Called to report a timeout reached while waiting for model response.

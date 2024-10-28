@@ -130,17 +130,24 @@ SafetyChecker::Result SafetyChecker::Result::Merge(
   return merged;
 }
 
-SafetyChecker::SafetyChecker(SafetyConfig safety_cfg)
-    : safety_cfg_(std::move(safety_cfg)) {}
+SafetyChecker::SafetyChecker(base::WeakPtr<TextSafetyClient> client,
+                             on_device_model::TextSafetyLoaderParams params,
+                             SafetyConfig safety_cfg)
+    : client_(std::move(client)),
+      params_(std::move(params)),
+      safety_cfg_(std::move(safety_cfg)) {}
 SafetyChecker::~SafetyChecker() = default;
 
 void SafetyChecker::RunRequestChecks(
-    TextSafetyClient& client,
     const google::protobuf::MessageLite& request,
     ResultCallback callback) {
   int num_checks = safety_cfg_.NumRequestChecks();
   if (num_checks == 0) {
     std::move(callback).Run(SafetyChecker::Result{});
+    return;
+  }
+  if (!client_) {
+    std::move(callback).Run(FailToRunResult());
     return;
   }
   auto merge_fn = base::BarrierCallback<Result>(
@@ -158,20 +165,23 @@ void SafetyChecker::RunRequestChecks(
                        text)
             .Then(merge_fn);
     if (safety_cfg_.IsRequestCheckLanguageOnly(idx)) {
-      client.GetTextSafetyModelRemote()->DetectLanguage(
+      client_->GetTextSafetyModelRemote(params_)->DetectLanguage(
           text, base::BindOnce(&AsSafetyInfo).Then(std::move(merge_result_fn)));
     } else {
-      client.GetTextSafetyModelRemote()->ClassifyTextSafety(
+      client_->GetTextSafetyModelRemote(params_)->ClassifyTextSafety(
           text, std::move(merge_result_fn));
     }
   }
 }
 
-void SafetyChecker::RunRawOutputCheck(TextSafetyClient& client,
-                                      const std::string& raw_output,
+void SafetyChecker::RunRawOutputCheck(const std::string& raw_output,
                                       ResultCallback callback) {
   if (!safety_cfg_.HasRawOutputCheck()) {
     std::move(callback).Run(SafetyChecker::Result{});
+    return;
+  }
+  if (!client_) {
+    std::move(callback).Run(FailToRunResult());
     return;
   }
   auto check_input = safety_cfg_.GetRawOutputCheckInput(raw_output);
@@ -180,20 +190,23 @@ void SafetyChecker::RunRawOutputCheck(TextSafetyClient& client,
     return;
   }
   auto text = check_input->ToString();
-  client.GetTextSafetyModelRemote()->ClassifyTextSafety(
+  client_->GetTextSafetyModelRemote(params_)->ClassifyTextSafety(
       text, base::BindOnce(&RawOutputCheckResult,
                            weak_ptr_factory_.GetWeakPtr(), text)
                 .Then(std::move(callback)));
 }
 
 void SafetyChecker::RunResponseChecks(
-    TextSafetyClient& client,
     const google::protobuf::MessageLite& request,
     const proto::Any& response_as_any,
     ResultCallback callback) {
   int num_checks = safety_cfg_.NumResponseChecks();
   if (num_checks == 0) {
     std::move(callback).Run(SafetyChecker::Result{});
+    return;
+  }
+  if (!client_) {
+    std::move(callback).Run(FailToRunResult());
     return;
   }
   auto response = GetProtoFromAny(response_as_any);
@@ -216,7 +229,7 @@ void SafetyChecker::RunResponseChecks(
         base::BindOnce(&ResponseCheckResult, weak_ptr_factory_.GetWeakPtr(),
                        idx, text)
             .Then(merge_fn);
-    client.GetTextSafetyModelRemote()->ClassifyTextSafety(
+    client_->GetTextSafetyModelRemote(params_)->ClassifyTextSafety(
         text, std::move(merge_result_fn));
   }
 }

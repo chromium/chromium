@@ -436,7 +436,7 @@ void SessionImpl::ExecuteModel(
   options->temperature = sampling_params_.temperature;
 
   on_device_state_->opts.safety_checker->RunRequestChecks(
-      *on_device_state_->opts.model_client, *last_message_,
+      *last_message_,
       base::BindOnce(&SessionImpl::OnRequestSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      std::move(options)));
@@ -561,7 +561,7 @@ void SessionImpl::OnComplete(
 void SessionImpl::RunRawOutputSafetyCheck() {
   on_device_state_->num_unchecked_response_tokens = 0;
   on_device_state_->opts.safety_checker->RunRawOutputCheck(
-      *on_device_state_->opts.model_client, on_device_state_->current_response,
+      on_device_state_->current_response,
       base::BindOnce(&SessionImpl::OnRawOutputSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      on_device_state_->current_response.size()));
@@ -715,7 +715,7 @@ void SessionImpl::OnParsedResponse(
     }
   }
   on_device_state_->opts.safety_checker->RunResponseChecks(
-      *on_device_state_->opts.model_client, *last_message_, *output,
+      *last_message_, *output,
       base::BindOnce(&SessionImpl::OnResponseSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      is_complete, *output));

@@ -16,6 +16,7 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
@@ -25,7 +26,8 @@ class TextSafetyClient {
  public:
   virtual ~TextSafetyClient() = 0;
   virtual mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-  GetTextSafetyModelRemote() = 0;
+  GetTextSafetyModelRemote(
+      const on_device_model::TextSafetyLoaderParams& params) = 0;
 };
 
 // Performs safety checks according to a config against a text safety model.
@@ -49,23 +51,21 @@ class SafetyChecker final {
   };
   using ResultCallback = base::OnceCallback<void(Result)>;
 
-  // TODO(holte): Have this own a TextSafetyClient ref.
-  explicit SafetyChecker(SafetyConfig safety_cfg);
+  explicit SafetyChecker(base::WeakPtr<TextSafetyClient> client,
+                         on_device_model::TextSafetyLoaderParams params,
+                         SafetyConfig safety_cfg);
   ~SafetyChecker();
 
   // Runs all of the configured request checks for a request.
-  void RunRequestChecks(TextSafetyClient& client,
-                        const google::protobuf::MessageLite& request_metadata,
+  void RunRequestChecks(const google::protobuf::MessageLite& request_metadata,
                         ResultCallback callback);
 
   // Runs the configured check (if any) for evaluating raw output.
-  void RunRawOutputCheck(TextSafetyClient& client,
-                         const std::string& raw_output,
+  void RunRawOutputCheck(const std::string& raw_output,
                          ResultCallback callback);
 
   // Runs all of the configured checks for evaluating parsed responses.
-  void RunResponseChecks(TextSafetyClient& client,
-                         const google::protobuf::MessageLite& request,
+  void RunResponseChecks(const google::protobuf::MessageLite& request,
                          const proto::Any& response,
                          ResultCallback callback);
 
@@ -74,6 +74,8 @@ class SafetyChecker final {
   size_t TokenInterval() const { return safety_cfg_.TokenInterval(); }
 
  private:
+  base::WeakPtr<TextSafetyClient> client_;
+  on_device_model::TextSafetyLoaderParams params_;
   SafetyConfig safety_cfg_;
   base::WeakPtrFactory<SafetyChecker> weak_ptr_factory_{this};
 };

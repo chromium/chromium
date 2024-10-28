@@ -7,16 +7,20 @@
 #include <cstdint>
 #include <initializer_list>
 #include <sstream>
+#include <string>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
+#include "components/optimization_guide/core/model_execution/safety_client.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -27,6 +31,7 @@
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,50 +74,32 @@ proto::Any SimpleResponse(const std::string& output) {
 
 }  // namespace
 
-class FakeTextSafetyClient : public TextSafetyClient {
+class SafetyClientFixture {
  public:
-  FakeTextSafetyClient() {
-    CHECK(ts_data_.Create());
-    CHECK(ts_sp_model_.Create());
-    CHECK(language_model_.Create());
-    CHECK(base::WriteFile(ts_data_.path(), on_device_model::FakeTsData()));
-    CHECK(
-        base::WriteFile(ts_sp_model_.path(), on_device_model::FakeTsSpModel()));
-    CHECK(base::WriteFile(language_model_.path(),
-                          on_device_model::FakeLanguageModel()));
-    fake_ts_model_.emplace(TsParams());
-    receiver_set_.Add(&fake_ts_model_.value(),
-                      remote_.BindNewPipeAndPassReceiver());
+  explicit SafetyClientFixture(proto::FeatureTextSafetyConfiguration config)
+      : safety_asset_(std::move(config)) {
+    safety_client_.SetLanguageDetectionModel(language_asset_.model_info());
+    safety_client_.MaybeUpdateSafetyModel(safety_asset_.model_info());
   }
 
-  on_device_model::mojom::TextSafetyModelParamsPtr TsParams() {
-    on_device_model::TextSafetyLoaderParams params;
-    params.ts_paths.emplace();
-    params.ts_paths->data = ts_data_.path();
-    params.ts_paths->sp_model = ts_sp_model_.path();
-    params.language_paths.emplace();
-    params.language_paths->model = language_model_.path();
-    return LoadTextSafetyParams(params);
-  }
-
-  mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-  GetTextSafetyModelRemote() override {
-    return remote_;
+  std::unique_ptr<SafetyChecker> MakeSafetyChecker() {
+    return safety_client_
+        .MakeSafetyChecker(ModelBasedCapabilityKey::kCompose, false)
+        .value();
   }
 
  private:
-  base::ScopedTempFile ts_data_;
-  base::ScopedTempFile ts_sp_model_;
-  base::ScopedTempFile language_model_;
-  std::optional<on_device_model::FakeTsModel> fake_ts_model_;
-  mojo::ReceiverSet<on_device_model::mojom::TextSafetyModel> receiver_set_;
-  mojo::Remote<on_device_model::mojom::TextSafetyModel> remote_;
+  FakeLanguageModelAsset language_asset_;
+  FakeSafetyModelAsset safety_asset_;
+  on_device_model::FakeOnDeviceServiceSettings fake_settings_;
+  on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
+  on_device_model::ServiceClient service_client_{fake_launcher_.LaunchFn()};
+  SafetyClient safety_client_{service_client_.GetWeakPtr()};
 };
 
 class SafetyCheckerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
-  FakeTextSafetyClient client_;
   base::test::TestFuture<SafetyChecker::Result> future_;
 };
 
@@ -142,9 +129,9 @@ TEST(SafetyConfigTest, SafeWithRequiredScores) {
 
 TEST_F(SafetyCheckerTest, RawOutputCheckPassesWithTrivialConfig) {
   // When no thresholds are defined, all outputs will pass.
-  SafetyChecker checker([]() { return SafetyConfig(ComposeSafetyConfig()); }());
-  checker.RunRawOutputCheck(client_, "unsafe raw output",
-                            future_.GetCallback());
+  SafetyClientFixture fixture([]() { return ComposeSafetyConfig(); }());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("unsafe raw output", future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -158,16 +145,16 @@ TEST_F(SafetyCheckerTest, RawOutputCheckPassesWithTrivialConfig) {
 }
 
 TEST_F(SafetyCheckerTest, DefaultOutputSafetyPassesOnSafeOutput) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     // No explicit raw_output_check, should still perform a default one.
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRawOutputCheck(client_, "reasonable raw output",
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("reasonable raw output", future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -182,16 +169,16 @@ TEST_F(SafetyCheckerTest, DefaultOutputSafetyPassesOnSafeOutput) {
 }
 
 TEST_F(SafetyCheckerTest, DefaultOutputSafetyFailsOnUnsafeOutput) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     // No explicit raw_output_check, should still perform a default one.
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRawOutputCheck(client_, "unsafe raw output",
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("unsafe raw output", future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -205,7 +192,7 @@ TEST_F(SafetyCheckerTest, DefaultOutputSafetyFailsOnUnsafeOutput) {
 }
 
 TEST_F(SafetyCheckerTest, OutputSafetyPassesWithMetRequiredLanguage) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -214,10 +201,11 @@ TEST_F(SafetyCheckerTest, OutputSafetyPassesWithMetRequiredLanguage) {
     auto* check = safety_config.mutable_raw_output_check();
     check->mutable_input_template()->Add(
         FieldSubstitution("is_raw_output_safe: %s", StringValueField()));
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRawOutputCheck(client_, "reasonable raw output in esperanto",
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("reasonable raw output in esperanto",
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -233,7 +221,7 @@ TEST_F(SafetyCheckerTest, OutputSafetyPassesWithMetRequiredLanguage) {
 }
 
 TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnmetRequiredLanguage) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -242,10 +230,10 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnmetRequiredLanguage) {
     auto* check = safety_config.mutable_raw_output_check();
     check->mutable_input_template()->Add(
         FieldSubstitution("is_raw_output_safe: %s", StringValueField()));
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRawOutputCheck(client_, "reasonable raw output",
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("reasonable raw output", future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -261,7 +249,7 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnmetRequiredLanguage) {
 
 TEST_F(SafetyCheckerTest,
        OutputSafetyPassesWithSafeOutputAndNoRequiredLanguage) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -269,10 +257,10 @@ TEST_F(SafetyCheckerTest,
     auto* check = safety_config.mutable_raw_output_check();
     check->mutable_input_template()->Add(
         FieldSubstitution("is_raw_output_safe: %s", StringValueField()));
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRawOutputCheck(client_, "reasonable raw output",
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("reasonable raw output", future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -287,7 +275,7 @@ TEST_F(SafetyCheckerTest,
 }
 
 TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnsafeOutput) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -295,10 +283,10 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnsafeOutput) {
     auto* check = safety_config.mutable_raw_output_check();
     check->mutable_input_template()->Add(
         FieldSubstitution("is_raw_output_safe: %s", StringValueField()));
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRawOutputCheck(client_, "unsafe raw output",
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRawOutputCheck("unsafe raw output", future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -313,10 +301,10 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnsafeOutput) {
 }
 
 TEST_F(SafetyCheckerTest, RequestChecksPassesWithTrivialConfig) {
-  SafetyChecker checker([]() { return SafetyConfig(ComposeSafetyConfig()); }());
-  checker.RunRequestChecks(client_,
-                           UrlAndInputRequest("unsafe_url", "unsafe_input"),
-                           future_.GetCallback());
+  SafetyClientFixture fixture([]() { return ComposeSafetyConfig(); }());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UrlAndInputRequest("unsafe_url", "unsafe_input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -326,7 +314,7 @@ TEST_F(SafetyCheckerTest, RequestChecksPassesWithTrivialConfig) {
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckPassesWithSafeUrl) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -341,11 +329,11 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithSafeUrl) {
       check2->mutable_input_template()->Add(
           FieldSubstitution("is_safe_input: %s", UserInputField()));
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_,
-                           UrlAndInputRequest("safe_url", "reasonable input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UrlAndInputRequest("safe_url", "reasonable input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -364,7 +352,7 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithSafeUrl) {
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeUrl) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -379,11 +367,12 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeUrl) {
       check2->mutable_input_template()->Add(
           FieldSubstitution("is_safe_input: %s", UserInputField()));
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_,
-                           UrlAndInputRequest("unsafe_url", "reasonable input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(
+      UrlAndInputRequest("unsafe_url", "reasonable input"),
+      future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -402,7 +391,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeUrl) {
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnmetRequiredLanguage) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     // Configure a request safety check on the PageUrl.
     auto safety_config = ComposeSafetyConfig();
     safety_config.add_allowed_languages("eo");  // Require esperanto
@@ -412,10 +401,11 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnmetRequiredLanguage) {
           FieldSubstitution("is_safe_input: %s", UserInputField()));
       check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_, UserInputRequest("english input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UserInputRequest("english input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -431,7 +421,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnmetRequiredLanguage) {
 
 TEST_F(SafetyCheckerTest,
        RequestCheckPassesWithUnmetRequiredLanguageButIgnored) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.add_allowed_languages("eo");  // Require esperanto
     {
@@ -441,10 +431,11 @@ TEST_F(SafetyCheckerTest,
       check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
       check->set_ignore_language_result(true);
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_, UserInputRequest("english input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UserInputRequest("english input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -459,7 +450,7 @@ TEST_F(SafetyCheckerTest,
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckPassesWithMetRequiredLanguage) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     // Configure a request safety check on the PageUrl.
     auto safety_config = ComposeSafetyConfig();
     safety_config.add_allowed_languages("eo");  // Require esperanto
@@ -469,10 +460,11 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithMetRequiredLanguage) {
           FieldSubstitution("is_safe_input: %s", UserInputField()));
       check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_, UserInputRequest("esperanto input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UserInputRequest("esperanto input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -487,7 +479,7 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithMetRequiredLanguage) {
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckPassesWithLanguageOnly) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     // Configure a request safety check on the PageUrl.
     auto safety_config = ComposeSafetyConfig();
     safety_config.add_allowed_languages("eo");  // Require esperanto
@@ -499,10 +491,11 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithLanguageOnly) {
       check->mutable_safety_category_thresholds()->Add(RequireReasonable());
       check->set_check_language_only(true);
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_, UserInputRequest("esperanto input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UserInputRequest("esperanto input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -516,7 +509,7 @@ TEST_F(SafetyCheckerTest, RequestCheckPassesWithLanguageOnly) {
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckFailsWithLanguageOnly) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     // Configure a request safety check on the PageUrl.
     auto safety_config = ComposeSafetyConfig();
     safety_config.add_allowed_languages("eo");  // Require esperanto
@@ -528,10 +521,11 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithLanguageOnly) {
       check->mutable_safety_category_thresholds()->Add(RequireReasonable());
       check->set_check_language_only(true);
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunRequestChecks(client_, UserInputRequest("english input"),
-                           future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunRequestChecks(UserInputRequest("english input"),
+                            future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -545,7 +539,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithLanguageOnly) {
 }
 
 TEST_F(SafetyCheckerTest, ResponseCheckPassesWithSafeResponse) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -572,10 +566,11 @@ TEST_F(SafetyCheckerTest, ResponseCheckPassesWithSafeResponse) {
       i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
       i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunResponseChecks(
-      client_, UrlAndInputRequest("very_", "reasonable_esperanto_"),
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunResponseChecks(
+      UrlAndInputRequest("very_", "reasonable_esperanto_"),
       SimpleResponse("safe_output"), future_.GetCallback());
   auto result = future_.Take();
 
@@ -596,7 +591,7 @@ TEST_F(SafetyCheckerTest, ResponseCheckPassesWithSafeResponse) {
 }
 
 TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeResponse) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -623,11 +618,12 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeResponse) {
       i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
       i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunResponseChecks(
-      client_, UrlAndInputRequest("un", "reasonable_esperanto_"),
-      SimpleResponse("safe_output"), future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunResponseChecks(UrlAndInputRequest("un", "reasonable_esperanto_"),
+                             SimpleResponse("safe_output"),
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -647,7 +643,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeResponse) {
 }
 
 TEST_F(SafetyCheckerTest, ResponseCheckFailsWithUnmetRequiredLanguge) {
-  SafetyChecker checker([]() {
+  SafetyClientFixture fixture([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(
         RequireReasonable());
@@ -674,11 +670,12 @@ TEST_F(SafetyCheckerTest, ResponseCheckFailsWithUnmetRequiredLanguge) {
       i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
       i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
     }
-    return SafetyConfig(safety_config);
+    return safety_config;
   }());
-  checker.RunResponseChecks(client_, UrlAndInputRequest("very_", "reasonable_"),
-                            SimpleResponse("safe_output"),
-                            future_.GetCallback());
+  auto checker = fixture.MakeSafetyChecker();
+  checker->RunResponseChecks(UrlAndInputRequest("very_", "reasonable_"),
+                             SimpleResponse("safe_output"),
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);

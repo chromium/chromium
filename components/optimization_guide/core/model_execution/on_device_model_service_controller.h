@@ -23,6 +23,8 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
+#include "components/optimization_guide/core/model_execution/safety_checker.h"
+#include "components/optimization_guide/core/model_execution/safety_client.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -135,7 +137,7 @@ class OnDeviceModelServiceController
   virtual ~OnDeviceModelServiceController();
 
   std::optional<base::FilePath> language_detection_model_path() const {
-    return language_detection_model_path_;
+    return safety_client_.language_detection_model_path();
   }
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& base_model_remote() {
@@ -148,7 +150,6 @@ class OnDeviceModelServiceController
     OnDeviceModelClient(
         ModelBasedCapabilityKey feature,
         base::WeakPtr<OnDeviceModelServiceController> controller,
-        const on_device_model::TextSafetyLoaderParams& ts_params,
         const on_device_model::ModelAssetPaths& model_paths,
         base::optional_ref<const on_device_model::AdaptationAssetPaths>
             adaptation_assets);
@@ -156,8 +157,6 @@ class OnDeviceModelServiceController
     bool ShouldUse() override;
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
         override;
-    mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-    GetTextSafetyModelRemote() override;
     void OnResponseCompleted() override;
     void OnSessionTimedOut() override;
 
@@ -165,7 +164,6 @@ class OnDeviceModelServiceController
     ModelBasedCapabilityKey feature_;
     base::WeakPtr<OnDeviceModelServiceController> controller_;
     on_device_model::ModelAssetPaths model_paths_;
-    on_device_model::TextSafetyLoaderParams ts_params_;
 
     // Model adaptation assets are populated when it was required.
     std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets_;
@@ -185,14 +183,6 @@ class OnDeviceModelServiceController
       const on_device_model::ModelAssetPaths& model_paths,
       base::optional_ref<const on_device_model::AdaptationAssetPaths>
           adaptation_assets);
-
-  mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-  GetTextSafetyModelRemote(
-      const on_device_model::TextSafetyLoaderParams& params);
-
-  void OnTextSafetyParamsLoaded(
-      mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model,
-      on_device_model::mojom::TextSafetyModelParamsPtr params);
 
   // Ensures the service is running and base model remote is created.
   void MaybeCreateBaseModelRemote(
@@ -224,8 +214,6 @@ class OnDeviceModelServiceController
 
   on_device_model::ModelAssetPaths PopulateModelPaths();
 
-  on_device_model::TextSafetyLoaderParams PopulateTextSafetyParams() const;
-
   // Called to update the model availability changes for `feature`.
   void NotifyModelAvailabilityChange(ModelBasedCapabilityKey feature);
 
@@ -235,17 +223,11 @@ class OnDeviceModelServiceController
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
 
-  // Full path of the language detection model file if it's available.
-  std::optional<base::FilePath> language_detection_model_path_;
-
-  // Can be null if no safety model available.
-  std::unique_ptr<SafetyModelInfo> safety_model_info_;
   std::unique_ptr<OnDeviceModelMetadata> model_metadata_;
   on_device_model::ServiceClient service_client_;
+  SafetyClient safety_client_;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel> base_model_remote_;
-
-  mojo::Remote<on_device_model::mojom::TextSafetyModel> ts_model_remote_;
 
   // Maintains the live model adaptation controllers per feature. Created when
   // model adaptation is needed for a feature, and removed when adaptation
