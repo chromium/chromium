@@ -53,9 +53,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-#error "Extensions must be enabled"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/ash_extension_keeplist_manager.h"

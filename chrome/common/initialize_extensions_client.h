@@ -7,9 +7,7 @@
 
 #include "extensions/buildflags/buildflags.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#error "Extensions must be enabled"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // Initializes the single instance of the ExtensionsClient. Safe to call
 // multiple times.
