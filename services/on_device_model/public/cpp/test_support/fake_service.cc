@@ -304,10 +304,10 @@ FakeServiceLauncher::~FakeServiceLauncher() = default;
 
 void FakeServiceLauncher::LaunchService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
-        pending_reciever) {
+        pending_receiver) {
   did_launch_service_ = true;
   service_ = std::make_unique<on_device_model::FakeOnDeviceModelService>(
-      std::move(pending_reciever), settings_);
+      std::move(pending_receiver), settings_);
 }
 
 }  // namespace on_device_model

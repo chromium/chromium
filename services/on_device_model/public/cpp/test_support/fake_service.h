@@ -226,7 +226,7 @@ class FakeServiceLauncher final {
  private:
   void LaunchService(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
-          pending_reciever);
+          pending_receiver);
 
   raw_ptr<on_device_model::FakeOnDeviceServiceSettings> settings_;
   std::unique_ptr<FakeOnDeviceModelService> service_;

@@ -12,30 +12,40 @@
 
 namespace optimization_guide {
 
+namespace {
+
+// Creates the on-device model service.
+void CreateModelService(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        receiver) {
+  // TODO(crbug.com/370768381): Save the pointer of OnDeviceModelService. Otherwise, it will
+  // disconnect the service immediately.
+  on_device_model::OnDeviceModelService::Create(std::move(receiver));
+}
+
+// Launches the on-device model service.
+void LaunchService(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        pending_receiver) {
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  background_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CreateModelService, std::move(pending_receiver)));
+}
+
+}  // namespace
+
 OnDeviceModelServiceControllerIOS::OnDeviceModelServiceControllerIOS(
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager)
     : OnDeviceModelServiceController(
           std::make_unique<OnDeviceModelAccessController>(
               *GetApplicationContext()->GetLocalState()),
-          std::move(on_device_component_state_manager)) {}
+          std::move(on_device_component_state_manager),
+          base::BindRepeating(&LaunchService)) {}
 
 OnDeviceModelServiceControllerIOS::~OnDeviceModelServiceControllerIOS() {}
-
-void OnDeviceModelServiceControllerIOS::LaunchService() {
-  receiver_ = service_remote_.BindNewPipeAndPassReceiver();
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  background_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceModelServiceControllerIOS::CreateModelService,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void OnDeviceModelServiceControllerIOS::CreateModelService() {
-  service_ =
-      on_device_model::OnDeviceModelService::Create(std::move(receiver_));
-}
 
 }  // namespace optimization_guide

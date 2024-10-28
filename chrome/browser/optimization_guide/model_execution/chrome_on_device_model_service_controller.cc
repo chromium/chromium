@@ -18,11 +18,11 @@ ChromeOnDeviceModelServiceController* g_instance = nullptr;
 
 void LaunchService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
-        pending_reciever) {
+        pending_receiver) {
   CHECK(features::CanLaunchOnDeviceModelService());
   content::ServiceProcessHost::Launch<
       on_device_model::mojom::OnDeviceModelService>(
-      std::move(pending_reciever),
+      std::move(pending_receiver),
       content::ServiceProcessHost::Options()
           .WithDisplayName("On-Device Model Service")
           .Pass());
