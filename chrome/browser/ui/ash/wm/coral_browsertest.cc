@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
@@ -17,6 +18,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/command_line.h"
@@ -296,6 +298,75 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveAppsToNewDesk) {
                                           "gdkbjbkdgeggmfkjbfohmimchmkikbid",
                                           "nbljnnecbjbmifnoehiemkgefbnpoeak",
                                           "odknhmnlageboeamepcngndbggdpaobj"));
+}
+
+// Tests that the chip will get updated when the title is loaded by the backend.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
+  // Create a test coral group with a pending title.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(CreateTestGroup({}));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  BirchChipButton* coral_chip =
+      static_cast<BirchChipButton*>(GetBirchChipButton());
+  ASSERT_TRUE(coral_chip);
+
+  // The chip should hide title with title pending.
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+  ASSERT_FALSE(coral_chip->title_->GetVisible());
+
+  // When the group title gets updated, the chip title will be shown with
+  // updated title.
+  BirchCoralProvider::Get()->TitleUpdated(base::Token(), "Updated Title");
+  ASSERT_TRUE(coral_chip->title_->GetVisible());
+  EXPECT_EQ(coral_chip->title_->GetText(), u"Updated Title");
+}
+
+// Tests that the chip will show placeholder title when corresponding group
+// title loading fails.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
+  // Create a test coral group with a pending title.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(CreateTestGroup({}));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  BirchChipButton* coral_chip =
+      static_cast<BirchChipButton*>(GetBirchChipButton());
+  ASSERT_TRUE(coral_chip);
+
+  // The chip should show placeholder title when receiving an empty title.
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+  ASSERT_FALSE(coral_chip->title_->GetVisible());
+
+  // When the group title gets updated, the chip title will be shown with
+  // updated title.
+  BirchCoralProvider::Get()->TitleUpdated(base::Token(), "");
+  ASSERT_TRUE(coral_chip->title_->GetVisible());
+  EXPECT_EQ(coral_chip->title_->GetText(), u"Suggested Group");
 }
 
 }  // namespace ash

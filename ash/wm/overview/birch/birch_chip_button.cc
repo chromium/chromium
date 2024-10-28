@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -17,6 +18,7 @@
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -327,8 +329,29 @@ void BirchChipButton::Init(BirchItem* item) {
           item->GetAddonAccessibleName());
       button->SetTooltipText(item->GetAddonAccessibleName());
       SetAddon(std::move(button));
-      // Show loading animation for title if `item` has a dummy title.
-      if (item_->title() == u"CoralTitle") {
+      // Coral chip gets the real title from the group.
+      auto* coral_provider = BirchCoralProvider::Get();
+      const std::optional<std::string>& group_title =
+          coral_provider
+              ? coral_provider
+                    ->GetGroupById(
+                        static_cast<BirchCoralItem*>(item_)->group_id())
+                    ->title
+              : "";
+      if (group_title) {
+        // If the title is not empty, reset the `title_` with the real title.
+        if (!group_title->empty()) {
+          title_->SetText(base::UTF8ToUTF16(*group_title));
+        }
+        // Show title and delete the loading animation.
+        title_->SetVisible(true);
+        if (!!title_loading_animated_image_) {
+          title_loading_animated_image_->Stop();
+          titles_container_->RemoveChildViewT(
+              std::exchange(title_loading_animated_image_, nullptr));
+        }
+      } else {
+        // If the title is null, show the animation to wait for title loading.
         title_->SetVisible(false);
 
         BuildTitleLoadingAnimation();
@@ -337,14 +360,6 @@ void BirchChipButton::Init(BirchItem* item) {
                 *title_loading_animated_image_->animated_image()->skottie(),
                 // TODO(yulunwu) replace loading animation when available.
                 IDR_MAHI_LOADING_OUTLINES_ANIMATION));
-      } else {
-        // Show title and delete the loading animation.
-        title_->SetVisible(true);
-        if (!!title_loading_animated_image_) {
-          title_loading_animated_image_->Stop();
-          titles_container_->RemoveChildViewT(
-              std::exchange(title_loading_animated_image_, nullptr));
-        }
       }
       break;
     }
@@ -434,7 +449,7 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
 
 void BirchChipButton::SetAddon(std::unique_ptr<views::View> addon_view) {
   if (addon_view_) {
-    RemoveChildViewT(addon_view_);
+    RemoveChildViewT(std::exchange(addon_view_, nullptr));
   } else {
     flex_layout_->SetInteriorMargin(kInteriorMarginsWithAddon);
   }

@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_chip_loader_view.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -762,7 +763,8 @@ void BirchBarView::RemoveChipFromTwoRowsBar(
 }
 
 void BirchBarView::MaybeShowPrivacyNudge() {
-  if (chips_.empty()) {
+  // Don't show nudge when exiting Overview.
+  if (chips_.empty() || !OverviewController::Get()->InOverviewSession()) {
     return;
   }
   // The nudge is anchored on the first suggestion chip.

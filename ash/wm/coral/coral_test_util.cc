@@ -29,11 +29,11 @@ TestEntity& TestEntity::operator=(const TestEntity&) = default;
 TestEntity::~TestEntity() = default;
 
 coral::mojom::GroupPtr CreateTestGroup(const std::vector<TestEntity>& entities,
-                                       const std::string& title,
+                                       const std::optional<std::string>& title,
                                        const base::Token& id) {
   auto test_group = coral::mojom::Group::New();
   test_group->id = id;
-  test_group->title = title.empty() ? "Coral Group" : title;
+  test_group->title = title;
 
   for (const TestEntity& entity : entities) {
     if (std::holds_alternative<GURL>(entity.id)) {
@@ -56,7 +56,8 @@ coral::mojom::GroupPtr CreateDefaultTestGroup() {
                           {"Figma", GURL("https://www.figma.com/")},
                           {"Notion", GURL("https://www.notion.so/")},
                           {"Settings", "odknhmnlageboeamepcngndbggdpaobj"},
-                          {"Files", "lgnggepjiihbfdbedefdhcffnmhcahbm"}});
+                          {"Files", "lgnggepjiihbfdbedefdhcffnmhcahbm"}},
+                         "Coral Group");
 }
 
 void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups) {

@@ -60,6 +60,9 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
  private:
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);
+  FRIEND_TEST_ALL_PREFIXES(CoralBrowserTest, AsyncGroupTitle);
+  FRIEND_TEST_ALL_PREFIXES(CoralBrowserTest, GroupTitleLoadingFail);
+
   class ChipMenuController;
 
   void SetAddon(std::unique_ptr<views::View> addon_view);

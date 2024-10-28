@@ -87,6 +87,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
+  // Called when the content of a group with given `group_id` gets updated.
+  void OnCoralGroupUpdated(const base::Token& group_id);
+
   // Executes the commands from bar and chip context menus. `from_chip` will be
   // true if the command is from a chip context menu.
   // Please note that most of the bar menu commands should be executed by the

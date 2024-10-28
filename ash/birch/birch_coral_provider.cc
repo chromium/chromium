@@ -24,6 +24,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
@@ -58,6 +59,8 @@ constexpr base::TimeDelta kPostLoginClustersLifespan = base::Minutes(15);
 // cluster.
 constexpr base::TimeDelta kPostLoginSecondClusterLifespan = base::Minutes(10);
 BirchCoralProvider* g_instance = nullptr;
+
+constexpr char16_t kTitlePlaceholder[] = u"Suggested Group";
 
 bool HasValidClusterCount(size_t num_clusters) {
   return num_clusters <= kMaxClusterCount;
@@ -303,6 +306,9 @@ void BirchCoralProvider::TitleUpdated(const base::Token& id,
   for (coral::mojom::GroupPtr& group : response_->groups()) {
     if (group->id == id) {
       group->title = title;
+      if (auto* bar_controller = BirchBarController::Get()) {
+        bar_controller->OnCoralGroupUpdated(group->id);
+      }
       return;
     }
   }
@@ -355,10 +361,8 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
 
   request_.set_source(CoralSource::kPostLogin);
   request_.set_content(std::move(tab_app_data));
-  // TODO(zxdan): Change `mojo::NullRemote()` to `BindRemote()` when we
-  // can update BirchModel on title updates.
   Shell::Get()->coral_controller()->GenerateContentGroups(
-      request_, mojo::NullRemote(),
+      request_, BindRemote(),
       base::BindOnce(&BirchCoralProvider::HandlePostLoginCoralResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -381,10 +385,8 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   FilterCoralContentItems(&active_tab_app_data);
   request_.set_source(CoralSource::kInSession);
   request_.set_content(std::move(active_tab_app_data));
-  // TODO(zxdan): Change `mojo::NullRemote()` to `BindRemote()` when we
-  // can update BirchModel on title updates.
   Shell::Get()->coral_controller()->GenerateContentGroups(
-      request_, mojo::NullRemote(),
+      request_, BindRemote(),
       base::BindOnce(&BirchCoralProvider::HandleInSessionCoralResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -435,9 +437,10 @@ void BirchCoralProvider::HandleCoralResponse(
   CHECK(HasValidClusterCount(response_->groups().size()));
   for (size_t i = 0; i < response_->groups().size(); ++i) {
     const auto& group = response_->groups()[i];
-    // TODO(zxdan): Support nullopt title for async title generation.
+    // Set a placeholder to item title. The chip title will be directly fetched
+    // from group title.
     // TODO(zxdan): Localize the strings.
-    items.emplace_back(base::UTF8ToUTF16(group->title.value_or(std::string())),
+    items.emplace_back(/*title=*/kTitlePlaceholder,
                        /*subtitle=*/u"Resume suggested group",
                        response_->source(),
                        /*group_id=*/group->id);

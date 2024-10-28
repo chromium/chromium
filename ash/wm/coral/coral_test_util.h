@@ -32,9 +32,10 @@ struct TestEntity {
 
 // Creates a group for testing purposes. `entities` is a vector of GURLs or app
 // ids.
-coral::mojom::GroupPtr CreateTestGroup(const std::vector<TestEntity>& entities,
-                                       const std::string& title = std::string(),
-                                       const base::Token& id = base::Token());
+coral::mojom::GroupPtr CreateTestGroup(
+    const std::vector<TestEntity>& entities,
+    const std::optional<std::string>& title = std::nullopt,
+    const base::Token& id = base::Token());
 
 // Creates a group with some default urls and apps.
 coral::mojom::GroupPtr CreateDefaultTestGroup();

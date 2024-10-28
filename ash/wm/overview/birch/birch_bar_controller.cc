@@ -232,23 +232,21 @@ void BirchBarController::ToggleTemperatureUnits() {
   MaybeFetchDataFromModel();
 }
 
-void BirchBarController::ProvideFeedbackForCoral() {
-  base::Value::List root;
-  for (auto& item : items_) {
-    if (item->GetType() == BirchItemType::kCoral) {
-      root.Append(
-          static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
-    }
+void BirchBarController::OnCoralGroupUpdated(const base::Token& group_id) {
+  auto iter =
+      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
+        if (item->GetType() != BirchItemType::kCoral) {
+          return false;
+        }
+        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
+      });
+  if (iter == items_.end()) {
+    return;
   }
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kOverview,
-      /*description_template=*/
-      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
-                    base::WriteJsonWithOptions(
-                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
-                        .value_or(std::string()),
-                    "\n", kMarkdownBackticks}),
-      /*category_tag=*/"Coral");
+
+  for (auto bar_view : bar_views_) {
+    bar_view->UpdateChip(iter->get());
+  }
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
@@ -317,6 +315,25 @@ void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
 
 void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
   ExecuteMenuCommand(command_id, /*from_chip=*/false);
+}
+
+void BirchBarController::ProvideFeedbackForCoral() {
+  base::Value::List root;
+  for (auto& item : items_) {
+    if (item->GetType() == BirchItemType::kCoral) {
+      root.Append(
+          static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
+    }
+  }
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      ShellDelegate::FeedbackSource::kOverview,
+      /*description_template=*/
+      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
+                    base::WriteJsonWithOptions(
+                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+                        .value_or(std::string()),
+                    "\n", kMarkdownBackticks}),
+      /*category_tag=*/"Coral");
 }
 
 void BirchBarController::MaybeFetchDataFromModel() {
