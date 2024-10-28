@@ -82,6 +82,7 @@ void EditorSystemActuator::ApproveConsent() {
                              /*freeform_text=*/std::nullopt);
       return;
     case EditorNoticeTransitionAction::kDoNothing:
+      system_->CloseUI();
       return;
   }
 }
