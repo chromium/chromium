@@ -142,8 +142,7 @@ TestingApplicationContext::GetSharedURLLoaderFactory() {
 network::mojom::NetworkContext*
 TestingApplicationContext::GetSystemNetworkContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const std::string& TestingApplicationContext::GetApplicationLocale() {

@@ -79,7 +79,7 @@ using bookmarks::BookmarkNode;
 
 - (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {

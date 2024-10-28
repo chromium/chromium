@@ -61,8 +61,7 @@ CGFloat CenteredTilesMarginForWidth(UITraitCollection* trait_collection,
       return margin;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 CGFloat MostVisitedTilesContentHorizontalSpace(

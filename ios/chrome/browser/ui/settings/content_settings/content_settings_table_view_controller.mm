@@ -509,7 +509,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.detectUnitsItem.on = [self.detectUnitsEnabled value];
     [self reconfigureCellsForItems:@[ self.detectUnitsItem ]];
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

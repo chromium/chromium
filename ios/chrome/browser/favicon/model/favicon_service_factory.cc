@@ -40,8 +40,7 @@ favicon::FaviconService* FaviconServiceFactory::GetForProfile(
   }
 
   // ProfileIOS is OffTheRecord without access.
-  NOTREACHED_IN_MIGRATION() << "ProfileIOS is OffTheRecord";
-  return nullptr;
+  NOTREACHED() << "ProfileIOS is OffTheRecord";
 }
 
 // static

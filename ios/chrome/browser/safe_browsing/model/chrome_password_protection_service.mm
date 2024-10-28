@@ -664,8 +664,7 @@ void ChromePasswordProtectionService::OnUserAction(
           UserMetricsAction("PasswordProtection.ModalWarning.CloseWarning"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   RemoveWarningRequestsByWebState(web_state);
 }

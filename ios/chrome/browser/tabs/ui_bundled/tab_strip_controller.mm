@@ -759,7 +759,7 @@ const CGFloat kSymbolSize = 18;
                         object:nil];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

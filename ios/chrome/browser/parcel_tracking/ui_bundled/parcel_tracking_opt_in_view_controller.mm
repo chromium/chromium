@@ -116,8 +116,7 @@ CGFloat const kRadioButtonSize = 20;
       break;
     case IOSParcelTrackingOptInStatus::kNeverTrack:
     case IOSParcelTrackingOptInStatus::kStatusNotSet:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

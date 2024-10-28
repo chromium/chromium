@@ -137,7 +137,7 @@ void TestFormResponseProvider::GetResponseHeadersAndBody(
     *response_body = request.method + std::string(" ") + request.body;
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

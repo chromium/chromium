@@ -188,7 +188,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         _sendTabPromoMediator.delegate = self;
       } else {
         // Known module mediators need to be handled.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -845,8 +845,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       default:
         // These module types should not have been added by the logic
         // receiving the order list from Segmentation.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return magicStackOrder;

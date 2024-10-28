@@ -175,9 +175,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       cell.accessibilityTraits |= UIAccessibilityTraitButton;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      cellType = NewPasswordTableCellTypeSuggestStrongPassword;
-      break;
+      NOTREACHED();
   }
 
   [cell setCellType:cellType];
@@ -559,8 +557,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender {
-  NOTREACHED_IN_MIGRATION()
-      << "The typing shield should only be present on web";
+  NOTREACHED() << "The typing shield should only be present on web";
 }
 
 @end

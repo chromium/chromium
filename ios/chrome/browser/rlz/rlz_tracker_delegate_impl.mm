@@ -112,16 +112,15 @@ void RLZTrackerDelegateImpl::SetOmniboxSearchCallback(
 
 void RLZTrackerDelegateImpl::SetHomepageSearchCallback(
     base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RLZTrackerDelegateImpl::RunHomepageSearchCallback() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool RLZTrackerDelegateImpl::ShouldUpdateExistingAccessPointRlz() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox(OmniboxLog* log) {

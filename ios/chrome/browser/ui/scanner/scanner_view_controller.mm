@@ -269,8 +269,7 @@ using base::UserMetricsAction;
       break;
     }
     case scanner::CAMERA_NOT_LOADED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

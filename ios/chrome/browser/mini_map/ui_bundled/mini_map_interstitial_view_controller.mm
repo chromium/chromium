@@ -142,7 +142,7 @@ UIImage* GetBrandedGoogleMapsSymbol() {
 }
 
 - (void)dismissed {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)userPressedContentSettings {

@@ -345,7 +345,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didChangeNode:(const BookmarkNode*)bookmarkNode {

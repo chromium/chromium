@@ -104,8 +104,7 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
                                                   kSymbolPointSize);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return symbol;
 }
@@ -676,8 +675,7 @@ BOOL UIIsBlocking(Browser* browser) {
     case ItemTypeDataTypeAutofill:
       return kClearAutofillCellAccessibilityIdentifier;
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     }
   }
 }

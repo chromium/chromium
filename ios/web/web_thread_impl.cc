@@ -146,8 +146,7 @@ class WebThreadTaskExecutor {
       case WebThread::IO:
         return io_thread_task_runner_;
       case WebThread::ID_COUNT:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 

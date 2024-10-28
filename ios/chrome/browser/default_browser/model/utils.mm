@@ -160,8 +160,7 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
     case DefaultPromoTypeStaySafe:
       return kLastSignificantUserEventStaySafe;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 // Loads from NSUserDefaults the time of the non-expired events for the

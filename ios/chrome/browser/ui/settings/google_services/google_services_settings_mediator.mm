@@ -99,8 +99,7 @@ bool IsControllingSigninAllowedByPolicy() {
     case BrowserSigninMode::kForced:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool GetStatusForSigninPolicy() {
@@ -114,8 +113,7 @@ bool GetStatusForSigninPolicy() {
     case BrowserSigninMode::kDisabled:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -553,8 +551,7 @@ bool GetStatusForSigninPolicy() {
     case BetterSearchAndBrowsingManagedItemType:
     case ImproveChromeManagedItemType:
     case ImproveSearchSuggestionsManagedItemType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ParcelTrackingItemType:
       break;
   }

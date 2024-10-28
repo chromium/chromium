@@ -395,8 +395,7 @@
              initWithAnimation:ConsistencySheetSlideAnimationPopping
           navigationController:self.navigationController];
   }
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (id<UIViewControllerInteractiveTransitioning>)

@@ -351,8 +351,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeNickname:
       return YES;
   }
-  NOTREACHED_IN_MIGRATION();
-  return NO;
+  NOTREACHED();
 }
 
 #pragma mark - Actions

@@ -45,7 +45,7 @@ bool IOSBlockingPageControllerClient::CanLaunchDateAndTimeSettings() {
 }
 
 void IOSBlockingPageControllerClient::LaunchDateAndTimeSettings() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void IOSBlockingPageControllerClient::GoBack() {
@@ -66,16 +66,15 @@ bool IOSBlockingPageControllerClient::CanGoBack() {
 }
 
 bool IOSBlockingPageControllerClient::CanGoBackBeforeNavigation() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void IOSBlockingPageControllerClient::GoBackAfterNavigationCommitted() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void IOSBlockingPageControllerClient::Proceed() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void IOSBlockingPageControllerClient::Reload() {
@@ -97,7 +96,7 @@ void IOSBlockingPageControllerClient::OpenUrlInNewForegroundTab(
 }
 
 void IOSBlockingPageControllerClient::OpenEnhancedProtectionSettings() {
-  NOTREACHED_IN_MIGRATION() << "Enhanced protection is not supported on iOS.";
+  NOTREACHED() << "Enhanced protection is not supported on iOS.";
 }
 
 const std::string& IOSBlockingPageControllerClient::GetApplicationLocale()

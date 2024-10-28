@@ -198,8 +198,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
   switch (swipeType) {
     case SwipeType::NONE:
     case SwipeType::CHANGE_TAB:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SwipeType::CHANGE_PAGE:
       [self animatePageNavigationInDirection:direction];
       break;
@@ -241,7 +240,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
   if (_swipeType == SwipeType::CHANGE_PAGE) {
     return [self handleSwipeToNavigate:gesture];
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)handleiPadTabSwipe:(SideSwipeGestureRecognizer*)gesture {

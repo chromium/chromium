@@ -1233,8 +1233,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       sectionIndex++;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 - (void)dismissMarkConfirmationSheet {

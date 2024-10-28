@@ -156,8 +156,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     case SyncSettingsAccountState::kSignedIn:
       break;
     case SyncSettingsAccountState::kSignedOut:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   self.mediator = [[ManageSyncSettingsMediator alloc]

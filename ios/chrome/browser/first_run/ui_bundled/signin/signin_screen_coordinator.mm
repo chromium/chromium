@@ -285,8 +285,8 @@
     self.mediator.UMALinkWasTapped = YES;
     [self showUMADialog];
   } else {
-    NOTREACHED_IN_MIGRATION() << std::string("Unknown URL ")
-                              << base::SysNSStringToUTF8(URL.absoluteString);
+    NOTREACHED() << std::string("Unknown URL ")
+                 << base::SysNSStringToUTF8(URL.absoluteString);
   }
 }
 

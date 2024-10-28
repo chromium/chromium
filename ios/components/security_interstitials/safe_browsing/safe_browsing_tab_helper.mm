@@ -90,7 +90,7 @@ void RecordTotalDelay2MetricForNavigation(
       performed_check_str = ".HashPrefixRealTimeCheck";
       break;
     case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::UmaHistogramTimes("SafeBrowsing.IOS.TotalDelay2" + performed_check_str,

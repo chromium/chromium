@@ -53,9 +53,7 @@ IOSChromeTabRestoreServiceClient::CreateLiveTabContext(
     const std::string& /* workspace */,
     const std::string& /* user_title */,
     const std::map<std::string, std::string>& /* extra_data */) {
-  NOTREACHED_IN_MIGRATION()
-      << "Tab restore service attempting to create a new window.";
-  return nullptr;
+  NOTREACHED() << "Tab restore service attempting to create a new window.";
 }
 
 sessions::LiveTabContext*
@@ -126,5 +124,5 @@ bool IOSChromeTabRestoreServiceClient::HasLastSession() {
 
 void IOSChromeTabRestoreServiceClient::GetLastSession(
     sessions::GetLastSessionCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

@@ -243,7 +243,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 - (void)userDismissedFindNavigatorForManager:
     (web::AbstractFindInPageManager*)manager {
   // There should not be any Find navigator in JavaScript Find in Page.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #pragma mark - Notification listeners

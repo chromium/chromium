@@ -382,8 +382,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kTips:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return @"";
+      NOTREACHED();
   }
 }
 

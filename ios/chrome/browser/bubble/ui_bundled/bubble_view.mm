@@ -720,9 +720,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
       offset = -alignmentOffset;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid bubble alignment " << self.alignment;
-      return nil;
+      NOTREACHED() << "Invalid bubble alignment " << self.alignment;
   }
   NSLayoutAnchor* centerAnchor =
       vertical ? (NSLayoutAnchor*)self.arrow.centerXAnchor

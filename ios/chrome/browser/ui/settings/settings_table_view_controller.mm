@@ -1289,10 +1289,10 @@ struct EnhancedSafeBrowsingActivePromoData
       [switchCell.switchView addTarget:self
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
       break;
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
     }
     case SettingsItemTypeManagedDefaultSearchEngine: {
       TableViewInfoButtonCell* managedCell =
@@ -2305,7 +2305,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)reportBackUserAction {
   // Not called for root settings controller.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)settingsWillBeDismissed {
@@ -2515,7 +2515,7 @@ struct EnhancedSafeBrowsingActivePromoData
             : l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION);
     [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

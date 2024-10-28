@@ -243,9 +243,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Unexpected value for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -347,9 +346,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Unexpected value for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -451,9 +449,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Unexpected value for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -1261,9 +1258,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                        promoAction:promoAction];
       return;
     case SigninPromoAction::kReviewAccountSettings:
-      NOTREACHED_IN_MIGRATION()
-          << "This action is only valid for a signed in account.";
-      return;
+      NOTREACHED() << "This action is only valid for a signed in account.";
   }
 }
 
@@ -1329,14 +1324,10 @@ id<SystemIdentity> GetDisplayedIdentity(
                                        PROMO_ACTION_NOT_DEFAULT];
       return;
     case SigninPromoAction::kReviewAccountSettings:
-      NOTREACHED_IN_MIGRATION()
-          << "This action is only valid for a signed in account.";
-      return;
+      NOTREACHED() << "This action is only valid for a signed in account.";
     case SigninPromoAction::kSigninWithNoDefaultIdentity:
-      NOTREACHED_IN_MIGRATION()
-          << "The user should not be able to explicitly select "
-             "\"other account\".";
-      return;
+      NOTREACHED() << "The user should not be able to explicitly select "
+                      "\"other account\".";
   }
 }
 

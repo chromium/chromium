@@ -332,7 +332,7 @@
       [self.delegate openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

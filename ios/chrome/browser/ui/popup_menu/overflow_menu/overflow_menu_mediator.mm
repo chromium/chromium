@@ -1971,8 +1971,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::Help:
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     case overflow_menu::ActionType::Follow:
       return [self newFollowAction];
     case overflow_menu::ActionType::Bookmark:

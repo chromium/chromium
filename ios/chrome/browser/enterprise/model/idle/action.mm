@@ -267,7 +267,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
         break;
       default:
         // Perform validation in the `PolicyHandler` if a new type is added.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

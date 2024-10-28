@@ -138,8 +138,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (instancetype)initWithCoder:(nonnull NSCoder*)aDecoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)setText:(NSAttributedString*)text

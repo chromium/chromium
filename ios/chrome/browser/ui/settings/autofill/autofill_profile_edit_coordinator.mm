@@ -147,7 +147,7 @@
 }
 
 - (void)didSaveProfile {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate

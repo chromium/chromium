@@ -1361,8 +1361,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       return GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
   }
 }
 

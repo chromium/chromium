@@ -56,8 +56,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
       return NonModalPromoTriggerType::kShare;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -469,9 +468,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   base::TimeDelta promoTimeInterval;
   switch (self.currentPromoReason) {
     case PromoReasonNone:
-      NOTREACHED_IN_MIGRATION();
-      promoTimeInterval = kShowPromoWebpageLoadWaitTime;
-      break;
+      NOTREACHED();
     case PromoReasonOmniboxPaste:
       promoTimeInterval = kShowPromoWebpageLoadWaitTime;
       break;

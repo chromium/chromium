@@ -328,8 +328,7 @@ enum class CancelationReason {
   _state = [self nextState];
   switch (_state) {
     case BEGIN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
 
     case CHECK_SIGNIN_STEPS:
       [self checkSigninSteps];
@@ -405,7 +404,7 @@ enum class CancelationReason {
     case DONE:
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)checkSigninSteps {

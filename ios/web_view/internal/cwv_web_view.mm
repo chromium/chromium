@@ -867,7 +867,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   } else if (micPermissionRequested) {
     mediaCaptureType = CWVMediaCaptureTypeMicrophone;
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unknown media permissions";
+    NOTREACHED() << "Unknown media permissions";
   }
 
   SEL selector = @selector(webView:

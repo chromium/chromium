@@ -449,23 +449,23 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
             (PasswordDetailsTableViewController*)viewController
                 didAddPasswordDetails:(NSString*)username
                              password:(NSString*)password {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)checkForDuplicates:(NSString*)username {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)showExistingCredential:(NSString*)username {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didCancelAddPasswordDetails {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)setWebsiteURL:(NSString*)website {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (BOOL)isURLValid {

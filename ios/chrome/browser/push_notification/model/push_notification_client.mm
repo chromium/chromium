@@ -55,8 +55,7 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
       case PushNotificationClientId::kSendTab:
       case PushNotificationClientId::kSafetyCheck:
         // Features do not support feedback.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

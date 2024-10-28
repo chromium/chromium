@@ -253,8 +253,7 @@ void CredentialProviderService::OnLoginsChanged(
         forms_to_remove.push_back(change.form());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

@@ -54,9 +54,7 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
       default_symbol = false;
       break;
     case OmniboxSuggestionIconType::kCount:
-      NOTREACHED_IN_MIGRATION();
-      symbol_name = kGlobeAmericasSymbol;
-      break;
+      NOTREACHED();
   }
 
   if (default_symbol) {

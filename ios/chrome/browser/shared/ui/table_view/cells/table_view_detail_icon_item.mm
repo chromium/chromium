@@ -458,8 +458,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
     case BadgeType::kNew:
       return NewIPHBadgeView();
     case BadgeType::kNone: {
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     }
   }
 }
@@ -565,8 +564,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                              l10n_util::GetNSString(
                                  IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)];
       case BadgeType::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return self.textLabel.text;
@@ -596,8 +594,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                              l10n_util::GetNSString(
                                  IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)] ];
       case BadgeType::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return @[ self.textLabel.text ];

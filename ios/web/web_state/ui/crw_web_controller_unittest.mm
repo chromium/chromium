@@ -1222,9 +1222,7 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
     int title_change_count() { return title_change_count_; }
     // WebStateObserver overrides:
     void TitleWasSet(WebState* web_state) override { title_change_count_++; }
-    void WebStateDestroyed(WebState* web_state) override {
-      NOTREACHED_IN_MIGRATION();
-    }
+    void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
 
    private:
     int title_change_count_ = 0;

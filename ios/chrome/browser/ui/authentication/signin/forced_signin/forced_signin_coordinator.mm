@@ -122,9 +122,7 @@
     case kChoice:
     case kDockingPromo:
     case kStepsCompleted:
-      NOTREACHED_IN_MIGRATION()
-          << "Type of screen not supported." << static_cast<int>(type);
-      break;
+      NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
   }
   return nil;
 }

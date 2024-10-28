@@ -885,7 +885,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                            errorHandler:^(NSError* error) {
                              LOG(ERROR) << base::SysNSStringToUTF8(
                                  error.localizedDescription);
-                             NOTREACHED_IN_MIGRATION();
+                             NOTREACHED();
                            }];
     }
   }
@@ -973,7 +973,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                        errorHandler:^(NSError* error) {
                          LOG(ERROR) << base::SysNSStringToUTF8(
                              error.localizedDescription);
-                         NOTREACHED_IN_MIGRATION();
+                         NOTREACHED();
                        }];
 
   if (!targetSceneState.UIEnabled) {

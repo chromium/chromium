@@ -49,8 +49,7 @@ int InactiveDaysThresholdWithItemType(ItemType item_type) {
     case ItemTypeOptions21Days:
       return 21;
     case ItemTypeHeader:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

@@ -297,8 +297,7 @@ void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
     case NSStreamEventHasSpaceAvailable:
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected stream event: " << event;
-      break;
+      NOTREACHED() << "Unexpected stream event: " << event;
   }
 }
 
@@ -704,9 +703,7 @@ void HttpProtocolHandlerCore::StopListeningStream(NSStream* stream) {
     case NSStreamStatusError:
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected stream status: " << [stream streamStatus];
-      break;
+      NOTREACHED() << "Unexpected stream status: " << [stream streamStatus];
   }
 }
 

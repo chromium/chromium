@@ -73,8 +73,7 @@ FaviconURL::IconType IconTypeFromContentIconType(
     case blink::mojom::FaviconIconType::kInvalid:
       return FaviconURL::IconType::kInvalid;
   }
-  NOTREACHED_IN_MIGRATION();
-  return FaviconURL::IconType::kInvalid;
+  NOTREACHED();
 }
 
 // Creates a CRWSessionStorage instance from protobuf message.

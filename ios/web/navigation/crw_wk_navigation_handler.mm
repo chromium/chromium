@@ -1134,7 +1134,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // As Chromium never return WKNavigationResponsePolicyDownload
   // when deciding the policy for an action, WebKit should never
   // invoke this delegate method.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)webView:(WKWebView*)webView

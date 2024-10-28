@@ -52,13 +52,11 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)didMoveToSuperview {

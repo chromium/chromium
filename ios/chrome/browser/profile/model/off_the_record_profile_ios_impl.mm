@@ -76,7 +76,7 @@ ProfileIOS* OffTheRecordProfileIOSImpl::GetOffTheRecordProfile() {
 }
 
 void OffTheRecordProfileIOSImpl::DestroyOffTheRecordProfile() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ProfilePolicyConnector* OffTheRecordProfileIOSImpl::GetPolicyConnector() {

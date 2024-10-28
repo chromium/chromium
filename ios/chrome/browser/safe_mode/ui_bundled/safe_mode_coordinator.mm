@@ -63,9 +63,7 @@ const int kStartupCrashLoopThreshold = 3;
 
 // Override of ChildCoordinators method, which is not supported in this class.
 - (MutableCoordinatorArray*)childCoordinators {
-  NOTREACHED_IN_MIGRATION()
-      << "Do not add child coordinators to SafeModeCoordinator.";
-  return nil;
+  NOTREACHED() << "Do not add child coordinators to SafeModeCoordinator.";
 }
 
 #pragma mark - SafeModeViewControllerDelegate implementation

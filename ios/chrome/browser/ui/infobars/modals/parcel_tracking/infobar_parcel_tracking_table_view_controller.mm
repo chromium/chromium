@@ -370,8 +370,7 @@ NSString* const kCarrierKey = @"carrier";
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_USPS);
     default:
       // Currently unsupported carriers.
-      NOTREACHED_IN_MIGRATION();
-      return @"";
+      NOTREACHED();
   }
 }
 

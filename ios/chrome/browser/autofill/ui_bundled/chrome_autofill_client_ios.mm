@@ -249,7 +249,7 @@ GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
 
 void ChromeAutofillClientIOS::ShowAutofillSettings(
     SuggestionType suggestion_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(

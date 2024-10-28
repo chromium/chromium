@@ -144,8 +144,7 @@
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender {
-  NOTREACHED_IN_MIGRATION()
-      << "The typing shield should only be present on web";
+  NOTREACHED() << "The typing shield should only be present on web";
 }
 
 #pragma mark - Helper methods
@@ -206,8 +205,7 @@
 }
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NOTREACHED_IN_MIGRATION();
-  return YES;
+  NOTREACHED();
 }
 
 - (void)moveToAnotherTextFieldWithOffset:(NSInteger)offset {

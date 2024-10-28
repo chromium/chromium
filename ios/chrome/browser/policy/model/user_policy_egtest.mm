@@ -202,7 +202,7 @@ void WaitForVisibleChromeManagementURL() {
   if (!policy_test_server_->Start()) {
     // Use NOTREACHED() instead of GREYAssertTrue because GREYAssertTrue can
     // only be used after calling the -setUp method of the super class.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Set up and start the local test server for other services.
@@ -214,7 +214,7 @@ void WaitForVisibleChromeManagementURL() {
   if (!embedded_test_server_->Start()) {
     // Use NOTREACHED() instead of GREYAssertTrue because GREYAssertTrue can
     // only be used after calling the -setUp method of the super class.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   [super setUp];

@@ -46,8 +46,7 @@ const char* GetLogIdString(PriceDropLogId& log_id) {
     case NAVIGATION_COMPLETE:
       return kFinishNavigationMetricsString;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown PriceDropLogId " << log_id;
-  return "";
+  NOTREACHED() << "Unknown PriceDropLogId " << log_id;
 }
 
 const char* GetTabStatusString(base::Time time_last_accessed) {

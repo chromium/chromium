@@ -43,7 +43,7 @@
 }
 
 - (void)deleteCookie:(NSHTTPCookie*)cookie {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (NSArray<NSHTTPCookie*>*)cookiesForURL:(NSURL*)URL {

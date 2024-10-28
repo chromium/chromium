@@ -81,8 +81,7 @@
     case network::mojom::ReferrerPolicy::kStrictOrigin:
       return web::ReferrerPolicy::ReferrerPolicyStrictOrigin;
   }
-  NOTREACHED_IN_MIGRATION();
-  return web::ReferrerPolicy::ReferrerPolicyDefault;
+  NOTREACHED();
 }
 
 - (web::ContextMenuParams)webContextMenuParams {

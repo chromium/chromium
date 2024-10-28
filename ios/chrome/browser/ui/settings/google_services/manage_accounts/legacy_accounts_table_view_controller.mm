@@ -503,8 +503,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     case ItemTypeSignInHeader:
     case ItemTypeSignOutSyncingFooter:
     case ItemTypeRestrictedAccountsFooter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];

@@ -1192,7 +1192,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)handleMoveNode:(const BookmarkNode*)node toPosition:(size_t)position {
@@ -1914,8 +1914,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     case BookmarksContextBarBeginSelection:
       // This must never happen, as the leading button is disabled at this
       // point.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case BookmarksContextBarSingleURLSelection:
     case BookmarksContextBarMultipleURLSelection:
     case BookmarksContextBarSingleFolderSelection:
@@ -1927,7 +1926,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       break;
     case BookmarksContextBarNone:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1972,8 +1971,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     case BookmarksContextBarBeginSelection:
     case BookmarksContextBarNone:
       // Center button is disabled in these states.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   [self addCancelActionToCoordinator:self.actionSheetCoordinator];
@@ -2395,8 +2393,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     [self configureCoordinator:self.actionSheetCoordinator
         forSingleBookmarkFolder:node];
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   [self addCancelActionToCoordinator:self.actionSheetCoordinator];

@@ -54,13 +54,11 @@
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)dealloc {

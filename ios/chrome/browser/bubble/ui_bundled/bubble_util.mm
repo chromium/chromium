@@ -55,8 +55,7 @@ CGFloat LeadingDistance(CGPoint anchor_point,
           leading_offset = bubble_width - bubble_alignment_offset;
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Invalid bubble alignment " << alignment;
-          break;
+          NOTREACHED() << "Invalid bubble alignment " << alignment;
       }
       break;
     case BubbleArrowDirectionLeading:
@@ -158,8 +157,7 @@ CGFloat BubbleMaxWidth(CGFloat anchor_point_x,
               bubble_alignment_offset;
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Invalid bubble alignment " << alignment;
-          break;
+          NOTREACHED() << "Invalid bubble alignment " << alignment;
       }
       break;
     case BubbleArrowDirectionLeading:

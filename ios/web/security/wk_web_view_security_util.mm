@@ -38,8 +38,7 @@ net::CertStatus GetCertStatusFromNSErrorCode(NSInteger code) {
     case NSURLErrorServerCertificateNotYetValid:
       return net::CERT_STATUS_DATE_INVALID;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace

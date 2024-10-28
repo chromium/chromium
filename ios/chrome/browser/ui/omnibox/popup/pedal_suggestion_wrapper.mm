@@ -88,8 +88,7 @@
 }
 
 - (NSString*)matchTypeIconAccessibilityIdentifier {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (BOOL)isMatchTypeSearch {

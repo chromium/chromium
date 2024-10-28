@@ -40,8 +40,7 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
       case omnibox::ANSWER_TYPE_WEB_ANSWER:
         return OmniboxSuggestionIconType::kFallbackAnswer;
       case omnibox::ANSWER_TYPE_UNSPECIFIED:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

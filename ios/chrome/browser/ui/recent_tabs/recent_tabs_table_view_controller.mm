@@ -660,8 +660,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     switch (state) {
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS:
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_IN_PROGRESS:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
 
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_OFF:
         itemType = ItemTypeOtherDevicesSyncOff;
@@ -816,8 +815,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     if (_displayedTabs[i].session_tag == distantSession->tag)
       return i + kFirstSessionSectionIdentifier;
   }
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 // Returns an IndexSet containing the Other Devices Section.

@@ -21,8 +21,7 @@ AutofillCreditCardUIType AutofillUITypeFromAutofillTypeForCard(
     case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
       return AutofillCreditCardUIType::kExpYear;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return AutofillCreditCardUIType::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -43,8 +42,7 @@ autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     case AutofillCreditCardUIType::kBillingAddress:
     case AutofillCreditCardUIType::kSaveToChrome:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return autofill::UNKNOWN_TYPE;
+      NOTREACHED();
   }
 }
 

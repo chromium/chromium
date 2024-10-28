@@ -224,8 +224,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       permission = web::PermissionMicrophone;
       break;
     case ItemTypePermissionsDescription:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
   permissionsDescription.permission = permission;

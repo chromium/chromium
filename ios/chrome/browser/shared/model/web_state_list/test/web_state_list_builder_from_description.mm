@@ -465,7 +465,6 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
 
 void WebStateListBuilderFromDescription::WebStateListDestroyed(
     WebStateList* web_state_list) {
-  NOTREACHED_IN_MIGRATION()
-      << "WebStateListBuilderFromDescription shouldn’t outlive its "
-         "WebStateList";
+  NOTREACHED() << "WebStateListBuilderFromDescription shouldn’t outlive its "
+                  "WebStateList";
 }

@@ -118,8 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       safeBrowsingState = safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   safe_browsing::SetSafeBrowsingState(self.userPrefService, safeBrowsingState);
 
@@ -260,8 +259,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       return safeBrowsingState ==
              safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return NO;
+      NOTREACHED();
   }
 }
 
@@ -350,8 +348,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.handler showSafeBrowsingStandardProtection];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

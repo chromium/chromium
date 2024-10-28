@@ -313,8 +313,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - Public
 
 - (Browser*)browser {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (Browser*)regularBrowser {

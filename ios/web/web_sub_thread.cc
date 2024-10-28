@@ -70,8 +70,7 @@ void WebSubThread::Run(base::RunLoop* run_loop) {
       IOThreadRun(run_loop);
       return;
     case WebThread::ID_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

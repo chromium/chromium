@@ -133,8 +133,7 @@
 
 - (CGFloat)infobarModalHeightForWidth:(CGFloat)width {
   // The non-modal promo should never have a modal.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 #pragma mark - private

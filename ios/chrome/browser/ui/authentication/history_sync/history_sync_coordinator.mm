@@ -285,8 +285,7 @@
                                       kHistorySyncCancelEqualWeighted;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *buttonClicked);

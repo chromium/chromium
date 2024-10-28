@@ -276,8 +276,7 @@ using password_manager::WarningType;
 
 - (void)showUpdateAtLocation:(NSString*)location {
   if (!location) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   const GURL url(base::SysNSStringToUTF8(location));
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];

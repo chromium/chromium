@@ -404,7 +404,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 #pragma mark - NSObject(Accessibility)
 
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (NSString*)accessibilityLabel {

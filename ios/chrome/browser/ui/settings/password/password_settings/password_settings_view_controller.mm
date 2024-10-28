@@ -914,8 +914,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       // If the state is PasswordSettingsOnDeviceEncryptionStateNotShown, then
       // we shouldn't be trying to populate this section. If it's some other
       // value, then this switch needs to be updated.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 

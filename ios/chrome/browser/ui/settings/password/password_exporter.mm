@@ -249,7 +249,7 @@ enum class ReauthenticationStatus {
       [self resetExportState];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -313,7 +313,7 @@ enum class ReauthenticationStatus {
         [strongSelf resetExportState];
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   };
 

@@ -142,7 +142,7 @@ MobileSessionAppState GetMobileSessionAppState(bool has_possible_explanation) {
       return has_possible_explanation ? MobileSessionAppState::BackgroundXte
                                       : MobileSessionAppState::BackgroundUte;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Returns value to record for

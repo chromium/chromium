@@ -378,8 +378,7 @@
     }
     default:
       // Not a switch.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -398,8 +397,7 @@
     case ItemIdentifierSendTab:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
