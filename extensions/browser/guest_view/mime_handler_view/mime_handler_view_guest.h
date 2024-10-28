@@ -135,9 +135,9 @@ class MimeHandlerViewGuest
   // GuestViewBase implementation.
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) override;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(

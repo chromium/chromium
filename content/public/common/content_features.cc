@@ -501,6 +501,12 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
 // (activated by kUserAgentClientHint)
 BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether GuestViews (see components/guest_view/README.md) are implemented
+// using MPArch inner pages. See https://crbug.com/40202416
+BASE_FEATURE(kGuestViewMPArch,
+             "GuestViewMPArch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // See crbug.com/359623664
 BASE_FEATURE(kIdbPrioritizeForegroundClients,
              "IdbPrioritizeForegroundClients",

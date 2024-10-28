@@ -7357,3 +7357,20 @@ IN_PROC_BROWSER_TEST_F(WebViewFileSystemAccessTest,
   // Have the embedder create a webview and attempt to use file picker.
   TestHelper("testFileSystemAccessAvailable", "web_view/shim", NO_TEST_SERVER);
 }
+
+// TODO(mcnee): Parameterize WebViewTest once enough tests are runnable.
+class WebViewMPArchTest : public WebViewTest {
+ public:
+  WebViewMPArchTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGuestViewMPArch);
+  }
+  ~WebViewMPArchTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewMPArchTest, Basic) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAppWithGuest("web_view/simple");
+}

@@ -219,6 +219,14 @@ class CONTENT_EXPORT FrameTree {
     // frame will be kFencedFrame, but the RenderFrameHosts inside of it will
     // have their lifecycle state indicate that they are bfcached.
     kFencedFrame,
+
+    // This FrameTree is used to host the contents of a guest page. Guests are
+    // kinds of embedded pages, but their semantics are mostly delegated outside
+    // of the content/ layer. See components/guest_view/README.md.
+    // The implementation of guests is being migrated from using a separate
+    // WebContents to using this FrameTree Type. This type is used with the
+    // `features::kGuestViewMPArch` flag.
+    kGuest,
   };
 
   // A set of delegates are remembered here so that we can create
@@ -263,6 +271,7 @@ class CONTENT_EXPORT FrameTree {
   bool is_primary() const { return type_ == Type::kPrimary; }
   bool is_prerendering() const { return type_ == Type::kPrerender; }
   bool is_fenced_frame() const { return type_ == Type::kFencedFrame; }
+  bool is_guest() const { return type_ == Type::kGuest; }
 
   Delegate* delegate() { return delegate_; }
 

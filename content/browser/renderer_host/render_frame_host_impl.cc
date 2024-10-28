@@ -88,6 +88,7 @@
 #include "content/browser/font_access/font_access_manager.h"
 #include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 #include "content/browser/geolocation/geolocation_service_impl.h"
+#include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 #include "content/browser/interest_group/ad_auction_document_data.h"
@@ -2448,6 +2449,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // |geolocation_service_| needs to be destroyed before RenderFrameHostImpl,
   // otherwise it might cause dangling pointer.
   geolocation_service_.reset();
+
+  // Deleting the children would have deleted any guests.
+  CHECK(guest_pages_.empty());
 
   // Matches the pair of TRACE_EVENT_BEGINS in the constructor: one for
   // "RenderFrameHostImpl" slice itself, one for the slice with the lifecycle
@@ -9406,6 +9410,20 @@ void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
   // An ancestor's network revocation status could've changed as a result of
   // this fenced frame being removed.
   GetOutermostMainFrame()->CalculateUntrustedNetworkStatus();
+}
+
+void RenderFrameHostImpl::TakeGuestOwnership(
+    std::unique_ptr<GuestPageHolderImpl> guest_page) {
+  guest_pages_.push_back(std::move(guest_page));
+}
+
+void RenderFrameHostImpl::DestroyGuestPage(
+    const FrameTreeNode* child_frame_tree_node) {
+  CHECK_EQ(this, child_frame_tree_node->parent());
+  std::erase_if(guest_pages_, [&](const auto& guest_page) {
+    return child_frame_tree_node->frame_tree_node_id() ==
+           guest_page->GetOuterDelegateFrameTreeNodeId();
+  });
 }
 
 void RenderFrameHostImpl::CreateFencedFrame(

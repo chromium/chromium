@@ -18,6 +18,7 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
@@ -872,6 +873,13 @@ bool FrameNodeImpl::SetIsCurrent(bool is_current) {
 
 void FrameNodeImpl::SetViewportIntersectionImpl(bool is_intersecting_viewport) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    // TODO(crbug.com/40202416): performance_manager needs to be updated to
+    // understand the new guest architecture. Bail out until this is
+    // implemented.
+    NOTIMPLEMENTED_LOG_ONCE();
+    return;
+  }
   // The outermost main frame or embedder is always fully intersecting with the
   // viewport, so it is not tracked.
   CHECK(parent_or_outer_document_or_embedder());
@@ -893,6 +901,14 @@ void FrameNodeImpl::SetViewportIntersectionImpl(bool is_intersecting_viewport) {
 void FrameNodeImpl::SetViewportIntersectionImpl(
     ViewportIntersection viewport_intersection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    // TODO(crbug.com/40202416): performance_manager needs to be updated to
+    // understand the new guest architecture. Bail out until this is
+    // implemented.
+    NOTIMPLEMENTED_LOG_ONCE();
+    return;
+  }
 
   // Nothing to do if the value didn't change.
   if (GetViewportIntersection() &&

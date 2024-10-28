@@ -469,6 +469,8 @@ class CONTENT_EXPORT WebContentsImpl
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
       bool is_full_page) override;
+  void AttachGuestPage(std::unique_ptr<GuestPageHolder> guest_page,
+                       RenderFrameHost* outer_render_frame_host) override;
   bool IsInnerWebContentsForGuest() override;
   RenderFrameHostImpl* GetOuterWebContentsFrame() override;
   WebContentsImpl* GetOuterWebContents() override;

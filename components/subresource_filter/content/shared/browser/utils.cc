@@ -55,6 +55,7 @@ bool IsInSubresourceFilterRoot(content::NavigationHandle* navigation_handle) {
   switch (navigation_handle->GetNavigatingFrameType()) {
     case content::FrameType::kPrimaryMainFrame:
     case content::FrameType::kPrerenderMainFrame:
+    case content::FrameType::kGuestMainFrame:
       return true;
     case content::FrameType::kSubframe:
     case content::FrameType::kFencedFrameRoot:

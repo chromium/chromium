@@ -8704,6 +8704,7 @@ bool NavigationRequest::IsInOutermostMainFrame() {
   switch (GetNavigatingFrameType()) {
     case FrameType::kPrimaryMainFrame:
     case FrameType::kPrerenderMainFrame:
+    case FrameType::kGuestMainFrame:
       return true;
     case FrameType::kSubframe:
     case FrameType::kFencedFrameRoot:
@@ -9442,10 +9443,12 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     // [1] https://fetch.spec.whatwg.org/#concept-request-client
     //
     // The `kPrimaryMainFrame` case also covers guest views
-    // (https://crbug.com/1261928) since they do not use MPArch.
+    // (https://crbug.com/1261928) when the MPArch implementation is not being
+    // used.
     //
     // TODO(crbug.com/40258826): Determine how to treat guest views.
     case FrameType::kPrimaryMainFrame:
+    case FrameType::kGuestMainFrame:
     case FrameType::kSubframe: {
       if (!policy_container_builder_->InitiatorPolicies()) {
         return nullptr;

@@ -180,9 +180,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                                     base::OnceCallback<void(bool)> callback);
 
   // GuestViewBase implementation.
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) final;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
@@ -332,10 +332,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   void SetTransparency(content::RenderFrameHost* render_frame_host);
 
-  void CreateWebContentsWithStoragePartition(
+  void CreateInnerPageWithStoragePartition(
       std::unique_ptr<GuestViewBase> owned_this,
       const base::Value::Dict& create_params,
-      WebContentsCreatedCallback callback,
+      GuestPageCreatedCallback callback,
       std::optional<content::StoragePartitionConfig> storage_partition_config);
 
   // Identifies the set of rules registries belonging to this guest.

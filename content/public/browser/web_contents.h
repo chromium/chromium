@@ -108,6 +108,7 @@ namespace content {
 class BackForwardTransitionAnimationManager;
 class BrowserContext;
 class BrowserPluginGuestDelegate;
+class GuestPageHolder;
 class RenderFrameHost;
 class RenderViewHost;
 class RenderWidgetHostView;
@@ -924,6 +925,19 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
       bool is_full_page) = 0;
+
+  // Attaches `guest_page` to the container frame `outer_render_frame_host`,
+  // which must be in a FrameTree for this WebContents. Note:
+  // `outer_render_frame_host` will be swapped out and destroyed during the
+  // process. Generally a frame same-process with its parent is the right choice
+  // but ideally it should be "about:blank" to avoid problems with beforeunload.
+  // To ensure sane usage of this API users first should call the async API
+  // RenderFrameHost::PrepareForInnerWebContentsAttach first.
+  // TODO(crbug.com/40202416): This method is the MPArch equivalent of
+  // `AttachInnerWebContents`. Once `features::kGuestViewMPArch` ships,
+  // `AttachInnerWebContents` will be removable.
+  virtual void AttachGuestPage(std::unique_ptr<GuestPageHolder> guest_page,
+                               RenderFrameHost* outer_render_frame_host) = 0;
 
   // Returns whether this WebContents is an inner WebContents for a guest.
   // Important: please avoid using this in new callsites, and use

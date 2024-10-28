@@ -1039,7 +1039,7 @@ mojom::ViewWidgetType RenderViewHostImpl::ViewWidgetType() {
     return *view_widget_type_;
   }
 
-  bool is_guest_view = delegate_->IsGuest();
+  bool is_guest_view = frame_tree_->is_guest() || delegate_->IsGuest();
   bool is_fenced_frame = frame_tree_->is_fenced_frame();
 
   if (is_fenced_frame) {

@@ -61,15 +61,16 @@ class StubGuestView : public GuestView<StubGuestView> {
       content::RenderFrameHost* outer_contents_frame) override {
     ADD_FAILURE();
   }
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) override {
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) override {
     ADD_FAILURE();
   }
 };
 
 const char StubGuestView::Type[] = "stubguestview";
 
+// TODO(mcnee): Parameterize GuestViewManagerTest with `kGuestViewMPArch`.
 class GuestViewManagerTest : public content::RenderViewHostTestHarness {
  public:
   GuestViewManagerTest() = default;

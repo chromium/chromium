@@ -81,6 +81,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_web_contents_observer.h"
@@ -3046,6 +3047,9 @@ void WebContentsImpl::AttachInnerWebContents(
     std::unique_ptr<WebContents> inner_web_contents,
     RenderFrameHost* render_frame_host,
     bool is_full_page) {
+  // Not reachable with MPArch based guests.
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::AttachInnerWebContents",
                         "inner_web_contents",
                         static_cast<void*>(inner_web_contents.get()),
@@ -3094,12 +3098,12 @@ void WebContentsImpl::AttachInnerWebContents(
     }
   }
 
-  // When the WebContents being initialized has an opener, the  browser side
-  // Render{View,Frame}Host must be initialized and the RenderWidgetHostView
-  // created. This is needed because the usual initialization happens during
-  // the first navigation, but when attaching a new window we don't navigate
-  // before attaching. If the browser side is already initialized, the calls
-  // below will just early return.
+  // When the WebContents being initialized has not already navigated, the
+  // browser side Render{View,Frame}Host must be initialized and the
+  // RenderWidgetHostView created. This is needed because the usual
+  // initialization happens during the first navigation, but not all guest types
+  // navigate before attaching. If the browser side is already initialized, the
+  // calls below will just early return.
   inner_render_manager->InitRenderView(
       inner_main_frame->GetSiteInstance()->group(), inner_render_view_host,
       nullptr);
@@ -3155,6 +3159,94 @@ void WebContentsImpl::AttachInnerWebContents(
   // Make sure that the inner web contents and its outer delegate get properly
   // linked via the embedding token now that inner web contents are attached.
   inner_main_frame->PropagateEmbeddingTokenToParentFrame();
+}
+
+void WebContentsImpl::AttachGuestPage(
+    std::unique_ptr<GuestPageHolder> guest_page,
+    RenderFrameHost* outer_render_frame_host) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::AttachGuestPage",
+                        "guest_page", static_cast<void*>(guest_page.get()));
+  auto* outer_render_frame_host_impl =
+      static_cast<RenderFrameHostImpl*>(outer_render_frame_host);
+  CHECK_EQ(this,
+           WebContents::FromRenderFrameHost(outer_render_frame_host_impl));
+  CHECK(outer_render_frame_host_impl->GetParent());
+
+  // Guest pages aren't supported with prerendering. See
+  // https://crbug.com/40191159 for details.
+  CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+           outer_render_frame_host_impl->lifecycle_state());
+
+  auto* guest_page_impl = static_cast<GuestPageHolderImpl*>(guest_page.get());
+  outer_render_frame_host_impl->GetParent()->TakeGuestOwnership(
+      base::WrapUnique(
+          static_cast<GuestPageHolderImpl*>(guest_page.release())));
+
+  FrameTree& inner_frame_tree = guest_page_impl->frame_tree();
+  RenderFrameHostManager* inner_render_manager =
+      inner_frame_tree.root()->render_manager();
+  RenderFrameHostImpl* inner_main_frame =
+      inner_render_manager->current_frame_host();
+  RenderViewHostImpl* inner_render_view_host =
+      inner_main_frame->render_view_host();
+  auto* outer_render_manager =
+      outer_render_frame_host_impl->frame_tree_node()->render_manager();
+
+  if (RenderWidgetHostViewBase* prev_rwhv =
+          inner_render_manager->GetRenderWidgetHostView()) {
+    // Ensure that if there is an existing RenderWidgetHostView, it's valid to
+    // embed.
+    CHECK(prev_rwhv->IsRenderWidgetHostViewChildFrame());
+    static_cast<RenderWidgetHostViewChildFrame*>(prev_rwhv)
+        ->UnregisterFrameSinkId();
+  }
+
+  // Make `outer_render_frame_host_impl` the placeholder for the inner frame
+  // tree.
+  outer_render_frame_host_impl->set_inner_tree_main_frame_tree_node_id(
+      inner_main_frame->frame_tree_node()->frame_tree_node_id());
+  guest_page_impl->set_outer_frame_tree_node_id(
+      outer_render_frame_host_impl->frame_tree_node()->frame_tree_node_id());
+
+  // When the guest page being initialized has not already navigated, the
+  // browser side Render{View,Frame}Host must be initialized and the
+  // RenderWidgetHostView created. This is needed because the usual
+  // initialization happens during the first navigation, but not all guest types
+  // navigate before attaching. If the browser side is already initialized, the
+  // call below will just early return.
+  inner_render_manager->InitRenderView(
+      inner_main_frame->GetSiteInstance()->group(), inner_render_view_host,
+      /*proxy=*/nullptr);
+
+  RenderFrameProxyHost* proxy =
+      inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
+          outer_render_frame_host_impl->GetSiteInstance()->group(),
+          inner_main_frame->frame_tree_node(), blink::RemoteFrameToken());
+  // Since the inner page is created from the browser side we do
+  // not have RemoteFrame mojo channels. New channels will be bound when the
+  // `CreateView` IPC is sent.
+
+  // When attaching a GuestView as an inner frame tree, there should already be
+  // a live RenderFrame, which has to be swapped.
+  if (outer_render_frame_host_impl->IsRenderFrameLive()) {
+    inner_render_manager->SwapOuterDelegateFrame(outer_render_frame_host_impl,
+                                                 proxy);
+  }
+
+  RenderWidgetHostViewBase* child_rwhvb =
+      inner_render_manager->GetRenderWidgetHostView();
+  CHECK(child_rwhvb);
+  CHECK(child_rwhvb->IsRenderWidgetHostViewChildFrame());
+  RenderWidgetHostViewChildFrame* child_rwhv =
+      static_cast<RenderWidgetHostViewChildFrame*>(child_rwhvb);
+  inner_render_manager->SetRWHViewForInnerFrameTree(child_rwhv);
+  child_rwhv->RegisterFrameSinkId();
+
+  outer_render_manager->set_attach_complete();
+  inner_main_frame->PropagateEmbeddingTokenToParentFrame();
+  // TODO(crbug.com/40202416): Determine if anything else is needed here.
 }
 
 void WebContentsImpl::RecursivelyRegisterRenderWidgetHostViews() {
@@ -4633,6 +4725,9 @@ bool WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
       primary_frame_tree_.root()) {
     return false;
   }
+
+  // Not reachable with MPArch based guests.
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
 
   DCHECK(GetOuterWebContents());
 
@@ -9561,6 +9656,7 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
       case FrameTree::Type::kPrerender:
         return false;
       case FrameTree::Type::kFencedFrame:
+      case FrameTree::Type::kGuest:
         return true;
     }
   }();
@@ -10508,11 +10604,25 @@ void WebContentsImpl::OnFrameIsCapturingMediaStreamChanged(
 // for ascending.
 std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
     RenderFrameHostImpl* owner) {
-  std::vector<FrameTreeNode*> unattached_owned_nodes;
+  if (owner->GetParent()) {
+    return {};
+  }
   BrowserPluginGuestManager* guest_manager =
       GetBrowserContext()->GetGuestManager();
-  if (owner == GetPrimaryMainFrame() && guest_manager) {
-    guest_manager->ForEachUnattachedGuest(
+  if (!guest_manager) {
+    return {};
+  }
+  std::vector<FrameTreeNode*> unattached_owned_nodes;
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    guest_manager->ForEachUnattachedGuestPage(
+        owner->GetPage(), [&](GuestPageHolder& guest_page) {
+          unattached_owned_nodes.push_back(
+              static_cast<GuestPageHolderImpl&>(guest_page)
+                  .frame_tree()
+                  .root());
+        });
+  } else if (owner == GetPrimaryMainFrame()) {
+    guest_manager->ForEachUnattachedGuestContents(
         this, [&](WebContents* guest_contents) {
           unattached_owned_nodes.push_back(
               static_cast<WebContentsImpl*>(guest_contents)

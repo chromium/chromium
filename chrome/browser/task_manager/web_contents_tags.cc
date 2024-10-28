@@ -21,6 +21,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -47,8 +48,10 @@ void TagWebContents(content::WebContents* contents,
 bool IsExtensionWebContents(content::WebContents* contents) {
   DCHECK(contents);
 
-  if (guest_view::GuestViewBase::IsGuest(contents))
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch) &&
+      guest_view::GuestViewBase::IsGuest(contents)) {
     return false;
+  }
 
   extensions::mojom::ViewType view_type = extensions::GetViewType(contents);
   return (view_type != extensions::mojom::ViewType::kInvalid &&
@@ -115,6 +118,9 @@ void WebContentsTags::CreateForPrintingContents(
 // static
 void WebContentsTags::CreateForGuestContents(
     content::WebContents* web_contents) {
+  // TODO(crbug.com/40202416): Support the MPArch GuestView implementation in
+  // task manager.
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   CHECK(guest_view::GuestViewBase::IsGuest(web_contents));
   if (!WebContentsTag::FromWebContents(web_contents)) {
     TagWebContents(web_contents, base::WrapUnique(new GuestTag(web_contents)),

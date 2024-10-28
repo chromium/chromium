@@ -32,9 +32,9 @@ class ExtensionOptionsGuest
   explicit ExtensionOptionsGuest(content::RenderFrameHost* owner_rfh);
 
   // GuestViewBase implementation.
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) final;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;

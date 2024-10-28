@@ -15,10 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
 class BrowserContext;
+class NavigationHandle;
 class SiteInstance;
 class StoragePartitionConfig;
 }
@@ -126,9 +128,12 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       const content::StoragePartitionConfig& storage_partition_config);
 
   // BrowserPluginGuestManager implementation.
-  void ForEachUnattachedGuest(
+  void ForEachUnattachedGuestContents(
       content::WebContents* owner_web_contents,
       base::FunctionRef<void(content::WebContents*)> fn) override;
+  void ForEachUnattachedGuestPage(
+      content::Page& owner_page,
+      base::FunctionRef<void(content::GuestPageHolder&)> fn) override;
   bool ForEachGuest(content::WebContents* owner_web_contents,
                     base::FunctionRef<bool(content::WebContents*)> fn) override;
   content::WebContents* GetFullPageGuest(
@@ -152,6 +157,14 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   void RemoveGuest(GuestViewBase* guest, bool invalidate_id);
 
   GuestViewBase* GetGuestFromWebContents(content::WebContents* web_contents);
+  GuestViewBase* GetGuestFromRenderFrameHost(content::RenderFrameHost& rfh);
+  GuestViewBase* GetGuestFromNavigationHandle(
+      content::NavigationHandle& navigation_handle);
+  GuestViewBase* GetGuestFromFrameTreeNodeId(
+      content::FrameTreeNodeId frame_tree_node_id);
+
+  GuestViewBase* GetGuestFromOutermostFrameTreeNodeId(
+      content::FrameTreeNodeId outermost_ftn_id);
 
   // This method is called when the embedder process with ID
   // |embedder_process_id| has been destroyed.
@@ -221,6 +234,10 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       std::map<const content::WebContents*,
                raw_ptr<GuestViewBase, CtnExperimental>>;
   WebContentsGuestViewMap webcontents_guestview_map_;
+
+  // Maps the FTN ID of a guest's main frame to the associated `GuestViewBase`.
+  std::map<content::FrameTreeNodeId, GuestViewBase*>
+      guest_page_frame_id_guestview_map_;
 
   struct ElementInstanceKey {
     int embedder_process_id;

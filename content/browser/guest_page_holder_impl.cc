@@ -1,0 +1,159 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/guest_page_holder_impl.h"
+
+#include "base/notimplemented.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/site_instance_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/site_instance.h"
+
+namespace content {
+
+std::unique_ptr<GuestPageHolder> GuestPageHolder::Create(
+    WebContents* owner_web_contents,
+    scoped_refptr<SiteInstance> site_instance,
+    base::WeakPtr<GuestPageHolder::Delegate> delegate) {
+  CHECK(owner_web_contents);
+  // Note that `site_instance->IsGuest()` would only be true for <webview>, not
+  // other guest types.
+  CHECK(site_instance);
+  CHECK(delegate);
+
+  std::unique_ptr<GuestPageHolderImpl> guest_page =
+      std::make_unique<GuestPageHolderImpl>(
+          static_cast<WebContentsImpl&>(*owner_web_contents),
+          std::move(site_instance), delegate);
+  return guest_page;
+}
+
+GuestPageHolderImpl::GuestPageHolderImpl(
+    WebContentsImpl& owner_web_contents,
+    scoped_refptr<SiteInstance> site_instance,
+    base::WeakPtr<GuestPageHolder::Delegate> delegate)
+    : owner_web_contents_(owner_web_contents),
+      delegate_(delegate),
+      frame_tree_(owner_web_contents.GetBrowserContext(),
+                  /*delegate=*/this,
+                  /*navigation_controller_delegate=*/this,
+                  /*navigator_delegate=*/&owner_web_contents,
+                  /*render_frame_delegate=*/&owner_web_contents,
+                  /*render_view_delegate=*/&owner_web_contents,
+                  /*render_widget_delegate=*/&owner_web_contents,
+                  /*manager_delegate=*/&owner_web_contents,
+                  /*page_delegate=*/&owner_web_contents,
+                  FrameTree::Type::kGuest) {
+  // TODO(crbug.com/40202416): Implement support for devtools and set the
+  // `devtools_frame_token`.
+  frame_tree_.Init(static_cast<SiteInstanceImpl*>(site_instance.get()),
+                   /*renderer_initiated_creation=*/false,
+                   /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
+                   blink::FramePolicy{},
+                   /*devtools_frame_token=*/base::UnguessableToken::Create());
+  // Notify WebContentsObservers of the new guest frame via
+  // RenderFrameHostChanged.
+  // TODO(crbug.com/40177940): This should be moved to FrameTree::Init.
+  owner_web_contents.NotifySwappedFromRenderManager(
+      /*old_frame=*/nullptr,
+      frame_tree_.root()->render_manager()->current_frame_host());
+
+  // TODO(crbug.com/40202416): MPArch based guests need to override
+  // RendererPreferences from their embedder. Notably, we need to force
+  // `browser_handles_all_top_level_requests` off, otherwise renderer initiated
+  // navigation would be disabled in guests embedded in Chrome Apps.
+}
+
+GuestPageHolderImpl::~GuestPageHolderImpl() {
+  frame_tree_.Shutdown();
+}
+
+void GuestPageHolderImpl::set_outer_frame_tree_node_id(
+    FrameTreeNodeId outer_frame_tree_node_id) {
+  CHECK(!outer_frame_tree_node_id_);
+  CHECK(outer_frame_tree_node_id);
+  outer_frame_tree_node_id_ = outer_frame_tree_node_id;
+}
+
+NavigationController& GuestPageHolderImpl::GetController() {
+  return frame_tree_.controller();
+}
+
+RenderFrameHost* GuestPageHolderImpl::GetGuestMainFrame() {
+  return frame_tree_.root()->current_frame_host();
+}
+
+void GuestPageHolderImpl::LoadingStateChanged(LoadingState new_state) {
+  NOTIMPLEMENTED();
+}
+
+void GuestPageHolderImpl::DidStartLoading(FrameTreeNode* frame_tree_node) {
+  NOTIMPLEMENTED();
+}
+
+void GuestPageHolderImpl::DidStopLoading() {
+  if (delegate_) {
+    delegate_->GuestDidStopLoading();
+  }
+}
+
+bool GuestPageHolderImpl::IsHidden() {
+  return owner_web_contents_->IsHidden();
+}
+
+FrameTreeNodeId GuestPageHolderImpl::GetOuterDelegateFrameTreeNodeId() {
+  return outer_frame_tree_node_id_;
+}
+
+RenderFrameHostImpl* GuestPageHolderImpl::GetProspectiveOuterDocument() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+FrameTree* GuestPageHolderImpl::LoadingTree() {
+  return &frame_tree_;
+}
+
+void GuestPageHolderImpl::SetFocusedFrame(FrameTreeNode* node,
+                                          SiteInstanceGroup* source) {
+  owner_web_contents_->SetFocusedFrame(node, source);
+}
+
+FrameTree* GuestPageHolderImpl::GetOwnedPictureInPictureFrameTree() {
+  return nullptr;
+}
+
+FrameTree* GuestPageHolderImpl::GetPictureInPictureOpenerFrameTree() {
+  return nullptr;
+}
+
+void GuestPageHolderImpl::NotifyNavigationStateChangedFromController(
+    InvalidateTypes changed_flags) {}
+
+void GuestPageHolderImpl::NotifyBeforeFormRepostWarningShow() {}
+
+void GuestPageHolderImpl::NotifyNavigationEntryCommitted(
+    const LoadCommittedDetails& load_details) {}
+
+void GuestPageHolderImpl::NotifyNavigationEntryChanged(
+    const EntryChangedDetails& change_details) {}
+
+void GuestPageHolderImpl::NotifyNavigationListPruned(
+    const PrunedDetails& pruned_details) {}
+
+void GuestPageHolderImpl::NotifyNavigationEntriesDeleted() {}
+
+void GuestPageHolderImpl::ActivateAndShowRepostFormWarningDialog() {
+  NOTIMPLEMENTED();
+}
+
+bool GuestPageHolderImpl::ShouldPreserveAbortedURLs() {
+  return false;
+}
+
+void GuestPageHolderImpl::UpdateOverridingUserAgent() {
+  NOTIMPLEMENTED();
+}
+
+}  // namespace content

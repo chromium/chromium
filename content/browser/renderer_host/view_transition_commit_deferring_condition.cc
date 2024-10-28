@@ -41,6 +41,9 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     case FrameTree::Type::kFencedFrame:
       // TODO(khushalsagar): Enable for fenced frames with a WPT.
       return nullptr;
+    case FrameTree::Type::kGuest:
+      // TODO(crbug.com/40202416): Enable for MPArch based guests.
+      return nullptr;
   };
 
   RenderFrameHostImpl* old_rfh =

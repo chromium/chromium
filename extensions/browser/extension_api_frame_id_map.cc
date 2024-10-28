@@ -282,6 +282,7 @@ api::extension_types::FrameType ExtensionApiFrameIdMap::GetFrameType(
       return api::extension_types::FrameType::kFencedFrame;
     case content::FrameType::kPrimaryMainFrame:
     case content::FrameType::kPrerenderMainFrame:
+    case content::FrameType::kGuestMainFrame:
       return api::extension_types::FrameType::kOutermostFrame;
   }
 }

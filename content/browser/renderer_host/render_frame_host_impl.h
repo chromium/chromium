@@ -273,6 +273,7 @@ class FileSystemManagerImpl;
 class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
+class GuestPageHolderImpl;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
@@ -1865,6 +1866,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Called when a fenced frame needs to be destroyed.
   void DestroyFencedFrame(FencedFrame& fenced_frame);
+
+  void TakeGuestOwnership(std::unique_ptr<GuestPageHolderImpl> guest_page);
+  void DestroyGuestPage(const FrameTreeNode* child_frame_tree_node);
 
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 
@@ -4964,6 +4968,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The fenced frames owned by this document, ordered with newer fenced frames
   // being appended to the end.
   std::vector<std::unique_ptr<FencedFrame>> fenced_frames_;
+
+  // The guest frame trees owned by this document.
+  std::vector<std::unique_ptr<GuestPageHolderImpl>> guest_pages_;
 
   // Tracking active features in this frame, for use in figuring out whether
   // or not it can be frozen.

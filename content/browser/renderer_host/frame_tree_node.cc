@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 
 #include <math.h>
+
 #include <queue>
 #include <unordered_map>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -179,23 +181,42 @@ FrameTreeNode::FrameTreeNode(
 }
 
 void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
+  if (!current_frame_host() ||
+      !current_frame_host()->inner_tree_main_frame_tree_node_id()) {
+    return;
+  }
+
+  FrameTreeNode* inner_tree_main_frame_tree_node =
+      FrameTreeNode::GloballyFindByID(
+          current_frame_host()->inner_tree_main_frame_tree_node_id());
+  if (!inner_tree_main_frame_tree_node) {
+    return;
+  }
+
   // If `this` is an dummy outer delegate node, then we really are representing
   // an inner FrameTree for one of the following consumers:
   //   - `FencedFrame`
   //   - `GuestView`
-  // If we are representing a `FencedFrame` object, we need to destroy it
-  // alongside ourself. `GuestView` however, *currently* has a more complex
-  // lifetime and is dealt with separately.
-  bool is_outer_dummy_node = false;
-  if (current_frame_host() &&
-      current_frame_host()->inner_tree_main_frame_tree_node_id()) {
-    is_outer_dummy_node = true;
-  }
-
-  if (is_outer_dummy_node) {
-    if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
-      parent()->DestroyFencedFrame(*doomed_fenced_frame);
-    }
+  switch (inner_tree_main_frame_tree_node->GetFrameType()) {
+    case FrameType::kSubframe:
+    case FrameType::kPrerenderMainFrame:
+      NOTREACHED();
+    case FrameType::kPrimaryMainFrame:
+      // This is possible for inner WebContents based GuestViews. The lifetimes
+      // of inner WebContents are dealt with separately.
+      // TODO(crbug.com/40202416): Once inner WebContents are removed, this can
+      // be NOTREACHED.
+      break;
+    case FrameType::kFencedFrameRoot:
+      // If we are representing a `FencedFrame` object, we need to destroy it
+      // alongside ourself.
+      if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
+        parent()->DestroyFencedFrame(*doomed_fenced_frame);
+      }
+      break;
+    case FrameType::kGuestMainFrame:
+      parent()->DestroyGuestPage(this);
+      break;
   }
 }
 
@@ -380,6 +401,8 @@ FrameType FrameTreeNode::GetFrameType() const {
       return FrameType::kPrerenderMainFrame;
     case FrameTree::Type::kFencedFrame:
       return FrameType::kFencedFrameRoot;
+    case FrameTree::Type::kGuest:
+      return FrameType::kGuestMainFrame;
   }
 }
 

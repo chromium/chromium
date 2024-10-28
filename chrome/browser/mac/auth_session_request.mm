@@ -193,6 +193,7 @@ std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
   switch (handle->GetNavigatingFrameType()) {
     case content::FrameType::kSubframe:
     case content::FrameType::kFencedFrameRoot:
+    case content::FrameType::kGuestMainFrame:
       return nil;
     case content::FrameType::kPrimaryMainFrame:
     case content::FrameType::kPrerenderMainFrame:
