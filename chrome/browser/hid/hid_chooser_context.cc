@@ -518,6 +518,7 @@ bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
       base::MakeFixedFlatSet<std::string_view>({
           "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
           "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
+          "gdmilihokhggmmlomocddffphkaikkke",  // gnubbyd-v3 flywheel
       });
 
   if (origin.scheme() == extensions::kExtensionScheme &&
