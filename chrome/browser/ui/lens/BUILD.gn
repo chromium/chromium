@@ -77,6 +77,7 @@ source_set("lens") {
     "//components/find_in_page",
     "//components/lens",
     "//content/public/browser",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/base/mojom:ui_base_types",
   ]
 
