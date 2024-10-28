@@ -97,6 +97,7 @@ CrosSpeechRecognitionRecognizerImpl::AddLiveCaptionLanguagesToConfig(
     multi_lang_config->locale_to_language_pack_map[config_path.first] =
         config_path.second.value();
   }
+  multi_lang_config->rewind_when_switching_language = true;
   return multi_lang_config;
 }
 
