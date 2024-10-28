@@ -39,12 +39,6 @@ BASE_FEATURE(kWebViewDragDropFiles,
              "WebViewDragDropFiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Cache origins which have camera/mic permissions approved to allow subsequent
-// calls to enumerate devices to return device labels.
-BASE_FEATURE(kWebViewEnumerateDevicesCache,
-             "WebViewEnumerateDevicesCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable JS FileSystemAccess API.
 // TODO(b/364980165): Add targetSdkVersion checks before enabling.
 BASE_FEATURE(kWebViewFileSystemAccess,

@@ -291,9 +291,6 @@ bool AwWebContentsDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache)) {
-    return false;
-  }
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents) {

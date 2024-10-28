@@ -183,20 +183,4 @@ TEST_F(MediaAccessPermissionRequestTest,
       aw_permission_manager_.ShouldShowEnumerateDevicesVideoLabels(origin));
 }
 
-TEST_F(MediaAccessPermissionRequestTest,
-       TestGrantedPermissionRequestWithoutCacheFailsEnumerateDevices) {
-  feature_list_.InitAndDisableFeature(features::kWebViewEnumerateDevicesCache);
-  url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  EXPECT_FALSE(
-      aw_permission_manager_.ShouldShowEnumerateDevicesAudioLabels(origin));
-  EXPECT_FALSE(
-      aw_permission_manager_.ShouldShowEnumerateDevicesVideoLabels(origin));
-  std::unique_ptr<TestMediaAccessPermissionRequest> request =
-      CreateRequest(audio_device_id_, video_device_id_);
-  request->NotifyRequestResult(true);
-  EXPECT_FALSE(
-      aw_permission_manager_.ShouldShowEnumerateDevicesAudioLabels(origin));
-  EXPECT_FALSE(
-      aw_permission_manager_.ShouldShowEnumerateDevicesVideoLabels(origin));
-}
 }  // namespace android_webview
