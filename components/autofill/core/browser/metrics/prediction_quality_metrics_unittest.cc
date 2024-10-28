@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -161,6 +162,38 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
                    Bucket((predicted_type[1] << 16) | actual_types[1], 1),
                    Bucket((predicted_type[2] << 16) | actual_types[2], 1),
                    Bucket((predicted_type[3] << 16) | actual_types[3], 1)));
+  }
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogHeuristicPredictionQualityMetrics_PerLabelSource) {
+  constexpr std::string_view kMetricName =
+      "Autofill.FieldPredictionQuality.Aggregate.Heuristic.PTag";
+
+  AutofillField field;
+  field.set_label_source(FormFieldData::LabelSource::kPTag);
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FULL);
+
+  // Actual type matches.
+  {
+    field.set_possible_types({NAME_FULL});
+    base::HistogramTester histogram_tester;
+    LogHeuristicPredictionQualityPerLabelSourceMetric(field);
+    histogram_tester.ExpectUniqueSample(kMetricName, true, 1);
+  }
+  // Actual type doesn't match.
+  {
+    field.set_possible_types({NAME_FIRST});
+    base::HistogramTester histogram_tester;
+    LogHeuristicPredictionQualityPerLabelSourceMetric(field);
+    histogram_tester.ExpectUniqueSample(kMetricName, false, 1);
+  }
+  // Unknown type -> metric not logged.
+  {
+    field.set_possible_types({UNKNOWN_TYPE});
+    base::HistogramTester histogram_tester;
+    LogHeuristicPredictionQualityPerLabelSourceMetric(field);
+    histogram_tester.ExpectTotalCount(kMetricName, 0);
   }
 }
 

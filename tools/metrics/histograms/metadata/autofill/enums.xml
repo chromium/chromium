@@ -4617,6 +4617,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Has predictions"/>
 </enum>
 
+<enum name="BooleanPredictionQualityByLabelSource">
+  <int value="0" label="Possible types didn't contain heuristic type"/>
+  <int value="1" label="Possible types contained heuristic type"/>
+</enum>
+
 <enum name="BooleanPreviouslyShown">
   <int value="0" label="Never shown"/>
   <int value="1" label="Previously shown"/>

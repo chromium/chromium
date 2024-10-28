@@ -2483,6 +2483,35 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FieldPredictionQuality.Aggregate.{LabelSource}"
+    enum="BooleanPredictionQualityByLabelSource" expires_after="2025-04-13">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Whether or not the heuristic type is contained in the possible types at
+    submission time. Not emitted if the possible type is empty or unknown.
+  </summary>
+  <token key="LabelSource">
+    <variant name="AriaLabel"/>
+    <variant name="Combined"/>
+    <variant name="DdTag"/>
+    <variant name="DefaultSelectText"/>
+    <variant name="DivTable"/>
+    <variant name="ForId"/>
+    <variant name="ForName"/>
+    <variant name="ForShadowHostId"/>
+    <variant name="ForShadowHostName"/>
+    <variant name="LabelTag"/>
+    <variant name="LiTag"/>
+    <variant name="NoLabel"/>
+    <variant name="OverlayingLabel"/>
+    <variant name="Placeholder"/>
+    <variant name="PTag"/>
+    <variant name="TdTag"/>
+    <variant name="Value"/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.FieldPredictionQuality.Aggregate{AutofillFieldPredictionSource}"
     enum="AutofillFieldPredictionQuality" expires_after="2025-04-13">

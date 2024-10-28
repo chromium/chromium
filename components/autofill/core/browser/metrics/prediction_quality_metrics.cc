@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,10 +14,18 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/common/label_source_util.h"
 
 namespace autofill::autofill_metrics {
 
 namespace {
+
+constexpr std::string_view kFieldPredictionMetricPrefix =
+    "Autofill.FieldPrediction.";
+constexpr std::string_view kAggregateFieldPredictionMetricPrefix =
+    "Autofill.FieldPredictionQuality.Aggregate.";
+constexpr std::string_view kByFieldTypeFieldPredictionMetricPrefix =
+    "Autofill.FieldPredictionQuality.ByFieldType.";
 
 // Don't change the enum values because they are recorded in metrics.
 enum FieldTypeGroupForMetrics {
@@ -619,11 +628,11 @@ void LogPredictionQualityMetrics(
   const char* source = GetQualityMetricPredictionSource(prediction_source);
   const char* suffix = GetQualityMetricTypeSuffix(metric_type);
   std::string raw_data_histogram =
-      base::StrCat({"Autofill.FieldPrediction.", source, suffix});
-  std::string aggregate_histogram = base::StrCat(
-      {"Autofill.FieldPredictionQuality.Aggregate.", source, suffix});
-  std::string type_specific_histogram = base::StrCat(
-      {"Autofill.FieldPredictionQuality.ByFieldType.", source, suffix});
+      base::StrCat({kFieldPredictionMetricPrefix, source, suffix});
+  std::string aggregate_histogram =
+      base::StrCat({kAggregateFieldPredictionMetricPrefix, source, suffix});
+  std::string type_specific_histogram =
+      base::StrCat({kByFieldTypeFieldPredictionMetricPrefix, source, suffix});
 
   const FieldTypeSet& possible_types =
       metric_type == AutofillMetrics::TYPE_AUTOCOMPLETE_BASED
@@ -685,6 +694,29 @@ void LogHeuristicPredictionQualityMetrics(
       AutofillMetrics::PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
       form_interactions_ukm_logger, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
+  if (metric_type == AutofillMetrics::QualityMetricType::TYPE_SUBMISSION) {
+    LogHeuristicPredictionQualityPerLabelSourceMetric(field);
+  }
+}
+
+void LogHeuristicPredictionQualityPerLabelSourceMetric(
+    const AutofillField& field) {
+  FieldType predicted_type = field.heuristic_type();
+  // If there are multiple `possible_types()`, `GetActualFieldType()` will:
+  // - Return the `predicted_type` if it is contained in the set. A "true"
+  //   sample is emitted to the metric.
+  // - Return AMBIGUOUS_TYPE otherwise. A "false" sample is emitted to the
+  //   metric.
+  FieldType actual_type =
+      GetActualFieldType(field.possible_types(), predicted_type);
+  if (actual_type != UNKNOWN_TYPE && actual_type != EMPTY_TYPE) {
+    base::UmaHistogramBoolean(
+        base::StrCat({kAggregateFieldPredictionMetricPrefix,
+                      GetQualityMetricPredictionSource(
+                          AutofillMetrics::PREDICTION_SOURCE_HEURISTIC),
+                      ".", LabelSourceToString(field.label_source())}),
+        predicted_type == actual_type);
+  }
 }
 
 void LogMlPredictionQualityMetrics(

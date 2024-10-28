@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/label_source_util.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -83,45 +84,6 @@ std::vector<TestCase> GetTests() {
   base::apple::ClearAmIBundledCache();
 #endif
   return tests;
-}
-
-std::string LabelSourceToString(FormFieldData::LabelSource source) {
-  switch (source) {
-    case FormFieldData::LabelSource::kUnknown:
-      return "NoLabel";
-    case FormFieldData::LabelSource::kLabelTag:
-      return "LabelTag";
-    case FormFieldData::LabelSource::kPTag:
-      return "PTag";
-    case FormFieldData::LabelSource::kDivTable:
-      return "DivTable";
-    case FormFieldData::LabelSource::kTdTag:
-      return "TdTag";
-    case FormFieldData::LabelSource::kDdTag:
-      return "DdTag";
-    case FormFieldData::LabelSource::kLiTag:
-      return "LiTag";
-    case FormFieldData::LabelSource::kPlaceHolder:
-      return "Placeholder";
-    case FormFieldData::LabelSource::kAriaLabel:
-      return "AriaLabel";
-    case FormFieldData::LabelSource::kCombined:
-      return "Combined";
-    case FormFieldData::LabelSource::kValue:
-      return "Value";
-    case FormFieldData::LabelSource::kForId:
-      return "ForId";
-    case FormFieldData::LabelSource::kForName:
-      return "ForName";
-    case FormFieldData::LabelSource::kForShadowHostId:
-      return "ForShadowHostId";
-    case FormFieldData::LabelSource::kForShadowHostName:
-      return "ForShadowHostName";
-    case FormFieldData::LabelSource::kOverlayingLabel:
-      return "OverlayingLabel";
-    case FormFieldData::LabelSource::kDefaultSelectText:
-      return "DefaultSelectText";
-  }
 }
 
 class DomLabelTest : public content::RenderViewTest,

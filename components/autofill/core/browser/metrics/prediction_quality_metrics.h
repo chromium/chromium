@@ -144,6 +144,9 @@ void LogHeuristicPredictionQualityMetrics(
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type);
 
+void LogHeuristicPredictionQualityPerLabelSourceMetric(
+    const AutofillField& field);
+
 void LogMlPredictionQualityMetrics(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
