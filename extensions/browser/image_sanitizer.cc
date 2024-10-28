@@ -158,14 +158,9 @@ void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
     return;
   }
 
-  // TODO(https://crbug.com/370696612): Remove this disambiguating cast when the
-  // deprecated APIs are removed.
-  using NonDeprecatedVersion =
-      std::optional<std::vector<uint8_t>> (*)(const SkBitmap&, bool);
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce((NonDeprecatedVersion)gfx::PNGCodec::EncodeBGRASkBitmap,
-                     decoded_image,
+      base::BindOnce(gfx::PNGCodec::EncodeBGRASkBitmap, decoded_image,
                      /*discard_transparency=*/false),
       base::BindOnce(&ImageSanitizer::ImageReencoded,
                      weak_factory_.GetWeakPtr(), image_path));

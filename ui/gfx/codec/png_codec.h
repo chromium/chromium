@@ -116,15 +116,6 @@ class CODEC_EXPORT PNGCodec {
       bool discard_transparency,
       const std::vector<Comment>& comments);
 
-  // DEPRECATED version of above.
-  static bool Encode(const unsigned char* input,
-                     ColorFormat format,
-                     const Size& size,
-                     int row_byte_width,
-                     bool discard_transparency,
-                     const std::vector<Comment>& comments,
-                     std::vector<unsigned char>* output);
-
   // Call `PNGCodec::Encode` on the supplied SkBitmap `input`, which is assumed
   // to be `kN32_SkColorType`, 32 bits per pixel. The params
   // `discard_transparency` and `output` are passed directly to Encode(); refer
@@ -133,22 +124,12 @@ class CODEC_EXPORT PNGCodec {
       const SkBitmap& input,
       bool discard_transparency);
 
-  // DEPRECATED version of above.
-  static bool EncodeBGRASkBitmap(const SkBitmap& input,
-                                 bool discard_transparency,
-                                 std::vector<unsigned char>* output);
-
   // Call `PNGCodec::Encode` on the supplied SkBitmap `input`. The difference
   // between this and the previous method is that this restricts compression to
   // zlib q1, which is just rle encoding.
   static std::optional<std::vector<uint8_t>> FastEncodeBGRASkBitmap(
       const SkBitmap& input,
       bool discard_transparency);
-
-  // DEPRECATED version of above.
-  static bool FastEncodeBGRASkBitmap(const SkBitmap& input,
-                                     bool discard_transparency,
-                                     std::vector<unsigned char>* output);
 
   // Decodes the PNG data contained in `input`.
   //
@@ -182,11 +163,6 @@ class CODEC_EXPORT PNGCodec {
   // Returns a valid SkBitmap if the data can be decoded as a PNG, and a null
   // SkBitmap otherwise.
   static SkBitmap Decode(base::span<const uint8_t> input);
-
-  // DEPRECATED version of above.
-  static bool Decode(const unsigned char* input,
-                     size_t input_size,
-                     SkBitmap* bitmap);
 };
 
 }  // namespace gfx

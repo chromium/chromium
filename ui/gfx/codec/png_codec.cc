@@ -179,19 +179,6 @@ SkBitmap PNGCodec::Decode(base::span<const uint8_t> input) {
   }
 }
 
-// DEPRECATED
-bool PNGCodec::Decode(const unsigned char* input,
-                      size_t input_size,
-                      SkBitmap* bitmap) {
-  SkBitmap result = Decode(UNSAFE_TODO(base::span(input, input_size)));
-  if (result.isNull()) {
-    return false;
-  }
-
-  *bitmap = std::move(result);
-  return true;
-}
-
 // Encoder --------------------------------------------------------------------
 
 namespace {
@@ -314,26 +301,6 @@ std::optional<std::vector<uint8_t>> PNGCodec::Encode(
                         DEFAULT_ZLIB_COMPRESSION, /*disable_filters=*/false);
 }
 
-// DEPRECATED
-bool PNGCodec::Encode(const unsigned char* input,
-                      ColorFormat format,
-                      const Size& size,
-                      int row_byte_width,
-                      bool discard_transparency,
-                      const std::vector<Comment>& comments,
-                      std::vector<unsigned char>* output) {
-  std::optional<std::vector<uint8_t>> result = Encode(
-      input, format, size, row_byte_width, discard_transparency, comments);
-
-  if (!result) {
-    output->clear();
-    return false;
-  }
-
-  *output = std::move(*result);
-  return true;
-}
-
 std::optional<std::vector<uint8_t>> PNGCodec::EncodeBGRASkBitmap(
     const SkBitmap& input,
     bool discard_transparency) {
@@ -341,45 +308,11 @@ std::optional<std::vector<uint8_t>> PNGCodec::EncodeBGRASkBitmap(
                         /*disable_filters=*/false);
 }
 
-// DEPRECATED
-bool PNGCodec::EncodeBGRASkBitmap(const SkBitmap& input,
-                                  bool discard_transparency,
-                                  std::vector<unsigned char>* output) {
-  std::optional<std::vector<uint8_t>> result =
-      EncodeSkBitmap(input, discard_transparency, DEFAULT_ZLIB_COMPRESSION,
-                     /*disable_filters=*/false);
-
-  if (!result) {
-    output->clear();
-    return false;
-  }
-
-  *output = std::move(*result);
-  return true;
-}
-
 std::optional<std::vector<uint8_t>> PNGCodec::FastEncodeBGRASkBitmap(
     const SkBitmap& input,
     bool discard_transparency) {
   return EncodeSkBitmap(input, discard_transparency, Z_BEST_SPEED,
                         /*disable_filters=*/true);
-}
-
-// DEPRECATED
-bool PNGCodec::FastEncodeBGRASkBitmap(const SkBitmap& input,
-                                      bool discard_transparency,
-                                      std::vector<unsigned char>* output) {
-  std::optional<std::vector<uint8_t>> result =
-      EncodeSkBitmap(input, discard_transparency, Z_BEST_SPEED,
-                     /*disable_filters=*/true);
-
-  if (!result) {
-    output->clear();
-    return false;
-  }
-
-  *output = std::move(*result);
-  return true;
 }
 
 PNGCodec::Comment::Comment(const std::string& k, const std::string& t)

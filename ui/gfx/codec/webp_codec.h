@@ -45,11 +45,6 @@ class CODEC_EXPORT WebpCodec {
   static std::optional<std::vector<uint8_t>> Encode(const SkBitmap& input,
                                                     int quality);
 
-  // DEPRECATED version of above.
-  static bool Encode(const SkBitmap& input,
-                     int quality,
-                     std::vector<unsigned char>* output);
-
   // Encodes the pixmap 'frames' as an animated WebP image. Returns the encoded
   // data on success, or std::nullopt on failure.
   static std::optional<std::vector<uint8_t>> EncodeAnimated(

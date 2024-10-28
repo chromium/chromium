@@ -46,13 +46,6 @@ class CODEC_EXPORT JPEGCodec {
       SkJpegEncoder::Downsample downsample,
       const SkData* xmp_metadata = nullptr);
 
-  // DEPRECATED version of above.
-  static bool Encode(const SkPixmap& input,
-                     int quality,
-                     SkJpegEncoder::Downsample downsample,
-                     std::vector<unsigned char>* output,
-                     const SkData* xmp_metadata = nullptr);
-
   // Encodes the given raw `input` pixmap, which includes a pointer to pixels
   // as well as information describing the pixel format.
   //
@@ -62,11 +55,6 @@ class CODEC_EXPORT JPEGCodec {
   static std::optional<std::vector<uint8_t>> Encode(const SkPixmap& input,
                                                     int quality);
 
-  // DEPRECATED version of above.
-  static bool Encode(const SkPixmap& input,
-                     int quality,
-                     std::vector<unsigned char>* output);
-
   // Encodes the `input` bitmap`
   //
   // Returns the encoded data on success, or std::nullopt on failure.
@@ -74,11 +62,6 @@ class CODEC_EXPORT JPEGCodec {
   // quality: an integer in the range 0-100, where 100 is the highest quality.
   static std::optional<std::vector<uint8_t>> Encode(const SkBitmap& input,
                                                     int quality);
-
-  // DEPRECATED version of above.
-  static bool Encode(const SkBitmap& input,
-                     int quality,
-                     std::vector<unsigned char>* output);
 
   // Decodes the JPEG data contained in `input` of length `input_size`.
   // `color_type` must be RGBA_8888 or BGRA_8888. The decoded data will be
@@ -100,10 +83,6 @@ class CODEC_EXPORT JPEGCodec {
   // Returns a valid SkBitmap if the data can be decoded as a JPEG, and a null
   // SkBitmap otherwise.
   static SkBitmap Decode(base::span<const uint8_t> input);
-
-  // DEPRECATED version of above.
-  static std::unique_ptr<SkBitmap> Decode(const unsigned char* input,
-                                          size_t input_size);
 };
 
 }  // namespace gfx

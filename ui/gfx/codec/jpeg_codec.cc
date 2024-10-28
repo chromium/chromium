@@ -42,33 +42,9 @@ std::optional<std::vector<uint8_t>> JPEGCodec::Encode(
   return output;
 }
 
-// DEPRECATED
-bool JPEGCodec::Encode(const SkPixmap& input,
-                       int quality,
-                       SkJpegEncoder::Downsample downsample,
-                       std::vector<unsigned char>* output,
-                       const SkData* xmp_metadata) {
-  std::optional<std::vector<uint8_t>> result =
-      Encode(input, quality, downsample, xmp_metadata);
-  if (!result) {
-    output->clear();
-    return false;
-  }
-
-  *output = std::move(*result);
-  return true;
-}
-
 std::optional<std::vector<uint8_t>> JPEGCodec::Encode(const SkPixmap& input,
                                                       int quality) {
   return Encode(input, quality, SkJpegEncoder::Downsample::k420);
-}
-
-// DEPRECATED
-bool JPEGCodec::Encode(const SkPixmap& input,
-                       int quality,
-                       std::vector<unsigned char>* output) {
-  return Encode(input, quality, SkJpegEncoder::Downsample::k420, output);
 }
 
 std::optional<std::vector<uint8_t>> JPEGCodec::Encode(const SkBitmap& src,
@@ -79,18 +55,6 @@ std::optional<std::vector<uint8_t>> JPEGCodec::Encode(const SkBitmap& src,
   }
 
   return JPEGCodec::Encode(pixmap, quality);
-}
-
-// DEPRECATED
-bool JPEGCodec::Encode(const SkBitmap& src,
-                       int quality,
-                       std::vector<unsigned char>* output) {
-  SkPixmap pixmap;
-  if (!src.peekPixels(&pixmap)) {
-    return false;
-  }
-
-  return JPEGCodec::Encode(pixmap, quality, output);
 }
 
 // Decoder --------------------------------------------------------------------
@@ -200,17 +164,6 @@ SkBitmap JPEGCodec::Decode(base::span<const uint8_t> input) {
   } else {
     return SkBitmap();
   }
-}
-
-// DEPRECATED
-std::unique_ptr<SkBitmap> JPEGCodec::Decode(const unsigned char* input,
-                                            size_t input_size) {
-  std::optional<SkBitmap> result =
-      Decode(UNSAFE_TODO(base::span(input, input_size)));
-  if (!result) {
-    return std::make_unique<SkBitmap>();
-  }
-  return std::make_unique<SkBitmap>(std::move(result.value()));
 }
 
 }  // namespace gfx

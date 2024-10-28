@@ -222,23 +222,21 @@ void GetTabDataForModelPrototyping(
 
 std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
   TRACE_EVENT0("browser", "EncodePngOnBackgroundThread");
-  std::vector<unsigned char> data;
-  bool encoded = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data);
-  if (!encoded) {
-    return "";
+  std::optional<std::vector<uint8_t>> data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  if (!data) {
+    return std::string();
   }
-  return base::Base64Encode(data);
+  return base::Base64Encode(data.value());
 }
 
 void OnEncodePng(AiDataKeyedService::AiDataCallback continue_callback,
                  std::string base64_result) {
   TRACE_EVENT0("browser", "OnEncodePng");
   auto ai_data = std::make_optional<AiDataKeyedService::BrowserData>();
-  if (base64_result.empty()) {
-    return std::move(continue_callback).Run(std::move(ai_data));
+  if (!base64_result.empty()) {
+    ai_data->mutable_page_context()->set_tab_screenshot(base64_result);
   }
-
-  ai_data->mutable_page_context()->set_tab_screenshot(base64_result);
   std::move(continue_callback).Run(std::move(ai_data));
 }
 

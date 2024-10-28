@@ -51,25 +51,6 @@ std::optional<std::vector<uint8_t>> WebpCodec::Encode(const SkBitmap& src,
   return PixmapEncode(pixmap, quality);
 }
 
-// DEPRECATED
-bool WebpCodec::Encode(const SkBitmap& src,
-                       int quality,
-                       std::vector<unsigned char>* output) {
-  SkPixmap pixmap;
-  if (!src.peekPixels(&pixmap)) {
-    return false;
-  }
-
-  std::optional<std::vector<uint8_t>> result = PixmapEncode(pixmap, quality);
-  if (!result) {
-    output->clear();
-    return false;
-  }
-
-  *output = std::move(*result);
-  return true;
-}
-
 std::optional<std::vector<uint8_t>> WebpCodec::EncodeAnimated(
     const std::vector<SkEncoder::Frame>& frames,
     const SkWebpEncoder::Options& options) {
