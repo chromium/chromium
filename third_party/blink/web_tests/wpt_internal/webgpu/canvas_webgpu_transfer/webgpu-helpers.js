@@ -23,26 +23,6 @@ async function getWebGPUDevice(adapter) {
   return device;
 }
 
-/**
- * Invokes `callback` with a valid GPUAdapter, GPUAdapterInfo and GPUDevice, or
- * causes an assertion.
- */
-function with_webgpu(callback) {
-  return navigator.gpu.requestAdapter().then((adapter) => {
-    if (!(adapter instanceof GPUAdapter)) {
-      assert_unreached('Failed to request WebGPU adapter.');
-      return;
-    }
-    return adapter.requestDevice().then((device) => {
-      if (!(device instanceof GPUDevice)) {
-        assert_unreached('Failed to request WebGPU device.');
-        return;
-      }
-      return callback(adapter, adapter.info, device);
-    });
-  });
-}
-
 /** Returns true if we are running on a Mac with a SwiftShader GPU adapter. */
 function isMacSwiftShader(adapterInfo) {
   assert_true(adapterInfo instanceof GPUAdapterInfo);
@@ -158,68 +138,4 @@ function createBindGroupUsingTexture(device, tex) {
       },
     ],
   });
-}
-
-/**
-/**
- * transferToGPUTexture() should create a texture which honors the requested
- * usage flags.
- */
-async function test_transferToGPUTexture_usage_flags(
-    adapter, adapterInfo, device, canvas) {
-  // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
-  if (isMacSwiftShader(adapterInfo)) {
-    return;
-  }
-
-  // Declare a helper function which tests individual usage flags.
-  const testOneUsageFlag = async function(
-      device, canvas, usageToEnable, usageToTest) {
-    const ctx = canvas.getContext('2d');
-    const tex = ctx.transferToGPUTexture({device: device,
-                                           usage: usageToEnable});
-
-    // Check that the GPUTexture's usage flags match our requested flags.
-    assert_equals(tex.usage, usageToEnable);
-
-    // Confirm that we _actually_ have the requested usage by performing an
-    // action requiring that usage, and verifying no GPUValidationError occurs.
-    device.pushErrorScope('validation');
-
-    if (usageToTest & GPUTextureUsage.COPY_SRC) {
-      copyOnePixelFromTextureAndSubmit(device, tex);
-    }
-    if (usageToTest & GPUTextureUsage.COPY_DST) {
-      copyOnePixelToTextureAndSubmit(device, tex);
-    }
-    if (usageToTest & GPUTextureUsage.TEXTURE_BINDING) {
-      createBindGroupUsingTexture(device, tex);
-    }
-    if (usageToTest & GPUTextureUsage.RENDER_ATTACHMENT) {
-      clearTextureToColor(device, tex, { r: 1.0, g: 1.0, b: 1.0, a: 1.0 });
-    }
-
-    const errors = await device.popErrorScope();
-    if (usageToTest == usageToEnable) {
-      assert_equals(errors, null, 'enabled ' + usageToEnable +
-                                  ', tested ' + usageToTest);
-    } else {
-      assert_not_equals(errors, null, 'enabled ' + usageToEnable +
-                                      ', tested ' + usageToTest);
-    }
-    ctx.transferBackFromGPUTexture();
-  };
-
-  // Build up a chain of promises which test each TextureUsage flag.
-  const supportedUsageFlags = [GPUTextureUsage.COPY_SRC,
-                               GPUTextureUsage.COPY_DST,
-                               GPUTextureUsage.TEXTURE_BINDING,
-                               GPUTextureUsage.RENDER_ATTACHMENT];
-
-  for (const usageToEnable of supportedUsageFlags) {
-    for (const usageToTest of supportedUsageFlags) {
-      const device = await getWebGPUDevice();
-      await testOneUsageFlag(device, canvas, usageToEnable, usageToTest);
-    }
-  }
 }
