@@ -46,7 +46,9 @@ void ServerCertificateDatabaseService::AddOrUpdateUserCertificate(
   server_cert_database_
       .AsyncCall(&net::ServerCertificateDatabase::InsertOrUpdateCert)
       .WithArgs(std::move(cert_info))
-      .Then(std::move(callback));
+      .Then(base::BindOnce(
+          &ServerCertificateDatabaseService::HandleModificationResult,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServerCertificateDatabaseService::GetAllCertificates(
@@ -145,7 +147,23 @@ void ServerCertificateDatabaseService::DeleteCertificate(
   server_cert_database_
       .AsyncCall(&net::ServerCertificateDatabase::DeleteCertificate)
       .WithArgs(sha256hash_hex)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(
+          &ServerCertificateDatabaseService::HandleModificationResult,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+base::CallbackListSubscription ServerCertificateDatabaseService::AddObserver(
+    base::RepeatingClosure callback) {
+  return observers_.Add(std::move(callback));
+}
+
+void ServerCertificateDatabaseService::HandleModificationResult(
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  std::move(callback).Run(success);
+  if (success) {
+    observers_.Notify();
+  }
 }
 
 }  // namespace net

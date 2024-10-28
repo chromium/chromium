@@ -27,27 +27,103 @@ using ::testing::UnorderedElementsAre;
 
 namespace net {
 
-#if BUILDFLAG(IS_CHROMEOS)
-class ServerCertificateDatabaseServiceNSSMigratorTest : public testing::Test {
+class ServerCertificateDatabaseServiceTest : public testing::Test {
  public:
   void SetUp() override {
     profile_ = TestingProfile::Builder().Build();
-
-    nss_service_ = FakeNssService::InitializeForBrowserContext(
-        profile_.get(),
-        /*enable_system_slot=*/false);
   }
 
-  void TearDown() override { nss_service_ = nullptr; }
-
   TestingProfile* profile() { return profile_.get(); }
-  FakeNssService* nss_service() { return nss_service_; }
 
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kEnableCertManagementUIV2Write};
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(ServerCertificateDatabaseServiceTest, TestNotifications) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+
+  net::ServerCertificateDatabaseService* cert_db_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          profile());
+
+  base::test::TestFuture<void> update_waiter;
+
+  auto scoped_observer_subscription =
+      cert_db_service->AddObserver(update_waiter.GetRepeatingCallback());
+
+  // Insert a new cert.
+  {
+    base::test::TestFuture<bool> insert_waiter;
+    cert_db_service->AddOrUpdateUserCertificate(
+        MakeCertInfo(root->GetDER(),
+                     CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED),
+        insert_waiter.GetCallback());
+    // Insert should be successful.
+    EXPECT_TRUE(insert_waiter.Take());
+  }
+  // Observer notification should have been delivered.
+  EXPECT_TRUE(update_waiter.WaitAndClear());
+
+  // Update metadata for existing cert.
+  {
+    base::test::TestFuture<bool> insert_waiter;
+    cert_db_service->AddOrUpdateUserCertificate(
+        MakeCertInfo(root->GetDER(),
+                     CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED),
+        insert_waiter.GetCallback());
+    // Update should be successful.
+    EXPECT_TRUE(insert_waiter.Take());
+  }
+  // Observer notification should have been delivered.
+  EXPECT_TRUE(update_waiter.WaitAndClear());
+
+  // Delete a cert.
+  {
+    base::test::TestFuture<bool> delete_waiter;
+    auto cert_info = MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED);
+    cert_db_service->DeleteCertificate(cert_info.sha256hash_hex,
+                                       delete_waiter.GetCallback());
+    // Delete should be successful.
+    EXPECT_TRUE(delete_waiter.Take());
+  }
+  // Observer notification should have been delivered.
+  EXPECT_TRUE(update_waiter.WaitAndClear());
+
+  // Try to delete a cert that doesn't exist.
+  {
+    base::test::TestFuture<bool> delete_waiter;
+    auto cert_info = MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED);
+    cert_db_service->DeleteCertificate(cert_info.sha256hash_hex,
+                                       delete_waiter.GetCallback());
+    // Delete should fail since the cert doesn't exist in the database.
+    EXPECT_FALSE(delete_waiter.Take());
+  }
+  // Observer notification should not be delivered since nothing was actually
+  // changed.
+  EXPECT_FALSE(update_waiter.IsReady());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+class ServerCertificateDatabaseServiceNSSMigratorTest
+    : public ServerCertificateDatabaseServiceTest {
+ public:
+  void SetUp() override {
+    ServerCertificateDatabaseServiceTest::SetUp();
+
+    nss_service_ = FakeNssService::InitializeForBrowserContext(
+        profile(), /*enable_system_slot=*/false);
+  }
+
+  void TearDown() override { nss_service_ = nullptr; }
+
+  FakeNssService* nss_service() { return nss_service_; }
+
+ private:
   raw_ptr<FakeNssService> nss_service_;
 };
 

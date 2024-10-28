@@ -127,6 +127,11 @@ TEST_F(ServerCertificateDatabaseTest, Delete) {
 
   EXPECT_THAT(database_->RetrieveAllCertificates(),
               UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info))));
+
+  // Trying to delete a certificate hash that doesn't exist in the database
+  // should return false.
+  EXPECT_FALSE(
+      database_->DeleteCertificate(intermediate_cert_info.sha256hash_hex));
 }
 
 TEST(ServerCertificateDatabaseTrustTest, TestTrustMappings) {

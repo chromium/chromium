@@ -165,7 +165,7 @@ bool ServerCertificateDatabase::DeleteCertificate(
       SQL_FROM_HERE, "DELETE FROM certificates WHERE sha256hash_hex=?"));
   DCHECK(delete_statement.is_valid());
   delete_statement.BindString(0, sha256hash_hex);
-  return delete_statement.Run();
+  return delete_statement.Run() && db_.GetLastChangeCount() > 0;
 }
 
 ServerCertificateDatabase::CertInformation::CertInformation() = default;
