@@ -10715,6 +10715,7 @@ experimental domain Storage
       SignedInt64AsBase10 destinationLimitPriority
       AttributionReportingAggregatableDebugReportingConfig aggregatableDebugReportingConfig
       optional AttributionScopesData scopesData
+      integer maxEventLevelReports
 
   experimental type AttributionReportingSourceRegistrationResult extends string
     enum

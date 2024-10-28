@@ -32,6 +32,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.h"
@@ -2231,6 +2232,8 @@ void StorageHandler::OnSourceHandled(
               ToAggregatableDebugReportingConfig(
                   aggregatable_debug_reporting_config.budget(),
                   aggregatable_debug_reporting_config.config()))
+          .SetMaxEventLevelReports(
+              registration.trigger_specs.max_event_level_reports())
           .Build();
 
   if (registration.debug_key.has_value()) {
