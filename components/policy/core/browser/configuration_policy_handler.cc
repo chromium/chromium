@@ -231,7 +231,7 @@ StringMappingListPolicyHandler::MappingEntry::MappingEntry(
     std::unique_ptr<base::Value> map)
     : enum_value(policy_value), mapped_value(std::move(map)) {}
 
-StringMappingListPolicyHandler::MappingEntry::~MappingEntry() {}
+StringMappingListPolicyHandler::MappingEntry::~MappingEntry() = default;
 
 StringMappingListPolicyHandler::StringMappingListPolicyHandler(
     const char* policy_name,
