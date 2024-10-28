@@ -7,8 +7,10 @@
 #import "base/check_deref.h"
 #import "base/containers/contains.h"
 #import "base/containers/to_vector.h"
+#import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/observer_list.h"
@@ -22,6 +24,8 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/form_fetch_batcher.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "ios/web/public/browser_state.h"
@@ -47,6 +51,11 @@ bool IsAcrossIframesEnabled() {
   return base::FeatureList::IsEnabled(
       autofill::features::kAutofillAcrossIframesIos);
 }
+
+base::TimeDelta GetDocumentFormScanPeriod() {
+  return base::Milliseconds(kAutofillDocumentFormScanPeriodMs.Get());
+}
+
 }  // namespace
 
 // static
@@ -80,7 +89,10 @@ AutofillDriverIOS::AutofillDriverIOS(
       bridge_(bridge),
       client_(*client),
       manager_(std::make_unique<BrowserAutofillManager>(this, app_locale)),
-      router_(router) {
+      router_(router),
+      document_scan_batcher_(bridge,
+                             web_frame ? web_frame->AsWeakPtr() : nullptr,
+                             GetDocumentFormScanPeriod()) {
   manager_observation_.Observe(manager_.get());
 
   if (IsAcrossIframesEnabled()) {
@@ -274,7 +286,34 @@ void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
   if (!is_processed()) {
     return;
   }
-  [bridge_ scanFormsInWebState:web_state_ inFrame:web_frame()];
+
+  ScanForms();
+}
+
+void AutofillDriverIOS::ScanForms() {
+  if (!web_frame()) {
+    return;
+  }
+
+  const auto callback =
+      [](id<AutofillDriverIOSBridge> bridge, base::WeakPtr<web::WebFrame> frame,
+         std::optional<std::vector<autofill::FormData>> forms) {
+        if (!frame || !forms || forms->empty()) {
+          return;
+        }
+        [bridge notifyFormsSeen:*std::move(forms) inFrame:frame.get()];
+      };
+
+  if (base::FeatureList::IsEnabled(kAutofillThrottleDocumentFormScanIos)) {
+    document_scan_batcher_.PushRequest(
+        base::BindOnce(callback, bridge_, web_frame()->AsWeakPtr()));
+  } else {
+    [bridge_ fetchFormsFiltered:NO
+                       withName:std::u16string()
+                        inFrame:web_frame()
+              completionHandler:base::BindOnce(callback, bridge_,
+                                               web_frame()->AsWeakPtr())];
+  }
 }
 
 void AutofillDriverIOS::TriggerFormExtractionInAllFrames(

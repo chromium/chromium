@@ -38,3 +38,16 @@ BASE_FEATURE(kAutofillPaymentsSheetV2Ios,
 BASE_FEATURE(kAutofillStickyInfobarIos,
              "AutofillStickyInfobarIos",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Throttles the document form scanning done for taking recurrent snaphots of
+// the forms in the renderer by using scheduled batches. This doesn't throttle
+// single form fetching (aka filtered form fetching), e.g. getting the latest
+// snapshot of a form when handling a form activity, which is usually a more
+// user visible operation that requires its own special throttling adjustment.
+BASE_FEATURE(kAutofillThrottleDocumentFormScanIos,
+             "AutofillThrottleDocumentFormScanIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Minimal period of time between the document form scanning batches.
+extern const base::FeatureParam<int> kAutofillDocumentFormScanPeriodMs = {
+    &kAutofillThrottleDocumentFormScanIos,
+    /*name=*/"period-ms", /*default_value=*/250};

@@ -398,7 +398,7 @@ void AutofillControllerTest::SetUp() {
 
   std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale);
+      web_state(), autofill_client_.get(), autofill_agent_, locale);
 
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(

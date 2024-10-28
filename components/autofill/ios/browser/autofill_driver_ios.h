@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "components/autofill/ios/browser/form_fetch_batcher.h"
 #import "url/origin.h"
 
 namespace web {
@@ -176,6 +177,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   // as soon as the extraction request is started regardless of the results.
   void OnDidTriggerFormFetch();
 
+  // Scans to find all eligible forms in the frame's document.
+  void ScanForms();
+
  private:
   friend class AutofillDriverIOSTestApi;
 
@@ -284,6 +288,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   // driver's lifetime. The counter doesn't care whether the extraction
   // actually happened for real where it focuses on the trigger.
   int form_extraction_trigger_count_ = 0;
+
+  // FetchRequestBatcher used exclusively for batching document form scans.
+  FormFetchBatcher document_scan_batcher_;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

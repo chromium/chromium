@@ -14,6 +14,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_op.h"
 #import "base/containers/map_util.h"
 #import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
@@ -53,6 +54,7 @@
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -119,11 +121,6 @@ struct AutofillData {
   base::Value::Dict payload;
   FieldToFormLookupMap fieldToFormLookupMap;
 };
-
-// The type of the completion handler callback for
-// |fetchFormsWithName:completionHandler|
-using FetchFormsCompletionHandler =
-    base::OnceCallback<void(std::optional<FormDataVector>)>;
 
 // Delay for setting an utterance to be queued, it is required to ensure that
 // standard announcements have already been started and thus would not interrupt
@@ -552,25 +549,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       frame, std::move(predictionData));
 }
 
-- (void)scanFormsInWebState:(web::WebState*)webState
-                    inFrame:(web::WebFrame*)webFrame {
-  __weak __typeof(self) weakSelf = self;
-  const auto callback = [](__weak AutofillAgent* agent,
-                           base::WeakPtr<web::WebFrame> frame,
-                           std::optional<FormDataVector> forms) {
-    if (!forms || forms->empty()) {
-      return;
-    }
-    [agent notifyFormsSeen:*std::move(forms) inFrame:frame.get()];
-  };
-  // The document has now been fully loaded. Scan for forms to be extracted.
-  [self fetchFormsFiltered:NO
-                  withName:std::u16string()
-                   inFrame:webFrame
-         completionHandler:base::BindOnce(callback, weakSelf,
-                                          webFrame->AsWeakPtr())];
-}
-
 #pragma mark - AutofillClientIOSBridge
 
 - (void)showAutofillPopup:
@@ -823,7 +801,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // not a particular form. The whole document's forms need to be extracted to
   // find the new forms.
   if (params.type == "form_changed") {
-    [self scanFormsInWebState:webState inFrame:frame];
+    driver->ScanForms();
     return;
   }
 
@@ -1212,7 +1190,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)fetchFormsFiltered:(BOOL)filtered
                   withName:(const std::u16string&)formName
                    inFrame:(web::WebFrame*)frame
-         completionHandler:(FetchFormsCompletionHandler)completionHandler {
+         completionHandler:(FormFetchCompletion)completionHandler {
   DCHECK(completionHandler);
 
   // Necessary so the values can be used inside a block.
@@ -1227,9 +1205,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   const scoped_refptr<FieldDataManager> fieldDataManager =
       FieldDataManagerFactoryIOS::GetRetainable(frame);
-  const auto callback = [](FetchFormsCompletionHandler completion,
-                           BOOL filtered, const std::u16string& formName,
-                           const GURL& pageURL, const GURL& frameOrigin,
+  const auto callback = [](FormFetchCompletion completion, BOOL filtered,
+                           const std::u16string& formName, const GURL& pageURL,
+                           const GURL& frameOrigin,
                            scoped_refptr<FieldDataManager> fieldDataManager,
                            const std::string& frame_id, NSString* formJSON) {
     std::optional<std::vector<FormData>> formData =
@@ -1348,7 +1326,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       frame,
       /*track_user_edited_fields=*/true);
 
-  [self scanFormsInWebState:webState inFrame:frame];
+  driver->ScanForms();
 }
 
 // Records if the renderer was able to fill the Autofill-provided values in a

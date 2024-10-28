@@ -3198,6 +3198,21 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
+<histogram name="Autofill.iOS.FormExtraction.ForScan.BatchSize" units="count"
+    expires_after="2025-03-01">
+  <owner>vincb@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the number of form extraction requests in a form extraction batch
+    done for scanning a document, when batching is enabled. Recorded when the
+    batch delayed task is run regardless of the outcome of the task (e.g. the
+    task failed because the frame disappeared somewhere between scheduling and
+    running).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.iOS.FormRemoval.RemovedUnownedFields" units="count"
     expires_after="2025-04-13">
   <owner>vincb@google.com</owner>

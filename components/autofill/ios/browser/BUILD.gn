@@ -22,6 +22,8 @@ source_set("browser") {
     "autofill_manager_observer_bridge.mm",
     "credit_card_util.h",
     "credit_card_util.mm",
+    "form_fetch_batcher.h",
+    "form_fetch_batcher.mm",
     "form_suggestion.h",
     "form_suggestion.mm",
     "form_suggestion_provider.h",
@@ -152,6 +154,7 @@ source_set("unit_tests") {
     "autofill_driver_ios_factory_unittest.mm",
     "autofill_util_unittests.mm",
     "autofill_xhr_sumission_detection_unittest.mm",
+    "form_fetch_batcher_unittest.mm",
     "form_suggestion_provider_query_unittests.mm",
     "password_autofill_agent_unittest.mm",
   ]
