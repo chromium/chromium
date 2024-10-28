@@ -71,6 +71,9 @@ message ModelPrototypingRequest {
     // The image to use in the prompt.
     string image_template = 6;
 
+    // The pre-existing conversation between the user and the model.
+    Conversation conversation = 7;
+
     message ModelInformation {
       ModelEnum model_enum = 1;
 
@@ -98,6 +101,24 @@ message ModelPrototypingRequest {
   }
 }
 
+// A representation of an ongoing conversation.
+message Conversation {
+  // The turns of various messages in the conversation.
+  repeated ConversationTurn conversation_turns = 1;
+}
+
+// A single turn in a conversation.
+message ConversationTurn {
+  // The text of the conversation turn.
+  string conversation_text = 1;
+
+  // Which participant in the conversation this turn is from.
+  string role = 2;
+
+  // The mime type of the conversation turn.
+  string mime_type = 3;
+}
+
 message ModelPrototypingResponse {
   // The series of prompts sent to the model corresponding to the
   // |prototyping_prompts| in the request.
@@ -105,6 +126,9 @@ message ModelPrototypingResponse {
 
   // The responses from the model corresponding to |model_prompts|.
   repeated string model_responses = 2;
+
+  // Ordered conversation between the user and the model.
+  repeated Conversation conversations = 3;
 }
 
 message ModelPrototypingMetadata {
