@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/url_constants.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -136,17 +137,10 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
         base::TimeFormatShortDate(scored_url_row.row.last_visit()));
     item->last_url_visit_timestamp =
         scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch();
-
-    url_formatter::FormatUrlTypes format_types =
-        url_formatter::kFormatUrlOmitDefaults |
-        url_formatter::kFormatUrlOmitHTTPS |
-        url_formatter::kFormatUrlOmitTrivialSubdomains;
-    if (history_embeddings::kTrimAfterHostInResults.Get()) {
-      format_types |= url_formatter::kFormatUrlTrimAfterHost;
-    }
-    item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
-        nullptr, nullptr, nullptr));
+    item->url_for_display =
+        base::UTF16ToUTF8(history_clusters::ComputeURLForDisplay(
+            scored_url_row.row.url(),
+            history_embeddings::kTrimAfterHostInResults.Get()));
     if (has_answer && i == native_search_result.AnswerIndex()) {
       item->answer_data = history_embeddings::mojom::AnswerData::New();
       item->answer_data->answer_text_directives.assign(
