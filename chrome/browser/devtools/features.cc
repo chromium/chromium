@@ -34,20 +34,6 @@ const base::FeatureParam<DevToolsFreestylerExecutionMode>::Option
          "SIDE_EFFECT_FREE_SCRIPTS_ONLY"},
         {DevToolsFreestylerExecutionMode::kNoScripts, "NO_SCRIPTS"}};
 
-// Whether the DevTools styling assistant dogfood is enabled.
-BASE_FEATURE(kDevToolsFreestylerDogfood,
-             "DevToolsFreestylerDogfood",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
-    &kDevToolsFreestylerDogfood, "aida_model_id", /*default_value=*/""};
-const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
-    &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/-1};
-const base::FeatureParam<DevToolsFreestylerUserTier>
-    kDevToolsFreestylerDogfoodUserTier{
-        &kDevToolsFreestylerDogfood, "user_tier",
-        /*default_value=*/DevToolsFreestylerUserTier::kBeta,
-        &devtools_freestyler_user_tier_options};
-
 // Whether the DevTools styling assistant is enabled.
 BASE_FEATURE(kDevToolsFreestyler,
              "DevToolsFreestyler",

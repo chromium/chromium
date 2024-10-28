@@ -716,7 +716,6 @@ bool IsAnyAidaPoweredFeatureEnabled() {
              ::features::kDevToolsAiAssistanceNetworkAgent) ||
          base::FeatureList::IsEnabled(
              ::features::kDevToolsAiAssistancePerformanceAgent) ||
-         base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood) ||
          base::FeatureList::IsEnabled(
              ::features::kDevToolsExplainThisResourceDogfood) ||
          base::FeatureList::IsEnabled(
@@ -1593,8 +1592,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsConsoleInsights",
                     std::move(console_insights_dict));
 
-  base::Value::Dict freestyler_dict;
   if (base::FeatureList::IsEnabled(::features::kDevToolsFreestyler)) {
+    base::Value::Dict freestyler_dict;
     freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
                                        ::features::kDevToolsFreestyler));
     freestyler_dict.Set("modelId", features::kDevToolsFreestylerModelId.Get());
@@ -1606,18 +1605,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     freestyler_dict.Set("executionMode",
                         features::kDevToolsFreestylerExecutionMode.GetName(
                             features::kDevToolsFreestylerExecutionMode.Get()));
-  } else {
-    freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
-                                       ::features::kDevToolsFreestylerDogfood));
-    freestyler_dict.Set("modelId",
-                        features::kDevToolsFreestylerDogfoodModelId.Get());
-    freestyler_dict.Set("temperature",
-                        features::kDevToolsFreestylerDogfoodTemperature.Get());
-    freestyler_dict.Set(
-        "userTier", features::kDevToolsFreestylerDogfoodUserTier.GetName(
-                        features::kDevToolsFreestylerDogfoodUserTier.Get()));
+    response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));
   }
-  response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));
 
   if (base::FeatureList::IsEnabled(
           ::features::kDevToolsAiAssistanceNetworkAgent)) {
