@@ -73,6 +73,13 @@ class ProfileAttributesStorageIOS {
   // Returns the name of the profile associated to the given scene.
   const std::string& GetProfileNameForSceneID(std::string_view scene_id);
 
+  // Returns the name of the profile that's designated as the personal profile,
+  // i.e. the one containing all consumer (non-managed) accounts.
+  const std::string& GetPersonalProfileName() const;
+
+  // Designates the profile with `profile_name` as the personal profile.
+  void SetPersonalProfileName(std::string_view profile_name);
+
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

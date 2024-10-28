@@ -146,12 +146,22 @@ const std::string& ProfileAttributesStorageIOS::GetProfileNameForSceneID(
   return base::EmptyString();
 }
 
+const std::string& ProfileAttributesStorageIOS::GetPersonalProfileName() const {
+  return prefs_->GetString(prefs::kPersonalProfileName);
+}
+
+void ProfileAttributesStorageIOS::SetPersonalProfileName(
+    std::string_view profile_name) {
+  prefs_->SetString(prefs::kPersonalProfileName, profile_name);
+}
+
 // static
 void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileInfoCache);
   registry->RegisterIntegerPref(prefs::kNumberOfProfiles, 0);
   registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
+  registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
 }
 
 void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(

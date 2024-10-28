@@ -162,6 +162,10 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // tests where no ProfileManager exists.
   ProfileAttributesStorageIOS* GetProfileAttributesStorage();
 
+  // Returns the name of the personal profile, queried from the
+  // ProfileAttributesStorageIOS.
+  std::string GetPersonalProfileName();
+
   // Callback for SystemIdentityManager::IterateOverIdentities(). Checks the
   // mapping of `identity` to a profile, and attaches (or re-attaches) it as
   // necessary. Note that the attaching may happen asynchronously, if the hosted
@@ -302,6 +306,15 @@ AccountProfileMapper::Assigner::GetProfileAttributesStorage() {
                           : nullptr;
 }
 
+std::string AccountProfileMapper::Assigner::GetPersonalProfileName() {
+  ProfileAttributesStorageIOS* attributes = GetProfileAttributesStorage();
+  if (!attributes) {
+    CHECK_IS_TEST();
+    return kIOSChromeInitialProfile;
+  }
+  return attributes->GetPersonalProfileName();
+}
+
 SystemIdentityManager::IteratorResult
 AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     std::set<std::string>& processed_gaia_ids,
@@ -366,12 +379,14 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     }
   }
 
+  const std::string personal_profile_name = GetPersonalProfileName();
+
   if (current_assigned_profile) {
     // Already assigned, check if it needs to be re-assigned. (This can happen
     // if Chrome previously failed to determine the hosted domain, or in rare
     // cases, if the hosted domain actually changed.)
     bool is_in_personal_profile =
-        (*current_assigned_profile == kIOSChromeInitialProfile);
+        (*current_assigned_profile == personal_profile_name);
     if (is_in_personal_profile != is_managed_account) {
       // The account is already in the correct profile, nothing to be done.
       return;
@@ -392,10 +407,8 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     CreateProfileForIdentity(identity);
   } else {
     // Consumer account, assign to the personal profile.
-    // TODO(crbug.com/331783685): Remove assumption that "Default" is the
-    // personal profile.
-    AttachGaiaIdToProfile(GetProfileAttributesStorage(),
-                          kIOSChromeInitialProfile, gaia_id);
+    AttachGaiaIdToProfile(GetProfileAttributesStorage(), personal_profile_name,
+                          gaia_id);
   }
 }
 

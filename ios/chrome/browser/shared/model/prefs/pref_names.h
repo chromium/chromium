@@ -45,6 +45,11 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 // to load them.
 inline constexpr char kProfileInfoCache[] = "profile.info_cache";
 
+// The name of the profile that's used as the "personal" profile (used for
+// consumer accounts), as opposed to managed profiles (linked to a managed aka
+// Enterprise account).
+inline constexpr char kPersonalProfileName[] = "profile.personal";
+
 // Name of the last used profile.
 // TODO(crbug.com/325921947): Remove use of this key, kLastActiveProfiles
 // should be used.

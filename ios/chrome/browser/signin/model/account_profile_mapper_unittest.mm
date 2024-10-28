@@ -29,7 +29,7 @@ using testing::_;
 
 namespace {
 
-const std::string kDefaultProfileName(kIOSChromeInitialProfile);
+const std::string kPersonalProfileName(kIOSChromeInitialProfile);
 
 FakeSystemIdentity* gmail_identity1 =
     [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"];
@@ -101,11 +101,12 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
  public:
   explicit FakeProfileManagerIOS(PrefService* local_state)
       : profile_attributes_storage_(local_state) {
-    // Load the "Default" profile. This is similar to what the real
-    // ProfileManagerIOS does on startup.
-    profiles_map_[kDefaultProfileName] =
-        std::make_unique<FakeProfileIOS>(kDefaultProfileName);
-    profile_attributes_storage_.AddProfile(kDefaultProfileName);
+    // Load the "Default" profile, and mark it as the personal profile. This is
+    // similar to what the real ProfileManagerIOS does on startup.
+    profiles_map_[kPersonalProfileName] =
+        std::make_unique<FakeProfileIOS>(kPersonalProfileName);
+    profile_attributes_storage_.AddProfile(kPersonalProfileName);
+    profile_attributes_storage_.SetPersonalProfileName(kPersonalProfileName);
   }
   ~FakeProfileManagerIOS() override = default;
 
@@ -251,22 +252,22 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest, NoIdentity) {
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer;
-  account_profile_mapper_->AddObserver(&mock_observer, kDefaultProfileName);
+  account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
-  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kDefaultProfileName));
+  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
 
-  account_profile_mapper_->RemoveObserver(&mock_observer, kDefaultProfileName);
+  account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
 
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer;
-  account_profile_mapper_->AddObserver(&mock_observer, kDefaultProfileName);
+  account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
-  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kDefaultProfileName));
+  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
 
-  account_profile_mapper_->RemoveObserver(&mock_observer, kDefaultProfileName);
+  account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
 
 // Tests that when the feature flag is disabled, all identities are visible
@@ -282,7 +283,7 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer0;
-  account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
+  account_profile_mapper_->AddObserver(&mock_observer0, kPersonalProfileName);
   testing::StrictMock<MockObserver> mock_observer1;
   account_profile_mapper_->AddObserver(&mock_observer1, kTestProfile1Name);
 
@@ -301,7 +302,7 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
   NSArray* expected_identities =
       @[ gmail_identity1, gmail_identity2, google_identity ];
   EXPECT_NSEQ(expected_identities,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   EXPECT_NSEQ(expected_identities, GetIdentitiesForProfile(kTestProfile1Name));
 
   // Remove an identity; this should also apply to all profiles.
@@ -320,11 +321,12 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
   // All (remaining) identities should be visible in all profiles.
   expected_identities = @[ gmail_identity1, google_identity ];
   EXPECT_NSEQ(expected_identities,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   EXPECT_NSEQ(expected_identities, GetIdentitiesForProfile(kTestProfile1Name));
 
   account_profile_mapper_->RemoveObserver(&mock_observer1, kTestProfile1Name);
-  account_profile_mapper_->RemoveObserver(&mock_observer0, kDefaultProfileName);
+  account_profile_mapper_->RemoveObserver(&mock_observer0,
+                                          kPersonalProfileName);
 }
 
 // Tests that 2 non-managed identities are added to the personal profile.
@@ -335,7 +337,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer;
-  account_profile_mapper_->AddObserver(&mock_observer, kDefaultProfileName);
+  account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
   EXPECT_CALL(mock_observer, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -344,11 +346,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   NSArray* expected_identities = @[ gmail_identity1, gmail_identity2 ];
   EXPECT_NSEQ(expected_identities,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   // Check that no other profiles have been created.
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
 
-  account_profile_mapper_->RemoveObserver(&mock_observer, kDefaultProfileName);
+  account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
 
 // Tests that the 2 non-managed identities are added to the personal profile,
@@ -361,7 +363,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
-                                       kDefaultProfileName);
+                                       kPersonalProfileName);
 
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -375,7 +377,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Ensure a second profile has been created. Find its name.
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
   std::string managed_profile_name =
-      FindCreatedProfileName(/*known_profile_names=*/{kDefaultProfileName});
+      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
   ASSERT_FALSE(managed_profile_name.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed;
@@ -392,13 +394,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Verify the assignment of identities to profiles.
   NSArray* expected_identities_personal = @[ gmail_identity1, gmail_identity2 ];
   EXPECT_NSEQ(expected_identities_personal,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   NSArray* expected_identities_managed = @[ google_identity ];
   EXPECT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(managed_profile_name));
 
   account_profile_mapper_->RemoveObserver(&mock_observer_personal,
-                                          kDefaultProfileName);
+                                          kPersonalProfileName);
   account_profile_mapper_->RemoveObserver(&mock_observer_managed,
                                           managed_profile_name);
 }
@@ -412,7 +414,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
-                                       kDefaultProfileName);
+                                       kPersonalProfileName);
 
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -427,7 +429,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Ensure a separate profile has been created. Find its name.
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
   std::string managed_profile_name1 =
-      FindCreatedProfileName(/*known_profile_names=*/{kDefaultProfileName});
+      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
   ASSERT_FALSE(managed_profile_name1.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed1;
@@ -443,7 +445,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Ensure another profile has been created. Find its name.
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 3u);
   std::string managed_profile_name2 = FindCreatedProfileName(
-      /*known_profile_names=*/{kDefaultProfileName, managed_profile_name1});
+      /*known_profile_names=*/{kPersonalProfileName, managed_profile_name1});
   ASSERT_FALSE(managed_profile_name2.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed2;
@@ -453,7 +455,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Verify the assignments of identities to profiles.
   NSArray* expected_identities_personal = @[ gmail_identity1, gmail_identity2 ];
   EXPECT_NSEQ(expected_identities_personal,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   NSArray* expected_identities_managed1 = @[ google_identity ];
   EXPECT_NSEQ(expected_identities_managed1,
               GetIdentitiesForProfile(managed_profile_name1));
@@ -462,7 +464,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
               GetIdentitiesForProfile(managed_profile_name2));
 
   account_profile_mapper_->RemoveObserver(&mock_observer_personal,
-                                          kDefaultProfileName);
+                                          kPersonalProfileName);
   account_profile_mapper_->RemoveObserver(&mock_observer_managed1,
                                           managed_profile_name1);
   account_profile_mapper_->RemoveObserver(&mock_observer_managed2,
@@ -477,7 +479,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
-                                       kDefaultProfileName);
+                                       kPersonalProfileName);
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
@@ -492,7 +494,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
   std::string managed_profile_name;
   for (const ProfileIOS* profile : profile_manager_->GetLoadedProfiles()) {
-    if (profile->GetProfileName() != kDefaultProfileName) {
+    if (profile->GetProfileName() != kPersonalProfileName) {
       managed_profile_name = profile->GetProfileName();
       break;
     }
@@ -520,7 +522,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Verify the assignments of identities to profiles.
   NSArray* expected_identities_personal = @[ gmail_identity1 ];
   EXPECT_NSEQ(expected_identities_personal,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   NSArray* expected_identities_managed = @[ google_identity ];
   EXPECT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(managed_profile_name));
@@ -542,14 +544,14 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Verify the assignments of identities to profiles.
   expected_identities_personal = @[ gmail_identity1 ];
   EXPECT_NSEQ(expected_identities_personal,
-              GetIdentitiesForProfile(kDefaultProfileName));
+              GetIdentitiesForProfile(kPersonalProfileName));
   // TODO(crbug.com/331783685): The managed profile should get deleted here.
   expected_identities_managed = @[];
   EXPECT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(managed_profile_name));
 
   account_profile_mapper_->RemoveObserver(&mock_observer_personal,
-                                          kDefaultProfileName);
+                                          kPersonalProfileName);
   account_profile_mapper_->RemoveObserver(&mock_observer_managed,
                                           managed_profile_name);
 }
