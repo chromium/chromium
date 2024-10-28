@@ -438,7 +438,7 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
-        mCustomTabActivityTestRule.launchActivity(intent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Tab normalTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
         // We can check if the page title is correct to know if the tab is done loading.
@@ -459,7 +459,7 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
         // Verify the tab has the expected cookie.
         Assert.assertEquals("\"foo=bar\"", JsHelper.getJsonResultAndClear());
-        mCustomTabActivityTestRule.getActivity().finish();
+        mCustomTabActivityTestRule.finishActivity();
 
         // Launch the first hidden tab. This tab should use a separate storage partition and
         // therefore shouldn't see the first cookie.
@@ -534,9 +534,8 @@ public class CustomTabsConnectionTest {
         // Launch the second custom tab. Because there is already a hidden tab for the same url this
         // custom tab should just re-use the hidden tab. This means that this tab will use the same
         // storage partition and therefore access the same cookie.
-        mCustomTabActivityTestRule.launchActivity(intent2);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent2);
         Tab normalTab2 = mCustomTabActivityTestRule.getActivity().getActivityTab();
-
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(
@@ -552,13 +551,14 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
         // This custom tab should see the third cookie set.
         Assert.assertEquals("\"foo_hidden2=baz\"", JsHelper.getJsonResultAndClear());
+        mCustomTabActivityTestRule.finishActivity();
 
         // Finally, launch a third custom tab. Because there isn't an associated mayLaunchUrl this
         // custom tab will use the default storage partition and will access the first cookie.
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
         Intent intent3 =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
-        mCustomTabActivityTestRule.launchActivity(intent3);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent3);
         Tab normalTab3 = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
         CriteriaHelper.pollUiThread(
