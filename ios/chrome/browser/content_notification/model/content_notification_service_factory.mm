@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/content_notification/content_notification_api.h"
 
 // static
@@ -31,6 +33,8 @@ ContentNotificationServiceFactory::ContentNotificationServiceFactory()
           "ContentNotificationService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(AuthenticationServiceFactory::GetInstance());
+  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 ContentNotificationServiceFactory::~ContentNotificationServiceFactory() =
@@ -39,11 +43,15 @@ ContentNotificationServiceFactory::~ContentNotificationServiceFactory() =
 std::unique_ptr<KeyedService>
 ContentNotificationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+
   ContentNotificationConfiguration* config =
       [[ContentNotificationConfiguration alloc] init];
 
-  config.authService = AuthenticationServiceFactory::GetForProfile(
-      ProfileIOS::FromBrowserState(context));
+  config.authService = AuthenticationServiceFactory::GetForProfile(profile);
+  config.identityManager = IdentityManagerFactory::GetForProfile(profile);
+  config.accountManager =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   config.ssoService = GetApplicationContext()->GetSingleSignOnService();
 
