@@ -3684,6 +3684,10 @@ const char kTextInShelfName[] = "Internal test: text in shelf";
 const char kTextInShelfDescription[] =
     "Extend text in shelf timeout to learn about user education";
 
+const char kTextSafetyClassifierName[] = "Text Safety Classifier";
+const char kTextSafetyClassifierDescription[] =
+    "Enables text safety classifier for on-device models";
+
 const char kThreadedScrollPreventRenderingStarvationName[] =
     "threaded-scroll-prevent-rendering-starvation";
 const char kThreadedScrollPreventRenderingStarvationDescription[] =

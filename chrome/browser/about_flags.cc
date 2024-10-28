@@ -1201,31 +1201,21 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
 const FeatureEntry::FeatureParam
     kOptimizationGuideOnDeviceModelBypassPerfParams[] = {
         {"compatible_on_device_performance_classes", "*"},
-        {"on_device_retract_unsafe_content", "true"},
-};
-const FeatureEntry::FeatureParam
-    kOptimizationGuideOnDeviceModelBypassTextSafetyParams[] = {
-        {"on_device_retract_unsafe_content", "false"},
-};
-const FeatureEntry::FeatureParam
-    kOptimizationGuideOnDeviceModelBypassPerfAndTextSafetyParams[] = {
-        {"compatible_on_device_performance_classes", "*"},
-        {"on_device_retract_unsafe_content", "false"},
 };
 const FeatureEntry::FeatureVariation
     kOptimizationGuideOnDeviceModelVariations[] = {
         {"BypassPerfRequirement",
          kOptimizationGuideOnDeviceModelBypassPerfParams,
          std::size(kOptimizationGuideOnDeviceModelBypassPerfParams), nullptr},
-        {"BypassTextSafety",
-         kOptimizationGuideOnDeviceModelBypassTextSafetyParams,
-         std::size(kOptimizationGuideOnDeviceModelBypassTextSafetyParams),
-         nullptr},
-        {"BypassPerfAndTextSafety",
-         kOptimizationGuideOnDeviceModelBypassPerfAndTextSafetyParams,
-         std::size(
-             kOptimizationGuideOnDeviceModelBypassPerfAndTextSafetyParams),
-         nullptr},
+};
+
+const FeatureEntry::FeatureParam kTextSafetyClassifierNoRetractParams[] = {
+    {"on_device_retract_unsafe_content", "false"},
+};
+const FeatureEntry::FeatureVariation kTextSafetyClassifierVariations[] = {
+    {"Executes safety classifier but no retraction of output",
+     kTextSafetyClassifierNoRetractParams,
+     std::size(kTextSafetyClassifierNoRetractParams), nullptr},
 };
 
 const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
@@ -6531,6 +6521,13 @@ const FeatureEntry kFeatureEntries[] = {
          optimization_guide::features::kOptimizationGuideOnDeviceModel,
          kOptimizationGuideOnDeviceModelVariations,
          "OptimizationGuideOnDeviceModel")},
+
+    {"text-safety-classifier", flag_descriptions::kTextSafetyClassifierName,
+     flag_descriptions::kTextSafetyClassifierDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         optimization_guide::features::kTextSafetyClassifier,
+         kTextSafetyClassifierVariations,
+         "TextSafetyClassifier")},
 
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,

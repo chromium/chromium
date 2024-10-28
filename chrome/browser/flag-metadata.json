@@ -8671,6 +8671,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "text-safety-classifier",
+    "owners": [ "sophiechang@chromium.org", "robertogden@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "third-party-cookie-deprecation-trial",
     "owners": [
       "//chrome/browser/tpcd/OWNERS"

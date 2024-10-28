@@ -21411,6 +21411,7 @@ from previous Chrome versions.
   <int value="529235584" label="PhoneHub:enabled"/>
   <int value="529665808"
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:disabled"/>
+  <int value="530260251" label="TextSafetyClassifier:disabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
   <int value="531157579" label="EnterOverviewFromWallpaper:enabled"/>
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
@@ -24434,6 +24435,7 @@ from previous Chrome versions.
       label="DropUnrecognizedTemplateUrlParameters:enabled"/>
   <int value="1755024316" label="HostWindowsInAppShimProcess:disabled"/>
   <int value="1756736642" label="DynamicSearchUpdateAnimation:enabled"/>
+  <int value="1756997013" label="TextSafetyClassifier:enabled"/>
   <int value="1757654890"
       label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:disabled"/>
   <int value="1757894817" label="PrinterStatusDialog:disabled"/>
