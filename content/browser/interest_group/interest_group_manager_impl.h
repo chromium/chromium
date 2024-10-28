@@ -59,6 +59,7 @@ namespace content {
 
 class AdAuctionPageData;
 class InterestGroupStorage;
+class TrustedSignalsCacheImpl;
 struct DebugReportLockoutAndCooldowns;
 
 // InterestGroupManager is a per-StoragePartition class that owns shared
@@ -524,6 +525,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       std::optional<double> bid,
       base::optional_ref<const std::string> bid_currency);
 
+  // Cache for trusted browser signals version 2. Returns nullptr if relevant
+  // features have not been enabled.
+  TrustedSignalsCacheImpl* trusted_signals_cache() {
+    return trusted_signals_cache_.get();
+  }
+
  private:
   // InterestGroupUpdateManager calls private members to write updates to the
   // database.
@@ -696,6 +703,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // InterestGroupStorage. Returns cached values for GetInterestGroupsForOwner
   // when available.
   InterestGroupCachingStorage caching_storage_;
+
+  // Cache for trusted browser signals version 2. Only populated if
+  // kFledgeTrustedSignalsKVv2Support and kFledgeUseKvv2SignalsCache features
+  // are enabled. Rather than check for those features, consumers should check
+  // if this has been populated. Must be declared before
+  // `auction_process_manager_`, which depends on this.
+  const std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache_;
 
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;

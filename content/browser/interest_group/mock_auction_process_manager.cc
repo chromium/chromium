@@ -551,7 +551,9 @@ void MockSellerWorklet::Flush() {
   receiver_.FlushForTesting();
 }
 
-MockAuctionProcessManager::MockAuctionProcessManager() = default;
+MockAuctionProcessManager::MockAuctionProcessManager()
+    : DedicatedAuctionProcessManager(/*trusted_signals_cache=*/nullptr) {}
+
 MockAuctionProcessManager::~MockAuctionProcessManager() = default;
 
 AuctionProcessManager::WorkletProcess::ProcessContext

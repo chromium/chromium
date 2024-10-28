@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
@@ -155,9 +157,10 @@ void AuctionProcessManager::WorkletProcess::ActivateAndBindIfUnbound(
     CHECK_EQ(origin, origin_);
   } else {
     ReassignWorkletTypeAndOrigin(worklet_type, origin);
+    is_bound_to_origin_ = true;
+    OnBoundToOrigin();
   }
   is_idle_ = false;
-  is_bound_to_origin_ = true;
   remove_idle_process_from_manager_timer_.Stop();
 }
 
@@ -184,6 +187,10 @@ void AuctionProcessManager::WorkletProcess::SetService(
       DCHECK(render_process_host_->GetProcess().IsValid());
       pid_ = render_process_host_->GetProcess().Pid();
     }
+  }
+
+  if (is_bound_to_origin_) {
+    OnBoundToOrigin();
   }
 }
 
@@ -231,6 +238,20 @@ void AuctionProcessManager::WorkletProcess::RemoveFromProcessManager(
 
 AuctionProcessManager::WorkletProcess::~WorkletProcess() {
   RemoveFromProcessManager(/*on_destruction=*/true);
+}
+
+void AuctionProcessManager::WorkletProcess::OnBoundToOrigin() {
+  DCHECK(is_bound_to_origin_);
+
+  // If the TrustedSignalsCache exists (and thus is enabled), pass a pipe to
+  // for KVv2 bidding signals fetches. Seller signals are not yet supported, so
+  // only do this for bidder worklets.
+  auto* trusted_signals_cache =
+      auction_process_manager_->trusted_signals_cache_.get();
+  if (trusted_signals_cache && worklet_type_ == WorkletType::kBidder) {
+    service_->SetTrustedSignalsCache(trusted_signals_cache->CreateMojoPipe(
+        TrustedSignalsCacheImpl::SignalsType::kBidding, origin_));
+  }
 }
 
 AuctionProcessManager::ProcessHandle::ProcessHandle() = default;
@@ -548,7 +569,9 @@ bool AuctionProcessManager::TryToUseIdleProcessForHandle(
   return true;
 }
 
-AuctionProcessManager::AuctionProcessManager() = default;
+AuctionProcessManager::AuctionProcessManager::AuctionProcessManager(
+    TrustedSignalsCacheImpl* trusted_signals_cache)
+    : trusted_signals_cache_(trusted_signals_cache) {}
 
 void AuctionProcessManager::RemovePendingProcessHandle(
     ProcessHandle* process_handle) {
@@ -682,7 +705,10 @@ bool AuctionProcessManager::HasAvailableProcessSlotForIdleProcess(
          kMaxSellerProcesses;
 }
 
-DedicatedAuctionProcessManager::DedicatedAuctionProcessManager() = default;
+DedicatedAuctionProcessManager::DedicatedAuctionProcessManager(
+    TrustedSignalsCacheImpl* trusted_signals_cache)
+    : AuctionProcessManager(trusted_signals_cache) {}
+
 DedicatedAuctionProcessManager::~DedicatedAuctionProcessManager() = default;
 
 AuctionProcessManager::WorkletProcess::ProcessContext
@@ -732,7 +758,10 @@ bool DedicatedAuctionProcessManager::TryUseSharedProcess(
   return false;
 }
 
-InRendererAuctionProcessManager::InRendererAuctionProcessManager() = default;
+InRendererAuctionProcessManager::InRendererAuctionProcessManager(
+    TrustedSignalsCacheImpl* trusted_signals_cache)
+    : AuctionProcessManager(trusted_signals_cache) {}
+
 InRendererAuctionProcessManager::~InRendererAuctionProcessManager() = default;
 
 AuctionProcessManager::WorkletProcess::ProcessContext

@@ -29,7 +29,10 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/common/features.h"
@@ -52,6 +55,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -67,6 +71,12 @@ using RequestWorkletServiceOutcome =
 const size_t kMaxSellerProcesses = AuctionProcessManager::kMaxSellerProcesses;
 const size_t kMaxBidderProcesses = AuctionProcessManager::kMaxBidderProcesses;
 
+// For tests that make sure the TrustedSignalsCache is wired up correctly, the
+// cache is configured to fail with this error, if it successfully receives a
+// request.
+constexpr std::string_view kCacheMessage =
+    "The cache failed with the right error.";
+
 base::OnceClosure NeverInvokedClosure() {
   return base::BindOnce([]() { ADD_FAILURE() << "This should not be called"; });
 }
@@ -76,7 +86,29 @@ class TestAuctionProcessManager
     : public AuctionManagerBaseType,
       public auction_worklet::mojom::AuctionWorkletService {
  public:
-  TestAuctionProcessManager() = default;
+  // Per-AuctionWorkletService receiver pipe information. Public only so inlined
+  // public methods can use it.
+  struct ReceiverContext {
+    explicit ReceiverContext(
+        base::WeakPtr<AuctionProcessManager::WorkletProcess> worklet_process)
+        : worklet_process(std::move(worklet_process)) {}
+
+    // The associated worklet process, which may have been destroyed.
+    base::WeakPtr<AuctionProcessManager::WorkletProcess> worklet_process;
+
+    // The TrustedSignalsCache Mojo pipe, received from
+    // SetTrustedSignalsCache(). There should only be a single call to that
+    // method, so should only be one such pipe.
+    mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_remote;
+
+    // If non-null, its Quit() method will be invoked when `cache_remote` is
+    // populated.
+    raw_ptr<base::RunLoop> wait_for_cache_remote_run_loop;
+  };
+
+  explicit TestAuctionProcessManager(
+      TrustedSignalsCacheImpl* trusted_signals_cache)
+      : AuctionManagerBaseType(trusted_signals_cache) {}
 
   TestAuctionProcessManager(const TestAuctionProcessManager&) = delete;
   const TestAuctionProcessManager& operator=(const TestAuctionProcessManager&) =
@@ -86,7 +118,16 @@ class TestAuctionProcessManager
 
   void SetTrustedSignalsCache(
       mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-          trusted_signals_cache) override {}
+          trusted_signals_cache) override {
+    ReceiverContext& context = receiver_set_.current_context();
+    // This should only be called once per pipe.
+    ASSERT_FALSE(context.cache_remote);
+    context.cache_remote.Bind(std::move(trusted_signals_cache));
+    if (context.wait_for_cache_remote_run_loop) {
+      context.wait_for_cache_remote_run_loop->Quit();
+      context.wait_for_cache_remote_run_loop = nullptr;
+    }
+  }
 
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
@@ -178,6 +219,55 @@ class TestAuctionProcessManager
     return;
   }
 
+  // Checks that `handle` has no cache remote. Calls RunUntilIdle() to make sure
+  // there are no pending calls to pass in a cache remote.
+  void ExpectNoCacheRemote(const AuctionProcessManager::ProcessHandle& handle) {
+    // `handle` must be assigned a process.
+    ASSERT_TRUE(handle.worklet_process_for_testing());
+
+    base::RunLoop().RunUntilIdle();
+    // `handle` must still be assigned a process.
+    ASSERT_TRUE(handle.worklet_process_for_testing());
+
+    ReceiverContext* context = FindContextForProcess(handle);
+    ASSERT_TRUE(context);
+    EXPECT_FALSE(context->cache_remote);
+  }
+
+  // Waits until a non-zero number of TrustedSignalsCache PendingRemotes have
+  // been received, and then returns them all. Because of the complexity of
+  // figuring out which remote come from which worklet pipe, they aren't tracked
+  // by which WorkletProcess's receiver they were received by.
+  auction_worklet::mojom::TrustedSignalsCache* WaitForCacheRemote(
+      const AuctionProcessManager::ProcessHandle& handle) {
+    // `handle` must be assigned a process.
+    CHECK(handle.worklet_process_for_testing());
+
+    ReceiverContext* context = FindContextForProcess(handle);
+    if (!context) {
+      return nullptr;
+    }
+
+    if (!context->cache_remote) {
+      base::RunLoop run_loop;
+      context->wait_for_cache_remote_run_loop = &run_loop;
+      // Null out context, since the pointer may be invalidated while spinning
+      // the message loop.
+      context = nullptr;
+      run_loop.Run();
+
+      context = FindContextForProcess(handle);
+      if (!context) {
+        return nullptr;
+      }
+    }
+
+    EXPECT_TRUE(context->cache_remote.is_bound());
+    EXPECT_TRUE(context->cache_remote.is_connected());
+
+    return context->cache_remote.get();
+  }
+
  private:
   AuctionProcessManager::WorkletProcess::ProcessContext CreateProcessInternal(
       AuctionProcessManager::WorkletProcess& worklet_process) override {
@@ -188,40 +278,106 @@ class TestAuctionProcessManager
       // need to set a binder so `this` can intercept them and bind them to
       // `receiver_set_`, while still exercising the production
       // CreateProcessInternal() call.
+      //
+      // The `worklet_process` weak pointer is passed to store in
+      // `receiver_set_` when BindInterface() is invoke. This assumes that
+      // BindInterface() will only be invoked once, synchronously, for each
+      // AuctionManagerBaseType::CreateProcessInternal() invocation.
       static_cast<MockRenderProcessHost*>(
           worklet_process.site_instance()->GetProcess())
           ->OverrideBinderForTesting(
               auction_worklet::mojom::AuctionWorkletService::Name_,
               base::BindRepeating(&TestAuctionProcessManager<
                                       AuctionManagerBaseType>::BindInterface,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  worklet_process.GetWeakPtrForTesting()));
       // Defer to the RendererProcessHost mocks when using the InRenderer path.
       return AuctionManagerBaseType::CreateProcessInternal(worklet_process);
     } else {
       mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
           service;
-      receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver());
+      receiver_set_.Add(
+          this, service.InitWithNewPipeAndPassReceiver(),
+          ReceiverContext(worklet_process.GetWeakPtrForTesting()));
       return AuctionProcessManager::WorkletProcess::ProcessContext(
           std::move(service));
     }
   }
 
   // Callback when trying to bind a pipe through the MockRenderProcessHost.
-  void BindInterface(mojo::ScopedMessagePipeHandle pipe) {
+  void BindInterface(
+      base::WeakPtr<AuctionProcessManager::WorkletProcess> worklet_process,
+      mojo::ScopedMessagePipeHandle pipe) {
     receiver_set_.Add(
         this,
         mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>(
-            std::move(pipe)));
+            std::move(pipe)),
+        ReceiverContext(worklet_process));
+  }
+
+  // Finds the ReceiverContext associated with `handle`. `handle` must have a
+  // process. It's considered and error for no such ReceiverContext to exist.
+  ReceiverContext* FindContextForProcess(
+      const AuctionProcessManager::ProcessHandle& handle) {
+    // `handle` must be assigned a process.
+    CHECK(handle.worklet_process_for_testing());
+    for (const auto& receiver : receiver_set_.GetAllContexts()) {
+      if (receiver.second->worklet_process.get() ==
+          handle.worklet_process_for_testing()) {
+        return receiver.second;
+      }
+    }
+    ADD_FAILURE() << "Context associated with process not found.";
+    return nullptr;
   }
 
   std::vector<base::WeakPtr<AuctionProcessManager::WorkletProcess>>
       launched_processes_;
 
-  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
+  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService,
+                    ReceiverContext>
       receiver_set_;
 
   base::WeakPtrFactory<TestAuctionProcessManager<AuctionManagerBaseType>>
       weak_ptr_factory_{this};
+};
+
+class TestCacheClient
+    : public auction_worklet::mojom::TrustedSignalsCacheClient {
+ public:
+  explicit TestCacheClient(auction_worklet::mojom::TrustedSignalsCache* cache)
+      : cache_(cache) {}
+
+  ~TestCacheClient() override = default;
+
+  void RequestSignalsExpectingSuccess(
+      base::UnguessableToken compression_group_token) {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    cache_->GetTrustedSignals(compression_group_token,
+                              receiver_.BindNewPipeAndPassRemote());
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+ private:
+  // TrustedSignalsCacheClient implementation:
+  void OnSuccess(auction_worklet::mojom::TrustedSignalsCompressionScheme
+                     compression_scheme,
+                 mojo_base::BigBuffer foo) override {
+    ADD_FAILURE() << "Valid signals should never be received in these tests";
+    run_loop_->Quit();
+  }
+
+  void OnError(const std::string& error_message) override {
+    EXPECT_EQ(error_message, kCacheMessage);
+    run_loop_->Quit();
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+
+  raw_ptr<auction_worklet::mojom::TrustedSignalsCache> cache_;
+  mojo::Receiver<auction_worklet::mojom::TrustedSignalsCacheClient> receiver_{
+      this};
 };
 
 // ContentBrowserClient to disable strict site isolation.
@@ -263,14 +419,10 @@ class AuctionProcessManagerTest
     std::vector<base::test::FeatureRef> disabled_features;
     switch (GetProcessMode()) {
       case ProcessMode::kDedicated:
-        dedicated_process_manager_.emplace();
-        auction_process_manager_ = &dedicated_process_manager_.value();
         break;
       case ProcessMode::kInRendererSitePerProcess:
         scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
             switches::kSitePerProcess);
-        in_renderer_process_manager_.emplace();
-        auction_process_manager_ = &in_renderer_process_manager_.value();
         break;
       case ProcessMode::kInRendererSharedProcess:
         enabled_features.emplace_back(
@@ -284,8 +436,6 @@ class AuctionProcessManagerTest
             switches::kSitePerProcess);
         original_browser_client_ =
             content::SetBrowserClientForTesting(&browser_client_);
-        in_renderer_process_manager_.emplace();
-        auction_process_manager_ = &in_renderer_process_manager_.value();
         break;
     }
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
@@ -306,6 +456,8 @@ class AuctionProcessManagerTest
 
     site_instance1_ = SiteInstance::Create(&test_browser_context_);
     site_instance2_ = SiteInstance::Create(&test_browser_context_);
+
+    CreateAuctionProcessManager(&trusted_signals_cache_);
   }
 
   virtual ~AuctionProcessManagerTest() {
@@ -313,6 +465,25 @@ class AuctionProcessManagerTest
       content::SetBrowserClientForTesting(original_browser_client_);
     }
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
+  }
+
+  void CreateAuctionProcessManager(
+      TrustedSignalsCacheImpl* trusted_signals_cache) {
+    // Need to clear the raw ptr first, in case there's already an existing
+    // process.
+    auction_process_manager_ = nullptr;
+
+    switch (GetProcessMode()) {
+      case ProcessMode::kDedicated:
+        dedicated_process_manager_.emplace(trusted_signals_cache);
+        auction_process_manager_ = &dedicated_process_manager_.value();
+        break;
+      case ProcessMode::kInRendererSitePerProcess:
+      case ProcessMode::kInRendererSharedProcess:
+        in_renderer_process_manager_.emplace(trusted_signals_cache);
+        auction_process_manager_ = &in_renderer_process_manager_.value();
+        break;
+    }
   }
 
   // Closes all worklet pipes, much like a crash.
@@ -333,6 +504,76 @@ class AuctionProcessManagerTest
     } else {
       return in_renderer_process_manager_->ProcessCreationOrder(handle);
     }
+  }
+
+  // Calls WaitForCacheRemote() on the correct TestAuctionProcessManager.
+  auction_worklet::mojom::TrustedSignalsCache* WaitForCacheRemote(
+      const AuctionProcessManager::ProcessHandle& handle) {
+    if (dedicated_process_manager_) {
+      return dedicated_process_manager_->WaitForCacheRemote(handle);
+    } else {
+      return in_renderer_process_manager_->WaitForCacheRemote(handle);
+    }
+  }
+
+  // Checks that `handle` has no cache remote. Calls RunUntilIdle() to make sure
+  // there are no pending calls to pass in a cache remote.
+  void ExpectNoCacheRemote(const AuctionProcessManager::ProcessHandle& handle) {
+    if (dedicated_process_manager_) {
+      dedicated_process_manager_->ExpectNoCacheRemote(handle);
+    } else {
+      in_renderer_process_manager_->ExpectNoCacheRemote(handle);
+    }
+  }
+
+  // For bidder worklets, validates `handle` has received a cache remote that
+  // works for the provided origin. For seller worklets, validates that no cache
+  // remote is received, as the cache does not yet support seller signals.
+  void ValidateCacheRemote(const AuctionProcessManager::ProcessHandle& handle,
+                           const url::Origin& origin) {
+    // In the seller case, which is not yet supported by the caching logic,
+    // expect no cache remote to be received.
+    if (GetWorkletType() == AuctionProcessManager::WorkletType::kSeller) {
+      ExpectNoCacheRemote(handle);
+      return;
+    }
+
+    auto* cache_remote = WaitForCacheRemote(handle);
+    ASSERT_TRUE(cache_remote);
+
+    scoped_refptr<TrustedSignalsCacheImpl::Handle> trusted_signals_handle;
+    int partition_id_ignored = 0;
+    // Request signals of the corresponding worklet type, on behalf of `origin`.
+    // None of the other parameters matter.
+    switch (GetWorkletType()) {
+      case AuctionProcessManager::WorkletType::kBidder:
+        trusted_signals_handle =
+            trusted_signals_cache_.RequestTrustedBiddingSignals(
+                url::Origin::Create(GURL("https://main-frame-origin.test")),
+                origin, "Interest Group Name",
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                url::Origin::Create(GURL("https://joinin-origin.test")),
+                GURL("https://trusted-signals-url/"),
+                url::Origin::Create(GURL("https://coordinator.test")),
+                /*trusted_bidding_signals_key=*/{},
+                /*additional_params=*/{}, partition_id_ignored);
+        break;
+      case AuctionProcessManager::WorkletType::kSeller:
+        trusted_signals_handle =
+            trusted_signals_cache_.RequestTrustedScoringSignals(
+                url::Origin::Create(GURL("https://main-frame-origin.test")),
+                origin, GURL("https://trusted-signals-url/"),
+                url::Origin::Create(GURL("https://coordinator.test")),
+                url::Origin::Create(GURL("https://bidder.test")),
+                url::Origin::Create(GURL("https://joining-origin.test")),
+                GURL("https://render-url.test"), /*component_render_urls=*/{},
+                /*additional_params=*/{}, partition_id_ignored);
+        break;
+    }
+
+    TestCacheClient cache_client(cache_remote);
+    cache_client.RequestSignalsExpectingSuccess(
+        trusted_signals_handle->compression_group_token());
   }
 
   // Currently only works when testing the dedicated path.
@@ -485,6 +726,16 @@ class AuctionProcessManagerTest
   // instances.
   scoped_refptr<SiteInstance> site_instance1_;
   scoped_refptr<SiteInstance> site_instance2_;
+
+  TrustedSignalsCacheImpl trusted_signals_cache_{
+      /*url_loader_factory=*/nullptr,
+      base::BindRepeating(
+          [](const std::optional<url::Origin>& coordinator,
+             base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                                    std::string>)> callback) {
+            std::move(callback).Run(
+                base::unexpected(std::string(kCacheMessage)));
+          })};
 
   // Only one of these two is populated, based on the ProcessMode.
   std::optional<TestAuctionProcessManager<DedicatedAuctionProcessManager>>
@@ -1822,6 +2073,107 @@ TEST_P(SharedRendererInRendererAuctionProcessManagerTest, PolicyChange) {
   // can share it, too.
   EXPECT_EQ(handle_a2->worklet_process_for_testing(),
             handle_a3->worklet_process_for_testing());
+}
+
+TEST_P(SitePerProcessAuctionProcessManagerTest, TrustedSignalsCache) {
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
+      GetServiceExpectSuccess(kOriginA);
+  ValidateCacheRemote(*handle_a1, kOriginA);
+
+  // Creating another handle to the same process should not result in another
+  // cache pipe being passed to the AuctionWorkletService.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
+      GetServiceExpectSuccess(kOriginA);
+  EXPECT_EQ(handle_a1->GetService(), handle_a2->GetService());
+  // Cache remote should still be live.
+  ValidateCacheRemote(*handle_a2, kOriginA);
+
+  // Requesting a service from a different origin, however, results in a cache
+  // pipe being passed to the new AuctionWorkletService.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b =
+      GetServiceExpectSuccess(kOriginB);
+  EXPECT_NE(handle_a1->GetService(), handle_b->GetService());
+  ValidateCacheRemote(*handle_b, kOriginB);
+}
+
+TEST_P(SitePerProcessAuctionProcessManagerTest,
+       TrustedSignalsCacheSentToAnticipatoryProcess) {
+  // Creating an anticipatory process and then getting a handle to it should
+  // result in a cache pipe being sent to the AuctionWorkletService.
+  MaybeStartAnticipatoryProcess(kOriginA);
+  // This should not send a second cache pipe to the process.
+  MaybeStartAnticipatoryProcess(kOriginA);
+
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 1u);
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
+      GetServiceExpectSuccess(kOriginA);
+  ValidateCacheRemote(*handle_a1, kOriginA);
+  // Make sure the anticipatory process was actually used.
+  EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
+
+  // Creating another handle to the same process should not result in another
+  // cache pipe being passed to the AuctionWorkletService.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
+      GetServiceExpectSuccess(kOriginA);
+  EXPECT_EQ(handle_a1->GetService(), handle_a2->GetService());
+  ValidateCacheRemote(*handle_a2, kOriginA);
+
+  // Trying to create an anticipatory process matching the existing process
+  // should do nothing, including not sending a new pipe to the process.
+  MaybeStartAnticipatoryProcess(kOriginA);
+  ValidateCacheRemote(*handle_a1, kOriginA);
+}
+
+// Test that no cache pipe is sent, and there is no crash, when the trusted
+// signals cache is disabled.
+TEST_P(SitePerProcessAuctionProcessManagerTest, TrustedSignalsCacheDisabled) {
+  // Create a new AuctionProcessManager without a TrustedSignalsCache.
+  CreateAuctionProcessManager(/*trusted_signals_cache=*/nullptr);
+
+  // Check there's no trusted signals cache in the base case.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a =
+      GetServiceExpectSuccess(kOriginA);
+  ExpectNoCacheRemote(*handle_a);
+
+  // Check there's no trusted siganls cache when creating anticipatory
+  // processes.
+  MaybeStartAnticipatoryProcess(kOriginB);
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b =
+      GetServiceExpectSuccess(kOriginB);
+  ExpectNoCacheRemote(*handle_b);
+}
+
+// Test the single shared renderer process case. Since anticipatory processes
+// aren't created in that case, don't bother testing that case.
+TEST_P(SharedRendererInRendererAuctionProcessManagerTest, TrustedSignalsCache) {
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
+      GetServiceExpectSuccess(kOriginA);
+  ValidateCacheRemote(*handle_a1, kOriginA);
+
+  // Creating another handle with the same origin results in a pipe, instead of
+  // reusing the old one, and a new cache remote should be passed to it.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
+      GetServiceExpectSuccess(kOriginA);
+  EXPECT_NE(handle_a1->GetService(), handle_a2->GetService());
+  ValidateCacheRemote(*handle_a2, kOriginA);
+
+  // Requesting a service from a different origin, however, results in a cache
+  // pipe being passed to the new AuctionWorkletService.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b =
+      GetServiceExpectSuccess(kOriginB);
+  ValidateCacheRemote(*handle_b, kOriginB);
+}
+
+// Test that no cache pipe is sent, and there is no crash, when the trusted
+// signals cache is disabled.
+TEST_P(SharedRendererInRendererAuctionProcessManagerTest,
+       TrustedSignalsCacheDisabled) {
+  // Create a new AuctionProcessManager without a TrustedSignalsCache.
+  CreateAuctionProcessManager(/*trusted_signals_cache=*/nullptr);
+
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> handle =
+      GetServiceExpectSuccess(kOriginA);
+  ExpectNoCacheRemote(*handle);
 }
 
 }  // namespace

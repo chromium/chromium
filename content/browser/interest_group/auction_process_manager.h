@@ -35,6 +35,7 @@ namespace content {
 
 class RenderProcessHost;
 class SiteInstance;
+class TrustedSignalsCacheImpl;
 
 // Base class of per-StoragePartition manager of auction bidder and seller
 // worklet processes. This provides limiting and sharing of worker processes.
@@ -191,6 +192,13 @@ class CONTENT_EXPORT AuctionProcessManager {
     void RemoveFromProcessManager(bool on_destruction);
 
     ~WorkletProcess() override;
+
+    // Must be called when setting `is_bound_to_origin_` to true, if
+    // SetService() has already been invoked. At that point, the origin the
+    // service is bound to will not change, so this method can pass an
+    // origin-bound TrustedSignalsCache Mojo pipe to `service_`, if the cache is
+    // enabled.
+    void OnBoundToOrigin();
 
     raw_ptr<RenderProcessHost> render_process_host_;
 
@@ -380,7 +388,11 @@ class CONTENT_EXPORT AuctionProcessManager {
   }
 
  protected:
-  AuctionProcessManager();
+  // `trusted_signals_cache` must outlive the AuctionProcessManager. Passing in
+  // a null cache means that there's no in-process KVv2 cache, because the
+  // feature is disabled.
+  explicit AuctionProcessManager(
+      TrustedSignalsCacheImpl* trusted_signals_cache);
 
   // Launches the actual process. The process will be kept-alive and
   // watched by the returned WorkletProcess.
@@ -484,6 +496,8 @@ class CONTENT_EXPORT AuctionProcessManager {
       WorkletType worklet_type,
       size_t num_idle_processes_of_type) const;
 
+  raw_ptr<TrustedSignalsCacheImpl> trusted_signals_cache_;
+
   PendingRequestQueue pending_bidder_request_queue_;
   PendingRequestQueue pending_seller_request_queue_;
 
@@ -506,7 +520,8 @@ class CONTENT_EXPORT AuctionProcessManager {
 class CONTENT_EXPORT DedicatedAuctionProcessManager
     : public AuctionProcessManager {
  public:
-  DedicatedAuctionProcessManager();
+  explicit DedicatedAuctionProcessManager(
+      TrustedSignalsCacheImpl* trusted_signals_cache);
   ~DedicatedAuctionProcessManager() override;
 
  protected:
@@ -534,7 +549,8 @@ class CONTENT_EXPORT DedicatedAuctionProcessManager
 class CONTENT_EXPORT InRendererAuctionProcessManager
     : public AuctionProcessManager {
  public:
-  InRendererAuctionProcessManager();
+  explicit InRendererAuctionProcessManager(
+      TrustedSignalsCacheImpl* trusted_signals_cache);
   ~InRendererAuctionProcessManager() override;
 
  protected:

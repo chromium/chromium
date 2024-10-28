@@ -27,6 +27,7 @@
 #include "base/types/expected.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -528,7 +529,8 @@ class MockAuctionProcessManager
     : public DedicatedAuctionProcessManager,
       public auction_worklet::mojom::AuctionWorkletService {
  public:
-  MockAuctionProcessManager() = default;
+  MockAuctionProcessManager()
+      : DedicatedAuctionProcessManager(/*trusted_signals_cache=*/nullptr) {}
   ~MockAuctionProcessManager() override = default;
 
   struct WorkletInfo {
@@ -2773,8 +2775,11 @@ TEST_F(AuctionWorkletManagerTest,
 class AuctionWorkletManagerKVv2Test : public AuctionWorkletManagerTest {
  public:
   AuctionWorkletManagerKVv2Test() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgeTrustedSignalsKVv2Support);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kFledgeTrustedSignalsKVv2Support},
+        /*disabled_features=*/
+        {features::kFledgeUseKVv2SignalsCache});
   }
 
   ~AuctionWorkletManagerKVv2Test() override { DCHECK(!fetch_key_callback_); }
@@ -3391,6 +3396,50 @@ TEST_F(AuctionWorkletManagerKVv2Test, SellerWorkletWithoutCoordinator) {
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
   EXPECT_TRUE(!seller_worklet->public_key());
+}
+
+// Test that when both kFledgeTrustedSignalsKVv2Support and
+// kFledgeUseKVv2SignalsCache are enabled, bidder worklets don't get
+// TrustedSignalsPublicKey, but seller worklets do. This is because the cache
+// currently only supports bidder worklets, and manages the keys itself, while
+// seller worklet KVv2 requests still must be managed by the worklet process.
+TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeUseKVv2SignalsCache);
+
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> bidder_handle;
+  base::test::TestFuture<void> bidder_worklet_available;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+      bidder_worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
+      bidder_handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(bidder_worklet_available.Wait());
+  EXPECT_TRUE(bidder_handle->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
+  EXPECT_FALSE(bidder_worklet->public_key());
+
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_handle;
+  base::test::TestFuture<void> seller_worklet_available;
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt, coordinator_,
+      seller_worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
+      seller_handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(seller_worklet_available.Wait());
+  EXPECT_TRUE(seller_handle->GetSellerWorklet());
+  std::unique_ptr<MockSellerWorklet> seller_worklet =
+      auction_process_manager_.WaitForSellerWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
+  EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet->public_key(), key_));
 }
 
 }  // namespace

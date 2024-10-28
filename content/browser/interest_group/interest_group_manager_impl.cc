@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -40,6 +41,7 @@
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
+#include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -260,11 +262,24 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetKAnonymityServiceDelegateCallback k_anonymity_service_callback)
     : caching_storage_(path, in_memory),
+      trusted_signals_cache_(
+          base::FeatureList::IsEnabled(
+              blink::features::kFledgeTrustedSignalsKVv2Support) &&
+                  base::FeatureList::IsEnabled(
+                      features::kFledgeUseKVv2SignalsCache)
+              ? std::make_unique<TrustedSignalsCacheImpl>(
+                    url_loader_factory,
+                    base::BindRepeating(&InterestGroupManagerImpl::
+                                            GetBiddingAndAuctionServerKey,
+                                        base::Unretained(this)))
+              : nullptr),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated
                                ? static_cast<AuctionProcessManager*>(
-                                     new DedicatedAuctionProcessManager())
-                               : new InRendererAuctionProcessManager())),
+                                     new DedicatedAuctionProcessManager(
+                                         trusted_signals_cache_.get()))
+                               : new InRendererAuctionProcessManager(
+                                     trusted_signals_cache_.get()))),
       update_manager_(this, url_loader_factory),
       k_anonymity_manager_(std::make_unique<InterestGroupKAnonymityManager>(
           this,

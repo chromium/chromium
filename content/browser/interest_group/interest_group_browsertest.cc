@@ -27099,7 +27099,8 @@ IN_PROC_BROWSER_TEST_F(
     PidGetsAssignedEvenIfOriginalProcessHandleDeletedShortlyAfterRequestWorkletService) {
   // Make sure that a pid still gets assigned to a worklet process even if its
   // original ProcessHandle no longer exists.
-  DedicatedAuctionProcessManager auction_manager;
+  DedicatedAuctionProcessManager auction_manager(
+      manager_->trusted_signals_cache());
   AuctionProcessManager::ProcessHandle second_process_handle;
   {
     AuctionProcessManager::ProcessHandle original_process_handle;

@@ -74,6 +74,14 @@ BASE_FEATURE(kFledgeStoreBandAKeysInDB,
              "FledgeStoreBandAKeysInDB",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables using a cache in the browser process for FLEDGE KVv2 fetches. The
+// fetches are also initiated by and managed in the browser process. This
+// feature also requires blink::features::kFledgeTrustedSignalsKVv2Support to
+// also be enabled for KVv2 to be enabled.
+BASE_FEATURE(kFledgeUseKVv2SignalsCache,
+             "kFledgeUseKVv2SignalsCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables preconnecting to interest group owner origins and a bidding signals
 // URL origin at the start of an auction.
 BASE_FEATURE(kFledgeUsePreconnectCache,
