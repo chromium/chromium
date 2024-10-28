@@ -147,6 +147,10 @@ class Node:
 
         node = Node(*x)
 
+        # replacement and include_directive fields are percent-encoded.
+        node.replacement = urllib.parse.unquote(node.replacement)
+        node.include_directive = urllib.parse.unquote(node.include_directive)
+
         # Deduplicate nodes, as they might appear multiple times in the input.
         if (Node.key_to_node.get(node.replacement) is None):
             Node.key_to_node[node.replacement] = node
@@ -382,7 +386,7 @@ def main():
 
     for index, component in enumerate(component_with_changes):
         for text in component.changes:
-            print(urllib.parse.unquote(text).replace('\n', '\0'))
+            print(text.replace('\n', '\0'))
 
         summary_file.write(f'patch_{index}: {len(component.changes)}\n')
 
