@@ -124,9 +124,7 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
       src_format = libyuv::FOURCC_UYVY;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported pixel format passed to RotateAndBlobify";
-      return nullptr;
+      NOTREACHED() << "Unsupported pixel format passed to RotateAndBlobify";
   }
 
   const gfx::Size frame_size = capture_format.frame_size;

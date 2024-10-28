@@ -1080,9 +1080,7 @@ void V4L2CaptureDelegate::DoCapture() {
           }
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
-              << "Unexpected event type dequeued: " << event.type;
-          break;
+          NOTREACHED() << "Unexpected event type dequeued: " << event.type;
       }
     } while (event.pending > 0u);
 

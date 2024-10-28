@@ -272,7 +272,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
           v4l2_frame_params.alt_frame_ts = ref_surface->GetReferenceID();
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
+          NOTREACHED() << "Invalid reference frame index";
       }
     }
   }

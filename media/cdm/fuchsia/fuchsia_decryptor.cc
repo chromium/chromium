@@ -29,7 +29,7 @@ void FuchsiaDecryptor::Decrypt(StreamType stream_type,
 }
 
 void FuchsiaDecryptor::CancelDecrypt(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::InitializeAudioDecoder(const AudioDecoderConfig& config,
@@ -47,23 +47,21 @@ void FuchsiaDecryptor::InitializeVideoDecoder(const VideoDecoderConfig& config,
 void FuchsiaDecryptor::DecryptAndDecodeAudio(
     scoped_refptr<DecoderBuffer> encrypted,
     AudioDecodeCB audio_decode_cb) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(audio_decode_cb).Run(Status::kError, AudioFrames());
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::DecryptAndDecodeVideo(
     scoped_refptr<DecoderBuffer> encrypted,
     VideoDecodeCB video_decode_cb) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(video_decode_cb).Run(Status::kError, nullptr);
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::ResetDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::DeinitializeDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FuchsiaDecryptor::CanAlwaysDecrypt() {

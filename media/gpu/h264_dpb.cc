@@ -90,7 +90,7 @@ void H264DPB::Delete(scoped_refptr<H264Picture> pic) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Missing pic with POC: " << pic->pic_order_cnt;
+  NOTREACHED() << "Missing pic with POC: " << pic->pic_order_cnt;
 }
 
 void H264DPB::DeleteUnused() {

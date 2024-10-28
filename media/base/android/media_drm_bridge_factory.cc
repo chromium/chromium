@@ -55,9 +55,7 @@ void MediaDrmBridgeFactory::Create(
     auto error_message =
         cdm_config.key_system +
         " may require use_video_overlay_for_embedded_encrypted_video";
-    NOTREACHED_IN_MIGRATION() << error_message;
-    std::move(cdm_created_cb).Run(nullptr, CreateCdmStatus::kInvalidCdmConfig);
-    return;
+    NOTREACHED() << error_message;
   }
 
   session_message_cb_ = session_message_cb;

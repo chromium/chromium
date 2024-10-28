@@ -862,8 +862,7 @@ void Mp2tStreamParser::OnEmitVideoBuffer(
 
   // Ignore the incoming buffer if it is not associated with any config.
   if (buffer_queue_chain_.empty()) {
-    NOTREACHED_IN_MIGRATION() << "Cannot provide buffers before configs";
-    return;
+    NOTREACHED() << "Cannot provide buffers before configs";
   }
 
   buffer_queue_chain_.back().video_queue.push_back(stream_parser_buffer);

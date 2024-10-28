@@ -188,7 +188,7 @@ class FakeClientNativePixmap : public gfx::ClientNativePixmap {
 
   // gfx::ClientNativePixmap implementation.
   bool Map() override { NOTREACHED(); }
-  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
+  void Unmap() override { NOTREACHED(); }
   size_t GetNumberOfPlanes() const override { NOTREACHED(); }
   void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
   int GetStride(size_t plane) const override { NOTREACHED(); }

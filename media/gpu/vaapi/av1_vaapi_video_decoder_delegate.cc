@@ -215,9 +215,8 @@ void FillGlobalMotionInfo(
         va_warped_motion[i].wmtype = VAAV1TransformationAffine;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, "
-            << va_warped_motion[i].wmtype;
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << va_warped_motion[i].wmtype;
     }
     static_assert(ARRAY_SIZE(va_warped_motion[i].wmmat) == 8 &&
                       ARRAY_SIZE(gm.params) == 6,
@@ -428,9 +427,8 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
       case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
         return 2;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid restoration type" << base::strict_cast<int>(lr_type);
-        return 0;
+        NOTREACHED() << "Invalid restoration type"
+                     << base::strict_cast<int>(lr_type);
     }
   };
   static_assert(
@@ -494,9 +492,9 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
       va_pic_param.bit_depth_idx = 2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown bit depth: "
-          << base::strict_cast<int>(sequence_header.color_config.bitdepth);
+      NOTREACHED() << "Unknown bit depth: "
+                   << base::strict_cast<int>(
+                          sequence_header.color_config.bitdepth);
   }
   switch (sequence_header.color_config.matrix_coefficients) {
     case libgav1::kMatrixCoefficientsIdentity:
@@ -550,9 +548,9 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
                           sequence_header.color_config.color_range));
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown color range: "
-          << static_cast<int>(sequence_header.color_config.color_range);
+      NOTREACHED() << "Unknown color range: "
+                   << static_cast<int>(
+                          sequence_header.color_config.color_range);
   }
 #undef COPY_SEQ_FILED2
 
@@ -659,9 +657,8 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
           base::strict_cast<uint32_t>(frame_header.frame_type);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown frame type: "
-          << base::strict_cast<int>(frame_header.frame_type);
+      NOTREACHED() << "Unknown frame type: "
+                   << base::strict_cast<int>(frame_header.frame_type);
   }
   va_pic_info_fields.disable_cdf_update = !frame_header.enable_cdf_update;
   va_pic_info_fields.disable_frame_end_update_cdf =

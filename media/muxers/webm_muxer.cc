@@ -132,9 +132,7 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
       return kHevcCodecId;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported codec " << GetCodecName(video_codec);
-      return "";
+      NOTREACHED() << "Unsupported codec " << GetCodecName(video_codec);
   }
 }
 
@@ -275,8 +273,7 @@ void WebmMuxer::AddVideoTrack(
   video_track_index_ =
       segment_.AddVideoTrack(frame_size.width(), frame_size.height(), 0);
   if (video_track_index_ <= 0) {  // See https://crbug.com/616391.
-    NOTREACHED_IN_MIGRATION() << "Error adding video track";
-    return;
+    NOTREACHED() << "Error adding video track";
   }
 
   mkvmuxer::VideoTrack* const video_track =
@@ -322,8 +319,7 @@ void WebmMuxer::AddAudioTrack(const AudioParameters& params) {
   audio_track_index_ =
       segment_.AddAudioTrack(params.sample_rate(), params.channels(), 0);
   if (audio_track_index_ <= 0) {  // See https://crbug.com/616391.
-    NOTREACHED_IN_MIGRATION() << "Error adding audio track";
-    return;
+    NOTREACHED() << "Error adding audio track";
   }
 
   mkvmuxer::AudioTrack* const audio_track =

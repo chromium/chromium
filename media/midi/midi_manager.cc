@@ -168,7 +168,7 @@ void MidiManager::DispatchSendMidiData(MidiManagerClient* client,
                                        uint32_t port_index,
                                        const std::vector<uint8_t>& data,
                                        base::TimeTicks timestamp) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MidiManager::EndAllSessions() {

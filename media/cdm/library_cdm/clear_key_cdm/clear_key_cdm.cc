@@ -630,7 +630,7 @@ void ClearKeyCdm::ResetDecoder(cdm::StreamType decoder_type) {
       audio_decoder_->Reset();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "ResetDecoder(): invalid cdm::StreamType";
+      NOTREACHED() << "ResetDecoder(): invalid cdm::StreamType";
   }
 #endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
 }
@@ -647,8 +647,7 @@ void ClearKeyCdm::DeinitializeDecoder(cdm::StreamType decoder_type) {
 #endif
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "DeinitializeDecoder(): invalid cdm::StreamType";
+      NOTREACHED() << "DeinitializeDecoder(): invalid cdm::StreamType";
   }
 }
 
@@ -771,9 +770,7 @@ void ClearKeyCdm::OnPlatformChallengeResponse(
   DVLOG(1) << __func__;
 
   if (!is_running_platform_verification_test_) {
-    NOTREACHED_IN_MIGRATION()
-        << "OnPlatformChallengeResponse() called unexpectedly.";
-    return;
+    NOTREACHED() << "OnPlatformChallengeResponse() called unexpectedly.";
   }
 
   is_running_platform_verification_test_ = false;
@@ -792,9 +789,7 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
            << ", output_protection_mask:" << output_protection_mask;
 
   if (!is_running_output_protection_test_) {
-    NOTREACHED_IN_MIGRATION()
-        << "OnQueryOutputProtectionStatus() called unexpectedly.";
-    return;
+    NOTREACHED() << "OnQueryOutputProtectionStatus() called unexpectedly.";
   }
 
   // A session ID is needed, so use |last_session_id_|. However, if this is
@@ -834,8 +829,7 @@ void ClearKeyCdm::OnStorageId(uint32_t version,
                               const uint8_t* storage_id,
                               uint32_t storage_id_size) {
   if (!is_running_storage_id_test_) {
-    NOTREACHED_IN_MIGRATION() << "OnStorageId() called unexpectedly.";
-    return;
+    NOTREACHED() << "OnStorageId() called unexpectedly.";
   }
 
   is_running_storage_id_test_ = false;

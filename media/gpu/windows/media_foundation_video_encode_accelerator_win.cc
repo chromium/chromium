@@ -805,8 +805,7 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   int bitrate_sum = 0;
   for (int tid = 0; tid < num_temporal_layers; ++tid) {

@@ -262,7 +262,7 @@ void InterfaceFactoryImpl::CreateMediaPlayerRenderer(
     mojo::PendingReceiver<mojom::Renderer> receiver,
     mojo::PendingReceiver<mojom::MediaPlayerRendererExtension>
         renderer_extension_receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InterfaceFactoryImpl::CreateFlingingRenderer(
@@ -270,7 +270,7 @@ void InterfaceFactoryImpl::CreateFlingingRenderer(
     mojo::PendingRemote<mojom::FlingingRendererClientExtension>
         client_extension,
     mojo::PendingReceiver<mojom::Renderer> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -460,7 +460,7 @@ void InterfaceFactoryImpl::FinishCreatingVideoDecoder(
                                    std::move(dst_video_decoder)),
                                std::move(receiver));
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

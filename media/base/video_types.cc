@@ -96,8 +96,7 @@ std::string VideoPixelFormatToString(VideoPixelFormat format) {
     case PIXEL_FORMAT_P410LE:
       return "PIXEL_FORMAT_P410LE";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid VideoPixelFormat provided: " << format;
-  return "";
+  NOTREACHED() << "Invalid VideoPixelFormat provided: " << format;
 }
 
 std::string VideoChromaSamplingToString(VideoChromaSampling chroma_sampling) {
@@ -336,8 +335,7 @@ bool IsOpaque(VideoPixelFormat format) {
 size_t BitDepth(VideoPixelFormat format) {
   switch (format) {
     case PIXEL_FORMAT_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I422:

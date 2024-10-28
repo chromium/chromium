@@ -85,8 +85,7 @@ float Fps2MaxQP(float fps) {
           kFPS2QPTradeoffs[i].qp, kFPS2QPTradeoffs[i + 1].qp);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0f;
+  NOTREACHED();
 }
 
 // Returns the FPS value related to the Max QP value. The returned value is
@@ -100,8 +99,7 @@ float MaxQP2Fps(int max_qp) {
       return kFPS2QPTradeoffs[i + 1].fps;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0f;
+  NOTREACHED();
 }
 }  // namespace
 

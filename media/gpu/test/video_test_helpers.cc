@@ -777,8 +777,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
         << "Failed creating GpuMemoryBufferHandle";
     return VideoFrameData(std::move(gmb_handle));
 #else
-    NOTREACHED_IN_MIGRATION();
-    return VideoFrameData();
+    NOTREACHED();
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
     const size_t dst_video_frame_size =

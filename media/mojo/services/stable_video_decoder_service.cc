@@ -355,7 +355,7 @@ void StableVideoDecoderService::OnWaiting(WaitingReason reason) {
 void StableVideoDecoderService::RequestOverlayInfo(
     bool restart_for_transitions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void StableVideoDecoderService::AddLogRecord(const MediaLogRecord& event) {

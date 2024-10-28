@@ -194,7 +194,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     avc_config.avc_config_record = std::move(avc_config_record);
     visual_sample_entry.avc_decoder_configuration = std::move(avc_config);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   } else if (video_codec_ == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -209,7 +209,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     hevc_config.hevc_config_record = std::move(hevc_config_record);
     visual_sample_entry.hevc_decoder_configuration = std::move(hevc_config);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   } else if (video_codec_ == VideoCodec::kVP9) {
     visual_sample_entry.compressor_name = "VPC Coding";
@@ -240,7 +240,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
         &codec_descriptions[0], &codec_descriptions[config_size]);
     visual_sample_entry.av1_decoder_configuration = std::move(av1_config);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   description.video_sample_entry = std::move(visual_sample_entry);
@@ -345,7 +345,7 @@ void Mp4MuxerDelegate::BuildMovieAudioTrack(
     audio_sample_entry.elementary_stream_descriptor =
         std::move(elementary_stream_descriptor);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   } else {
     // TODO(crbug.com/40281463): Ensure the below OpusSpecificBox is correct.

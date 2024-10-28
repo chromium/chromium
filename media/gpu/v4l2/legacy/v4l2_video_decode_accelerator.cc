@@ -188,16 +188,12 @@ bool V4L2VideoDecodeAccelerator::Initialize(const Config& config,
   }
 
   if (config.is_encrypted()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Encrypted streams are not supported for this VDA";
-    return false;
+    NOTREACHED() << "Encrypted streams are not supported for this VDA";
   }
 
   if (config.output_mode != Config::OutputMode::kAllocate &&
       config.output_mode != Config::OutputMode::kImport) {
-    NOTREACHED_IN_MIGRATION()
-        << "Only ALLOCATE and IMPORT OutputModes are supported";
-    return false;
+    NOTREACHED() << "Only ALLOCATE and IMPORT OutputModes are supported";
   }
 
   client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
@@ -1372,7 +1368,7 @@ bool V4L2VideoDecodeAccelerator::EnqueueOutputRecord(
       ret = std::move(buffer).QueueDMABuf(output_record.output_frame);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (!ret) {

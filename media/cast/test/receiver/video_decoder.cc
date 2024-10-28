@@ -150,9 +150,7 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
     if (!image)
       return nullptr;
     if (image->fmt != VPX_IMG_FMT_I420) {
-      NOTREACHED_IN_MIGRATION()
-          << "Only pixel format supported is I420, got " << image->fmt;
-      return nullptr;
+      NOTREACHED() << "Only pixel format supported is I420, got " << image->fmt;
     }
     DCHECK(vpx_codec_get_frame(&context_, &iter) == nullptr)
         << "Should have only decoded exactly one frame.";
@@ -232,8 +230,7 @@ VideoDecoder::VideoDecoder(
       NOTIMPLEMENTED();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown or unspecified codec.";
-      break;
+      NOTREACHED() << "Unknown or unspecified codec.";
   }
 }
 

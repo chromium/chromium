@@ -26,9 +26,7 @@ std::string GetEncryptionScheme(EncryptionScheme mode) {
     case EncryptionScheme::kCbcs:
       return fuchsia::media::ENCRYPTION_SCHEME_CBCS;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "unknown encryption mode " << static_cast<int>(mode);
-      return "";
+      NOTREACHED() << "unknown encryption mode " << static_cast<int>(mode);
   }
 }
 

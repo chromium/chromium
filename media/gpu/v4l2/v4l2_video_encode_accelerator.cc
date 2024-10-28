@@ -1566,12 +1566,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      SetErrorState({EncoderStatus::Codes::kEncoderIllegalState,
-                     base::StrCat({"Unknown input memory type: ",
-                                   base::NumberToString(static_cast<int>(
-                                       input_buf.Memory()))})});
-      return false;
+      NOTREACHED();
   }
 
   // Keep |frame| in |input_record| so that a client doesn't use |frame| until
@@ -1997,9 +1992,8 @@ bool V4L2VideoEncodeAccelerator::InitControls(const Config& config) {
       InitControlsVP8(config);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported codec " << FourccToString(output_format_fourcc_);
-      return false;
+      NOTREACHED() << "Unsupported codec "
+                   << FourccToString(output_format_fourcc_);
   }
 
   // Optional controls:

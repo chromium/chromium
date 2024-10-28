@@ -470,7 +470,7 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
       DVLOG(2) << ": DTS Frame Count = " << frame_count;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unsupported passthrough format.";
+      NOTREACHED() << "Unsupported passthrough format.";
     }
 
     // Create AudioOutput buffer based on current parameters.
@@ -605,8 +605,7 @@ const char* MediaCodecAudioDecoder::AsString(State state) {
     RETURN_STRING(STATE_READY);
     RETURN_STRING(STATE_ERROR);
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
-  return nullptr;
+  NOTREACHED() << "Unknown state " << state;
 }
 
 #undef RETURN_STRING

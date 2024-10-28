@@ -397,7 +397,7 @@ void Av1Encoder::UpdateRates(uint32_t new_bitrate) {
 
   // Update encoder context.
   if (aom_codec_enc_config_set(&encoder_, &config_)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid return value";
+    NOTREACHED() << "Invalid return value";
   }
 
   VLOG(1) << "AV1 new rc_target_bitrate: " << new_bitrate_kbit << " kbps";

@@ -184,8 +184,7 @@ HRESULT AddEncryptAttributes(const DecryptConfig& decrypt_config,
       }
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unexpected encryption scheme";
-    return MF_E_UNEXPECTED;
+    NOTREACHED() << "Unexpected encryption scheme";
   }
   RETURN_IF_FAILED(mf_sample->SetUINT32(
       MFSampleExtension_Encryption_ProtectionScheme, mf_protection_scheme));

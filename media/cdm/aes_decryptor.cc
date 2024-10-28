@@ -235,10 +235,7 @@ void AesDecryptor::CreateSessionAndGenerateRequest(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
-                      "init_data_type not supported.");
-      return;
+      NOTREACHED();
   }
   CreateLicenseRequest(keys, session_type, &message);
 
@@ -253,9 +250,7 @@ void AesDecryptor::LoadSession(CdmSessionType session_type,
   // LoadSession() is not supported directly, as there is no way to persist
   // the session state. Should not be called as blink should not allow
   // persistent sessions for ClearKey.
-  NOTREACHED_IN_MIGRATION();
-  promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
-                  "LoadSession() is not supported.");
+  NOTREACHED();
 }
 
 void AesDecryptor::UpdateSession(const std::string& session_id,
@@ -510,17 +505,16 @@ void AesDecryptor::InitializeVideoDecoder(const VideoDecoderConfig& config,
 
 void AesDecryptor::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
                                          AudioDecodeCB audio_decode_cb) {
-  NOTREACHED_IN_MIGRATION() << "AesDecryptor does not support audio decoding";
+  NOTREACHED() << "AesDecryptor does not support audio decoding";
 }
 
 void AesDecryptor::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
                                          VideoDecodeCB video_decode_cb) {
-  NOTREACHED_IN_MIGRATION() << "AesDecryptor does not support video decoding";
+  NOTREACHED() << "AesDecryptor does not support video decoding";
 }
 
 void AesDecryptor::ResetDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION()
-      << "AesDecryptor does not support audio/video decoding";
+  NOTREACHED() << "AesDecryptor does not support audio/video decoding";
 }
 
 void AesDecryptor::DeinitializeDecoder(StreamType stream_type) {

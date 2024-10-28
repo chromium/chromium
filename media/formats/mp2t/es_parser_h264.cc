@@ -454,8 +454,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
       case EncryptionScheme::kUnencrypted:
         // As |base_decrypt_config| is specified, the stream is encrypted,
         // so this shouldn't happen.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case EncryptionScheme::kCenc:
         stream_parser_buffer->set_decrypt_config(
             DecryptConfig::CreateCencConfig(base_decrypt_config->key_id(),

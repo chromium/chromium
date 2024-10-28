@@ -327,8 +327,7 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
       painter_format = PacmanFramePainter::Format::NV12;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      painter_format = PacmanFramePainter::Format::I420;
+      NOTREACHED();
   }
   auto frame_painter =
       std::make_unique<PacmanFramePainter>(painter_format, device_state_);

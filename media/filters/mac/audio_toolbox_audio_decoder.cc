@@ -92,8 +92,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 AudioConverterRef
 AudioToolboxAudioDecoder::ScopedAudioConverterRefTraits::Retain(
     AudioConverterRef converter) {
-  NOTREACHED_IN_MIGRATION() << "Only compatible with ASSUME policy";
-  return converter;
+  NOTREACHED() << "Only compatible with ASSUME policy";
 }
 
 // static
@@ -270,8 +269,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported codec: " << config.codec();
-      return false;
+      NOTREACHED() << "Unsupported codec: " << config.codec();
   }
 
   // Output is float planar.

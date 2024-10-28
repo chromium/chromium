@@ -238,7 +238,7 @@ class AudioRendererImplTest : public ::testing::Test,
 
   // RendererClient implementation.
   MOCK_METHOD1(OnError, void(PipelineStatus));
-  void OnFallback(PipelineStatus status) override { NOTREACHED_IN_MIGRATION(); }
+  void OnFallback(PipelineStatus status) override { NOTREACHED(); }
   void OnEnded() override {
     CHECK(!ended_);
     ended_ = true;

@@ -172,10 +172,8 @@ scoped_refptr<MmappedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
 
 template <typename T>
 bool V4L2IoctlShim::Ioctl(int request_code, T arg) const {
-  NOTREACHED_IN_MIGRATION()
-      << "Please add a specialized function for the given V4L2 ioctl "
-         "request code.";
-  return !kIoctlOk;
+  NOTREACHED() << "Please add a specialized function for the given V4L2 ioctl "
+                  "request code.";
 }
 
 template <>

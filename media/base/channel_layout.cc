@@ -294,8 +294,7 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
     case CHANNEL_LAYOUT_3_1_BACK:
       return "3.1_BACK";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid channel layout provided: " << layout;
-  return "";
+  NOTREACHED() << "Invalid channel layout provided: " << layout;
 }
 
 }  // namespace media

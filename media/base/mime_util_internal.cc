@@ -266,7 +266,7 @@ SupportsType MimeUtil::AreSupportedCodecs(
           // Nothing to do for AAC; no notion of profile / level to guess.
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Only VP9, H264, and AAC codec strings can be ambiguous.";
       }
     }
@@ -548,9 +548,7 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   }
 
   if (parsed_results.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << __func__ << " Successful parsing should output results.";
-    return SupportsType::kNotSupported;
+    NOTREACHED() << __func__ << " Successful parsing should output results.";
   }
 
   // We get here if the mime type expects to get a codecs parameter
@@ -729,10 +727,8 @@ bool MimeUtil::ParseCodecStrings(
       // Determine implied codec for mime type.
       ParsedCodecResult implied_result = MakeDefaultParsedCodecResult();
       if (!GetDefaultCodec(mime_type_lower_case, &implied_result.codec)) {
-        NOTREACHED_IN_MIGRATION()
-            << " Mime types must offer a default codec if no explicit "
-               "codecs are expected";
-        return false;
+        NOTREACHED() << " Mime types must offer a default codec if no explicit "
+                        "codecs are expected";
       }
       out_results->push_back(implied_result);
       return true;

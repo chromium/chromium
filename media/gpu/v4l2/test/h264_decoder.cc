@@ -971,7 +971,7 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(const int frame_number,
   }
 
   if (slice_ready_queue_.empty()) {
-    NOTREACHED_IN_MIGRATION() << "Stream ended with |slice_ready_queue_| empty";
+    NOTREACHED() << "Stream ended with |slice_ready_queue_| empty";
   }
 
   H264SliceMetadata picture = slice_ready_queue_.front();

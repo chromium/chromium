@@ -712,7 +712,7 @@ Mp4MovieVisualSampleEntryBoxWriter::Mp4MovieVisualSampleEntryBoxWriter(
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -740,7 +740,7 @@ void Mp4MovieVisualSampleEntryBoxWriter::Write(BoxByteStream& writer) {
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   writer.WriteU32(0);  // reserved.
@@ -876,7 +876,7 @@ Mp4MovieAudioSampleEntryBoxWriter::Mp4MovieAudioSampleEntryBoxWriter(
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -896,7 +896,7 @@ void Mp4MovieAudioSampleEntryBoxWriter::Write(BoxByteStream& writer) {
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   constexpr size_t kAudioSampleEntryReservedSize = 6u;
@@ -977,7 +977,7 @@ void Mp4MovieVPCodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
       writer.WriteU8(3);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   writer.WriteU8(box_->level);

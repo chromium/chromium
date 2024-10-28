@@ -89,8 +89,7 @@ MockVideoCaptureClient::ReserveOutputBuffer(
     int* require_new_buffer_id,
     int* retire_old_buffer_id) {
   DoReserveOutputBuffer();
-  NOTREACHED_IN_MIGRATION() << "This should never be called";
-  return ReserveResult::kSucceeded;
+  NOTREACHED();
 }
 
 void MockVideoCaptureClient::OnIncomingCapturedBuffer(

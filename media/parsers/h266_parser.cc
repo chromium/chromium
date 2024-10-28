@@ -252,8 +252,7 @@ VideoChromaSampling H266SPS::GetChromaSampling() const {
     case 3:
       return VideoChromaSampling::k444;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return VideoChromaSampling::kUnknown;
+      NOTREACHED();
   }
 }
 

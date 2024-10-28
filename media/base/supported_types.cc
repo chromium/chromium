@@ -284,10 +284,11 @@ bool IsDecoderVp9ProfileSupported(const VideoType& type) {
       return vpx_supports_hbd;
 #endif  // BUILDFLAG(IS_ANDROID)
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-#endif  // BUILDFLAG(ENABLE_LIBVPX)
+#else
   return false;
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
 }
 
 bool IsDecoderAV1Supported(const VideoType& type) {

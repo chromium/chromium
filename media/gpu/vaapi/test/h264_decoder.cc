@@ -1175,7 +1175,7 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
 
       default:
         // Would indicate a bug in parser.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

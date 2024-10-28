@@ -96,8 +96,7 @@ std::string VideoFrame::StorageTypeToString(
       return "GPU_MEMORY_BUFFER";
   }
 
-  NOTREACHED_IN_MIGRATION() << "Invalid StorageType provided: " << storage_type;
-  return "INVALID";
+  NOTREACHED() << "Invalid StorageType provided: " << storage_type;
 }
 
 // static

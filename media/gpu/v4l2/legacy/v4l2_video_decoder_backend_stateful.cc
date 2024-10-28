@@ -359,7 +359,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // Running out of V4L2 buffers is not an error, so just exit the loop
@@ -476,7 +476,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         frame = buffer->GetFrameResource();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);

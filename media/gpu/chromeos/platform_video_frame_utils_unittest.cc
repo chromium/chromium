@@ -134,8 +134,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
                                                 kTimeStamp, kBufferUsage);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     };
 
     ASSERT_TRUE(frame);
@@ -154,8 +153,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
         EXPECT_TRUE(frame->GetGpuMemoryBufferForTesting());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     };
   }
 }

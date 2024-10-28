@@ -315,8 +315,7 @@ class MojoCdmTest : public ::testing::Test {
 
       case CONNECTION_ERROR_BEFORE:
         // Connection should be broken before this is called.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case CONNECTION_ERROR_DURING:
         ForceConnectionError();
@@ -351,8 +350,7 @@ class MojoCdmTest : public ::testing::Test {
 
       case CONNECTION_ERROR_BEFORE:
         // Connection should be broken before this is called.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case CONNECTION_ERROR_DURING:
         ForceConnectionError();

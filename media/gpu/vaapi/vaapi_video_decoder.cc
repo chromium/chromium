@@ -932,9 +932,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
 bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_cb_) << "VaapiVideoDecoder hasn't been initialized";
-  NOTREACHED_IN_MIGRATION();
-  return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
-         (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX);
+  NOTREACHED();
 }
 
 bool VaapiVideoDecoder::CanReadWithoutStalling() const {

@@ -17,9 +17,9 @@ V4L2VideoDecoderBackend::V4L2VideoDecoderBackend(
   input_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   output_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   if (!input_queue_ || !output_queue_) {
-    VLOGF(1) << "Failed to get V4L2 queue. This should not happen since the "
-             << "queues are supposed to be initialized when we are called.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED()
+        << "Failed to get V4L2 queue. This should not happen since the queues "
+           "are supposed to be initialized when we are called.";
   }
 }
 

@@ -349,10 +349,10 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
       // The spec for AC3/EAC3 audio is ETSI TS 102 366. According to sections
       // F.3.1 and F.5.1 in that spec the sample_format for AC3/EAC3 must be 16.
       sample_format = kSampleFormatS16;
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif
       break;
+#else
+      NOTREACHED();
+#endif
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
     case AudioCodec::kMpegHAudio:
       channel_layout = CHANNEL_LAYOUT_BITSTREAM;

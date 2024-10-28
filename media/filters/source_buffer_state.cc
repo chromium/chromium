@@ -500,8 +500,7 @@ void SourceBufferState::SetMemoryLimits(DemuxerStream::Type type,
       }
       break;
     case DemuxerStream::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

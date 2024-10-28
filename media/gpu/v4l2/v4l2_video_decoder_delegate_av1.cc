@@ -387,7 +387,7 @@ struct v4l2_av1_loop_restoration FillLoopRestorationParams(
         v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SWITCHABLE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid loop restoration type";
+        NOTREACHED() << "Invalid loop restoration type";
     }
 
     if (v4l2_lr.frame_restoration_type[i] != V4L2_AV1_FRAME_RESTORE_NONE) {
@@ -452,8 +452,8 @@ struct v4l2_av1_global_motion FillGlobalMotionParams(
         v4l2_gm.flags[i] |= V4L2_AV1_WARP_MODEL_AFFINE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, " << v4l2_gm.type[i];
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << v4l2_gm.type[i];
     }
 
     if (gm.type != libgav1::kGlobalMotionTransformationTypeIdentity)
@@ -563,8 +563,7 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
       v4l2_frame_params.frame_type = V4L2_AV1_SWITCH_FRAME;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid frame type, " << frame_header.frame_type;
+      NOTREACHED() << "Invalid frame type, " << frame_header.frame_type;
   }
 
   v4l2_frame_params.order_hint = frame_header.order_hint;
@@ -593,8 +592,8 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
           V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid interpolation filter, "
-                                << frame_header.interpolation_filter;
+      NOTREACHED() << "Invalid interpolation filter, "
+                   << frame_header.interpolation_filter;
   }
 
   switch (frame_header.tx_mode) {
@@ -608,7 +607,7 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
       v4l2_frame_params.tx_mode = V4L2_AV1_TX_MODE_SELECT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid tx mode, " << frame_header.tx_mode;
+      NOTREACHED() << "Invalid tx mode, " << frame_header.tx_mode;
   }
 
   v4l2_frame_params.frame_width_minus_1 = frame_header.width - 1;

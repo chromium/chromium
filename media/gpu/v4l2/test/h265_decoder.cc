@@ -1443,8 +1443,7 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
   }
 
   if (frames_ready_to_be_outputted_.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Stream ended with |frames_ready_to_be_outputted_| empty";
+    NOTREACHED() << "Stream ended with |frames_ready_to_be_outputted_| empty";
   }
 
   scoped_refptr<H265Picture> picture = frames_ready_to_be_outputted_.front();

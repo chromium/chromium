@@ -64,7 +64,7 @@ std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
       break;
     case AV1PROFILE_PROFILE_PRO:
     default:
-      NOTREACHED_IN_MIGRATION();  // Checked during Initialize().
+      NOTREACHED();  // Checked during Initialize().
   }
 
   return std::nullopt;
@@ -525,7 +525,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
     case AV1PROFILE_PROFILE_PRO:
     default:
-      NOTREACHED_IN_MIGRATION();  // Checked during Initialize().
+      NOTREACHED();  // Checked during Initialize().
   }
 
   bool key_frame = encode_options.key_frame;

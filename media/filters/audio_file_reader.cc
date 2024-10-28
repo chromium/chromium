@@ -335,9 +335,8 @@ bool AudioFileReader::OnNewFrame(
             reinterpret_cast<const int32_t*>(frame->data[0]), frames_read);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported bytes per sample encountered: " << bytes_per_sample;
-        audio_bus->ZeroFrames(frames_read);
+        NOTREACHED() << "Unsupported bytes per sample encountered: "
+                     << bytes_per_sample;
     }
   }
 

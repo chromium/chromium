@@ -471,8 +471,7 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   const auto it = frame_timestamp_map_.find(presentaion_timestamp);

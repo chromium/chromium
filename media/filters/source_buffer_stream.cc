@@ -510,10 +510,9 @@ void SourceBufferStream::UpdateLastAppendStateForRemove(
         ResetLastAppendedState();
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << __func__ << " " << GetStreamTypeName()
-          << " range_for_next_append_ set, but not tracking last"
-          << " append nor new coded frame group.";
+      NOTREACHED() << __func__ << " " << GetStreamTypeName()
+                   << " range_for_next_append_ set, but not tracking last"
+                   << " append nor new coded frame group.";
     }
   }
 }

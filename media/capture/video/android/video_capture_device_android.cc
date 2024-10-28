@@ -57,7 +57,7 @@ mojom::MeteringMode ToMojomMeteringMode(
       return mojom::MeteringMode::NONE;
     case PhotoCapabilities::AndroidMeteringMode::NOT_SET:
     case PhotoCapabilities::AndroidMeteringMode::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return mojom::MeteringMode::NONE;
 }
@@ -88,7 +88,7 @@ mojom::FillLightMode ToMojomFillLightMode(
       return mojom::FillLightMode::OFF;
     case PhotoCapabilities::AndroidFillLightMode::NOT_SET:
     case PhotoCapabilities::AndroidFillLightMode::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -415,8 +415,7 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
       base::ranges::find(get_photo_state_callbacks_, cb,
                          &std::unique_ptr<GetPhotoStateCallback>::get);
   if (reference_it == get_photo_state_callbacks_.end()) {
-    NOTREACHED_IN_MIGRATION() << "|callback_id| not found.";
-    return;
+    NOTREACHED() << "|callback_id| not found.";
   }
   if (result == nullptr) {
     get_photo_state_callbacks_.erase(reference_it);
@@ -578,8 +577,7 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
   const auto reference_it = base::ranges::find(
       take_photo_callbacks_, cb, &std::unique_ptr<TakePhotoCallback>::get);
   if (reference_it == take_photo_callbacks_.end()) {
-    NOTREACHED_IN_MIGRATION() << "|callback_id| not found.";
-    return;
+    NOTREACHED() << "|callback_id| not found.";
   }
 
   if (data != nullptr) {

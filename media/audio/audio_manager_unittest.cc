@@ -613,13 +613,12 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ASSERT_GT(default_params.frames_per_buffer(),
             GetMinAudioBufferSizeMacOS(media::limits::kMinAudioBufferSize,
                                        default_params.sample_rate()));
-#elif BUILDFLAG(USE_CRAS)
+#else
+  static_assert(BUILDFLAG(USE_CRAS));
   // On CRAS the preferred output buffer size varies per board and may be as low
   // as the minimum for some boards.
   ASSERT_GE(default_params.frames_per_buffer(),
             media::limits::kMinAudioBufferSize);
-#else
-  NOTREACHED_IN_MIGRATION();
 #endif
 
   AudioOutputStream* stream;

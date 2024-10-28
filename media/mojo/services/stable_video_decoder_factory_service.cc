@@ -55,7 +55,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
             GetDecoderImplementationType(), gpu_driver_bug_workarounds_);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return configs.value_or(std::vector<SupportedVideoDecoderConfig>{});
   }

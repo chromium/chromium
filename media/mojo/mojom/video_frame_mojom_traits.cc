@@ -162,8 +162,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::OpaqueVideoFrameData::New());
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unsupported VideoFrame conversion";
-  return nullptr;
+  NOTREACHED() << "Unsupported VideoFrame conversion";
 }
 
 }  // namespace

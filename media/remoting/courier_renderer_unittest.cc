@@ -296,7 +296,7 @@ class CourierRendererTest : public testing::Test {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     RunPendingTasks();
   }

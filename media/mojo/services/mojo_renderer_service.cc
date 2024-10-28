@@ -176,7 +176,7 @@ void MojoRendererService::OnError(PipelineStatus error) {
 }
 
 void MojoRendererService::OnFallback(PipelineStatus error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MojoRendererService::OnEnded() {

@@ -458,8 +458,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -477,8 +476,7 @@ class VideoDecoderStreamTest
       // This is only interesting to test during VideoDecoderStream destruction.
       // There's no need to satisfy a callback.
       case DECRYPTOR_NO_KEY:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case DECODER_REINIT:
         decoder_->SatisfyInit();
@@ -493,8 +491,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     base::RunLoop().RunUntilIdle();

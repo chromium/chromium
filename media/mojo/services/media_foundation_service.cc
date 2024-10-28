@@ -130,11 +130,10 @@ std::string GetFourCCString(VideoCodec codec) {
     case VideoCodec::kAV1:
       return "av01";
     default:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "This video codec is not supported by MediaFoundationCDM. codec="
           << GetCodecName(codec);
   }
-  return "";
 }
 
 // Returns an "ext-profile" feature query (with ending comma) for a video codec.
@@ -165,11 +164,10 @@ std::string GetFourCCString(AudioCodec codec) {
     case AudioCodec::kMpegHAudio:
       return "mhm1";
     default:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "This audio codec is not supported by MediaFoundationCDM. codec="
           << GetCodecName(codec);
   }
-  return "";
 }
 
 std::string GetName(EncryptionScheme scheme) {
@@ -179,9 +177,8 @@ std::string GetName(EncryptionScheme scheme) {
     case EncryptionScheme::kCbcs:
       return "cbcs";
     default:
-      NOTREACHED_IN_MIGRATION() << "Only cenc and cbcs are supported";
+      NOTREACHED() << "Only cenc and cbcs are supported";
   }
-  return "";
 }
 
 // According to the common encryption spec, both 8 and 16 bytes IV are allowed
@@ -196,9 +193,8 @@ int GetIvSize(EncryptionScheme scheme) {
     case EncryptionScheme::kCbcs:
       return 16;
     default:
-      NOTREACHED_IN_MIGRATION() << "Only cenc and cbcs are supported";
+      NOTREACHED() << "Only cenc and cbcs are supported";
   }
-  return 0;
 }
 
 // Feature name:value mapping.
