@@ -163,7 +163,7 @@ class VisitedLinkCommon {
   // Computes the fingerprint of the given partition key. Used when constructing
   // the partitioned :visited link hashtable.
   static Fingerprint ComputePartitionedFingerprint(
-      const GURL& link_url,
+      std::string_view canonical_link_url,
       const net::SchemefulSite& top_level_site,
       const url::Origin& frame_origin,
       uint64_t salt);
