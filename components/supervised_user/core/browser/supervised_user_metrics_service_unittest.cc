@@ -51,8 +51,7 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_,
         settings_service_, &sync_service_,
         std::make_unique<FakeURLFilterDelegate>(),
-        std::make_unique<FakePlatformDelegate>(),
-        /*can_show_first_time_interstitial_banner=*/false);
+        std::make_unique<FakePlatformDelegate>());
     supervised_user_service_->Init();
   }
 

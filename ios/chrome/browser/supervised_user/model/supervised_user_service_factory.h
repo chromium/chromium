@@ -11,13 +11,6 @@
 
 class ProfileIOS;
 
-namespace supervised_user {
-// Factory helper method that returns true if we need to show the first
-// time banner on the interstitial. The banner informs existing Desktop/iOS
-// users about the application of parental controls.
-bool ShouldShowFirstTimeBanner(ProfileIOS* profile);
-}  // namespace supervised_user
-
 // Singleton that owns SupervisedUserService objects and associates
 // them with Profiles.
 class SupervisedUserServiceFactory : public ProfileKeyedServiceFactoryIOS {

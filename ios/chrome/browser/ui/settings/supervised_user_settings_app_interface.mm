@@ -220,17 +220,6 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   setUrlFilteringForUrl(net::GURLWithNSURL(host), false);
 }
 
-+ (void)resetFirstTimeBanner {
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
-  PrefService* user_prefs = profile->GetPrefs();
-  CHECK(user_prefs);
-  user_prefs->SetInteger(
-      prefs::kFirstTimeInterstitialBannerState,
-      static_cast<int>(
-          supervised_user::FirstTimeInterstitialBannerState::kNeedToShow));
-}
-
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed {
   // Fake the ClassifyUrl responses.
   kidsmanagement::ClassifyUrlResponse response;

@@ -227,10 +227,6 @@ void SupervisedUserInterstitialBlockingPage::HandleCommand(
     security_interstitials::SecurityInterstitialCommand command) {
   CHECK(error_container_);
   error_container_->HandleCommand(*interstitial_, command);
-
-  // If the page was pre-rendered, the first time banner was not marked
-  // on page loading.
-  MaybeUpdateFirstTimeInterstitialBanner();
 }
 
 bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
@@ -257,31 +253,4 @@ void SupervisedUserInterstitialBlockingPage::WebStateDestroyed(
   DCHECK(scoped_observation_.IsObservingSource(web_state));
   error_container_ = nullptr;
   scoped_observation_.Reset();
-}
-
-void SupervisedUserInterstitialBlockingPage::PageLoaded(
-    web::WebState* web_state,
-    web::PageLoadCompletionStatus load_completion_status) {
-  MaybeUpdateFirstTimeInterstitialBanner();
-}
-
-void SupervisedUserInterstitialBlockingPage::
-    MaybeUpdateFirstTimeInterstitialBanner() {
-  if (!interstitial_->web_content_handler()->IsMainFrame()) {
-    return;
-  }
-  if (!web_state_->IsVisible()) {
-    // Only mark the banner if the loaded page is visible (it might be
-    // pre-rendered).
-    return;
-  }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  CHECK(profile);
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-
-  CHECK(supervised_user_service);
-  supervised_user_service->MarkFirstTimeInterstitialBannerShown();
 }

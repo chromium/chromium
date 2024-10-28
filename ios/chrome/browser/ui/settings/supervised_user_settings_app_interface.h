@@ -42,9 +42,6 @@
 // Adds the `url` to a supervised user's block-list.
 + (void)addWebsiteToBlockList:(NSURL*)host;
 
-// Marks the "first time banner" of the SU interstitial as not shown.
-+ (void)resetFirstTimeBanner;
-
 // Sets the behaviour of Safe Search filtering: it sets the default
 // response of the ClassifyUrl endpoint to allow or restrict all requests.
 // In order to use this method, use setUp/tearDown TestUrlLoaderFactoryHelper

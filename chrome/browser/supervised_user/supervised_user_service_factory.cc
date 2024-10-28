@@ -76,8 +76,7 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
           profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<FilterDelegateImpl>(),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-      /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile));
 }
 
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()

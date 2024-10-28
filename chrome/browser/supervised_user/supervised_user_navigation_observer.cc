@@ -185,7 +185,6 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
     int count = supervised_user_interstitials_.size();
     if (main_frame_blocked) {
       count = 0;
-      supervised_user_service_->MarkFirstTimeInterstitialBannerShown();
     }
 
     UMA_HISTOGRAM_COUNTS_1000("ManagedUsers.BlockedIframeCount", count);

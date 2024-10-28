@@ -686,15 +686,9 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     }
   }
 
-  bool show_banner = false;
-  std::string show_banner_string;
-  if (net::GetValueForKeyInQuery(url, "show_banner", &show_banner_string)) {
-    show_banner = show_banner_string == "1";
-  }
-
   return supervised_user::BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
       g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
-      /*is_main_frame=*/true, show_banner);
+      /*is_main_frame=*/true);
 }

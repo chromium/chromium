@@ -122,14 +122,6 @@ class SupervisedUserService : public KeyedService {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Updates the kFirstTimeInterstitialBannerState pref to indicate that the
-  // user has been shown the interstitial banner. This will only update users
-  // who haven't yet seen the banner.
-  void MarkFirstTimeInterstitialBannerShown() const;
-
-  // Returns true if the interstitial banner needs to be shown to user.
-  bool ShouldShowFirstTimeInterstitialBanner() const;
-
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   // Public to allow visibility to iOS factory.
@@ -142,8 +134,7 @@ class SupervisedUserService : public KeyedService {
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
       std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
-          platform_delegate,
-      bool can_show_first_time_interstitial_banner);
+          platform_delegate);
 
  private:
   friend class SupervisedUserServiceExtensionTestBase;
@@ -179,9 +170,6 @@ class SupervisedUserService : public KeyedService {
   // Method used in testing to set the given test_filter as the url_filter_
   void SetURLFilterForTesting(
       std::unique_ptr<SupervisedUserURLFilter> test_filter);
-
-  FirstTimeInterstitialBannerState GetUpdatedBannerState(
-      FirstTimeInterstitialBannerState original_state);
 
   void SetActive(bool active);
 
@@ -225,8 +213,6 @@ class SupervisedUserService : public KeyedService {
   bool did_shutdown_ = false;
 
   std::unique_ptr<SupervisedUserURLFilter> url_filter_;
-
-  const bool can_show_first_time_interstitial_banner_;
 
   // Manages remote web approvals.
   RemoteWebApprovalsManager remote_web_approvals_manager_;

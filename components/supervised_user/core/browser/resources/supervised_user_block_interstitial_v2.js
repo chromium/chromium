@@ -82,10 +82,6 @@ function initialize() {
     }
   }
 
-  const showBanner = loadTimeData.getBoolean('showBanner');
-  if (!showBanner) {
-    $('banner').style.display = 'none';
-  }
 
   const alreadyRequestedAccessRemote =
       loadTimeData.getBoolean('alreadySentRemoteRequest');

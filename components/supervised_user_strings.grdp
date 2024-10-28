@@ -70,12 +70,6 @@
       <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry and the child has two parents.">
         Your parents can unblock it for you
       </message>
-      <message name="IDS_PARENT_BLOCKED_SITE_BANNER_TITLE" desc="The banner title for the first time a user is blocked from a website because of parental controls">
-        New: Family Link choices for Chrome apply here
-      </message>
-      <message name="IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE" desc="The banner message for the first time a user is blocked from a website because of parental controls">
-        The settings your parent chose are now keeping you safer online
-      </message>
       <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE" desc="The title of the tab when displaying a message to the child user when they attempt to visit YouTube.com. The child is signed in to their Google Account in Chrome, but their credentials have expired, so they need to sign in to get all the settings that their parent chose for them on YouTube.">
         YouTube
       </message>
