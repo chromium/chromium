@@ -111,7 +111,7 @@ proto_library("any_lite_proto_impl") {
 proto_library("mediapipe_proto") {
   proto_in_dir = "src"
   cc_generator_options = "lite=true:"
-  link_deps = [ ":any_lite_proto_impl" ]
+  deps = [ ":any_lite_proto_impl" ]
   sources = [
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
