@@ -6,9 +6,9 @@
   #settingsContainer {
     display: flex;
     height: 60px;
-    width: 100%;
+    width: 95%;
     overflow-x: auto;
-    gap: 32px;
+    gap: 48px;
     margin: 0 32px;
     align-items: center;
   }
@@ -20,8 +20,16 @@
   }
 
   cr-input {
-    width: 250px;
+    width: 160px;
     --cr-input-error-display: none;
+  }
+
+  #sortColumnSelector {
+    width: 160px;
+  }
+
+  #sortOrderSelector {
+    width: 120px;
   }
 
   #tableContainer {
@@ -34,7 +42,6 @@
     overflow: auto;
     border-collapse: collapse;
     margin: 0 auto 16px auto;
-    border: 1px solid var(--cr-primary-text-color);
   }
 
   thead th {
@@ -44,10 +51,13 @@
     background-color: var(--cr-menu-background-color);
   }
 
+  td {
+    border-top: 1px solid var(--scrollable-border-color);
+  }
+
   th, td {
     color: var(--cr-primary-text-color);
-    border: 1px solid var(--cr-primary-text-color);
-    padding: 8px;
+    padding: 8px 16px;
     text-align: center;
     max-width: 100px;
     word-wrap: break-word;
