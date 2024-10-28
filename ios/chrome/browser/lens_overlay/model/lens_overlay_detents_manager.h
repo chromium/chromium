@@ -26,9 +26,6 @@
 // Adjust the detents of the given sheet based on the sheet state.
 - (void)adjustDetentsForState:(SheetDetentState)state;
 
-// Restricts the sheet to stay in the largest detent.
-- (void)restrictSheetToLargeDetent:(BOOL)restrictToLargeDetent;
-
 // Maximize the bottom sheet to the large detent.
 - (void)requestMaximizeBottomSheet;
 

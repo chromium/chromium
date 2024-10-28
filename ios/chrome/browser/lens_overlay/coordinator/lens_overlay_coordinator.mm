@@ -589,6 +589,7 @@ const CGFloat kMenuSymbolSize = 18;
       break;
     default:
       [self disableSelectionInteraction:NO];
+      [_mediator defocusOmnibox];
       break;
   }
 }

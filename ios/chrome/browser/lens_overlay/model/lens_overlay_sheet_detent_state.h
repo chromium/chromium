@@ -7,8 +7,6 @@
 
 // Indicates the state of the bottom sheet detents.
 typedef NS_ENUM(NSUInteger, SheetDetentState) {
-  // The bottom sheet is locked in large detent.
-  SheetDetentStateLockedInLargeDetent,
   // The bottom sheet is free to oscillate between medium and large.
   SheetDetentStateUnrestrictedMovement,
   // The bottom sheet is presenting the consent dialog sheet.

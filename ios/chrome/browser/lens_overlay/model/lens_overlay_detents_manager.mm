@@ -75,18 +75,12 @@ const CGFloat kPeakDetentHeight = 100;
   }];
 }
 
-- (void)restrictSheetToLargeDetent:(BOOL)restrictToLargeDetent {
-  SheetDetentState state = restrictToLargeDetent
-                               ? SheetDetentStateLockedInLargeDetent
-                               : SheetDetentStateUnrestrictedMovement;
-  [self adjustDetentsForState:state];
-}
-
 - (void)requestMaximizeBottomSheet {
   [_sheet animateChanges:^{
     _sheet.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierLarge;
   }];
+  [self reportDimensionChangeIfNeeded];
 }
 
 - (void)requestMinimizeBottomSheet {
@@ -94,6 +88,7 @@ const CGFloat kPeakDetentHeight = 100;
     _sheet.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierMedium;
   }];
+  [self reportDimensionChangeIfNeeded];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -124,11 +119,6 @@ const CGFloat kPeakDetentHeight = 100;
       _sheet.detents = @[ self.mediumDetent, self.largeDetent ];
       _sheet.largestUndimmedDetentIdentifier = self.largeDetent.identifier;
       _sheet.selectedDetentIdentifier = self.mediumDetent.identifier;
-      break;
-    case SheetDetentStateLockedInLargeDetent:
-      _sheet.detents = @[ self.largeDetent ];
-      _sheet.largestUndimmedDetentIdentifier = self.largeDetent.identifier;
-      _sheet.selectedDetentIdentifier = self.largeDetent.identifier;
       break;
     case SheetDetentStatePeakEnabled:
       _sheet.detents = @[ self.peakDetent ];
