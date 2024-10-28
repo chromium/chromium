@@ -401,6 +401,9 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338972492
+    @CommandLineFlags.Add({
+        "disable-features=BackForwardTransitions"
+    }) // TODO(https://crbug.com/367792374): Re-enable once the test is fixed.
     public void testSwipeNavigateOnNativePage() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
