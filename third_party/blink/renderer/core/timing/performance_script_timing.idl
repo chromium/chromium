@@ -5,7 +5,6 @@
 enum ScriptInvokerType {
     "classic-script",
     "module-script",
-    "execute-script",
     "event-listener",
     "user-callback",
     "resolve-promise",
