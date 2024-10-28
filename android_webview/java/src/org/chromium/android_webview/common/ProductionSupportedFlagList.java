@@ -1097,6 +1097,10 @@ public final class ProductionSupportedFlagList {
                 "AsyncFastCheckout", "When enabled, run FastCheckoutTabHelper asynchronously."),
         Flag.baseFeature("Prerender2FallbackPrefetchSpecRules"),
         Flag.baseFeature("PrefetchReusable"),
+        Flag.baseFeature(
+                "LCPTimingPredictorPrerender2",
+                "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
+                        + " finished."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
