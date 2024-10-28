@@ -25,6 +25,8 @@ class UnexportableKeyService;
 
 namespace net::device_bound_sessions {
 
+class RegistrationRequestParam;
+
 // This class creates a new unexportable key, creates a registration JWT and
 // signs it with the new key, and makes the network request to the DBSC
 // registration endpoint with this signed JWT to get the registration
@@ -60,6 +62,19 @@ class NET_EXPORT RegistrationFetcher {
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
       RegistrationCompleteCallback callback);
+
+  // Starts the network request to the DBSC refresh endpoint with existing key
+  // id. `callback` is called with the fetch results upon completion. This can
+  // fail during signing and during the network request, and if so the callback
+  // will be called with a std::nullopt.
+  static void StartFetchWithExistingKey(
+      RegistrationRequestParam request_params,
+      unexportable_keys::UnexportableKeyService& key_service,
+      const URLRequestContext* context,
+      const IsolationInfo& isolation_info,
+      RegistrationCompleteCallback callback,
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+          key_id);
 
   // Helper function for generating a new binding key and a registration token
   // to bind the key on the server. unexportable_key_service must outlive the
