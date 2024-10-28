@@ -62,9 +62,10 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   HTMLFormElement* Form() const { return form_.Get(); }
   ValidityState* validity();
 
-  virtual bool IsFormControlElement() const = 0;
+  virtual bool IsFormControlElement() const;
   virtual bool IsFormControlElementWithState() const;
   virtual bool IsElementInternals() const;
+  virtual bool IsObjectElement() const;
   virtual bool IsEnumeratable() const = 0;
 
   // Returns the 'name' attribute value. If this element has no name

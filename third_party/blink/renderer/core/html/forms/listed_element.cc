@@ -731,11 +731,19 @@ const AtomicString& ListedElement::GetName() const {
   return name.IsNull() ? g_empty_atom : name;
 }
 
+bool ListedElement::IsFormControlElement() const {
+  return false;
+}
+
 bool ListedElement::IsFormControlElementWithState() const {
   return false;
 }
 
 bool ListedElement::IsElementInternals() const {
+  return false;
+}
+
+bool ListedElement::IsObjectElement() const {
   return false;
 }
 
@@ -753,11 +761,13 @@ ListedElement* ListedElement::From(Element& element) {
 }
 
 const HTMLElement& ListedElement::ToHTMLElement() const {
-  if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(this))
+  if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(this)) {
     return *form_control_element;
-  if (IsElementInternals())
-    return To<ElementInternals>(*this).Target();
-  return ToHTMLObjectElementFromListedElement(*this);
+  }
+  if (auto* element_internals = DynamicTo<ElementInternals>(this)) {
+    return element_internals->Target();
+  }
+  return To<HTMLObjectElement>(*this);
 }
 
 HTMLElement& ListedElement::ToHTMLElement() {

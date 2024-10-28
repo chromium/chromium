@@ -470,10 +470,6 @@ bool ElementInternals::IsTargetFormAssociated() const {
   return definition && definition->IsFormAssociated();
 }
 
-bool ElementInternals::IsFormControlElement() const {
-  return false;
-}
-
 bool ElementInternals::IsElementInternals() const {
   return true;
 }

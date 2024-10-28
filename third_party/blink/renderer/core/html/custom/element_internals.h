@@ -102,7 +102,6 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool IsTargetFormAssociated() const;
 
   // ListedElement overrides:
-  bool IsFormControlElement() const override;
   bool IsElementInternals() const override;
   bool IsEnumeratable() const override;
   void AppendToFormData(FormData& form_data) override;
