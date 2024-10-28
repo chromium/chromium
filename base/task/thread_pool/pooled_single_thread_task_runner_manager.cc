@@ -41,6 +41,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/debug/crash_logging.h"
 #include "base/win/scoped_com_initializer.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -323,8 +324,20 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
 
     scoped_com_initializer_ = std::make_unique<win::ScopedCOMInitializer>();
 
-    // CHECK to make sure this COM thread is initialized correctly in an STA.
-    CHECK(scoped_com_initializer_->Succeeded());
+    // Make sure this COM thread is initialized correctly in an STA. The thread
+    // would be in the default MTA state upon failure, which would mean any
+    // other MTA thread could service calls invoked by COM on objects living in
+    // this apartment.
+    if (!scoped_com_initializer_->Succeeded()) {
+      // Collect the reason when CoInitializeEx fails. Classic OOM (or ATOM
+      // exhaustion) should lead to process death in ScopedCOMInitializer, but
+      // other failures will leak out. Collect the failure codes in an effort to
+      // understand whether or not these failures are actionable; see
+      // https://crbug.com/40074523.
+      SCOPED_CRASH_KEY_NUMBER("WorkerThreadCOMDelegate", "hr",
+                              scoped_com_initializer_->hr());
+      NOTREACHED();
+    }
   }
 
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
