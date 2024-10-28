@@ -8,13 +8,15 @@ import android.content.Context;
 
 import org.chromium.android_webview.R;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JavaUtils;
 import org.chromium.components.metrics.HistogramEventProtos.HistogramEventProto;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Keeps a list of which histograms to upload if histograms filtering is applied.
@@ -27,13 +29,25 @@ import java.util.stream.Collectors;
 public class HistogramsAllowlist {
     private final Set<Long> mHistogramNameHashes;
 
-    public HistogramsAllowlist() {
+    private HistogramsAllowlist(Set<Long> hashes) {
+        mHistogramNameHashes = hashes;
+    }
+
+    public static HistogramsAllowlist load() {
         Context appContext = ContextUtils.getApplicationContext();
         InputStream inputStream =
                 appContext.getResources().openRawResource(R.raw.histograms_allowlist);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        mHistogramNameHashes =
-                reader.lines().map(AwMetricsUtils::hashHistogramName).collect(Collectors.toSet());
+        Set<Long> hashes = new HashSet();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                hashes.add(AwMetricsUtils.hashHistogramName(line));
+            }
+        } catch (IOException e) {
+            JavaUtils.throwUnchecked(e);
+        }
+
+        return new HistogramsAllowlist(hashes);
     }
 
     public boolean contains(Long histogramNameHash) {

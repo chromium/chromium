@@ -94,14 +94,13 @@ public class SamsungSelectionActionMenuHelper {
             List<ResolveInfo> textProcessActivities =
                     PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
             // Identify and get ResolveInfo for Translate app.
-            ResolveInfo translateResolveInfo =
-                    textProcessActivities.stream()
-                            .filter(
-                                    resolveInfo ->
-                                            resolveInfo.activityInfo.packageName.equals(
-                                                    TRANSLATOR_PACKAGE_NAME))
-                            .findAny()
-                            .orElse(null);
+            ResolveInfo translateResolveInfo = null;
+            for (ResolveInfo resolveInfo : textProcessActivities) {
+                if (resolveInfo.activityInfo.packageName.equals(TRANSLATOR_PACKAGE_NAME)) {
+                    translateResolveInfo = resolveInfo;
+                    break;
+                }
+            }
             if (translateResolveInfo == null) {
                 // Do not add Translate menu if resolve info is not available.
                 return;

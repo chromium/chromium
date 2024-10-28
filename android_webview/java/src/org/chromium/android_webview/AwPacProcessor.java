@@ -15,12 +15,14 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.UsedByReflection;
 
-import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to evaluate PAC scripts. Its lifecycle is independent of
@@ -55,19 +57,18 @@ public class AwPacProcessor {
     }
 
     private void updateNetworkLinkAddress(Network network, LinkProperties linkProperties) {
-        if (network == null || linkProperties == null) {
-            setNetworkAndLinkAddresses(NETWORK_UNSPECIFIED, new String[0]);
-        } else {
-            String[] addresses =
-                    linkProperties.getLinkAddresses().stream()
-                            .map(LinkAddress::getAddress)
-                            .map(InetAddress::getHostAddress)
-                            .toArray(String[]::new);
-            setNetworkAndLinkAddresses(network.getNetworkHandle(), addresses);
+        long networkHandle = NETWORK_UNSPECIFIED;
+        ArrayList<String> addresses = new ArrayList<>();
+        if (network != null && linkProperties != null) {
+            networkHandle = network.getNetworkHandle();
+            for (LinkAddress addr : linkProperties.getLinkAddresses()) {
+                addresses.add(addr.getAddress().getHostAddress());
+            }
         }
+        setNetworkAndLinkAddresses(networkHandle, addresses);
     }
 
-    public void setNetworkAndLinkAddresses(long networkHandle, String[] addresses) {
+    public void setNetworkAndLinkAddresses(long networkHandle, List<String> addresses) {
         AwPacProcessorJni.get()
                 .setNetworkAndLinkAddresses(mNativePacProcessor, networkHandle, addresses);
     }
@@ -147,6 +148,8 @@ public class AwPacProcessor {
         void destroyNative(long nativeAwPacProcessor, AwPacProcessor caller);
 
         void setNetworkAndLinkAddresses(
-                long nativeAwPacProcessor, long networkHandle, String[] adresses);
+                long nativeAwPacProcessor,
+                long networkHandle,
+                @JniType("std::vector<std::string>") List<String> addresses);
     }
 }

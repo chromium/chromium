@@ -42,7 +42,7 @@ class AwPacProcessor {
   void SetNetworkAndLinkAddresses(
       JNIEnv* env,
       net_handle_t net_handle,
-      const base::android::JavaParamRef<jobjectArray>& addresses);
+      const std::vector<std::string>& string_link_addresses);
 
  private:
   void Destroy(base::WaitableEvent* event);

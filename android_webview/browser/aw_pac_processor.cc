@@ -473,10 +473,7 @@ ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
 void AwPacProcessor::SetNetworkAndLinkAddresses(
     JNIEnv* env,
     net_handle_t net_handle,
-    const base::android::JavaParamRef<jobjectArray>& jlink_addresses) {
-  std::vector<std::string> string_link_addresses;
-  base::android::AppendJavaStringArrayToStringVector(env, jlink_addresses,
-                                                     &string_link_addresses);
+    const std::vector<std::string>& string_link_addresses) {
   std::vector<net::IPAddress> link_addresses;
   for (const std::string& address : string_link_addresses) {
     net::IPAddress ip_address;
