@@ -225,6 +225,7 @@ class OnDemandUpdater {
   friend class OnDemandTester;
   friend class policy::ComponentUpdaterPolicyTest;
   friend class ::ComponentsHandler;
+  friend class OptimizationGuideOnDeviceModelInstallerPolicy;
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
   friend class SodaComponentInstallerPolicy;

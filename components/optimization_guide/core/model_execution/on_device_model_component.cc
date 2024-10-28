@@ -270,7 +270,7 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     delegate_->Uninstall(this);
   } else if (criteria.should_install() || criteria.is_already_installing) {
     component_installer_registered_ = true;
-    delegate_->RegisterInstaller(this);
+    delegate_->RegisterInstaller(this, criteria.is_already_installing);
   }
 
   // Log metrics only for first registration attempt.

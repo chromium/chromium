@@ -34,8 +34,9 @@ class FakeOnDeviceModelComponentStateManagerDelegate
   ~FakeOnDeviceModelComponentStateManagerDelegate() override = default;
 
   // OnDeviceModelComponentStateManager::Delegate.
-  void RegisterInstaller(scoped_refptr<OnDeviceModelComponentStateManager>
-                             state_manager) override {
+  void RegisterInstaller(
+      scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+      bool is_already_installing) override {
     state_->installer_registered_ = true;
   }
   void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>

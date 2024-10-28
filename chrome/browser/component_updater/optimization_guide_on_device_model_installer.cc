@@ -13,10 +13,13 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -123,17 +126,48 @@ bool OptimizationGuideOnDeviceModelInstallerPolicy::
   return false;
 }
 
+// static
+const std::string
+OptimizationGuideOnDeviceModelInstallerPolicy::GetOnDeviceModelExtensionId() {
+  return crx_file::id_util::GenerateIdFromHash(kPublicKeySHA256);
+}
+
+// static
+void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand() {
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      GetOnDeviceModelExtensionId(),
+      component_updater::OnDemandUpdater::Priority::FOREGROUND,
+      base::BindOnce([](update_client::Error error) {
+        if (error != update_client::Error::NONE &&
+            error != update_client::Error::UPDATE_IN_PROGRESS) {
+          LOG(ERROR) << "Failed to update on-device model component with error "
+                     << static_cast<int>(error);
+        }
+      }));
+}
+
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
-    scoped_refptr<OnDeviceModelComponentStateManager> state_manager) {
+    scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+    bool is_already_installing) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto register_callback = base::BindOnce(
+      [](base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
+         bool is_already_installing) {
+        if (!is_already_installing) {
+          // Only do on-demand check when the model was
+          // not downloaded and installed before.
+          OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand();
+        }
+        if (state_manager) {
+          state_manager->InstallerRegistered();
+        }
+      },
+      state_manager->GetWeakPtr(), is_already_installing);
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(
           state_manager))
-      ->Register(cus,
-                 base::BindOnce(
-                     &OnDeviceModelComponentStateManager::InstallerRegistered,
-                     state_manager->GetWeakPtr()));
+      ->Register(cus, std::move(register_callback));
 }
 
 void UninstallOptimizationGuideOnDeviceModelComponent(

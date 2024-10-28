@@ -87,8 +87,9 @@ class OnDeviceModelComponentStateManagerDelegate
         std::move(callback));
   }
 
-  void RegisterInstaller(scoped_refptr<OnDeviceModelComponentStateManager>
-                             state_manager) override {
+  void RegisterInstaller(
+      scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+      bool is_already_installing) override {
     // If a model is bundled with the app, call SetReady() and treat
     // it as an override. Otherwise return and do nothing.
     base::FilePath model_path =
