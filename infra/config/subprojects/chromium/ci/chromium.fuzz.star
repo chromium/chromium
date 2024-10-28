@@ -25,6 +25,10 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.CHROMIUM,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     health_spec = health_spec.DEFAULT,
     notifies = ["chrome-fuzzing-core"],
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
@@ -1620,9 +1624,6 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
-    experiments = {
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     properties = {
         "upload_bucket": "chromium-browser-libfuzzer",
         "upload_directory": "asan",
