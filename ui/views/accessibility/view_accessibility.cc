@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -73,7 +74,7 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
          "initialization of the accessibility cache. Instead, set the "  \
          "attributes directly on `AXNodeData` parameter.";
 
-#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   // Cannot use std::make_unique because constructor is protected.

@@ -288,7 +288,7 @@ AXVirtualView* TreeViewTest::GetRootAccessibilityView() const {
 }
 
 ViewAXPlatformNodeDelegate* TreeViewTest::GetTreeAccessibilityView() const {
-#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   return nullptr;  // ViewAXPlatformNodeDelegate is not used on this platform.
 #else
   return static_cast<ViewAXPlatformNodeDelegate*>(

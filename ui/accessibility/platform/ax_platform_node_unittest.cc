@@ -17,10 +17,10 @@ AXPlatformNodeTest::AXPlatformNodeTest() = default;
 AXPlatformNodeTest::~AXPlatformNodeTest() = default;
 
 void AXPlatformNodeTest::TearDown() {
-#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#if BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   TestAXNodeWrapper::SetGlobalIsWebContent(false);
   TestAXNodeWrapper::ResetGlobalState();
-#endif  // BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#endif  // BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 
   // Destroy the tree and make sure we're not leaking any objects.
   DestroyTree();

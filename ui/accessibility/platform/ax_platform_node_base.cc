@@ -133,7 +133,7 @@ const char16_t AXPlatformNodeBase::kEmbeddedCharacter = u'\xfffc';
 
 // TODO(fxbug.dev/91030): Remove the !BUILDFLAG(IS_FUCHSIA) condition once
 // fuchsia has native accessibility.
-#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) && !BUILDFLAG(IS_FUCHSIA)
 // static
 AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeBase* node = new AXPlatformNodeBase();

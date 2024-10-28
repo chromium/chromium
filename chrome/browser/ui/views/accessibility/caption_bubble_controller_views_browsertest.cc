@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // When screen reader mode turns on on Windows, the label is focusable. It
   // remains unfocusable on other OS's.
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) && !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetLabel()->IsFocusable());
 #else
   EXPECT_FALSE(GetLabel()->IsFocusable());

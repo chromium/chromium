@@ -72,7 +72,7 @@
 // document navigation. It is suspected that other screen readers on Windows and
 // Linux will need this behavior, too. VoiceOver and ChromeVox do not need the
 // label to be focusable.
-#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) && !BUILDFLAG(IS_MAC)
 #define NEED_FOCUS_FOR_ACCESSIBILITY
 #endif
 
