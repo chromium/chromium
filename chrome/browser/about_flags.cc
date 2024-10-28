@@ -1282,6 +1282,10 @@ const FeatureEntry::FeatureVariation
         {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
 
+const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
+    {"High Performance Canonicalization", nullptr, 0, "3362133"},
+};
+
 const FeatureEntry::FeatureParam kSidePanelJourneysOpensFromOmniboxParams[] = {
     {"SidePanelJourneysOpensFromOmnibox", "true"},
 };
@@ -6614,9 +6618,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"page-content-annotations-remote-page-metadata",
      flag_descriptions::kPageContentAnnotationsRemotePageMetadataName,
      flag_descriptions::kPageContentAnnotationsRemotePageMetadataDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         page_content_annotations::features::kRemotePageMetadata)},
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         page_content_annotations::features::kRemotePageMetadata,
+         kRemotePageMetadataVariations,
+         "RemotePageMetadata")},
 
     {"page-visibility-page-content-annotations",
      flag_descriptions::kPageVisibilityPageContentAnnotationsName,
