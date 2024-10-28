@@ -20,7 +20,7 @@ class AIMetrics {
     kSummarizer = 3,
     kMaxValue = kSummarizer,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histogram.xml:AIAPI)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histogram.xml:SessionType)
 
   // This class contains all the model execution API supported.
   // These values are persisted to logs. Entries should not be renumbered and
