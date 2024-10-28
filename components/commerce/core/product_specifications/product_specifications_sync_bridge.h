@@ -139,6 +139,9 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
                                   syncer::EntityChange::ChangeType>>&
           specifics_to_change);
 
+  void SendInitialSyncData(const std::set<std::string>& server_uuids,
+                           syncer::MetadataChangeList* metadata_change_list);
+
   std::map<std::string, sync_pb::ProductComparisonSpecifics> entries_;
 
   std::unique_ptr<syncer::DataTypeStore> store_;
