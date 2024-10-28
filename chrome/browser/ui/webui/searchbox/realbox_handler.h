@@ -66,7 +66,8 @@ class RealboxHandler : public SearchboxHandler {
   bool HasObserver(const OmniboxWebUIPopupChangeObserver* observer) const;
 
   // AutocompleteController::Observer:
-  void OnAutocompleteStopTimerTriggered() override;
+  void OnAutocompleteStopTimerTriggered(
+      const AutocompleteInput& input) override;
 
   // searchbox::mojom::PageHandler:
   void SetPage(

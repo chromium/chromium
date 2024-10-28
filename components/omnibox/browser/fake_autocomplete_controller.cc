@@ -29,7 +29,8 @@ void FakeAutocompleteControllerObserver::OnResultChanged(
   last_default_match_changed = default_match_changed;
 }
 
-void FakeAutocompleteControllerObserver::OnAutocompleteStopTimerTriggered() {
+void FakeAutocompleteControllerObserver::OnAutocompleteStopTimerTriggered(
+    const AutocompleteInput& input) {
   on_autocomplete_stop_timer_stopped_call_count++;
 }
 

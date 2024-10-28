@@ -20,7 +20,8 @@ class FakeAutocompleteControllerObserver
  public:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
-  void OnAutocompleteStopTimerTriggered() override;
+  void OnAutocompleteStopTimerTriggered(
+      const AutocompleteInput& input) override;
   int on_result_changed_call_count_ = 0;
   bool last_default_match_changed = false;
   int on_autocomplete_stop_timer_stopped_call_count = 0;

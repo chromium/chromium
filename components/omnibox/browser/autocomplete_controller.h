@@ -139,7 +139,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                             const AutocompleteResult& result) {}
 
     // Invoked when autocomplete stop timer is triggered.
-    virtual void OnAutocompleteStopTimerTriggered() {}
+    virtual void OnAutocompleteStopTimerTriggered(
+        const AutocompleteInput& input) {}
   };
 
   // Converts `UpdateType` to string.

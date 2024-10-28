@@ -609,8 +609,11 @@ const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,
   return &match;
 }
 
-void RealboxHandler::OnAutocompleteStopTimerTriggered() {
-  if (lens_searchbox_client_) {
+void RealboxHandler::OnAutocompleteStopTimerTriggered(
+    const AutocompleteInput& input) {
+  // Only notify the lens controller when autocomplete stop timer is triggered
+  // for zero suggest inputs.
+  if (lens_searchbox_client_ && input.IsZeroSuggest()) {
     lens_searchbox_client_->OnAutocompleteStopTimerTriggered();
   }
 }

@@ -1962,7 +1962,7 @@ void AutocompleteController::StartStopTimer() {
 void AutocompleteController::OnStopTimerTriggered() {
   Stop(false, true);
   for (Observer& obs : observers_) {
-    obs.OnAutocompleteStopTimerTriggered();
+    obs.OnAutocompleteStopTimerTriggered(input_);
   }
 }
 
