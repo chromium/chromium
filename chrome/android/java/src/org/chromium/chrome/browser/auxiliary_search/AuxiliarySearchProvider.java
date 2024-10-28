@@ -60,6 +60,7 @@ public class AuxiliarySearchProvider {
     @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
     @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;
     @VisibleForTesting static final int DEFAULT_FAVICON_NUMBER = 5;
+    @VisibleForTesting static final int DEFAULT_SCHEDULE_DELAY_TIME_MS = 0;
 
     /** The current version of the saved Tab donate metadata file. */
     private static final int SAVED_STATE_VERSION = 1;
@@ -90,6 +91,13 @@ public class AuxiliarySearchProvider {
                     ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
                     USE_LARGE_FAVICON_PARAM,
                     false);
+
+    private static final String SCHEDULE_DELAY_TIME_MS_PARAM = "schedule_delay_time_ms";
+    public static final IntCachedFieldTrialParameter SCHEDULE_DELAY_TIME_MS =
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
+                    SCHEDULE_DELAY_TIME_MS_PARAM,
+                    DEFAULT_SCHEDULE_DELAY_TIME_MS);
 
     private final Context mContext;
     private final Profile mProfile;
@@ -180,13 +188,15 @@ public class AuxiliarySearchProvider {
             }
         }
 
+        // Allows to call the callback to start a donation immediately.
+        callback.onResult(tabGroupBuilder.build());
+
         if (mIsFaviconEnabled && mMaxFaviconNumber < tabs.size()) {
             saveTabMetadataToFile(getTabDonateFile(mContext), tabs, mMaxFaviconNumber);
         }
-        callback.onResult(tabGroupBuilder.build());
 
         if (mIsFaviconEnabled) {
-            scheduleBackgroundTask(0L, startTimeMs);
+            scheduleBackgroundTask((long) SCHEDULE_DELAY_TIME_MS.getValue(), startTimeMs);
         }
     }
 

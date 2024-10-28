@@ -98,6 +98,7 @@ public class ChromeCachedFlags {
                         AuthTabVerifier.VERIFICATION_TIMEOUT_MS,
                         AuxiliarySearchProvider.MAX_FAVICON_NUMBER,
                         AuxiliarySearchProvider.USE_LARGE_FAVICON,
+                        AuxiliarySearchProvider.SCHEDULE_DELAY_TIME_MS,
                         BackPressManager.TAB_HISTORY_RECOVER,
                         ChimeFeatures.ALWAYS_REGISTER,
                         TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM,

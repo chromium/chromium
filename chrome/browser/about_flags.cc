@@ -2660,11 +2660,25 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon[] = {
         {"use_large_favicon", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_DelayTime200Ms[] = {
+        {"schedule_delay_time_ms", "200"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon[] = {
+        {"schedule_delay_time_ms", "200"},
+        {"use_large_favicon", "true"}};
 
 const FeatureEntry::FeatureVariation
     kAndroidAppIntegrationWithFaviconVariations[] = {
-        {"Use large favicon", kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
-         std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon),
+        {"Use large favicon (No delay)",
+         kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
+         std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
+        {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
+         std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
+        {"200ms delay with large favicon",
+         kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
+         std::size(
+             kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
          nullptr}};
 
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
