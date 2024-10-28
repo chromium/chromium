@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
@@ -109,6 +110,8 @@ constexpr int kControlMargin = 16;
 // Minimum padding between the overlay view, if shown, and the window.
 constexpr gfx::Size kOverlayViewPadding(64, 46);
 
+constexpr gfx::Size kPreviousNextButtonSize(28, 28);
+
 // Returns the quadrant the VideoOverlayWindowViews is primarily in on the
 // current work area.
 VideoOverlayWindowViews::WindowQuadrant GetCurrentWindowQuadrant(
@@ -177,6 +180,11 @@ class ControlsBackgroundView : public views::View {
 
 BEGIN_METADATA(ControlsBackgroundView)
 END_METADATA
+
+bool Use2024UI() {
+  return base::FeatureList::IsEnabled(
+      media::kVideoPictureInPictureControlsUpdate2024);
+}
 
 }  // namespace
 
@@ -292,8 +300,7 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
       base::WrapUnique(new VideoOverlayWindowViews(controller));
 
   // The 2024 updated controls use dark mode colors.
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
+  if (Use2024UI()) {
     overlay_window->SetColorModeOverride(
         ui::ColorProviderKey::ColorMode::kDark);
   }
@@ -525,7 +532,7 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
   WindowQuadrant quadrant =
       GetCurrentWindowQuadrant(GetBounds(), GetController());
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
-  if (minimize_button_) {
+  if (Use2024UI()) {
     minimize_button_->SetPosition(GetBounds().size(), quadrant);
   }
   UpdateResizeHandleBounds(quadrant);
@@ -823,13 +830,29 @@ void VideoOverlayWindowViews::SetUpViews() {
   auto close_controls_view = std::make_unique<CloseImageButton>(
       base::BindRepeating(&VideoOverlayWindowViews::CloseAndPauseIfAvailable,
                           base::Unretained(this)));
+
+  auto play_pause_controls_view =
+      std::make_unique<PlaybackImageButton>(base::BindRepeating(
+          [](VideoOverlayWindowViews* overlay) { overlay->TogglePlayPause(); },
+          base::Unretained(this)));
+
+  // These controls may be different (or even nonexistent) depending on whether
+  // the 2024 updated UI is enabled.
   std::unique_ptr<OverlayWindowMinimizeButton> minimize_button;
   std::unique_ptr<OverlayWindowBackToTabButton> back_to_tab_button;
   std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    // The 2024 controls have a minimize button and an image button for the back
-    // to tab control.
+  std::unique_ptr<SimpleOverlayWindowImageButton> previous_track_controls_view;
+  std::unique_ptr<SimpleOverlayWindowImageButton> next_track_controls_view;
+  std::unique_ptr<SimpleOverlayWindowImageButton> previous_slide_controls_view;
+  std::unique_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view;
+  std::unique_ptr<SkipAdLabelButton> skip_ad_controls_view;
+  std::unique_ptr<ToggleMicrophoneButton> toggle_microphone_button;
+  std::unique_ptr<ToggleCameraButton> toggle_camera_button;
+  std::unique_ptr<HangUpButton> hang_up_button;
+
+  if (Use2024UI()) {
+    play_pause_controls_view->SetSize(
+        {kPlaybackButtonSize, kPlaybackButtonSize});
     minimize_button = std::make_unique<
         OverlayWindowMinimizeButton>(base::BindRepeating(
         [](VideoOverlayWindowViews* overlay) {
@@ -847,9 +870,36 @@ void VideoOverlayWindowViews::SetUpViews() {
                           kCloseWindowAndFocusOpener);
             },
             base::Unretained(this)));
+    previous_track_controls_view =
+        std::make_unique<SimpleOverlayWindowImageButton>(
+            base::BindRepeating(
+                [](VideoOverlayWindowViews* overlay) {
+                  if (overlay->show_previous_track_button_) {
+                    overlay->controller_->PreviousTrack();
+                  } else if (overlay->show_previous_slide_button_) {
+                    overlay->controller_->PreviousSlide();
+                  }
+                },
+                base::Unretained(this)),
+            vector_icons::kMediaPreviousTrackIcon,
+            l10n_util::GetStringUTF16(
+                IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
+    previous_track_controls_view->SetSize(kPreviousNextButtonSize);
+    next_track_controls_view = std::make_unique<SimpleOverlayWindowImageButton>(
+        base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              if (overlay->show_next_track_button_) {
+                overlay->controller_->NextTrack();
+              } else if (overlay->show_next_slide_button_) {
+                overlay->controller_->NextSlide();
+              }
+            },
+            base::Unretained(this)),
+        vector_icons::kMediaNextTrackIcon,
+        l10n_util::GetStringUTF16(
+            IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
+    next_track_controls_view->SetSize(kPreviousNextButtonSize);
   } else {
-    // The previous controls have no minimize button and a label button for the
-    // back to tab control.
     back_to_tab_label_button =
         std::make_unique<BackToTabLabelButton>(base::BindRepeating(
             [](VideoOverlayWindowViews* overlay) {
@@ -859,76 +909,69 @@ void VideoOverlayWindowViews::SetUpViews() {
                           kCloseWindowAndFocusOpener);
             },
             base::Unretained(this)));
+    previous_track_controls_view =
+        std::make_unique<SimpleOverlayWindowImageButton>(
+            base::BindRepeating(
+                [](VideoOverlayWindowViews* overlay) {
+                  overlay->controller_->PreviousTrack();
+                },
+                base::Unretained(this)),
+            vector_icons::kMediaPreviousTrackIcon,
+            l10n_util::GetStringUTF16(
+                IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
+    next_track_controls_view = std::make_unique<SimpleOverlayWindowImageButton>(
+        base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              overlay->controller_->NextTrack();
+            },
+            base::Unretained(this)),
+        vector_icons::kMediaNextTrackIcon,
+        l10n_util::GetStringUTF16(
+            IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
+    previous_slide_controls_view =
+        std::make_unique<SimpleOverlayWindowImageButton>(
+            base::BindRepeating(
+                [](VideoOverlayWindowViews* overlay) {
+                  overlay->controller_->PreviousSlide();
+                },
+                base::Unretained(this)),
+            vector_icons::kMediaPreviousTrackIcon,
+            l10n_util::GetStringUTF16(
+                IDS_PICTURE_IN_PICTURE_PREVIOUS_SLIDE_CONTROL_ACCESSIBLE_TEXT));
+    next_slide_controls_view = std::make_unique<SimpleOverlayWindowImageButton>(
+        base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              overlay->controller_->NextSlide();
+            },
+            base::Unretained(this)),
+        vector_icons::kMediaNextTrackIcon,
+        l10n_util::GetStringUTF16(
+            IDS_PICTURE_IN_PICTURE_NEXT_SLIDE_CONTROL_ACCESSIBLE_TEXT));
+    skip_ad_controls_view =
+        std::make_unique<SkipAdLabelButton>(base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              overlay->controller_->SkipAd();
+            },
+            base::Unretained(this)));
+    toggle_microphone_button =
+        std::make_unique<ToggleMicrophoneButton>(base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              overlay->controller_->ToggleMicrophone();
+            },
+            base::Unretained(this)));
+    toggle_camera_button =
+        std::make_unique<ToggleCameraButton>(base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              overlay->controller_->ToggleCamera();
+            },
+            base::Unretained(this)));
+    hang_up_button = std::make_unique<HangUpButton>(base::BindRepeating(
+        [](VideoOverlayWindowViews* overlay) {
+          overlay->controller_->HangUp();
+        },
+        base::Unretained(this)));
   }
-  auto previous_track_controls_view =
-      std::make_unique<SimpleOverlayWindowImageButton>(
-          base::BindRepeating(
-              [](VideoOverlayWindowViews* overlay) {
-                overlay->controller_->PreviousTrack();
-              },
-              base::Unretained(this)),
-          vector_icons::kMediaPreviousTrackIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
-  auto play_pause_controls_view =
-      std::make_unique<PlaybackImageButton>(base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            overlay->TogglePlayPause();
-          },
-          base::Unretained(this)));
-  auto next_track_controls_view =
-      std::make_unique<SimpleOverlayWindowImageButton>(
-          base::BindRepeating(
-              [](VideoOverlayWindowViews* overlay) {
-                overlay->controller_->NextTrack();
-              },
-              base::Unretained(this)),
-          vector_icons::kMediaNextTrackIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
-  auto skip_ad_controls_view =
-      std::make_unique<SkipAdLabelButton>(base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            overlay->controller_->SkipAd();
-          },
-          base::Unretained(this)));
-  auto toggle_microphone_button =
-      std::make_unique<ToggleMicrophoneButton>(base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            overlay->controller_->ToggleMicrophone();
-          },
-          base::Unretained(this)));
-  auto toggle_camera_button =
-      std::make_unique<ToggleCameraButton>(base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            overlay->controller_->ToggleCamera();
-          },
-          base::Unretained(this)));
-  auto hang_up_button = std::make_unique<HangUpButton>(base::BindRepeating(
-      [](VideoOverlayWindowViews* overlay) {
-        overlay->controller_->HangUp();
-      },
-      base::Unretained(this)));
-  auto previous_slide_controls_view =
-      std::make_unique<SimpleOverlayWindowImageButton>(
-          base::BindRepeating(
-              [](VideoOverlayWindowViews* overlay) {
-                overlay->controller_->PreviousSlide();
-              },
-              base::Unretained(this)),
-          vector_icons::kMediaPreviousTrackIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PICTURE_IN_PICTURE_PREVIOUS_SLIDE_CONTROL_ACCESSIBLE_TEXT));
-  auto next_slide_controls_view =
-      std::make_unique<SimpleOverlayWindowImageButton>(
-          base::BindRepeating(
-              [](VideoOverlayWindowViews* overlay) {
-                overlay->controller_->NextSlide();
-              },
-              base::Unretained(this)),
-          vector_icons::kMediaNextTrackIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PICTURE_IN_PICTURE_NEXT_SLIDE_CONTROL_ACCESSIBLE_TEXT));
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   auto resize_handle_view =
       std::make_unique<ResizeHandleButton>(views::Button::PressedCallback());
@@ -959,14 +1002,14 @@ void VideoOverlayWindowViews::SetUpViews() {
   close_controls_view->layer()->SetName("CloseControlsView");
 
   // views::View that closes the window without pausing. ----------------------
-  if (minimize_button) {
+  if (Use2024UI()) {
     minimize_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     minimize_button->layer()->SetFillsBoundsOpaquely(false);
     minimize_button->layer()->SetName("OverlayWindowMinimizeButton");
   }
 
   // views::View that closes the window and focuses initiator tab. ------------
-  if (back_to_tab_button) {
+  if (Use2024UI()) {
     back_to_tab_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     back_to_tab_button->layer()->SetFillsBoundsOpaquely(false);
     back_to_tab_button->layer()->SetName("BackToTabControlsView");
@@ -994,30 +1037,33 @@ void VideoOverlayWindowViews::SetUpViews() {
   next_track_controls_view->layer()->SetFillsBoundsOpaquely(false);
   next_track_controls_view->layer()->SetName("NextTrackControlsView");
 
-  // views::View that holds the skip-ad label button. -------------------------
-  skip_ad_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  skip_ad_controls_view->layer()->SetFillsBoundsOpaquely(true);
-  skip_ad_controls_view->layer()->SetName("SkipAdControlsView");
+  if (!Use2024UI()) {
+    // views::View that holds the skip-ad label button.
+    // -------------------------
+    skip_ad_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    skip_ad_controls_view->layer()->SetFillsBoundsOpaquely(true);
+    skip_ad_controls_view->layer()->SetName("SkipAdControlsView");
 
-  toggle_microphone_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  toggle_microphone_button->layer()->SetFillsBoundsOpaquely(false);
-  toggle_microphone_button->layer()->SetName("ToggleMicrophoneButton");
+    toggle_microphone_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    toggle_microphone_button->layer()->SetFillsBoundsOpaquely(false);
+    toggle_microphone_button->layer()->SetName("ToggleMicrophoneButton");
 
-  toggle_camera_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  toggle_camera_button->layer()->SetFillsBoundsOpaquely(false);
-  toggle_camera_button->layer()->SetName("ToggleCameraButton");
+    toggle_camera_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    toggle_camera_button->layer()->SetFillsBoundsOpaquely(false);
+    toggle_camera_button->layer()->SetName("ToggleCameraButton");
 
-  hang_up_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  hang_up_button->layer()->SetFillsBoundsOpaquely(false);
-  hang_up_button->layer()->SetName("HangUpButton");
+    hang_up_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    hang_up_button->layer()->SetFillsBoundsOpaquely(false);
+    hang_up_button->layer()->SetName("HangUpButton");
 
-  previous_slide_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  previous_slide_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  previous_slide_controls_view->layer()->SetName("PreviousSlideButton");
+    previous_slide_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    previous_slide_controls_view->layer()->SetFillsBoundsOpaquely(false);
+    previous_slide_controls_view->layer()->SetName("PreviousSlideButton");
 
-  next_slide_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  next_slide_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  next_slide_controls_view->layer()->SetName("NextSlideButton");
+    next_slide_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    next_slide_controls_view->layer()->SetFillsBoundsOpaquely(false);
+    next_slide_controls_view->layer()->SetName("NextSlideButton");
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // views::View that shows the affordance that the window can be resized. ----
@@ -1033,13 +1079,12 @@ void VideoOverlayWindowViews::SetUpViews() {
   video_view_ = AddChildView(&view_holder_, std::move(video_view));
   controls_scrim_view_ =
       controls_container_view->AddChildView(std::move(controls_scrim_view));
+
   close_controls_view_ =
       controls_container_view->AddChildView(std::move(close_controls_view));
-  if (minimize_button) {
+  if (Use2024UI()) {
     minimize_button_ =
         controls_container_view->AddChildView(std::move(minimize_button));
-  }
-  if (back_to_tab_button) {
     back_to_tab_button_ =
         controls_container_view->AddChildView(std::move(back_to_tab_button));
   } else {
@@ -1049,22 +1094,27 @@ void VideoOverlayWindowViews::SetUpViews() {
   }
   previous_track_controls_view_ = controls_container_view->AddChildView(
       std::move(previous_track_controls_view));
-  previous_slide_controls_view_ = controls_container_view->AddChildView(
-      std::move(previous_slide_controls_view));
+  if (!Use2024UI()) {
+    previous_slide_controls_view_ = controls_container_view->AddChildView(
+        std::move(previous_slide_controls_view));
+  }
   play_pause_controls_view_ = controls_container_view->AddChildView(
       std::move(play_pause_controls_view));
+
   next_track_controls_view_ = controls_container_view->AddChildView(
       std::move(next_track_controls_view));
-  next_slide_controls_view_ = controls_container_view->AddChildView(
-      std::move(next_slide_controls_view));
-  skip_ad_controls_view_ =
-      controls_container_view->AddChildView(std::move(skip_ad_controls_view));
-  toggle_microphone_button_ = controls_container_view->AddChildView(
-      std::move(toggle_microphone_button));
-  toggle_camera_button_ =
-      controls_container_view->AddChildView(std::move(toggle_camera_button));
-  hang_up_button_ =
-      controls_container_view->AddChildView(std::move(hang_up_button));
+  if (!Use2024UI()) {
+    next_slide_controls_view_ = controls_container_view->AddChildView(
+        std::move(next_slide_controls_view));
+    skip_ad_controls_view_ =
+        controls_container_view->AddChildView(std::move(skip_ad_controls_view));
+    toggle_microphone_button_ = controls_container_view->AddChildView(
+        std::move(toggle_microphone_button));
+    toggle_camera_button_ =
+        controls_container_view->AddChildView(std::move(toggle_camera_button));
+    hang_up_button_ =
+        controls_container_view->AddChildView(std::move(hang_up_button));
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   resize_handle_view_ =
       controls_container_view->AddChildView(std::move(resize_handle_view));
@@ -1156,25 +1206,66 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
 
   WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
-  if (minimize_button_) {
-    minimize_button_->SetPosition(GetBounds().size(), quadrant);
-  }
-
-  if (back_to_tab_button_) {
-    back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
-  } else {
-    CHECK(back_to_tab_label_button_);
-    back_to_tab_label_button_->SetWindowSize(GetBounds().size());
-  }
-
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    play_pause_controls_view_->SetWindowSize(GetBounds().size());
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   UpdateResizeHandleBounds(quadrant);
 #endif
+
+  // The 2024 updated UI lays out controls differently.
+  if (Use2024UI()) {
+    constexpr int kTopControlsHeight = 34;
+    constexpr int kBottomControlsHeight = 64;
+    constexpr int kControlHorizontalMargin = 8;
+    constexpr int kBottomControlsHorizontalMargin = 8;
+    constexpr int kBottomControlsVerticalMargin = 4;
+
+    gfx::Rect bounds = GetBounds();
+    bounds.set_origin({0, 0});
+
+    // The top bar takes up the first `kTopControlsHeight` pixels of vertical
+    // space.
+    gfx::Rect top_controls_bounds(bounds.x(), bounds.y(), bounds.width(),
+                                  kTopControlsHeight);
+
+    // The bottom controls take up the last `kBottomControlsHeight` pixels of
+    // vertical space.
+    gfx::Rect bottom_controls_bounds(
+        bounds.x(), bounds.y() + bounds.height() - kBottomControlsHeight,
+        bounds.width(), kBottomControlsHeight);
+
+    // The rest of the vertical space is used for the middle controls area.
+    gfx::Rect middle_controls_bounds = gfx::BoundingRect(
+        top_controls_bounds.bottom_left(), bottom_controls_bounds.top_right());
+
+    minimize_button_->SetPosition(GetBounds().size(), quadrant);
+    back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
+
+    // The play/pause buttons is at the center of the middle controls area.
+    play_pause_controls_view_->SetPosition(
+        {middle_controls_bounds.CenterPoint().x() - kPlaybackButtonSize / 2,
+         middle_controls_bounds.CenterPoint().y() - kPlaybackButtonSize / 2});
+
+    // The previous and next track buttons are placed on the top left/right
+    // edges of the bottom controls area.
+    previous_track_controls_view_->SetPosition(
+        {bottom_controls_bounds.x() + kBottomControlsHorizontalMargin +
+             kControlHorizontalMargin,
+         bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
+    next_track_controls_view_->SetPosition(
+        {bottom_controls_bounds.x() + bottom_controls_bounds.width() -
+             (kBottomControlsHorizontalMargin + kControlHorizontalMargin +
+              kPreviousNextButtonSize.width()),
+         bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
+
+    // The previous and next track buttons are always visible, but disabled if
+    // there is no action handler for them.
+    previous_track_controls_view_->SetEnabled(show_previous_track_button_);
+    next_track_controls_view_->SetEnabled(show_next_track_button_);
+    return;
+  }
+
+  CHECK(back_to_tab_label_button_);
+  back_to_tab_label_button_->SetWindowSize(GetBounds().size());
 
   skip_ad_controls_view_->SetPosition(GetBounds().size());
 
@@ -1192,9 +1283,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     visible_controls_views.push_back(previous_track_controls_view_);
   if (show_previous_slide_button_)
     visible_controls_views.push_back(previous_slide_controls_view_);
-  if (show_play_pause_button_ &&
-      !base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
+  if (show_play_pause_button_) {
     visible_controls_views.push_back(play_pause_controls_view_);
   }
   if (show_next_track_button_)
@@ -1472,11 +1561,17 @@ void VideoOverlayWindowViews::SetPreviousTrackButtonVisibility(
 }
 
 void VideoOverlayWindowViews::SetMicrophoneMuted(bool muted) {
-  toggle_microphone_button_->SetMutedState(muted);
+  // The 2024 UI does not yet have a toggle microphone button implemented.
+  if (!Use2024UI()) {
+    toggle_microphone_button_->SetMutedState(muted);
+  }
 }
 
 void VideoOverlayWindowViews::SetCameraState(bool turned_on) {
-  toggle_camera_button_->SetCameraState(turned_on);
+  // The 2024 UI does not yet have a toggle camera button implemented.
+  if (!Use2024UI()) {
+    toggle_camera_button_->SetCameraState(turned_on);
+  }
 }
 
 void VideoOverlayWindowViews::SetToggleMicrophoneButtonVisibility(
@@ -1587,7 +1682,7 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetBackToTabControlsBounds() {
-  if (back_to_tab_button_) {
+  if (Use2024UI()) {
     return back_to_tab_button_->GetMirroredBounds();
   }
   CHECK(back_to_tab_label_button_);
@@ -1595,6 +1690,10 @@ gfx::Rect VideoOverlayWindowViews::GetBackToTabControlsBounds() {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetSkipAdControlsBounds() {
+  // The 2024 UI does not yet have a skip ad button implemented.
+  if (Use2024UI()) {
+    return gfx::Rect();
+  }
   return skip_ad_controls_view_->GetMirroredBounds();
 }
 
@@ -1603,7 +1702,7 @@ gfx::Rect VideoOverlayWindowViews::GetCloseControlsBounds() {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetMinimizeControlsBounds() {
-  if (!minimize_button_) {
+  if (!Use2024UI()) {
     return gfx::Rect();
   }
   return minimize_button_->GetMirroredBounds();
@@ -1628,22 +1727,43 @@ gfx::Rect VideoOverlayWindowViews::GetPreviousTrackControlsBounds() {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetToggleMicrophoneButtonBounds() {
+  // The 2024 UI does not yet have a toggle microphone button implemented.
+  if (Use2024UI()) {
+    return gfx::Rect();
+  }
   return toggle_microphone_button_->GetMirroredBounds();
 }
 
 gfx::Rect VideoOverlayWindowViews::GetToggleCameraButtonBounds() {
+  // The 2024 UI does not yet have a toggle camera button implemented.
+  if (Use2024UI()) {
+    return gfx::Rect();
+  }
   return toggle_camera_button_->GetMirroredBounds();
 }
 
 gfx::Rect VideoOverlayWindowViews::GetHangUpButtonBounds() {
+  // The 2024 UI does not yet have a hang up button implemented.
+  if (Use2024UI()) {
+    return gfx::Rect();
+  }
   return hang_up_button_->GetMirroredBounds();
 }
 
 gfx::Rect VideoOverlayWindowViews::GetPreviousSlideControlsBounds() {
+  // The 2024 UI combines the previous slide button with the previous track
+  // button.
+  if (Use2024UI()) {
+    return gfx::Rect();
+  }
   return previous_slide_controls_view_->GetMirroredBounds();
 }
 
 gfx::Rect VideoOverlayWindowViews::GetNextSlideControlsBounds() {
+  // The 2024 UI combines the next slide button with the next track button.
+  if (Use2024UI()) {
+    return gfx::Rect();
+  }
   return next_slide_controls_view_->GetMirroredBounds();
 }
 
