@@ -1666,8 +1666,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_FALSE(back_nav_to_red.was_committed());
 }
 
-// The user swipes across the screen while a cross-doc navigation commits. We
-// destroy the animation manager synchronously.
+// The user swipes across the screen while a cross-doc navigation commits. The
+// live page should be replaced by the page that was navigated to while the
+// animation continues.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                        NavigationWhileOnGestureProgressed) {
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
@@ -1677,16 +1678,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   TestFuture<AnimatorState> destroyed;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 
-  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
-  EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
-                        kFloatTolerance);
+  // The current live page should be blue.html.
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
+
+  EXPECT_STATE_EQ(kStarted, GetAnimator()->state());
+
+  // The gesture should have created and attached a screenshot layer with a
+  // child scrim layer, under the live page.
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            RedURL());
 }
 
-// The cancel animation is displaying while a cross-doc navigation commits. We
-// destroy the animation manager synchronously.
+// The cancel animation is displaying while a cross-doc navigation commits. The
+// live page should be replaced by the page that was navigated to while the
+// animation continues.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                        NavigationWhileDisplayingCancelAnimation) {
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
@@ -1698,12 +1710,21 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager()->OnGestureCancelled();
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
 
-  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
-  EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
-                        kFloatTolerance);
+  // The current live page should be blue.html.
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
+
+  // The gesture should have created and attached a screenshot layer with a
+  // child scrim layer, under the live page.
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->UnpauseAnimation();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
@@ -2762,8 +2783,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
 // Test that when the user has decided not leave the current page by interacting
 // with the prompt and the cancel animation is still playing, another navigation
-// commits in the main frame. We should destroy the animator when the other
-// navigation commits.
+// commits in the main frame. The animator should continue animating and the
+// live page should be replaced by the page that was navigated to.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                        BeforeUnload_RequestCancelledBeforeStart) {
   DisableBackForwardCacheForTesting(
@@ -2811,10 +2832,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
 
   EXPECT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 
   ASSERT_FALSE(did_invoke.IsReady());
   ASSERT_FALSE(did_cancel.IsReady());
+
+  GetAnimator()->UnpauseAnimation();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ(back_nav.last_committed_url(), BlueURL());
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 3);
@@ -2939,10 +2963,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
 // Testing that, on the back nav from green.html to red.html, red.html redirects
 // to blue.html. while the cross-fading animation is playing from the red.html's
-// screenshot to the live page. We should abort the cross-fade animation when
-// the redirect to blue.html commits.
+// screenshot to the live page. The animator should continue cross-fading to
+// blue.html.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       ClientRedirect_AnimatorDestroyedDuringCrossFade) {
+                       ClientRedirect_RedirectDuringCrossFade) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -3097,44 +3121,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     EXPECT_EQ(input_watcher.last_sent_event_type(),
               blink::WebInputEvent::Type::kGestureTap);
   }
-}
-
-// Regression test for https://crbug.com/339501357: If the animator is destroyed
-// in the middle of a gesture, the history navigation should still proceed.
-IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       AnimatorDestroyedMidGesture) {
-  DisableBackForwardCacheForTesting(
-      web_contents(),
-      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
-
-  // Start a navigation and wait until the request has been sent
-  TestNavigationManager nav_to_blue(web_contents(), BlueURL());
-  web_contents()->GetController().LoadURL(
-      BlueURL(), Referrer{},
-      ui::PageTransitionFromInt(
-          ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR |
-          ui::PageTransition::PAGE_TRANSITION_TYPED),
-      std::string{});
-  ASSERT_TRUE(nav_to_blue.WaitForRequestStart());
-
-  // Start a swipe gesture
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          SwipeEdge::LEFT, NavType::kBackward);
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-
-  TestFuture<AnimatorState> destroyed;
-  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
-
-  // When the navigation above commits the animator should be destroyed with an
-  // abort
-  ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-
-  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
-  GetAnimationManager()->OnGestureInvoked();
-  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
-  ASSERT_TRUE(back_nav_to_red.was_committed());
 }
 
 // Regression test for https://crbug.com/344761329: If the
@@ -3886,8 +3872,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that when the user has decided not leave the current page by interacting
 // with the prompt and the cancel animation is still playing, another navigation
-// commits in the main frame. We should destroy the animator when the other
-// navigation commits.
+// commits in the main frame. The live page should be replaced by the page that
+// was navigated to while the animation continues.
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
     BeforeUnload_RequestCancelledBeforeStart) {
@@ -3938,15 +3924,21 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(beforeunload_complete.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
 
+  GetAnimator()->UnpauseAnimation();
+
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+
+  // The current live page should be blue.html.
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
 
   ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_FALSE(did_cancel.IsReady());
+  ASSERT_TRUE(did_cancel.IsReady());
 
   ASSERT_EQ(back_nav.last_navigation_url(), BlueURL());
   ASSERT_FALSE(did_invoke.IsReady());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 }
 
 // Test that the animator is behaving correctly, even after the renderer acks

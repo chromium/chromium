@@ -131,10 +131,6 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
       return "kRenderWidgetHostDestroyed";
     case AnimationAbortReason::kMainCommitOnSubframeTransition:
       return "kMainCommitOnSubframeTransition";
-    case AnimationAbortReason::kNewCommitInPrimaryMainFrame:
-      return "kNewCommitInPrimaryMainFrame";
-    case AnimationAbortReason::kNewCommitWhileDisplayingCanceledAnimation:
-      return "kNewCommitWhileDisplayingCanceledAnimation";
     case AnimationAbortReason::kMultipleNavigationRequestsCreated:
       return "kMultipleNavigationRequestsCreated";
     case AnimationAbortReason::kNavigationEntryDeletedBeforeCommit:
@@ -875,12 +871,12 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
 
   switch (state_) {
     case State::kStarted:
+      // A new navigation finished in the primary main frame to C while the user
+      // is swiping across the screen from B to A. The live page B will be
+      // replaced by C and the swipe will navigate the user from C to A as
+      // expected.
       CHECK(!tracked_request_);
       CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
-      // A new navigation finished in the primary main frame while the user is
-      // swiping across the screen. For simplicity, destroy this class if the
-      // new navigation was from the primary main frame.
-      abort_reason = AnimationAbortReason::kNewCommitInPrimaryMainFrame;
       break;
     case State::kDisplayingInvokeAnimation: {
       // We can only get to `kDisplayingInvokeAnimation` if we have started
@@ -957,10 +953,8 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
             navigation_state_ == NavigationState::kCancelledBeforeStart)
           << NavigationStateToString(navigation_state_);
 
-      // A navigation finished while we are displaying the cancel animation.
-      // For simplicity, destroy `this` and reset everything.
-      abort_reason =
-          AnimationAbortReason::kNewCommitWhileDisplayingCanceledAnimation;
+      // A new navigation to C finished while we are displaying the cancel
+      // animation. The live page will be replaced by C.
       break;
     }
     case State::kWaitingForNewRendererToDraw:

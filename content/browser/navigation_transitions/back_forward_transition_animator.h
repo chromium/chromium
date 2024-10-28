@@ -137,10 +137,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // cross-fade to finish. We also do not wait for Viz to activate a new
     // frame before cross-fading.
     kMainCommitOnSubframeTransition = 1,
-    kNewCommitInPrimaryMainFrame = 2,
+    // Deprecated kNewCommitInPrimaryMainFrame = 2,
     // Deprecated kCrossOriginRedirect = 3,
     // Deprecated kNewCommitWhileDisplayingInvokeAnimation = 4,
-    kNewCommitWhileDisplayingCanceledAnimation = 5,
+    // Deprecated kNewCommitWhileDisplayingCanceledAnimation = 5,
     // Deprecated kNewCommitWhileWaitingForNewRendererToDraw = 6,
     // Deprecated kNewCommitWhileWaitingForContentForNavigationEntryShown = 7,
     // Deprecated kNewCommitWhileDisplayingCrossFadeAnimation = 8,
@@ -151,8 +151,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // The navigation entry was deleted when the navigation was ready to commit.
     kNavigationEntryDeletedBeforeCommit = 11,
 
-    // [Deprecated] The new frame is not activated in time.
-    // kPostNavigationFirstFrameTimeout = 12,
+    // Deprecated kPostNavigationFirstFrameTimeout = 12,
 
     // The user started a new gesture while the first one is still on-going.
     kChainedBack = 13,
