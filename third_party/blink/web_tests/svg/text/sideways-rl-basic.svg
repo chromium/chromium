@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <style>
+  :root {
+    writing-mode: sideways-rl;
+    font: 32px sans-serif;
+  }
+  </style>
+
+  <circle cx="40" cy="20" r="3" fill="rgba(255,0,0,0.8)"></circle>
+  <text x="40" y="20">
+    Myてきすと<tspan style="baseline-shift:16px">shifted</tspan>
+    ꙮ<tspan dx="-10 20" dy="6 -10">ꙮꙮ</tspan>
+  </text>
+
+  <circle cx="80" cy="580" r="3" fill="rgba(255,0,0,0.8)"></circle>
+  <text x="80" y="580" direction="rtl">RTL text</text>
+  <circle cx="120" cy="580" r="3" fill="rgba(255,0,0,0.8)"></circle>
+  <text x="120" y="580" text-anchor="end">LTR end-anchoring</text>
+</svg>

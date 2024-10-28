@@ -43,6 +43,15 @@ class SvgTextLayoutAlgorithm {
   PhysicalSize WriteBackToFragmentItems(
       FragmentItemsBuilder::ItemWithOffsetList& items);
 
+  bool IsHorizontal() const {
+    return inline_direction_ == PhysicalDirection::kRight;
+  }
+  bool IsVerticalDownward() const {
+    return inline_direction_ == PhysicalDirection::kDown;
+  }
+  bool IsVerticalUpward() const {
+    return inline_direction_ == PhysicalDirection::kUp;
+  }
   float ScalingFactorAt(const FragmentItemsBuilder::ItemWithOffsetList& items,
                         wtf_size_t addressable_index) const;
   bool IsFirstCharacterInTextPath(wtf_size_t index) const;
@@ -54,7 +63,10 @@ class SvgTextLayoutAlgorithm {
   wtf_size_t addressable_count_;
 
   // "horizontal" flag defined in the specification.
+  // This should be replaced with `inline_direction_`.
   bool horizontal_;
+  // A replacement of the "horizontal" flag above.
+  const PhysicalDirection inline_direction_;
 
   struct SvgPerCharacterInfo {
     std::optional<float> x;

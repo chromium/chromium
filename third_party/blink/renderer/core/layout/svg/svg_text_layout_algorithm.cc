@@ -29,7 +29,9 @@ SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(InlineNode node,
     : inline_node_(node),
       // 1.5. Let "horizontal" be a flag, true if the writing mode of ‘text’
       // is horizontal, false otherwise.
-      horizontal_(IsHorizontalWritingMode(writing_mode)) {
+      horizontal_(IsHorizontalWritingMode(writing_mode)),
+      inline_direction_(
+          WritingDirectionMode(writing_mode, TextDirection::kLtr).InlineEnd()) {
   DCHECK(node.IsSvgText());
 }
 
@@ -154,10 +156,16 @@ void SvgTextLayoutAlgorithm::SetFlags(
       ascent = font_data->GetFontMetrics().FixedAscent(
           item.Style().GetFontBaseline());
     }
-    gfx::PointF offset(logical_offset.inline_offset,
-                       logical_offset.block_offset + ascent);
-    if (!horizontal_) {
-      offset.SetPoint(-offset.y(), offset.x());
+    gfx::PointF offset;
+    if (IsHorizontal()) {
+      offset.SetPoint(logical_offset.inline_offset,
+                      logical_offset.block_offset + ascent);
+    } else if (IsVerticalDownward()) {
+      offset.SetPoint(-(logical_offset.block_offset + ascent),
+                      logical_offset.inline_offset);
+    } else {
+      offset.SetPoint(logical_offset.block_offset + ascent,
+                      -logical_offset.inline_offset);
     }
     css_positions_.push_back(offset);
 
@@ -522,7 +530,9 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
 
       // 1.2.1. Let pos = the x coordinate of the position in result[k], if
       // the "horizontal" flag is true, and the y coordinate otherwise.
-      const float min_char_pos = horizontal_ ? *result_[k].x : *result_[k].y;
+      const float min_char_pos = IsHorizontal()         ? *result_[k].x
+                                 : IsVerticalDownward() ? *result_[k].y
+                                                        : -*result_[k].y;
       // 2.2.2. Let advance = the advance of the typographic character
       // corresponding to character k.
       const float inline_size = result_[k].inline_size;
@@ -536,7 +546,9 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
     if (min_position != std::numeric_limits<float>::infinity()) {
       // 1.3.1. Let shift be the x coordinate of result[i], if the "horizontal"
       // flag is true, and the y coordinate otherwise.
-      float shift = horizontal_ ? *result_[i].x : *result_[i].y;
+      float shift = IsHorizontal()         ? *result_[i].x
+                    : IsVerticalDownward() ? *result_[i].y
+                                           : -*result_[i].y;
 
       // 1.3.2. Adjust shift based on the value of text-anchor and direction
       // of the element the character at index i is in:
@@ -567,10 +579,12 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
       for (wtf_size_t k = i; k <= j; ++k) {
         // 1.3.3.1. Add shift to the x coordinate of the position in result[k],
         // if the "horizontal" flag is true, and to the y coordinate otherwise.
-        if (horizontal_) {
+        if (IsHorizontal()) {
           *result_[k].x += shift;
-        } else {
+        } else if (IsVerticalDownward()) {
           *result_[k].y += shift;
+        } else {
+          *result_[k].y -= shift;
         }
       }
     }
@@ -803,12 +817,17 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     float y = *info.y;
     float width;
     float height;
-    if (horizontal_) {
+    if (IsHorizontal()) {
       y -= ascent;
       width = info.inline_size;
       height = item->Size().height;
-    } else {
+    } else if (IsVerticalDownward()) {
       x -= descent;
+      width = item->Size().width;
+      height = info.inline_size;
+    } else {
+      x -= ascent;
+      y -= info.inline_size;
       width = item->Size().width;
       height = info.inline_size;
     }
