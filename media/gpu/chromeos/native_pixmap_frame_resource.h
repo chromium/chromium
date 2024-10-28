@@ -126,6 +126,7 @@ class NativePixmapFrameResource : public FrameResource {
                             base::TimeDelta timestamp,
                             gfx::BufferFormat buffer_format,
                             gfx::GenericSharedMemoryId id,
+                            const base::UnguessableToken& token,
                             std::optional<gfx::BufferUsage> buffer_usage,
                             gfx::NativePixmapHandle handle);
 
@@ -135,6 +136,7 @@ class NativePixmapFrameResource : public FrameResource {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp,
       gfx::GenericSharedMemoryId id,
+      const base::UnguessableToken& token,
       std::optional<gfx::BufferUsage> buffer_usage,
       scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap);
 

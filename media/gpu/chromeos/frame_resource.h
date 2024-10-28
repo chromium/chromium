@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
@@ -137,6 +138,10 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual const VideoFrameMetadata& metadata() const = 0;
   virtual VideoFrameMetadata& metadata() = 0;
   virtual void set_metadata(const VideoFrameMetadata& metadata) = 0;
+
+  // An UnguessableToken that identifies unique frames regardless of wrapping.
+  // The returned UnguessableToken is guaranteed to be non-empty.
+  const base::UnguessableToken& tracking_token() const;
 
   virtual base::TimeDelta timestamp() const = 0;
   virtual void set_timestamp(base::TimeDelta timestamp) = 0;
