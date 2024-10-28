@@ -20,6 +20,8 @@ class NameInfo : public FormGroup {
  public:
   NameInfo();
   NameInfo(const NameInfo& info);
+  NameInfo(std::unique_ptr<NameFull> name,
+           std::unique_ptr<AlternativeFullName> alternative_name);
   ~NameInfo() override;
 
   NameInfo& operator=(const NameInfo& info);
@@ -64,6 +66,10 @@ class NameInfo : public FormGroup {
     return *alternative_name_;
   }
 
+  // Returns the node in the tree that supports `field_type`. This node, if it
+  // exists, is unique by definition.
+  const AddressComponent* GetNodeForType(FieldType type) const;
+
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
@@ -82,13 +88,10 @@ class NameInfo : public FormGroup {
   // exists, is unique by definition.
   AddressComponent* GetNodeForType(FieldType type);
 
-  // const version of GetNodeForType.
-  const AddressComponent* GetNodeForType(FieldType type) const;
-
   // This data structures store structured representation of the name and
   // alternative (e.g. phonetic) name.
-  const std::unique_ptr<AddressComponent> name_;
-  const std::unique_ptr<AddressComponent> alternative_name_;
+  const std::unique_ptr<NameFull> name_;
+  const std::unique_ptr<AlternativeFullName> alternative_name_;
 };
 
 class EmailInfo : public FormGroup {

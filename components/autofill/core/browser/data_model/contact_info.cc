@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -43,6 +44,10 @@ NameInfo::NameInfo(const NameInfo& info) : NameInfo() {
 
 NameInfo::~NameInfo() = default;
 
+NameInfo::NameInfo(std::unique_ptr<NameFull> name,
+                   std::unique_ptr<AlternativeFullName> alternative_name)
+    : name_(std::move(name)), alternative_name_(std::move(alternative_name)) {}
+
 NameInfo& NameInfo::operator=(const NameInfo& info) {
   if (this == &info)
     return *this;
@@ -54,13 +59,15 @@ NameInfo& NameInfo::operator=(const NameInfo& info) {
 }
 
 bool NameInfo::MergeStructuredName(const NameInfo& newer) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSupportPhoneticNameForJP)) {
-    return name_->MergeWithComponent(newer.GetStructuredName()) &&
-           alternative_name_->MergeWithComponent(
-               newer.GetStructuredAlternativeName());
+  if (name_->MergeWithComponent(newer.GetStructuredName())) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillSupportPhoneticNameForJP)) {
+      return alternative_name_->MergeWithComponent(
+          newer.GetStructuredAlternativeName());
+    }
+    return true;
   }
-  return name_->MergeWithComponent(newer.GetStructuredName());
+  return false;
 }
 
 void NameInfo::MergeStructuredNameValidationStatuses(const NameInfo& newer) {
@@ -163,6 +170,7 @@ AddressComponent* NameInfo::GetNodeForType(FieldType field_type) {
 }
 
 const AddressComponent* NameInfo::GetNodeForType(FieldType field_type) const {
+  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(field_type));
   if (IsAlternativeNameType(field_type)) {
     return alternative_name_.get();
   }

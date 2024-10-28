@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -15,8 +16,11 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -372,6 +376,11 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
     return false;
   }
 
+  if (!HaveMergeableAlternativeNames(p1, p2)) {
+    DVLOG(1) << "Different alternative names.";
+    return false;
+  }
+
   if (!HaveMergeableAddresses(p1, p2)) {
     DVLOG(1) << "Different addresses.";
     return false;
@@ -389,40 +398,19 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
 bool AutofillProfileComparator::MergeNames(const AutofillProfile& p1,
                                            const AutofillProfile& p2,
                                            NameInfo& name_info) const {
-  DCHECK(HaveMergeableNames(p1, p2));
+  DCHECK(HaveMergeableNames(p1, p2) && HaveMergeableAlternativeNames(p1, p2));
 
-  const std::u16string full_name_1 = p1.GetInfo(NAME_FULL, app_locale_);
-  const std::u16string full_name_2 = p2.GetInfo(NAME_FULL, app_locale_);
+  auto name_full = std::make_unique<NameFull>();
+  auto alternative_full_name = std::make_unique<AlternativeFullName>();
 
-  // At this state it is already determined that the two names are mergeable.
-  // This can mean of of the following things:
-  // * One name is empty. In this scenario the non-empty name is used.
-  // * The names are token equivalent: In this scenario a merge of the tree
-  // structure should be possible.
-  // * One name is a variant of the other. In this scenario, use the non-variant
-  // name. Note, p1 is the newer profile.
-  // First, set info to the original profile.
-  name_info = p2.GetNameInfo();
-  // If the name of the |p1| is empty, just keep the state of p2.
-  if (HasOnlySkippableCharacters(full_name_1))
-    return true;
-  // Vice verse set name to the one of |p1| if |p2| has an empty name
-  if (HasOnlySkippableCharacters(full_name_2)) {
-    name_info = p1.GetNameInfo();
-    return true;
+  // TODO(crbug.com/375383124): Update `MergeNamesImpl` to provide meaningful
+  // return values.
+  MergeNamesImpl(p1, p2, NAME_FULL, *name_full);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    MergeNamesImpl(p1, p2, ALTERNATIVE_FULL_NAME, *alternative_full_name);
   }
-  // Try to apply a direct merging.
-  if (name_info.MergeStructuredName(p1.GetNameInfo()))
-    return true;
-  // If the name in |p2| is a variant of |p1| use the one in |p1|.
-  if (IsNameVariantOf(NormalizeForComparison(full_name_1),
-                      NormalizeForComparison(full_name_2))) {
-    name_info = p1.GetNameInfo();
-    return true;
-  }
-  // The only left case is that |p1| is a variant of |p2|.
-  DCHECK(IsNameVariantOf(NormalizeForComparison(full_name_2),
-                         NormalizeForComparison(full_name_1)));
+  name_info = NameInfo(std::move(name_full), std::move(alternative_full_name));
   return true;
 }
 
@@ -824,28 +812,20 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
 bool AutofillProfileComparator::HaveMergeableNames(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
-  std::u16string full_name_1 = p1.GetInfo(NAME_FULL, app_locale_);
-  std::u16string full_name_2 = p2.GetInfo(NAME_FULL, app_locale_);
+  return AreNamesMergeable(p1.GetInfo(NAME_FULL, app_locale_),
+                           p2.GetInfo(NAME_FULL, app_locale_));
+}
 
-  if (HasOnlySkippableCharacters(full_name_1) ||
-      HasOnlySkippableCharacters(full_name_2) ||
-      Compare(full_name_1, full_name_2)) {
+bool AutofillProfileComparator::HaveMergeableAlternativeNames(
+    const AutofillProfile& p1,
+    const AutofillProfile& p2) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
     return true;
   }
 
-  // If the two names are just a permutation of each other, they are mergeable
-  // for structured names.
-  if (AreStringTokenEquivalent(full_name_1, full_name_2)) {
-    return true;
-  }
-
-  std::u16string canon_full_name_1 = NormalizeForComparison(full_name_1);
-  std::u16string canon_full_name_2 = NormalizeForComparison(full_name_2);
-
-  // Is it reasonable to merge the names from p1 and p2.
-  bool result = IsNameVariantOf(canon_full_name_1, canon_full_name_2) ||
-                IsNameVariantOf(canon_full_name_2, canon_full_name_1);
-  return result;
+  return AreNamesMergeable(p1.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_),
+                           p2.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_));
 }
 
 bool AutofillProfileComparator::HaveMergeableEmailAddresses(
@@ -910,6 +890,74 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
     const AutofillProfile& p2) const {
   // Note that p1 is the newer address. Using p2 as the base.
   return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
+}
+
+bool AutofillProfileComparator::AreNamesMergeable(
+    const std::u16string& name_1,
+    const std::u16string& name_2) const {
+  if (HasOnlySkippableCharacters(name_1) ||
+      HasOnlySkippableCharacters(name_2) || Compare(name_1, name_2)) {
+    return true;
+  }
+
+  // If the two names are just a permutation of each other, they are mergeable
+  // for structured names.
+  if (AreStringTokenEquivalent(name_1, name_2)) {
+    return true;
+  }
+
+  std::u16string canon_full_name_1 = NormalizeForComparison(name_1);
+  std::u16string canon_full_name_2 = NormalizeForComparison(name_2);
+
+  // Is it reasonable to merge the names from p1 and p2.
+  bool result = IsNameVariantOf(canon_full_name_1, canon_full_name_2) ||
+                IsNameVariantOf(canon_full_name_2, canon_full_name_1);
+  return result;
+}
+
+bool AutofillProfileComparator::MergeNamesImpl(
+    const AutofillProfile& p1,
+    const AutofillProfile& p2,
+    FieldType name_type,
+    AddressComponent& name_component) const {
+  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
+
+  const std::u16string full_name_1 = p1.GetInfo(name_type, app_locale_);
+  const std::u16string full_name_2 = p2.GetInfo(name_type, app_locale_);
+
+  // At this state it is already determined that the two names are mergeable.
+  // This can mean of of the following things:
+  // * One name is empty. In this scenario the non-empty name is used.
+  // * The names are token equivalent: In this scenario a merge of the tree
+  // structure should be possible.
+  // * One name is a variant of the other. In this scenario, use the non-variant
+  // name. Note, p1 is the newer profile.
+  // First, set info to the original profile.
+  name_component.CopyFrom(*p2.GetNameInfo().GetNodeForType(name_type));
+  // If the name of the |p1| is empty, just keep the state of p2.
+  if (HasOnlySkippableCharacters(full_name_1)) {
+    return true;
+  }
+  // Vice verse set name to the one of |p1| if |p2| has an empty name
+  if (HasOnlySkippableCharacters(full_name_2)) {
+    name_component.CopyFrom(*p1.GetNameInfo().GetNodeForType(name_type));
+    return true;
+  }
+  // Try to apply a direct merging.
+  if (name_component.MergeWithComponent(
+          *p1.GetNameInfo().GetNodeForType(name_type))) {
+    return true;
+  }
+  // If the name in |p2| is a variant of |p1| use the one in |p1|.
+  if (IsNameVariantOf(NormalizeForComparison(full_name_1),
+                      NormalizeForComparison(full_name_2))) {
+    name_component.CopyFrom(*p1.GetNameInfo().GetNodeForType(name_type));
+    return true;
+  }
+  // The only left case is that |p1| is a variant of |p2|.
+  DCHECK(IsNameVariantOf(NormalizeForComparison(full_name_2),
+                         NormalizeForComparison(full_name_1)));
+  return true;
 }
 
 }  // namespace autofill
