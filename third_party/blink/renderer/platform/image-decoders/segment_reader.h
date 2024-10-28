@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -47,6 +50,10 @@ class PLATFORM_EXPORT SegmentReader
   SegmentReader& operator=(const SegmentReader&) = delete;
   virtual size_t size() const = 0;
   virtual size_t GetSomeData(const char*& data, size_t position) const = 0;
+  // Returns a span of however much data is left in the segment containing the
+  // `position`. If there's no data at the specified `position`, an empty span
+  // is returned.
+  base::span<const uint8_t> GetSomeData(size_t position) const;
   virtual sk_sp<SkData> GetAsSkData() const = 0;
   virtual void LockData() {}
   virtual void UnlockData() {}

@@ -15,6 +15,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -706,19 +707,20 @@ crabbyavif::avifResult CrabbyAVIFImageDecoder::ReadFromSegmentReader(
   }
 
   out->size = size;
-  const char* data;
-  size_t data_size = io_data->reader->GetSomeData(data, position);
-  if (data_size >= size) {
-    out->data = reinterpret_cast<const uint8_t*>(data);
+
+  base::span<const uint8_t> data = io_data->reader->GetSomeData(position);
+  if (data.size() >= size) {
+    out->data = data.data();
     return crabbyavif::AVIF_RESULT_OK;
   }
 
   io_data->buffer.clear();
   io_data->buffer.reserve(size);
+
   while (size != 0) {
-    data_size = io_data->reader->GetSomeData(data, position);
-    size_t copy_size = std::min(data_size, size);
-    io_data->buffer.insert(io_data->buffer.end(), data, data + copy_size);
+    data = io_data->reader->GetSomeData(position);
+    size_t copy_size = std::min(data.size(), size);
+    io_data->buffer.insert(io_data->buffer.end(), data.begin(), data.end());
     position += copy_size;
     size -= copy_size;
   }

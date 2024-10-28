@@ -243,6 +243,12 @@ scoped_refptr<SegmentReader> SegmentReader::CreateFromROBuffer(
   return base::AdoptRef(new ROBufferSegmentReader(std::move(buffer)));
 }
 
+base::span<const uint8_t> SegmentReader::GetSomeData(size_t position) const {
+  const char* data = nullptr;
+  const size_t data_size = GetSomeData(data, position);
+  return base::as_bytes(base::span(data, data_size));
+}
+
 // static
 sk_sp<SkData> SegmentReader::RWBufferCopyAsSkData(RWBuffer::ROIter iter,
                                                   size_t available) {

@@ -68,22 +68,20 @@ size_t SegmentStream::peek(void* buffer, size_t size) const {
   size = std::min(size, reader_->size() - position_);
 
   size_t total_bytes_peeked = 0;
-  char* buffer_as_char_ptr = reinterpret_cast<char*>(buffer);
-  while (size) {
-    const char* segment = nullptr;
-    size_t bytes_peeked =
-        reader_->GetSomeData(segment, position_ + total_bytes_peeked);
-    if (!bytes_peeked) {
+  auto buffer_span = base::span(static_cast<uint8_t*>(buffer), size);
+  while (!buffer_span.empty()) {
+    base::span<const uint8_t> segment =
+        reader_->GetSomeData(position_ + total_bytes_peeked);
+    if (segment.empty()) {
       break;
     }
-    if (bytes_peeked > size) {
-      bytes_peeked = size;
+    if (segment.size() > buffer_span.size()) {
+      segment = segment.first(buffer_span.size());
     }
 
-    memcpy(buffer_as_char_ptr, segment, bytes_peeked);
-    buffer_as_char_ptr += bytes_peeked;
-    size -= bytes_peeked;
-    total_bytes_peeked += bytes_peeked;
+    buffer_span.copy_prefix_from(segment);
+    buffer_span = buffer_span.subspan(segment.size());
+    total_bytes_peeked += segment.size();
   }
 
   return total_bytes_peeked;
