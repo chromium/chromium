@@ -1615,17 +1615,17 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransitionImagePair ||
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
-          IsPartLikePseudoElement(GetPseudoType()));
+          IsElementBackedPseudoElement(GetPseudoType()));
 }
 
-/* static */ bool CSSSelector::IsPartLikePseudoElement(
+/* static */ bool CSSSelector::IsElementBackedPseudoElement(
     CSSSelector::PseudoType pseudo) {
   return pseudo == kPseudoDetailsContent || pseudo == kPseudoPicker;
 }
 
-bool CSSSelector::IsPartLikePseudoElement() const {
+bool CSSSelector::IsElementBackedPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
-         IsPartLikePseudoElement(GetPseudoType());
+         IsElementBackedPseudoElement(GetPseudoType());
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {

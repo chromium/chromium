@@ -1166,8 +1166,8 @@ bool IsUserActionPseudoClass(CSSSelector::PseudoType pseudo) {
 bool IsPseudoClassValidAfterPseudoElement(
     CSSSelector::PseudoType pseudo_class,
     CSSSelector::PseudoType compound_pseudo_element) {
-  // NOTE: pseudo-class rules for ::part() and part-like pseudo-elements do
-  // not need to be handled here; they should be handled in
+  // NOTE: pseudo-class rules for ::part() and element-backed pseudo-elements
+  // do not need to be handled here; they should be handled in
   // CSSSelector::IsAllowedAfterPart() instead.
   switch (compound_pseudo_element) {
     case CSSSelector::kPseudoResizer:
@@ -1226,7 +1226,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
       break;
   }
   if ((compound_pseudo_element == CSSSelector::kPseudoPart ||
-       CSSSelector::IsPartLikePseudoElement(compound_pseudo_element)) &&
+       CSSSelector::IsElementBackedPseudoElement(compound_pseudo_element)) &&
       simple_selector.IsAllowedAfterPart()) {
     return true;
   }

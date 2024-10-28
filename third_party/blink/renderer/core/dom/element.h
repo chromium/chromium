@@ -1443,7 +1443,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns the element that represents the given |pseudo_id| and
   // |view_transition_name| originating from this DOM element.  The
-  // returned element may be a PseudoElement, or (for part-like
+  // returned element may be a PseudoElement, or (for element-backed
   // pseudo-elements) an Element.
   //
   // The returned pseudo element may be directly associated with this

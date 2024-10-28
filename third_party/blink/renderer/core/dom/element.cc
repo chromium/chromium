@@ -8261,8 +8261,8 @@ Element* Element::GetStyledPseudoElement(
         shadow_element_utils::StringForUAShadowPseudoId(pseudo_id);
     if (pseudo_string != g_null_atom) {
       // This is a pseudo-element that refers to an element in the UA shadow
-      // tree (such as a part-like pseudo-element).  Find it in the shadow
-      // tree.
+      // tree (such as a element-backed pseudo-element).  Find it in the
+      // shadow tree.
       if (ShadowRoot* root = GetShadowRoot()) {
         if (root->IsUserAgent()) {
           for (Element& el : ElementTraversal::DescendantsOf(*root)) {
