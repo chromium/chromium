@@ -5,6 +5,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 
 #include "base/task/current_thread.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,6 +36,7 @@ namespace {
 
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
+using ::base::test::RunOnceCallback;
 using PredictionsByGlobalId =
     AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId;
 using ::testing::_;
@@ -199,19 +201,24 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> post_loading_suggestion;
 
   {
     InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(
+                        SuggestionType::kPredictionImprovementsLoadingState)),
+                    _));
     EXPECT_CALL(client_, GetAXTree)
         .WillOnce(MoveArg<0>(&axtree_received_callback));
     EXPECT_CALL(filling_engine_, GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&post_loading_suggestion));
+    EXPECT_CALL(
+        update_suggestions_callback,
+        Run(ElementsAre(
+                HasType(SuggestionType::kPredictionImprovementsError),
+                HasType(SuggestionType::kSeparator),
+                HasType(SuggestionType::kPredictionImprovementsFeedback)),
+            _));
   }
 
   manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
@@ -222,15 +229,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
   base::test::RunUntil([this]() {
     return !test_api(*manager_).loading_suggestion_timer().IsRunning();
   });
-
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  ASSERT_THAT(
-      post_loading_suggestion,
-      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 // Tests that when the server fails to generate suggestions, but we have
@@ -255,18 +253,21 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> post_loading_suggestion;
   {
     InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(
+                        SuggestionType::kPredictionImprovementsLoadingState)),
+                    _));
     EXPECT_CALL(client_, GetAXTree)
         .WillOnce(MoveArg<0>(&axtree_received_callback));
     EXPECT_CALL(filling_engine_, GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&post_loading_suggestion));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(SuggestionType::kAddressEntry),
+                                HasType(SuggestionType::kSeparator),
+                                HasType(SuggestionType::kManageAddress)),
+                    _));
   }
 
   manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
@@ -277,14 +278,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   base::test::RunUntil([this]() {
     return !test_api(*manager_).loading_suggestion_timer().IsRunning();
   });
-
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  ASSERT_THAT(post_loading_suggestion,
-              ElementsAre(HasType(SuggestionType::kAddressEntry),
-                          HasType(SuggestionType::kSeparator),
-                          HasType(SuggestionType::kManageAddress)));
 }
 
 // Tests that the `update_suggestions_callback` is called eventually with the
@@ -974,10 +967,10 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
 #endif
-  AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
   if (should_extract_ax_tree()) {
     EXPECT_CALL(client_, GetAXTree)
-        .WillOnce(MoveArg<0>(&axtree_received_callback));
+        .WillOnce(
+            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate{}));
   } else {
     EXPECT_CALL(client_, GetAXTree).Times(0);
   }
@@ -1002,9 +995,6 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
   }
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             autofill_callback.Get());
-  if (should_extract_ax_tree()) {
-    std::move(axtree_received_callback).Run({});
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
