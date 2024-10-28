@@ -325,6 +325,8 @@ const struct {
 #if BUILDFLAG(IS_MAC)
     // Similar Mac specific blocks.
     {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
+    // Block access to the current bundle directory.
+    {chrome::DIR_OUTER_BUNDLE, nullptr, kBlockAllChildren},
     // Block access to the user's Applications directory.
     {base::DIR_HOME, FILE_PATH_LITERAL("Applications"), kBlockAllChildren},
     // Block access to the root Applications directory.

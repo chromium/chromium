@@ -535,6 +535,12 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       }
       break;
+#if BUILDFLAG(IS_MAC)
+    case chrome::DIR_OUTER_BUNDLE: {
+      cur = base::apple::OuterBundlePath();
+      break;
+    }
+#endif
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OPENBSD)
     case chrome::DIR_POLICY_FILES: {
       cur = base::FilePath(policy::kPolicyPath);

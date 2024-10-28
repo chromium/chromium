@@ -857,6 +857,27 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
 }
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_BlockAllChildren_OuterBundlePath) {
+  // OuterBundlePath should be blocked.
+  base::FilePath outer_bundle_path = temp_dir_.GetPath();
+  ASSERT_FALSE(outer_bundle_path.empty());
+  base::ScopedPathOverride bundle_override(chrome::DIR_OUTER_BUNDLE,
+                                           outer_bundle_path, true, true);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(outer_bundle_path),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Paths within the current application bundle should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(outer_bundle_path.AppendASCII("test_folder")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

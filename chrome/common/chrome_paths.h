@@ -48,6 +48,9 @@ enum {
   DIR_INTERNAL_PLUGINS,        // Directory where internal plugins reside.
   DIR_COMPONENTS,              // Directory where built-in implementations of
                                // component-updated libraries or data reside.
+#if BUILDFLAG(IS_MAC)
+  DIR_OUTER_BUNDLE,  // Directory that is the outermost Chromium bundle.
+#endif
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   DIR_POLICY_FILES,  // Directory for system-wide read-only
                      // policy files that allow sys-admins
