@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -117,6 +118,8 @@ class IsolatedWebAppApplyUpdateCommand
 
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
 
+  void HandleKeyRotationIfNecessary(base::OnceClosure next_step_callback);
+
   void CreateStoragePartition(base::OnceClosure next_step_callback);
 
   void LoadInstallUrl(base::OnceClosure next_step_callback);
@@ -139,6 +142,13 @@ class IsolatedWebAppApplyUpdateCommand
 
   void CleanupOnFailure(base::OnceClosure next_step_callback);
 
+  // These fields are set in `CheckIfUpdateIsStillPending()`. Calling them
+  // before that will trigger a CHECK-fail.
+  const IsolationData& isolation_data() const { return *isolation_data_; }
+  const IsolationData::PendingUpdateInfo pending_update_info() const {
+    return *isolation_data_->pending_update_info();
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<AppLock> lock_;
@@ -151,7 +161,7 @@ class IsolatedWebAppApplyUpdateCommand
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
-  std::optional<IsolationData::PendingUpdateInfo> pending_update_info_;
+  std::optional<IsolationData> isolation_data_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 

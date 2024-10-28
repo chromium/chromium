@@ -302,21 +302,6 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   ExpectAppNotUpdatedAndDataCleared();
 }
 
-TEST_F(IsolatedWebAppApplyUpdateCommandTest,
-       FailsIfInstalledAppIsOnHigherVersion) {
-  test::AwaitStartWebAppProviderAndSubsystems(profile());
-  installed_version_ = base::Version("3.0.0");
-  InstallIwa(update_info());
-  ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
-  CreateDefaultPageState();
-
-  auto result = ApplyPendingUpdate();
-  ASSERT_THAT(result.has_value(), IsFalse());
-  EXPECT_THAT(result.error().message,
-              HasSubstr("Installed app is already on version"));
-  ExpectAppNotUpdatedAndDataCleared();
-}
-
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   InstallIwa(update_info());

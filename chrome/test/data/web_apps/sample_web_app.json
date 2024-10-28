@@ -163,10 +163,10 @@
    } ],
    "first_install_time": "1970-01-14 01:52:12.032000 UTC",
    "generated_icon_fix": {
-      "attempt_count": 16,
-      "last_attempt_time": "1970-01-26 13:12:59.808000 UTC",
+      "attempt_count": 96,
+      "last_attempt_time": "1970-01-15 14:47:42.595000 UTC",
       "source": "Retroactive",
-      "window_start_time": "1970-01-22 22:45:27.144000 UTC"
+      "window_start_time": "1970-02-05 14:04:06.863000 UTC"
    },
    "install_state": "1",
    "is_diy_app": true,
@@ -204,11 +204,11 @@
             } ]
          },
          "isolated_web_app_location": {
-            "unowned_bundle": {
-               "path": "1234"
+            "proxy": {
+               "proxy_url": "https://proxy-1234.com"
             }
          },
-         "version": "3937585727.2427438178.28552270"
+         "version": "1083487731.1419818898.544974083"
       },
       "update_channel": "default",
       "update_manifest_url": "https://update-manifest.com/",
@@ -217,7 +217,7 @@
    "last_badging_time": "1970-01-27 09:52:51.713000 UTC",
    "last_launch_time": "1970-01-02 14:58:07.045000 UTC",
    "latest_install_source": "menu custom tab",
-   "latest_install_time": "1970-01-15 14:47:42.595000 UTC",
+   "latest_install_time": "1970-01-01 07:55:52.270000 UTC",
    "launch_handler": {
       "client_mode": "kNavigateNew"
    },
@@ -388,8 +388,8 @@
    } ],
    "sources": [ "System", "IwaShimlessRma", "Kiosk", "Policy", "IwaPolicy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "UserInstalled", "IwaUserInstalled", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
-   "supported_links_offer_dismiss_count": -612267880,
-   "supported_links_offer_ignore_count": 1430602893,
+   "supported_links_offer_dismiss_count": -2087387488,
+   "supported_links_offer_ignore_count": 1896327144,
    "sync_proto": {
       "icon_infos": [ {
          "purpose": "MONOCHROME",

@@ -128,8 +128,7 @@ constexpr std::string_view kEcdsaP256SHA256SignatureHex =
 
 }  // namespace
 
-namespace web_app {
-namespace test {
+namespace web_app::test {
 
 namespace {
 
@@ -223,12 +222,15 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
                              ? apps::ShareTarget::Enctype::kMultipartFormData
                              : apps::ShareTarget::Enctype::kFormUrlEncoded;
 
-  if (suffix % 3 != 0)
+  if (suffix % 3 != 0) {
     share_target.params.title = "title" + base::NumberToString(suffix);
-  if (suffix % 3 != 1)
+  }
+  if (suffix % 3 != 1) {
     share_target.params.text = "text" + base::NumberToString(suffix);
-  if (suffix % 3 != 2)
+  }
+  if (suffix % 3 != 2) {
     share_target.params.url = "url" + base::NumberToString(suffix);
+  }
 
   for (uint32_t index = 0; index < suffix % 5; ++index) {
     apps::ShareTarget::Files files;
@@ -790,13 +792,15 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   // Add only unique display modes.
   std::set<DisplayMode> display_mode_override;
   int num_display_mode_override_tries = random.next_uint(5);
-  for (int i = 0; i < num_display_mode_override_tries; i++)
+  for (int i = 0; i < num_display_mode_override_tries; i++) {
     display_mode_override.insert(display_modes[random.next_uint(4)]);
+  }
   app->SetDisplayModeOverride(std::vector<DisplayMode>(
       display_mode_override.begin(), display_mode_override.end()));
 
-  if (random.next_bool())
+  if (random.next_bool()) {
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
+  }
 
   app->SetRunOnOsLoginMode(random.next_enum<RunOnOsLoginMode>());
 
@@ -807,32 +811,40 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     apps::IconInfo icon;
     icon.url = params.base_url.Resolve(
         "/icon" + base::NumberToString(random.next_uint()));
-    if (random.next_bool())
+    if (random.next_bool()) {
       icon.square_size_px = size;
+    }
 
     int purpose = random.next_uint(4);
-    if (purpose == 0)
+    if (purpose == 0) {
       icon.purpose = apps::IconInfo::Purpose::kAny;
-    if (purpose == 1)
+    }
+    if (purpose == 1) {
       icon.purpose = apps::IconInfo::Purpose::kMaskable;
-    if (purpose == 2)
+    }
+    if (purpose == 2) {
       icon.purpose = apps::IconInfo::Purpose::kMonochrome;
+    }
     // if (purpose == 3), leave purpose unset. Should default to ANY.
 
     manifest_icons[i] = icon;
   }
   app->SetManifestIcons(manifest_icons);
-  if (random.next_bool())
+  if (random.next_bool()) {
     app->SetDownloadedIconSizes(IconPurpose::ANY, {size});
-  if (random.next_bool())
+  }
+  if (random.next_bool()) {
     app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {size});
-  if (random.next_bool())
+  }
+  if (random.next_bool()) {
     app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, {size});
+  }
   app->SetIsGeneratedIcon(random.next_bool());
 
   app->SetFileHandlers(CreateRandomFileHandlers(random.next_uint()));
-  if (random.next_bool())
+  if (random.next_bool()) {
     app->SetShareTarget(CreateRandomShareTarget(random.next_uint()));
+  }
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
   app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
   app->SetScopeExtensions(
@@ -921,11 +933,13 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetManifestUpdateTime(random.next_time());
 
-  if (random.next_bool())
+  if (random.next_bool()) {
     app->SetParentAppId(base::NumberToString(random.next_uint()));
+  }
 
-  if (random.next_bool())
+  if (random.next_bool()) {
     app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
+  }
 
   uint32_t install_source =
       random.next_uint(static_cast<int>(webapps::WebappInstallSource::COUNT));
@@ -1047,7 +1061,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     };
 
     base::Version version = base::Version({
-        random.next_uint(),
+        random.next_uint(UINT32_MAX - 1U),
         random.next_uint(),
         random.next_uint(),
     });
@@ -1063,11 +1077,21 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       idb.SetControlledFramePartitions({"partition_name"});
     }
     if (random.next_bool()) {
-      base::Version pending_version = base::Version({
-          random.next_uint(),
-          random.next_uint(),
-          random.next_uint(),
-      });
+      base::Version pending_version = [&] {
+        if (random.next_bool()) {
+          // Case where `pending_version == version`. Useful for validating key
+          // rotation scenarios.
+          return version;
+        }
+        // Otherwise, create `pending_version > version`.
+        uint32_t major_version = version.components()[0];
+        CHECK_LT(major_version, UINT32_MAX - 1U);
+        uint32_t delta = random.next_uint(UINT32_MAX - 1U - major_version) + 1;
+        // `major_version` + `delta` < UINT32_MAX.
+        return base::Version(
+            {major_version + delta, random.next_uint(), random.next_uint()});
+      }();
+      CHECK_GE(pending_version, version);
       IsolationData::PendingUpdateInfo pending_update_info(
           get_location_type(), pending_version, integrity_block_data);
       idb.SetPendingUpdateInfo(std::move(pending_update_info));
@@ -1242,5 +1266,4 @@ ScopedSkipMainProfileCheck::~ScopedSkipMainProfileCheck() {
 }
 #endif
 
-}  // namespace test
-}  // namespace web_app
+}  // namespace web_app::test
