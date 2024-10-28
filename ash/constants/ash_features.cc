@@ -1307,6 +1307,11 @@ BASE_FEATURE(kGameDashboardUtilities,
              "GameDashboardUtilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the App launch keyboard shortcut.
+BASE_FEATURE(kAppLaunchShortcut,
+             "AppLaunchShortcut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Game Dashboard's Record Game feature. This flag is to be enabled
 // by the feature management module.
 BASE_FEATURE(kFeatureManagementGameDashboardRecordGame,
@@ -4261,6 +4266,10 @@ bool IsGameDashboardGamesInTestEnabled() {
 
 bool AreGameDashboardUtilitiesEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboardUtilities);
+}
+
+bool IsAppLaunchShortcutEnabled() {
+  return base::FeatureList::IsEnabled(kAppLaunchShortcut);
 }
 
 bool IsLockScreenInlineReplyEnabled() {

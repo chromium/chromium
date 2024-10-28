@@ -245,6 +245,15 @@
     "expiry_milestone": 123
   },
   {
+    "name": "app-launch-shortcut",
+    "owners": [
+      "michaelcheco@google.com",
+      "dpad@google.com",
+      "cros-device-enablement@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "app-specific-history",
     "owners": [ "katzz@google.com", "jinsukkim@google.com" ],
     "expiry_milestone": 142

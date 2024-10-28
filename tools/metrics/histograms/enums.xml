@@ -15993,6 +15993,7 @@ from previous Chrome versions.
   <int value="-1674868343" label="DlcSettingsUi:enabled"/>
   <int value="-1673342139"
       label="ImageServiceOptimizationGuideSalientImages:enabled"/>
+  <int value="-1672894860" label="AppLaunchShortcut:enabled"/>
   <int value="-1672894214"
       label="AutofillUpstreamAllowAdditionalEmailDomains:disabled"/>
   <int value="-1672160462"
@@ -16791,6 +16792,7 @@ from previous Chrome versions.
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
   <int value="-1355886577" label="ReleaseNotesNotificationAllChannels:enabled"/>
   <int value="-1355717940" label="WebViewPowerSchedulerThrottleIdle:enabled"/>
+  <int value="-1355349150" label="AppLaunchShortcut:disabled"/>
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
   <int value="-1354983077" label="CameraAppAutoQRDetection:disabled"/>

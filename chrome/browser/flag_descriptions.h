@@ -3980,6 +3980,9 @@ extern const char kGameDashboardGamesInTestDescription[];
 extern const char kGameDashboardUtilities[];
 extern const char kGameDashboardUtilitiesDescription[];
 
+extern const char kAppLaunchShortcut[];
+extern const char kAppLaunchShortcutDescription[];
+
 extern const char kGlanceablesTimeManagementClassroomStudentViewName[];
 extern const char kGlanceablesTimeManagementClassroomStudentViewDescription[];
 

@@ -6914,6 +6914,10 @@ const char kGameDashboardUtilities[] = "Game Dashboard Utilities";
 const char kGameDashboardUtilitiesDescription[] =
     "Enables utility features in the Game Dashboard.";
 
+const char kAppLaunchShortcut[] = "App launch keyboard shortcut";
+const char kAppLaunchShortcutDescription[] =
+    "Enables a keyboard shortcut that launches a user specified app.";
+
 const char kGlanceablesTimeManagementClassroomStudentViewName[] =
     "Glanceables > Time Management > Classroom Student";
 const char kGlanceablesTimeManagementClassroomStudentViewDescription[] =

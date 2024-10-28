@@ -9912,6 +9912,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"app-launch-shortcut", flag_descriptions::kAppLaunchShortcut,
+     flag_descriptions::kAppLaunchShortcutDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAppLaunchShortcut)},
     {"enable-holding-space-suggestions",
      flag_descriptions::kHoldingSpaceSuggestionsName,
      flag_descriptions::kHoldingSpaceSuggestionsDescription, kOsCrOS,
