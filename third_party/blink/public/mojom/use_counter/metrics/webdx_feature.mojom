@@ -202,6 +202,7 @@ enum WebDXFeature {
   kDocumentCaretpositionfrompoint = 144,
   kMediaQueryRangeSyntax = 145,
   kRegisteredCustomProperties = 146,
+  kAccelerometer = 147,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

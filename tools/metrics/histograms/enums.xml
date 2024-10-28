@@ -33657,6 +33657,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="144" label="DocumentCaretpositionfrompoint"/>
   <int value="145" label="MediaQueryRangeSyntax"/>
   <int value="146" label="RegisteredCustomProperties"/>
+  <int value="147" label="Accelerometer"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

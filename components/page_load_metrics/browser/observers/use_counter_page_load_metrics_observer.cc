@@ -484,6 +484,10 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kRegisteredCustomProperties},
           {WebFeature::kCSSAtRuleProperty,
            WebDXFeature::kRegisteredCustomProperties},
+          {WebFeature::kAccelerometerConstructor, WebDXFeature::kAccelerometer},
+          {WebFeature::kLinearAccelerationSensorConstructor,
+           WebDXFeature::kAccelerometer},
+          {WebFeature::kGravitySensorConstructor, WebDXFeature::kAccelerometer},
       }};
 
   return *kMap;
