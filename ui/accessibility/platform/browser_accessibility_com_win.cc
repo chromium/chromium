@@ -1089,6 +1089,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
     ADD_ATTRIBUTE("maxlength", base::NumberToString(max_length));
   }
 
+  // JAWS 2024 and earlier use aria-label directly.
+  // Do not use on image, where kAttribute is used for "alt".
+  if (GetOwner()->GetData().GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
+      !ui::IsImage(GetOwner()->GetRole())) {
+    ADD_ATTRIBUTE("aria-label", GetOwner()->GetStringAttribute(
+                                    ax::mojom::StringAttribute::kName));
+  }
+
   // Next add serialized attributes.
   const auto& serialized_attrs = GetOwner()->GetHtmlAttributes();
   for (const auto& serialized_attr : serialized_attrs) {
