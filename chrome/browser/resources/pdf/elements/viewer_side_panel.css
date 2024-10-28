@@ -44,7 +44,8 @@ cr-icon-button[data-selected="true"] {
 
 ink-brush-selector {
   border-bottom: 1px solid var(--viewer-border-color);
-  padding-bottom: 8px;
+  padding-bottom: 12px;
+  padding-top: 4px;
 }
 
 ink-color-selector,

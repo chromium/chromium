@@ -9,13 +9,13 @@
 :host,
 div {
   display: flex;
+  gap: var(--ink-brush-button-gap, 16px);
   justify-content: center;
 }
 
 cr-icon-button {
   --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
-  --cr-icon-button-size: 48px;
-  margin: 4px 8px;
+  --cr-icon-button-size: var(--ink-brush-button-size, 48px);
 }
 
 cr-icon-button[data-selected="true"] {
