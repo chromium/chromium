@@ -4557,7 +4557,7 @@ chromium-metrics-reviews@google.com.
     survey and when a user answers any question on a HaTS survey.
   </summary>
   <token key="SurveyName">
-    <variant name="Sentiment"/>
+    <variant name="PrivacySandboxSentimentSurvey"/>
   </token>
 </histogram>
 
