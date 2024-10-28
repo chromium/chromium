@@ -98,10 +98,6 @@ enum LogoutRequestState {
   kMaxValue = kFailed
 };
 
-BASE_FEATURE(kGaiaCookieManagerServiceMonitorsAllDeletions,
-             "GaiaCookieManagerServiceMonitorsAllDeletions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Records metrics for ListAccounts failures.
 void RecordListAccountsFailure(GoogleServiceAuthError::State error_state) {
   UMA_HISTOGRAM_ENUMERATION("Signin.ListAccountsFailure", error_state,
@@ -477,14 +473,9 @@ void GaiaCookieManagerService::InitCookieListener() {
   // NOTE: |cookie_manager| can be nullptr when TestSigninClient is used in
   // testing contexts.
   if (cookie_manager) {
-    std::optional<std::string> cookie_name;
-    if (!base::FeatureList::IsEnabled(
-            kGaiaCookieManagerServiceMonitorsAllDeletions)) {
-      cookie_name = GaiaConstants::kGaiaSigninCookieName;
-    }
     cookie_manager->AddCookieChangeListener(
         GaiaUrls::GetInstance()->secure_google_url(),
-        /*name=*/cookie_name,
+        /*name=*/std::nullopt,
         cookie_listener_receiver_.BindNewPipeAndPassRemote());
     cookie_listener_receiver_.set_disconnect_handler(base::BindOnce(
         &GaiaCookieManagerService::OnCookieListenerConnectionError,
