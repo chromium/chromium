@@ -66,6 +66,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1641,16 +1642,12 @@ class NavigationMetricsRecorderIDNABrowserTest : public InProcessBrowserTest {
     omnibox->OnAfterPossibleChange(true);
 
     // Press enter and wait for the navigation to finish.
+    content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents());
     content::TestNavigationObserver navigation_observer(
         browser()->tab_strip_model()->GetActiveWebContents(), 1);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const Browser* browser) {
-              EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
-                  browser, ui::VKEY_RETURN, false, false, false, false));
-            },
-            browser()));
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
+                                                false, false, false, false));
     navigation_observer.Wait();
   }
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
@@ -1660,8 +1657,10 @@ class NavigationMetricsRecorderIDNABrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/40086853): Remove once the old pre-IDNA2008
+// non-transitional paths are cleaned up.
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
-                       IDNA2008Metrics) {
+                       DISABLED_IDNA2008Metrics) {
   using UkmEntry = ukm::builders::Navigation_IDNA2008Transition;
 
   base::HistogramTester histograms;
@@ -1669,7 +1668,6 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   auto url_loader_interceptor =
       std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
           [](content::URLLoaderInterceptor::RequestParams* params) {
-            network::URLLoaderCompletionStatus status;
             std::string headers =
                 "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
             std::string body = "<html>Hello world</html>";
@@ -1704,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   auto entries = test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
   test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0],
-                                               GURL("https://fass.de"));
+                                               GURL("http://fass.de"));
   test_ukm_recorder()->ExpectEntryMetric(
       entries[0], "Character",
       static_cast<int>(IDNA2008DeviationCharacter::kEszett));
@@ -1719,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   entries = test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(2u, entries.size());
   test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0],
-                                               GURL("https://fass.de"));
+                                               GURL("http://fass.de"));
   test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[1],
                                                GURL("https://faß.de/test_url"));
   test_ukm_recorder()->ExpectEntryMetric(

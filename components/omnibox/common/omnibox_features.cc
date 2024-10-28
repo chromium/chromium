@@ -253,9 +253,11 @@ BASE_FEATURE(kUpdatedConnectionSecurityIndicators,
 // loads http://example.com. When this feature is enabled, it should load
 // https://example.com instead, with fallback to http://example.com if
 // necessary.
+// TODO(crbug.com/375004882): This feature is now superseded by HTTPS-Upgrades
+// and will be removed in the near future.
 BASE_FEATURE(kDefaultTypedNavigationsToHttps,
              "OmniboxDefaultTypedNavigationsToHttps",
-             ENABLED);
+             DISABLED);
 
 // Override the delay to create a spare renderer when the omnibox is focused
 // on Android.
