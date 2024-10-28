@@ -396,6 +396,17 @@ static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kGetAssertionUvDiscouragedWithGoogleRp[] = R"((() => {
+  return navigator.credentials.get({ publicKey: {
+    rpId: "google.com",
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 static constexpr char kAbortableGetAssertion[] = R"((() => {
   window.enclaveAbortSignal = new AbortController();
   navigator.credentials.get({ publicKey: {
@@ -2190,6 +2201,40 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_TRUE(script_result.starts_with("\"error NotAllowedError"))
       << script_result;
   EXPECT_EQ(browser()->tab_strip_model()->GetTabCount(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       GpmEnclaveNeedsReauthOnGoogleCom) {
+  // Set the account state to a recoverable signin error.
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountId account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Add a passkey to make sure it's not shown.
+  AddTestPasskeyToModel();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("accounts.google.com", "/title1.html")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents,
+                              kGetAssertionUvDiscouragedWithGoogleRp);
+  delegate_observer()->WaitForUI();
+
+  ASSERT_EQ(browser()->tab_strip_model()->GetTabCount(), 1);
+  // The sign in button is not visible.
+  const auto sign_in_again_mech =
+      base::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
+      });
+  ASSERT_EQ(sign_in_again_mech, dialog_model()->mechanisms.end());
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,

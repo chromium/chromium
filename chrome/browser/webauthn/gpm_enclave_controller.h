@@ -52,6 +52,7 @@ namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }  // namespace sync_pb
 
+enum class EnclaveEnabledStatus;
 class Profile;
 
 class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
@@ -138,8 +139,8 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
           result);
 
   // Called when enough state has been loaded that the initial UI can be shown.
-  // If `active` then the enclave will be a valid mechanism.
-  void SetActive(bool active);
+  // If `kEnabled` then the enclave will be a valid mechanism.
+  void SetActive(EnclaveEnabledStatus enclave_enabled_status);
 
   // EnclaveManager::Observer:
   void OnKeysStored() override;

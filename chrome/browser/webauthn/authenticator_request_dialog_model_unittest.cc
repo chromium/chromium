@@ -1374,7 +1374,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       has_v2_cable_extension = false;
     }
     if (base::Contains(test.params, TransportAvailabilityParam::kEnclaveCred)) {
-      model->EnclaveEnabled();
+      model->EnclaveEnabledStatusChanged(EnclaveEnabledStatus::kEnabled);
     }
 
     if (base::Contains(test.params,
@@ -1417,7 +1417,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kEnclaveNeedsSignIn)) {
-      controller.EnclaveNeedsReauth();
+      controller.EnclaveEnabledStatusChanged(
+          EnclaveEnabledStatus::kEnabledAndReauthNeeded);
     }
 
     controller.SetAccountPreselectedCallback(base::BindRepeating(

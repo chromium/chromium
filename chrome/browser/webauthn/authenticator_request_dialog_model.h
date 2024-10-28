@@ -43,6 +43,12 @@ struct VectorIcon;
 struct AccountInfo;
 class Profile;
 
+enum class EnclaveEnabledStatus {
+  kDisabled,
+  kEnabled,
+  kEnabledAndReauthNeeded,
+};
+
 //                ┌───────┐
 //                │ View  │
 //                └───────┘ Events are
@@ -83,11 +89,11 @@ class Profile;
   /* powered. Valid action when at step: kBlePowerOnManual, */                \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(ContinueWithFlowAfterBleAdapterPowered)       \
-  /* Called when the enclave authenticator is available for a request. */     \
-  AUTHENTICATOR_REQUEST_EVENT_0(EnclaveEnabled)                               \
-  /* Called when the enclave authenticator needs a reauth before it is */     \
-  /* available for a request. */                                              \
-  AUTHENTICATOR_REQUEST_EVENT_0(EnclaveNeedsReauth)                           \
+  /* Called when the enclave authenticator is available for a request or */   \
+  /* the enclave authenticator needs a reauth before it is available for a */ \
+  /* request. */                                                              \
+  AUTHENTICATOR_REQUEST_EVENT_1(EnclaveEnabledStatusChanged,                  \
+                                EnclaveEnabledStatus)                         \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
   /* Called when the power state of the Bluetooth adapter has changed. */     \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)               \

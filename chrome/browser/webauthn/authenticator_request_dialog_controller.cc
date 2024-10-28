@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
@@ -589,12 +590,9 @@ void AuthenticatorRequestDialogController::OnHavePIN(std::u16string pin) {
   std::move(pin_callback_).Run(pin);
 }
 
-void AuthenticatorRequestDialogController::EnclaveEnabled() {
-  enclave_enabled_ = true;
-}
-
-void AuthenticatorRequestDialogController::EnclaveNeedsReauth() {
-  enclave_needs_reauth_ = true;
+void AuthenticatorRequestDialogController::EnclaveEnabledStatusChanged(
+    EnclaveEnabledStatus status) {
+  enclave_enabled_status_ = status;
 }
 
 void AuthenticatorRequestDialogController::OnAccountSelected(size_t index) {
@@ -831,7 +829,8 @@ void AuthenticatorRequestDialogController::
       // Don't jump to an enclave credential if we need to do reauth because the
       // OAuth token won't work. Also, don't jump to a phone credential either
       // because reauthenticating is probably a better option for the user.
-      if (!enclave_needs_reauth_) {
+      if (enclave_enabled_status_ !=
+          EnclaveEnabledStatus::kEnabledAndReauthNeeded) {
         // If not doing UV, but the allowlist matches an enclave credential,
         // show UI to serve as user presence.
         if (!enclave_will_do_uv && transport_availability_.request_type ==
@@ -913,8 +912,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
   // See https://w3c.github.io/webauthn/#enum-hints
   const auto mech_it = base::ranges::find_if(
       model_->mechanisms,
-      [this, mechanism_is_transport, transport, profile,
-       enclave_needs_reauth = enclave_needs_reauth_](const auto& mech) {
+      [this, mechanism_is_transport, transport, profile](const auto& mech) {
         switch (transport) {
           case AuthenticatorTransport::kUsbHumanInterfaceDevice:
             return absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
@@ -925,7 +923,8 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
                     absl::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
                    absl::get_if<Mechanism::AddPhone>(&mech.type);
           case AuthenticatorTransport::kInternal:
-            return !enclave_needs_reauth &&
+            return enclave_enabled_status_ !=
+                       EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
                    (absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
                     absl::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
                     (absl::get_if<Mechanism::Enclave>(&mech.type) &&
@@ -1900,7 +1899,8 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
         !priority_phone_index) {
       continue;
     }
-    if (credential.source == AuthenticatorType::kEnclave && !enclave_enabled_) {
+    if (credential.source == AuthenticatorType::kEnclave &&
+        enclave_enabled_status_ != EnclaveEnabledStatus::kEnabled) {
       continue;
     }
     password_manager::PasskeyCredential& passkey = credentials.emplace_back(
@@ -2089,7 +2089,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         continue;
       }
       if (cred.source == AuthenticatorType::kEnclave) {
-        if (enclave_needs_reauth_) {
+        if (enclave_enabled_status_ != EnclaveEnabledStatus::kEnabled) {
           // Do not list passkeys from the enclave if it needs reauth before
           // proceeding.  Instead, we'll show a button to trigger reauth.
           continue;
@@ -2176,7 +2176,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-      enclave_enabled_ && !is_get_assertion &&
+      !is_get_assertion &&
+      enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled &&
       *transport_availability_.make_credential_attachment !=
           device::AuthenticatorAttachment::kCrossPlatform) {
     const std::u16string name =
@@ -2188,7 +2189,9 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     mechanism.description = base::UTF8ToUTF16(model_->GetGpmAccountEmail());
     model_->mechanisms.emplace_back(std::move(mechanism));
   }
-  if (enclave_needs_reauth_ && !use_conditional_mediation_) {
+  if (enclave_enabled_status_ ==
+          EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
+      !use_conditional_mediation_ && model_->relying_party_id != "google.com") {
     // Show a button that lets the user sign in again to restore sync. This
     // cancels the request, so we can't do it for conditional UI requests.
     // TODO(crbug.com/345413738): add support for conditional UI.
@@ -2334,7 +2337,9 @@ std::optional<size_t>
 AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
   // Never pick a priority mechanism if we are showing the enclave reauth
   // button.
-  if (enclave_needs_reauth_ && !use_conditional_mediation_) {
+  if (enclave_enabled_status_ ==
+          EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
+      !use_conditional_mediation_) {
     return std::nullopt;
   }
 
@@ -2430,7 +2435,8 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
         Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
             ->GetOriginalProfile();
     if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        CanDefaultToEnclave(profile) && enclave_enabled_) {
+        CanDefaultToEnclave(profile) &&
+        enclave_enabled_status_ == EnclaveEnabledStatus::kEnabled) {
       priority_list.emplace_back(Mechanism::Enclave());
     }
 

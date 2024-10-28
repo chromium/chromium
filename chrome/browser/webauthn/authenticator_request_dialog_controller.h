@@ -67,8 +67,7 @@ class AuthenticatorRequestDialogController
   void OnRequestComplete() override;
   void OnResidentCredentialConfirmed() override;
   void OnHavePIN(std::u16string pin) override;
-  void EnclaveEnabled() override;
-  void EnclaveNeedsReauth() override;
+  void EnclaveEnabledStatusChanged(EnclaveEnabledStatus status) override;
   void OnAccountSelected(size_t index) override;
   void OnAccountPreselectedIndex(size_t index) override;
   void ContactPriorityPhone() override;
@@ -558,13 +557,12 @@ class AuthenticatorRequestDialogController
   // profile authenticator.
   bool should_create_in_icloud_keychain_ = false;
 
-  // enclave_enabled_ is true if a "Google Password Manager" entry should be
-  // offered as a mechanism for creating a credential.
-  bool enclave_enabled_ = false;
-
-  // enclave_needs_reauth_ is true if a "Reauth to use Google Password Manager"
-  // entry should be offered as a mechanism for creating or using a credential.
-  bool enclave_needs_reauth_ = false;
+  // enclave_enabled_status_ determines whether Googple Password Manager entries
+  // should be offered both for `makeCredential` or `getAssertion`. If reauth
+  // needed, instead of offering the actual passkeys or creating a passkey,
+  // re-authentication to Google is offered.
+  EnclaveEnabledStatus enclave_enabled_status_ =
+      EnclaveEnabledStatus::kDisabled;
 
   // The RP's hints. See
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints

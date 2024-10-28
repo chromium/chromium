@@ -398,7 +398,7 @@ GPMEnclaveController::GPMEnclaveController(
       request_type == device::FidoRequestType::kGetAssertion) {
     // No possibility of using GPM for this request.
     FIDO_LOG(EVENT) << "Enclave is not a candidate for this request";
-    SetActive(false);
+    SetActive(EnclaveEnabledStatus::kDisabled);
   } else if (enclave_manager_->is_loaded()) {
     OnEnclaveLoaded();
   } else {
@@ -461,8 +461,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
   if (signin_error.IsPersistentError()) {
     FIDO_LOG(EVENT) << "Recoverable sign-in error: " << signin_error.ToString();
     account_state_ = AccountState::kNone;
-    model_->EnclaveNeedsReauth();
-    SetActive(false);
+    SetActive(EnclaveEnabledStatus::kEnabledAndReauthNeeded);
     return;
   }
 
@@ -491,7 +490,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
           FIDO_LOG(EVENT) << "Enclave is ready and this request will not use a "
                              "GPM PIN for user verification";
           SetAccountStateReady();
-          SetActive(true);
+          SetActive(EnclaveEnabledStatus::kEnabled);
           return;
       }
     }
@@ -500,7 +499,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
       // For get() requests, progress the UI now because, with GPM PIN support,
       // we can handle the account in any state and we'll block the UI if needed
       // when the user selects a GPM credential.
-      SetActive(true);
+      SetActive(EnclaveEnabledStatus::kEnabled);
     }
   }
 
@@ -519,7 +518,7 @@ void GPMEnclaveController::OnUVCapabilityKnown(bool can_make_uv_keys) {
     // Without the ability to do user verification, we cannot enroll the current
     // device.
     account_state_ = AccountState::kNone;
-    SetActive(false);
+    SetActive(EnclaveEnabledStatus::kDisabled);
     return;
   }
 
@@ -571,11 +570,11 @@ void GPMEnclaveController::OnAccountStateTimeOut() {
     // If we were checking the security domain just to check whether the epoch
     // has changed then we assume that it hasn't.
     SetAccountStateReady();
-    SetActive(true);
+    SetActive(EnclaveEnabledStatus::kEnabled);
   } else {
     model_->OnLoadingEnclaveTimeout();
     account_state_ = AccountState::kNone;
-    SetActive(false);
+    SetActive(EnclaveEnabledStatus::kDisabled);
   }
 }
 
@@ -607,7 +606,7 @@ void GPMEnclaveController::OnAccountStateDownloaded(
       enclave_manager_->ConsiderSecurityDomainState(result,
                                                     base::DoNothing())) {
     SetAccountStateReady();
-    SetActive(true);
+    SetActive(EnclaveEnabledStatus::kEnabled);
     return;
   }
 
@@ -654,14 +653,18 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   user_gaia_id_ = std::move(gaia_id);
 
   if (device::kWebAuthnGpmPin.Get()) {
-    SetActive(account_state_ != AccountState::kNone);
+    SetActive(account_state_ != AccountState::kNone
+                  ? EnclaveEnabledStatus::kEnabled
+                  : EnclaveEnabledStatus::kDisabled);
   } else {
-    SetActive(account_state_ == AccountState::kRecoverable);
+    SetActive(account_state_ == AccountState::kRecoverable
+                  ? EnclaveEnabledStatus::kEnabled
+                  : EnclaveEnabledStatus::kDisabled);
   }
 }
 
-void GPMEnclaveController::SetActive(bool active) {
-  is_active_ = active;
+void GPMEnclaveController::SetActive(EnclaveEnabledStatus status) {
+  is_active_ = status == EnclaveEnabledStatus::kEnabled;
   if (waiting_for_account_state_) {
     std::move(waiting_for_account_state_).Run();
   }
@@ -669,9 +672,7 @@ void GPMEnclaveController::SetActive(bool active) {
     return;
   }
   ready_for_ui_ = true;
-  if (active) {
-    model_->EnclaveEnabled();
-  }
+  model_->EnclaveEnabledStatusChanged(status);
   model_->OnReadyForUI();
 }
 
