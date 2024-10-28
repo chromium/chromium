@@ -28,10 +28,11 @@ void FakeCoralService::Group(
 
   // Create fake groups from the items in the request.
   auto response = coral::mojom::GroupResponse::New();
-  auto create_group = [&](const std::string& name, size_t tab_start,
-                          size_t tab_num, size_t app_start,
+  auto create_group = [&](const std::string& name, const base::Token& id,
+                          size_t tab_start, size_t tab_num, size_t app_start,
                           size_t app_num) -> coral::mojom::GroupPtr {
     auto group = coral::mojom::Group::New();
+    group->id = id;
     group->title = name;
     for (size_t i = tab_start; i < tab_start + tab_num; i++) {
       group->entities.push_back(coral::mojom::Entity::NewTab(tabs[i].Clone()));
@@ -52,6 +53,7 @@ void FakeCoralService::Group(
   const int app_num_1 = group_size_1 - tab_num_1;
   if (group_size_1) {
     response->groups.push_back(create_group(/*name=*/"Fake Group 1",
+                                            base::Token(1, 2),
                                             /*tab_start=*/0, tab_num_1,
                                             /*app_start=*/0, app_num_1));
   }
@@ -63,10 +65,10 @@ void FakeCoralService::Group(
   const int tab_num_2 = group_size_2 * (tab_total - tab_num_1) / residual;
   const int app_num_2 = group_size_2 - tab_num_2;
   if (group_size_2) {
-    response->groups.push_back(create_group(/*name=*/"Fake Group 2",
-                                            /*tab_start=*/tab_num_1, tab_num_2,
-                                            /*app_start=*/app_num_1,
-                                            app_num_2));
+    response->groups.push_back(
+        create_group(/*name=*/"Fake Group 2", base::Token(2, 3),
+                     /*tab_start=*/tab_num_1, tab_num_2,
+                     /*app_start=*/app_num_1, app_num_2));
   }
 
   auto group_result =
