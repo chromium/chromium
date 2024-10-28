@@ -254,37 +254,82 @@ void CollectAncestorRoles(
 // Required for AXCustomContentProvider, which defines the property.
 @synthesize accessibilityCustomContent = _accessibilityCustomContent;
 
+// The new NSAccessibility API is method-based, but the old NSAccessibility
+// is attribute-based. For every method, there is a corresponding attribute.
+// This function returns the map between the methods and the attributes
+// for purposes of migrating to the new API.
+- (NSDictionary*)methodToAttributeMap {
+  static NSDictionary* dict = nil;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    dict = @{
+      @"accessibilityDisclosedByRow" : NSAccessibilityDisclosedByRowAttribute,
+      @"accessibilityDisclosedRows" : NSAccessibilityDisclosedRowsAttribute,
+      @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
+      @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
+      @"isAccessibilityFocused" : NSAccessibilityFocusedAttribute,
+    };
+  });
+  return dict;
+}
+
+// While the migration to the new NSAccessibility API in progress, this
+// function returns all attributes that are being replaced by methods.
 - (NSSet<NSString*>*)migratingAttributes {
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set = [NSSet<NSString*>
-        setWithObjects:NSAccessibilityDisclosedByRowAttribute,
-                       NSAccessibilityDisclosedRowsAttribute,
-                       NSAccessibilityDisclosingAttribute,
-                       NSAccessibilityDisclosureLevelAttribute,
-                       NSAccessibilityFocusedAttribute, nil];
+    set =
+        [NSSet<NSString*> setWithArray:[[self methodToAttributeMap] allValues]];
   });
   return set;
 }
 
+// While the migration to the new NSAccessibility API in progress, this
+// function returns all new API endpoints.
 - (NSSet<NSString*>*)migratingMethods {
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set = [NSSet<NSString*> setWithObjects:@"accessibilityDisclosedByRow",
-                                           @"accessibilityDisclosedRows",
-                                           @"accessibilityDisclosureLevel",
-                                           @"isAccessibilityDisclosed",
-                                           @"isAccessibilityFocused", nil];
+    set = [NSSet<NSString*> setWithArray:[[self methodToAttributeMap] allKeys]];
   });
   return set;
 }
 
+// Returns true if the migration flag is enabled and the attribute
+// is contained in the migratingAttributes list.
 - (BOOL)isMigratingAttribute:(NSString*)attribute {
   if (features::IsMacAccessibilityAPIMigrationEnabled()) {
     return [[self migratingAttributes] containsObject:attribute];
-    ;
+  }
+  return NO;
+}
+
+// Returns true if the migration flag is enabled and the method
+// is contained in the migratingMethods list.
+- (BOOL)isMigratingMethod:(NSString*)method {
+  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+    return [[self migratingMethods] containsObject:method];
+  }
+  return NO;
+}
+
+// Returns whether a method-based NSAccessibility API endpoint is supported for
+// this node. Support is based on this node's role and is calculated in
+// internalAccessibilityAttribueNames.
+// Can only be used for migrated methods, all other methods will
+// return "NO".
+- (BOOL)isMigratingMethodSupported:(NSString*)method {
+  if (!_node) {
+    return NO;
+  }
+
+  NSString* attribute = [[self methodToAttributeMap] objectForKey:method];
+  if (attribute) {
+    // Check whether the corresponding attribute is supported for this node.
+    NSArray* attributeNames = [self internalAccessibilityAttributeNames];
+    return [attributeNames containsObject:attribute];
   }
   return NO;
 }
@@ -296,6 +341,7 @@ void CollectAncestorRoles(
       return NO;
     }
   }
+
   return [super respondsToSelector:selector];
 }
 
@@ -2367,6 +2413,12 @@ void CollectAncestorRoles(
   // to set the selection range, which won't work because of 692362.
   if (_node->GetDelegate() && _node->GetDelegate()->IsReadOnlyOrDisabled() &&
       IsAXSetter(selector)) {
+    return NO;
+  }
+
+  NSString* selectorString = NSStringFromSelector(selector);
+  if ([self isMigratingMethod:selectorString] &&
+      ![self isMigratingMethodSupported:selectorString]) {
     return NO;
   }
 

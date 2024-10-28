@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
 
   // AXTreeFormatter overrides.
   std::string Format(AXPlatformNodeDelegate* root) const override;
+  std::string Format(const AXTreeSelector&) const override;
   std::string FormatNode(AXPlatformNodeDelegate* node) const override;
   std::string FormatTree(const base::Value::Dict& tree_node) const override;
   base::Value::Dict BuildTreeForNode(AXNode* root) const override;

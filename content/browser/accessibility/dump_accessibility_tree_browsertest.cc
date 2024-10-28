@@ -889,8 +889,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // TODO(crbug.com/40853220): disabled on UIA
+// TODO(crbug.com/372866272): disabled temporarily on macOS
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AccessibilityAriaDescribedByUpdates \
+  DISABLED_AccessibilityAriaDescribedByUpdates
+#else
+#define MAYBE_AccessibilityAriaDescribedByUpdates \
+  AccessibilityAriaDescribedByUpdates
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
-                       AccessibilityAriaDescribedByUpdates) {
+                       MAYBE_AccessibilityAriaDescribedByUpdates) {
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby-updates.html"));
 }
 

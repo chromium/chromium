@@ -229,6 +229,8 @@ class DumpAccessibilityTestBase
   }
 
  private:
+  std::string FormatWebContentsTree(const ui::AXTreeFormatter&) const;
+
   ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
                                               const std::string& name) const;
 

@@ -55,6 +55,10 @@ std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
   return FormatTree(BuildTree(root));
 }
 
+std::string AXTreeFormatterBase::Format(const AXTreeSelector& selector) const {
+  return FormatTree(BuildTreeForSelector(selector));
+}
+
 std::string AXTreeFormatterBase::FormatNode(
     AXPlatformNodeDelegate* node) const {
   return FormatTree(BuildNode(node));

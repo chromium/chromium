@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   // |root| must be non-null and must be in web content.
   virtual std::string Format(AXPlatformNodeDelegate* root) const = 0;
 
+  // Formats an accessible tree identified by the given selector.
+  virtual std::string Format(const AXTreeSelector&) const = 0;
+
   // Formats a given web node (i.e. without children).
   virtual std::string FormatNode(AXPlatformNodeDelegate* node) const = 0;
 

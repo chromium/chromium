@@ -32,6 +32,8 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXTreeSelector {
 
   AXTreeSelector() = default;
   explicit AXTreeSelector(gfx::AcceleratedWidget widget) : widget(widget) {}
+  AXTreeSelector(gfx::AcceleratedWidget widget, int filter)
+      : types(filter), widget(widget) {}
   AXTreeSelector(int types, const std::string& pattern)
       : types(types), pattern(pattern) {}
   AXTreeSelector(int types,
