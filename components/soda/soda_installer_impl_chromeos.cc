@@ -443,8 +443,6 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
         base::Time::Now() - start_time);
 
   } else {
-    // TODO: Notify the observer of the specific language pack that failed
-    // to install. ChromeOS currently only supports the en-US language pack.
     NotifyOnSodaInstallError(language_code,
                              DlcCodeToSodaErrorCode(install_result.error));
 
