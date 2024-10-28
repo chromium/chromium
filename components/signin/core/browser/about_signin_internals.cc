@@ -559,7 +559,7 @@ AboutSigninInternals::TokenInfo::TokenInfo(const std::string& consumer_id,
       error(GoogleServiceAuthError::AuthErrorNone()),
       removed_(false) {}
 
-AboutSigninInternals::TokenInfo::~TokenInfo() {}
+AboutSigninInternals::TokenInfo::~TokenInfo() = default;
 
 bool AboutSigninInternals::TokenInfo::LessThan(
     const std::unique_ptr<TokenInfo>& a,
@@ -634,7 +634,7 @@ std::string AboutSigninInternals::RefreshTokenEvent::GetTypeAsString() const {
 AboutSigninInternals::SigninStatus::SigninStatus()
     : timed_signin_fields(signin_internals_util::TIMED_FIELDS_END) {}
 
-AboutSigninInternals::SigninStatus::~SigninStatus() {}
+AboutSigninInternals::SigninStatus::~SigninStatus() = default;
 
 AboutSigninInternals::TokenInfo* AboutSigninInternals::SigninStatus::FindToken(
     const CoreAccountId& account_id,
