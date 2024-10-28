@@ -107,7 +107,7 @@ group("resources") {
   }
 
   if (is_chromeos) {
-    public_deps += [ "dlp_internals:resources" ]
+    public_deps += [ "chromeos/dlp_internals:resources" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

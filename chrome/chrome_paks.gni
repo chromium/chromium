@@ -410,11 +410,13 @@ template("chrome_extra_paks") {
     if (is_chromeos) {
       sources += [
         "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
+        "$root_gen_dir/chrome/dlp_internals_resources.pak",
         "$root_gen_dir/chrome/kerberos_resources.pak",
         "$root_gen_dir/chrome/office_web_app_resources.pak",
       ]
       deps += [
         "//chrome/browser/resources:office_web_app_resources",
+        "//chrome/browser/resources/chromeos/dlp_internals:resources",
         "//chrome/browser/resources/chromeos/kerberos:resources",
         "//chrome/common/chromeos/extensions:resources",
       ]
@@ -452,11 +454,6 @@ template("chrome_extra_paks") {
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
       sources += [ "$root_gen_dir/chrome/connectors_internals_resources.pak" ]
       deps += [ "//chrome/browser/resources/connectors_internals:resources" ]
-    }
-
-    if (is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/dlp_internals_resources.pak" ]
-      deps += [ "//chrome/browser/resources/dlp_internals:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos_lacros) {

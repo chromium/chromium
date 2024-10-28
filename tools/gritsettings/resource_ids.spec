@@ -372,7 +372,7 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [3840],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/dlp_internals/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/dlp_internals/resources.grd": {
     "META": {"sizes": {"includes": [15]}},
     "includes": [3860],
   },
