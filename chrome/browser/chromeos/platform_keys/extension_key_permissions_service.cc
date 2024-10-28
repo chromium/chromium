@@ -151,7 +151,7 @@ void ExtensionKeyPermissionsService::CanUseKeyForSigning(
       GetStateStoreEntry(base::Base64Encode(public_key_spki_der));
 
   // In any case, we allow the generating extension to use the generated key a
-  // single time for signing arbitrary data. The reason is, that the extension
+  // single time for signing arbitrary data. The reason is that the extension
   // usually has to sign a certification request containing the public key in
   // order to obtain a certificate for the key.
   // That means, once a certificate authority generated a certificate for the

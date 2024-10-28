@@ -118,32 +118,26 @@ class ExtensionKeyPermissionsService {
 
   // Returns true if the private key matching |public_key_spki_der| can be
   // used for signing by the extension with id |extension_id_|.
-  // |key_locations| must describe locations available to the user the private
-  // key is stored on.
   void CanUseKeyForSigning(const std::vector<uint8_t>& public_key_spki_der,
                            CanUseKeyForSigningCallback callback);
 
   // Must be called when the extension with id |extension_id| used the private
-  // key matching |public_key_spki_der| for signing. |key_locations| must
-  // describe locations available to the user the private key is stored on.
-  // Updates the permissions accordingly.  E.g. if this extension generated
-  // the key and no other permission was granted then the permission to sign
-  // with this key is removed.
+  // key matching |public_key_spki_der| for signing. Updates the permissions
+  // accordingly. E.g. if this extension generated the key and no other
+  // permission was granted then the permission to sign with this key is
+  // removed.
   void SetKeyUsedForSigning(const std::vector<uint8_t>& public_key_spki_der,
                             SetKeyUsedForSigningCallback callback);
 
   // Registers the private key matching |public_key_spki_der| as being generated
   // by the extension with id |extension_id| and marks it for corporate usage.
-  // |key_locations| must describe locations available to the user the private
-  // key is stored on.
+
   void RegisterKeyForCorporateUsage(
       const std::vector<uint8_t>& public_key_spki_der,
       RegisterKeyForCorporateUsageCallback callback);
 
-  // Sets the user granted permission that the extension with id
-  // |extension_id| can use the private key matching |public_key_spki_der| for
-  // signing. |key_locations| must describe locations available to the user
-  // the private key is stored on.
+  // Sets the user granted permission that the extension with id |extension_id|
+  // can use the private key matching |public_key_spki_der| for signing.
   void SetUserGrantedPermission(const std::vector<uint8_t>& public_key_spki_der,
                                 SetUserGrantedPermissionCallback callback);
 
@@ -168,9 +162,10 @@ class ExtensionKeyPermissionsService {
     bool sign_once = false;
 
     // True if the key can be used for signing an unlimited number of times.
-    // This permission is granted by the user to allow the extension to use the
-    // key for signing through the enterprise.platformKeys or platformKeys API.
-    // This permission is granted until revoked by the user or the policy.
+    // This permission is granted by the user or by admin policy to allow the
+    // extension to use the key for signing through the enterprise.platformKeys
+    // or platformKeys API. This permission is granted until revoked by the user
+    // or the policy.
     bool sign_unlimited = false;
   };
 
