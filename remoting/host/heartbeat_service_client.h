@@ -54,6 +54,11 @@ class HeartbeatServiceClient {
 
   // Cancels any pending service requests.
   virtual void CancelPendingRequests() = 0;
+
+  // Common error handler for all HeartbeatServiceClients. Should only be called
+  // if the status response for a heartbeat is an error.
+  void OnError(HeartbeatResponseCallback callback,
+               const ProtobufHttpStatus& status);
 };
 
 }  // namespace remoting
