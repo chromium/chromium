@@ -120,6 +120,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
+#include "content/browser/web_contents/partitioned_popins_controller.h"
 #include "content/browser/web_contents/slow_web_preference_cache.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
@@ -861,6 +862,10 @@ bool WebContentsImpl::IsPartitionedPopin() const {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
          !partitioned_popin_opener_);
 
+  // TODO(crbug.com/340606651): Store a boolean telling if `this` is a
+  // partitioned popin, do not imply from the opener. Since the opener's
+  // lifetime is not bound to the popin, it might be gone by the time we're
+  // checking it here.
   return !!partitioned_popin_opener_;
 }
 
@@ -11376,6 +11381,8 @@ void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
     return;
   }
 
+  PartitionedPopinsController::CreateForWebContents(
+      static_cast<WebContentsImpl*>(opener->delegate()));
   new_window->partitioned_popin_opener_ = opener->GetWeakPtr();
   opened_partitioned_popin_ = new_window->GetWeakPtr();
 }
