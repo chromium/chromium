@@ -2987,7 +2987,11 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   // it is showing.
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
     if (auto popover = form_control->popoverTargetElement().popover) {
-      return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
+      if (!form_control->IsDescendantOrShadowDescendantOf(popover)) {
+        // Only expose expanded/collapsed if the trigger button isn't contained
+        // within the popover itself. E.g. a close button within the popover.
+        return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
+      }
     }
   }
 

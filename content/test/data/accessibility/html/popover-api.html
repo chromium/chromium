@@ -47,6 +47,7 @@
 <input type=url popovertarget=popover3 popovertargetaction=show>Url input pointing to nested popover</button>
 <div popover id=popover2 style="top:100px">Popover (showing)
   <div popover id=popover3 style="top:200px">Nested popover (showing)</div>
+  <button popovertarget=popover2>Nested invoker pointing back to containing popover</button>
 </div>
 <button popovertarget=manual2 popovertargetaction=hide>Hide button pointing to showing manual (should add aria-details)</button>
 <input type=url popovertarget=manual2 popovertargetaction=hide>Url input pointing to showing manual</button>

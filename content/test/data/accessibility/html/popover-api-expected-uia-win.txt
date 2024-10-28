@@ -25,9 +25,10 @@ Document
 ++Edit
 ++Text Name='Url input pointing to nested popover '
 ++Group IsControlElement=false
-++++Text Name='Popover (showing)'
+++++Text Name='Popover (showing) '
 ++++Group IsControlElement=false
 ++++++Text Name='Nested popover (showing)'
+++++Button Name='Nested invoker pointing back to containing popover'
 ++Button Name='Hide button pointing to showing manual (should add aria-details)' ExpandCollapse.ExpandCollapseState='Expanded'
 ++Edit
 ++Text Name='Url input pointing to showing manual '
