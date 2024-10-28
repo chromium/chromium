@@ -25289,10 +25289,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                            /*attest_signals_origin=*/false);
 }
 
-class FledgeEnableUserAgentAndClientHintsBrowserTest
+class FledgeEnableUserAgentOverrideBrowserTest
     : public InterestGroupBrowserTest {
  public:
-  FledgeEnableUserAgentAndClientHintsBrowserTest() {
+  FledgeEnableUserAgentOverrideBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kFledgeEnableUserAgentOverrides},
         /*disabled_features=*/{});
@@ -25302,7 +25302,7 @@ class FledgeEnableUserAgentAndClientHintsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideBrowserTest,
                        ReportingMultipleAuctionsWithUserAgentOverridden) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -25455,7 +25455,7 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideBrowserTest,
                        RunAdAuctionWithWinnerWithUserAgentOverridden) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -25531,7 +25531,7 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideBrowserTest,
                        UpdateURLHasOverridenUserAgent) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -25586,10 +25586,120 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
               "overridden-user-agent");
 }
 
-class FledgeEnableUserAgentAndClientHintsDisabledBrowserTest
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideBrowserTest,
+                       RunAdAuctionWithDebugReporting) {
+  URLLoaderMonitor url_loader_monitor;
+
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("overridden-user-agent"),
+      /*override_in_new_tabs=*/false);
+  web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad1_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_winner");
+  GURL ad2_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_bikes");
+  GURL ad3_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_shoes");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"winner")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetAds({{{ad1_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"bikes")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetAds({{{ad2_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"shoes")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetAds({{{ad3_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+                })",
+      test_origin,
+      embedded_https_test_server().GetURL(
+          "a.test", "/interest_group/decision_logic_with_debugging_report.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // Check ResourceRequest structs of report requests.
+  const auto kExpectedReportUrls = std::to_array<GURL>({
+      // Return value from seller's ReportResult() method.
+      embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
+      // Return value from winning bidder's ReportWin() method.
+      embedded_https_test_server().GetURL("a.test",
+                                          "/echoall?report_bidder/winner"),
+      // Debugging report URL from seller for win report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?seller_debug_report_win/winner"),
+      // Debugging report URL from winning bidder for win report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?bidder_debug_report_win/winner"),
+      // Debugging report URL from seller for loss report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?seller_debug_report_loss/bikes"),
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?seller_debug_report_loss/shoes"),
+      // Debugging report URL from losing bidders for loss report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?bidder_debug_report_loss/bikes"),
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?bidder_debug_report_loss/shoes"),
+  });
+
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
+
+    std::optional<network::ResourceRequest> request =
+        url_loader_monitor.WaitForUrl(expected_report_url);
+    ASSERT_TRUE(request);
+    EXPECT_EQ(test_origin, request->request_initiator);
+
+    EXPECT_FALSE(request->headers.IsEmpty());
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+                "overridden-user-agent");
+  }
+}
+
+class FledgeEnableUserAgentOverrideDisabledBrowserTest
     : public InterestGroupBrowserTest {
  public:
-  FledgeEnableUserAgentAndClientHintsDisabledBrowserTest() {
+  FledgeEnableUserAgentOverrideDisabledBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kFledgeEnableUserAgentOverrides});
@@ -25599,7 +25709,7 @@ class FledgeEnableUserAgentAndClientHintsDisabledBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
                        RunAdAuctionWithWinnerWithUserAgentOverridden) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -25674,7 +25784,7 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
                        ReportingMultipleAuctionsWithUserAgentOverridden) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -25825,7 +25935,7 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
                        UpdateURLDoesNotOverrideUserAgent) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -25876,6 +25986,114 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
   const network::ResourceRequest& request =
       url_loader_monitor.WaitForUrl(update_url);
   EXPECT_EQ(0u, request.headers.GetHeaderVector().size());
+}
+
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
+                       RunAdAuctionWithDebugReporting) {
+  URLLoaderMonitor url_loader_monitor;
+
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("overridden-user-agent"),
+      /*override_in_new_tabs=*/false);
+  web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad1_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_winner");
+  GURL ad2_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_bikes");
+  GURL ad3_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_shoes");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"winner")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetAds({{{ad1_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"bikes")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetAds({{{ad2_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"shoes")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_debugging_report.js"))
+              .SetAds({{{ad3_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+                })",
+      test_origin,
+      embedded_https_test_server().GetURL(
+          "a.test", "/interest_group/decision_logic_with_debugging_report.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // Check ResourceRequest structs of report requests.
+  const auto kExpectedReportUrls = std::to_array<GURL>({
+      // Return value from seller's ReportResult() method.
+      embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
+      // Return value from winning bidder's ReportWin() method.
+      embedded_https_test_server().GetURL("a.test",
+                                          "/echoall?report_bidder/winner"),
+      // Debugging report URL from seller for win report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?seller_debug_report_win/winner"),
+      // Debugging report URL from winning bidder for win report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?bidder_debug_report_win/winner"),
+      // Debugging report URL from seller for loss report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?seller_debug_report_loss/bikes"),
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?seller_debug_report_loss/shoes"),
+      // Debugging report URL from losing bidders for loss report.
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?bidder_debug_report_loss/bikes"),
+      embedded_https_test_server().GetURL(
+          "a.test", "/echo?bidder_debug_report_loss/shoes"),
+  });
+
+  for (const auto& expected_report_url : kExpectedReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
+
+    std::optional<network::ResourceRequest> request =
+        url_loader_monitor.WaitForUrl(expected_report_url);
+    ASSERT_TRUE(request);
+    EXPECT_EQ(test_origin, request->request_initiator);
+
+    EXPECT_TRUE(request->headers.IsEmpty());
+  }
 }
 
 class RealTimeReportingEnabledTest : public InterestGroupBrowserTest {
