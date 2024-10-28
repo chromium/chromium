@@ -365,6 +365,9 @@ template("rust_target") {
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
         }
+        if (defined(_bindgen_inputs)) {
+          inputs += _bindgen_inputs
+        }
         if (defined(invoker.test_inputs)) {
           inputs += invoker.test_inputs
         }
