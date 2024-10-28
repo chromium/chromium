@@ -82,8 +82,10 @@ InformedRestoreItemView::InformedRestoreItemView(
             .SetBetweenChildSpacing(informed_restore::kScreenshotFaviconSpacing)
             .Build());
   } else {
+    views::BoxLayoutView* inner_box;
     AddChildView(
         views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&inner_box)
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
             .SetBetweenChildSpacing(kTitleFaviconSpacing)
@@ -111,6 +113,7 @@ InformedRestoreItemView::InformedRestoreItemView(
                         views::BoxLayout::CrossAxisAlignment::kCenter)
                     .SetBetweenChildSpacing(kBetweenFaviconSpacing))
             .Build());
+    SetFlexForView(inner_box, 1);
   }
 
   std::vector<GURL> favicons;
