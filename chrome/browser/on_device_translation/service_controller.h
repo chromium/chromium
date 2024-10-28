@@ -14,6 +14,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 
@@ -36,10 +37,11 @@ class OnDeviceTranslationServiceController {
   // Creates a translator class that implements
   // `mojom::Translator`, and bind it with the
   // `receiver`.
-  void CreateTranslator(const std::string& source_lang,
-                        const std::string& target_lang,
-                        mojo::PendingReceiver<mojom::Translator> receiver,
-                        base::OnceCallback<void(bool)> callback);
+  void CreateTranslator(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)>
+          callback);
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.
@@ -81,10 +83,11 @@ class OnDeviceTranslationServiceController {
       const std::string& target_lang);
 
   // Send the CreateTranslator IPC call to the OnDeviceTranslationService.
-  void CreateTranslatorImpl(const std::string& source_lang,
-                            const std::string& target_lang,
-                            mojo::PendingReceiver<mojom::Translator> receiver,
-                            base::OnceCallback<void(bool)> callback);
+  void CreateTranslatorImpl(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)>
+          callback);
 
   // Called when the TranslateKitBinaryPath pref is changed.
   void OnTranslateKitBinaryPathChanged(const std::string& pref_name);

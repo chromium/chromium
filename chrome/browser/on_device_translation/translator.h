@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
@@ -15,9 +16,10 @@ namespace on_device_translation {
 // exposes the `Translate()` method to do translation.
 class Translator : public blink::mojom::Translator {
  public:
-  Translator(const std::string& source_lang,
-             const std::string& target_lang,
-             base::OnceCallback<void(bool)> callback);
+  Translator(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      mojo::PendingRemote<on_device_translation::mojom::Translator> remote);
 
   Translator(const Translator&) = delete;
   Translator& operator=(const Translator&) = delete;

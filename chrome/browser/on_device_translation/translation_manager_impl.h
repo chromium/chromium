@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
@@ -44,19 +45,19 @@ class TranslationManagerImpl
   void CanCreateTranslator(const std::string& source_lang,
                            const std::string& target_lang,
                            CanCreateTranslatorCallback callback) override;
-
   void CreateTranslator(
-      const std::string& source_lang,
-      const std::string& target_lang,
-      mojo::PendingReceiver<blink::mojom::Translator> receiver,
-      CreateTranslatorCallback callback) override;
+      mojo::PendingRemote<
+          blink::mojom::TranslationManagerCreateTranslatorClient> client,
+      blink::mojom::TranslatorCreateOptionsPtr options) override;
 
   static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
                                        const std::string& source_lang,
                                        const std::string& target_lang);
 
+  mojo::UniqueReceiverSet<blink::mojom::Translator> translators_;
   base::WeakPtr<content::BrowserContext> browser_context_;
   mojo::Receiver<blink::mojom::TranslationManager> receiver_{this};
+  base::WeakPtrFactory<TranslationManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace on_device_translation

@@ -32,6 +32,23 @@ enum CanCreateTranslatorResult {
   kNoExceedsLanguagePackCountLimitation = 6,
 };
 
+// The client interface that receives a Translator from a TranslationManager.
+interface TranslationManagerCreateTranslatorClient {
+  // Called with a created Translator's mojo interface as a result for the
+  // CreateTranslator() method of the TranslationManager. When failed to create
+  // a Translator, this method is called with a null pending remote.
+  OnResult(pending_remote<blink.mojom.Translator>? translator);
+};
+
+// This is used when creating a new Translator for Translator API.
+// https://github.com/WICG/translation-api/
+struct TranslatorCreateOptions {
+  // This is `AITranslatorCreateOptions`'s `sourceLanguage` of Translator API.
+  string source_lang;
+  // This is `AITranslatorCreateOptions`'s `targetLanguage` of Translator API.
+  string target_lang;
+};
+
 // The manager for on-device translation.
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
@@ -39,11 +56,11 @@ interface TranslationManager {
   CanCreateTranslator(
     string source_lang, string target_lang
   ) => (CanCreateTranslatorResult result);
+
   // Creates a translator that could translate texts from `source_lang`
-  // to `target_lang`. The translator will be bound to the `receiver`, and the
-  // result will be passed to the callback.
+  // to `target_lang` of the passed `options`. When the passed client is
+  // disconnected, the creation process will be aborted.
   CreateTranslator(
-    string source_lang, string target_lang,
-    pending_receiver<blink.mojom.Translator> receiver
-  ) => (bool success);
+    pending_remote<TranslationManagerCreateTranslatorClient> client,
+    TranslatorCreateOptions options);
 };

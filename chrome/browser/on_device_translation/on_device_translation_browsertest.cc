@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -35,6 +36,11 @@ using ::testing::Invoke;
 namespace on_device_translation {
 
 namespace {
+
+std::string CreateFakeDictionaryData(const std::string& sourceLang,
+                                     const std::string& targetLang) {
+  return base::StringPrintf("%s to %s: ", sourceLang, targetLang);
+}
 
 class MockComponentManager : public ComponentManager {
  public:
@@ -81,7 +87,7 @@ class MockComponentManager : public ComponentManager {
 
   // Installs the mock language pack.
   void InstallMockLanguagePack(LanguagePackKey language_pack_key,
-                               const std::string_view fake_dictionary_data) {
+                               const std::string& fake_dictionary_data) {
     base::ScopedAllowBlockingForTesting allow_io;
     const auto dict_dir_path =
         package_dir_.AppendASCII(GetPackageInstallDirName(language_pack_key));
@@ -100,9 +106,70 @@ class MockComponentManager : public ComponentManager {
         GetComponentPathPrefName(*config), dict_dir_path);
   }
 
+  // Post a task to call InstallMockLanguagePack()
+  void InstallMockLanguagePackLater(
+      LanguagePackKey language_pack_key,
+      const std::string_view fake_dictionary_data) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MockComponentManager::InstallMockLanguagePack,
+                       weak_ptr_factory_.GetWeakPtr(), language_pack_key,
+                       std::string(fake_dictionary_data)));
+  }
+
  private:
   const base::FilePath package_dir_;
+  base::WeakPtrFactory<MockComponentManager> weak_ptr_factory_{this};
 };
+
+void TestSimpleTranslationWorks(Browser* browser,
+                                const std::string& sourceLang,
+                                const std::string& targetLang) {
+  // Translate "hello" from `sourceLang` to `targetLang`.
+  // Note: the mock TranslateKit component returns the concatenation of the
+  // content of "dict.dat" in the language pack and the input text.
+  // See comments in mock_translate_kit_lib.cc for more details.
+  EXPECT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(R"(
+        (async () => {
+          try {
+            const translator = await translation.createTranslator({
+              sourceLanguage: '%s',
+              targetLanguage: '%s',
+            });
+            return await translator.translate('hello');
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )",
+                                      sourceLang, targetLang))
+                .ExtractString(),
+            base::StringPrintf("%s to %s: hello", sourceLang, targetLang));
+}
+
+void TestCreateTranslator(Browser* browser,
+                          const std::string& sourceLang,
+                          const std::string& targetLang,
+                          const std::string& result) {
+  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(R"(
+  (async () => {
+    try {
+      await translation.createTranslator({
+          sourceLanguage: '%s',
+          targetLanguage: '%s',
+        });
+      return 'OK';
+    } catch (e) {
+      return e.toString();
+    }
+    })();
+  )",
+                                      sourceLang, targetLang))
+                .ExtractString(),
+            result);
+}
 
 }  // namespace
 
@@ -131,6 +198,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests the behavior of createTranslator().
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
   MockComponentManager mock_component_manager(GetTempDir());
   CHECK(ui_test_utils::NavigateToURL(
@@ -153,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
                    R"(
   (() => {
     try {
-      window._testPromise =  translation.createTranslator({
+      window._testPromise = translation.createTranslator({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -173,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
   // Install the mock TranslateKit component.
   mock_component_manager.InstallMockTranslateKitComponent();
   // Install the mock language pack.
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja,
-                                                 "English to Japanese: ");
+  mock_component_manager.InstallMockLanguagePack(
+      LanguagePackKey::kEn_Ja, CreateFakeDictionaryData("en", "ja"));
   // Translate "hello" to Japanese.
   // Note: the mock TranslateKit component returns the concatenation of the
   // content of "dict.dat" in the language pack and the input text.
@@ -191,7 +259,117 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
         })();
       )")
                 .ExtractString(),
-            "English to Japanese: hello");
+            "en to ja: hello");
+}
+
+// Tests the behavior of TranslationAPILimitLanguagePackCount
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       ExceedLanguagePackCount) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  // Install the mock TranslateKit component.
+  mock_component_manager.InstallMockTranslateKitComponent();
+
+  EXPECT_CALL(mock_component_manager,
+              RegisterTranslateKitLanguagePackComponent(_))
+      .WillOnce(Invoke([&](LanguagePackKey key) {
+        EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
+        mock_component_manager.InstallMockLanguagePackLater(
+            key, CreateFakeDictionaryData("en", "ja"));
+      }))
+      .WillOnce(Invoke([&](LanguagePackKey key) {
+        EXPECT_EQ(key, LanguagePackKey::kEn_Es);
+        mock_component_manager.InstallMockLanguagePackLater(
+            key, CreateFakeDictionaryData("en", "es"));
+      }))
+      .WillOnce(Invoke([&](LanguagePackKey key) {
+        EXPECT_EQ(key, LanguagePackKey::kEn_Zh);
+        mock_component_manager.InstallMockLanguagePackLater(
+            key, CreateFakeDictionaryData("en", "zh"));
+      }));
+
+  // Create a translator for En => Ja.
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+  // Create a translator for En => Es.
+  TestSimpleTranslationWorks(browser(), "en", "es");
+  // Create a translator for En => Zh.
+  TestSimpleTranslationWorks(browser(), "en", "zh");
+  // Create a translator for En => Hi.
+  TestCreateTranslator(browser(), "en", "hi",
+                       "NotSupportedError: Unable to create translator for the "
+                       "given source and target language.");
+}
+
+// Tests the behavior of createTranslator() when the target language is
+// unsupported.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CreateTranslatorUnsupportedLanguage) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+  // Create a translator for unsupported language.
+  TestCreateTranslator(browser(), "en", "xx",
+                       "NotSupportedError: Unable to create translator for the "
+                       "given source and target language.");
+}
+
+// Tests that the browser process can handle the case that the frame is deleted
+// while creating a translator.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       FrameDeletedWhileCreatingATranslator) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  base::RunLoop run_loop_for_register_translate_kit;
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .WillOnce(Invoke([&]() { run_loop_for_register_translate_kit.Quit(); }));
+
+  base::RunLoop run_loop_for_register_language_pack;
+  EXPECT_CALL(mock_component_manager,
+              RegisterTranslateKitLanguagePackComponent(_))
+      .WillOnce(Invoke([&](LanguagePackKey key) {
+        EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
+        run_loop_for_register_language_pack.Quit();
+      }));
+
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Create a translator in an iframe.
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     R"(
+  (() => {
+      window._testIframe = document.createElement('iframe');
+      document.body.appendChild(window._testIframe);
+      window._testIframe.contentWindow.translation.createTranslator({
+          sourceLanguage: 'en',
+          targetLanguage: 'ja',
+        });
+    })();
+  )"));
+  // Wait until RegisterTranslateKitComponentImpl() is called.
+  run_loop_for_register_translate_kit.Run();
+  // Wait until RegisterTranslateKitLanguagePackComponent() is called.
+  run_loop_for_register_language_pack.Run();
+
+  // Deletes the iframe after the browser process receives the request.
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     "document.body.removeChild(window._testIframe);"));
+
+  // Install the mock TranslateKit component.
+  mock_component_manager.InstallMockTranslateKitComponent();
+  // Install the mock language pack.
+  mock_component_manager.InstallMockLanguagePack(
+      LanguagePackKey::kEn_Ja, CreateFakeDictionaryData("en", "ja"));
+
+  // Test that Translator API works even after the frame requesting a translator
+  // is deleted.
+  TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
 class OnDeviceTranslationCommandLineBrowserTest
@@ -211,37 +389,20 @@ class OnDeviceTranslationCommandLineBrowserTest
     CHECK(
         base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
             .WriteAndCheck(
-                0, base::byte_span_from_cstring("English to Japanese: ")));
+                0, base::as_byte_span(CreateFakeDictionaryData("en", "ja"))));
     command_line->AppendSwitchASCII(
         "translate-kit-packages",
         base::StrCat({"en,ja,", dict_dir_path.AsUTF8Unsafe()}));
   }
 };
 
+// Tests the behavior of createTranslator() when the command line flags are
+// provided.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCommandLineBrowserTest,
                        SimpleTranslation) {
   CHECK(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/empty.html")));
-  // Translate "hello" to Japanese.
-  // Note: the mock TranslateKit component returns the concatenation of the
-  // content of "dict.dat" in the language pack and the input text.
-  // See comments in mock_translate_kit_lib.cc for more details.
-  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                   R"(
-        (async () => {
-          try {
-            const translator = await  translation.createTranslator({
-              sourceLanguage: 'en',
-              targetLanguage: 'ja',
-            });
-            return await translator.translate('hello');
-          } catch (e) {
-            return e;
-          }
-        })();
-      )")
-                .ExtractString(),
-            "English to Japanese: hello");
+  TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
 }  // namespace on_device_translation

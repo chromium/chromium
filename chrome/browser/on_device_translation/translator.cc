@@ -11,14 +11,13 @@
 
 namespace on_device_translation {
 
-Translator::Translator(const std::string& source_lang,
-                       const std::string& target_lang,
-                       base::OnceCallback<void(bool)> callback)
-    : source_lang_(source_lang), target_lang_(target_lang) {
-  OnDeviceTranslationServiceController::GetInstance()->CreateTranslator(
-      source_lang, target_lang, translator_remote_.BindNewPipeAndPassReceiver(),
-      std::move(callback));
-}
+Translator::Translator(
+    const std::string& source_lang,
+    const std::string& target_lang,
+    mojo::PendingRemote<on_device_translation::mojom::Translator> remote)
+    : source_lang_(source_lang),
+      target_lang_(target_lang),
+      translator_remote_(std::move(remote)) {}
 
 Translator::~Translator() = default;
 

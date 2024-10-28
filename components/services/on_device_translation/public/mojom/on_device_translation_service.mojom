@@ -77,12 +77,13 @@ interface OnDeviceTranslationService {
   // when the binary or the language packages are updated (or uninstalled).
   SetServiceConfig(OnDeviceTranslationServiceConfig config);
 
-  // Binds the receiver to a `Translator` implementation that could
-  // do translation from `source_lang` to `target_lang`.
+  // Creates a `Translator` that could do translation from `source_lang` to
+  // `target_lang`. When succeeds, the result callback will be called with a
+  // valid `Translator` pending remote. Otherwise, the result callback will be
+  // called with a null pending remote.
   CreateTranslator(string source_lang,
-                   string target_lang,
-                   pending_receiver<Translator> receiver)
-      => (bool is_sucessful);
+                   string target_lang)
+      => (pending_remote<Translator>? translator);
 
   // Returns if the service could translate text from `source_lang` to
   // `target_lang`.

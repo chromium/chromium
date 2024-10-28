@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,24 +85,55 @@ void TranslationManagerImpl::CanCreateTranslator(
 }
 
 void TranslationManagerImpl::CreateTranslator(
-    const std::string& source_lang,
-    const std::string& target_lang,
-    mojo::PendingReceiver<blink::mojom::Translator> receiver,
-    CreateTranslatorCallback callback) {
-  RecordTranslationAPICallForLanguagePair("Create", source_lang, target_lang);
+    mojo::PendingRemote<blink::mojom::TranslationManagerCreateTranslatorClient>
+        client,
+    blink::mojom::TranslatorCreateOptionsPtr options) {
+  RecordTranslationAPICallForLanguagePair("Create", options->source_lang,
+                                          options->target_lang);
   CHECK(browser_context_);
   if (!PassAcceptLanguagesCheck(
           Profile::FromBrowserContext(browser_context_.get())
               ->GetPrefs()
               ->GetString(language::prefs::kAcceptLanguages),
-          source_lang, target_lang)) {
-    std::move(callback).Run(false);
+          options->source_lang, options->target_lang)) {
+    mojo::Remote(std::move(client))->OnResult(mojo::NullRemote());
     return;
   }
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<Translator>(source_lang, target_lang,
-                                   std::move(callback)),
-      std::move(receiver));
+
+  OnDeviceTranslationServiceController::GetInstance()->CreateTranslator(
+      options->source_lang, options->target_lang,
+      base::BindOnce(
+          [](base::WeakPtr<TranslationManagerImpl> self,
+             mojo::PendingRemote<
+                 blink::mojom::TranslationManagerCreateTranslatorClient> client,
+             const std::string& source_lang, const std::string& target_lang,
+             mojo::PendingRemote<on_device_translation::mojom::Translator>
+                 remote) {
+            if (!client || !self) {
+              // Request was aborted or the frame was destroyed. Note: Currently
+              // aborting createTranslator() is not supported yet.
+              // TODO(crbug.com/331735396): Support abort signal.
+              return;
+            }
+            if (!remote) {
+              mojo::Remote<
+                  blink::mojom::TranslationManagerCreateTranslatorClient>(
+                  std::move(client))
+                  ->OnResult(mojo::NullRemote());
+              return;
+            }
+            mojo::PendingRemote<::blink::mojom::Translator> blink_remote;
+            self->translators_.Add(
+                std::make_unique<Translator>(source_lang, target_lang,
+                                             std::move(remote)),
+                blink_remote.InitWithNewPipeAndPassReceiver());
+            mojo::Remote<
+                blink::mojom::TranslationManagerCreateTranslatorClient>(
+                std::move(client))
+                ->OnResult(std::move(blink_remote));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(client),
+          options->source_lang, options->target_lang));
 }
 
 // static

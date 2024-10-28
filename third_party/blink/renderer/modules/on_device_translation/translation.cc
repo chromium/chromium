@@ -5,18 +5,100 @@
 #include "third_party/blink/renderer/modules/on_device_translation/translation.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translation_language_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/on_device_translation/language_detector.h"
 #include "third_party/blink/renderer/modules/on_device_translation/language_translator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
+namespace {
+
+const char kExceptionMessageUnableToCreateTranslator[] =
+    "Unable to create translator for the given source and target language.";
+
+class CreateTranslatorClient
+    : public GarbageCollected<CreateTranslatorClient>,
+      public mojom::blink::TranslationManagerCreateTranslatorClient,
+      public AIMojoClient<LanguageTranslator> {
+ public:
+  CreateTranslatorClient(
+      ScriptState* script_state,
+      Translation* translation,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      ScriptPromiseResolver<LanguageTranslator>* resolver,
+      String source_language,
+      String target_language,
+      mojo::PendingReceiver<
+          mojom::blink::TranslationManagerCreateTranslatorClient>
+          pending_receiver)
+      : AIMojoClient(script_state,
+                     translation,
+                     resolver,
+                     // Currently abort signal is not supported.
+                     // TODO(crbug.com/331735396): Support abort signal.
+                     /*abort_signal=*/nullptr),
+        translation_(translation),
+        receiver_(this, translation_->GetExecutionContext()),
+        task_runner_(task_runner),
+        source_language_(source_language),
+        target_language_(target_language) {
+    receiver_.Bind(std::move(pending_receiver), task_runner);
+  }
+  ~CreateTranslatorClient() override = default;
+
+  CreateTranslatorClient(const CreateTranslatorClient&) = delete;
+  CreateTranslatorClient& operator=(const CreateTranslatorClient&) = delete;
+
+  void Trace(Visitor* visitor) const override {
+    AIMojoClient::Trace(visitor);
+    visitor->Trace(translation_);
+    visitor->Trace(receiver_);
+  }
+
+  void OnResult(
+      mojo::PendingRemote<mojom::blink::Translator> pending_remote) override {
+    if (!GetResolver()) {
+      // The request was aborted. Note: Currently abort signal is not supported.
+      // TODO(crbug.com/331735396): Support abort signal.
+      return;
+    }
+    if (pending_remote) {
+      GetResolver()->Resolve(MakeGarbageCollected<LanguageTranslator>(
+          source_language_, target_language_, std::move(pending_remote),
+          task_runner_));
+    } else {
+      GetResolver()->Reject(DOMException::Create(
+          kExceptionMessageUnableToCreateTranslator,
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+    }
+    Cleanup();
+  }
+
+  void ResetReceiver() override {
+    receiver_.reset();
+  }
+
+ private:
+  Member<Translation> translation_;
+  HeapMojoReceiver<mojom::blink::TranslationManagerCreateTranslatorClient,
+                   CreateTranslatorClient>
+      receiver_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const String source_language_;
+  const String target_language_;
+};
+
+}  // namespace
 
 using mojom::blink::CanCreateTranslatorResult;
 
@@ -108,32 +190,21 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
                                       "The execution context is not valid.");
     return EmptyPromise();
   }
-
+  CHECK(options);
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageTranslator>>(
           script_state);
-  LanguageTranslator* translator = MakeGarbageCollected<LanguageTranslator>(
-      options->sourceLanguage(), options->targetLanguage(), task_runner_);
   auto promise = resolver->Promise();
 
+  mojo::PendingRemote<mojom::blink::TranslationManagerCreateTranslatorClient>
+      client;
+  MakeGarbageCollected<CreateTranslatorClient>(
+      script_state, this, task_runner_, resolver, options->sourceLanguage(),
+      options->targetLanguage(), client.InitWithNewPipeAndPassReceiver());
   GetTranslationManagerRemote()->CreateTranslator(
-      options->sourceLanguage(), options->targetLanguage(),
-      translator->GetTranslatorReceiver(),
-      WTF::BindOnce(
-          [](ScriptPromiseResolver<LanguageTranslator>* resolver,
-             LanguageTranslator* translator, bool success) {
-            if (success) {
-              resolver->Resolve(translator);
-            } else {
-              resolver->Reject(DOMException::Create(
-                  "Unable to create translator for the given source and target "
-                  "language.",
-                  DOMException::GetErrorName(
-                      DOMExceptionCode::kNotSupportedError)));
-            }
-          },
-          WrapPersistent(resolver), WrapPersistent(translator)));
-
+      std::move(client),
+      mojom::blink::TranslatorCreateOptions::New(options->sourceLanguage(),
+                                                 options->targetLanguage()));
   return promise;
 }
 

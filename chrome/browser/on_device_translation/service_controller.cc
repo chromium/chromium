@@ -34,6 +34,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
@@ -175,8 +176,7 @@ OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() =
 void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
-    mojo::PendingReceiver<mojom::Translator> receiver,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
   std::set<LanguagePackKey> required_packs;
   std::vector<LanguagePackKey> required_not_installed_packs;
   // If the language packs are set by the command line, we don't need to check
@@ -196,7 +196,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
           RecordLanguagePairUma(
               "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
               source_lang, target_lang);
-          std::move(callback).Run(false);
+          std::move(callback).Run(mojo::NullRemote());
           return;
         }
       }
@@ -221,7 +221,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     // task and hadle the request as failure to avoid OOM of the browser
     // process.
     if (pending_tasks_.size() == kMaxPendingTaskCount) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(mojo::NullRemote());
       return;
     }
     pending_tasks_.emplace_back(
@@ -229,20 +229,17 @@ void OnDeviceTranslationServiceController::CreateTranslator(
         base::BindOnce(
             &OnDeviceTranslationServiceController::CreateTranslatorImpl,
             base::Unretained(this), source_lang, target_lang,
-            std::move(receiver), std::move(callback)));
+            std::move(callback)));
     return;
   }
-  CreateTranslatorImpl(source_lang, target_lang, std::move(receiver),
-                       std::move(callback));
+  CreateTranslatorImpl(source_lang, target_lang, std::move(callback));
 }
 
 void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     const std::string& source_lang,
     const std::string& target_lang,
-    mojo::PendingReceiver<mojom::Translator> receiver,
-    base::OnceCallback<void(bool)> callback) {
-  GetRemote()->CreateTranslator(source_lang, target_lang, std::move(receiver),
-                                std::move(callback));
+    base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
+  GetRemote()->CreateTranslator(source_lang, target_lang, std::move(callback));
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(

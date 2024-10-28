@@ -20,25 +20,23 @@ class LanguageTranslator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  LanguageTranslator(const WTF::String source_lang,
-                     const WTF::String target_lang,
-                     scoped_refptr<base::SequencedTaskRunner> task_runner);
+  LanguageTranslator(
+      const String source_lang,
+      const String target_lang,
+      mojo::PendingRemote<mojom::blink::Translator> pending_remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~LanguageTranslator() override = default;
 
   void Trace(Visitor* visitor) const override;
 
-  mojo::PendingReceiver<blink::mojom::blink::Translator>
-  GetTranslatorReceiver();
-
   // language_translator.idl implementation.
   ScriptPromise<IDLString> translate(ScriptState* script_state,
-                                     const WTF::String& input,
+                                     const String& input,
                                      ExceptionState& exception_state);
 
  private:
-  const WTF::String source_lang_;
-  const WTF::String target_lang_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const String source_lang_;
+  const String target_lang_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
 };
 

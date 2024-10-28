@@ -18,28 +18,24 @@
 namespace blink {
 
 LanguageTranslator::LanguageTranslator(
-    const WTF::String source_lang,
-    const WTF::String target_lang,
+    const String source_lang,
+    const String target_lang,
+    mojo::PendingRemote<mojom::blink::Translator> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : source_lang_(source_lang),
-      target_lang_(target_lang),
-      task_runner_(task_runner) {}
+    : source_lang_(source_lang), target_lang_(target_lang) {
+  translator_remote_.Bind(std::move(pending_remote), task_runner);
+}
 
 void LanguageTranslator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
 }
 
-mojo::PendingReceiver<blink::mojom::blink::Translator>
-LanguageTranslator::GetTranslatorReceiver() {
-  return translator_remote_.BindNewPipeAndPassReceiver(task_runner_);
-}
-
 // TODO(crbug.com/322229993): The new version is AITranslator::translate().
 // Delete this old version.
 ScriptPromise<IDLString> LanguageTranslator::translate(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
