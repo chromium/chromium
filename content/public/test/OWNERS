@@ -1,5 +1,3 @@
-sky@chromium.org
-
 # For download tests support review.
 per-file *download*=file://components/download/OWNERS
 per-file *test_file_error_injector*=file://components/download/OWNERS

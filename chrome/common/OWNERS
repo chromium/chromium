@@ -49,5 +49,4 @@ per-file webui_util*=file://ui/webui/PLATFORM_OWNERS
 # Other stuff.
 per-file autocomplete_match_type.*=mpearson@chromium.org
 per-file autocomplete_match_type.*=pkasting@chromium.org
-per-file autocomplete_match_type.*=sky@chromium.org
 per-file crash_keys*=file://components/crash/OWNERS
