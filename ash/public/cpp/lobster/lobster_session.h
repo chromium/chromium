@@ -14,7 +14,6 @@
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "ui/base/ime/input_method.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -29,7 +28,6 @@ class ASH_PUBLIC_EXPORT LobsterSession {
                                  const base::FilePath& file_path,
                                  StatusCallback) = 0;
   virtual void CommitAsInsert(int candidate_id,
-                              ui::TextInputClient* text_input_client,
                               StatusCallback callback) = 0;
   virtual void CommitAsDownload(int candidate_id,
                                 const base::FilePath& file_path,

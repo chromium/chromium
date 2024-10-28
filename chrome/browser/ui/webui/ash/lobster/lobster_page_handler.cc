@@ -13,8 +13,6 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/input_method.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -24,21 +22,6 @@ namespace {
 base::FilePath GetDownloadDirectoryForProfile(Profile* profile) {
   return DownloadPrefs::FromBrowserContext(profile)
       ->GetDefaultDownloadDirectoryForProfile();
-}
-
-ui::TextInputClient* GetFocusedTextInputClient() {
-  if (IMEBridge::Get() == nullptr ||
-      IMEBridge::Get()->GetInputContextHandler() == nullptr) {
-    return nullptr;
-  }
-
-  const ui::InputMethod* input_method =
-      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  if (!input_method || !input_method->GetTextInputClient()) {
-    return nullptr;
-  }
-
-  return input_method->GetTextInputClient();
 }
 
 bool IsUrlAllowed(const GURL& url) {
@@ -72,10 +55,7 @@ void LobsterPageHandler::DownloadCandidate(uint32_t candidate_id,
 
 void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
                                         CommitAsInsertCallback callback) {
-  // TODO: b:348279280 - Adds the logic to re-focus on the text input field,
-  // close the UI and insert the image
-  session_->CommitAsInsert(candidate_id, GetFocusedTextInputClient(),
-                           std::move(callback));
+  session_->CommitAsInsert(candidate_id, std::move(callback));
 }
 
 void LobsterPageHandler::CommitAsDownload(uint32_t candidate_id,

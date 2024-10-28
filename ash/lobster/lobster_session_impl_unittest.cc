@@ -67,6 +67,11 @@ class MockLobsterClient : public LobsterClient {
                const std::string& description,
                const std::string& image_bytes),
               (override));
+  MOCK_METHOD(void,
+              QueueInsertion,
+              (const std::string& image_bytes,
+               StatusCallback insert_status_callback),
+              (override));
   MOCK_METHOD(void, LoadUI, (std::optional<std::string> query), (override));
   MOCK_METHOD(void, ShowUI, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
@@ -381,7 +386,6 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToDownloadCandidate) {
 TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsInsert) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
-  ui::FakeTextInputClient text_input_client(&ime(), {.can_insert_image = true});
 
   ON_CALL(*lobster_client,
           InflateCandidate(/*seed=*/21, testing::_, testing::_))
@@ -394,12 +398,18 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsInsert) {
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
+  ON_CALL(*lobster_client, QueueInsertion(/*image_bytes=*/"a1b2c3", testing::_))
+      .WillByDefault([](const std::string& image_bytes,
+                        LobsterClient::StatusCallback callback) {
+        std::move(callback).Run(true);
+      });
+
   LobsterSessionImpl session(std::move(lobster_client), store,
                              LobsterEntryPoint::kPicker);
 
   base::test::TestFuture<bool> future;
 
-  session.CommitAsInsert(/*id=*/1, &text_input_client, future.GetCallback());
+  session.CommitAsInsert(/*id=*/1, future.GetCallback());
   RunUntilIdle();
 
   EXPECT_TRUE(future.Get());
@@ -414,8 +424,6 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsInsert) {
 TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsInsert) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
-  ui::FakeTextInputClient text_input_client(&ime(),
-                                            {.can_insert_image = false});
 
   ON_CALL(*lobster_client,
           InflateCandidate(/*seed=*/21, testing::_, testing::_))
@@ -429,7 +437,7 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsInsert) {
 
   base::test::TestFuture<bool> future;
 
-  session.CommitAsInsert(/*id=*/1, nullptr, future.GetCallback());
+  session.CommitAsInsert(/*id=*/1, future.GetCallback());
   RunUntilIdle();
 
   EXPECT_FALSE(future.Get());
@@ -444,7 +452,6 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsInsert) {
 TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsDownload) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
-  ui::FakeTextInputClient text_input_client(&ime(), {.can_insert_image = true});
 
   ON_CALL(*lobster_client,
           InflateCandidate(/*seed=*/21, testing::_, testing::_))
@@ -478,8 +485,6 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsDownload) {
 TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsDownload) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
-  ui::FakeTextInputClient text_input_client(&ime(),
-                                            {.can_insert_image = false});
 
   ON_CALL(*lobster_client,
           InflateCandidate(/*seed=*/21, testing::_, testing::_))

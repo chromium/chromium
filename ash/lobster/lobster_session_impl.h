@@ -43,7 +43,6 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
                          const base::FilePath& file_path,
                          StatusCallback callback) override;
   void CommitAsInsert(int candidate_id,
-                      ui::TextInputClient* text_input_client,
                       StatusCallback callback) override;
   void CommitAsDownload(int candidate_id,
                         const base::FilePath& file_path,
@@ -63,10 +62,6 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
  private:
   void OnRequestCandidates(RequestCandidatesCallback callback,
                            const LobsterResult& image_candidates);
-
-  void InflateCandidateAndPerformAction(int candidate_id,
-                                        ActionCallback action_callback,
-                                        StatusCallback status_callback);
 
   std::unique_ptr<LobsterClient> client_;
 

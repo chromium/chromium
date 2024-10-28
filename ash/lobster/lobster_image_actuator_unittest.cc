@@ -56,30 +56,27 @@ TEST_F(LobsterImageActuatorTest, CanInsertImageIntoEligibleTextInputField) {
   ui::FakeTextInputClient text_input_client(&ime(), {.can_insert_image = true});
   base::test::TestFuture<bool> future;
 
-  InsertImageOrCopyToClipboard(&text_input_client,
-                               /*image_bytes=*/"a1b2c3", future.GetCallback());
+  EXPECT_TRUE(InsertImageOrCopyToClipboard(&text_input_client,
+                                           /*image_bytes=*/"a1b2c3"));
 
   EXPECT_EQ(text_input_client.last_inserted_image_url(),
             GURL(base::StrCat(
                 {"data:image/jpeg;base64,", base::Base64Encode("a1b2c3")})));
-  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(LobsterImageActuatorTest,
        FallbackToCopyToClipboardInIneligibleTextInputField) {
   ui::FakeTextInputClient text_input_client(&ime(),
                                             {.can_insert_image = false});
-  base::test::TestFuture<bool> future;
 
-  InsertImageOrCopyToClipboard(&text_input_client,
-                               /*image_bytes=*/"a1b2c3", future.GetCallback());
+  EXPECT_FALSE(InsertImageOrCopyToClipboard(&text_input_client,
+                                            /*image_bytes=*/"a1b2c3"));
 
   EXPECT_EQ(text_input_client.last_inserted_image_url(), std::nullopt);
   EXPECT_EQ(
       ReadHTMLFromClipboard(ui::Clipboard::GetForCurrentThread()),
       base::StrCat({u"<img src=\"data:image/jpeg;base64,",
                     base::UTF8ToUTF16(base::Base64Encode("a1b2c3")), u"\">"}));
-  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(LobsterImageActuatorTest, WriteImageToPathCreatesNewFile) {

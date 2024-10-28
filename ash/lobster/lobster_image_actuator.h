@@ -22,9 +22,8 @@ using StatusCallback = base::OnceCallback<void(bool)>;
 
 }  // namespace
 
-void ASH_EXPORT InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
-                                             const std::string& image_bytes,
-                                             StatusCallback status_callback);
+bool ASH_EXPORT InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
+                                             const std::string& image_bytes);
 
 void ASH_EXPORT WriteImageToPath(const base::FilePath& path,
                                  const std::string& image_bytes,

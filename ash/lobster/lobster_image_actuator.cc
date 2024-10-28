@@ -18,28 +18,24 @@
 
 namespace ash {
 
-void InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
-                                  const std::string& image_bytes,
-                                  StatusCallback status_callback) {
+bool InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
+                                  const std::string& image_bytes) {
   GURL image_data_url(base::StrCat(
       {"data:image/jpeg;base64,", base::Base64Encode(image_bytes)}));
 
   if (!image_data_url.is_valid()) {
     LOG(ERROR) << "The image data is broken.";
-    std::move(status_callback).Run(false);
-    return;
+    return false;
   }
 
   if (!input_client) {
     LOG(ERROR) << "No valid input client found.";
-    std::move(status_callback).Run(false);
-    return;
+    return false;
   }
 
   if (input_client->CanInsertImage()) {
     input_client->InsertImage(image_data_url);
-    std::move(status_callback).Run(true);
-    return;
+    return true;
   }
 
   // Overwrite the clipboard data with the image data url.
@@ -51,7 +47,7 @@ void InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
                        /*source_url=*/"");
   // TODO: b:369306847 - Show a toast notification if needed.
 
-  std::move(status_callback).Run(false);
+  return false;
 }
 
 void WriteImageToPath(const base::FilePath& file_path,

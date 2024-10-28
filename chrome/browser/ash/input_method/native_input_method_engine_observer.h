@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/pref_change_recorder.h"
 #include "chrome/browser/ash/input_method/suggestions_collector.h"
+#include "chrome/browser/ash/lobster/lobster_event_sink.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/ash/services/ime/public/mojom/connection_factory.mojom.h"
@@ -51,6 +52,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   NativeInputMethodEngineObserver(
       PrefService* prefs,
       EditorEventSink* editor_event_sink,
+      LobsterEventSink* lobster_event_sink,
       std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
       std::unique_ptr<AssistiveSuggester> assistive_suggester,
       std::unique_ptr<AutocorrectManager> autocorrect_manager,
@@ -186,6 +188,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   // Not owned by this class.
   raw_ptr<PrefService> prefs_ = nullptr;
   raw_ptr<EditorEventSink> editor_event_sink_;
+  raw_ptr<LobsterEventSink> lobster_event_sink_;
 
   std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
   mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;

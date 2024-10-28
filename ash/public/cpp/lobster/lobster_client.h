@@ -18,6 +18,7 @@ namespace ash {
 
 class ASH_PUBLIC_EXPORT LobsterClient {
  public:
+  using StatusCallback = base::OnceCallback<void(bool)>;
   virtual ~LobsterClient() = default;
 
   virtual void SetActiveSession(LobsterSession* session) = 0;
@@ -28,6 +29,8 @@ class ASH_PUBLIC_EXPORT LobsterClient {
   virtual void InflateCandidate(uint32_t seed,
                                 const std::string& query,
                                 InflateCandidateCallback) = 0;
+  virtual void QueueInsertion(const std::string& image_bytes,
+                              StatusCallback insert_status_callback) = 0;
   virtual bool SubmitFeedback(const std::string& query,
                               const std::string& model_version,
                               const std::string& description,
