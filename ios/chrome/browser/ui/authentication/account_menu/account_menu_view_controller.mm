@@ -103,8 +103,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIButton* _ellipsisButton;
   CentralAccountView* _identityAccountView;
   BOOL _resizeReady;
-  // The index path of the cell on which the user tapped.
-  // It should be nil when the data source update the table content.
+  // The index path of the cell on which the user tapped while account switching
+  // is in progress. It should be reset to nil before any table content occurs.
   NSIndexPath* _selectedIndexPath;
 }
 
@@ -473,12 +473,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     base::RecordAction(
         base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
     CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
-    TableViewAccountCell* cell =
-        base::apple::ObjCCastStrict<TableViewAccountCell>(
-            [self.tableView cellForRowAtIndexPath:indexPath]);
-    [self setActivityIndicator:cell];
-    [self.mutator accountTappedWithGaiaID:gaiaID targetRect:cellRect];
     _selectedIndexPath = indexPath;
+    [self.mutator accountTappedWithGaiaID:gaiaID targetRect:cellRect];
   } else {
     // Otherwise `itemIdentifier` is a `RowIdentifier`.
     RowIdentifier rowIdentifier = static_cast<RowIdentifier>(
@@ -533,6 +529,29 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 #pragma mark - AccountMenuConsumer
 
+- (void)switchingStarted {
+  CHECK(_selectedIndexPath, base::NotFatalUntil::M135);
+  TableViewAccountCell* cell =
+      base::apple::ObjCCastStrict<TableViewAccountCell>(
+          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
+  [self setActivityIndicator:cell];
+  self.modalInPresentation = YES;
+  _ellipsisButton.enabled = NO;
+}
+
+- (void)switchingStopped {
+  if (!_selectedIndexPath) {
+    return;
+  }
+  TableViewAccountCell* cell =
+      base::apple::ObjCCastStrict<TableViewAccountCell>(
+          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
+  cell.accessoryView = nil;
+  _selectedIndexPath = nil;
+  self.modalInPresentation = NO;
+  _ellipsisButton.enabled = YES;
+}
+
 - (void)updatePrimaryAccount {
   _identityAccountView = [[CentralAccountView alloc]
         initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
@@ -548,6 +567,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)updateErrorSection:(AccountErrorUIInfo*)error {
+  CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
   if (error == nil) {
     // The error disappeared.
@@ -574,12 +594,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove {
+  CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
   [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
-  TableViewAccountCell* cell =
-      base::apple::ObjCCastStrict<TableViewAccountCell>(
-          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
-  cell.accessoryView = nil;
-  _selectedIndexPath = nil;
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];

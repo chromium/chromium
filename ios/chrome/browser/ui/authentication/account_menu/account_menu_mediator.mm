@@ -275,6 +275,7 @@
     return;
   }
   [self.delegate blockOtherScene];
+  [self.consumer switchingStarted];
   _blockUpdates = YES;
   _blockUserInteractions = YES;
   id<SystemIdentity> newIdentity = nil;
@@ -484,6 +485,7 @@
     // The mediator was disconnected. Don’t restart updates.
     return;
   }
+  [self.consumer switchingStopped];
   _blockUpdates = NO;
   [self updateIdentities];
   [self onSyncStateChanged];
