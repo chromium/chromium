@@ -1,0 +1,10 @@
+monorail: {
+  component:"Internals>Permissions>PermissionElement"
+}
+team_email: "permissions-core@google.com"
+wpt: {
+  notify: YES
+}
+buganizer_public: {
+  component_id: 1563542
+}
