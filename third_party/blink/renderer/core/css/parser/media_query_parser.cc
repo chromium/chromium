@@ -121,14 +121,14 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
 
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
     const String& query_string,
-    const ExecutionContext* execution_context) {
+    ExecutionContext* execution_context) {
   CSSParserTokenStream stream(query_string);
   return ParseMediaQuerySet(stream, execution_context);
 }
 
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
     CSSParserTokenStream& stream,
-    const ExecutionContext* execution_context) {
+    ExecutionContext* execution_context) {
   return MediaQueryParser(kMediaQuerySetParser, kHTMLStandardMode,
                           execution_context)
       .ParseImpl(stream);
@@ -137,14 +137,14 @@ MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySetInMode(
     CSSParserTokenStream& stream,
     CSSParserMode mode,
-    const ExecutionContext* execution_context) {
+    ExecutionContext* execution_context) {
   return MediaQueryParser(kMediaQuerySetParser, mode, execution_context)
       .ParseImpl(stream);
 }
 
 MediaQuerySet* MediaQueryParser::ParseMediaCondition(
     CSSParserTokenStream& stream,
-    const ExecutionContext* execution_context) {
+    ExecutionContext* execution_context) {
   return MediaQueryParser(kMediaConditionParser, kHTMLStandardMode,
                           execution_context)
       .ParseImpl(stream);
@@ -152,7 +152,7 @@ MediaQuerySet* MediaQueryParser::ParseMediaCondition(
 
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
                                    CSSParserMode mode,
-                                   const ExecutionContext* execution_context,
+                                   ExecutionContext* execution_context,
                                    SyntaxLevel syntax_level)
     : parser_type_(parser_type),
       mode_(mode),
@@ -359,6 +359,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
           auto left = MediaQueryExpComparison();
           auto right = MediaQueryExpComparison(*value, op);
 
+          UseCountRangeSyntax();
           return MakeGarbageCollected<MediaQueryFeatureExpNode>(
               MediaQueryExp::Create(feature_name,
                                     MediaQueryExpBounds(left, right)));
@@ -422,6 +423,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     auto left = MediaQueryExpComparison(*value1, op1);
     auto right = MediaQueryExpComparison();
 
+    UseCountRangeSyntax();
     return MakeGarbageCollected<MediaQueryFeatureExpNode>(
         MediaQueryExp::Create(feature_name, MediaQueryExpBounds(left, right)));
   }
@@ -445,6 +447,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     return nullptr;
   }
 
+  UseCountRangeSyntax();
   return MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
       feature_name,
       MediaQueryExpBounds(MediaQueryExpComparison(*value1, op1),
@@ -614,6 +617,10 @@ MediaQuerySet* MediaQueryParser::ParseImpl(CSSParserTokenStream& stream) {
   } while (!stream.AtEnd() && ConsumeUntilCommaInclusive(stream));
 
   return MakeGarbageCollected<MediaQuerySet>(std::move(queries));
+}
+
+void MediaQueryParser::UseCountRangeSyntax() {
+  UseCounter::Count(execution_context_, WebFeature::kMediaQueryRangeSyntax);
 }
 
 }  // namespace blink

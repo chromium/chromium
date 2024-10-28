@@ -10775,6 +10775,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5127" label="PerformanceNavigationTimingConfidence"/>
   <int value="5128" label="HttpParsersParseDateFromUTCStringDifferent"/>
   <int value="5129" label="HttpParsersParseDateFromStringDifferent"/>
+  <int value="5130" label="MediaQueryRangeSyntax"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33639,6 +33640,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="142" label="WillReadFrequently"/>
   <int value="143" label="StartingStyle"/>
   <int value="144" label="DocumentCaretpositionfrompoint"/>
+  <int value="145" label="MediaQueryRangeSyntax"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

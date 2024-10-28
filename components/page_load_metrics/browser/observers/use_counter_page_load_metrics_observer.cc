@@ -478,6 +478,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSAtRuleStartingStyle, WebDXFeature::kStartingStyle},
           {WebFeature::kCaretPositionFromPoint,
            WebDXFeature::kDocumentCaretpositionfrompoint},
+          {WebFeature::kMediaQueryRangeSyntax,
+           WebDXFeature::kMediaQueryRangeSyntax},
       }};
 
   return *kMap;

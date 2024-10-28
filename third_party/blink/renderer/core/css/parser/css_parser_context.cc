@@ -244,7 +244,7 @@ const Document* CSSParserContext::GetDocument() const {
 
 // Fuzzers may execution CSS parsing code without a Document being available,
 // thus this method can return null.
-const ExecutionContext* CSSParserContext::GetExecutionContext() const {
+ExecutionContext* CSSParserContext::GetExecutionContext() const {
   return (document_.Get()) ? document_.Get()->GetExecutionContext() : nullptr;
 }
 

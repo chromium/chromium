@@ -150,7 +150,7 @@ MediaValuesCached* CreateMediaValues(
 
 bool MediaMatches(const String& media,
                   MediaValues* media_values,
-                  const ExecutionContext* execution_context) {
+                  ExecutionContext* execution_context) {
   MediaQuerySet* media_queries =
       MediaQuerySet::Create(media, execution_context);
   MediaQueryEvaluator* evaluator =

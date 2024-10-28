@@ -26,15 +26,14 @@ class CORE_EXPORT MediaQueryParser {
   MediaQueryParser(const MediaQueryParser&) = delete;
   MediaQueryParser& operator=(const MediaQueryParser&) = delete;
 
-  static MediaQuerySet* ParseMediaQuerySet(const String&,
-                                           const ExecutionContext*);
+  static MediaQuerySet* ParseMediaQuerySet(const String&, ExecutionContext*);
   static MediaQuerySet* ParseMediaQuerySet(CSSParserTokenStream&,
-                                           const ExecutionContext*);
+                                           ExecutionContext*);
   static MediaQuerySet* ParseMediaCondition(CSSParserTokenStream&,
-                                            const ExecutionContext*);
+                                            ExecutionContext*);
   static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenStream&,
                                                  CSSParserMode,
-                                                 const ExecutionContext*);
+                                                 ExecutionContext*);
 
   // Passed to ConsumeFeature to determine which features are allowed.
   class FeatureSet {
@@ -73,7 +72,7 @@ class CORE_EXPORT MediaQueryParser {
 
   MediaQueryParser(ParserType,
                    CSSParserMode,
-                   const ExecutionContext*,
+                   ExecutionContext*,
                    SyntaxLevel = SyntaxLevel::kAuto);
 
   // [ not | only ]
@@ -138,9 +137,11 @@ class CORE_EXPORT MediaQueryParser {
 
   MediaQuerySet* ParseImpl(CSSParserTokenStream&);
 
+  void UseCountRangeSyntax();
+
   ParserType parser_type_;
   CSSParserMode mode_;
-  const ExecutionContext* execution_context_;
+  ExecutionContext* execution_context_;
   SyntaxLevel syntax_level_;
   // A fake CSSParserContext for use counter only.
   // TODO(xiaochengh): Plumb the real CSSParserContext from the document.
