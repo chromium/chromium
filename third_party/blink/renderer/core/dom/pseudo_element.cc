@@ -472,6 +472,11 @@ bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       if (pseudo_id != kPseudoIdMarker)
         return false;
       break;
+    case kPseudoIdColumn:
+      if (pseudo_id != kPseudoIdScrollMarker) {
+        return false;
+      }
+      break;
     default:
       return false;
   }

@@ -3849,9 +3849,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
   }
 
-  bool update_pseudo_elements =
-      child_change.TraversePseudoElements(*this) && !IsColumnPseudoElement();
-  if (update_pseudo_elements) {
+  if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollPrevButton, child_change,
                         child_recalc_context);
@@ -3860,6 +3858,14 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
+    if (const ElementRareDataVector* data = GetElementRareData()) {
+      if (const ColumnPseudoElementsVector* columns =
+              data->GetColumnPseudoElements()) {
+        for (ColumnPseudoElement* column : *columns) {
+          column->RecalcStyle(child_change, child_recalc_context);
+        }
+      }
+    }
 
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       if (DynamicTo<HTMLOptionElement>(this)) {
@@ -3885,10 +3891,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
   }
 
-  DCHECK_EQ(
-      update_pseudo_elements,
-      child_change.TraversePseudoElements(*this) && !IsColumnPseudoElement());
-  if (update_pseudo_elements) {
+  if (child_change.TraversePseudoElements(*this)) {
     UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
                         child_recalc_context);
