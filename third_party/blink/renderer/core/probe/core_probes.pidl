@@ -218,5 +218,5 @@ interface CoreProbes {
   void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
   void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
   void DidInitializeFrameWidget(LocalFrame* document);
-  void UpdateScrollableFlag([Keep] Node* node);
+  void UpdateScrollableFlag([Keep] Node* node, std::optional<bool>);
 }
