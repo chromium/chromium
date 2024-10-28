@@ -53,7 +53,7 @@ String HighlightTypeToString(HighlightLayerType type) {
     case HighlightLayerType::kSearchText:
       result.Append("search");
       break;
-    case HighlightLayerType::kSearchTextCurrent:
+    case HighlightLayerType::kSearchTextActiveMatch:
       result.Append("search:current");
       break;
     case HighlightLayerType::kSelection:
@@ -114,7 +114,7 @@ enum PseudoId HighlightLayer::PseudoId() const {
       return kPseudoIdTargetText;
     case HighlightLayerType::kSearchText:
       return kPseudoIdSearchText;
-    case HighlightLayerType::kSearchTextCurrent:
+    case HighlightLayerType::kSearchTextActiveMatch:
       return kPseudoIdSearchText;
     case HighlightLayerType::kSelection:
       return kPseudoIdSelection;
@@ -445,7 +445,7 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
   if (!search.empty() &&
       RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
     layers.emplace_back(HighlightLayerType::kSearchText);
-    layers.emplace_back(HighlightLayerType::kSearchTextCurrent);
+    layers.emplace_back(HighlightLayerType::kSearchTextActiveMatch);
   }
   if (selection)
     layers.emplace_back(HighlightLayerType::kSelection);
@@ -466,7 +466,7 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
           : TextDecorationLine::kNone;
   for (wtf_size_t i = 1; i < layers.size(); i++) {
     layers[i].style =
-        layers[i].type == HighlightLayerType::kSearchTextCurrent
+        layers[i].type == HighlightLayerType::kSearchTextActiveMatch
             ? originating_style.HighlightData().SearchTextCurrent()
             : HighlightStyleUtils::HighlightPseudoStyle(
                   node, originating_style, layers[i].PseudoId(),
@@ -474,9 +474,9 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
     layers[i].text_style = HighlightStyleUtils::HighlightPaintingStyle(
         document, originating_style, layers[i].style, node,
         layers[i].PseudoId(), layers[i - 1].text_style.style, paint_info,
-        layers[i].type == HighlightLayerType::kSearchTextCurrent
-            ? SearchTextIsCurrent::kYes
-            : SearchTextIsCurrent::kNo);
+        layers[i].type == HighlightLayerType::kSearchTextActiveMatch
+            ? SearchTextIsActiveMatch::kYes
+            : SearchTextIsActiveMatch::kNo);
     layers[i].decorations_in_effect =
         layers[i].style && layers[i].style->HasAppliedTextDecorations()
             ? layers[i].style->TextDecorationsInEffect()
@@ -629,8 +629,8 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
       mapping_context.Reset();
       uint16_t layer_index_not_current =
           HighlightLayerIndex(layers, HighlightLayerType::kSearchText);
-      uint16_t layer_index_current =
-          HighlightLayerIndex(layers, HighlightLayerType::kSearchTextCurrent);
+      uint16_t layer_index_current = HighlightLayerIndex(
+          layers, HighlightLayerType::kSearchTextActiveMatch);
       for (const auto& marker : search) {
         std::optional<TextOffsetRange> marker_offsets =
             mapping_context.GetTextContentOffsets(*marker);
@@ -643,9 +643,10 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
           continue;
         }
         auto* text_match_marker = To<TextMatchMarker>(marker.Get());
-        HighlightLayerType type = text_match_marker->IsActiveMatch()
-                                      ? HighlightLayerType::kSearchTextCurrent
-                                      : HighlightLayerType::kSearchText;
+        HighlightLayerType type =
+            text_match_marker->IsActiveMatch()
+                ? HighlightLayerType::kSearchTextActiveMatch
+                : HighlightLayerType::kSearchText;
         uint16_t layer_index = text_match_marker->IsActiveMatch()
                                    ? layer_index_current
                                    : layer_index_not_current;

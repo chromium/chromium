@@ -66,11 +66,11 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
 
   const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
       text_node, text_style, kPseudoIdSelection);
-  paint_style =
-      HighlightStyleUtils::HighlightPaintingStyle(
-          GetDocument(), text_style, pseudo_style, text_node,
-          kPseudoIdSelection, paint_style, paint_info, SearchTextIsCurrent::kNo)
-          .style;
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+                    GetDocument(), text_style, pseudo_style, text_node,
+                    kPseudoIdSelection, paint_style, paint_info,
+                    SearchTextIsActiveMatch::kNo)
+                    .style;
 
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_TRUE(paint_style.shadow);
@@ -125,14 +125,14 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
   const ComputedStyle* div1_pseudo_style =
       HighlightStyleUtils::HighlightPseudoStyle(div1_text, div1_style,
                                                 kPseudoIdSelection);
-  paint_style =
-      HighlightStyleUtils::HighlightPaintingStyle(
-          GetDocument(), div1_style, div1_pseudo_style, div1_text,
-          kPseudoIdSelection, paint_style, paint_info, SearchTextIsCurrent::kNo)
-          .style;
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+                    GetDocument(), div1_style, div1_pseudo_style, div1_text,
+                    kPseudoIdSelection, paint_style, paint_info,
+                    SearchTextIsActiveMatch::kNo)
+                    .style;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div1_style, div1_text, std::nullopt, kPseudoIdSelection,
-      SearchTextIsCurrent::kNo);
+      SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_EQ(Color(0, 128, 0), background_color);
 
@@ -143,14 +143,14 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
   const ComputedStyle* div2_pseudo_style =
       HighlightStyleUtils::HighlightPseudoStyle(div2_text, div2_style,
                                                 kPseudoIdSelection);
-  paint_style =
-      HighlightStyleUtils::HighlightPaintingStyle(
-          GetDocument(), div2_style, div2_pseudo_style, div2_text,
-          kPseudoIdSelection, paint_style, paint_info, SearchTextIsCurrent::kNo)
-          .style;
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+                    GetDocument(), div2_style, div2_pseudo_style, div2_text,
+                    kPseudoIdSelection, paint_style, paint_info,
+                    SearchTextIsActiveMatch::kNo)
+                    .style;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div2_style, div2_text, std::nullopt, kPseudoIdSelection,
-      SearchTextIsCurrent::kNo);
+      SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(default_highlight_background, paint_style.current_color);
   // Paired defaults means this is transparent
   EXPECT_EQ(Color(0, 0, 0, 0), background_color);
@@ -162,15 +162,15 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
   const ComputedStyle* div3_pseudo_style =
       HighlightStyleUtils::HighlightPseudoStyle(div3_text, div3_style,
                                                 kPseudoIdSelection);
-  paint_style =
-      HighlightStyleUtils::HighlightPaintingStyle(
-          GetDocument(), div3_style, div3_pseudo_style, div3_text,
-          kPseudoIdSelection, paint_style, paint_info, SearchTextIsCurrent::kNo)
-          .style;
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+                    GetDocument(), div3_style, div3_pseudo_style, div3_text,
+                    kPseudoIdSelection, paint_style, paint_info,
+                    SearchTextIsActiveMatch::kNo)
+                    .style;
   std::optional<Color> current_layer_color = default_highlight_background;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div3_style, div3_text, current_layer_color,
-      kPseudoIdSelection, SearchTextIsCurrent::kNo);
+      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ(default_highlight_background, paint_style.current_color);
   EXPECT_EQ(Color(255, 255, 255), background_color);
@@ -234,7 +234,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, div_pseudo_style, div_text,
           kPseudoIdHighlight, paint_style, paint_info,
-          SearchTextIsCurrent::kNo);
+          SearchTextIsActiveMatch::kNo);
 
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
@@ -273,7 +273,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, selection_pseudo_style, div_text,
           kPseudoIdSelection, paint_style, paint_info,
-          SearchTextIsCurrent::kNo);
+          SearchTextIsActiveMatch::kNo);
   // Selection uses explicit default colors.
   EXPECT_TRUE(selection_paint_style.properties_using_current_color.empty());
 #endif
@@ -324,7 +324,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, div_pseudo_style, div_text,
           kPseudoIdHighlight, paint_style, paint_info,
-          SearchTextIsCurrent::kNo);
+          SearchTextIsActiveMatch::kNo);
 
   EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
       HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
@@ -380,17 +380,17 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   const ComputedStyle* div_pseudo_style =
       HighlightStyleUtils::HighlightPseudoStyle(div_node, div_style,
                                                 kPseudoIdSelection);
-  paint_style =
-      HighlightStyleUtils::HighlightPaintingStyle(
-          GetDocument(), div_style, div_pseudo_style, div_node,
-          kPseudoIdSelection, paint_style, paint_info, SearchTextIsCurrent::kNo)
-          .style;
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+                    GetDocument(), div_style, div_pseudo_style, div_node,
+                    kPseudoIdSelection, paint_style, paint_info,
+                    SearchTextIsActiveMatch::kNo)
+                    .style;
 
   EXPECT_EQ(Color(255, 0, 0), paint_style.fill_color);
 
   Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
-      kPseudoIdSelection, SearchTextIsCurrent::kNo);
+      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
 
   EXPECT_EQ(Color(0, 128, 0), background_color);
 }
@@ -431,7 +431,7 @@ TEST_F(HighlightStyleUtilsTest,
   std::optional<Color> previous_layer_color;
   Color div_background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
-      kPseudoIdSelection, SearchTextIsCurrent::kNo);
+      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), div_background_color);
 
   auto* div_inherited_vars = div_style.InheritedVariables();
@@ -441,7 +441,7 @@ TEST_F(HighlightStyleUtilsTest,
   Color first_p_background_color =
       HighlightStyleUtils::HighlightBackgroundColor(
           GetDocument(), first_p_style, first_p_node, previous_layer_color,
-          kPseudoIdSelection, SearchTextIsCurrent::kNo);
+          kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), first_p_background_color);
   auto* first_p_inherited_vars = first_p_style.InheritedVariables();
   EXPECT_EQ(div_inherited_vars, first_p_inherited_vars);
@@ -452,7 +452,7 @@ TEST_F(HighlightStyleUtilsTest,
   Color second_p_background_color =
       HighlightStyleUtils::HighlightBackgroundColor(
           GetDocument(), second_p_style, second_p_node, previous_layer_color,
-          kPseudoIdSelection, SearchTextIsCurrent::kNo);
+          kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 0, 255), second_p_background_color);
   auto* second_p_inherited_vars = second_p_style.InheritedVariables();
   EXPECT_NE(second_p_inherited_vars, first_p_inherited_vars);
@@ -464,7 +464,8 @@ TEST_F(HighlightStyleUtilsTest,
   Color second_strong_background_color =
       HighlightStyleUtils::HighlightBackgroundColor(
           GetDocument(), second_strong_style, second_strong_node,
-          previous_layer_color, kPseudoIdSelection, SearchTextIsCurrent::kNo);
+          previous_layer_color, kPseudoIdSelection,
+          SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 0, 255), second_strong_background_color);
   auto* second_strong_inherited_vars = second_strong_style.InheritedVariables();
   EXPECT_EQ(second_p_inherited_vars, second_strong_inherited_vars);
