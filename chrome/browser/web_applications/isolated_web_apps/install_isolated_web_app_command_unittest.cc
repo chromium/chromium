@@ -110,10 +110,8 @@ constexpr std::string_view kManifestPath =
 constexpr std::string_view kIconPath = "/icon.png";
 
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
-  web_package::SignedWebBundleId signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateRandomForProxyMode();
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      signed_web_bundle_id);
+      web_package::SignedWebBundleId::CreateRandomForProxyMode());
 }
 
 IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
@@ -908,8 +906,8 @@ class InstallIsolatedWebAppCommandBundleInstallSourceTest
 
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
        InstallationFinalizedWithCorrectInstallSurface) {
-  IsolatedWebAppBuilder builder{ManifestBuilder()};
-  auto app = builder.BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(test::GetDefaultEd25519KeyPair());
   app->FakeInstallPageState(profile());
   app->TrustSigningKey();
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();

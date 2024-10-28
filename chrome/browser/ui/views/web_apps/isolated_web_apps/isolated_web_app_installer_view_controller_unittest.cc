@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -100,13 +101,10 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
 IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
     const base::FilePath& bundle_path,
     const std::string& version) {
-  TestSignedWebBundleBuilder::BuildOptions bundle_options =
-      TestSignedWebBundleBuilder::BuildOptions().SetVersion(
-          base::Version(version));
-  auto bundle = TestSignedWebBundleBuilder::BuildDefault(bundle_options);
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(base::WriteFile(bundle_path, bundle.data));
-  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
+  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+          .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair())
+          ->web_bundle_id());
 }
 
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,

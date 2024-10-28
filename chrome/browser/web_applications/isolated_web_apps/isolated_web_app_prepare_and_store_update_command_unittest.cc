@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -104,10 +105,9 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
   }
 
   void WriteUpdateBundleToDisk() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    auto bundle = TestSignedWebBundleBuilder::BuildDefault(
-        TestSignedWebBundleBuilder::BuildOptions().SetVersion(update_version_));
-    ASSERT_THAT(base::WriteFile(update_bundle_path_, bundle.data), IsTrue());
+    IsolatedWebAppBuilder(
+        ManifestBuilder().SetVersion(update_version_.GetString()))
+        .BuildBundle(update_bundle_path_, test::GetDefaultEd25519KeyPair());
   }
 
   void InstallIwa() {

@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -122,9 +123,10 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
             .AppendASCII("foo")
             .Append(base::FilePath::kParentDirectory)
             .Append(base::FilePath::FromASCII("test-bundle.swbn"));
-    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
-    bundle_id_ = std::make_unique<web_package::SignedWebBundleId>(bundle.id);
-    CHECK(base::WriteFile(signed_web_bundle_path_, bundle.data));
+    IsolatedWebAppBuilder(
+        ManifestBuilder().SetName("Simple Isolated App").SetVersion("1.0.0"))
+        .BuildBundle(signed_web_bundle_path_, test::GetDefaultEd25519KeyPair());
+    bundle_id_ = test::GetDefaultEd25519WebBundleId();
 
     InstallIsolatedWebAppFromCommandLineBrowserTest::SetUp();
   }
@@ -139,7 +141,7 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
 
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath signed_web_bundle_path_;
-  std::unique_ptr<web_package::SignedWebBundleId> bundle_id_;
+  std::optional<web_package::SignedWebBundleId> bundle_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,

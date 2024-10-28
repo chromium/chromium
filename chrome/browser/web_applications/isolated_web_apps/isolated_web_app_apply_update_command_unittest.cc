@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -100,13 +101,14 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
   }
 
   void WriteUpdateBundleToDisk() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    auto bundle = TestSignedWebBundleBuilder::BuildDefault(
-        TestSignedWebBundleBuilder::BuildOptions().SetVersion(update_version_));
     base::FilePath bundle_path =
         update_bundle_location_.GetPath(profile()->GetPath());
-    ASSERT_THAT(base::CreateDirectory(bundle_path.DirName()), IsTrue());
-    ASSERT_THAT(base::WriteFile(bundle_path, bundle.data), IsTrue());
+    base::CreateDirectory(bundle_path.DirName());
+    IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+        IsolatedWebAppBuilder(
+            ManifestBuilder().SetVersion(update_version_.GetString()))
+            .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair())
+            ->web_bundle_id());
   }
 
   void InstallIwa(

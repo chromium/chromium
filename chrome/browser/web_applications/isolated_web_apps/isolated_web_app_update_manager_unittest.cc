@@ -275,21 +275,14 @@ class IsolatedWebAppUpdateManagerDevModeUpdateTest
 
 TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
        DiscoversLocalDevModeUpdate) {
-  auto key_pair = web_package::test::Ed25519KeyPair::CreateRandom();
-  TestSignedWebBundle update_bundle = TestSignedWebBundleBuilder::BuildDefault(
-      TestSignedWebBundleBuilder::BuildOptions()
-          .SetVersion(base::Version("2.0.0"))
-          .SetAppName("updated iwa")
-          .AddKeyPair(key_pair));
-
-  ASSERT_THAT(temp_dir_.CreateUniqueTempDir(), IsTrue());
-  base::FilePath path = temp_dir_.GetPath().AppendASCII("bundle.swbn");
-  base::WriteFile(path, update_bundle.data);
+  auto update_bundle =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetVersion("2.0.0").SetName("updated iwa"))
+          .BuildBundle();
 
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateForPublicKey(
-              key_pair.public_key));
+          update_bundle->web_bundle_id());
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "installed iwa 1 (unowned bundle)",
@@ -303,7 +296,8 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   fake_provider()
       .iwa_update_manager()
       .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-          IwaSourceBundleDevModeWithFileOp(path, kDefaultBundleDevFileOp),
+          IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
+                                           kDefaultBundleDevFileOp),
           url_info, future.GetCallback());
 
   EXPECT_THAT(future.Get(), ValueIs(Eq(base::Version("2.0.0"))));
@@ -1164,8 +1158,11 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     EXPECT_THAT(base::CreateDirectory(path.DirName()), IsTrue());
 
     auto update_bundle =
-        CreateBundle(iwa_info1_->update_version, iwa_info1_->key_pair);
-    EXPECT_THAT(base::WriteFile(path, update_bundle.data), IsTrue());
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .SetVersion(iwa_info1_->update_version.GetString())
+                .SetName("updated iwa"))
+            .BuildBundle(path, iwa_info1_->key_pair);
 
     std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
         iwa_info1_->url_info.origin().GetURL(),
