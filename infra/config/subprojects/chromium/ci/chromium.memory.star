@@ -908,10 +908,6 @@ linux_memory_builder(
     ),
     builderless = True,
     cores = 32,
-    # TODO (crbug.com/40248746): Once green builds have been established,
-    # add this to the gardener rotation, and make tree closing.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "linux|ubsan",
         short_name = "bld",
@@ -976,10 +972,6 @@ linux_memory_builder(
             ),
         },
     ),
-    # TODO (crbug.com/40248746): Once green builds have been established,
-    # add this to the gardener rotation, and make tree closing.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "linux|ubsan",
         short_name = "tst",

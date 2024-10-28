@@ -133,6 +133,7 @@ chromium/try/linux_chromium_compile_rel_ng
 chromium/try/linux_chromium_dbg_ng
 chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
+chromium/try/linux_chromium_ubsan_rel_ng
 chromium/try/mac-arm64-clobber-rel
 chromium/try/mac-arm64-dawn-rel
 chromium/try/mac-arm64-on-arm64-rel

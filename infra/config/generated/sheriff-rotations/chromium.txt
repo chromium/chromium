@@ -40,6 +40,8 @@ ci/Linux TSan Tests
 ci/Linux Tests
 ci/Linux Tests (Wayland)
 ci/Linux Tests (dbg)(1)
+ci/Linux UBSan Builder
+ci/Linux UBSan Tests
 ci/MSAN Release (chained origins)
 ci/MSAN Release (no origins)
 ci/Mac ASAN Release
