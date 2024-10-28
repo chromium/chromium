@@ -139,12 +139,12 @@ void MaybeRecordInteractionAsAction(MetricsHelper::Interaction interaction,
 
 MetricsHelper::~MetricsHelper() = default;
 
-MetricsHelper::ReportDetails::ReportDetails() {}
+MetricsHelper::ReportDetails::ReportDetails() = default;
 
 MetricsHelper::ReportDetails::ReportDetails(const ReportDetails& other) =
     default;
 
-MetricsHelper::ReportDetails::~ReportDetails() {}
+MetricsHelper::ReportDetails::~ReportDetails() = default;
 
 MetricsHelper::MetricsHelper(const GURL& request_url,
                              const ReportDetails settings,
