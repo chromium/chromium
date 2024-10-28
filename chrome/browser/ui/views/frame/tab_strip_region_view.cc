@@ -84,18 +84,19 @@ class FrameGrabHandle : public views::View {
 BEGIN_METADATA(FrameGrabHandle)
 END_METADATA
 
-bool ShouldShowNewTabButton(const Browser* browser) {
+bool ShouldShowNewTabButton(BrowserWindowInterface* browser) {
   // `browser` can be null in tests and `app_controller` will be null if
   // the browser is not for an app.
-  return !browser || !browser->app_controller() ||
-         !browser->app_controller()->ShouldHideNewTabButton();
+  return !browser || !browser->GetAppBrowserController() ||
+         !browser->GetAppBrowserController()->ShouldHideNewTabButton();
 }
 
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
-    : profile_(tab_strip->GetBrowser() ? tab_strip->GetBrowser()->profile()
-                                       : nullptr),
+    : profile_(tab_strip->GetBrowserWindowInterface()
+                   ? tab_strip->GetBrowserWindowInterface()->GetProfile()
+                   : nullptr),
       render_tab_search_before_tab_strip_(
           !tabs::GetTabSearchTrailingTabstrip(profile_)),
       tab_search_position_metrics_logger_(
@@ -111,15 +112,16 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   GetViewAccessibility().SetIsMultiselectable(true);
 
   tab_strip_ = tab_strip.get();
-  const Browser* browser = tab_strip_->GetBrowser();
+  BrowserWindowInterface* browser = tab_strip->GetBrowserWindowInterface();
 
   // Add and configure the TabSearchContainer.
   std::unique_ptr<TabSearchContainer> tab_search_container;
-  if (browser && browser->is_type_normal()) {
+  if (browser &&
+      (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     tab_search_container = std::make_unique<TabSearchContainer>(
-        tab_strip_->controller(), browser->tab_strip_model(),
-        render_tab_search_before_tab_strip_, this,
-        browser->browser_window_features()->tab_declutter_controller());
+        tab_strip_->controller(), browser->GetTabStripModel(),
+        render_tab_search_before_tab_strip_, this, browser,
+        browser->GetFeatures().tab_declutter_controller());
     tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
   }
@@ -130,9 +132,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     product_specifications_button =
         std::make_unique<ProductSpecificationsButton>(
-            tab_strip_->controller(), browser->tab_strip_model(),
-            browser->browser_window_features()
-                ->product_specifications_entry_point_controller(),
+            tab_strip_->controller(), browser->GetTabStripModel(),
+            browser->GetFeatures()
+                .product_specifications_entry_point_controller(),
             render_tab_search_before_tab_strip_, this);
     product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
                                                views::LayoutAlignment::kCenter);

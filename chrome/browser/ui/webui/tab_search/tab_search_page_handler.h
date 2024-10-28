@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
@@ -34,7 +35,6 @@ class Browser;
 class MetricsReporter;
 class TabOrganizationService;
 class OptimizationGuideKeyedService;
-class TabSearchUI;
 
 namespace tabs {
 class TabDeclutterController;
@@ -69,7 +69,7 @@ class TabSearchPageHandler
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       content::WebUI* web_ui,
-      TabSearchUI* webui_controller,
+      TopChromeWebUIController* webui_controller,
       MetricsReporter* metrics_reporter);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
@@ -138,11 +138,6 @@ class TabSearchPageHandler
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
 
-  void TabDeclutterControllerInstalled();
-  void RemoveDeclutterObserverForTesting() {
-    tab_declutter_observation_.Reset();
-  }
-
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).
   bool IsWebContentsVisible();
@@ -173,6 +168,9 @@ class TabSearchPageHandler
 
   std::vector<tabs::TabModel*> stale_tabs_for_testing() { return stale_tabs_; }
 
+  void SetTabDeclutterControllerForTesting(
+      tabs::TabDeclutterController* tab_declutter_controller);
+
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
@@ -199,7 +197,8 @@ class TabSearchPageHandler
   tab_search::mojom::ProfileDataPtr CreateProfileData();
   void UpdateStaleTabs();
 
-  tabs::TabDeclutterController* GetTabDeclutterController();
+  void SetTabDeclutterController(
+      tabs::TabDeclutterController* tab_declutter_controller);
 
   // Adds recently closed tabs and tab groups.
   void AddRecentlyClosedEntries(
@@ -260,16 +259,20 @@ class TabSearchPageHandler
                               std::optional<tab_groups::TabGroupId> new_group);
   void RemoveStaleTab(tabs::TabModel* tab_model);
 
+  // Called when the browser window context for this WebUI has changed.
+  void BrowserWindowInterfaceChanged();
+
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<TabSearchUI, DanglingUntriaged> webui_controller_;
+  const raw_ptr<TopChromeWebUIController, DanglingUntriaged> webui_controller_;
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
   raw_ptr<TabOrganizationService> organization_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
   // Tracks how many times |CloseTab()| has been evoked for the currently open
   // instance of Tab Search for logging in UMA.
@@ -292,6 +295,9 @@ class TabSearchPageHandler
   bool search_ready_to_show_ = false;
 
   bool disable_last_active_time_for_testing_ = false;
+
+  // Notifies this when the browser window context changes.
+  base::CallbackListSubscription browser_window_changed_subscription_;
 
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>

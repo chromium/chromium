@@ -16,10 +16,12 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager_observer.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +31,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class GURL;
-class Profile;
 class WebUIBubbleDialogView;
 
 // WebUIBubbleManager handles the creation / destruction of the WebUI bubble.
@@ -39,7 +40,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
   template <typename Controller>
   static std::unique_ptr<WebUIBubbleManager> Create(
       views::View* anchor_view,
-      Profile* profile,
+      BrowserWindowInterface* browser_window_interface,
       const GURL& webui_url,
       int task_manager_string_id,
       bool force_load_on_create = false);
@@ -87,10 +88,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
   }
   void ResetContentsWrapperForTesting();
   void DisableCloseBubbleHelperForTesting();
-
-  // Gets the WebUIContentsWrapper. This is available after calling
-  // ShowBubble().
-  virtual WebUIContentsWrapper* GetContentsWrapper() = 0;
+  WebUIContentsWrapper* GetContentsWrapperForTesting();
 
  protected:
   WebUIBubbleManager();
@@ -98,6 +96,10 @@ class WebUIBubbleManager : public views::WidgetObserver {
   virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) = 0;
+
+  // Gets the WebUIContentsWrapper. This is available after calling
+  // ShowBubble().
+  virtual WebUIContentsWrapper* GetContentsWrapper() = 0;
 
   WebUIContentsWrapper* cached_contents_wrapper() {
     return cached_contents_wrapper_.get();
@@ -149,28 +151,26 @@ template <typename T>
 class WebUIBubbleManagerImpl : public WebUIBubbleManager {
  public:
   WebUIBubbleManagerImpl(views::View* anchor_view,
-                         Profile* profile,
+                         BrowserWindowInterface* browser_window_interface,
                          const GURL& webui_url,
                          int task_manager_string_id,
                          bool force_load_on_create)
       : anchor_view_(anchor_view),
-        profile_(profile),
+        browser_window_interface_(browser_window_interface),
         webui_url_(webui_url),
         task_manager_string_id_(task_manager_string_id),
         force_load_on_create_(force_load_on_create) {}
   ~WebUIBubbleManagerImpl() override = default;
-
-  // WebUIBubbleManager:
-  WebUIContentsWrapper* GetContentsWrapper() override;
 
  private:
   // WebUIBubbleManager:
   base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) override;
+  WebUIContentsWrapper* GetContentsWrapper() override;
 
   const raw_ptr<views::View> anchor_view_;
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const GURL webui_url_;
   const int task_manager_string_id_;
 
@@ -183,12 +183,12 @@ class WebUIBubbleManagerImpl : public WebUIBubbleManager {
 template <typename Controller>
 std::unique_ptr<WebUIBubbleManager> WebUIBubbleManager::Create(
     views::View* anchor_view,
-    Profile* profile,
+    BrowserWindowInterface* browser_window_interface,
     const GURL& webui_url,
     int task_manager_string_id,
     bool force_load_on_create) {
   return std::make_unique<WebUIBubbleManagerImpl<Controller>>(
-      anchor_view, profile, webui_url, task_manager_string_id,
+      anchor_view, browser_window_interface, webui_url, task_manager_string_id,
       force_load_on_create);
 }
 
@@ -203,10 +203,15 @@ WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
 
   if (!cached_contents_wrapper()) {
     set_cached_contents_wrapper(std::make_unique<WebUIContentsWrapperT<T>>(
-        webui_url_, profile_, task_manager_string_id_));
+        webui_url_, browser_window_interface_->GetProfile(),
+        task_manager_string_id_));
   }
 
   contents_wrapper = cached_contents_wrapper();
+
+  // Set the browser context for the chosen WebUIContentsWrapper.
+  webui::SetBrowserWindowInterface(contents_wrapper->web_contents(),
+                                   browser_window_interface_.get());
 
   // If the contents has already navigated to the current WebUI page force a
   // reload. This will force the contents back through the page load lifecycle.

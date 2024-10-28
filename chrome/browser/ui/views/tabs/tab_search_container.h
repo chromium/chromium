@@ -20,14 +20,11 @@
 #include "ui/views/view.h"
 
 enum class Edge;
+class BrowserWindowInterface;
 class TabOrganizationButton;
 class TabOrganizationService;
 class TabSearchButton;
 class TabStripController;
-
-namespace tabs {
-class TabDeclutterController;
-}
 
 enum class LockedExpansionMode {
   kNone = 0,
@@ -119,6 +116,7 @@ class TabSearchContainer : public views::View,
                      TabStripModel* tab_strip_model,
                      bool before_tab_strip,
                      View* locked_expansion_view,
+                     BrowserWindowInterface* browser_window_interface,
                      tabs::TabDeclutterController* tab_declutter_controller);
   TabSearchContainer(const TabSearchContainer&) = delete;
   TabSearchContainer& operator=(const TabSearchContainer&) = delete;

@@ -228,6 +228,9 @@ class TabStrip : public views::View,
   // Gets the default focusable child view in the TabStrip.
   views::View* GetDefaultFocusableChild();
 
+  // The browser window interface for the hosting browser.
+  BrowserWindowInterface* GetBrowserWindowInterface();
+
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
   std::optional<int> GetActiveIndex() const override;

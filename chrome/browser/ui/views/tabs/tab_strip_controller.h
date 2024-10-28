@@ -17,6 +17,7 @@
 #include "ui/gfx/range/range.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Tab;
 class TabStrip;
 
@@ -221,6 +222,11 @@ class TabStripController {
   // Returns the profile associated with the Tabstrip.
   virtual Profile* GetProfile() const = 0;
 
+  // Returns the interface for the browser hosting the tab strip.
+  virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
+
+  // TODO(tluk): Migrate use of Browser to BrowserWindowInterface and remove
+  // this method.
   virtual const Browser* GetBrowser() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -97,6 +97,7 @@ class FakeBaseTabStripController : public TabStripController {
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   Profile* GetProfile() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
   const Browser* GetBrowser() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;

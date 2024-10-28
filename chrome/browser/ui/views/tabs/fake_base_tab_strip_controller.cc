@@ -305,6 +305,11 @@ Profile* FakeBaseTabStripController::GetProfile() const {
   return nullptr;
 }
 
+BrowserWindowInterface*
+FakeBaseTabStripController::GetBrowserWindowInterface() {
+  return nullptr;
+}
+
 const Browser* FakeBaseTabStripController::GetBrowser() const {
   return nullptr;
 }

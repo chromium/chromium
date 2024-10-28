@@ -190,13 +190,13 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser3()->tab_strip_model()->CloseAllTabs();
     browser4()->tab_strip_model()->CloseAllTabs();
     browser5()->tab_strip_model()->CloseAllTabs();
-    browser2_.reset();
-    browser3_.reset();
-    browser4_.reset();
+    handler_.reset();
+    webui_controller_.reset();
     browser5_.reset();
+    browser4_.reset();
+    browser3_.reset();
+    browser2_.reset();
     web_contents_.reset();
-    // Ensure destructor is called
-    handler_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -942,15 +942,13 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
     tab_declutter_controller_ = std::make_unique<MockTabDeclutterController>(
         browser_window_interface_.get());
     tab_declutter_controller_->DidBecomeActive(browser_window_interface_.get());
-
-    webui_controller()->InstallTabDeclutterController(
-        tab_declutter_controller());
+    handler()->SetTabDeclutterControllerForTesting(
+        tab_declutter_controller_.get());
   }
 
   void TearDown() override {
     // Remove the tab declutter observation first.
-    webui_controller()->InstallTabDeclutterController(nullptr);
-    handler()->RemoveDeclutterObserverForTesting();
+    handler()->SetTabDeclutterControllerForTesting(nullptr);
 
     tab_declutter_controller_.reset();
     tab_strip_model_.reset();
@@ -976,6 +974,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
 };
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(1);
   std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
@@ -1002,8 +1001,7 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
 }
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
-  handler()->TabDeclutterControllerInstalled();
-
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
   std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
@@ -1024,13 +1022,13 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
   tab_declutter_controller()->SetTimerForTesting(
       task_runner->GetMockTickClock(), task_runner);
 
-  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
 
   task_runner->FastForwardBy(
       tab_declutter_controller()->declutter_timer_interval());
 }
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterStaleTabChanges) {
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(::testing::AtLeast(1));
   std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
 
   // Create 10 stale tabs.
@@ -1072,7 +1070,6 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterStaleTabChanges) {
   // Detach a stale tab. It should remove it from the internal stale tab list.
   fake_tab_strip_model()->CloseWebContentsAt(4, TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(handler()->stale_tabs_for_testing().size(), 6u);
-  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(::testing::AtLeast(1));
 }
 
 }  // namespace

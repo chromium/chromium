@@ -641,6 +641,10 @@ Profile* BrowserTabStripController::GetProfile() const {
   return model_->profile();
 }
 
+BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
+  return browser_view_->browser();
+}
+
 const Browser* BrowserTabStripController::GetBrowser() const {
   return browser();
 }

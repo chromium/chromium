@@ -117,6 +117,14 @@ void WebUIBubbleManager::ResetContentsWrapperForTesting() {
   ResetContentsWrapper();
 }
 
+void WebUIBubbleManager::DisableCloseBubbleHelperForTesting() {
+  disable_close_bubble_helper_ = true;
+}
+
+WebUIContentsWrapper* WebUIBubbleManager::GetContentsWrapperForTesting() {
+  return GetContentsWrapper();
+}
+
 void WebUIBubbleManager::ResetContentsWrapper() {
   if (!cached_contents_wrapper_)
     return;
@@ -125,8 +133,4 @@ void WebUIBubbleManager::ResetContentsWrapper() {
     CloseBubble();
   DCHECK(!cached_contents_wrapper_->GetHost());
   cached_contents_wrapper_.reset();
-}
-
-void WebUIBubbleManager::DisableCloseBubbleHelperForTesting() {
-  disable_close_bubble_helper_ = true;
 }

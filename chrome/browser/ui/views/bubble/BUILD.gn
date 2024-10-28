@@ -18,6 +18,7 @@ source_set("bubble") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//content/public/browser",
     "//skia",
     "//ui/base",

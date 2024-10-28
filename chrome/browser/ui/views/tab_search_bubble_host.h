@@ -17,14 +17,11 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
 
-namespace tabs {
-class TabDeclutterController;
-}  // namespace tabs
-
 namespace views {
 class Widget;
 }  // namespace views
 
+class BrowserWindowInterface;
 class Profile;
 class TabOrganizationService;
 
@@ -35,8 +32,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                             public WebUIBubbleManagerObserver {
  public:
   TabSearchBubbleHost(views::Button* button,
-                      tabs::TabDeclutterController* tab_declutter_controller,
-                      Profile* profile);
+                      BrowserWindowInterface* browser_window_interface);
   TabSearchBubbleHost(const TabSearchBubbleHost&) = delete;
   TabSearchBubbleHost& operator=(const TabSearchBubbleHost&) = delete;
   ~TabSearchBubbleHost() override;
@@ -82,13 +78,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   // The anchor button for the tab search bubble.
   const raw_ptr<views::Button> button_;
 
-  // BrowserWindowFeature of the host Browser.
-  const raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
-
   const raw_ptr<Profile> profile_;
 
-  // TODO(b/366254790) : Look into removing this dependency or simplify
-  // interaction.
   std::unique_ptr<WebUIBubbleManager> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;

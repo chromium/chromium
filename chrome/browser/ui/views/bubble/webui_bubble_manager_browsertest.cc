@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -83,8 +84,8 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<WebUIBubbleManager> MakeBubbleManager(
       GURL site_url = GURL("chrome://test.top-chrome")) {
     return WebUIBubbleManager::Create<TestWebUIController>(
-        BrowserView::GetBrowserViewForBrowser(browser()), browser()->profile(),
-        site_url, 1);
+        BrowserView::GetBrowserViewForBrowser(browser()), browser(), site_url,
+        1);
   }
 
   void DestroyBubbleManager() { bubble_manager_.reset(); }
@@ -172,4 +173,16 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   bubble_manager()->ShowBubble();
   EXPECT_EQ(bubble_manager()->contents_warmup_level(),
             WebUIContentsWarmupLevel::kReshowingWebContents);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
+                       BrowserWindowContextSetOnShow) {
+  EXPECT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
+  bubble_manager()->ShowBubble();
+  EXPECT_TRUE(bubble_manager()->GetBubbleWidget());
+
+  EXPECT_EQ(
+      browser(),
+      webui::GetBrowserWindowInterface(
+          bubble_manager()->GetContentsWrapperForTesting()->web_contents()));
 }

@@ -206,6 +206,7 @@ TabSearchContainer::TabSearchContainer(
     TabStripModel* tab_strip_model,
     bool before_tab_strip,
     View* locked_expansion_view,
+    BrowserWindowInterface* browser_window_interface,
     tabs::TabDeclutterController* tab_declutter_controller)
     : AnimationDelegateViews(this),
       locked_expansion_view_(locked_expansion_view),
@@ -224,7 +225,7 @@ TabSearchContainer::TabSearchContainer(
 
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(tab_strip_controller,
-                                        tab_declutter_controller_.get(),
+                                        browser_window_interface,
                                         GetFlatEdge(true, before_tab_strip));
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);

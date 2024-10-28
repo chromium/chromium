@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -64,14 +63,12 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 TabSearchBubbleHost::TabSearchBubbleHost(
     views::Button* button,
-    tabs::TabDeclutterController* tab_declutter_controller,
-    Profile* profile)
+    BrowserWindowInterface* browser_window_interface)
     : button_(button),
-      tab_declutter_controller_(tab_declutter_controller),
-      profile_(profile),
+      profile_(browser_window_interface->GetProfile()),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
           button,
-          profile,
+          browser_window_interface,
           GURL(chrome::kChromeUITabSearchURL),
           IDS_ACCNAME_TAB_SEARCH)),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
@@ -79,7 +76,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(
                                       time_elapsed);
       })) {
   auto* const tab_organization_service =
-      TabOrganizationServiceFactory::GetForProfile(profile);
+      TabOrganizationServiceFactory::GetForProfile(profile_.get());
   if (tab_organization_service) {
     tab_organization_observation_.Observe(tab_organization_service);
   }
@@ -183,20 +180,6 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
   DCHECK(!bubble_widget_observation_.IsObserving());
   bubble_widget_observation_.Observe(widget);
   widget_open_timer_.Reset(widget);
-
-  // The declutter controller is set in the WebUI controller, which notifies the
-  // page handler. This works because the contents wrapper is created by the
-  // `webui_bubble_manager_` during `webui_bubble_manager_->ShowBubble()`.
-  // TODO (b/360724768): Refactor how WebUI page handlers can access specific
-  // contexts more efficiently.
-  CHECK(webui_bubble_manager_->GetContentsWrapper());
-  CHECK(webui_bubble_manager_->GetContentsWrapper()->web_contents());
-  content::WebUI* web_ui =
-      webui_bubble_manager_->GetContentsWrapper()->web_contents()->GetWebUI();
-
-  CHECK(web_ui);
-  web_ui->GetController()->GetAs<TabSearchUI>()->InstallTabDeclutterController(
-      tab_declutter_controller_.get());
 
   widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
       base::BindOnce(

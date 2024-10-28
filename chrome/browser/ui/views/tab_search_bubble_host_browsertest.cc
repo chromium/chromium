@@ -76,17 +76,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
-                       TabDeclutterControllerAttachedToTabSearchUIOnShow) {
-  ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
-  tab_search_bubble_host()->ShowTabSearchBubble();
-  content::WebUI* web_ui =
-      bubble_manager()->GetContentsWrapper()->web_contents()->GetWebUI();
-  EXPECT_EQ(
-      web_ui->GetController()->GetAs<TabSearchUI>()->tab_declutter_controller(),
-      browser()->GetFeatures().tab_declutter_controller());
-}
-
-IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
                        BubbleShowCorrectlyInFullscreen) {
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 

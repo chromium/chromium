@@ -1462,6 +1462,10 @@ views::View* TabStrip::GetDefaultFocusableChild() {
   return active.has_value() ? tab_at(active.value()) : nullptr;
 }
 
+BrowserWindowInterface* TabStrip::GetBrowserWindowInterface() {
+  return controller_->GetBrowserWindowInterface();
+}
+
 bool TabStrip::IsValidModelIndex(int index) const {
   return controller_->IsValidIndex(index);
 }
