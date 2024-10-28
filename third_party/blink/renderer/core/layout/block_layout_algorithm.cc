@@ -3357,10 +3357,9 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
 
-  // Propagate `text-box-trim` only for in-flow children. Check the
-  // `LayoutObject` tree, because `InlineNode` synthesizes these flags.
-  if (ShouldTextBoxTrim() &&
-      !child.GetLayoutBox()->IsFloatingOrOutOfFlowPositioned()) [[unlikely]] {
+  // Propagate `text-box-trim` only for in-flow children.
+  if (ShouldTextBoxTrim() && !child.IsFloatingOrOutOfFlowPositioned())
+      [[unlikely]] {
     builder.SetShouldTextBoxTrimNodeStart(should_text_box_trim_node_start_);
     builder.SetShouldTextBoxTrimFragmentainerStart(
         should_text_box_trim_fragmentainer_start_);
