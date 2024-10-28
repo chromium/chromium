@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -97,37 +98,6 @@ MATCHER_P(UuidEq, uuid, "") {
   return arg.saved_guid() == uuid;
 }
 
-class MockOptimizationGuideDecider
-    : public optimization_guide::OptimizationGuideDecider {
- public:
-  MOCK_METHOD(void,
-              RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
-              (override));
-  MOCK_METHOD(void,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationGuideDecisionCallback),
-              (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationMetadata*),
-              (override));
-  MOCK_METHOD(
-      void,
-      CanApplyOptimizationOnDemand,
-      (const std::vector<GURL>&,
-       const base::flat_set<optimization_guide::proto::OptimizationType>&,
-       optimization_guide::proto::RequestContext,
-       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       std::optional<optimization_guide::proto::RequestContextMetadata>
-           request_context_metadata),
-      (override));
-};
-
 }  // namespace
 
 class TabGroupSyncServiceTest : public testing::Test {
@@ -139,7 +109,8 @@ class TabGroupSyncServiceTest : public testing::Test {
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         shared_store_(
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
-        decider_(std::make_unique<MockOptimizationGuideDecider>()),
+        decider_(std::make_unique<
+                 optimization_guide::MockOptimizationGuideDecider>()),
         fake_controller_delegate_(syncer::SAVED_TAB_GROUP),
         group_1_(test::CreateTestSavedTabGroup()),
         group_2_(test::CreateTestSavedTabGroup()),
@@ -292,7 +263,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<MockTabGroupSyncCoordinator> coordinator_;
-  std::unique_ptr<MockOptimizationGuideDecider> decider_;
+  std::unique_ptr<optimization_guide::MockOptimizationGuideDecider> decider_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
   syncer::FakeDataTypeControllerDelegate fake_controller_delegate_;
 

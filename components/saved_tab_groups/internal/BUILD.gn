@@ -185,6 +185,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
     "//components/saved_tab_groups/delegate",

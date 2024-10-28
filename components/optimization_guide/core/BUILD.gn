@@ -392,6 +392,8 @@ static_library("prediction") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_optimization_guide_decider.cc",
+    "mock_optimization_guide_decider.h",
     "mock_optimization_guide_model_executor.cc",
     "mock_optimization_guide_model_executor.h",
     "mock_push_notification_manager.cc",

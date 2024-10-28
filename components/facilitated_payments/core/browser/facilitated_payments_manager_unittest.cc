@@ -29,7 +29,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -77,37 +77,6 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
               (override));
 };
 
-class MockOptimizationGuideDecider
-    : public optimization_guide::OptimizationGuideDecider {
- public:
-  MOCK_METHOD(void,
-              RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
-              (override));
-  MOCK_METHOD(void,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationGuideDecisionCallback),
-              (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationMetadata*),
-              (override));
-  MOCK_METHOD(
-      void,
-      CanApplyOptimizationOnDemand,
-      (const std::vector<GURL>&,
-       const base::flat_set<optimization_guide::proto::OptimizationType>&,
-       optimization_guide::proto::RequestContext,
-       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       std::optional<optimization_guide::proto::RequestContextMetadata>
-           request_context_metadata),
-      (override));
-};
-
 class MockFacilitatedPaymentsNetworkInterface
     : public FacilitatedPaymentsNetworkInterface {
  public:
@@ -133,7 +102,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
 
   void SetUp() override {
     optimization_guide_decider_ =
-        std::make_unique<MockOptimizationGuideDecider>();
+        std::make_unique<optimization_guide::MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr, nullptr);
     client_ = std::make_unique<MockFacilitatedPaymentsClient>();
 
@@ -172,7 +141,8 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<MockOptimizationGuideDecider> optimization_guide_decider_;
+  std::unique_ptr<optimization_guide::MockOptimizationGuideDecider>
+      optimization_guide_decider_;
   std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;

@@ -24,7 +24,7 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/prefs/pref_service.h"
@@ -38,42 +38,12 @@ namespace autofill {
 using test::CreateTestCreditCardFormData;
 using test::CreateTestIbanFormData;
 
-class MockOptimizationGuideDecider
-    : public optimization_guide::OptimizationGuideDecider {
- public:
-  MOCK_METHOD(void,
-              RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
-              (override));
-  MOCK_METHOD(void,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationGuideDecisionCallback),
-              (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationMetadata*),
-              (override));
-  MOCK_METHOD(
-      void,
-      CanApplyOptimizationOnDemand,
-      (const std::vector<GURL>&,
-       const base::flat_set<optimization_guide::proto::OptimizationType>&,
-       optimization_guide::proto::RequestContext,
-       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       std::optional<optimization_guide::proto::RequestContextMetadata>
-           request_context_metadata),
-      (override));
-};
-
 class AutofillOptimizationGuideTest : public testing::Test {
  public:
   AutofillOptimizationGuideTest()
       : pref_service_(test::PrefServiceForTesting()),
-        decider_(std::make_unique<MockOptimizationGuideDecider>()),
+        decider_(std::make_unique<
+                 optimization_guide::MockOptimizationGuideDecider>()),
         personal_data_manager_(std::make_unique<TestPersonalDataManager>()),
         autofill_optimization_guide_(
             std::make_unique<AutofillOptimizationGuide>(decider_.get())) {
@@ -111,7 +81,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
-  std::unique_ptr<MockOptimizationGuideDecider> decider_;
+  std::unique_ptr<optimization_guide::MockOptimizationGuideDecider> decider_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<AutofillOptimizationGuide> autofill_optimization_guide_;
 };

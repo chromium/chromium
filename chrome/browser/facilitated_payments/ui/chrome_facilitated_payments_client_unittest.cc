@@ -7,43 +7,12 @@
 #include <memory>
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
 using ::testing::Return;
-
-class MockOptimizationGuideDecider
-    : public optimization_guide::OptimizationGuideDecider {
- public:
-  MOCK_METHOD(void,
-              RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
-              (override));
-  MOCK_METHOD(void,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationGuideDecisionCallback),
-              (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationMetadata*),
-              (override));
-  MOCK_METHOD(
-      void,
-      CanApplyOptimizationOnDemand,
-      (const std::vector<GURL>&,
-       const base::flat_set<optimization_guide::proto::OptimizationType>&,
-       optimization_guide::proto::RequestContext,
-       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       std::optional<optimization_guide::proto::RequestContextMetadata>
-           request_context_metadata),
-      (override));
-};
 
 class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
  public:
@@ -96,7 +65,7 @@ class ChromeFacilitatedPaymentsClientTest
   MockFacilitatedPaymentsController& controller() { return *controller_; }
 
  private:
-  MockOptimizationGuideDecider optimization_guide_decider_;
+  optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
   std::unique_ptr<ChromeFacilitatedPaymentsClient> client_;
   raw_ptr<MockFacilitatedPaymentsController> controller_;
 };

@@ -32,5 +32,6 @@ source_set("unit_tests") {
     ":facilitated_payments",
     "//base",
     "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
   ]
 }

@@ -23,8 +23,8 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager_test_api.h"
 #include "components/autofill_prediction_improvements/core/browser/mock_autofill_prediction_improvements_client.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,37 +79,6 @@ auto HasLabel(const std::u16string& expected_label) {
                                              expected_label))));
 }
 
-class MockOptimizationGuideDecider
-    : public optimization_guide::OptimizationGuideDecider {
- public:
-  MOCK_METHOD(void,
-              RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
-              (override));
-  MOCK_METHOD(void,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationGuideDecisionCallback),
-              (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationMetadata*),
-              (override));
-  MOCK_METHOD(
-      void,
-      CanApplyOptimizationOnDemand,
-      (const std::vector<GURL>&,
-       const base::flat_set<optimization_guide::proto::OptimizationType>&,
-       optimization_guide::proto::RequestContext,
-       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       std::optional<optimization_guide::proto::RequestContextMetadata>
-           request_context_metadata),
-      (override));
-};
-
 class MockAutofillPredictionImprovementsFillingEngine
     : public AutofillPredictionImprovementsFillingEngine {
  public:
@@ -135,7 +104,7 @@ class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
  protected:
   GURL url_{"https://example.com"};
   url::Origin origin_ = url::Origin::Create(GURL("https://example.com"));
-  NiceMock<MockOptimizationGuideDecider> decider_;
+  NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
   NiceMock<MockAutofillPredictionImprovementsFillingEngine> filling_engine_;
   NiceMock<MockAutofillPredictionImprovementsClient> client_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;

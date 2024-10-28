@@ -55,6 +55,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
     "//components/signin/public/identity_manager",
     "//components/sync:test_support",
     "//components/ukm:test_support",
