@@ -289,7 +289,7 @@
     {
       name: "FocusWithoutUserActivation",
       permissions_policy_name: "focus-without-user-activation",
-      feature_default: "EnableForAll",
+      feature_default: "EnableForSelf",
       depends_on: ["BlockingFocusWithoutUserActivation"],
     },
     {

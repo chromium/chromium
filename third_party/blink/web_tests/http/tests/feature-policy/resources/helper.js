@@ -6,3 +6,7 @@ function loadIframes(srcs) {
     }
   }
 }
+
+function hasAllowAttributeWithValue(frame, feature) {
+  return frame.hasAttribute('allow') && frame.getAttribute('allow').includes(feature);
+}
