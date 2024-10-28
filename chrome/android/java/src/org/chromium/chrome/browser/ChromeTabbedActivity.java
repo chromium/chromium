@@ -3796,7 +3796,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 intent, DataSharingNotificationManager.DATA_SHARING_EXTRA));
         Runnable showJoinFlowRunnable =
                 () -> {
-                    mRootUiCoordinator.getDataSharingTabManager().initiateJoinFlow(url);
+                    mRootUiCoordinator.getDataSharingTabManager().initiateJoinFlow(this, url);
                 };
 
         OneshotSupplier<TabModelSelector> wrappedSelector =
