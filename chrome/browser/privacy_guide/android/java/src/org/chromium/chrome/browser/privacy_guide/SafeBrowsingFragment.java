@@ -18,7 +18,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
-/** Controls the behaviour of the Safe Browsing privacy guide page. */
+/** Controls the behavior of the Safe Browsing privacy guide page. */
 public class SafeBrowsingFragment extends PrivacyGuideBasePage
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
                 RadioGroup.OnCheckedChangeListener {
@@ -56,10 +56,10 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
 
         mEnhancedProtection.setAuxButtonClickedListener(this);
 
-        initialRadioButtonConfig();
+        updateRadioButtonConfig();
     }
 
-    private void initialRadioButtonConfig() {
+    private void updateRadioButtonConfig() {
         @SafeBrowsingState
         int safeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState(getProfile());
         switch (safeBrowsingState) {
@@ -72,6 +72,12 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
             default:
                 assert false : "Unexpected SafeBrowsingState " + safeBrowsingState;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRadioButtonConfig();
     }
 
     @Override

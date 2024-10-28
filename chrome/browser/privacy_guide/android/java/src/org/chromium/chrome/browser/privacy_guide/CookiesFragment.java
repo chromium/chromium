@@ -21,7 +21,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/** Controls the behaviour of the Cookies privacy guide page. */
+/** Controls the behavior of the Cookies privacy guide page. */
 public class CookiesFragment extends PrivacyGuideBasePage
         implements RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
@@ -41,7 +41,13 @@ public class CookiesFragment extends PrivacyGuideBasePage
         mBlockThirdPartyIncognito = view.findViewById(R.id.block_third_party_incognito);
         mBlockThirdParty = view.findViewById(R.id.block_third_party);
 
-        initialRadioButtonConfig();
+        boolean allowCookies =
+                WebsitePreferenceBridge.isCategoryEnabled(
+                        getProfile(), ContentSettingsType.COOKIES);
+        if (!allowCookies) {
+            assert false : "Cookies page should not be shown if cookies are blocked";
+        }
+        updateRadioButtonConfig();
     }
 
     @Override
@@ -57,14 +63,7 @@ public class CookiesFragment extends PrivacyGuideBasePage
         }
     }
 
-    private void initialRadioButtonConfig() {
-        boolean allowCookies =
-                WebsitePreferenceBridge.isCategoryEnabled(
-                        getProfile(), ContentSettingsType.COOKIES);
-        if (!allowCookies) {
-            assert false : "Cookies page should not be shown if cookies are blocked";
-        }
-
+    private void updateRadioButtonConfig() {
         @CookieControlsMode
         int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(getProfile());
         switch (cookieControlsMode) {
@@ -84,6 +83,12 @@ public class CookiesFragment extends PrivacyGuideBasePage
             default:
                 assert false : "Unexpected CookieControlsMode " + cookieControlsMode;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRadioButtonConfig();
     }
 
     private void setCookieControlsMode(@CookieControlsMode int cookieControlsMode) {

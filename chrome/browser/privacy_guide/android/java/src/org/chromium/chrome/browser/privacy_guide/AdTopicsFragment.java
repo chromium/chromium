@@ -26,6 +26,7 @@ public class AdTopicsFragment extends PrivacyGuideBasePage {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mAdTopicsSwitch = view.findViewById(R.id.ad_topics_switch);
+        setAdTopicsSwitchState();
 
         mAdTopicsSwitch.setOnCheckedChangeListener(
                 (button, isChecked) -> {
