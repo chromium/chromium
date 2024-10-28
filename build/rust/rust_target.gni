@@ -17,6 +17,10 @@ if (enable_rust_cxx) {
 # understand some handy variables such as "edition" and "features" and also to
 # build any associated unit tests.
 #
+# `bindgen_deps` field exists only for 3P cargo sys crates that uses
+# `rust_bindgen_generator` templates. For 1P code, `rust_bindgen` should
+# be used and should go directly in the `deps` field.
+#
 # Normally, you should not use this directly. Use either
 # - cargo_crate.gni - for 3p crates only
 # - rust_static_library.gni - for 1p Rust code
@@ -162,6 +166,34 @@ template("rust_target") {
   _deps = []
   if (defined(invoker.deps)) {
     _deps += invoker.deps
+  }
+  if (defined(invoker.bindgen_deps)) {
+    _bindgen_inputs = []
+
+    # This iteration assumes that no targets have the same name which is
+    # very rare to happen and if it does. An error will be thrown as we
+    # try to create two targets with the same name, the error might not
+    # be descriptive enough so maybe adding a check action would be better.
+    foreach(bindgen_dep, invoker.bindgen_deps) {
+      _copy_target_name =
+          target_name + "_" + get_label_info(bindgen_dep, "name") + "_copy"
+      copy(_copy_target_name) {
+        _bindgen_output_files = get_target_outputs(bindgen_dep)
+
+        # `rust_bindgen_generator` promises that the first output file is always .rs.
+        sources = [ _bindgen_output_files[0] ]
+        outputs = [ "$_env_out_dir/{{source_name_part}}.rs" ]
+        deps = [ bindgen_dep ]
+      }
+
+      # The bindgen-generated rs files are inputs to this library for the library
+      # to `include!` them.
+      # The output of the copy action is always a single file so just copy everything.
+      _bindgen_inputs += get_target_outputs(":$_copy_target_name")
+
+      # Depend on the bindgen generation to make the above `_bindgen_inputs`.
+      _deps += [ ":$_copy_target_name" ]
+    }
   }
   _public_deps = []
   if (defined(invoker.public_deps)) {
@@ -404,6 +436,14 @@ template("rust_target") {
       if (_generate_crate_root) {
         deps += [ ":${_target_name}_crate_root" ]
         sources += [ _crate_root ]
+      }
+
+      if (!defined(inputs)) {
+        inputs = []
+      }
+
+      if (defined(_bindgen_inputs)) {
+        inputs += _bindgen_inputs
       }
 
       if (!defined(output_name)) {

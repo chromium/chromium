@@ -35,11 +35,6 @@ rust_static_library("bindgen_test_lib") {
   sources = [ "src/lib.rs" ]
   build_native_rust_unit_tests = true
   crate_root = "src/lib.rs"
-
-  bindgen_output = get_target_outputs(":c_lib_bindgen")
-  inputs = bindgen_output
-  rustenv = [ "BINDGEN_RS_FILE=" +
-              rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }
 
 rust_executable("bindgen_test") {

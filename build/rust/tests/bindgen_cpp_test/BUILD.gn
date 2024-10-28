@@ -27,9 +27,4 @@ rust_executable("bindgen_cpp_test") {
   crate_root = "main.rs"
 
   allow_unsafe = true  # Needed for FFI.
-
-  bindgen_output = get_target_outputs(":cpp_lib_bindgen")
-  inputs = bindgen_output
-  rustenv = [ "BINDGEN_RS_FILE=" +
-              rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }

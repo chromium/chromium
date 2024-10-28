@@ -2490,12 +2490,6 @@ rust_static_library("rust_logger") {
   crate_root = "logging/rust_logger.rs"
 
   cxx_bindings = [ "logging/rust_logger.rs" ]
-
-  _bindgen_output = get_target_outputs(":rust_log_bindgen")
-  inputs = _bindgen_output
-  rustenv =
-      [ "RUST_LOG_INTEGRATION_BINDGEN_RS_FILE=" +
-        rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }
 
 if (is_linux || is_chromeos) {

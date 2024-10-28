@@ -5,6 +5,7 @@
 import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
+import("//build/rust/rust_bindgen_generator.gni")
 import("//build/rust/rust_static_library.gni")
 
 if (is_win) {
@@ -27,9 +28,8 @@ if (host_os == "win") {
 
 # Template to build Rust/C bindings with bindgen.
 #
-# This template expands to an action that generates the Rust side of the
-# bindings. Add it as a dependency and then incorporate
-# `get_target_outputs(target_name)[0]` into your Rust crate.
+# This template expands to a rust_static_library that exports the
+# bindings generated from bindgen at the root of the library.
 #
 # Parameters:
 #
@@ -59,269 +59,58 @@ if (host_os == "win") {
 #   build. Additionally, `get_target_outputs` will return both the Rust file and
 #   a generated C file, but callers can rely on the Rust file being first.
 #
-# Rust targets depending on the output must `include!` the generated file, which
-# can be done as follows. Export `BINDGEN_RS_FILE` in the Rust GN target:
-# ```
-#   bindgen_output = get_target_outputs(":<rust_bindgen_target>")
-#   inputs = bindgen_output
-#   rustenv = [
-#       "BINDGEN_RS_FILE=" +
-#       rebase_path(bindgen_output[0], get_path_info(crate_root, "dir"))
-#   ]
-# ```
-# And then include the generated header file in the Rust library:
-# ```
-# #[allow(dead_code)]
-# #[allow(non_upper_case_globals)]
-# #[allow(non_camel_case_types)]
-# #[allow(non_snake_case)]
-# mod ffi {
-#     include!(env!("BINDGEN_RS_FILE"));
-# }
-# ```
-# If using `cpp = true`, consider adding this to the bottom of the `ffi` module,
-# below the `include!`:
-# ```
-#     pub use root::*;
-# ```
 #
 # For a small, self-contained example please see:
 # * C header: //build/rust/tests/bindgen_test
 # * C++ header: //build/rust/tests/bindgen_cpp_test
 template("rust_bindgen") {
-  assert(defined(invoker.header),
-         "Must specify the C/C++ header file to make bindings for.")
-  _wrap_static_fns = defined(invoker.wrap_static_fns) && invoker.wrap_static_fns
+  # "_generator" will be added to the rust_bindgen_generator target.
+  _rust_bindgen_generator_name = target_name + "_generator"
+  _wrap_static_fns = false
+  if (defined(invoker.wrap_static_fns) && invoker.wrap_static_fns) {
+    _wrap_static_fns = true
+  }
+  rust_bindgen_generator(_rust_bindgen_generator_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                                 "library_name",
+                                 "output_name",
+                               ] + TESTONLY_AND_VISIBILITY)
 
-  if (!defined(invoker.cpp)) {
-    _cpp = false
-  } else {
-    _cpp = invoker.cpp
+    # This will allow the rust_static_library to depend on the `rust_bindgen_generator`
+    # through visibility.
+    library_name = target_name
+
+    # We know the library that is going to consume this rust_bindgen and we're sure
+    # that only a single bindgen is there. So rename the bindings to avoid passing
+    # envflags.
+    # envflags are usually problematic for Cronet as Soong does not support it (b/181221467).
+    output_name = "bindings"
   }
 
-  _bindgen_target_name = target_name
-  action(_bindgen_target_name) {
-    # bindgen relies on knowing the {{defines}} and {{include_dirs}} required
-    # to build the C++ headers which it's parsing. These are passed to the
-    # script's args and are populated using deps and configs.
+  rust_static_library(target_name) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
-                                 "configs",
-                                 "deps",
-                                 "public_configs",
-                                 "public_deps",
+                                 "crate_name",
+                                 "cpp",
                                ])
 
-    sources = [ invoker.header ]
-
-    if (!defined(configs)) {
-      configs = []
-    }
-
-    # Several important compiler flags come from default_compiler_configs
-    configs += default_compiler_configs
-
-    output_dir = "$target_gen_dir"
-    out_gen_rs = "$output_dir/${target_name}.rs"
-
-    script = rebase_path("//build/rust/run_bindgen.py")
-    inputs = [
-      _bindgen_path,
-      "//build/action_helpers.py",
-      "//build/gn_helpers.py",
-      "//build/rust/filter_clang_args.py",
-    ]
-
-    depfile = "$target_out_dir/${target_name}.d"
-    outputs = [ out_gen_rs ]
-
-    args = [
-      "--exe",
-      rebase_path(_bindgen_path, root_build_dir),
-      "--header",
-      rebase_path(invoker.header, root_build_dir),
-      "--depfile",
-      rebase_path(depfile, root_build_dir),
-      "--output",
-      rebase_path(out_gen_rs, root_build_dir),
-      "--libclang-path",
-      rebase_path(_libclang_path, root_build_dir),
-    ]
-
+    crate_root = "//build/rust/bindings.rs"
+    sources = [ crate_root ]
+    bindgen_deps = [ ":$_rust_bindgen_generator_name" ]
+    allow_unsafe = true
     if (_wrap_static_fns) {
-      if (_cpp) {
-        out_gen_c = "$output_dir/${target_name}.cc"
-      } else {
-        out_gen_c = "$output_dir/${target_name}.c"
-      }
-      outputs += [ out_gen_c ]
-      args += [
-        "--wrap-static-fns",
-        rebase_path(out_gen_c, root_build_dir),
+      # Add a dependency on the static_fns library for simplicity if
+      # it's declared.
+      deps = [ ":${_rust_bindgen_generator_name}_static_fns" ]
+    }
+    if (defined(cpp) && cpp) {
+      # This cfg is used to control the bindings public export.
+      rustflags = [
+        "--cfg",
+        "cpp",
       ]
-    }
-
-    if (is_linux) {
-      # Linux clang, and clang libs, use a shared libstdc++, which we must
-      # point to.
-      args += [
-        "--ld-library-path",
-        rebase_path(clang_base_path + "/lib", root_build_dir),
-      ]
-    }
-
-    args += [ "--bindgen-flags" ]
-    if (defined(invoker.bindgen_flags)) {
-      foreach(flag, invoker.bindgen_flags) {
-        args += [ flag ]
-      }
-    }
-    if (_cpp) {
-      args += [ "enable-cxx-namespaces" ]
-    }
-
-    # Everything below is passed through to libclang.
-    args += [ "--" ]
-
-    if (_cpp) {
-      args += [
-        "-x",
-        "c++",
-      ]
-    }
-
-    args += [
-      "{{defines}}",
-      "{{include_dirs}}",
-      "{{cflags}}",
-    ]
-    if (_cpp) {
-      args += [ "{{cflags_cc}}" ]
-    } else {
-      args += [ "{{cflags_c}}" ]
-    }
-
-    # libclang will run the system `clang` to find the "resource dir" which it
-    # places before the directory specified in `-isysroot`.
-    # https://github.com/llvm/llvm-project/blob/699e0bed4bfead826e210025bf33e5a1997c018b/clang/lib/Tooling/Tooling.cpp#L499-L510
-    #
-    # This means include files are pulled from the wrong place if the `clang`
-    # says the wrong thing. We point it to our clang's resource dir which will
-    # make it behave consistently with our other command line flags and allows
-    # system headers to be found.
-    clang_resource_dir =
-        rebase_path(clang_base_path + "/lib/clang/" + clang_version,
-                    root_build_dir)
-    args += [
-      "-resource-dir",
-      clang_resource_dir,
-    ]
-
-    # The `--sysroot` flag is not working as expected and gets ignored (we don't
-    # fully understand why, see b/328510249). But we add `-isystem` to point at
-    # the headers in the sysroot which are otherwise not found.
-    if (sysroot != "") {
-      if (is_win) {
-        args +=
-            [ "-I" + rebase_path(sysroot + "/usr/include/", root_build_dir) ]
-      } else {
-        args += [
-          "-isystem",
-          rebase_path(sysroot + "/usr/include/", root_build_dir),
-        ]
-      }
-    }
-
-    if (is_win) {
-      # On Windows we fall back to using system headers from a sysroot from
-      # depot_tools. This is negotiated by python scripts and the result is
-      # available in //build/toolchain/win/win_toolchain_data.gni. From there
-      # we get the `include_flags_imsvc` which point to the system headers.
-      if (host_cpu == "x86") {
-        win_toolchain_data = win_toolchain_data_x86
-      } else if (host_cpu == "x64") {
-        win_toolchain_data = win_toolchain_data_x64
-      } else if (host_cpu == "arm64") {
-        win_toolchain_data = win_toolchain_data_arm64
-      } else {
-        error("Unsupported host_cpu, add it to win_toolchain_data.gni")
-      }
-      args += win_toolchain_data.include_flags_imsvc_list
-    }
-
-    # Passes C comments through as rustdoc attributes.
-    if (is_win) {
-      args += [ "/clang:-fparse-all-comments" ]
-    } else {
-      args += [ "-fparse-all-comments" ]
-    }
-
-    # Default configs include "-fvisibility=hidden", and for some reason this
-    # causes bindgen not to emit function bindings. Override it.
-    if (!is_win) {
-      args += [ "-fvisibility=default" ]
-    }
-
-    if (is_win) {
-      # We pass MSVC style flags to clang on Windows, and libclang needs to be
-      # told explicitly to accept them.
-      args += [ "--driver-mode=cl" ]
-
-      # On Windows, libclang adds arguments that it then fails to understand.
-      # -fno-spell-checking
-      # -fallow-editor-placeholders
-      # These should not cause bindgen to fail.
-      args += [ "-Wno-unknown-argument" ]
-
-      # C++ mode makes bindgen pass /TP to libclang (to parse as C++) which
-      # then libclang says is unused.
-      args += [ "-Wno-unused-command-line-argument" ]
-
-      # Replace these two arguments with a version that clang-cl can parse.
-      args += [
-        "/clang:-fno-spell-checking",
-        "/clang:-fallow-editor-placeholders",
-      ]
-    }
-
-    if (is_cfi) {
-      # LLVM searches for a default CFI ignorelist at (exactly)
-      # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
-      # Even if we provide a custom -fsanitize-ignorelist, the absence
-      # of this default file will cause a fatal error. clang finds
-      # it within third_party/llvm-build, but for bindgen our cwd
-      # is the $out_dir. We _could_ create this file at the right
-      # location within the outdir using a "copy" target, but as
-      # we don't actually generate code within bindgen, the easier
-      # option is to tell bindgen to ignore all CFI ignorelists.
-      args += [ "-fno-sanitize-ignorelist" ]
-    }
-  }
-
-  if (_wrap_static_fns) {
-    source_set("${target_name}_static_fns") {
-      forward_variables_from(invoker,
-                             TESTONLY_AND_VISIBILITY + [
-                                   "deps",
-                                   "configs",
-                                   "public_configs",
-                                   "public_deps",
-                                 ])
-      bindgen_output = get_target_outputs(":${_bindgen_target_name}")
-      if (!defined(deps)) {
-        deps = []
-      }
-      deps += [ ":${_bindgen_target_name}" ]
-
-      if (_cpp) {
-        sources = filter_include(bindgen_output, [ "*.cc" ])
-      } else {
-        sources = filter_include(bindgen_output, [ "*.c" ])
-      }
-
-      # bindgen generates a C file whose include is relative to the directory it
-      # runs from.
-      include_dirs = [ root_build_dir ]
     }
   }
 }

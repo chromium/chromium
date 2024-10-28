@@ -6,12 +6,12 @@ use log::Level::{Debug, Error, Info, Trace, Warn};
 use log::{LevelFilter, Metadata, Record};
 use std::ffi::CString;
 
-mod rust_log_integration {
-    include!(env!("RUST_LOG_INTEGRATION_BINDGEN_RS_FILE"));
+chromium::import! {
+    "//base:rust_log_bindgen";
 }
 
-use rust_log_integration::root::logging::internal::print_rust_log;
-use rust_log_integration::root::logging::internal::{
+use rust_log_bindgen::logging::internal::print_rust_log;
+use rust_log_bindgen::logging::internal::{
     RustLogSeverity_DEBUG, RustLogSeverity_ERROR, RustLogSeverity_INFO, RustLogSeverity_TRACE,
     RustLogSeverity_WARNING,
 };
