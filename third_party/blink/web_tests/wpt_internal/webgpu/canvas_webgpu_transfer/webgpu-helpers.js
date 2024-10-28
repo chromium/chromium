@@ -161,24 +161,6 @@ function createBindGroupUsingTexture(device, tex) {
 }
 
 /**
- * transferToGPUTexture() should create a texture from an uninitialized canvas.
- */
-function test_transferToGPUTexture_untouched_canvas(device, canvas) {
-  // Leave the canvas untouched; it won't have a Canvas2DLayerBridge yet.
-
-  // Next, call transferToGPUTexture.
-  const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToGPUTexture({device: device,
-                                         label: "hello, webgpu!"});
-
-  // Confirm that we now have a GPU texture that matches our request.
-  assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
-  assert_equals(tex.label, "hello, webgpu!");
-  assert_equals(tex.width, canvas.width);
-  assert_equals(tex.height, canvas.height);
-}
-
-/**
 /**
  * transferToGPUTexture() should create a texture which honors the requested
  * usage flags.
