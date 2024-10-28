@@ -204,8 +204,9 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
-  // has to be called by the subclass before the coordinator is deallocated.
+  // -[SigninCoordinator
+  // runCompletionWithSigninResult:completionInfo:] has to be called
+  // by the subclass before the coordinator is deallocated.
   DCHECK(!self.signinCompletion) << base::SysNSStringToUTF8([self description]);
 }
 
@@ -227,18 +228,17 @@ using signin_metrics::PromoAction;
   // need to close the view. You need to call -[SigninCoordinator
   // interruptWithAction:completion:].
   // If you work on a SigninCoordinator subclass:
-  // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
-  // has to be called by the subclass before
+  // -[SigninCoordinator
+  // runCompletionWithSigninResult:completionInfo:] has to be called
+  // by the subclass before
   // -[SigninCoordinator stop] is called.
   DCHECK(!self.signinCompletion);
 }
 
 #pragma mark - Private
 
-- (void)runCompletionCallbackWithSigninResult:
-            (SigninCoordinatorResult)signinResult
-                               completionInfo:
-                                   (SigninCompletionInfo*)completionInfo {
+- (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
+                       completionInfo:(SigninCompletionInfo*)completionInfo {
   // `identity` is set, if and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) &&
           completionInfo.identity) ||

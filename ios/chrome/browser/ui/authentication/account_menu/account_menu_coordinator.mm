@@ -253,7 +253,8 @@
   [_signoutActionSheetCoordinator start];
 }
 
-- (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback {
+- (void)didTapAddAccountWithCompletion:
+    (ShowSigninCommandCompletionCallback)completion {
   _addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:_navigationController
                                           browser:self.browser
@@ -264,7 +265,7 @@
         SigninCompletionInfo* signinCompletionInfo) {
         [weakSelf addAccountCompletionWithSigninResult:signinResult
                                         completionInfo:signinCompletionInfo
-                                              callback:callback];
+                                            completion:completion];
       };
   [_addAccountCoordinator start];
 }
@@ -410,10 +411,9 @@
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock childrenCompletion = ^() {
-    [weakSelf runCompletionCallbackWithSigninResult:weakSelf.mediator
-                                                        .signinCoordinatorResult
-                                     completionInfo:weakSelf.mediator
-                                                        .signinCompletionInfo];
+    [weakSelf
+        runCompletionWithSigninResult:weakSelf.mediator.signinCoordinatorResult
+                       completionInfo:weakSelf.mediator.signinCompletionInfo];
     if (completion) {
       completion();
     }
@@ -436,12 +436,12 @@
 - (void)
     addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                           completionInfo:(SigninCompletionInfo*)completionInfo
-                                callback:(ShowSigninCommandCompletionCallback)
-                                             callback {
+                              completion:(ShowSigninCommandCompletionCallback)
+                                             completion {
   [_addAccountCoordinator stop];
   _addAccountCoordinator = nil;
-  if (callback) {
-    callback(signinResult, completionInfo);
+  if (completion) {
+    completion(signinResult, completionInfo);
   }
 }
 

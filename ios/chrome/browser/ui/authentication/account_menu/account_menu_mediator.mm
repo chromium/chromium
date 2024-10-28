@@ -356,10 +356,11 @@
   }
   __weak __typeof(self) weakSelf = self;
   _blockUserInteractions = YES;
-  [self.delegate didTapAddAccount:^(SigninCoordinatorResult result,
-                                    SigninCompletionInfo* info) {
-    [weakSelf accountAddedIsDone];
-  }];
+  [self.delegate
+      didTapAddAccountWithCompletion:^(SigninCoordinatorResult result,
+                                       SigninCompletionInfo* info) {
+        [weakSelf accountAddedIsDone];
+      }];
 }
 
 #pragma mark - Callbacks

@@ -323,7 +323,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     }
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
       __weak __typeof(self) weakSelf = self;
-      ShowSigninCommandCompletionCallback callback =
+      ShowSigninCommandCompletionCallback completion =
           ^(SigninCoordinatorResult result,
             SigninCompletionInfo* completionInfo) {
             BOOL succeeded = result == SigninCoordinatorResultSuccess;
@@ -336,7 +336,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                 ACCESS_POINT_SEND_TAB_TO_SELF_PROMO
                 promoAction:signin_metrics::PromoAction::
                                 PROMO_ACTION_NO_SIGNIN_PROMO
-                   callback:callback];
+                 completion:completion];
       [self.signinPresenter showSignin:command];
       break;
     }

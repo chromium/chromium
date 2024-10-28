@@ -1146,7 +1146,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                                           identity:identity
                                        accessPoint:self.accessPoint
                                        promoAction:promoAction
-                                          callback:completion];
+                                        completion:completion];
   [self.signinPresenter showSignin:command];
 }
 

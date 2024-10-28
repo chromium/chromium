@@ -328,14 +328,14 @@
                             ACCESS_POINT_DRIVE_FILE_PICKER_IOS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 if (result == SigninCoordinatorResultSuccess) {
-                   [weakSelf addAndSelectNewIdentity:completionInfo.identity];
-                 } else {
-                   [weakSelf reportAddingIdentityFailure];
-                 }
-               }];
+               if (result == SigninCoordinatorResultSuccess) {
+                 [weakSelf addAndSelectNewIdentity:completionInfo.identity];
+               } else {
+                 [weakSelf reportAddingIdentityFailure];
+               }
+             }];
   [applicationCommandsHandler showSignin:addAccountCommand
                       baseViewController:_navigationController];
 }

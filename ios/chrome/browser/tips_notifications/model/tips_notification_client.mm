@@ -533,7 +533,7 @@ void TipsNotificationClient::ShowSignin(Browser* browser) {
                             ACCESS_POINT_TIPS_NOTIFICATION
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:nil];
+             completion:nil];
 
   [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
       showSignin:command];

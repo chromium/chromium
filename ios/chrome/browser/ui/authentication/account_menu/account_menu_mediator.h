@@ -35,7 +35,8 @@ class SyncService;
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AccountMenuMediatorDelegate> delegate;
 
-// Parameters for [super runCompletionCallbackWithSigninResult:completionInfo];
+// Parameters for [super
+// runCompletionWithSigninResult:completionInfo];
 @property(nonatomic, readwrite) SigninCoordinatorResult signinCoordinatorResult;
 // the identity with which the user is newly signed-in.
 @property(nonatomic, strong, readonly)

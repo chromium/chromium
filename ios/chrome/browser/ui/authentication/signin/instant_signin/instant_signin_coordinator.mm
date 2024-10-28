@@ -145,9 +145,8 @@
     CHECK(!_activityOverlayCoordinator);
     [_identityChooserCoordinator stop];
     _identityChooserCoordinator = nil;
-    [self
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                               completionInfo:nil];
+    [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                         completionInfo:nil];
     if (completion) {
       completion();
     }
@@ -161,9 +160,8 @@
     // Drop the activity overlay if it exists.
     [_activityOverlayCoordinator stop];
     _activityOverlayCoordinator = nil;
-    [self
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                               completionInfo:nil];
+    [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                         completionInfo:nil];
     if (completion) {
       completion();
     }
@@ -211,9 +209,8 @@
   _identityChooserCoordinator = nil;
   if (!identity) {
     // If no identity was selected, the coordinator can be closed.
-    [self runCompletionCallbackWithSigninResult:
-              SigninCoordinatorResultCanceledByUser
-                                 completionInfo:nil];
+    [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                         completionInfo:nil];
     return;
   }
   _identity = identity;
@@ -234,14 +231,14 @@
                                                        self.accessPoint);
       SigninCompletionInfo* info =
           [SigninCompletionInfo signinCompletionInfoWithIdentity:_identity];
-      [self runCompletionCallbackWithSigninResult:SigninCoordinatorResultSuccess
-                                   completionInfo:info];
+      [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
+                           completionInfo:info];
       break;
     }
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionCallbackWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionInfo:nil];
       break;
   }
 }
@@ -306,7 +303,7 @@
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionCallbackWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionInfo:nil];
       break;
   }
 }

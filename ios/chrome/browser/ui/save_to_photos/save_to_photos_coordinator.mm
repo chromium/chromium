@@ -254,12 +254,12 @@
                             ACCESS_POINT_SAVE_TO_PHOTOS_IOS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 if (completion) {
-                   completion(completionInfo.identity);
-                 }
-               }];
+               if (completion) {
+                 completion(completionInfo.identity);
+               }
+             }];
   [applicationCommandsHandler
               showSignin:addAccountCommand
       baseViewController:accountPickerCoordinator.viewController];

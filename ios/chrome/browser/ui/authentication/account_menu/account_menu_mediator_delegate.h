@@ -46,7 +46,8 @@
 - (void)didTapEditAccountList;
 
 // The user tapped on "Add account…".
-- (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback;
+- (void)didTapAddAccountWithCompletion:
+    (ShowSigninCommandCompletionCallback)completion;
 
 // Blocks the user from using Chromium. Returns whether the block was possible.
 - (BOOL)blockOtherScenesIfPossible;

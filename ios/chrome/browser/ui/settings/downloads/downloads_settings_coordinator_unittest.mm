@@ -315,8 +315,8 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   OCMExpect([mock_application_commands_handler_
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
-                EXPECT_TRUE(command.callback);
-                show_signin_callback = command.callback;
+                EXPECT_TRUE(command.completion);
+                show_signin_callback = command.completion;
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);
                 EXPECT_FALSE(command.identity);

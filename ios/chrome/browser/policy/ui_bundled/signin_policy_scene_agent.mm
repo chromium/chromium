@@ -253,7 +253,7 @@
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:nil];
+             completion:nil];
 
   [self.applicationCommandsHandler
               showSignin:command

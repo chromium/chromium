@@ -1849,7 +1849,7 @@ using UserFeedbackDataCallback =
                                                                  .promoAction];
       break;
   }
-  [self startSigninCoordinatorWithCompletion:command.callback];
+  [self startSigninCoordinatorWithCompletion:command.completion];
 }
 
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView

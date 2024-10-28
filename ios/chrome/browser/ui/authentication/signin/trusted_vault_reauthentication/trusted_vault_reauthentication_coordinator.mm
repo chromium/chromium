@@ -75,9 +75,8 @@ using l10n_util::GetNSStringF;
     // The completion block has to be called explicitly.
     SigninCompletionInfo* completionInfo =
         [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
-    [weakSelf
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                               completionInfo:completionInfo];
+    [weakSelf runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                             completionInfo:completionInfo];
     if (completion) {
       completion();
     }
@@ -191,8 +190,7 @@ using l10n_util::GetNSStringF;
                                        : SigninCoordinatorResultCanceledByUser;
   SigninCompletionInfo* completionInfo = [SigninCompletionInfo
       signinCompletionInfoWithIdentity:success ? self.identity : nil];
-  [self runCompletionCallbackWithSigninResult:result
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
 }
 
 #pragma mark - NSObject

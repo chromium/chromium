@@ -189,8 +189,7 @@ using base::UserMetricsAction;
   _screenProvider = nil;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionCallbackWithSigninResult:result
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
 }
 
 #pragma mark - FirstRunScreenDelegate

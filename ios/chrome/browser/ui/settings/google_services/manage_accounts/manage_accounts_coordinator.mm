@@ -258,10 +258,10 @@ using signin_metrics::PromoAction;
                identity:nil
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 [weakSelf addAccountToDeviceCompleted];
-               }];
+               [weakSelf addAccountToDeviceCompleted];
+             }];
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
               showSignin:command
       baseViewController:_viewController];

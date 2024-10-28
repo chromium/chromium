@@ -2270,10 +2270,10 @@ struct EnhancedSafeBrowsingActivePromoData
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 [weakSelf didFinishSignin];
-               }];
+               [weakSelf didFinishSignin];
+             }];
   [self.applicationHandler showSignin:command baseViewController:self];
 }
 

@@ -144,15 +144,15 @@
                             ACCESS_POINT_SAVE_TO_PHOTOS_IOS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* info) {
-                 __strong __typeof(weakSelf) strongSelf = weakSelf;
-                 if (strongSelf && result == SigninCoordinatorResultSuccess &&
-                     info.identity) {
-                   [strongSelf->_saveToPhotosSettingsMediator
-                       setSelectedIdentityGaiaID:info.identity.gaiaID];
-                 }
-               }];
+               __strong __typeof(weakSelf) strongSelf = weakSelf;
+               if (strongSelf && result == SigninCoordinatorResultSuccess &&
+                   info.identity) {
+                 [strongSelf->_saveToPhotosSettingsMediator
+                     setSelectedIdentityGaiaID:info.identity.gaiaID];
+               }
+             }];
   [applicationCommandsHandler showSignin:addAccountCommand
                       baseViewController:self.baseViewController];
 }

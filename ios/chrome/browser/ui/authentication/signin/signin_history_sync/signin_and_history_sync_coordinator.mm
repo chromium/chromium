@@ -144,8 +144,7 @@ enum class SignInHistorySyncStep {
   }
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionCallbackWithSigninResult:result
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
 }
 
 // Creates the current step coordinator according to `_currentStep`.

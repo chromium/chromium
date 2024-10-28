@@ -81,7 +81,7 @@ using signin_metrics::PromoAction;
   // When interrupting `self.postSigninManagerCoordinator` or
   // `self.historySyncPopupCoordinator` below, the signinCompletion is called.
   // This callback is in charge to call `[self
-  // runCompletionCallbackWithSigninResult: completionInfo:]`.
+  // runCompletionWithSigninResult: completionInfo:]`.
   if (self.postSigninManagerCoordinator) {
     DCHECK(!self.addAccountSigninManager);
     [self.postSigninManagerCoordinator interruptWithAction:action
@@ -124,7 +124,7 @@ using signin_metrics::PromoAction;
 - (void)stop {
   [super stop];
   // If one of those 3 DCHECK() fails, -[AddAccountSigninCoordinator
-  // runCompletionCallbackWithSigninResult] has not been called.
+  // runCompletionWithSigninResult] has not been called.
   DCHECK(!self.addAccountSigninManager);
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.postSigninManagerCoordinator);
@@ -240,8 +240,8 @@ using signin_metrics::PromoAction;
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionCallbackWithSigninResult:signinResult
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:signinResult
+                       completionInfo:completionInfo];
 }
 
 // Presents the extra screen with `identity` pre-selected.

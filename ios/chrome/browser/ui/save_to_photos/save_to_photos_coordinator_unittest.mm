@@ -427,7 +427,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
                 if (command) {
-                  command.callback(
+                  command.completion(
                       SigninCoordinatorResultSuccess,
                       [SigninCompletionInfo
                           signinCompletionInfoWithIdentity:added_identity]);

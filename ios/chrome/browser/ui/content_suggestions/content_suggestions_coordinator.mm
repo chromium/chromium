@@ -1172,7 +1172,7 @@ using segmentation_platform::TipIdentifier;
 
 // Shows the SigninSync UI with the SetUpList access point.
 - (void)showSignIn {
-  ShowSigninCommandCompletionCallback callback =
+  ShowSigninCommandCompletionCallback completion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
         if (result == SigninCoordinatorResultSuccess ||
             result == SigninCoordinatorResultCanceledByUser) {
@@ -1194,7 +1194,7 @@ using segmentation_platform::TipIdentifier;
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:callback];
+             completion:completion];
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
               showSignin:command
       baseViewController:self.viewController];

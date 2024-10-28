@@ -78,7 +78,7 @@
 
 - (void)presentSignIn {
   __weak __typeof(self) weakSelf = self;
-  ShowSigninCommandCompletionCallback callback =
+  ShowSigninCommandCompletionCallback completion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
         if (result != SigninCoordinatorResultSuccess) {
           [weakSelf.mediator disableUserSelectionForItem:kContent];
@@ -99,7 +99,7 @@
                     ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:callback];
+             completion:completion];
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
               showSignin:command
       baseViewController:_viewController];

@@ -466,7 +466,7 @@ TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
 
 // Tests the effect of didTapAddAccount.
 TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
-  OCMExpect([delegate_ didTapAddAccount:[OCMArg any]]);
+  OCMExpect([delegate_ didTapAddAccountWithCompletion:[OCMArg any]]);
   [mediator_ didTapAddAccount];
 }
 
