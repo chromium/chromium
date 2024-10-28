@@ -685,6 +685,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "deletion_task_delay",
                    base::Milliseconds(1000));
 
+// Improves the signal-to-noise ratio of network error related messages in the
+// DevTools Console.
+// See http://crbug.com/124534.
+BASE_FEATURE(kDevToolsImprovedNetworkError,
+             "DevToolsImprovedNetworkError",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDirectCompositorThreadIpc,
              "DirectCompositorThreadIpc",
              base::FEATURE_DISABLED_BY_DEFAULT);

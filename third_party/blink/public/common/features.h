@@ -382,6 +382,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam);
 
+// Improves the signal-to-noise ratio of network error related messages in the
+// DevTools Console.
+// See http://crbug.com/40788570.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsImprovedNetworkError);
+
 // Enables the use of CrabbyAvif for decoding AVIF images.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCrabbyAvif);
 

@@ -131,6 +131,13 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
     return;
   }
 
+  // Reduce noise in the DevTools console due to CORS policy errors.
+  // See http://crbug.com/375357425.
+  if (error.CorsErrorStatus() &&
+      base::FeatureList::IsEnabled(features::kDevToolsImprovedNetworkError)) {
+    return;
+  }
+
   StringBuilder message;
   message.Append("Failed to load resource");
   if (!error.LocalizedDescription().empty()) {
