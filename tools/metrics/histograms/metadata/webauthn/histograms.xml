@@ -92,41 +92,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
-    enum="WebAuthenticationAOADiscoveryEvent" expires_after="2025-03-01">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Records events that happen during the discovery of USB-connected phones.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.CableV2.DiscoveryEvent"
-    enum="WebAuthenticationCableV2DiscoveryEvent" expires_after="2025-03-01">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Records events that happen when listening for a caBLEv2 device.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.CableV2.MobileEvent"
-    enum="WebAuthenticationCableV2MobileEvent" expires_after="2024-03-01">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    Records events that occur during a caBLE v2 transaction from the mobile
-    side.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.CableV2.MobileResult"
-    enum="WebAuthenticationCableV2MobileResult" expires_after="2024-03-01">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>Records the outcome of caBLEv2 transactions.</summary>
-</histogram>
-
 <histogram name="WebAuthentication.CableV2.PrelinkDataAgeDays" units="days"
     expires_after="2024-07-07">
   <owner>agl@chromium.org</owner>
@@ -135,17 +100,6 @@ chromium-metrics-reviews@google.com.
     The age, in days, of the caBLE prelink information published by Android
     devices at the time when they upload it to sync. This measurement saturates
     at 31 days and the value 32 indicates that the calculated age was negative.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.CableV2.RendezvousTime" units="ms"
-    expires_after="2024-03-01">
-  <owner>agl@chromium.org</owner>
-  <owner>martinkr@google.com</owner>
-  <summary>
-    The time between the phone connecting to the tunnel server (and thus
-    starting its BLE broadcast) to the point where it receives the handshake
-    message from the desktop.
   </summary>
 </histogram>
 
