@@ -26,3 +26,13 @@
 
 # crbug.com/351025215
 -org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
+
+# crbug.com/350393662
+-org.chromium.chrome.browser.searchwidget.SearchActivityTest.*
+
+# crbug.com/376095153
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
+
+# crbug.com/375710620
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigation
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
