@@ -153,29 +153,6 @@ bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
   return false;
 }
 
-void ChromeCaptureModeDelegate::CreateLensOverlayQueryController() {
-  if (Profile* profile = ProfileManager::GetActiveUserProfile();
-      profile && ash::features::IsSunfishFeatureEnabled()) {
-    lens_overlay_query_controller_ =
-        std::make_unique<lens::LensOverlayQueryController>(
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleStartQueryResponse,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleInteractionURLResponse,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleSuggestInputsResponse,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleThumbnailCreated,
-                weak_ptr_factory_.GetWeakPtr()),
-            profile->GetVariationsClient(), /*identity_manager=*/nullptr,
-            profile, lens::LensOverlayInvocationSource(),
-            /*use_dark_mode=*/false, /*gen204_controller=*/nullptr);
-  }
-}
-
 base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()
     const {
   DCHECK(ash::LoginState::Get()->IsUserLoggedIn());
@@ -518,8 +495,10 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
   }
 }
 
-void ChromeCaptureModeDelegate::SendRegionSearch(const SkBitmap& image,
-                                                 const gfx::Rect& region) {
+void ChromeCaptureModeDelegate::SendRegionSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    ash::OnSearchUrlFetchedCallback callback) {
   DCHECK(ash::features::IsSunfishFeatureEnabled());
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
@@ -548,6 +527,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(const SkBitmap& image,
             /*use_dark_mode=*/false,
             /*gen204_controller=*/gen204_controller_.get());
   }
+  on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->StartQueryFlow(
       /*screenshot=*/image,
       /*page_url=*/GURL(),
@@ -572,8 +552,7 @@ void ChromeCaptureModeDelegate::HandleStartQueryResponse(
 
 void ChromeCaptureModeDelegate::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
-  auto* controller = ash::CaptureModeController::Get();
-  controller->OnSearchUrlFetched(GURL(response.url()));
+  std::move(on_search_url_fetched_callback_).Run(GURL(response.url()));
 }
 
 void ChromeCaptureModeDelegate::HandleSuggestInputsResponse(

@@ -144,7 +144,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void DetectTextInImage(const SkBitmap& image,
                          OnTextDetectionComplete callback) override;
   void SendRegionSearch(const SkBitmap& image,
-                        const gfx::Rect& region) override;
+                        const gfx::Rect& region,
+                        OnSearchUrlFetchedCallback callback) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

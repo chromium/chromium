@@ -58,6 +58,9 @@ using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::SizeIs;
 
+constexpr char kTestSearchUrl[] =
+    "https://www.google.com/search?q=cat&gsc=1&masfc=c";
+
 void WaitForImageCapturedForSearch() {
   base::RunLoop run_loop;
   ash::CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
@@ -407,7 +410,7 @@ TEST_F(SunfishTest, OnLocatedEvent) {
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
 
   // Simulate opening the panel during an active session.
-  session->ShowSearchResultsPanel(gfx::ImageSkia());
+  session->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
   views::Widget* widget = session->search_results_panel_widget();
   ASSERT_TRUE(widget);
   auto* search_results_panel =
@@ -436,7 +439,7 @@ TEST_F(SunfishTest, UpdateCursor) {
   // Simulate opening the panel during an active session.
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  session->ShowSearchResultsPanel(gfx::ImageSkia());
+  session->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
   views::Widget* widget = session->search_results_panel_widget();
   ASSERT_TRUE(widget);
   auto* search_results_panel =

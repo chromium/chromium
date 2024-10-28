@@ -1704,10 +1704,13 @@ void CaptureModeController::OnImageCapturedForSearch(
   if (features::IsSunfishFeatureEnabled()) {
     SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
     const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-    // TODO(crbug.com/375491451): Bind these into 1 callback instead of
-    // immediately calling `ShowSearchResultsPanel()`.
-    delegate_->SendRegionSearch(bitmap, user_capture_region_);
-    capture_mode_session_->ShowSearchResultsPanel(image);
+    // `OnSearchUrlFetched()` will be invoked with `image` when the server
+    // response is fetched.
+    delegate_->SendRegionSearch(
+        bitmap, user_capture_region_,
+        base::BindOnce(&CaptureModeController::OnSearchUrlFetched,
+                       weak_ptr_factory_.GetWeakPtr(), capture_mode_session(),
+                       user_capture_region_, image));
   }
 
   if (on_image_captured_for_search_callback_for_test_) {
@@ -1732,9 +1735,14 @@ void CaptureModeController::OnScannerActionsFetched(
   }
 }
 
-void CaptureModeController::OnSearchUrlFetched(const GURL& url) {
-  if (IsActive()) {
-    capture_mode_session_->OnSearchUrlFetched(url);
+void CaptureModeController::OnSearchUrlFetched(
+    BaseCaptureModeSession* session_of_request,
+    const gfx::Rect& captured_region,
+    const gfx::ImageSkia& image,
+    GURL url) {
+  if (IsActive() && session_of_request == capture_mode_session() &&
+      captured_region == user_capture_region_) {
+    capture_mode_session_->ShowSearchResultsPanel(image, url);
   }
 }
 

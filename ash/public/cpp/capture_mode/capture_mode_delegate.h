@@ -245,9 +245,11 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void DetectTextInImage(const SkBitmap& image,
                                  OnTextDetectionComplete callback) = 0;
 
-  // Sends the captured `region` and `image` to the backend.
+  // Sends the captured `region` and `image` to the backend. Invokes `callback`
+  // when the response is fetched.
   virtual void SendRegionSearch(const SkBitmap& image,
-                                const gfx::Rect& region) = 0;
+                                const gfx::Rect& region,
+                                OnSearchUrlFetchedCallback callback) = 0;
 };
 
 }  // namespace ash

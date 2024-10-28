@@ -336,8 +336,16 @@ class ASH_EXPORT CaptureModeController
   bool IsAnnotatingSupported() const;
 
   // Called by `CaptureModeDelegate` when the search result is fetched.
-  // Navigates to `url`, if active.
-  void OnSearchUrlFetched(const GURL& url);
+  // Opens `url` and `image` if the following conditions are met:
+  //  - The current capture mode session is active.
+  //  - The current session object is the same as the one that initiated the
+  //  search request (i.e. the given `session_of_request`).
+  //  - The captured region on the screen has not changed since the request was
+  //  made.
+  void OnSearchUrlFetched(BaseCaptureModeSession* session_of_request,
+                          const gfx::Rect& captured_region,
+                          const gfx::ImageSkia& image,
+                          GURL url);
 
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,

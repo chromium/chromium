@@ -58,9 +58,6 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Returns true if a video recording was interrupted, and false otherwise.
   bool InterruptVideoRecordingIfAny();
 
-  // TODO(crbug.com/375491451): Determine when to call this. Currently unused.
-  void CreateLensOverlayQueryController();
-
   // ash::CaptureModeDelegate:
   base::FilePath GetUserDefaultDownloadsFolder() const override;
   void OpenScreenCaptureItem(const base::FilePath& file_path) override;
@@ -117,7 +114,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void DetectTextInImage(const SkBitmap& image,
                          ash::OnTextDetectionComplete callback) override;
   void SendRegionSearch(const SkBitmap& image,
-                        const gfx::Rect& region) override;
+                        const gfx::Rect& region,
+                        ash::OnSearchUrlFetchedCallback callback) override;
 
   void set_optical_character_recognizer_for_testing(
       scoped_refptr<screen_ai::OpticalCharacterRecognizer>
@@ -173,6 +171,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // locked.
   // This is only non-null during recording.
   base::OnceClosure interrupt_video_recording_callback_;
+
+  // A callback that will be invoked when the search URL is fetched.
+  ash::OnSearchUrlFetchedCallback on_search_url_fetched_callback_;
 
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;

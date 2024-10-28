@@ -1389,21 +1389,19 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return ignore_windows;
 }
 
-void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image) {
+void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image,
+                                                GURL url) {
   DCHECK(features::IsSunfishFeatureEnabled());
-  MaybeCreateSearchResultsPanel();
+  if (!search_results_panel_widget_) {
+    search_results_panel_widget_ =
+        SearchResultsPanel::CreateWidget(current_root());
+    search_results_panel_widget_->Show();
+  }
   // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
   // region selection and/or session is started.
   auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
       search_results_panel_widget_->GetContentsView());
   search_results_panel->SetSearchBoxImage(image);
-}
-
-void CaptureModeSession::OnSearchUrlFetched(const GURL& url) {
-  DCHECK(features::IsSunfishFeatureEnabled());
-  MaybeCreateSearchResultsPanel();
-  auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
-      search_results_panel_widget_->GetContentsView());
   search_results_panel->search_results_view()->Navigate(url);
 }
 
@@ -3142,14 +3140,6 @@ void CaptureModeSession::RemoveAllActionButtons() {
   if (action_container_widget_) {
     CHECK(action_container_view_);
     action_container_view_->RemoveAllChildViews();
-  }
-}
-
-void CaptureModeSession::MaybeCreateSearchResultsPanel() {
-  if (!search_results_panel_widget_) {
-    search_results_panel_widget_ =
-        SearchResultsPanel::CreateWidget(current_root());
-    search_results_panel_widget_->Show();
   }
 }
 
