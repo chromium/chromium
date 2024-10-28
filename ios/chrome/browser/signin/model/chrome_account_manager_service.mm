@@ -7,6 +7,7 @@
 #import <string_view>
 
 #import "base/check.h"
+#import "base/check_is_test.h"
 #import "base/memory/raw_ref.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -166,21 +167,24 @@ typename Collector::ResultType IterateOverIdentities(
 
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
-    PrefService* pref_service) {
+    PrefService* local_state) {
   return PatternAccountRestrictionFromValue(
-      pref_service->GetList(prefs::kRestrictAccountsToPatterns));
+      local_state->GetList(prefs::kRestrictAccountsToPatterns));
 }
 
 }  // anonymous namespace.
 
 ChromeAccountManagerService::ChromeAccountManagerService(
-    PrefService* pref_service,
+    PrefService* local_state,
     std::string_view profile_name)
-    : pref_service_(pref_service), profile_name_(profile_name) {
-  // pref_service is null in test environment. In prod environment pref_service
-  // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
-  if (pref_service_) {
-    registrar_.Init(pref_service_);
+    : local_state_(local_state), profile_name_(profile_name) {
+  // `local_state_` may be null in a test environment. In the prod environment,
+  // `local_state_` comes from GetApplicationContext()->GetLocalState() and
+  // couldn't be null.
+  if (!local_state_) {
+    CHECK_IS_TEST();
+  } else {
+    registrar_.Init(local_state_);
     registrar_.Add(
         prefs::kRestrictAccountsToPatterns,
         base::BindRepeating(&ChromeAccountManagerService::UpdateRestriction,
@@ -267,9 +271,9 @@ void ChromeAccountManagerService::Shutdown() {
   for (auto& observer : observer_list_) {
     observer.OnChromeAccountManagerServiceShutdown(this);
   }
-  if (pref_service_) {
+  if (local_state_) {
     registrar_.RemoveAll();
-    pref_service_ = nullptr;
+    local_state_ = nullptr;
   }
 }
 
@@ -309,7 +313,7 @@ void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
 }
 
 void ChromeAccountManagerService::UpdateRestriction() {
-  restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
+  restriction_ = PatternAccountRestrictionFromPreference(local_state_);
   OnIdentityListChanged();
 }
 

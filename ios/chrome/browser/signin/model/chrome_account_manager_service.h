@@ -61,7 +61,7 @@ class ChromeAccountManagerService : public KeyedService,
 
   // Initializes the service, getting identities corresponding to `profile_name`
   // from the AccountProfileMapper.
-  ChromeAccountManagerService(PrefService* pref_service,
+  ChromeAccountManagerService(PrefService* local_state,
                               std::string_view profile_name);
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
@@ -116,16 +116,16 @@ class ChromeAccountManagerService : public KeyedService,
       id<RefreshAccessTokenError> error) override;
 
  private:
-  // Updates PatternAccountRestriction with the current `pref_service_`. If
-  // `pref_service_` is null, no identity will be filtered.
+  // Updates PatternAccountRestriction with the current `local_state_`. If
+  // `local_state_` is null, no identity will be filtered.
   void UpdateRestriction();
 
   // Returns a ResizedAvatarCache based on `avatar_size`.
   ResizedAvatarCache* GetAvatarCacheForIdentityAvatarSize(
       IdentityAvatarSize avatar_size);
 
-  // Used to retrieve restricted patterns.
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  // The local-state pref service, used to retrieve restricted patterns.
+  raw_ptr<PrefService> local_state_ = nullptr;
   // Used to filter ChromeIdentities.
   PatternAccountRestriction restriction_;
   // Used to listen pref change.
