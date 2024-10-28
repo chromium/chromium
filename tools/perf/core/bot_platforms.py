@@ -507,6 +507,7 @@ _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
 _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
+    'rendering.desktop',
 ])
 _MAC_INTEL_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
