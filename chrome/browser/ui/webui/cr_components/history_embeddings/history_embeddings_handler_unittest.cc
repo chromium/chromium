@@ -89,7 +89,10 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings, {}},
+        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
+                               {
+                                   {"TrimAfterHostInResults", "true"},
+                               }},
                               {history_embeddings::kHistoryEmbeddingsAnswers,
                                {}},
                               {feature_engagement::kIPHHistorySearchFeature,
@@ -176,7 +179,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
 TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   history_embeddings::ScoredUrlRow scored_url_row(
       history_embeddings::ScoredUrl(0, 0, {}, .5));
-  scored_url_row.row = history::URLRow{GURL{"https://google.com"}};
+  scored_url_row.row = history::URLRow{GURL{"https://google.com/search"}};
   scored_url_row.row.set_title(u"my title");
   scored_url_row.row.set_last_visit(base::Time::Now() - base::Hours(1));
   history_embeddings::ScoredUrlRow other_scored_url_row = scored_url_row;
@@ -206,7 +209,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   EXPECT_EQ(mojo_result->answer, "the answer");
   ASSERT_EQ(mojo_result->items.size(), 2u);
   EXPECT_EQ(mojo_result->items[0]->title, "my title");
-  EXPECT_EQ(mojo_result->items[0]->url.spec(), "https://google.com/");
+  EXPECT_EQ(mojo_result->items[0]->url.spec(), "https://google.com/search");
   EXPECT_EQ(mojo_result->items[0]->relative_time,
             base::UTF16ToUTF8(ui::TimeFormat::Simple(
                 ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,

@@ -178,6 +178,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history search results powered by AI while loading.">
     Searching for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_WITH_ANSWERS_RESULTS_HEADING" desc="Heading for history search results powered by AI showing the best matches for a search query when answers are enabled." translateable="false">
+    Best matches from your history
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history search results powered by AI.">
     This is an experimental feature and won’t always get it right.
   </message>

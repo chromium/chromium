@@ -141,6 +141,9 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
         url_formatter::kFormatUrlOmitDefaults |
         url_formatter::kFormatUrlOmitHTTPS |
         url_formatter::kFormatUrlOmitTrivialSubdomains;
+    if (history_embeddings::kTrimAfterHostInResults.Get()) {
+      format_types |= url_formatter::kFormatUrlTrimAfterHost;
+    }
     item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
         scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
         nullptr, nullptr, nullptr));

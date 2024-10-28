@@ -228,10 +228,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return undefined;
     }
 
-    // TODO(b/348689167): Move strings into a grdp file.
     switch (this.searchResult_.answerStatus) {
       case AnswerStatus.kUnspecified:
       case AnswerStatus.kLoading:
+      case AnswerStatus.kExecutionCanceled:
         // Still loading or in an undefined state.
         return undefined;
       case AnswerStatus.kSuccess:
@@ -241,7 +241,6 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         return this.i18n('historyEmbeddingsAnswererErrorUnanswerable');
       case AnswerStatus.kModelUnavailable:
       case AnswerStatus.kExecutionFailure:
-      case AnswerStatus.kExecutionCanceled:
         return this.i18n('historyEmbeddingsAnswererErrorTryAgain');
       default:
         assertNotReached();
@@ -273,7 +272,20 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     if (this.loadingResults_) {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
+
+    if (this.enableAnswers_) {
+      return this.i18n('historyEmbeddingsWithAnswersResultsHeading');
+    }
+
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
+  }
+
+  private getHeadingTextForAnswerSection_(): string {
+    if (this.loadingAnswer_) {
+      return this.i18n('historyEmbeddingsAnswerLoadingHeading');
+    }
+
+    return this.i18n('historyEmbeddingsAnswerHeading');
   }
 
   private getAnswerDateTime_(): string {
@@ -300,6 +312,17 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return false;
     }
     return this.searchResult_?.answer !== '';
+  }
+
+  private isAnswerErrorState_(): boolean {
+    if (!this.searchResult_) {
+      return false;
+    }
+
+    return this.searchResult_.answerStatus === AnswerStatus.kUnanswerable ||
+        this.searchResult_.answerStatus === AnswerStatus.kFiltered ||
+        this.searchResult_.answerStatus === AnswerStatus.kModelUnavailable ||
+        this.searchResult_.answerStatus === AnswerStatus.kExecutionFailure;
   }
 
   private onFeedbackSelectedOptionChanged_(

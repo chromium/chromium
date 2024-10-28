@@ -16,10 +16,6 @@
 }
 
 :host([enable-answers_]) .card {
-  background: var(--color-history-embeddings-with-answers-background,
-      var(--cr-fallback-color-surface1));
-  border-radius: 16px;
-  box-shadow: none;
   padding-block: var(
       --cr-history-embeddings-card-padding-block-with-answers, 16px);
 }
@@ -57,6 +53,12 @@ h2 cr-icon {
   font-weight: 500;
   line-height: 24px;
   padding: var(--cr-history-embeddings-answer-padding, 8px 24px);
+}
+
+:host([enable-answers_]) .answer[is-error] {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  font-weight: 400;
 }
 
 :host([enable-answers_]) .answer-source {
@@ -100,6 +102,10 @@ hr {
   margin: 0px 24px;
 }
 
+:host([enable-answers_]) hr {
+  display: none;
+}
+
 hr:last-of-type {
   display: none;
 }
@@ -117,6 +123,11 @@ cr-url-list-item:has(.source-passage:not([hidden])) {
 hr:has(+ cr-url-list-item:hover),
 cr-url-list-item:hover + hr {
   opacity: 0;
+}
+
+:host([enable-answers_]) cr-url-list-item {
+  --cr-url-list-item-padding: var(
+      --cr-history-embeddings-url-list-item-padding, 8px 24px);
 }
 
 :host([enable-answers_]) .result-item {
@@ -189,7 +200,6 @@ cr-url-list-item:hover + hr {
       var(--cr-secondary-text-color));
   font-size: 11px;
   line-height: 16px;
-  margin-inline-start: 0;
   white-space: nowrap;
 }
 
@@ -244,9 +254,9 @@ cr-url-list-item:hover + hr {
       <cr-loading-gradient>
         <svg width="482" height="40">
           <clipPath>
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM55 8C55 5.79086 56.7909 4 59 4H478C480.209 4 482 5.79086 482 8V14C482 16.2091 480.209 18 478 18H59C56.7909 18 55 16.2091 55 14V8ZM55 28C55 25.7909 56.7909 24 59 24H371C373.209 24 375 25.7909 375 28V34C375 36.2091 373.209 38 371 38H59C56.7909 38 55 36.2091 55 34V28Z">
-            </path>
+            <rect width="40" height="40" rx="8" ry="8"></rect>
+            <rect x="55" y="4" width="calc(100% - 55px)" height="14" rx="4" ry="4"></rect>
+            <rect x="55" y="24" width="calc(78% - 55px)" height="14" rx="4" ry="4"></rect>
           </clipPath>
         </svg>
       </cr-loading-gradient>
@@ -293,20 +303,23 @@ cr-url-list-item:hover + hr {
   <div id="cardWithAnswers" class="card">
     <div class="answer-section"
         hidden$="[[!showAnswerSection_(searchQuery, searchResult_.*)]]">
-      <h2 class="heading">[[i18n('historyEmbeddingsAnswerHeading')]]</h2>
+      <h2 class="heading">
+        [[getHeadingTextForAnswerSection_(loadingAnswer_)]]
+      </h2>
       <div class="loading loading-answer" hidden$="[[!loadingAnswer_]]">
         <cr-loading-gradient>
-          <svg width="770" height="72" viewBox="0 0 770 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="100%" height="72" fill="none" xmlns="http://www.w3.org/2000/svg">
             <clipPath>
-              <rect width="770" height="12" rx="4"></rect>
-              <rect y="20" width="656" height="12" rx="4"></rect>
-              <rect y="40" width="576" height="12" rx="4"></rect>
-              <rect y="60" width="256" height="12" rx="4"></rect>
+              <rect width="100%" height="12" rx="4"1></rect>
+              <rect y="20" width="85%" height="12" rx="4"></rect>
+              <rect y="40" width="75%" height="12" rx="4"></rect>
+              <rect y="60" width="33%" height="12" rx="4"></rect>
             </clipPath>
           </svg>
         </cr-loading-gradient>
       </div>
-      <div class="answer" hidden="[[loadingAnswer_]]">
+      <div class="answer" hidden="[[loadingAnswer_]]"
+          is-error$="[[isAnswerErrorState_(searchResult_.*)]]">
         [[getAnswerOrError_(searchResult_.*)]]
       </div>
       <div class="answer-source" hidden="[[!answerSource_]]">
@@ -333,11 +346,11 @@ cr-url-list-item:hover + hr {
     </h2>
     <div class="loading loading-results" hidden$="[[!loadingResults_]]">
       <cr-loading-gradient>
-        <svg width="482" height="40">
+        <svg width="100%" height="40">
           <clipPath>
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM55 8C55 5.79086 56.7909 4 59 4H478C480.209 4 482 5.79086 482 8V14C482 16.2091 480.209 18 478 18H59C56.7909 18 55 16.2091 55 14V8ZM55 28C55 25.7909 56.7909 24 59 24H371C373.209 24 375 25.7909 375 28V34C375 36.2091 373.209 38 371 38H59C56.7909 38 55 36.2091 55 34V28Z">
-            </path>
+            <rect width="40" height="40" rx="8" ry="8"></rect>
+            <rect x="55" y="4" width="calc(100% - 55px)" height="14" rx="4" ry="4"></rect>
+            <rect x="55" y="24" width="calc(78% - 55px)" height="14" rx="4" ry="4"></rect>
           </clipPath>
         </svg>
       </cr-loading-gradient>

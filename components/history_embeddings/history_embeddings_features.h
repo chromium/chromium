@@ -153,6 +153,10 @@ extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 // history embeddings.
 extern const base::FeatureParam<bool> kEnableSidePanel;
 
+// Specifies whether history embedding results should show just the hostname of
+// the result's URL.
+extern const base::FeatureParam<bool> kTrimAfterHostInResults;
+
 // The maximum number of URLs to use when building context for answerer.
 extern const base::FeatureParam<int> kMaxAnswererContextUrlCount;
 
