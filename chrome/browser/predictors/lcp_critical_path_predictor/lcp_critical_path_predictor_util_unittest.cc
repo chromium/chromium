@@ -2330,4 +2330,69 @@ TEST_F(LcppDataMapTest, KeepDataBaseOverTearnDown) {
   }
 }
 
+class LCPPPrefetchSubresourceTest : public LcppDataMapTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kLCPPPrefetchSubresource);
+    LcppDataMapTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  InitializeDB(config);
+  ASSERT_TRUE(GetDataMap().empty());
+
+  const std::string kUrl = "example.test";
+  const std::string kJpegA = "https://" + kUrl + "/a.jpeg";
+  // Case #1:
+  // LcppStat in LcppData should have corresponding
+  // fetched_subresource_url_destination;
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
+  }
+  PreconnectPrediction prediction;
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_TRUE(GetDataMap().empty());
+
+  // Case #2:
+  // fetched_subresource_url_destination has minus value;
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    InitializeSubresourceUrlDestinationsBucket(lcpp_data,
+                                               {std::make_pair(kJpegA, -1)});
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
+  }
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_TRUE(GetDataMap().empty());
+
+  // Case #3:
+  // fetched_subresource_url_destination has over-max value;
+  const int32_t kMaxValue =
+      static_cast<int32_t>(network::mojom::RequestDestination::kMaxValue);
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    InitializeSubresourceUrlDestinationsBucket(
+        lcpp_data, {std::make_pair(kJpegA, kMaxValue + 1)});
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
+  }
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_TRUE(GetDataMap().empty());
+}
+
 }  // namespace predictors

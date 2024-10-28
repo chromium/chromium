@@ -251,11 +251,9 @@ bool LoadingPredictor::PrepareForPageLoad(
     AddInitialUrlToPreconnectPrediction(url, &prediction);
   }
 
-  std::optional<LcppStat> lcpp_stat =
-      resource_prefetch_predictor()->GetLcppStat(initiator_origin, url);
-  if (lcpp_stat) {
-    MaybeAddPreconnectAndPrefetchRequest(url, *lcpp_stat, prediction);
-  }
+  resource_prefetch_predictor()->GetPreconnectAndPrefetchRequest(
+      initiator_origin, url, prediction);
+
   // Return early if we do not have any requests.
   if (prediction.requests.empty() && prediction.prefetch_requests.empty())
     return false;

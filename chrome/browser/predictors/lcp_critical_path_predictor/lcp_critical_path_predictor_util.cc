@@ -5,6 +5,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -1291,9 +1292,14 @@ bool LcppDataMap::CreateOrClearTablesIfNecessary(sql::Database* db) {
                        std::string(kLcppTableNameInitiatorOrigin).c_str()));
 }
 
-void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
-                                          const LcppStat& lcpp_stat,
-                                          PreconnectPrediction& prediction) {
+void LcppDataMap::GetPreconnectAndPrefetchRequest(
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& url,
+    PreconnectPrediction& prediction) {
+  const std::optional<LcppStat> lcpp_stat = GetLcppStat(initiator_origin, url);
+  if (!lcpp_stat) {
+    return;
+  }
   // LCPP: AutoPreconnectLCPOrigins experiment (crbug.com/1518996)
   // Preconnect to LCPP predicted LCP origins in all platforms including those
   // without optimization guide.
@@ -1304,7 +1310,7 @@ void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
     auto anonymization_key =
         net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
     for (const GURL& preconnect_origin :
-         PredictPreconnectableOrigins(lcpp_stat)) {
+         PredictPreconnectableOrigins(*lcpp_stat)) {
       additional_preconnects.emplace_back(
           url::Origin::Create(preconnect_origin), 1, anonymization_key);
       ++count;
@@ -1343,7 +1349,7 @@ void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
         net::NetworkAnonymizationKey::CreateSameSite(
             net::SchemefulSite(url::Origin::Create(url)));
     size_t count = 0;
-    for (const GURL& font_url : PredictFetchedFontUrls(lcpp_stat)) {
+    for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
       prediction.prefetch_requests.emplace_back(
           font_url, network_anonymization_key,
           network::mojom::RequestDestination::kFont);
@@ -1354,7 +1360,7 @@ void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
 
   if (base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource)) {
     const std::vector<GURL>& subresource_urls =
-        PredictFetchedSubresourceUrls(lcpp_stat);
+        PredictFetchedSubresourceUrls(*lcpp_stat);
     if (!subresource_urls.empty()) {
       const auto network_anonymization_key =
           net::NetworkAnonymizationKey::CreateSameSite(
@@ -1364,17 +1370,24 @@ void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
       size_t subresource_urls_cross_site = 0;
       for (const GURL& subresource_url : subresource_urls) {
         const auto destination_it =
-            lcpp_stat.fetched_subresource_url_destination().find(
+            lcpp_stat->fetched_subresource_url_destination().find(
                 subresource_url.spec());
         // Database is broken.
         // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
         // database.
-        CHECK(destination_it !=
-              lcpp_stat.fetched_subresource_url_destination().end());
-        CHECK_GE(destination_it->second, 0);
-        CHECK_LE(destination_it->second,
-                 static_cast<int32_t>(
-                     network::mojom::RequestDestination::kMaxValue));
+        const bool is_database_broken =
+            (destination_it ==
+             lcpp_stat->fetched_subresource_url_destination().end()) ||
+            destination_it->second < 0 ||
+            destination_it->second >
+                static_cast<int32_t>(
+                    network::mojom::RequestDestination::kMaxValue);
+        if (is_database_broken) {
+          LOG(ERROR) << "fetched_subresource_url_destination is broken.";
+          base::debug::DumpWithoutCrashing();
+          DeleteAllData();
+          return;
+        }
         const network::mojom::RequestDestination destination =
             static_cast<network::mojom::RequestDestination>(
                 destination_it->second);

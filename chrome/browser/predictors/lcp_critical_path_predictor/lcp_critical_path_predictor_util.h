@@ -209,10 +209,6 @@ std::string GetFirstLevelPath(const GURL& url);
 // Returns true if `url1` and `url2` are the same site.
 bool IsSameSite(const GURL& url1, const GURL& url2);
 
-void MaybeAddPreconnectAndPrefetchRequest(const GURL& url,
-                                          const LcppStat& lcpp_stat,
-                                          PreconnectPrediction& prediction);
-
 class LcppDataMap {
  public:
   using DataTable = sqlite_proto::KeyValueTable<LcppData>;
@@ -247,6 +243,11 @@ class LcppDataMap {
   void DeleteUrls(const std::vector<GURL>& urls);
 
   void DeleteAllData();
+
+  void GetPreconnectAndPrefetchRequest(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& url,
+      PreconnectPrediction& prediction);
 
   static std::unique_ptr<LcppDataMap> CreateWithMockTableForTesting(
 
