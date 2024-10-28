@@ -23,7 +23,6 @@
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
 #include "net/http/alternative_service.h"
@@ -129,12 +128,6 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
-  CHECK(switching_info.proxy_info.is_direct());
-
-  if (delegate_for_testing_) {
-    delegate_for_testing_->OnRequestStream(switching_info.stream_key);
-  }
-
   auto controller = std::make_unique<JobController>(this);
   JobController* controller_raw_ptr = controller.get();
   // Put `controller` into `job_controllers_` before calling RequestStream() to
@@ -150,50 +143,19 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
 int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
                                size_t num_streams,
                                CompletionOnceCallback callback) {
-  num_streams = std::min(kDefaultMaxStreamSocketsPerGroup, num_streams);
-
-  const HttpStreamKey& stream_key = switching_info.stream_key;
-  if (!IsPortAllowedForScheme(stream_key.destination().port(),
-                              stream_key.destination().scheme())) {
-    return ERR_UNSAFE_PORT;
+  auto controller = std::make_unique<JobController>(this);
+  JobController* controller_raw_ptr = controller.get();
+  // SAFETY: Using base::Unretained() is safe because `this` will own
+  // `controller` when Preconnect() return ERR_IO_PENDING.
+  int rv = controller_raw_ptr->Preconnect(
+      std::move(switching_info), num_streams,
+      base::BindOnce(&HttpStreamPool::OnPreconnectComplete,
+                     base::Unretained(this), controller_raw_ptr,
+                     std::move(callback)));
+  if (rv == ERR_IO_PENDING) {
+    job_controllers_.emplace(std::move(controller));
   }
-
-  QuicSessionAliasKey quic_session_key =
-      stream_key.CalculateQuicSessionAliasKey();
-  if (CanUseExistingQuicSession(stream_key, quic_session_key,
-                                /*enable_ip_based_pooling=*/true,
-                                /*enable_alternative_services=*/true)) {
-    return OK;
-  }
-
-  SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
-  bool had_spdy_session =
-      http_network_session()->spdy_session_pool()->HasAvailableSession(
-          spdy_session_key, /*is_websocket=*/false);
-  if (FindAvailableSpdySession(stream_key, spdy_session_key,
-                               /*enable_ip_based_pooling=*/true)) {
-    return OK;
-  }
-  if (had_spdy_session) {
-    // We had a SPDY session but the server required HTTP/1.1. The session is
-    // going away right now.
-    return ERR_HTTP_1_1_REQUIRED;
-  }
-
-  if (delegate_for_testing_) {
-    // Some tests expect OnPreconnect() is called after checking existing
-    // sessions.
-    std::optional<int> result =
-        delegate_for_testing_->OnPreconnect(stream_key, num_streams);
-    if (result.has_value()) {
-      return *result;
-    }
-  }
-
-  quic::ParsedQuicVersion quic_version =
-      SelectQuicVersion(switching_info.alternative_service_info);
-  return GetOrCreateGroup(stream_key, stream_key.destination())
-      .Preconnect(num_streams, quic_version, std::move(callback));
+  return rv;
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
@@ -466,6 +428,13 @@ base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
     }
   }
   return spdy_session;
+}
+
+void HttpStreamPool::OnPreconnectComplete(JobController* job_controller,
+                                          CompletionOnceCallback callback,
+                                          int rv) {
+  OnJobControllerComplete(job_controller);
+  std::move(callback).Run(rv);
 }
 
 void HttpStreamPool::CheckConsistency() {

@@ -14,6 +14,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/alternative_service.h"
@@ -47,8 +48,13 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
+  CHECK(switching_info.proxy_info.is_direct());
   CHECK(!delegate_);
   CHECK(!request_);
+
+  if (pool_->delegate_for_testing_) {
+    pool_->delegate_for_testing_->OnRequestStream(switching_info.stream_key);
+  }
 
   delegate_ = delegate;
   auto request = std::make_unique<HttpStreamRequest>(
@@ -142,6 +148,55 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
                      quic_version, net_log);
 
   return request;
+}
+
+int HttpStreamPool::JobController::Preconnect(
+    HttpStreamPoolSwitchingInfo switching_info,
+    size_t num_streams,
+    CompletionOnceCallback callback) {
+  num_streams = std::min(kDefaultMaxStreamSocketsPerGroup, num_streams);
+
+  const HttpStreamKey& stream_key = switching_info.stream_key;
+  if (!IsPortAllowedForScheme(stream_key.destination().port(),
+                              stream_key.destination().scheme())) {
+    return ERR_UNSAFE_PORT;
+  }
+
+  QuicSessionAliasKey quic_session_key =
+      stream_key.CalculateQuicSessionAliasKey();
+  if (pool_->CanUseExistingQuicSession(stream_key, quic_session_key,
+                                       /*enable_ip_based_pooling=*/true,
+                                       /*enable_alternative_services=*/true)) {
+    return OK;
+  }
+
+  SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
+  bool had_spdy_session = spdy_session_pool()->HasAvailableSession(
+      spdy_session_key, /*is_websocket=*/false);
+  if (pool_->FindAvailableSpdySession(stream_key, spdy_session_key,
+                                      /*enable_ip_based_pooling=*/true)) {
+    return OK;
+  }
+  if (had_spdy_session) {
+    // We had a SPDY session but the server required HTTP/1.1. The session is
+    // going away right now.
+    return ERR_HTTP_1_1_REQUIRED;
+  }
+
+  if (pool_->delegate_for_testing_) {
+    // Some tests expect OnPreconnect() is called after checking existing
+    // sessions.
+    std::optional<int> result =
+        pool_->delegate_for_testing_->OnPreconnect(stream_key, num_streams);
+    if (result.has_value()) {
+      return *result;
+    }
+  }
+
+  quic::ParsedQuicVersion quic_version =
+      pool_->SelectQuicVersion(switching_info.alternative_service_info);
+  return pool_->GetOrCreateGroup(stream_key, stream_key.destination())
+      .Preconnect(num_streams, quic_version, std::move(callback));
 }
 
 void HttpStreamPool::JobController::OnStreamReady(

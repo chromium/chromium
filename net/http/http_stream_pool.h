@@ -278,6 +278,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       bool enable_ip_based_pooling,
       const NetLogWithSource& net_log = NetLogWithSource());
 
+  void OnPreconnectComplete(JobController* job_controller,
+                            CompletionOnceCallback callback,
+                            int rv);
+
   // Periodically checks the total active/idle/handed-out streams are consistent
   // with per-group streams. Only used when the kEnableConsistencyCheckParamName
   // FeatureParam is enabled.

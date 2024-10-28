@@ -49,6 +49,12 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
       bool enable_alternative_services,
       const NetLogWithSource& net_log);
 
+  // Requests that enough connections/sessions for `num_streams` be opened.
+  // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
+  int Preconnect(HttpStreamPoolSwitchingInfo switching_info,
+                 size_t num_streams,
+                 CompletionOnceCallback callback);
+
   // HttpStreamPool::Job::Delegate implementation:
   void OnStreamReady(Job* job,
                      std::unique_ptr<HttpStream> stream,
