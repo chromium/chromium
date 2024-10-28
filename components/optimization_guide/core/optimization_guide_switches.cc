@@ -262,14 +262,6 @@ std::optional<std::string> GetOnDeviceModelExecutionOverride() {
   return command_line->GetSwitchValueASCII(kOnDeviceModelExecutionOverride);
 }
 
-std::optional<std::string> GetOnDeviceModelAdaptationsOverride() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kOnDeviceModelAdaptationsOverride)) {
-    return std::nullopt;
-  }
-  return command_line->GetSwitchValueASCII(kOnDeviceModelAdaptationsOverride);
-}
-
 std::optional<base::FilePath> GetOnDeviceValidationRequestOverride() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kOnDeviceValidationRequestOverride)) {

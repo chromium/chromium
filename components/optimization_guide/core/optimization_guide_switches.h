@@ -145,13 +145,9 @@ bool ShouldValidateModelExecution();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<std::string> GetModelOverride();
 
-// Returns the on-device model execution override command line switch.
+// Returns the path to the on-device base model provided on the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<std::string> GetOnDeviceModelExecutionOverride();
-
-// Returns the on-device model adaptations override command line switch.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::optional<std::string> GetOnDeviceModelAdaptationsOverride();
 
 // Returns the file path to the text file to use for the on-device request
 // override.
