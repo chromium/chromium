@@ -167,6 +167,8 @@
 [ android ] Pixel_CSS3DBlueBox_NoGpuProcess [ Skip ]
 [ chromeos ] Pixel_Canvas2DRedBox_NoGpuProcess [ Skip ]
 [ chromeos ] Pixel_CSS3DBlueBox_NoGpuProcess [ Skip ]
+crbug.com/375950048 [ fuchsia ] Pixel_Canvas2DRedBox_NoGpuProcess [ Skip ]
+crbug.com/375950048 [ fuchsia ] Pixel_CSS3DBlueBox_NoGpuProcess [ Skip ]
 
 # Skip tests that kill the GPU process since Android Webview only supports
 # in-process GPU.
