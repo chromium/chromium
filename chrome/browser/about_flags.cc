@@ -11102,6 +11102,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConchExpandTranscriptionLanguageName,
      flag_descriptions::kConchExpandTranscriptionLanguageDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kConchExpandTranscriptionLanguage)},
+
+    {"conch-gen-ai", flag_descriptions::kConchGenAiName,
+     flag_descriptions::kConchGenAiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kConchGenAi)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

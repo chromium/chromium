@@ -446,6 +446,9 @@ BASE_FEATURE(kConchExpandTranscriptionLanguage,
              "ConchExpandTranscriptionLanguage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, conch will provide available GenAI features.
+BASE_FEATURE(kConchGenAi, "ConchGenAi", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, conch will use microphone to capture system audio.
 BASE_FEATURE(kConchSystemAudioFromMic,
              "ConchSystemAudioFromMic",

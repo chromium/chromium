@@ -18868,6 +18868,7 @@ from previous Chrome versions.
   <int value="-512151470" label="WebRtcPipeWireCamera:disabled"/>
   <int value="-511218457" label="NavBarColorMatchesTabBackground:enabled"/>
   <int value="-510488450" label="disable-pnacl"/>
+  <int value="-510428936" label="ConchGenAi:enabled"/>
   <int value="-510423102" label="ProductSpecificationsSync:enabled"/>
   <int value="-508488651" label="WebviewAccelerateSmallCanvases:enabled"/>
   <int value="-508346329" label="TerminalSystemAppLegacySettings:disabled"/>
@@ -22081,6 +22082,7 @@ from previous Chrome versions.
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
   <int value="798414711" label="BorealisForceDoubleScale:enabled"/>
+  <int value="798456441" label="ConchGenAi:disabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="798803191" label="ShareToGoogleCollections:disabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>

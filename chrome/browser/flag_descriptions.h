@@ -3645,6 +3645,9 @@ extern const char kConchDescription[];
 extern const char kConchExpandTranscriptionLanguageName[];
 extern const char kConchExpandTranscriptionLanguageDescription[];
 
+extern const char kConchGenAiName[];
+extern const char kConchGenAiDescription[];
+
 extern const char kConchSystemAudioFromMicName[];
 extern const char kConchSystemAudioFromMicDescription[];
 
