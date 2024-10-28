@@ -7285,15 +7285,13 @@ TEST_F(BrowserAutofillManagerTest,
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
   EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(
-          [](std::unique_ptr<autofill::FormStructure> form,
-             base::OnceCallback<void(
-                 std::unique_ptr<autofill::FormStructure> form,
-                 bool attempt_to_import_into_form_data_importer)> callback) {
-            std::move(callback).Run(
-                std::move(form),
-                /*attempt_to_import_into_form_data_importer=*/false);
-          });
+      .WillOnce([](std::unique_ptr<autofill::FormStructure> form,
+                   base::OnceCallback<void(
+                       std::unique_ptr<autofill::FormStructure> form,
+                       bool autofill_ai_shows_bubble)> callback) {
+        std::move(callback).Run(std::move(form),
+                                /*autofill_ai_shows_bubble=*/true);
+      });
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
@@ -7323,15 +7321,13 @@ TEST_F(BrowserAutofillManagerTest,
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
   EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(
-          [](std::unique_ptr<autofill::FormStructure> form,
-             base::OnceCallback<void(
-                 std::unique_ptr<autofill::FormStructure> form,
-                 bool attempt_to_import_into_form_data_importer)> callback) {
-            std::move(callback).Run(
-                std::move(form),
-                /*attempt_to_import_into_form_data_importer=*/true);
-          });
+      .WillOnce([](std::unique_ptr<autofill::FormStructure> form,
+                   base::OnceCallback<void(
+                       std::unique_ptr<autofill::FormStructure> form,
+                       bool autofill_ai_shows_bubble)> callback) {
+        std::move(callback).Run(std::move(form),
+                                /*autofill_ai_shows_bubble=*/false);
+      });
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
 }

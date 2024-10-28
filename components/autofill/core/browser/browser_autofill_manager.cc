@@ -1011,13 +1011,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                const FormData& form, SubmissionSource source,
                base::TimeTicks form_submitted_timestamp,
                std::unique_ptr<FormStructure> submitted_form,
-               bool attempt_to_import_into_form_data_importer) {
+               bool autofill_ai_shows_bubble) {
               // The manager may have been destroyed already.
               // See crbug.com/373831707#comment5.
               if (manager) {
                 manager->MaybeImportFromSubmittedForm(
-                    form, submitted_form.get(),
-                    attempt_to_import_into_form_data_importer);
+                    form, submitted_form.get(), autofill_ai_shows_bubble);
                 manager->OnFormSubmittedAfterImport(
                     form, std::move(submitted_form), source,
                     form_submitted_timestamp);
@@ -1033,9 +1032,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // - It should be guaranteed that they are always called. Currently, it is
     //   hard to see that all codepaths in
     //   AutofillPredictionImprovementsDelegate::MaybeImportForm() calls it.
-    MaybeImportFromSubmittedForm(
-        form, submitted_form.get(),
-        /*attempt_to_import_into_form_data_importer=*/true);
+    MaybeImportFromSubmittedForm(form, submitted_form.get(),
+                                 /*autofill_ai_shows_bubble=*/false);
     OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
                                form_submitted_timestamp);
   }
@@ -1206,7 +1204,7 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 void BrowserAutofillManager::MaybeImportFromSubmittedForm(
     const FormData& form,
     const FormStructure* const form_structure,
-    bool attempt_to_import_into_form_data_importer) {
+    bool autofill_ai_shows_bubble) {
   if (!form_structure) {
     // We always give Autocomplete a chance to save the data.
     // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
@@ -1216,8 +1214,7 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
         form, nullptr, client().IsAutocompleteEnabled());
     return;
   }
-  if (attempt_to_import_into_form_data_importer &&
-      form_structure->IsAutofillable()) {
+  if (!autofill_ai_shows_bubble && form_structure->IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client().GetFormDataImporter()->ImportAndProcessFormData(
         *form_structure, IsAutofillProfileEnabled(),

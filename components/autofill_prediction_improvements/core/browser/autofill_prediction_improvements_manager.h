@@ -88,8 +88,8 @@ class AutofillPredictionImprovementsManager
   void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form,
       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool attempt_to_import_into_form_data_importer)>
-          callback) override;
+                              bool autofill_ai_shows_bubble)> callback)
+      override;
   void HasDataStored(HasDataCallback callback) override;
   bool ShouldDisplayIph(const autofill::FormStructure& form,
                         const autofill::AutofillField& field) const override;

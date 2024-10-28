@@ -839,28 +839,27 @@ void AutofillPredictionImprovementsManager::UpdateSuggestions(
 void AutofillPredictionImprovementsManager::MaybeImportForm(
     std::unique_ptr<autofill::FormStructure> form,
     base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                            bool attempt_to_import_into_form_data_importer)>
-        autofill_callback) {
+                            bool autofill_ai_shows_bubble)> autofill_callback) {
   user_annotations::ImportFormCallback callback = base::BindOnce(
       [](base::WeakPtr<AutofillPredictionImprovementsManager> self,
-         base::OnceCallback<void(
-             std::unique_ptr<autofill::FormStructure> form,
-             bool attempt_to_import_into_form_data_importer)> autofill_callback,
+         base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+                                 bool autofill_ai_shows_bubble)>
+             autofill_callback,
          std::unique_ptr<autofill::FormStructure> form,
          std::unique_ptr<user_annotations::FormAnnotationResponse>
              form_annotation_response,
          user_annotations::PromptAcceptanceCallback
              prompt_acceptance_callback) {
-        const bool should_show_prediction_improvements_bubble =
+        const bool autofill_ai_shows_bubble =
             self && form_annotation_response &&
             !form_annotation_response->to_be_upserted_entries.empty();
-        if (should_show_prediction_improvements_bubble) {
+        if (autofill_ai_shows_bubble) {
           self->client_->ShowSaveAutofillPredictionImprovementsBubble(
               std::move(form_annotation_response),
               std::move(prompt_acceptance_callback));
         }
         std::move(autofill_callback)
-            .Run(std::move(form), !should_show_prediction_improvements_bubble);
+            .Run(std::move(form), autofill_ai_shows_bubble);
       },
       GetWeakPtr(), std::move(autofill_callback));
 

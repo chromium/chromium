@@ -977,7 +977,7 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
   user_annotations_service_.SetShouldImportFormData(should_import_form_data());
 
   base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool attempt_to_import_into_form_data_importer)>
+                              bool autofill_ai_shows_bubble)>
       autofill_callback;
   if (should_import_form_data()) {
     EXPECT_CALL(client_,
@@ -987,11 +987,11 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
                                   Not(IsEmpty()))),
                     _));
     EXPECT_CALL(autofill_callback,
-                Run(Pointer(eligible_form_structure.get()), false));
+                Run(Pointer(eligible_form_structure.get()), true));
   } else {
     EXPECT_CALL(client_, ShowSaveAutofillPredictionImprovementsBubble).Times(0);
     EXPECT_CALL(autofill_callback,
-                Run(Pointer(eligible_form_structure.get()), true));
+                Run(Pointer(eligible_form_structure.get()), false));
   }
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             autofill_callback.Get());
@@ -1032,14 +1032,14 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       /*should_import_form_data=*/true);
 
   base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool attempt_to_import_into_form_data_importer)>
+                              bool autofill_ai_shows_bubble)>
       autofill_callback;
   EXPECT_CALL(client_, ShowSaveAutofillPredictionImprovementsBubble).Times(0);
   EXPECT_CALL(client_, GetAXTree).Times(0);
   EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
       .WillOnce(Return(false));
   EXPECT_CALL(autofill_callback,
-              Run(Pointer(eligible_form_structure.get()), true))
+              Run(Pointer(eligible_form_structure.get()), false))
       .Times(1);
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             autofill_callback.Get());
@@ -1057,11 +1057,11 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       std::make_unique<autofill::FormStructure>(autofill::FormData());
 
   base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool attempt_to_import_into_form_data_importer)>
+                              bool autofill_ai_shows_bubble)>
       autofill_callback;
   EXPECT_CALL(client_, ShowSaveAutofillPredictionImprovementsBubble).Times(0);
   EXPECT_CALL(autofill_callback,
-              Run(Pointer(ineligible_form_structure.get()), true))
+              Run(Pointer(ineligible_form_structure.get()), false))
       .Times(1);
   manager_->MaybeImportForm(std::move(ineligible_form_structure),
                             autofill_callback.Get());

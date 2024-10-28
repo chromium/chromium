@@ -77,14 +77,13 @@ class AutofillPredictionImprovementsDelegate {
   //
   // The purpose of `autofill_callback` is to allow Autofill to import the form
   // on its own and/or send votes, for example. If Autofill Prediction
-  // Improvements has imported the form,
-  // `attempt_to_import_into_form_data_importer` is set to false; this is to
-  // avoid conflicting import bubbles. The call happens synchronously or
-  // asynchronously.
+  // Improvements has imported the form, `autofill_ai_shows_bubble` is set to
+  // true; this is to avoid conflicting import bubbles. The call happens
+  // synchronously or asynchronously.
   virtual void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool attempt_to_import_into_form_data_importer)>
+                              bool autofill_ai_shows_bubble)>
           autofill_callback) = 0;
 
   // Checks if there is any data stored in the profile's user annotations that
