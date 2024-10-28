@@ -591,7 +591,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BACK_TO_HOME_ANIMATION, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
-    public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, false);
+    public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, true);
     public static final CachedFlag sCctAuthTabDisableAllExternalIntents =
             newCachedFlag(CCT_AUTH_TAB_DISABLE_ALL_EXTERNAL_INTENTS, false);
     public static final CachedFlag sCctAuthTabEnableHttpsRedirects =

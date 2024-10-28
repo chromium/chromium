@@ -538,7 +538,7 @@ BASE_FEATURE(kCastDeviceFilter,
              "CastDeviceFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCCTAuthTab, "CCTAuthTab", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCCTAuthTab, "CCTAuthTab", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTAuthTabDisableAllExternalIntents,
              "CCTAuthTabDisableAllExternalIntents",
              base::FEATURE_DISABLED_BY_DEFAULT);
