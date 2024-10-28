@@ -8,8 +8,10 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -102,6 +104,12 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
           &LensPermissionBubbleController::OnHelpCenterLinkClicked,
           weak_ptr_factory_.GetWeakPtr()));
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  bool dark_mode =
+      lens::LensOverlayShouldUseDarkMode(ThemeServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile()));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   auto description_text =
       lens::features::IsLensOverlayContextualSearchboxEnabled()
           ? ui::DialogModelLabel::CreateWithReplacement(
@@ -114,8 +122,10 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
-                                              ui::kColorIcon, 20))
+      .SetIcon(ui::ImageModel::FromVectorIcon(
+          dark_mode ? vector_icons::kGoogleGLogoMonochromeIcon
+                    : vector_icons::kGoogleColorIcon,
+          dark_mode ? ui::kColorRefPrimary100 : ui::kColorIcon, 20))
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LENS_PERMISSION_MODAL_IMAGE)))
