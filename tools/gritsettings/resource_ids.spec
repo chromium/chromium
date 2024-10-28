@@ -1373,6 +1373,11 @@
     "includes": [10060],
   },
 
+  "<(SHARED_INTERMEDIATE_DIR)/third_party/blink/public/strings/permission_element_generated_strings.grd": {
+    "META": {"sizes": {"messages": [2000],}},
+    "messages": [10080],
+  }
+
   # END "everything else" section.
   # Everything but chrome/, components/, content/, and ios/
 
