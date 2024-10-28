@@ -2627,6 +2627,10 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15 ] external/wpt/html/canvas/element/compositing/2d.composite.grid.no_filter.shadow.pattern.html [ Failure ]
+[ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p0 [ Timeout ]
+[ Mac13 ] external/wpt/webcodecs/video-encoder-content-hint.https.any.html [ Timeout ]
+[ Mac13 ] external/wpt/webcodecs/video-encoder-flush.https.any.worker.html?av1 [ Timeout ]
 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/customizable-select/native-popup-with-wrapper-div.tentative.html [ Failure ]
 crbug.com/375262152 external/wpt/html/semantics/embedded-content/the-img-element/update-the-image-data/src-then-lazy-load.html [ Timeout ]
 crbug.com/375262151 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?npu [ Failure Timeout ]

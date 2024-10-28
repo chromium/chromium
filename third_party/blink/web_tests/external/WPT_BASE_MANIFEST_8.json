@@ -147964,6 +147964,84 @@
       ]
      },
      "text-box-trim": {
+      "border-padding-001.html": [
+       "9c25c42a1def684b364e98dc9d6233cd5c700519",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-padding-002.html": [
+       "59a071771ae94f646242a063410ec575fd441c93",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-padding-003.html": [
+       "a114612906de9e2040883119af87f27be654e980",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-padding-004.html": [
+       "dc9513b54df0e6ea18632f1c352dc4c63a004070",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "out-of-flow-001.html": [
+       "b81eb775d6400e45ef264296d96ce5efa85734f1",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "out-of-flow-002.html": [
+       "6bcd38cd686813f779e3114f176c8e71aa3e37d4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-accumulation-001.html": [
        "cdcc86b0a9e5d37ac3b830116888844f31c6a4f6",
        [
@@ -270842,6 +270920,136 @@
         {}
        ]
       ],
+      "negated-always-matches-negated-first-of-type-when-ancestor-changes.html": [
+       "33b65e6fb676f9be7606fb33ef5182ff47e06751",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-always-matches-negated-first-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-always-matches-negated-last-of-type-when-ancestor-changes.html": [
+       "99c3982759003cc78580c1ecf2b5b83e1e4cb65f",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-always-matches-negated-last-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-is-always-matches-negated-first-of-type-when-ancestor-changes.html": [
+       "6ed1f8c0e04d3c2465ee0d3f332202c3ed796047",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-is-always-matches-negated-first-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-is-always-matches-negated-last-of-type-when-ancestor-changes.html": [
+       "500fd3aa4eeb585345fbcfd00081884e8af58194",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-is-always-matches-negated-last-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-is-never-matches-negated-first-of-type-when-ancestor-changes.html": [
+       "e9d66755c775a3ea6540235ada3f6d057a251230",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-is-never-matches-negated-first-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-is-never-matches-negated-last-of-type-when-ancestor-changes.html": [
+       "7a2c0f2022219ed66267d9c26f703f9df77c903d",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-is-never-matches-negated-last-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-negated-first-of-type-when-ancestor-changes.html": [
+       "7e5376fc31f15febe5db2202e915427ea2e4cc5d",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-negated-first-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-negated-last-of-type-when-ancestor-changes.html": [
+       "67d35f94dfd173d54b42b42180e4c2e51499b560",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-negated-last-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-never-matches-negated-first-of-type-when-ancestor-changes.html": [
+       "c3064f6726dcbc486c88298a7aa1ca5a619ef495",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-never-matches-negated-first-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "negated-never-matches-negated-last-of-type-when-ancestor-changes.html": [
+       "9cdd0e4f407c914285896710143a287622d989ae",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/negated-never-matches-negated-last-of-type-when-ancestor-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "negated-nth-child-when-ancestor-changes.html": [
        "0d76146f19ad312d42a09cd89c14824424c193d3",
        [
@@ -363230,6 +363438,46 @@
        "a3cc6d3d8f56fd31c4b19d23af606d7c65487145",
        []
       ],
+      "negated-always-matches-negated-first-of-type-when-ancestor-changes-ref.html": [
+       "2ddb130e05f5fe92afb1450de69894b60beb9fad",
+       []
+      ],
+      "negated-always-matches-negated-last-of-type-when-ancestor-changes-ref.html": [
+       "2ddb130e05f5fe92afb1450de69894b60beb9fad",
+       []
+      ],
+      "negated-is-always-matches-negated-first-of-type-when-ancestor-changes-ref.html": [
+       "a3b598998538ca29c891f5e480d4a0bcbbc24927",
+       []
+      ],
+      "negated-is-always-matches-negated-last-of-type-when-ancestor-changes-ref.html": [
+       "a3b598998538ca29c891f5e480d4a0bcbbc24927",
+       []
+      ],
+      "negated-is-never-matches-negated-first-of-type-when-ancestor-changes-ref.html": [
+       "2ddb130e05f5fe92afb1450de69894b60beb9fad",
+       []
+      ],
+      "negated-is-never-matches-negated-last-of-type-when-ancestor-changes-ref.html": [
+       "2ddb130e05f5fe92afb1450de69894b60beb9fad",
+       []
+      ],
+      "negated-negated-first-of-type-when-ancestor-changes-ref.html": [
+       "2ddb130e05f5fe92afb1450de69894b60beb9fad",
+       []
+      ],
+      "negated-negated-last-of-type-when-ancestor-changes-ref.html": [
+       "2ddb130e05f5fe92afb1450de69894b60beb9fad",
+       []
+      ],
+      "negated-never-matches-negated-first-of-type-when-ancestor-changes-ref.html": [
+       "cadbabc7c5a0b671050b80d579d19cc6668ba2fc",
+       []
+      ],
+      "negated-never-matches-negated-last-of-type-when-ancestor-changes-ref.html": [
+       "cadbabc7c5a0b671050b80d579d19cc6668ba2fc",
+       []
+      ],
       "negated-nth-child-when-ancestor-changes-ref.html": [
        "bfa9d00e1b6ce666b8b3dc667dd7db07de8c48ad",
        []
@@ -366348,15 +366596,27 @@
       []
      ],
      "insertLineBreak_white-space=pre-expected.txt": [
-      "c061df6712aa01464d9e8d588160e41d5d47c2f7",
+      "a8eb38161f1f7d8ebec6f725545d07e1511ff1ad",
       []
      ],
      "insertLineBreak_white-space=pre-line-expected.txt": [
-      "c061df6712aa01464d9e8d588160e41d5d47c2f7",
+      "a8eb38161f1f7d8ebec6f725545d07e1511ff1ad",
       []
      ],
      "insertLineBreak_white-space=pre-wrap-expected.txt": [
-      "c061df6712aa01464d9e8d588160e41d5d47c2f7",
+      "a8eb38161f1f7d8ebec6f725545d07e1511ff1ad",
+      []
+     ],
+     "insertParagraph_white-space=pre-expected.txt": [
+      "a0c485a75f2b2788714248553e1a118421a81b62",
+      []
+     ],
+     "insertParagraph_white-space=pre-line-expected.txt": [
+      "a0c485a75f2b2788714248553e1a118421a81b62",
+      []
+     ],
+     "insertParagraph_white-space=pre-wrap-expected.txt": [
+      "a0c485a75f2b2788714248553e1a118421a81b62",
       []
      ],
      "insertText_white-space=normal-expected.txt": [
@@ -366364,15 +366624,15 @@
       []
      ],
      "insertText_white-space=pre-expected.txt": [
-      "aa2f2cee6a03c3472b0ace42dd9a65b261d28e40",
+      "c4116820133d4fdd25bc13e52255f652199bd7fe",
       []
      ],
      "insertText_white-space=pre-line-expected.txt": [
-      "6726d72e2d8fdfbcbe1df2d88e7466b86c282b86",
+      "37e4ac0f9ded1d199e9f2239903024d0c81311d7",
       []
      ],
      "insertText_white-space=pre-wrap-expected.txt": [
-      "aa2f2cee6a03c3472b0ace42dd9a65b261d28e40",
+      "c4116820133d4fdd25bc13e52255f652199bd7fe",
       []
      ],
      "styling-commands_styleWithCSS=false-expected.txt": [
@@ -388676,6 +388936,10 @@
       }
      },
      "permission-element": {
+      "DIR_METADATA": [
+       "b48965bc66c99e6a9bf0fa69af721867280278f9",
+       []
+      ],
       "bounded-css-properties-reftest-ref.html": [
        "c62ff5b24d66b2cc8499f7dfe891f307c7a186f3",
        []
@@ -395492,7 +395756,7 @@
       []
      ],
      "largest-contentful-paint-helpers.js": [
-      "52f7036466cca5d0c75d1966fe978db35f6237ad",
+      "d206beaef9945807f21f8c89c50c423e82ad2488",
       []
      ],
      "lcp-sw-from-cache.js": [
@@ -410994,6 +411258,12 @@
        "58b556cdc8760268f012e861d3fc2759ba91610f",
        []
       ]
+     },
+     "scripted": {
+      "getrotationofchar-expected.txt": [
+       "8fda536a9bfa3944341f385cc05e87c1cd9817bb",
+       []
+      ]
      }
     },
     "types": {
@@ -415787,7 +416057,7 @@
        []
       ],
       "helpers.py": [
-       "0ca5bd28269a831ccdbcfdcbcb0eb748f308495f",
+       "1cb5b801da214d419bd2a060233ad1311313b408",
        []
       ],
       "html": {
@@ -512887,7 +513157,7 @@
       ]
      ],
      "insertHTML.html": [
-      "00bd0df1d5249bdbe2a41add8b2d58d8330bb3f2",
+      "efc2609828ccbf576fe79fbfe1b3da4f2f6bb6b7",
       [
        "editing/plaintext-only/insertHTML.html?white-space=normal",
        {
@@ -512914,7 +513184,7 @@
       ]
      ],
      "insertLineBreak.html": [
-      "73ee625dd6277257fb61240e37f363b58bac0430",
+      "32448ed37e25a3eaaca335dadb5c90591dcebf9d",
       [
        "editing/plaintext-only/insertLineBreak.html?white-space=normal",
        {
@@ -512945,7 +513215,7 @@
       ]
      ],
      "insertParagraph.html": [
-      "429da8d134f6bf21b726208046a53877a6a24e69",
+      "70cbdd1b36811988c9b77aefef4c8d994b960f4f",
       [
        "editing/plaintext-only/insertParagraph.html?white-space=normal",
        {
@@ -512972,7 +513242,7 @@
       ]
      ],
      "insertText.html": [
-      "664b9befb8d33b81e28971d69345cc2142f21a0b",
+      "4a3ef23bbbd8cb17733e17efbf046455736a1ecf",
       [
        "editing/plaintext-only/insertText.html?white-space=normal",
        {
@@ -513003,7 +513273,7 @@
       ]
      ],
      "paste.https.html": [
-      "9081028732a1a8f7c7c1bce0f581fc0686737a37",
+      "191a83ff8f05f6817388c814832578c4d1a409ef",
       [
        "editing/plaintext-only/paste.https.html?white-space=normal",
        {
@@ -513893,7 +514163,7 @@
      ]
     ],
     "cross-origin-element.sub.html": [
-     "1052bf246d0fa262ce5370f4152cb60dd758adab",
+     "25a07a435e9eea0119070c0c6caadb31887e4859",
      [
       null,
       {}
@@ -513965,7 +514235,7 @@
      ]
     ],
     "image-TAO.sub.html": [
-     "7b455dfa4c405de3918efbcd0f9648be09346948",
+     "7986e69500ef7db1f0bc6aeb1cb07d41455b8988",
      [
       null,
       {}
@@ -514055,13 +514325,6 @@
       {}
      ]
     ],
-    "multiple-redirects-TAO.html": [
-     "3a45b552bea0f599fd778e62a77759321384fd2f",
-     [
-      null,
-      {}
-     ]
-    ],
     "observe-background-image.html": [
      "6a43401cd0f4270f52b9167393b1b9fd0a7d9cce",
      [
@@ -514141,13 +514404,6 @@
     ],
     "rectangular-image.html": [
      "65f190e75300e102bbca961ef34518db27b4efa2",
-     [
-      null,
-      {}
-     ]
-    ],
-    "redirects-tao-star.html": [
-     "e5067d3d6bd7915522bfb670fad0919f0e4101fb",
      [
       null,
       {}
@@ -682494,8 +682750,15 @@
       ]
      },
      "scripted": {
+      "getcharnumatposition-slr.tentative.html": [
+       "a929d58ba144cc0f1fe6a60e0c7f7281fe5f8ca3",
+       [
+        null,
+        {}
+       ]
+      ],
       "getcharnumatposition.html": [
-       "779fb477b95d3bb90d2b9c8033f89641ba9c3ca1",
+       "f17369b3742eddddbee792e0a0d983c24052f0ef",
        [
         null,
         {}
@@ -781869,7 +782132,7 @@
         ]
        ],
        "fullscreen.py": [
-        "f6e9e8792360c9069345a27d870f027ecaabf6cd",
+        "eb170369627b0662c779849e0818ed74fb00a321",
         [
          null,
          {}
@@ -782267,8 +782530,15 @@
        ]
       },
       "maximize_window": {
+       "from_minimized_window.py": [
+        "ab33aeb963a1502e98e21b8bc3a5caddeb16978a",
+        [
+         null,
+         {}
+        ]
+       ],
        "maximize.py": [
-        "3a20a0d5589bd222c17530ad650311555d71ded9",
+        "6b9fc680b85b49cd6e86c0930989e7606e4aef1d",
         [
          null,
          {
@@ -782297,7 +782567,7 @@
       },
       "minimize_window": {
        "minimize.py": [
-        "2ad5333ec54a79fd8306c17f093046a87b5aaf25",
+        "c4e15ad9a9cbc29f1cddda960214233b77c72ab3",
         [
          null,
          {
@@ -782745,7 +783015,7 @@
         ]
        ],
        "set.py": [
-        "9e15d02b0d1953df3d22f7ff7b544f6e86cca1ea",
+        "51cddffed51d53b74be60424215f9d9cabd3474e",
         [
          null,
          {

@@ -16,7 +16,7 @@ This is a testharness.js-based test.
 [FAIL] Pasting 2 paragraphs into <b>: beforeinput
   assert_equals: data should be null expected (object) null but got (string) "abc\\ndef"
 [FAIL] Pasting 2 paragraphs into <b>: pasted result
-  assert_in_array: Each paragraph should be pasted as a line value "<b>A</b>abc\\ndef<b>B</b>" not in array ["<b>Aabc<br>defB</b>", "<b>Aabc\\ndefB</b>", "<b>A<br>abc<br>def<br>B</b>", "<b>A\\nabc\\ndef\\nB</b>"]
+  assert_in_array: Each paragraph should be pasted as a line value "<b>A</b>abc\\ndef<b>B</b>" not in array ["<b>Aabc\\ndefB</b>", "<b>A\\nabc\\ndef\\nB</b>"]
 [FAIL] Pasting 2 paragraphs whose text is bold: beforeinput
   assert_equals: data should be null expected (object) null but got (string) "abc\\ndef"
 Harness: the test ran to completion.
