@@ -32,7 +32,7 @@
 - (void)didTapManageYourGoogleAccount;
 
 // The user tapped on "Edit account list".
-- (void)didTapEditAccountList;
+- (void)didTapManageAccounts;
 
 // The user tapped on "Add account…".
 - (void)didTapAddAccount;

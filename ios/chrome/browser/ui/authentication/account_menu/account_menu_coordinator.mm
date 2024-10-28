@@ -90,7 +90,8 @@
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
-  // The add account coordinator if it’s open.
+  // The add account coordinator if it’s open. It may be presented by the Manage
+  // Account’s coordinator view controller.
   SigninCoordinator* _addAccountCoordinator;
 
   // Block the UI when the identity removal or switch is in progress.
@@ -210,21 +211,21 @@
                   weakSelf));
 }
 
-- (void)didTapEditAccountList {
+- (void)didTapManageAccounts {
   CHECK(!_manageAccountsCoordinator, base::NotFatalUntil::M133);
   _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
        closeSettingsOnAddAccount:NO];
   _manageAccountsCoordinator.delegate = self;
-  _manageAccountsCoordinator.showAddAccountButton = NO;
   _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
+  _manageAccountsCoordinator.delegate = self;
   [_manageAccountsCoordinator start];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
                     forSwitch:(BOOL)forSwitch
-                     callback:(void (^)(BOOL))callback {
+                   completion:(void (^)(BOOL))completion {
   if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // This could happen in very rare cases, if the account somehow got removed
@@ -246,8 +247,8 @@
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf stopSignoutActionSheetCoordinator];
-    if (callback) {
-      callback(success);
+    if (completion) {
+      completion(success);
     }
   };
   [_signoutActionSheetCoordinator start];
@@ -255,19 +256,8 @@
 
 - (void)didTapAddAccountWithCompletion:
     (ShowSigninCommandCompletionCallback)completion {
-  _addAccountCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:_navigationController
-                                          browser:self.browser
-                                      accessPoint:self.accessPoint];
-  __weak __typeof(self) weakSelf = self;
-  _addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf addAccountCompletionWithSigninResult:signinResult
-                                        completionInfo:signinCompletionInfo
-                                            completion:completion];
-      };
-  [_addAccountCoordinator start];
+  [self openAddAccountWithBaseViewController:_navigationController
+                                  completion:completion];
 }
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator {
@@ -422,7 +412,7 @@
                                      completion:childrenCompletion];
 }
 
-#pragma mark - ManageAccountsCoordinator
+#pragma mark - ManageAccountsCoordinatorDelegate
 
 - (void)manageAccountsCoordinatorWantsToBeStopped:
     (ManageAccountsCoordinator*)coordinator {
@@ -430,7 +420,38 @@
   [self stopManageAccountsCoordinator];
 }
 
+- (void)manageAccountsCoordinator:
+            (ManageAccountsCoordinator*)manageAccountsCoordinator
+    didRequestAddAccountWithBaseViewController:(UIViewController*)viewController
+                                    completion:
+                                        (ShowSigninCommandCompletionCallback)
+                                            completion {
+  CHECK_EQ(manageAccountsCoordinator, _manageAccountsCoordinator);
+  [self openAddAccountWithBaseViewController:viewController
+                                  completion:completion];
+}
+
 #pragma mark - Private
+
+// Opens the add account coordinator on top of `baseViewController`.
+- (void)openAddAccountWithBaseViewController:baseViewController
+                                  completion:
+                                      (ShowSigninCommandCompletionCallback)
+                                          completion {
+  _addAccountCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:baseViewController
+                                          browser:self.browser
+                                      accessPoint:self.accessPoint];
+  __weak __typeof(self) weakSelf = self;
+  _addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf addAccountCompletionWithSigninResult:signinResult
+                                        completionInfo:signinCompletionInfo
+                                            completion:completion];
+      };
+  [_addAccountCoordinator start];
+}
 
 // Clean up the add account coordinator.
 - (void)
@@ -447,6 +468,7 @@
 
 - (void)stopManageAccountsCoordinator {
   [_manageAccountsCoordinator stop];
+  _manageAccountsCoordinator.delegate = nil;
   _manageAccountsCoordinator = nil;
 }
 
@@ -480,9 +502,11 @@
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
   [self stopSignoutActionSheetCoordinator];
-  [self stopManageAccountsCoordinator];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock dismissAndCompletion = ^() {
+    // Add Account coordinator should be stopped before the Manage Accounts
+    // Coordinator, as the former may be presented by the latter.
+    [weakSelf stopManageAccountsCoordinator];
     [weakSelf dismissViewControllerAction:action completion:completion];
   };
   if (_addAccountCoordinator) {

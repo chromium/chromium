@@ -35,7 +35,7 @@
 // It should only be called when the current scene is not blocked.
 - (void)signOutFromTargetRect:(CGRect)targetRect
                     forSwitch:(BOOL)forSwith
-                     callback:(void (^)(BOOL))callback;
+                   completion:(void (^)(BOOL))completion;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.
@@ -43,7 +43,7 @@
 - (void)didTapManageYourGoogleAccount;
 
 // The user tapped on "Edit account list".
-- (void)didTapEditAccountList;
+- (void)didTapManageAccounts;
 
 // The user tapped on "Add account…".
 - (void)didTapAddAccountWithCompletion:

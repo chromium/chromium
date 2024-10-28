@@ -238,10 +238,10 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testManageYourGoogleAccount) {
   assertOpenAndInterrupt();
 }
 
-// Tests that `didTapEditAccountList` has no impact on the view controller and
+// Tests that `didTapManageAccounts` has no impact on the view controller and
 // mediator.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testEditAccountList) {
-  [coordinator_ didTapEditAccountList];
+  [coordinator_ didTapManageAccounts];
   assertOpenAndInterrupt();
 }
 
@@ -255,11 +255,11 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testSignOut) {
       showSnackbarMessageOverBrowserToolbar:[OCMArg isNotNil]]);
   [coordinator_ signOutFromTargetRect:rect
                             forSwitch:NO
-                             callback:^(BOOL success) {
-                               EXPECT_TRUE(success);
-                               assertOpenAndInterrupt();
-                               closure.Run();
-                             }];
+                           completion:^(BOOL success) {
+                             EXPECT_TRUE(success);
+                             assertOpenAndInterrupt();
+                             closure.Run();
+                           }];
   run_loop.Run();
   EXPECT_EQ(authentication_service_->GetPrimaryIdentity(
                 signin::ConsentLevel::kSignin),
@@ -283,10 +283,10 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
   CGRect rect = CGRect();
   [coordinator_ signOutFromTargetRect:rect
                             forSwitch:NO
-                             callback:^(BOOL success) {
-                               EXPECT_TRUE(success);
-                               closure.Run();
-                             }];
+                           completion:^(BOOL success) {
+                             EXPECT_TRUE(success);
+                             closure.Run();
+                           }];
   run_loop.Run();
   assertOpenAndInterrupt();
 }

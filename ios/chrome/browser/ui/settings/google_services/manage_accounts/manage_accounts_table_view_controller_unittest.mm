@@ -71,8 +71,7 @@ class ManageAccountsTableViewControllerTest
 
     ManageAccountsTableViewController* controller =
         [[ManageAccountsTableViewController alloc]
-            initWithOfferSignout:show_signout_button_
-                 offerAddAccount:show_add_account_button_];
+            initWithOfferSignout:show_signout_button_];
 
     mediator.consumer = controller;
     controller.modelIdentityDataSource = mediator;
@@ -84,7 +83,6 @@ class ManageAccountsTableViewControllerTest
   void TearDown() override {
     mediator_ = nil;
     show_signout_button_ = NO;
-    show_add_account_button_ = NO;
     LegacyChromeTableViewControllerTest::TearDown();
   }
 
@@ -112,7 +110,6 @@ class ManageAccountsTableViewControllerTest
   }
 
   void showSignoutButton() { show_signout_button_ = YES; }
-  void hideAddAccountButton() { show_add_account_button_ = NO; }
 
  private:
   web::WebTaskEnvironment task_environment_{
@@ -124,7 +121,6 @@ class ManageAccountsTableViewControllerTest
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   ManageAccountsMediator* mediator_;
   BOOL show_signout_button_ = NO;
-  BOOL show_add_account_button_ = YES;
 };
 
 // Tests that a sign out button is added.
@@ -158,21 +154,4 @@ TEST_F(ManageAccountsTableViewControllerTest, ShouldNotOfferSignOut) {
   CheckController();
 
   EXPECT_EQ(2, NumberOfSections());
-}
-
-// Tests that a sign out button and an add account buttons are not added.
-TEST_F(ManageAccountsTableViewControllerTest, ShouldNotOfferExtraButtons) {
-  hideAddAccountButton();
-  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-  fake_system_identity_manager()->AddIdentity(fake_identity);
-
-  // Simulates a credential reload.
-  authentication_service()->SignIn(
-      fake_identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-  fake_system_identity_manager()->FireSystemIdentityReloaded();
-
-  CreateController();
-  CheckController();
-
-  EXPECT_EQ(1, NumberOfSections());
 }

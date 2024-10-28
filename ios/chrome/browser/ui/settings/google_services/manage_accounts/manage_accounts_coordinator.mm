@@ -115,8 +115,7 @@ using signin_metrics::PromoAction;
       !syncService->HasSyncConsent()) {
     ManageAccountsTableViewController* viewController =
         [[ManageAccountsTableViewController alloc]
-            initWithOfferSignout:self.showSignoutButton
-                 offerAddAccount:self.showAddAccountButton];
+            initWithOfferSignout:self.showSignoutButton];
     _viewController = viewController;
     _mediator.consumer = viewController;
     _mediator.delegate = self;
@@ -253,18 +252,33 @@ using signin_metrics::PromoAction;
 - (void)showAddAccountToDevice {
   [_viewController preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-               identity:nil
-            accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
-            promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          SigninCompletionInfo* completionInfo) {
-               [weakSelf addAccountToDeviceCompleted];
-             }];
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
-              showSignin:command
-      baseViewController:_viewController];
+  if (self.delegate &&
+      [self.delegate
+          respondsToSelector:@selector
+          (manageAccountsCoordinator:
+              didRequestAddAccountWithBaseViewController:completion:)]) {
+    [self.delegate manageAccountsCoordinator:self
+        didRequestAddAccountWithBaseViewController:_viewController
+                                        completion:^(
+                                            SigninCoordinatorResult result,
+                                            SigninCompletionInfo*) {
+                                          [weakSelf
+                                              addAccountToDeviceCompleted];
+                                        }];
+  } else {
+    ShowSigninCommand* command = [[ShowSigninCommand alloc]
+        initWithOperation:AuthenticationOperation::kAddAccount
+                 identity:nil
+              accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
+              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+               completion:^(SigninCoordinatorResult result,
+                            SigninCompletionInfo* completionInfo) {
+                 [weakSelf addAccountToDeviceCompleted];
+               }];
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        ApplicationCommands) showSignin:command
+                                     baseViewController:_viewController];
+  }
 }
 
 - (void)signOutWithItemView:(UIView*)itemView {

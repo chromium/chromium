@@ -283,7 +283,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_EditAccountList"));
-                [self.mutator didTapEditAccountList];
+                [self.mutator didTapManageAccounts];
               }];
 
   UIMenu* ellipsisMenu = [UIMenu

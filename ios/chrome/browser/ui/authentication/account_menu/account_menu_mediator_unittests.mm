@@ -308,10 +308,10 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([delegate_
       signOutFromTargetRect:target
                   forSwitch:YES
-                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
-                     onSignoutSuccess = value;
-                     return true;
-                   }]]);
+                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                   onSignoutSuccess = value;
+                   return true;
+                 }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
@@ -343,12 +343,12 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([delegate_
       signOutFromTargetRect:target
                   forSwitch:YES
-                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
-                     onSignoutSuccess = value;
-                     // Actually sign-out, in order to test next step.
-                     SignOut();
-                     return true;
-                   }]]);
+                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                   onSignoutSuccess = value;
+                   // Actually sign-out, in order to test next step.
+                   SignOut();
+                   return true;
+                 }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
@@ -401,10 +401,10 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   OCMExpect([delegate_
       signOutFromTargetRect:target
                   forSwitch:YES
-                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
-                     onSignoutSuccess = value;
-                     return true;
-                   }]]);
+                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                   onSignoutSuccess = value;
+                   return true;
+                 }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
@@ -458,10 +458,10 @@ TEST_F(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
   [mediator_ didTapManageYourGoogleAccount];
 }
 
-// Tests the effect of didTapEditAccountList.
+// Tests the effect of didTapManageAccounts.
 TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
-  OCMExpect([delegate_ didTapEditAccountList]);
-  [mediator_ didTapEditAccountList];
+  OCMExpect([delegate_ didTapManageAccounts]);
+  [mediator_ didTapManageAccounts];
 }
 
 // Tests the effect of didTapAddAccount.
@@ -478,10 +478,10 @@ TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   OCMExpect([delegate_
       signOutFromTargetRect:rect
                   forSwitch:NO
-                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
-                     callback = value;
-                     return true;
-                   }]]);
+                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                   callback = value;
+                   return true;
+                 }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   [mediator_ signOutFromTargetRect:rect];
   OCMExpect([delegate_ unblockOtherScenesIfPossible]);
@@ -497,10 +497,10 @@ TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
   OCMExpect([delegate_
       signOutFromTargetRect:rect
                   forSwitch:NO
-                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
-                     callback = value;
-                     return true;
-                   }]]);
+                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                   callback = value;
+                   return true;
+                 }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   [mediator_ signOutFromTargetRect:rect];
   [mediator_ disconnect];

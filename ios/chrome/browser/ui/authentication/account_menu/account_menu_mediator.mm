@@ -267,9 +267,9 @@
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                              forSwitch:NO
-                              callback:^(BOOL success) {
-                                [weakSelf signoutEndedWithSuccess:success];
-                              }];
+                            completion:^(BOOL success) {
+                              [weakSelf signoutEndedWithSuccess:success];
+                            }];
 }
 
 - (void)accountTappedWithGaiaID:(NSString*)gaiaID
@@ -295,11 +295,11 @@
   id<SystemIdentity> fromIdentity = _primaryIdentity;
   [self.delegate signOutFromTargetRect:targetRect
                              forSwitch:YES
-                              callback:^(BOOL success) {
-                                [weakSelf signoutEndedWithSuccess:success
-                                                     fromIdentity:fromIdentity
-                                                       toIdentity:newIdentity];
-                              }];
+                            completion:^(BOOL success) {
+                              [weakSelf signoutEndedWithSuccess:success
+                                                   fromIdentity:fromIdentity
+                                                     toIdentity:newIdentity];
+                            }];
 }
 
 - (void)didTapErrorButton {
@@ -343,11 +343,11 @@
   [self.delegate didTapManageYourGoogleAccount];
 }
 
-- (void)didTapEditAccountList {
+- (void)didTapManageAccounts {
   if (_blockUserInteractions) {
     return;
   }
-  [self.delegate didTapEditAccountList];
+  [self.delegate didTapManageAccounts];
 }
 
 - (void)didTapAddAccount {

@@ -29,7 +29,6 @@
 @property(nonatomic, weak) id<ManageAccountsMutator> mutator;
 
 - (instancetype)initWithOfferSignout:(BOOL)offerSignout
-                     offerAddAccount:(BOOL)offerAddAccount
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

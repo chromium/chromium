@@ -14,6 +14,18 @@
 - (void)manageAccountsCoordinatorWantsToBeStopped:
     (ManageAccountsCoordinator*)coordinator;
 
+@optional
+
+// Asks the delegate to handle offering the user to add a new account.
+// It must be implemented when a signin coordinator is already displayed by the
+// scene controller.
+- (void)manageAccountsCoordinator:
+            (ManageAccountsCoordinator*)manageAccountsCoordinator
+    didRequestAddAccountWithBaseViewController:(UIViewController*)viewController
+                                    completion:
+                                        (ShowSigninCommandCompletionCallback)
+                                            completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_COORDINATOR_DELEGATE_H_
