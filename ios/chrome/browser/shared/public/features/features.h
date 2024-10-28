@@ -907,4 +907,7 @@ BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 // Feature to support post-profile switch actions support.
 BASE_DECLARE_FEATURE(kPostProfileSwitchActions);
 
+// Feature flag to use the async version of the chrome startup method.
+BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

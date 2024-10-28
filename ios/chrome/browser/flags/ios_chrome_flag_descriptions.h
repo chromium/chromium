@@ -1036,6 +1036,11 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebPageTextZoomIPadName[];
 extern const char kWebPageTextZoomIPadDescription[];
 
+// Title and description for the flag to enable the use of the  async version of
+// the chrome startup method.
+extern const char kChromeStartupParametersAsyncName[];
+extern const char kChromeStartupParametersAsyncDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

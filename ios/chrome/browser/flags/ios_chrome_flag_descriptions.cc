@@ -1158,6 +1158,12 @@ const char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
 const char kWebPageTextZoomIPadDescription[] =
     "When enabled, text zoom works again on iPad";
 
+const char kChromeStartupParametersAsyncName[] =
+    "Enable the async chrome startup";
+const char kChromeStartupParametersAsyncDescription[] =
+    "When enabled the async version of the chrome startup method is used. This "
+    "method is used to parse the startup parameters.";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

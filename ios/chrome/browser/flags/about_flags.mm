@@ -2019,6 +2019,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayEnableSameTabNavigationName,
      flag_descriptions::kLensOverlayEnableSameTabNavigationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayEnableSameTabNavigation)},
+    {"ios-chrome-startup-parameters-async",
+     flag_descriptions::kChromeStartupParametersAsyncName,
+     flag_descriptions::kChromeStartupParametersAsyncDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kChromeStartupParametersAsync)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
