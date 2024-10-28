@@ -747,11 +747,7 @@ IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
     PRE_HistorySearchRecordsSyntheticFieldTrial) {
   EnableSignin();
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#else
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#endif
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kHistorySearch),
@@ -846,11 +842,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
   EnableSignin();
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#else
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#endif
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kModelExecutionMainToggleSettingState,
