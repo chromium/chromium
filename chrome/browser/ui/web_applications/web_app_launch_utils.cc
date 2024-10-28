@@ -334,6 +334,95 @@ bool IsNavigationCapturingReimplExperimentEnabled(
   return false;
 }
 
+// Searches all browsers and tabs to find an applicable browser and (contained)
+// tab that matches the given `requested_display_mode`.
+std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
+    const Profile& profile,
+    const webapps::AppId& app_id,
+    blink::mojom::DisplayMode requested_display_mode) {
+  std::optional<std::pair<Browser*, int>> first_app_browser_match;
+  std::optional<std::pair<Browser*, int>> first_browser_tab_match;
+  // These are the type `std::optional<std::pair<Browser*, int>>` for easy usage
+  // later when returning.
+  std::optional<std::pair<Browser*, int>> first_normal_browser;
+
+  auto GetTabForAppInBrowser = [](Browser* browser,
+                                  const webapps::AppId& app_id)
+      -> std::optional<std::pair<Browser*, int>> {
+    // The active web contents should have preference if it is in scope.
+    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
+      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
+          browser->tab_strip_model()->GetActiveWebContents());
+      if (tab_app_id && *tab_app_id == app_id) {
+        return {{browser, browser->tab_strip_model()->active_index()}};
+      }
+    }
+    // Otherwise, use the first one for the app.
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
+      if (tab_app_id && *tab_app_id == app_id) {
+        return {{browser, i}};
+      }
+    }
+    return {};
+  };
+
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
+      continue;
+    }
+    if (!(browser->is_type_normal() || browser->is_type_app())) {
+      continue;
+    }
+    if (browser->profile() != &profile) {
+      continue;
+    }
+    if (AppBrowserController::IsWebApp(browser)) {
+      if (!first_app_browser_match) {
+        first_app_browser_match = GetTabForAppInBrowser(browser, app_id);
+      }
+    } else {
+      if (!first_normal_browser.has_value()) {
+        first_normal_browser = {browser, -1};
+      }
+      if (!first_browser_tab_match) {
+        first_browser_tab_match = GetTabForAppInBrowser(browser, app_id);
+      }
+    }
+
+    if (first_browser_tab_match.has_value() &&
+        first_app_browser_match.has_value()) {
+      break;
+    }
+  }
+  switch (requested_display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+    case blink::mojom::DisplayMode::kBrowser:
+      if (first_browser_tab_match) {
+        return first_browser_tab_match;
+      }
+      return first_normal_browser;
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kStandalone:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+    case blink::mojom::DisplayMode::kBorderless:
+      if (first_app_browser_match) {
+        return first_app_browser_match;
+      }
+      if (first_browser_tab_match) {
+        return first_browser_tab_match;
+      }
+      return std::nullopt;
+      // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+    case blink::mojom::DisplayMode::kTabbed:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      NOTREACHED_NORETURN();
+  }
+}
+
 }  // namespace
 
 // static
@@ -633,30 +722,21 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     WebAppRegistrar& registrar) {
-  LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
-                                              ->launch_handler()
-                                              .value_or(LaunchHandler())
-                                              .client_mode;
+  ClientModeAndBrowser client_mode_and_browser =
+      GetEffectiveClientModeAndBrowserForCapturing(*profile, app_id);
+  LaunchHandler::ClientMode client_mode =
+      client_mode_and_browser.effective_client_mode;
   if (client_mode != LaunchHandler::ClientMode::kFocusExisting &&
       client_mode != LaunchHandler::ClientMode::kNavigateExisting) {
     return false;
   }
 
-  blink::mojom::DisplayMode display_mode =
-      registrar.GetAppEffectiveDisplayMode(app_id);
-  CHECK(display_mode != blink::mojom::DisplayMode::kBrowser);
-  CHECK(display_mode != blink::mojom::DisplayMode::kTabbed);
-
-  // Look for a pre-existing app in the background.
-  std::optional<std::pair<Browser*, int>> existing_browser_and_tab =
-      GetAppHostForCapturing(*profile, app_id, display_mode);
-  if (!existing_browser_and_tab.has_value()) {
-    return false;
-  }
+  CHECK(client_mode_and_browser.browser);
+  CHECK(client_mode_and_browser.tab_index.has_value());
 
   content::WebContents* preexisting_web_contents =
-      existing_browser_and_tab->first->tab_strip_model()->GetWebContentsAt(
-          existing_browser_and_tab->second);
+      client_mode_and_browser.browser->tab_strip_model()->GetWebContentsAt(
+          *client_mode_and_browser.tab_index);
   CHECK(preexisting_web_contents != contents);
 
   // We've found a browser in the background. We need to focus it and enqueue
@@ -671,7 +751,7 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
 
   preexisting_web_contents->Focus();
   if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
-    NavigateParams nav_params(existing_browser_and_tab->first, launch_url,
+    NavigateParams nav_params(client_mode_and_browser.browser, launch_url,
                               ui::PageTransition::PAGE_TRANSITION_LINK);
     Navigate(&nav_params);
   }
@@ -1152,93 +1232,42 @@ void LaunchWebApp(apps::AppLaunchParams params,
                      container, base::Value(std::move(debug_value))));
 }
 
-// Searches all browsers and tabs to find an applicable browser and (contained)
-// tab that matches the given `requested_display_mode`.
-std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
-    const Profile& profile,
-    const webapps::AppId& app_id,
-    blink::mojom::DisplayMode requested_display_mode) {
-  std::optional<std::pair<Browser*, int>> first_app_browser_match;
-  std::optional<std::pair<Browser*, int>> first_browser_tab_match;
-  // These are the type `std::optional<std::pair<Browser*, int>>` for easy usage
-  // later when returning.
-  std::optional<std::pair<Browser*, int>> first_normal_browser;
+ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
+    Profile& profile,
+    const webapps::AppId& app_id) {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(&profile);
+  CHECK(provider);
+  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
 
-  auto GetTabForAppInBrowser = [](Browser* browser,
-                                  const webapps::AppId& app_id)
-      -> std::optional<std::pair<Browser*, int>> {
-    // The active web contents should have preference if it is in scope.
-    if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
-          browser->tab_strip_model()->GetActiveWebContents());
-      if (tab_app_id && *tab_app_id == app_id) {
-        return {{browser, browser->tab_strip_model()->active_index()}};
-      }
-    }
-    // Otherwise, use the first one for the app.
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
-      if (tab_app_id && *tab_app_id == app_id) {
-        return {{browser, i}};
-      }
-    }
-    return {};
-  };
+  ClientModeAndBrowser result;
+  result.effective_client_mode = registrar.GetAppById(app_id)
+                                     ->launch_handler()
+                                     .value_or(LaunchHandler())
+                                     .client_mode;
+  if (result.effective_client_mode == LaunchHandler::ClientMode::kAuto) {
+    result.effective_client_mode = LaunchHandler::ClientMode::kNavigateNew;
+  }
 
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (!(browser->is_type_normal() || browser->is_type_app())) {
-      continue;
-    }
-    if (browser->profile() != &profile) {
-      continue;
-    }
-    if (AppBrowserController::IsWebApp(browser)) {
-      if (!first_app_browser_match) {
-        first_app_browser_match = GetTabForAppInBrowser(browser, app_id);
-      }
-    } else {
-      if (!first_normal_browser.has_value()) {
-        first_normal_browser = {browser, -1};
-      }
-      if (!first_browser_tab_match) {
-        first_browser_tab_match = GetTabForAppInBrowser(browser, app_id);
-      }
-    }
-
-    if (first_browser_tab_match.has_value() &&
-        first_app_browser_match.has_value()) {
-      break;
+  std::optional<std::pair<Browser*, int>> app_host = GetAppHostForCapturing(
+      profile, app_id, registrar.GetAppEffectiveDisplayMode(app_id));
+  if (app_host.has_value()) {
+    CHECK(app_host->first);
+    result.browser = app_host->first;
+    if (app_host->second != -1) {
+      result.tab_index = app_host->second;
     }
   }
-  switch (requested_display_mode) {
-    case blink::mojom::DisplayMode::kUndefined:
-    case blink::mojom::DisplayMode::kBrowser:
-      if (first_browser_tab_match) {
-        return first_browser_tab_match;
-      }
-      return first_normal_browser;
-    case blink::mojom::DisplayMode::kMinimalUi:
-    case blink::mojom::DisplayMode::kStandalone:
-    case blink::mojom::DisplayMode::kWindowControlsOverlay:
-    case blink::mojom::DisplayMode::kBorderless:
-      if (first_app_browser_match) {
-        return first_app_browser_match;
-      }
-      if (first_browser_tab_match) {
-        return first_browser_tab_match;
-      }
-      return std::nullopt;
-      // TODO(crbug.com/375504532): Support tabbed mode on desktop.
-    case blink::mojom::DisplayMode::kTabbed:
-    case blink::mojom::DisplayMode::kFullscreen:
-    case blink::mojom::DisplayMode::kPictureInPicture:
-      NOTREACHED_NORETURN();
+
+  if (result.effective_client_mode ==
+          LaunchHandler::ClientMode::kNavigateExisting ||
+      result.effective_client_mode ==
+          LaunchHandler::ClientMode::kFocusExisting) {
+    if (!result.tab_index.has_value()) {
+      result.effective_client_mode = LaunchHandler::ClientMode::kNavigateNew;
+    }
   }
+  return result;
 }
 
 AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
@@ -1346,10 +1375,23 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
           controlling_app_display_mode)) {
     return AppNavigationResult::CapturingDisabled();
   }
-  std::optional<std::pair<Browser*, int>> controlling_app_host_browser_and_tab;
+  std::optional<ClientModeAndBrowser> client_mode_and_browser;
   if (controlling_app_id) {
-    controlling_app_host_browser_and_tab = GetAppHostForCapturing(
-        *profile, controlling_app_id.value(), *controlling_app_display_mode);
+    client_mode_and_browser = GetEffectiveClientModeAndBrowserForCapturing(
+        *profile, *controlling_app_id);
+    debug_data.Set(
+        "effective_client_mode",
+        base::ToString(client_mode_and_browser->effective_client_mode));
+    CHECK(client_mode_and_browser->effective_client_mode !=
+          LaunchHandler::ClientMode::kAuto);
+    debug_data.Set("controlling_app_host_browser",
+                   client_mode_and_browser->browser
+                       ? base::ToString(client_mode_and_browser->browser)
+                       : "<none>");
+    debug_data.Set("controlling_app_host_tab",
+                   client_mode_and_browser->tab_index.has_value()
+                       ? base::ToString(*client_mode_and_browser->tab_index)
+                       : "<none>");
   }
 
   content::WebContents* source_contents = params.source_contents;
@@ -1380,16 +1422,6 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   debug_data.Set("controlling_app_display_mode",
                  base::ToString(controlling_app_display_mode.value_or(
                      DisplayMode::kUndefined)));
-  debug_data.Set(
-      "controlling_app_host_browser",
-      controlling_app_host_browser_and_tab.has_value()
-          ? base::ToString(controlling_app_host_browser_and_tab->first)
-          : "<none>");
-  debug_data.Set(
-      "controlling_app_host_tab",
-      controlling_app_host_browser_and_tab.has_value()
-          ? base::ToString(controlling_app_host_browser_and_tab->second)
-          : "<none>");
   debug_data.Set("params.browser", base::ToString(params.browser.get()));
 
   debug_data.Set("params.url", params.url.possibly_invalid_spec());
@@ -1432,8 +1464,11 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         source_browser_app_id, params.disposition, std::move(debug_data));
   }
   CHECK(controlling_app_display_mode);
+  CHECK(client_mode_and_browser);
   const webapps::AppId& app_id = *controlling_app_id;
   blink::mojom::DisplayMode app_display_mode = *controlling_app_display_mode;
+  LaunchHandler::ClientMode client_mode =
+      client_mode_and_browser->effective_client_mode;
 
   // Case: User-modified clicks.
   if (is_user_modified_click) {
@@ -1481,8 +1516,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       if (app_display_mode == DisplayMode::kBrowser) {
         // For a 'new tab' with the 'browser' requested display mode, prefer
         // using an existing browser window.
-        app_host_window = controlling_app_host_browser_and_tab.has_value()
-                              ? controlling_app_host_browser_and_tab->first
+        app_host_window = client_mode_and_browser->browser
+                              ? client_mode_and_browser->browser.get()
                               : Browser::Create(Browser::CreateParams(
                                     profile, params.user_gesture));
       } else {
@@ -1509,15 +1544,6 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
     app_display_mode = blink::mojom::DisplayMode::kBrowser;
   }
 
-  LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
-                                              ->launch_handler()
-                                              .value_or(LaunchHandler())
-                                              .client_mode;
-  debug_data.Set("initial_client_mode", base::ToString(client_mode));
-  if (client_mode == LaunchHandler::ClientMode::kAuto) {
-    client_mode = LaunchHandler::ClientMode::kNavigateNew;
-  }
-
   // If the developer has an in-scope link that opens a new top level browsing
   // in their own page, then force the client mode to be navigate-new.
   // To detect this, we consider both the app_id that controls the referrer url
@@ -1536,50 +1562,41 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Focus existing.
   if (client_mode == LaunchHandler::ClientMode::kFocusExisting) {
-    if (controlling_app_host_browser_and_tab.has_value() &&
-        controlling_app_host_browser_and_tab->second != -1) {
-      content::WebContents* contents =
-          controlling_app_host_browser_and_tab->first->tab_strip_model()
-              ->GetWebContentsAt(controlling_app_host_browser_and_tab->second);
-      CHECK(contents);
-      contents->Focus();
+    CHECK(client_mode_and_browser->browser);
+    CHECK(client_mode_and_browser->tab_index.has_value());
+    content::WebContents* contents =
+        client_mode_and_browser->browser->tab_strip_model()->GetWebContentsAt(
+            *client_mode_and_browser->tab_index);
+    CHECK(contents);
+    contents->Focus();
 
-      // Abort the navigation by returning a `nullptr`. Because this means
-      // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
-      // the launch params instantly and record the debug data.
-      EnqueueLaunchParams(contents, app_id, params.url,
-                          /*wait_for_navigation_to_complete=*/false);
-      provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
-          base::Value(std::move(debug_data)));
+    // Abort the navigation by returning a `nullptr`. Because this means
+    // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
+    // the launch params instantly and record the debug data.
+    EnqueueLaunchParams(contents, app_id, params.url,
+                        /*wait_for_navigation_to_complete=*/false);
+    provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
+        base::Value(std::move(debug_data)));
 
-      MaybeShowNavigationCaptureIph(
-          app_id, profile, controlling_app_host_browser_and_tab->first);
+    MaybeShowNavigationCaptureIph(app_id, profile,
+                                  client_mode_and_browser->browser);
 
-      // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
-      // with apps that open in a new browser tab.
-      RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                          apps::LaunchSource::kFromNavigationCapturing,
-                          params.url, contents);
-      return AppNavigationResult::CancelNavigation();
-    }
-
-    // Fallback to creating a new instance.
-    client_mode = LaunchHandler::ClientMode::kNavigateNew;
-    debug_data.Set("client_mode", base::ToString(client_mode));
+    // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
+    // with apps that open in a new browser tab.
+    RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                        apps::LaunchSource::kFromNavigationCapturing,
+                        params.url, contents);
+    return AppNavigationResult::CancelNavigation();
   }
 
   // Navigate existing.
   if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
-    if (controlling_app_host_browser_and_tab.has_value() &&
-        controlling_app_host_browser_and_tab->second != -1) {
-      return AppNavigationResult::CapturedNavigateExisting(
-          source_browser_app_id, app_id,
-          controlling_app_host_browser_and_tab->first,
-          controlling_app_host_browser_and_tab->second, params.disposition,
-          std::move(debug_data));
-    }
-    client_mode = LaunchHandler::ClientMode::kNavigateNew;
-    debug_data.Set("client_mode", base::ToString(client_mode));
+    CHECK(client_mode_and_browser->browser);
+    CHECK(client_mode_and_browser->tab_index.has_value());
+    return AppNavigationResult::CapturedNavigateExisting(
+        source_browser_app_id, app_id, client_mode_and_browser->browser,
+        *client_mode_and_browser->tab_index, params.disposition,
+        std::move(debug_data));
   }
 
   // Navigate new.
@@ -1588,8 +1605,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   Browser* host_window = nullptr;
   switch (app_display_mode) {
     case blink::mojom::DisplayMode::kBrowser:
-      if (controlling_app_host_browser_and_tab.has_value()) {
-        host_window = controlling_app_host_browser_and_tab->first;
+      if (client_mode_and_browser->browser) {
+        host_window = client_mode_and_browser->browser;
       } else {
         host_window = Browser::Create(
             Browser::CreateParams(profile, params.user_gesture));
@@ -1602,8 +1619,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
       break;
     case blink::mojom::DisplayMode::kTabbed:
-      if (controlling_app_host_browser_and_tab.has_value()) {
-        host_window = controlling_app_host_browser_and_tab->first;
+      if (client_mode_and_browser->browser) {
+        host_window = client_mode_and_browser->browser;
       } else {
         host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
       }

@@ -257,25 +257,39 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
+// Returns the effective client mode for the given app, taking into account the
+// app's effective display mode as well as what windows and tabs are currently
+// open.
+//
+// If an applicable browser and tab for the given app was found, `browser` and
+// `tab_index` will be populated even if the effective client mode is
+// `kNavigateNew`. On the other hand, the returned client mode will never be
+// `kFocusExisting` or `kNavigateExisting` if no existing tab was found.
+//
 // Searches all browsers and tabs to find an applicable browser for the given
-// `requested_display_mode` and `app_id`, specifically for use with navigation
+// `app_id` and its effective display mode, specifically for use with navigation
 // capturing. The tabs in each browser are searched for one that matches the
 // given `app_id`. This is the priority order of returned items:
 // - If a tab is found for `app_id` in a browser that matches the
-//   `requested_display_mode`, then that is returned.
-// - If the `requested_display_mode` is for a standalone PWA:
+//   display mode, then that is returned.
+// - If the display mode is for a standalone PWA:
 //   - Fall back to look for the first normal browser with a tab matching
 //     `app_id`.
-//   - Otherwise return `std::nullopt`.
-// - If the `requested_display_mode` is `kBrowser`:
-//   - Fall back to returning the first normal browser window, and `-1` for the
-//     tab.
-//   - Otherwise return `std::nullopt`.
-// - Return `std::nullopt` for all other cases.
-std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
-    const Profile& profile,
-    const webapps::AppId& app_id,
-    blink::mojom::DisplayMode requested_display_mode);
+//   - Otherwise set `browser` to `nullptr`.
+// - If the display mode is `kBrowser`:
+//   - Fall back to returning the first normal browser window, and `nullopt` for
+//     the tab.
+//   - Otherwise set `browser` to `nullptr`.
+// - Set `browser` to `nullptr` for all other cases.
+struct ClientModeAndBrowser {
+  LaunchHandler::ClientMode effective_client_mode =
+      LaunchHandler::ClientMode::kNavigateNew;
+  raw_ptr<Browser> browser = nullptr;
+  std::optional<int> tab_index;
+};
+ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
+    Profile& profile,
+    const webapps::AppId& app_id);
 
 // Returns an AppNavigationResult with pertinent details on how to handle a
 // navigation if the web app system can do so. If not, the

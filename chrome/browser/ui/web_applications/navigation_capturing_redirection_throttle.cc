@@ -84,17 +84,6 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
                                      target_browser_window);
 }
 
-LaunchHandler::ClientMode GetLaunchHandlerMode(WebAppRegistrar& registrar,
-                                               const webapps::AppId& app_id) {
-  LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
-                                              ->launch_handler()
-                                              .value_or(LaunchHandler())
-                                              .client_mode;
-  if (client_mode == LaunchHandler::ClientMode::kAuto) {
-    return LaunchHandler::ClientMode::kNavigateNew;
-  }
-  return client_mode;
-}
 }  // namespace
 
 // static
@@ -279,11 +268,11 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // Handle the use-case where the first result was navigation captured
   // into an app window and both apps had NavigateNew as launch handlers,
   // triggered via a non user modified.
-  std::optional<std::pair<Browser*, int>> existing_app_host = std::nullopt;
+  std::optional<ClientModeAndBrowser> client_mode_and_browser;
   if (target_app_id) {
     CHECK(target_display_mode.has_value());
-    existing_app_host = GetAppHostForCapturing(profile_.get(), *target_app_id,
-                                               *target_display_mode);
+    client_mode_and_browser =
+        GetEffectiveClientModeAndBrowserForCapturing(*profile_, *target_app_id);
   }
 
   // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
@@ -296,10 +285,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
       return content::NavigationThrottle::PROCEED;
     }
 
-    if (target_app_id &&
-        ((GetLaunchHandlerMode(registrar, target_app_id.value()) ==
-          LaunchHandler::ClientMode::kNavigateNew) ||
-         !existing_app_host)) {
+    if (target_app_id && client_mode_and_browser->effective_client_mode ==
+                             LaunchHandler::ClientMode::kNavigateNew) {
       ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
                                               *target_app_id, final_url);
       return content::NavigationThrottle::PROCEED;
@@ -329,14 +316,14 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // kFocusExisting, and there is an existing app window already present that
   // can be focused. The existing window is focused, and navigation is
   // aborted.
-  if (target_app_id &&
-      GetLaunchHandlerMode(registrar, *target_app_id) ==
-          LaunchHandler::ClientMode::kFocusExisting &&
-      existing_app_host.has_value() && existing_app_host->second != -1) {
-    // Focus any existing app window if it exists.
+  if (target_app_id && client_mode_and_browser->effective_client_mode ==
+                           LaunchHandler::ClientMode::kFocusExisting) {
+    CHECK(client_mode_and_browser->browser);
+    CHECK(client_mode_and_browser->tab_index.has_value());
+    // Focus any existing app window if it exist1s.
     content::WebContents* pre_existing_contents =
-        existing_app_host->first->tab_strip_model()->GetWebContentsAt(
-            existing_app_host->second);
+        client_mode_and_browser->browser->tab_strip_model()->GetWebContentsAt(
+            *client_mode_and_browser->tab_index);
     CHECK(pre_existing_contents);
 
     pre_existing_contents->Focus();
@@ -347,7 +334,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
     EnqueueLaunchParams(pre_existing_contents, *target_app_id, final_url,
                         /*wait_for_navigation_to_complete=*/false);
     MaybeShowNavigationCaptureIph(*target_app_id, &profile_.get(),
-                                  existing_app_host->first);
+                                  client_mode_and_browser->browser);
     RecordLaunchMetrics(*target_app_id,
                         apps::LaunchContainer::kLaunchContainerWindow,
                         apps::LaunchSource::kFromNavigationCapturing, final_url,
