@@ -171,8 +171,13 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
   // The IncognitoSessionTracker can be null during tests.
-  if (IncognitoSessionTracker* tracker =
-          GetApplicationContext()->GetIncognitoSessionTracker()) {
+  IncognitoSessionTracker* tracker =
+      GetApplicationContext()->GetIncognitoSessionTracker();
+
+  // Notify if OTR state was created before registration.
+  service->EnableMetrics(tracker ? !tracker->HasIncognitoSessionTabs() : true);
+
+  if (tracker) {
     // Usage of base::Unretained(...) is safe since the callback subscription
     // is owned by the SegmentationPlatformServiceSubscription attached to the
     // SegmentationPlatformService and deleted before the object itself.
