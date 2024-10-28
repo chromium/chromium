@@ -45,12 +45,14 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-using testing::_;
-using testing::An;
-using testing::Return;
-using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
-
 namespace {
+
+using ::optimization_guide::MockSession;
+using ::testing::_;
+using ::testing::An;
+using ::testing::NiceMock;
+using ::testing::Return;
+using DeepQuery = ::WebContentsInteractionTestUtil::DeepQuery;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentPageTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kComposeWebContents);
@@ -213,8 +215,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
         .WillByDefault(Return(true));
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault([&] {
-          return std::make_unique<optimization_guide::MockSessionWrapper>(
-              &session());
+          return std::make_unique<NiceMock<MockSession>>(&session());
         });
     ON_CALL(session(), ExecuteModel(_, _))
         .WillByDefault(testing::WithArg<1>(testing::Invoke(

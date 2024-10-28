@@ -25,7 +25,6 @@ using ::testing::NiceMock;
 namespace {
 
 using optimization_guide::MockSession;
-using optimization_guide::MockSessionWrapper;
 using optimization_guide::proto::SummarizeRequest;
 using optimization_guide::proto::SummarizerOutputFormat;
 using optimization_guide::proto::SummarizerOutputLength;
@@ -79,7 +78,7 @@ class AISummarizerUnitTest : public AITestUtils::AITestBase {
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
-            [&] { return std::make_unique<MockSessionWrapper>(&session_); });
+            [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
   }
 
   ~AISummarizerUnitTest() override = default;

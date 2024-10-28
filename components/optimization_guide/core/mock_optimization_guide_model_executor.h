@@ -41,7 +41,12 @@ class MockOptimizationGuideModelExecutor
 
 class MockSession : public OptimizationGuideModelExecutor::Session {
  public:
+  // Constructs an unconfigured mock.
   MockSession();
+  // Constructs a MockSession that delegates to the given session.
+  // The delegate should be an object that will outlive the MockSession.
+  explicit MockSession(OptimizationGuideModelExecutor::Session* delegate);
+
   ~MockSession() override;
 
   // Utility method to create a successful result.
@@ -49,6 +54,11 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
       proto::Any response);
   // Utility method to create a generic failure result.
   static OptimizationGuideModelStreamingExecutionResult FailResult();
+
+  // Configure this mock to delegate to another implementation.
+  // The delegate should be an object that will outlive the MockSession.
+  // This should be called *before* other ON_CALL statements.
+  void Delegate(OptimizationGuideModelExecutor::Session* impl);
 
   MOCK_METHOD(const optimization_guide::TokenLimits&,
               GetTokenLimits,
@@ -82,39 +92,6 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetOnDeviceFeatureMetadata,
               (),
               (const override));
-};
-
-// A wrapper that passes through calls to the underlying MockSession. Allows for
-// easily mocking calls with a single session object.
-class MockSessionWrapper : public OptimizationGuideModelExecutor::Session {
- public:
-  explicit MockSessionWrapper(MockSession* session);
-  ~MockSessionWrapper() override;
-
-  // OptimizationGuideModelExecutor::Session:
-  const optimization_guide::TokenLimits& GetTokenLimits() const override;
-  void AddContext(
-      const google::protobuf::MessageLite& request_metadata) override;
-  void Score(const std::string& text,
-             optimization_guide::OptimizationGuideModelScoreCallback callback)
-      override;
-  void ExecuteModel(
-      const google::protobuf::MessageLite& request_metadata,
-      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-          callback) override;
-  void GetSizeInTokens(
-      const std::string& text,
-      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
-      override;
-  void GetContextSizeInTokens(
-      const google::protobuf::MessageLite& request_metadata,
-      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
-      override;
-  const SamplingParams GetSamplingParams() const override;
-  const proto::Any& GetOnDeviceFeatureMetadata() const override;
-
- private:
-  raw_ptr<MockSession> session_;
 };
 
 }  // namespace optimization_guide

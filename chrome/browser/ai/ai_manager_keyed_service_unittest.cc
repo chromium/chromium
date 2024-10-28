@@ -24,7 +24,6 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 using optimization_guide::MockSession;
-using optimization_guide::MockSessionWrapper;
 using testing::_;
 using testing::AtMost;
 using testing::Invoke;
@@ -37,7 +36,7 @@ class AIManagerKeyedServiceTest : public AITestUtils::AITestBase {
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
-            [&] { return std::make_unique<MockSessionWrapper>(&session_); });
+            [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
     ON_CALL(session_, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
     ON_CALL(session_, GetOnDeviceFeatureMetadata())

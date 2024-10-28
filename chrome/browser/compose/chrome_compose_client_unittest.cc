@@ -81,10 +81,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using ::base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
+using testing::NiceMock;
 using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
+using optimization_guide::MockSession;
 using optimization_guide::ModelQualityLogEntry;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::
@@ -94,8 +98,6 @@ using optimization_guide::StreamingResponse;
 using optimization_guide::TestModelQualityLogsUploaderService;
 using optimization_guide::proto::LogAiDataRequest;
 using segmentation_platform::MockSegmentationPlatformService;
-
-namespace {
 
 const uint64_t kSessionIdHigh = 1234;
 const uint64_t kSessionIdLow = 5678;
@@ -193,8 +195,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
               std::move(callback).Run(std::move(expected_inner_text));
             })));
     ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
-      return std::make_unique<optimization_guide::MockSessionWrapper>(
-          &session());
+      return std::make_unique<NiceMock<MockSession>>(&session());
     });
     ON_CALL(session(), ExecuteModel(_, _))
         .WillByDefault(testing::WithArg<1>(testing::Invoke(

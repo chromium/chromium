@@ -17,7 +17,6 @@ namespace {
 
 using optimization_guide::MockOptimizationGuideModelExecutor;
 using optimization_guide::MockSession;
-using optimization_guide::MockSessionWrapper;
 using optimization_guide::
     OptimizationGuideModelExecutionResultStreamingCallback;
 using optimization_guide::StreamingResponse;
@@ -59,8 +58,7 @@ class MockExecutor : public MockOptimizationGuideModelExecutor {
  public:
   MockExecutor() {
     ON_CALL(*this, StartSession(_, _)).WillByDefault([&] {
-      return std::make_unique<optimization_guide::MockSessionWrapper>(
-          &session_);
+      return std::make_unique<NiceMock<MockSession>>(&session_);
     });
   }
   NiceMock<MockClassifierSession> session_;
