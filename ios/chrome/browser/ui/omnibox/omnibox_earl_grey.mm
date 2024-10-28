@@ -30,7 +30,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                     return [OmniboxAppInterface shortcutsBackendInitialized];
                   }];
   bool conditionMet = [waitCondition
-      waitWithTimeout:base::test::ios::kWaitForFileOperationTimeout
+      waitWithTimeout:base::test::ios::kWaitForActionTimeout
                           .InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(conditionMet, errorString);
 }
