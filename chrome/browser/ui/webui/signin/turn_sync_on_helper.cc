@@ -168,6 +168,10 @@ bool TurnSyncOnHelper::Delegate::
   return false;
 }
 
+bool TurnSyncOnHelper::Delegate::IsProfileCreationRequiredByPolicy() const {
+  return false;
+}
+
 // static
 void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
@@ -332,6 +336,14 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
 
   switch (choice) {
     case signin::SIGNIN_CHOICE_CANCEL:
+      // When profile creation/separation is enforced, declining the creation
+      // should fully sign the user out (even from the Web area) in order for
+      // the make sure not to bypass the policies in anyway.
+      if (delegate_->IsProfileCreationRequiredByPolicy() &&
+          (!enterprise_util::UserAcceptedAccountManagement(profile_) ||
+           !base::FeatureList::IsEnabled(kDisallowManagedProfileSignout))) {
+        signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+      }
       base::RecordAction(
           base::UserMetricsAction("Signin_EnterpriseAccountPrompt_Cancel"));
       AbortAndDelete();
