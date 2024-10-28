@@ -8,6 +8,7 @@ use std::iter::FromIterator;
 use syn::meta::ParseNestedMeta;
 use syn::parse::ParseStream;
 use syn::punctuated::Punctuated;
+use syn::spanned::Spanned;
 use syn::{parse_quote, token, Ident, Lifetime, Token};
 
 // This module handles parsing of `#[serde(...)]` attributes. The entrypoints
@@ -888,13 +889,13 @@ impl Variant {
                         ser_path
                             .path
                             .segments
-                            .push(Ident::new("serialize", Span::call_site()).into());
+                            .push(Ident::new("serialize", ser_path.span()).into());
                         serialize_with.set(&meta.path, ser_path);
                         let mut de_path = path;
                         de_path
                             .path
                             .segments
-                            .push(Ident::new("deserialize", Span::call_site()).into());
+                            .push(Ident::new("deserialize", de_path.span()).into());
                         deserialize_with.set(&meta.path, de_path);
                     }
                 } else if meta.path == SERIALIZE_WITH {
@@ -1170,13 +1171,13 @@ impl Field {
                         ser_path
                             .path
                             .segments
-                            .push(Ident::new("serialize", Span::call_site()).into());
+                            .push(Ident::new("serialize", ser_path.span()).into());
                         serialize_with.set(&meta.path, ser_path);
                         let mut de_path = path;
                         de_path
                             .path
                             .segments
-                            .push(Ident::new("deserialize", Span::call_site()).into());
+                            .push(Ident::new("deserialize", de_path.span()).into());
                         deserialize_with.set(&meta.path, de_path);
                     }
                 } else if meta.path == BOUND {

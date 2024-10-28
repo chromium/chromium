@@ -35,7 +35,7 @@ macro_rules! fmt_primitives {
 ///     }
 /// }
 /// ```
-impl<'a, 'b> Serializer for &'a mut fmt::Formatter<'b> {
+impl<'a> Serializer for &mut fmt::Formatter<'a> {
     type Ok = ();
     type Error = fmt::Error;
     type SerializeSeq = Impossible<(), fmt::Error>;

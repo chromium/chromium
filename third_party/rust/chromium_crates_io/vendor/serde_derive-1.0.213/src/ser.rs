@@ -1220,6 +1220,17 @@ fn wrap_serialize_with(
         })
     });
 
+    let self_var = quote!(self);
+    let serializer_var = quote!(__s);
+
+    // If #serialize_with returns wrong type, error will be reported on here.
+    // We attach span of the path to this piece so error will be reported
+    // on the #[serde(with = "...")]
+    //                       ^^^^^
+    let wrapper_serialize = quote_spanned! {serialize_with.span()=>
+        #serialize_with(#(#self_var.values.#field_access, )* #serializer_var)
+    };
+
     quote!({
         #[doc(hidden)]
         struct __SerializeWith #wrapper_impl_generics #where_clause {
@@ -1228,11 +1239,11 @@ fn wrap_serialize_with(
         }
 
         impl #wrapper_impl_generics _serde::Serialize for __SerializeWith #wrapper_ty_generics #where_clause {
-            fn serialize<__S>(&self, __s: __S) -> _serde::__private::Result<__S::Ok, __S::Error>
+            fn serialize<__S>(&#self_var, #serializer_var: __S) -> _serde::__private::Result<__S::Ok, __S::Error>
             where
                 __S: _serde::Serializer,
             {
-                #serialize_with(#(self.values.#field_access, )* __s)
+                #wrapper_serialize
             }
         }
 

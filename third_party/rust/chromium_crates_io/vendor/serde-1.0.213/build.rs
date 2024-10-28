@@ -50,11 +50,6 @@ fn main() {
         println!("cargo:rustc-cfg=no_float_copysign");
     }
 
-    // Current minimum supported version of serde_derive crate is Rust 1.56.
-    if minor < 56 {
-        println!("cargo:rustc-cfg=no_serde_derive");
-    }
-
     // Support for #[cfg(target_has_atomic = "...")] stabilized in Rust 1.60.
     if minor < 60 {
         println!("cargo:rustc-cfg=no_target_has_atomic");
@@ -74,6 +69,11 @@ fn main() {
         if minor < 34 || !has_atomic32 {
             println!("cargo:rustc-cfg=no_std_atomic");
         }
+    }
+
+    // Current minimum supported version of serde_derive crate is Rust 1.61.
+    if minor < 61 {
+        println!("cargo:rustc-cfg=no_serde_derive");
     }
 
     // Support for core::ffi::CStr and alloc::ffi::CString stabilized in Rust 1.64.

@@ -486,13 +486,13 @@ where
     }
 }
 
-impl<'a> Expected for &'a str {
+impl Expected for &str {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str(self)
     }
 }
 
-impl<'a> Display for Expected + 'a {
+impl Display for Expected + '_ {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         Expected::fmt(self, formatter)
     }
@@ -1741,7 +1741,7 @@ pub trait SeqAccess<'de> {
     }
 }
 
-impl<'de, 'a, A> SeqAccess<'de> for &'a mut A
+impl<'de, A> SeqAccess<'de> for &mut A
 where
     A: ?Sized + SeqAccess<'de>,
 {
@@ -1894,7 +1894,7 @@ pub trait MapAccess<'de> {
     }
 }
 
-impl<'de, 'a, A> MapAccess<'de> for &'a mut A
+impl<'de, A> MapAccess<'de> for &mut A
 where
     A: ?Sized + MapAccess<'de>,
 {
