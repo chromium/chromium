@@ -26,6 +26,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class FilePath;
@@ -112,19 +113,24 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
                                        base::Time trigger_time) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  enum class ReplaceReportResult {
-    kError,
-    kAddNewReport,
-    kDropNewReport,
-    kDropNewReportSourceDeactivated,
-    kReplaceOldReport,
+  struct ReplaceReportError {};
+  struct AddNewReport {};
+  struct DropNewReport {
+    bool source_deactivated;
   };
+  struct ReplaceOldReport {
+    AttributionReport replaced_report;
+  };
+
+  using ReplaceReportResult = absl::variant<ReplaceReportError,
+                                            AddNewReport,
+                                            DropNewReport,
+                                            ReplaceOldReport>;
+
   [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       const StoredSource& source,
-      int num_attributions,
-      std::optional<AttributionReport>& replaced_report)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      int num_attributions) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   attribution_reporting::mojom::EventLevelResult MaybeStoreEventLevelReport(
       AttributionReport& report,
