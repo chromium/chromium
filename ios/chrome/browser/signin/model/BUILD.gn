@@ -125,6 +125,22 @@ source_set("model") {
   ]
 }
 
+# This target is currently empty, but will eventually become a souce_set().
+# It will contain AuthenticationService related source files, but since it
+# is used in the internal repository, moving the files in the CL adding the
+# target would cause build failures.
+group("authentication_service") {
+  public_deps = [ ":model" ]
+}
+
+# This target is currently empty, but will eventually become a souce_set().
+# It will contain AuthenticationService related source files, but since it
+# is used in the internal repository, moving the files in the CL adding the
+# target would cause build failures.
+group("authentication_service_factory") {
+  public_deps = [ ":model" ]
+}
+
 source_set("signin_util") {
   sources = [
     "signin_util.h",
