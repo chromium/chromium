@@ -2819,6 +2819,12 @@ void WebLocalFrameImpl::DownloadURL(
                           std::move(blob_url_token));
 }
 
+WebFrame* WebLocalFrameImpl::GetProvisionalOwnerFrame() {
+  return GetFrame()->IsProvisional()
+             ? WebFrame::FromCoreFrame(GetFrame()->GetProvisionalOwnerFrame())
+             : nullptr;
+}
+
 void WebLocalFrameImpl::MaybeStartOutermostMainFrameNavigation(
     const WebVector<WebURL>& urls) const {
   Vector<KURL> kurls;

@@ -399,6 +399,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       network::mojom::blink::RedirectMode cross_origin_redirect_behavior,
       CrossVariantMojoRemote<mojom::blink::BlobURLTokenInterfaceBase>
           blob_url_token) override;
+  WebFrame* GetProvisionalOwnerFrame() override;
 
   void SetNotRestoredReasons(
       const mojom::BackForwardCacheNotRestoredReasonsPtr&) override;

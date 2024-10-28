@@ -936,6 +936,10 @@ class CORE_EXPORT LocalFrame final
 
   const WebPrintParams& GetPrintParams() const;
 
+  // Returns the `Frame` for which `provisional_frame_ == this`. May only be
+  // called on a provisional frame.
+  Frame* GetProvisionalOwnerFrame();
+
   // Return a keep alive handle for the browser side NavigationStateKeepAlive.
   // The NavigationStateKeepAlive is created by a RenderFrameHost. Holding the
   // pending receiver of this remote means the keep alive handle can still exist
@@ -1024,10 +1028,6 @@ class CORE_EXPORT LocalFrame final
       const gfx::Point& pos_in_viewport);
 
   bool ShouldThrottleDownload();
-
-  // Returns the `Frame` for which `provisional_frame_ == this`. May only be
-  // called on a provisional frame.
-  Frame* GetProvisionalOwnerFrame();
 
   void ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
                                     String& clip_text,

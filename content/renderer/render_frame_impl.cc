@@ -2189,7 +2189,18 @@ void RenderFrameImpl::BindFrameBindingsControl(
 
 void RenderFrameImpl::BindNavigationClient(
     mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver) {
-  navigation_client_impl_ = std::make_unique<NavigationClient>(this);
+  // If the provisional owner frame is a local frame and it has a non-null
+  // `navigation_client_impl_`, it began the navigation. Some properties need
+  // to be copied over from the original `NavigationClient` to preserve
+  // behaviour.
+  NavigationClient* initiator_navigation_client = nullptr;
+  WebFrame* initiator_frame = GetWebFrame()->GetProvisionalOwnerFrame();
+  if (initiator_frame && initiator_frame->IsWebLocalFrame()) {
+    initiator_navigation_client = RenderFrameImpl::FromWebFrame(initiator_frame)
+                                      ->navigation_client_impl_.get();
+  }
+  navigation_client_impl_ =
+      std::make_unique<NavigationClient>(this, initiator_navigation_client);
   navigation_client_impl_->Bind(std::move(receiver));
 }
 

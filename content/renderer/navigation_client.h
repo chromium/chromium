@@ -20,7 +20,10 @@ class RenderFrameImpl;
 
 class NavigationClient : mojom::NavigationClient {
  public:
-  explicit NavigationClient(RenderFrameImpl* render_frame);
+  // Used for browser-initiated navigations.
+  NavigationClient(RenderFrameImpl* render_frame,
+                   NavigationClient* initiator_navigation_client);
+  // Used for renderer-initiated navigations.
   NavigationClient(RenderFrameImpl* render_frame,
                    blink::mojom::BeginNavigationParamsPtr begin_params,
                    blink::mojom::CommonNavigationParamsPtr common_params);
