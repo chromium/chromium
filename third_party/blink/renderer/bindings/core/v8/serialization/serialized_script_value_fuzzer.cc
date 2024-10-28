@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
@@ -46,6 +47,7 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   v8::V8::SetFlagsFromString(kExposeGC, sizeof(kExposeGC));
   static BlinkFuzzerTestSupport fuzzer_support =
       BlinkFuzzerTestSupport(*argc, *argv);
+  base::test::AllowCheckIsTestForTesting();
   return 0;
 }
 
