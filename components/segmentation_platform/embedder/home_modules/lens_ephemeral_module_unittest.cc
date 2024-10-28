@@ -231,4 +231,22 @@ TEST_F(LensEphemeralModuleTest,
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
+// Validates that `IsEnabled(…)` returns true when under the impression limit
+// and false otherwise.
+TEST_F(LensEphemeralModuleTest, TestIsEnabled) {
+  // Enable the feature flag for ephemeral modules.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kSegmentationPlatformTipsEphemeralCard,
+        {{features::kTipsEphemeralCardModuleMaxImpressionCount, "3"}}},
+       {features::kSegmentationPlatformEphemeralCardRanker, {}}},
+      {});
+
+  EXPECT_TRUE(LensEphemeralModule::IsEnabled(0));
+  EXPECT_TRUE(LensEphemeralModule::IsEnabled(1));
+  EXPECT_TRUE(LensEphemeralModule::IsEnabled(2));
+  EXPECT_FALSE(LensEphemeralModule::IsEnabled(3));
+  EXPECT_FALSE(LensEphemeralModule::IsEnabled(4));
+}
+
 }  // namespace segmentation_platform::home_modules

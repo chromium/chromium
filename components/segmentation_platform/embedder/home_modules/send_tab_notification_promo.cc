@@ -85,11 +85,11 @@ bool SendTabNotificationPromo::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
-  if (impression_count > kMaxSendTabNotificationCardImpressions) {
-    return false;
+  if (impression_count < kMaxSendTabNotificationCardImpressions) {
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 }  // namespace home_modules
