@@ -1851,12 +1851,6 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   sync_pb::ThemeSpecifics::NtpCustomBackground* background =
       b.mutable_ntp_background();
 
-  // These fields do not matter when comparing two ntp background msgs.
-  background->set_attribution_line_1("attribution_line_1");
-  background->set_attribution_line_2("attribution_line_2");
-  background->set_attribution_action_url("attribution_action_url");
-  background->set_resume_token("resume_token");
-  background->set_refresh_timestamp_unix_epoch_seconds(1234567890);
   EXPECT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
 
   // Set a different url.
@@ -1872,6 +1866,34 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   background->clear_collection_id();
   background->set_main_color(SK_ColorRED);
   EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
+
+  // Set a different refresh timestamp.
+  background->clear_main_color();
+  background->set_refresh_timestamp_unix_epoch_seconds(1234567890);
+  EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
+
+  // Set a different resume token.
+  background->clear_refresh_timestamp_unix_epoch_seconds();
+  background->set_resume_token("resume_token");
+  EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
+
+  // Set a different attribution action url.
+  background->clear_resume_token();
+  background->set_attribution_action_url(kTestUrl);
+  EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
+
+  // Set a different attribution line 1.
+  background->clear_attribution_action_url();
+  background->set_attribution_line_1("attribution_line_1");
+  EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
+
+  // Set a different attribution line 2.
+  background->clear_attribution_line_1();
+  background->set_attribution_line_2("attribution_line_2");
+  EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
+
+  background->clear_attribution_line_2();
+  ASSERT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
 
   // Remove the ntp background.
   b.clear_ntp_background();
