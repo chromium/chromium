@@ -580,4 +580,36 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
 }
 
+// Tests that the mapping between profiles and accounts is populated when the
+// AccountProfileMapper is created, even without any notifications from
+// SystemIdentityManager.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       IdentitiesAreAssignedOnStartup) {
+  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+
+  // Some identities already exist before the AccountProfileMapper is created.
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+
+  // Wait for the enterprise profile to get created.
+  task_environment_.RunUntilIdle();
+
+  // Ensure a second profile has been created. Find its name.
+  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
+  std::string managed_profile_name =
+      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
+  ASSERT_FALSE(managed_profile_name.empty());
+
+  // Verify the assignment of identities to profiles.
+  NSArray* expected_identities_personal = @[ gmail_identity1 ];
+  EXPECT_NSEQ(expected_identities_personal,
+              GetIdentitiesForProfile(kPersonalProfileName));
+  NSArray* expected_identities_managed = @[ google_identity ];
+  EXPECT_NSEQ(expected_identities_managed,
+              GetIdentitiesForProfile(managed_profile_name));
+}
+
 }  // namespace

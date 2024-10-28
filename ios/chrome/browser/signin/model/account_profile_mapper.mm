@@ -244,8 +244,8 @@ AccountProfileMapper::Assigner::Assigner(
 
   profile_to_gaia_ids_ = GetMappingFromProfileAttributes(
       system_identity_manager_, GetProfileAttributesStorage());
-  // TODO(crbug.com/331783685): Verify and potentially update the mapping, and
-  // in particular, populate it the first time.
+  // Ensure the mapping is populated and up-to-date.
+  OnIdentityListChanged();
 }
 
 AccountProfileMapper::Assigner::~Assigner() = default;
@@ -382,6 +382,9 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
   const std::string personal_profile_name = GetPersonalProfileName();
 
   if (current_assigned_profile) {
+    // TODO(crbug.com/331783685): Validate the re-assignment logic - maybe it's
+    // better to keep accounts in their originally-assigned profiles until
+    // they're removed and re-added?
     // Already assigned, check if it needs to be re-assigned. (This can happen
     // if Chrome previously failed to determine the hosted domain, or in rare
     // cases, if the hosted domain actually changed.)
@@ -404,6 +407,8 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
   if (is_managed_account) {
     // Managed account, create a new dedicated profile and assign the identity
     // to that (asynchronously).
+    // TODO(crbug.com/331783685): Find a way to create (and load!) the new
+    // profile lazily, only when the user actually wants to switch to it.
     CreateProfileForIdentity(identity);
   } else {
     // Consumer account, assign to the personal profile.
