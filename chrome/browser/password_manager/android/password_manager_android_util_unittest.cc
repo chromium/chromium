@@ -79,6 +79,7 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::
     kOffAndMigrationPending;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
+using password_manager_android_util::GmsVersionCohort;
 using password_manager_android_util::PasswordAccessLossWarningType;
 
 namespace password_manager_android_util {
@@ -1337,7 +1338,8 @@ struct GetPasswordAccessLossWarningTypeTestCase {
   bool local_passwords_migration_failed;
   bool empty_profile_store;
   bool is_auto;
-  PasswordAccessLossWarningType expected_result;
+  GmsVersionCohort expected_gms_cohort;
+  PasswordAccessLossWarningType expected_type;
 };
 
 class GetPasswordAccessLossWarningTypeTest
@@ -1372,15 +1374,19 @@ TEST_P(GetPasswordAccessLossWarningTypeTest, GetPasswordAccessLossWarningType) {
                     "and vice-versa.";
   }
 
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      GetParam().gms_core_version);
+
+  EXPECT_EQ(GetParam().expected_gms_cohort,
+            password_manager_android_util::GetGmsVersionCohort());
+
   // This call is needed to set the variable whether the migration is failed.
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-      GetParam().gms_core_version);
   PasswordAccessLossWarningType result =
       GetPasswordAccessLossWarningType(pref_service());
 
-  EXPECT_EQ(GetParam().expected_result, result);
+  EXPECT_EQ(GetParam().expected_type, result);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1394,7 +1400,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/true,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+            /*expected_gms_cohort=*/GmsVersionCohort::kNoGms,
+            /*expected_type=*/PasswordAccessLossWarningType::kNoGmsCore),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"NoGmsButPwds",
             /*gms_core_version=*/"",
@@ -1402,7 +1409,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/false,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kNoGmsCore),
+            /*expected_gms_cohort=*/GmsVersionCohort::kNoGms,
+            /*expected_type=*/PasswordAccessLossWarningType::kNoGmsCore),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"NoUpmNoPwds",
             /*gms_core_version=*/"222912000",
@@ -1410,7 +1418,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/true,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+            /*expected_gms_cohort=*/GmsVersionCohort::kNoUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kNoUpm),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"NoUpmButPwds",
             /*gms_core_version=*/"222912000",
@@ -1418,7 +1427,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/false,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kNoUpm),
+            /*expected_gms_cohort=*/GmsVersionCohort::kNoUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kNoUpm),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"AccountGmsNoPwds",
             /*gms_core_version=*/"223012000",
@@ -1426,7 +1436,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/true,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+            /*expected_gms_cohort=*/GmsVersionCohort::kOnlyAccountUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"AccountGmsLocalPwds",
             /*gms_core_version=*/"223012000",
@@ -1434,7 +1445,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/false,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
+            /*expected_gms_cohort=*/GmsVersionCohort::kOnlyAccountUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"MigrationFailed",
             /*gms_core_version=*/"240212000",
@@ -1442,7 +1454,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/true,
             /*empty_profile_store=*/false,
             /*is_auto=*/false,
-            /*expected_result=*/
+            /*expected_gms_cohort=*/GmsVersionCohort::kFullUpmSupport,
+            /*expected_type=*/
             PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"MigrationSucceeded",
@@ -1451,7 +1464,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/false,
             /*is_auto=*/false,
-            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+            /*expected_gms_cohort=*/GmsVersionCohort::kFullUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kNone),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"AccountGmsLocalPwdsAuto",
             /*gms_core_version=*/"241412000",
@@ -1459,7 +1473,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/false,
             /*is_auto=*/true,
-            /*expected_result=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
+            /*expected_gms_cohort=*/GmsVersionCohort::kOnlyAccountUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"MigrationFailedAuto",
             /*gms_core_version=*/"241512000",
@@ -1467,7 +1482,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/true,
             /*empty_profile_store=*/false,
             /*is_auto=*/true,
-            /*expected_result=*/
+            /*expected_gms_cohort=*/GmsVersionCohort::kFullUpmSupport,
+            /*expected_type=*/
             PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed),
         GetPasswordAccessLossWarningTypeTestCase(
             /*test_case_desc=*/"MigrationSucceededAuto",
@@ -1476,7 +1492,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*local_passwords_migration_failed=*/false,
             /*empty_profile_store=*/false,
             /*is_auto=*/true,
-            /*expected_result=*/PasswordAccessLossWarningType::kNone)),
+            /*expected_gms_cohort=*/GmsVersionCohort::kFullUpmSupport,
+            /*expected_type=*/PasswordAccessLossWarningType::kNone)),
     [](const ::testing::TestParamInfo<GetPasswordAccessLossWarningTypeTestCase>&
            info) { return info.param.test_case_desc; });
 

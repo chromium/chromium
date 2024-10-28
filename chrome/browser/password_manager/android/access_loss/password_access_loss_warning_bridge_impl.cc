@@ -30,6 +30,10 @@ bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
     return false;
   }
 
+  // The trigger point of showing the sheet on startup has to combine the
+  // warning type check with checking the number of passwords in the store. This
+  // can only be done async and should only be done if the other conditions in
+  // this function are met.
   if (password_manager_android_util::GetPasswordAccessLossWarningType(
           pref_service) ==
       password_manager_android_util::PasswordAccessLossWarningType::kNone) {

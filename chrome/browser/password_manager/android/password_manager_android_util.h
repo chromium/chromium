@@ -36,6 +36,14 @@ enum class PasswordAccessLossWarningType {
   kMaxValue = kNewGmsCoreMigrationFailed,
 };
 
+// All GMS version categories with regards to UPM support.
+enum class GmsVersionCohort {
+  kNoGms,
+  kNoUpmSupport,
+  kOnlyAccountUpmSupport,
+  kFullUpmSupport,
+};
+
 // Represents different causes for showing the password access loss warning.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -87,19 +95,25 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
 void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
                                       const base::FilePath& login_db_directory);
 
-// This is part of UPM 4.1 implementation. Checks which type of passwords access
-// loss warning to show to the user if any (`kNone` means that no warning will
-// be displayed). The order of the checks is the following:
-// - If there are no passwords in the profile store, no warning is needed.
-// - If GMS Core is not installed, `kNoGms` is returned.
+// Returns the GMS version type based on which kind of UPM support is possible
+// in that version.
+GmsVersionCohort GetGmsVersionCohort();
+
+// Returns whether the last attempt to migrate to UPM local failed.
+bool LastMigrationAttemptToUpmLocalFailed();
+
+// Checks which type of passwords access loss warning to show to the user if any
+// (`kNone` means that no warning will be displayed).
+// The order of the checks is the following:
+// - If GMS Core is not installed, `kNoGmsCore` is returned.
 // - If GMS Core is installed, but has no support for passwords (neither
-// account, nor local), `kOutdatedGms` is returned.
+// account, nor local), `kNoUpm` is returned.
 // - If GMS Core is installed and has the version which supports account
-// passwords, but doesn't support local passwords, `kNoLocalSupportGms` is
+// passwords, but doesn't support local passwords, `kOnlyAccountUpm` is
 // returned.
-// - If there is a local passwords migration pending, then `kMigrationPending`
-// is returned.
-// - Otherwise no warning is shown.
+// - If there is a local passwords migration pending, then
+// `kNewGmsCoreMigrationFailed` is returned.
+// - Otherwise no warning should be shown so the function returens `kNone`.
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
     PrefService* pref_service);
 
