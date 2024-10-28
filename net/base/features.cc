@@ -346,7 +346,7 @@ BASE_FEATURE(kEnableIpProtectionProxy,
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
-    /*default_value=*/"https://phosphor-pa.googleapis.com"};
+    /*default_value=*/"https://prod.ipprotectionauth.goog"};
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
     &kEnableIpProtectionProxy,
