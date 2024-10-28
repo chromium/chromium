@@ -13,13 +13,14 @@
 edition = "2021"
 rust-version = "1.67"
 name = "cxxbridge-macro"
-version = "1.0.128"
+version = "1.0.129"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
     "build.rs",
     "README.md",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false

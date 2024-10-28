@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.67"
 name = "cxx"
-version = "1.0.128"
+version = "1.0.129"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 links = "cxxbridge1"
@@ -24,6 +24,7 @@ exclude = [
     "/third-party",
     "/tools/buck/prelude",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -97,13 +98,13 @@ name = "unique_ptr"
 path = "tests/unique_ptr.rs"
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.128"
+version = "=1.0.129"
 
 [dependencies.link-cplusplus]
 version = "1.0.9"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.128"
+version = "=1.0.129"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -122,7 +123,7 @@ features = ["diff"]
 version = "1.0.83"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.128"
+version = "=1.0.129"
 default-features = false
 
 [features]
