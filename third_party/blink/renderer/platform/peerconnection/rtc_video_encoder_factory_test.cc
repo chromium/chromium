@@ -41,9 +41,12 @@ constexpr uint32_t kHEVCMaxFramerateNumerator = 120;
 #endif  // BUILDFLAG(RTC_USE_H265)
 
 constexpr uint32_t kMaxFramerateDenominator = 1;
-const std::vector<media::SVCScalabilityMode> kScalabilityModes = {
+const std::vector<media::SVCScalabilityMode> kSVCScalabilityModes = {
     media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
     media::SVCScalabilityMode::kL1T3};
+const std::vector<webrtc::ScalabilityMode> kScalabilityModes = {
+    webrtc::ScalabilityMode::kL1T1, webrtc::ScalabilityMode::kL1T2,
+    webrtc::ScalabilityMode::kL1T3};
 
 bool Equals(webrtc::VideoEncoderFactory::CodecSupport a,
             webrtc::VideoEncoderFactory::CodecSupport b) {
@@ -62,24 +65,27 @@ class MockGpuVideoEncodeAcceleratorFactories
     media::VideoEncodeAccelerator::SupportedProfiles profiles = {
         {media::H264PROFILE_BASELINE, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
         {media::H264PROFILE_BASELINE, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
         // H264 with mismatch between profile and resolution should be ignored.
         {media::H264PROFILE_HIGH, kLowResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
         {media::VP8PROFILE_ANY, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
         {media::VP9PROFILE_PROFILE0, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
+        {media::AV1PROFILE_PROFILE_MAIN, kMaxResolution, kMaxFramerateNumerator,
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kSVCScalabilityModes},
 #if BUILDFLAG(RTC_USE_H265)
         {media::HEVCPROFILE_MAIN, kHEVCMaxResolution,
          kHEVCMaxFramerateNumerator, kMaxFramerateDenominator,
-         media::VideoEncodeAccelerator::kConstantMode, kScalabilityModes}
+         media::VideoEncodeAccelerator::kConstantMode, kSVCScalabilityModes}
 #endif  //  BUILDFLAG(RTC_USE_H265)
     };
     return profiles;
@@ -142,8 +148,12 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
       kSupportedPowerEfficient));
 #endif
 #endif
+  EXPECT_TRUE(Equals(
+      encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
+                                         /*scalability_mode=*/std::nullopt),
+      kSupportedPowerEfficient));
 
-  // H264 > BP, VP9 profile 2 and AV1 are unsupported.
+  // H264 > BP and VP9 profile 2 are unsupported.
   EXPECT_TRUE(Equals(
       encoder_factory_.QueryCodecSupport(
           webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},
@@ -155,10 +165,6 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
                          webrtc::SdpVideoFormat("VP9", {{"profile-id", "2"}}),
                          /*scalability_mode=*/std::nullopt),
                      kUnsupported));
-  EXPECT_TRUE(Equals(
-      encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
-                                         /*scalability_mode=*/std::nullopt),
-      kUnsupported));
 }
 
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportSvc) {
@@ -256,5 +262,17 @@ TEST_F(RTCVideoEncoderFactoryTest,
                      kUnsupported));
 }
 #endif  // BUILDFLAG(RTC_USE_H265)
+
+TEST_F(RTCVideoEncoderFactoryTest, SupportedFormatsHaveScalabilityModes) {
+  ClearDisabledProfilesForTesting();
+  EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  auto supported_formats = encoder_factory_.GetSupportedFormats();
+  for (const auto& format : supported_formats) {
+    EXPECT_THAT(format.scalability_modes,
+                testing::UnorderedElementsAreArray(kScalabilityModes));
+  }
+}
 
 }  // namespace blink

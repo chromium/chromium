@@ -25,6 +25,7 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/media/base/codec.h"
+#include "third_party/webrtc/modules/video_coding/svc/scalability_mode_util.h"
 
 #if BUILDFLAG(RTC_USE_H265)
 #include "third_party/webrtc/api/video_codecs/h265_profile_tier_level.h"
@@ -51,6 +52,23 @@ BASE_FEATURE(kMediaFoundationVP9Encoding,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Convert media::SVCScalabilityMode to webrtc::ScalabilityMode and fill
+// format.scalability_modes.
+void FillScalabilityModes(
+    webrtc::SdpVideoFormat& format,
+    const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+  for (const media::SVCScalabilityMode& mode : profile.scalability_modes) {
+    std::optional<webrtc::ScalabilityMode> scalability_mode =
+        webrtc::ScalabilityModeFromString(media::GetScalabilityModeName(mode));
+    if (!scalability_mode.has_value()) {
+      LOG(WARNING) << "Unrecognized SVC scalability mode: "
+                   << media::GetScalabilityModeName(mode);
+      continue;
+    }
+    format.scalability_modes.push_back(scalability_mode.value());
+  }
+}
+
 // Translate from media::VideoEncodeAccelerator::SupportedProfile to
 // webrtc::SdpVideoFormat, or return nothing if the profile isn't supported.
 std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
@@ -62,7 +80,9 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
 
   if (profile.profile >= media::VP8PROFILE_MIN &&
       profile.profile <= media::VP8PROFILE_MAX) {
-    return webrtc::SdpVideoFormat("VP8");
+    webrtc::SdpVideoFormat format("VP8");
+    FillScalabilityModes(format, profile);
+    return format;
   }
   if (profile.profile >= media::H264PROFILE_MIN &&
       profile.profile <= media::H264PROFILE_MAX) {
@@ -125,6 +145,7 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         {cricket::kH264FmtpProfileLevelId, *h264_profile_level_string},
         {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
         {cricket::kH264FmtpPacketizationMode, "1"}};
+    FillScalabilityModes(format, profile);
     return format;
   }
 
@@ -146,12 +167,15 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     format.parameters = {
         {webrtc::kVP9FmtpProfileId,
          webrtc::VP9ProfileToString(vp9_profile)}};
+    FillScalabilityModes(format, profile);
     return format;
   }
 
   if (profile.profile >= media::AV1PROFILE_MIN &&
       profile.profile <= media::AV1PROFILE_MAX) {
-    return webrtc::SdpVideoFormat("AV1");
+    webrtc::SdpVideoFormat format("AV1");
+    FillScalabilityModes(format, profile);
+    return format;
   }
 
   if (profile.profile >= media::HEVCPROFILE_MIN &&
@@ -190,6 +214,7 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         {cricket::kH265FmtpLevelId,
          webrtc::H265LevelToString(profile_tier_level.level)},
         {cricket::kH265FmtpTxMode, "SRST"}};
+    FillScalabilityModes(format, profile);
     return format;
 #else
     return std::nullopt;
