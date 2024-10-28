@@ -32,10 +32,10 @@ bool IsInactiveTabsEnabled() {
     return false;
   }
 
-  return !IsInactiveTabsExplictlyDisabledByUser();
+  return !IsInactiveTabsExplicitlyDisabledByUser();
 }
 
-bool IsInactiveTabsExplictlyDisabledByUser() {
+bool IsInactiveTabsExplicitlyDisabledByUser() {
   CHECK(IsInactiveTabsAvailable());
   return GetApplicationContext()->GetLocalState()->GetInteger(
              prefs::kInactiveTabsTimeThreshold) == kInactiveTabsDisabledByUser;

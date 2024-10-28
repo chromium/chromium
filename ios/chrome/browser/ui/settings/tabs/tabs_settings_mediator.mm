@@ -46,7 +46,7 @@
 
       // Use InactiveTabsTimeThreshold() instead of reading the pref value
       // directly as this function also manage flag and default value.
-      int currentThreshold = IsInactiveTabsExplictlyDisabledByUser()
+      int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser()
                                  ? kInactiveTabsDisabledByUser
                                  : InactiveTabsTimeThreshold().InDays();
       [_consumer setInactiveTabsTimeThreshold:currentThreshold];

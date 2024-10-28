@@ -28,7 +28,7 @@ bool IsInactiveTabsAvailable();
 bool IsInactiveTabsEnabled();
 
 // Returns true if a user disabled the feature manually.
-bool IsInactiveTabsExplictlyDisabledByUser();
+bool IsInactiveTabsExplicitlyDisabledByUser();
 
 // Convenience method for determining the tab inactivity threshold.
 // The default is 21 days.
