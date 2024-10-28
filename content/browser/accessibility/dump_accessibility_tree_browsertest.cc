@@ -2346,6 +2346,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("hidden-labelled-by.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityHiddenNamedSlotNoSubtreeCrash) {
+  RunHtmlTest(FILE_PATH_LITERAL("hidden-named-slot-no-subtree-crash.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityHR) {
   RunHtmlTest(FILE_PATH_LITERAL("hr.html"));
 }

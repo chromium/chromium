@@ -242,6 +242,10 @@ String GetNodeString(Node* node) {
     string_builder =
         string_builder + "#" + element->FastGetAttribute(html_names::kIdAttr);
   }
+  if (element->FastHasAttribute(html_names::kSlotAttr)) {
+    string_builder = string_builder + " slot=" +
+                     element->FastGetAttribute(html_names::kSlotAttr);
+  }
   return string_builder + ">";
 }
 

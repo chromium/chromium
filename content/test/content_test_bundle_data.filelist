@@ -3618,6 +3618,8 @@ data/accessibility/html/heading-with-tabIndex.html
 data/accessibility/html/heading.html
 data/accessibility/html/hgroup-expected-blink.txt
 data/accessibility/html/hgroup.html
+data/accessibility/html/hidden-named-slot-no-subtree-crash-expected-blink.txt
+data/accessibility/html/hidden-named-slot-no-subtree-crash.html
 data/accessibility/html/hr-expected-android-assist-data.txt
 data/accessibility/html/hr-expected-android-external.txt
 data/accessibility/html/hr-expected-android.txt

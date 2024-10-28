@@ -420,6 +420,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // possible, this means the child can no longer be in the AXTree, so remove
   // any AXObject subtree associated with the child.
   void RestoreParentOrPrune(Node* child_node);
+  void RestoreParentOrPruneWithCleanLayout(Node* child_node);
 
   // When an object is created or its id changes, this must be called so that
   // the relation cache is updated.
@@ -712,6 +713,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     kReferenceTargetChanged,
     kRemoveValidationMessageObjectFromFocusedUIElement,
     kRemoveValidationMessageObjectFromValidationMessageObject,
+    kRestoreParentOrPrune,
     kRoleChangeFromAriaHasPopup,
     kRoleChangeFromImageMapName,
     kRoleChangeFromRoleOrType,

@@ -808,6 +808,7 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kPostNotificationFromHandleScrolledToAnchor);
     DEBUG_STRING_CASE(kReferenceTargetChanged);
     DEBUG_STRING_CASE(kRemoveValidationMessageObjectFromFocusedUIElement);
+    DEBUG_STRING_CASE(kRestoreParentOrPrune);
     DEBUG_STRING_CASE(
         kRemoveValidationMessageObjectFromValidationMessageObject);
     DEBUG_STRING_CASE(kRoleChangeFromAriaHasPopup);
@@ -3655,6 +3656,12 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     return;
   }
 
+  // kRestoreParentOrPrune does not require an up-to-date AXObject.
+  if (tree_update->update_reason == TreeUpdateReason::kRestoreParentOrPrune) {
+    RestoreParentOrPruneWithCleanLayout(node);
+    return;
+  }
+
   AXObject* ax_object = Get(node);
   if (!ax_object) {
     return;
@@ -4736,6 +4743,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kRemoveValidationMessageObjectFromFocusedUIElement:
     case TreeUpdateReason::
         kRemoveValidationMessageObjectFromValidationMessageObject:
+    case TreeUpdateReason::kRestoreParentOrPrune:
     case TreeUpdateReason::kRoleChangeFromAriaHasPopup:
     case TreeUpdateReason::kRoleChangeFromImageMapName:
     case TreeUpdateReason::kRoleChangeFromRoleOrType:
@@ -5090,6 +5098,14 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::RestoreParentOrPrune(Node* child_node) {
+  if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
+    RestoreParentOrPruneWithCleanLayout(child_node);
+  } else {
+    DeferTreeUpdate(TreeUpdateReason::kRestoreParentOrPrune, child_node);
+  }
+}
+
+void AXObjectCacheImpl::RestoreParentOrPruneWithCleanLayout(Node* child_node) {
   AXObject* child = Get(child_node);
   if (child) {
     ChildrenChangedOnAncestorOf(child);
@@ -5109,11 +5125,7 @@ void AXObjectCacheImpl::RestoreParentOrPrune(Node* child_node) {
     // the tree. Remove the child's subtree and ask the parent (if any) to
     // rebuild its subtree.
     RemoveSubtree(child_node);
-    if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
-      ChildrenChangedWithCleanLayout(parent);
-    } else {
-      ChildrenChanged(parent);
-    }
+    ChildrenChangedWithCleanLayout(parent);
   }
 }
 
