@@ -49,6 +49,14 @@ public class PasswordAccessLossDialogHelper {
             BuildInfo buildInfo) {
         PrefService prefService = UserPrefs.get(profile);
         @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
+        if (warningType == PasswordAccessLossWarningType.NO_GMS_CORE
+                && prefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE)) {
+            new PasswordAccessLossPostExportDialogController(
+                            context, modalDialogManagerSupplier.get(), customTabIntentHelper)
+                    .showPostExportDialog();
+            return true;
+        }
+
         if (warningType != PasswordAccessLossWarningType.NONE) {
             // Always start export flow from Chrome main settings. If this is already being called
             // from main settings, then launch export flow right away.
@@ -66,12 +74,7 @@ public class PasswordAccessLossDialogHelper {
                             customTabIntentHelper);
             return true;
         }
-        if (shouldShowAccessLossWarningWhenNoGmsNoPasswords(prefService, buildInfo)) {
-            new PasswordAccessLossPostExportDialogController(
-                            context, modalDialogManagerSupplier.get(), customTabIntentHelper)
-                    .showPostExportDialog();
-            return true;
-        }
+
         return false;
     }
 
@@ -109,28 +112,5 @@ public class PasswordAccessLossDialogHelper {
             return PasswordAccessLossWarningType.NONE;
         }
         return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
-    }
-
-    /**
-     * Check if the warning dialog in settings should be shown even when there are no local
-     * passwords that need to be exported.
-     *
-     * @param prefService used to check if the login database for profile is empty.
-     * @param buildInfo used to check the GMS Core version.
-     * @return whether the warning dialog in settings should be shown.
-     */
-    public static boolean shouldShowAccessLossWarningWhenNoGmsNoPasswords(
-            PrefService prefService, BuildInfo buildInfo) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList
-                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
-            return false;
-        }
-        try {
-            Integer.parseInt(buildInfo.getGmsVersionCode());
-            return false;
-        } catch (NumberFormatException exception) {
-            return prefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE);
-        }
     }
 }

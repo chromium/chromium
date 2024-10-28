@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.R;
@@ -71,20 +70,19 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
         PrefService prefService = UserPrefs.get(mProfile);
         @PasswordAccessLossWarningType
         int warningType = PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService);
-        boolean shouldShowNoticeDialogWithoutPwds =
-                PasswordAccessLossDialogHelper.shouldShowAccessLossWarningWhenNoGmsNoPasswords(
-                        prefService, BuildInfo.getInstance());
 
         // If the device doesn't support Google Play Services and the user exports the local
         // passwords from Chrome, there is no need to show the warning anymore (warning type is
         // NONE), but there is a dialog that will show when the user tries to open the password
         // manager item in settings and the summary that shows up for the passwords preference.
         // If there is no need to show any warning or summary, this method can early return.
-        if (warningType == PasswordAccessLossWarningType.NONE
-                && !shouldShowNoticeDialogWithoutPwds) {
+        if (warningType == PasswordAccessLossWarningType.NONE) {
             return;
         }
 
+        boolean shouldShowNoticeDialogWithoutPwds =
+                (warningType == PasswordAccessLossWarningType.NO_GMS_CORE
+                        && prefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE));
         TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);
         summaryView.setText(getSummaryViewString(shouldShowNoticeDialogWithoutPwds, warningType));
         // ChromeBasePreference sets summary text view to be not visible by default if it's empty.
