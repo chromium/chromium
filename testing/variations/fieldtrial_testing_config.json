@@ -3061,6 +3061,10 @@
             "experiments": [
                 {
                     "name": "NoIPH",
+                    "params": {
+                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
+                        "dump-without-crash-tab-on-back-gesture-handler": "false"
+                    },
                     "enable_features": [
                         "BackForwardTransitions",
                         "MirrorBackForwardGesturesInRTL"
