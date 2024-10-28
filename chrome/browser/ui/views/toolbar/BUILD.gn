@@ -105,7 +105,6 @@ source_set("toolbar") {
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
     "//chrome/browser/apps/link_capturing:features",
-    "//chrome/browser/companion/core",
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/prefs",

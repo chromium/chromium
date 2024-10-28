@@ -64,7 +64,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -837,10 +836,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_FEEDBACK:
       OpenFeedbackDialog(browser_, feedback::kFeedbackSourceBrowserCommand);
       break;
-    case IDC_SHOW_SEARCH_COMPANION:
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kSearchCompanion, SidePanelOpenTrigger::kAppMenu);
-      break;
 #endif
     case IDC_SHOW_CHROME_LABS:
       window()->ShowChromeLabs();
@@ -1450,9 +1445,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
 
   if (browser_->is_type_normal()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    command_updater_.UpdateCommandEnabled(IDC_SHOW_SEARCH_COMPANION, true);
-#endif
     // Reading list commands.
     command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU, true);
     command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_ADD_TAB, true);
@@ -1642,10 +1634,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(
       IDC_TOGGLE_REQUEST_TABLET_SITE,
       CanRequestTabletSite(current_web_contents));
-
-  command_updater_.UpdateCommandEnabled(
-      IDC_SHOW_SEARCH_COMPANION,
-      companion::IsCompanionAvailableForCurrentActiveTab(browser_));
 
   UpdateCommandsForContentRestrictionState();
   UpdateCommandsForBookmarkEditing();

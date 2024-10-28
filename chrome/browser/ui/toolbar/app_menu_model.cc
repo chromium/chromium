@@ -76,7 +76,6 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -177,7 +176,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kInstallAppItem);
@@ -1152,14 +1150,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_LENS_OVERLAY);
       break;
-    // Search companion.
-    case IDC_SHOW_SEARCH_COMPANION:
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes(
-            "WrenchMenu.TimeToAction.ShowSearchCompanion", delta);
-      }
-      LogMenuAction(MENU_ACTION_SHOW_SEARCH_COMPANION);
-      break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
       CHECK(features::IsExtensionMenuInRootAppMenu());
@@ -1901,13 +1891,6 @@ void AppMenuModel::Build() {
     SetIsNewFeatureAt(lens_command_index,
                       browser()->window()->MaybeShowNewBadgeFor(
                           lens::features::kLensOverlay));
-  } else if (companion::IsSearchInCompanionSidePanelSupported(browser())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SEARCH_COMPANION,
-                                     IDS_SHOW_SEARCH_COMPANION,
-                                     vector_icons::kGoogleGLogoMonochromeIcon);
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_SHOW_SEARCH_COMPANION).value(),
-        kShowSearchCompanion);
   }
 #endif
 

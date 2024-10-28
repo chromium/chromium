@@ -35117,7 +35117,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="78" label="Payment methods"/>
   <int value="79" label="Addresses and more"/>
   <int value="80" label="Switch directly to other profile"/>
-  <int value="81" label="Show search companion"/>
   <int value="82" label="Show bookmark side panel"/>
   <int value="83" label="Show performance settings"/>
   <int value="84" label="Show history cluster side panel"/>

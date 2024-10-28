@@ -463,7 +463,6 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_PASSWORD_MANAGER,
                     IDC_SHOW_PAYMENT_METHODS,
                     IDC_SHOW_ADDRESSES,
-                    IDC_SHOW_SEARCH_COMPANION,
                     AppMenuModel::kMinOtherProfileCommandId));
 
 TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
