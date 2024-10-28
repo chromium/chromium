@@ -335,6 +335,10 @@ class ASH_EXPORT CaptureModeController
   // behavior.
   bool IsAnnotatingSupported() const;
 
+  // Calls the delegate to send a multimodal search with `image` and `text`.
+  void SendMultimodalSearch(const gfx::ImageSkia& image,
+                            const std::string& text);
+
   // Called by `CaptureModeDelegate` when the search result is fetched.
   // Opens `url` and `image` if the following conditions are met:
   //  - The current capture mode session is active.

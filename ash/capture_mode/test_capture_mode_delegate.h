@@ -146,6 +146,10 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         OnSearchUrlFetchedCallback callback) override;
+  void SendMultimodalSearch(const SkBitmap& image,
+                            const gfx::Rect& region,
+                            const std::string& text,
+                            ash::OnSearchUrlFetchedCallback callback) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

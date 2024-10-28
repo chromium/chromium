@@ -237,4 +237,12 @@ void TestCaptureModeDelegate::SendRegionSearch(
   std::move(callback).Run(GURL("kTestUrl"));
 }
 
+void TestCaptureModeDelegate::SendMultimodalSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    const std::string& text,
+    ash::OnSearchUrlFetchedCallback callback) {
+  std::move(callback).Run(GURL("kTestUrl"));
+}
+
 }  // namespace ash

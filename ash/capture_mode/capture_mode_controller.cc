@@ -1101,6 +1101,15 @@ bool CaptureModeController::IsAnnotatingSupported() const {
              ->ShouldCreateAnnotationsOverlayController();
 }
 
+void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
+                                                 const std::string& text) {
+  delegate_->SendMultimodalSearch(
+      *image.bitmap(), user_capture_region_, text,
+      base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          capture_mode_session(), user_capture_region_, image));
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {
@@ -1708,9 +1717,10 @@ void CaptureModeController::OnImageCapturedForSearch(
     // response is fetched.
     delegate_->SendRegionSearch(
         bitmap, user_capture_region_,
-        base::BindOnce(&CaptureModeController::OnSearchUrlFetched,
-                       weak_ptr_factory_.GetWeakPtr(), capture_mode_session(),
-                       user_capture_region_, image));
+        base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            capture_mode_session(), user_capture_region_,
+                            image));
   }
 
   if (on_image_captured_for_search_callback_for_test_) {
@@ -1735,12 +1745,11 @@ void CaptureModeController::OnScannerActionsFetched(
   }
 }
 
-void CaptureModeController::OnSearchUrlFetched(
-    BaseCaptureModeSession* session_of_request,
-    const gfx::Rect& captured_region,
-    const gfx::ImageSkia& image,
-    GURL url) {
-  if (IsActive() && session_of_request == capture_mode_session() &&
+void CaptureModeController::OnSearchUrlFetched(BaseCaptureModeSession* session,
+                                               const gfx::Rect& captured_region,
+                                               const gfx::ImageSkia& image,
+                                               GURL url) {
+  if (IsActive() && session == capture_mode_session() &&
       captured_region == user_capture_region_) {
     capture_mode_session_->ShowSearchResultsPanel(image, url);
   }

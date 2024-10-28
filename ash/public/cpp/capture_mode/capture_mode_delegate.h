@@ -64,8 +64,10 @@ using OnTextDetectionComplete =
     base::OnceCallback<void(std::string detected_text)>;
 
 // Defines the type of the callback that will be invoked when the search backend
-// result is fetched.
-using OnSearchUrlFetchedCallback = base::OnceCallback<void(GURL url)>;
+// result is fetched. Repeating because the `LensOverlayUrlResponseCallback`
+// that invokes this may be run multiple times for error; see
+// `LensOverlayQueryController::RunInteractionCallbackForError()`.
+using OnSearchUrlFetchedCallback = base::RepeatingCallback<void(GURL url)>;
 
 // Defines the interface for the delegate of CaptureModeController, that can be
 // implemented by an ash client (e.g. Chrome). The CaptureModeController owns
@@ -250,6 +252,14 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void SendRegionSearch(const SkBitmap& image,
                                 const gfx::Rect& region,
                                 OnSearchUrlFetchedCallback callback) = 0;
+
+  // Sends the captured `image`, `region`, and search box `text` to the backend.
+  // Invokes `callback` when the response is fetched.
+  virtual void SendMultimodalSearch(
+      const SkBitmap& image,
+      const gfx::Rect& region,
+      const std::string& text,
+      ash::OnSearchUrlFetchedCallback callback) = 0;
 };
 
 }  // namespace ash

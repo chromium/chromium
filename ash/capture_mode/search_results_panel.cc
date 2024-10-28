@@ -21,6 +21,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -37,7 +38,8 @@ inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 }  // namespace
 
 // `SunfishSearchBoxView` contains an image thumbnail and a textfield.
-class SunfishSearchBoxView : public views::View {
+class SunfishSearchBoxView : public views::View,
+                             public views::TextfieldController {
   METADATA_HEADER(SunfishSearchBoxView, views::View)
 
  public:
@@ -56,6 +58,7 @@ class SunfishSearchBoxView : public views::View {
                      .Build());
     AddChildView(views::Builder<views::Textfield>()
                      .CopyAddressTo(&textfield_)
+                     .SetController(this)
                      .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
                      .SetPlaceholderText(kSearchBoxPlaceholderText)
                      .SetProperty(views::kFlexBehaviorKey,
@@ -82,6 +85,25 @@ class SunfishSearchBoxView : public views::View {
     const int target_width = (image.width() * target_height) / image.height();
     image_view_->SetImage(image);
     image_view_->SetImageSize(gfx::Size(target_width, target_height));
+  }
+
+  // views::TextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& event) override {
+    if (sender->GetText().empty()) {
+      return false;
+    }
+
+    // TODO(crbug.com/375670205): Debug why `kKeyPressed` doesn't work.
+    if (event.type() == ui::EventType::kKeyReleased &&
+        event.key_code() == ui::VKEY_RETURN) {
+      const std::u16string& text = sender->GetText();
+      CaptureModeController::Get()->SendMultimodalSearch(
+          image_view_->GetImage(), base::UTF16ToUTF8(text));
+      return true;
+    }
+
+    return false;
   }
 
  private:

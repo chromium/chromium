@@ -540,8 +540,28 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
       lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
-      lens::LensOverlaySelectionType::UNKNOWN_SELECTION_TYPE,
+      lens::LensOverlaySelectionType::REGION_SEARCH,
       /*additional_search_query_params=*/std::map<std::string, std::string>(),
+      /*region_bytes=*/image);
+}
+
+void ChromeCaptureModeDelegate::SendMultimodalSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    const std::string& text,
+    ash::OnSearchUrlFetchedCallback callback) {
+  // TODO(crbug.com/375670205): Investigate edge cases when the region is
+  // adjusted or `SendMultimodalSearch()` is called before `StartQueryFlow()`.
+  DCHECK(lens_overlay_query_controller_);
+  on_search_url_fetched_callback_ = std::move(callback);
+  lens_overlay_query_controller_->SendMultimodalRequest(
+      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+          /*tab_bounds=*/region, /*view_bounds=*/region,
+          /*image_bounds=*/region),
+      text,
+      lens::LensOverlaySelectionType::
+          MULTIMODAL_SEARCH, /*additional_search_query_params=*/
+      std::map<std::string, std::string>(),
       /*region_bytes=*/image);
 }
 
@@ -552,7 +572,9 @@ void ChromeCaptureModeDelegate::HandleStartQueryResponse(
 
 void ChromeCaptureModeDelegate::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
-  std::move(on_search_url_fetched_callback_).Run(GURL(response.url()));
+  if (on_search_url_fetched_callback_) {
+    std::move(on_search_url_fetched_callback_).Run(GURL(response.url()));
+  }
 }
 
 void ChromeCaptureModeDelegate::HandleSuggestInputsResponse(

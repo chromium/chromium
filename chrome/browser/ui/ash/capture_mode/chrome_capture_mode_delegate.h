@@ -116,6 +116,10 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         ash::OnSearchUrlFetchedCallback callback) override;
+  void SendMultimodalSearch(const SkBitmap& image,
+                            const gfx::Rect& region,
+                            const std::string& text,
+                            ash::OnSearchUrlFetchedCallback callback) override;
 
   void set_optical_character_recognizer_for_testing(
       scoped_refptr<screen_ai::OpticalCharacterRecognizer>
