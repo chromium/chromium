@@ -63,6 +63,7 @@ class PrefetchCacheTest : public ::testing::Test {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kNetworkContextPrefetch,
         {{"max_loaders", base::NumberToString(kMaxSize)}});
+    erase_grace_time_ = features::kNetworkContextPrefetchEraseGraceTime.Get();
   }
 
   PrefetchCache& cache() { return cache_; }
@@ -71,7 +72,12 @@ class PrefetchCacheTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  base::TimeDelta erase_grace_time() const { return erase_grace_time_; }
+
+  base::TimeDelta half_grace_time() const { return erase_grace_time_ / 2; }
+
  private:
+  base::TimeDelta erase_grace_time_;
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -256,6 +262,57 @@ TEST_F(PrefetchCacheTest, ConsumedPrefetchesAreNotExpired) {
   EXPECT_FALSE(cache().Lookup(TestNIK(), TestURL(1)));
 
   cache().Erase(client);
+}
+
+TEST_F(PrefetchCacheTest, DelayedEraseErasesAfterADelay) {
+  auto* client =
+      cache().Emplace(MakeResourceRequest(TestURL(0), TestIsolationInfo()));
+  ASSERT_TRUE(client);
+  cache().DelayedErase(client);
+  // Should be still there.
+  FastForwardBy(half_grace_time());
+  // Still there.
+  EXPECT_TRUE(cache().Lookup(TestNIK(), TestURL(0)));
+  FastForwardBy(erase_grace_time());
+  // Gone.
+  EXPECT_FALSE(cache().Lookup(TestNIK(), TestURL(0)));
+}
+
+TEST_F(PrefetchCacheTest, MultipleDelayedErases) {
+  // This test requires that erase_grace_time() be evenly divisible by two.
+  ASSERT_EQ(half_grace_time() + half_grace_time(), erase_grace_time())
+      << "This test requires that kEraseGraceTime be evenly divisible by two";
+
+  const auto still_there = [&](int client_index) {
+    return cache().Lookup(TestNIK(), TestURL(client_index));
+  };
+
+  for (int i = 0; i < 3; ++i) {
+    auto* client =
+        cache().Emplace(MakeResourceRequest(TestURL(i), TestIsolationInfo()));
+    ASSERT_TRUE(client);
+    cache().DelayedErase(client);
+    FastForwardBy(half_grace_time());
+    EXPECT_TRUE(still_there(i));
+    if (i >= 1) {
+      EXPECT_FALSE(still_there(i - 1));
+    }
+  }
+
+  EXPECT_TRUE(still_there(2));
+  FastForwardBy(half_grace_time());
+  EXPECT_FALSE(still_there(2));
+}
+
+TEST_F(PrefetchCacheTest, DelayedEraseRacesWithExpiry) {
+  auto* client =
+      cache().Emplace(MakeResourceRequest(TestURL(0), TestIsolationInfo()));
+  ASSERT_TRUE(client);
+  FastForwardBy(PrefetchCache::kMaxAge - half_grace_time());
+  cache().DelayedErase(client);
+  FastForwardBy(erase_grace_time());
+  // Should be gone now.
+  EXPECT_FALSE(cache().Lookup(TestNIK(), TestURL(0)));
 }
 
 }  // namespace
