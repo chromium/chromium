@@ -204,6 +204,10 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   mutable AncestorDisabledState ancestor_disabled_state_ =
       AncestorDisabledState::kUnknown;
 
+  // exposed so that HTMLFieldSetElement can update the document's cache of
+  // disabled fieldsets.  Should not be used more generally.
+  bool IsSelfDisabledIgnoringAncestors() const { return is_element_disabled_; }
+
  private:
   void UpdateAncestorDisabledState() const;
   void SetFormAttributeTargetObserver(FormAttributeTargetObserver*);
@@ -211,7 +215,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   // Requests validity recalc for the form owner, if one exists.
   void FormOwnerSetNeedsValidityCheck();
   // Requests validity recalc for all ancestor fieldsets, if exist.
-  void FieldSetAncestorsSetNeedsValidityCheck(Node*);
+  enum class StartingNodeType { IS_PARENT, IS_INSERTION_POINT };
+  void FieldSetAncestorsSetNeedsValidityCheck(Node*, StartingNodeType);
 
   ValidationMessageClient* GetValidationMessageClient() const;
 

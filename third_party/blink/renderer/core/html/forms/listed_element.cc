@@ -134,7 +134,8 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
       ResetFormAttributeTargetObserver();
   }
 
-  FieldSetAncestorsSetNeedsValidityCheck(&insertion_point);
+  FieldSetAncestorsSetNeedsValidityCheck(&insertion_point,
+                                         StartingNodeType::IS_INSERTION_POINT);
   DisabledStateMightBeChanged();
 
   if (ClassSupportsStateRestore() && insertion_point.isConnected() &&
@@ -154,16 +155,17 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
 }
 
 void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
-  FieldSetAncestorsSetNeedsValidityCheck(&insertion_point);
+  FieldSetAncestorsSetNeedsValidityCheck(&insertion_point,
+                                         StartingNodeType::IS_INSERTION_POINT);
   HideVisibleValidationMessage();
   has_validation_message_ = false;
   // Two values that might change as a result of being removed are
-  // `may_have_fieldset_ancestor_` and `data_list_ancestor_state_`. Both of
+  // `ancestor_disabled_state_` and `data_list_ancestor_state_`. Both of
   // these values feed into the WillValidate cache. If this ListedElement is
   // not in a fieldset and not in a data-list, then it won't be in a fieldset
   // or fieldset after the removal, so that the cache does not need to be
   // updated.
-  if (!may_have_fieldset_ancestor_ &&
+  if (ancestor_disabled_state_ == AncestorDisabledState::kEnabled &&
       data_list_ancestor_state_ == DataListAncestorState::kNotInsideDataList) {
     DCHECK_EQ(will_validate_, RecalcWillValidate());
   } else {
@@ -268,20 +270,27 @@ void ListedElement::FormOwnerSetNeedsValidityCheck() {
   }
 }
 
-void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(Node* node) {
+void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(
+    Node* node,
+    StartingNodeType starting_type) {
   if (!node)
     return;
   if (!may_have_fieldset_ancestor_)
     return;
-  for (auto* field_set =
-           Traversal<HTMLFieldSetElement>::FirstAncestorOrSelf(*node);
-       field_set;
-       field_set = Traversal<HTMLFieldSetElement>::FirstAncestor(*field_set)) {
+  auto* field_set = Traversal<HTMLFieldSetElement>::FirstAncestorOrSelf(*node);
+  if (!field_set) {
+    if (starting_type == StartingNodeType::IS_PARENT) {
+      may_have_fieldset_ancestor_ = false;
+    }
+    return;
+  }
+  do {
     field_set->PseudoStateChanged(CSSSelector::kPseudoValid);
     field_set->PseudoStateChanged(CSSSelector::kPseudoInvalid);
     field_set->PseudoStateChanged(CSSSelector::kPseudoUserValid);
     field_set->PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
-  }
+  } while (
+      (field_set = Traversal<HTMLFieldSetElement>::FirstAncestor(*field_set)));
 }
 
 // https://html.spec.whatwg.org/multipage/C#reset-the-form-owner
@@ -584,7 +593,8 @@ void ListedElement::SetNeedsValidityCheck() {
   if (!validity_is_dirty_) {
     validity_is_dirty_ = true;
     FormOwnerSetNeedsValidityCheck();
-    FieldSetAncestorsSetNeedsValidityCheck(element.parentNode());
+    FieldSetAncestorsSetNeedsValidityCheck(element.parentNode(),
+                                           StartingNodeType::IS_PARENT);
     element.PseudoStateChanged(CSSSelector::kPseudoValid);
     element.PseudoStateChanged(CSSSelector::kPseudoInvalid);
     element.PseudoStateChanged(CSSSelector::kPseudoUserValid);
@@ -618,44 +628,40 @@ void ListedElement::ReadonlyAttributeChanged() {
 }
 
 void ListedElement::UpdateAncestorDisabledState() const {
-  if (!may_have_fieldset_ancestor_) {
-    ancestor_disabled_state_ = AncestorDisabledState::kEnabled;
-    return;
-  }
-  may_have_fieldset_ancestor_ = false;
-  // <fieldset> element of which |disabled| attribute affects the
-  // target element.
-  HTMLFieldSetElement* disabled_fieldset_ancestor = nullptr;
-  ContainerNode* last_legend_ancestor = nullptr;
-  for (auto* ancestor = Traversal<HTMLElement>::FirstAncestor(ToHTMLElement());
-       ancestor; ancestor = Traversal<HTMLElement>::FirstAncestor(*ancestor)) {
-    if (IsA<HTMLLegendElement>(*ancestor)) {
-      last_legend_ancestor = ancestor;
-      continue;
-    }
-    if (HTMLFieldSetElement* fieldset_ancestor =
-            DynamicTo<HTMLFieldSetElement>(ancestor)) {
-      may_have_fieldset_ancestor_ = true;
-      if (fieldset_ancestor->is_element_disabled_) {
-        if (last_legend_ancestor &&
-            last_legend_ancestor == fieldset_ancestor->Legend()) {
-          continue;
+  ancestor_disabled_state_ = AncestorDisabledState::kEnabled;
+  const HTMLElement& element = ToHTMLElement();
+  if (may_have_fieldset_ancestor_ &&
+      element.GetDocument().HasAtLeastOneDisabledFieldset()) {
+    may_have_fieldset_ancestor_ = false;
+    ContainerNode* last_legend_ancestor = nullptr;
+    for (auto* ancestor = Traversal<HTMLElement>::FirstAncestor(element);
+         ancestor;
+         ancestor = Traversal<HTMLElement>::FirstAncestor(*ancestor)) {
+      if (IsA<HTMLLegendElement>(*ancestor)) {
+        last_legend_ancestor = ancestor;
+        continue;
+      }
+      if (HTMLFieldSetElement* fieldset_ancestor =
+              DynamicTo<HTMLFieldSetElement>(ancestor)) {
+        may_have_fieldset_ancestor_ = true;
+        if (fieldset_ancestor->is_element_disabled_) {
+          if (last_legend_ancestor &&
+              last_legend_ancestor == fieldset_ancestor->Legend()) {
+            continue;
+          }
+          ancestor_disabled_state_ = AncestorDisabledState::kDisabled;
+          break;
         }
-        disabled_fieldset_ancestor = fieldset_ancestor;
-        break;
       }
     }
   }
-  ancestor_disabled_state_ = disabled_fieldset_ancestor
-                                 ? AncestorDisabledState::kDisabled
-                                 : AncestorDisabledState::kEnabled;
-  if (!disabled_fieldset_ancestor &&
+  if (ancestor_disabled_state_ == AncestorDisabledState::kEnabled &&
       RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    if (auto* button = DynamicTo<HTMLButtonElement>(ToHTMLElement())) {
+    if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
       if (auto* select = button->OwnerSelect()) {
-        ancestor_disabled_state_ = select->is_element_disabled_
-          ? AncestorDisabledState::kDisabled
-          : AncestorDisabledState::kEnabled;
+        if (select->is_element_disabled_) {
+          ancestor_disabled_state_ = AncestorDisabledState::kDisabled;
+        }
       }
     }
   }

@@ -2070,6 +2070,15 @@ class CORE_EXPORT Document : public ContainerNode,
   // it.
   bool HasAtLeastOneDataList() const { return data_list_count_; }
 
+  void IncrementDisabledFieldsetCount() { ++disabled_fieldset_count_; }
+  void DecrementDisabledFieldsetCount() {
+    DCHECK_GT(disabled_fieldset_count_, 0u);
+    --disabled_fieldset_count_;
+  }
+  bool HasAtLeastOneDisabledFieldset() const {
+    return disabled_fieldset_count_;
+  }
+
   // Updates app title based to the latest app title meta tag value.
   void UpdateAppTitle();
 
@@ -2903,6 +2912,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Number of data-list elements in this document.
   unsigned data_list_count_ = 0;
+
+  // Number of disabled <fieldset> elements in this document.
+  unsigned disabled_fieldset_count_ = 0;
 
   // If legacy DOM Mutation event listeners are supported by the embedder.
   std::optional<bool> legacy_dom_mutations_supported_;

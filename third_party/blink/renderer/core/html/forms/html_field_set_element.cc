@@ -116,9 +116,18 @@ HTMLFieldSetElement::InvalidateDescendantDisabledStateAndFindFocusedOne(
 }
 
 void HTMLFieldSetElement::DisabledAttributeChanged() {
+  bool was_disabled = IsSelfDisabledIgnoringAncestors();
   // This element must be updated before the style of nodes in its subtree gets
   // recalculated.
   HTMLFormControlElement::DisabledAttributeChanged();
+  if (was_disabled != IsSelfDisabledIgnoringAncestors()) {
+    Document& document = GetDocument();
+    if (was_disabled) {
+      document.DecrementDisabledFieldsetCount();
+    } else {
+      document.IncrementDisabledFieldsetCount();
+    }
+  }
   if (Element* focused_element =
           InvalidateDescendantDisabledStateAndFindFocusedOne(*this))
     focused_element->blur();
@@ -130,6 +139,14 @@ void HTMLFieldSetElement::AncestorDisabledStateWasChanged() {
   // we only invalidate this element's own disabled state and do not traverse
   // the descendants.
   HTMLFormControlElement::DisabledAttributeChanged();
+}
+
+void HTMLFieldSetElement::DidMoveToNewDocument(Document& old_document) {
+  HTMLFormControlElement::DidMoveToNewDocument(old_document);
+  if (IsSelfDisabledIgnoringAncestors()) {
+    old_document.DecrementDisabledFieldsetCount();
+    GetDocument().IncrementDisabledFieldsetCount();
+  }
 }
 
 void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {

@@ -45,6 +45,7 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
  protected:
   void DisabledAttributeChanged() override;
   void AncestorDisabledStateWasChanged() override;
+  void DidMoveToNewDocument(Document& old_document) override;
 
  private:
   bool IsEnumeratable() const override { return true; }
