@@ -13,6 +13,7 @@
 
 #include "base/types/strong_alias.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_ink_stroke_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -32,14 +33,14 @@ class PdfInkUndoRedoModel {
 
   // Set of IDs to draw/erase.
   using DrawCommands =
-      base::StrongAlias<class DrawCommandsTag, std::set<size_t>>;
+      base::StrongAlias<class DrawCommandsTag, std::set<InkStrokeId>>;
   using EraseCommands =
-      base::StrongAlias<class EraseCommandsTag, std::set<size_t>>;
+      base::StrongAlias<class EraseCommandsTag, std::set<InkStrokeId>>;
 
   using Commands = absl::variant<absl::monostate, DrawCommands, EraseCommands>;
 
   // Set of IDs used for drawing to discard.
-  using DiscardedDrawCommands = std::set<size_t>;
+  using DiscardedDrawCommands = std::set<InkStrokeId>;
 
   PdfInkUndoRedoModel();
   PdfInkUndoRedoModel(const PdfInkUndoRedoModel&) = delete;
@@ -66,7 +67,7 @@ class PdfInkUndoRedoModel {
   // Records drawing a stroke identified by `id`.
   // Must be called between StartDraw() and FinishDraw().
   // `id` must not be on the commands stack.
-  [[nodiscard]] bool Draw(size_t id);
+  [[nodiscard]] bool Draw(InkStrokeId id);
   // Finishes recording draw commands and pushes a new element onto the stack.
   // Must be called after StartDraw().
   [[nodiscard]] bool FinishDraw();
@@ -82,7 +83,7 @@ class PdfInkUndoRedoModel {
   // Must be called between StartErase() and FinishErase().
   // `id` must be in a `DrawCommands` on the commands stack.
   // `id` must not be in any `EraseCommands` on the commands stack.
-  [[nodiscard]] bool Erase(size_t id);
+  [[nodiscard]] bool Erase(InkStrokeId id);
   // Finishes recording erase commands and pushes a new element onto the stack.
   // Must be called after StartErase().
   [[nodiscard]] bool FinishErase();
@@ -102,8 +103,8 @@ class PdfInkUndoRedoModel {
   std::optional<DiscardedDrawCommands> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
-  bool HasIdInDrawCommands(size_t id) const;
-  bool HasIdInEraseCommands(size_t id) const;
+  bool HasIdInDrawCommands(InkStrokeId id) const;
+  bool HasIdInEraseCommands(InkStrokeId id) const;
 
   // Invariants:
   // (1) Never empty.

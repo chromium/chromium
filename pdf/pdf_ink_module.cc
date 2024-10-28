@@ -457,7 +457,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   if (!in_progress_stroke_segments.empty()) {
     CHECK_GE(state.page_index, 0);
     for (const auto& segment : in_progress_stroke_segments) {
-      size_t id = stroke_id_generator_.GetIdAndAdvance();
+      InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
       strokes_[state.page_index].push_back(
           FinishedStrokeState(segment.CopyToStroke(), id));
       bool undo_redo_success = undo_redo_model_.Draw(id);
@@ -801,19 +801,19 @@ void PdfInkModule::ApplyUndoRedoCommands(
   NOTREACHED();
 }
 
-void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<size_t> ids,
+void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
                                                bool should_draw) {
   CHECK(!strokes_.empty());
   CHECK(!ids.empty());
 
   for (auto& [page_index, page_ink_strokes] : strokes_) {
-    std::vector<size_t> page_ids;
+    std::vector<InkStrokeId> page_ids;
     page_ids.reserve(page_ink_strokes.size());
     for (const auto& stroke : page_ink_strokes) {
       page_ids.push_back(stroke.id);
     }
 
-    std::vector<size_t> ids_to_apply_command;
+    std::vector<InkStrokeId> ids_to_apply_command;
     base::ranges::set_intersection(ids, page_ids,
                                    std::back_inserter(ids_to_apply_command));
     if (ids_to_apply_command.empty()) {
@@ -824,7 +824,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<size_t> ids,
     // in `page_ink_strokes`.
     auto it = page_ink_strokes.begin();
     ink::Envelope invalidate_envelope;
-    for (size_t id : ids_to_apply_command) {
+    for (InkStrokeId id : ids_to_apply_command) {
       it = base::ranges::lower_bound(
           it, page_ink_strokes.end(), id, {},
           [](const FinishedStrokeState& state) { return state.id; });
@@ -859,7 +859,7 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   // ID is needed here. This is because the `page_ink_strokes` values in
   // `strokes_` are in sorted order. All elements in `page_ink_strokes` with the
   // first ID or larger IDs can be discarded.
-  const size_t start_id = *discards.begin();
+  const InkStrokeId start_id = *discards.begin();
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     // Find the first element in `page_ink_strokes` whose ID >= `start_id`.
     auto it = base::ranges::lower_bound(
@@ -870,14 +870,14 @@ void PdfInkModule::ApplyUndoRedoDiscards(
 
   // Check the pages with strokes and remove the ones that are now empty.
   // Also find the maximum stroke ID that is in use.
-  std::optional<size_t> max_stroke_id;
+  std::optional<InkStrokeId> max_stroke_id;
   for (auto it = strokes_.begin(); it != strokes_.end();) {
     const auto& page_ink_strokes = it->second;
     if (page_ink_strokes.empty()) {
       it = strokes_.erase(it);
     } else {
-      max_stroke_id =
-          std::max(max_stroke_id.value_or(0), page_ink_strokes.back().id);
+      max_stroke_id = std::max(max_stroke_id.value_or(InkStrokeId(0)),
+                               page_ink_strokes.back().id);
       ++it;
     }
   }
@@ -887,10 +887,11 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   if (max_stroke_id.has_value()) {
     // Since some stroke(s) got discarded, the maximum stroke ID value cannot be
     // the max integer value. Thus adding 1 will not overflow.
-    CHECK_NE(max_stroke_id.value(), std::numeric_limits<size_t>::max());
-    stroke_id_generator_.ResetIdTo(max_stroke_id.value() + 1);
+    CHECK_NE(max_stroke_id.value(), std::numeric_limits<InkStrokeId>::max());
+    stroke_id_generator_.ResetIdTo(
+        InkStrokeId(max_stroke_id.value().value() + 1));
   } else {
-    stroke_id_generator_.ResetIdTo(0);
+    stroke_id_generator_.ResetIdTo(InkStrokeId(0));
   }
 }
 
@@ -928,7 +929,7 @@ PdfInkModule::EraserState::EraserState() = default;
 PdfInkModule::EraserState::~EraserState() = default;
 
 PdfInkModule::FinishedStrokeState::FinishedStrokeState(ink::Stroke stroke,
-                                                       size_t id)
+                                                       InkStrokeId id)
     : stroke(std::move(stroke)), id(id) {}
 
 PdfInkModule::FinishedStrokeState::FinishedStrokeState(
@@ -943,13 +944,15 @@ PdfInkModule::StrokeIdGenerator::StrokeIdGenerator() = default;
 
 PdfInkModule::StrokeIdGenerator::~StrokeIdGenerator() = default;
 
-size_t PdfInkModule::StrokeIdGenerator::GetIdAndAdvance() {
+InkStrokeId PdfInkModule::StrokeIdGenerator::GetIdAndAdvance() {
   // Die intentionally if `next_stroke_id_` is about to overflow.
-  CHECK_NE(next_stroke_id_, std::numeric_limits<size_t>::max());
-  return next_stroke_id_++;
+  CHECK_NE(next_stroke_id_.value(), std::numeric_limits<size_t>::max());
+  InkStrokeId stroke_id = next_stroke_id_;
+  ++next_stroke_id_.value();
+  return stroke_id;
 }
 
-void PdfInkModule::StrokeIdGenerator::ResetIdTo(size_t id) {
+void PdfInkModule::StrokeIdGenerator::ResetIdTo(InkStrokeId id) {
   next_stroke_id_ = id;
 }
 

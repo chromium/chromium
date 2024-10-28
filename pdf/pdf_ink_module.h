@@ -5,8 +5,6 @@
 #ifndef PDF_PDF_INK_MODULE_H_
 #define PDF_PDF_INK_MODULE_H_
 
-#include <stddef.h>
-
 #include <map>
 #include <memory>
 #include <optional>
@@ -19,6 +17,7 @@
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_stroke_id.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
@@ -46,7 +45,7 @@ class PdfInkModule {
   // A stroke that has been completed, its ID, and whether it should be drawn
   // or not.
   struct FinishedStrokeState {
-    FinishedStrokeState(ink::Stroke stroke, size_t id);
+    FinishedStrokeState(ink::Stroke stroke, InkStrokeId id);
     FinishedStrokeState(const FinishedStrokeState&) = delete;
     FinishedStrokeState& operator=(const FinishedStrokeState&) = delete;
     FinishedStrokeState(FinishedStrokeState&&) noexcept;
@@ -58,7 +57,7 @@ class PdfInkModule {
     ink::Stroke stroke;
 
     // A unique ID to identify this stroke.
-    size_t id;
+    InkStrokeId id;
 
     bool should_draw = true;
   };
@@ -203,13 +202,13 @@ class PdfInkModule {
     ~StrokeIdGenerator();
 
     // Returns an available ID and advance the next available ID internally.
-    size_t GetIdAndAdvance();
+    InkStrokeId GetIdAndAdvance();
 
-    void ResetIdTo(size_t id);
+    void ResetIdTo(InkStrokeId id);
 
    private:
     // The next available ID for use in FinishedStrokeState.
-    size_t next_stroke_id_ = 0;
+    InkStrokeId next_stroke_id_ = InkStrokeId(0);
   };
 
   struct EraserState {
@@ -293,7 +292,7 @@ class PdfInkModule {
                             base::TimeTicks timestamp);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
-  void ApplyUndoRedoCommandsHelper(std::set<size_t> ids, bool should_draw);
+  void ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids, bool should_draw);
 
   void ApplyUndoRedoDiscards(
       const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
