@@ -164,9 +164,11 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  params.account_manager_facade =
-      GetAccountManagerFacade(profile->GetPath().value());
-  params.is_regular_profile = ash::ProfileHelper::IsUserProfile(profile);
+  if (ash::ProfileHelper::IsUserProfile(profile)) {
+    params.account_manager_facade =
+        GetAccountManagerFacade(profile->GetPath().value());
+    params.is_regular_profile = true;
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

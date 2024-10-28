@@ -147,7 +147,9 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
 
 ProfileOAuth2TokenServiceDelegateChromeOS::
     ~ProfileOAuth2TokenServiceDelegateChromeOS() {
-  account_manager_facade_->RemoveObserver(this);
+  if (account_manager_facade_) {
+    account_manager_facade_->RemoveObserver(this);
+  }
   network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
