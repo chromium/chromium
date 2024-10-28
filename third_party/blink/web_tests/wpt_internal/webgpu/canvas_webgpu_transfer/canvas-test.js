@@ -16,11 +16,29 @@
 */
 
 /**
- * Run `testBody` in a `promise_test`, once with an HTMLCanvasElement and once
- * more with an OffscreenCanvas. `testBody` must be a function accepting a
- * canvas as parameter and returning a promise that resolves on test completion.
+ * Enum listing all test types emitted by `canvasPromiseTest()`.
  */
-function canvasPromiseTest(testBody, description) {
+const CanvasTestType = Object.freeze({
+  HTML:   Symbol("html"),
+  OFFSCREEN:  Symbol("offscreen"),
+  WORKER: Symbol("worker")
+});
+
+/**
+ * Run `testBody` in a `promise_test` against multiple types of canvases. By
+ * default, the test is executed against an HTMLCanvasElement, a main thread
+ * OffscreenCanvas and a worker OffscreenCanvas, though `testTypes` can be used
+ * only enable a subset of these. `testBody` must be a function accepting a
+ * canvas as parameter and returning a promise that resolves on test completion.
+ *
+ * This function has two implementations. The version below runs the test on the
+ * main thread and another version in `canvas-worker-test.js` runs it in a
+ * worker. The worker invocation is launched by calling `runCanvasTestsInWorker`
+ * at the script level.
+ */
+function canvasPromiseTest(
+    testBody, description,
+    {testTypes = Object.values(CanvasTestType)} = {}) {
   setup(() => {
     const currentScript = document.currentScript;
     assert_true(
@@ -30,11 +48,15 @@ function canvasPromiseTest(testBody, description) {
         'worker coverage.');
   });
 
-  promise_test(() => testBody(document.createElement('canvas')),
-              'HTMLCanvasElement: ' + description);
+  if (testTypes.includes(CanvasTestType.HTML)) {
+    promise_test(() => testBody(document.createElement('canvas')),
+                 'HTMLCanvasElement: ' + description);
+  }
 
-  promise_test(() => testBody(new OffscreenCanvas(300, 150)),
-              'OffscreenCanvas: ' + description);
+  if (testTypes.includes(CanvasTestType.OFFSCREEN)) {
+    promise_test(() => testBody(new OffscreenCanvas(300, 150)),
+                 'OffscreenCanvas: ' + description);
+  }
 }
 
 /**

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./canvas-test.js"></script>
+<script src="./webgpu-helpers.js"></script>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-zero-copy-two-canvases</h1>
+<p>Tests whether a transfer in one canvas results in an initial transfer in a
+second canvas being zero-copy.</p>
+
+<script>
+
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
+
+/**
+ * Tests that a transfer in one canvas either does or does not result in an
+ * initial transfer in a second canvas being zero-copy depending on whether the
+ * canvas is an HTMLCanvasElement or an OffscreenCanvas.
+ */
+for (const testType of Object.values(CanvasTestType)) {
+  const description =
+      testType === CanvasTestType.HTML
+      ? ('A transfer in one HTMLCanvasElement results in an initial transfer ' +
+         'in a second HTMLCanvasElement being zero-copy.')
+      : ('A transfer in one OffscreenCanvas does not result in an initial ' +
+         'transfer in a second OffscreenCanvas being zero-copy.');
+  canvasPromiseTest(async (canvas) => {
+    const device = await getWebGPUDevice();
+    const ctx1 = canvas.getContext('2d');
+
+    // Draw to the first canvas via the canvas2D API to ensure that the
+    // SharedImage backing this canvas is created before doing any transfers to
+    // WebGPU. This ensures that this SharedImage will be created without WebGPU
+    // usage, which the test below assumes as a precondition.
+    ctx1.fillStyle = "#00FF00";
+    ctx1.fillRect(0, 0, canvas.width, canvas.height / 2);
+
+    // An initial transfer incurs a copy as the canvas resource's SharedImage
+    // doesn't have WebGPU usage by default. Validate that `requireZeroCopy` is
+    // getting forwarded properly by verifying that passing `true` causes an
+    // exception to be raised.
+    try {
+      ctx1.transferToGPUTexture({device: device, requireZeroCopy: true});
+      assert_unreached('transferToGPUTexture should have thrown.');
+    } catch (ex) {
+      assert_true(ex instanceof DOMException);
+      assert_equals(ex.name, 'InvalidStateError');
+      assert_true(
+          ex.message.includes('Transferring canvas to GPU was not zero-copy'));
+    }
+
+    // A second transfer on the same canvas should not incur a copy.
+    ctx1.transferToGPUTexture({device: device, requireZeroCopy: true});
+    ctx1.transferBackFromGPUTexture();
+
+    // Draw to the second canvas via the canvas2D API to ensure that the
+    // SharedImage backing this canvas is created before doing any transfers to
+    // WebGPU. This ensures that the test below is meaningful.
+    const canvas2 = (testType === CanvasTestType.HTML
+                    ? document.createElement('canvas')
+                    : new OffscreenCanvas(300, 150));
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = "#00FF00";
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height / 2);
+
+    if (testType === CanvasTestType.HTML) {
+      // An initial transfer on the second canvas element should not incur a
+      // copy.
+      ctx2.transferToGPUTexture({device: device, requireZeroCopy: true});
+      ctx2.transferBackFromGPUTexture();
+    } else {
+      // An initial transfer on the second offscreen canvas must incur a copy.
+      try {
+        ctx2.transferToGPUTexture({device: device, requireZeroCopy: true});
+        assert_unreached('transferToGPUTexture should have thrown.');
+      } catch (ex) {
+        assert_true(ex instanceof DOMException);
+        assert_equals(ex.name, 'InvalidStateError');
+        assert_true(ex.message.includes(
+            'Transferring canvas to GPU was not zero-copy'));
+      }
+    }
+  }, description, {testTypes: [testType]});
+}
+
+</script>

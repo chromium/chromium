@@ -1,13 +1,26 @@
 /** Worker script needed by canvas-test.js. */
 
 /**
- * Worker version of `canvasPromiseTest()`, running `testBody` with an
- * OffscreenCanvas. `testBody` must be a function accepting a canvas as
- * parameter and returning a promise that resolves on test completion.
+ * Enum listing all test types emitted by `canvasPromiseTest()`.
  */
-function canvasPromiseTest(testBody, description) {
-  promise_test(() => testBody(new OffscreenCanvas(300, 150)),
-              'Worker: ' + description);
+const CanvasTestType = Object.freeze({
+  HTML:   Symbol("html"),
+  OFFSCREEN:  Symbol("offscreen"),
+  WORKER: Symbol("worker")
+});
+
+/**
+ * Worker version of `canvasPromiseTest()`, running `testBody` with an
+ * `OffscreenCanvas` in a worker. For more details, see the main thread version
+ * of this function in `canvas-test.js`.
+ */
+function canvasPromiseTest(
+    testBody, description,
+    {testTypes = Object.values(CanvasTestType)} = {}) {
+  if (testTypes.includes(CanvasTestType.WORKER)) {
+    promise_test(() => testBody(new OffscreenCanvas(300, 150)),
+                'Worker: ' + description);
+  }
 }
 
 /**
