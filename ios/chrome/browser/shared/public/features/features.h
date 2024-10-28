@@ -910,4 +910,10 @@ BASE_DECLARE_FEATURE(kPostProfileSwitchActions);
 // Feature flag to use the async version of the chrome startup method.
 BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
 
+// Feature flag to enable Reactivation Notifications.
+BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
+
+// Returns whether `kIOSReactivationNotifications` is enabled.
+bool IsIOSReactivationNotificationsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

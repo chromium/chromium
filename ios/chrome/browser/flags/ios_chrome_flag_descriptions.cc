@@ -612,6 +612,11 @@ const char kIOSTipsNotificationsDescription[] =
     "Enables Notifications with content to help new users get the most out of "
     "the app.";
 
+const char kIOSReactivationNotificationsName[] = "Reactivation Notifications";
+const char kIOSReactivationNotificationsDescription[] =
+    "Enables a feature to send provisional notifications of interest to new"
+    "users and encourage them to return to the app.";
+
 const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";

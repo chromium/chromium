@@ -1099,3 +1099,11 @@ BASE_FEATURE(kPostProfileSwitchActions,
 BASE_FEATURE(kChromeStartupParametersAsync,
              "ChromeStartupParametersAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSReactivationNotifications,
+             "IOSReactivationNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSReactivationNotificationsEnabled() {
+  return base::FeatureList::IsEnabled(kIOSReactivationNotifications);
+}

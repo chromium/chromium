@@ -529,6 +529,10 @@ extern const char kIOSSoftLockDescription[];
 extern const char kIOSTipsNotificationsName[];
 extern const char kIOSTipsNotificationsDescription[];
 
+// Title and description for the flag to enable Reactivation Notifications.
+extern const char kIOSReactivationNotificationsName[];
+extern const char kIOSReactivationNotificationsDescription[];
+
 // Title and description for the flag to enable IPH for safari switcher.
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];

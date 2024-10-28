@@ -5456,6 +5456,11 @@
     "expiry_milestone": 133
   },
   {
+    "name": "ios-reactivation-notifications",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-segmentation-ephemeral-card-ranker",
     "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 136
