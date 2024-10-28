@@ -80,13 +80,20 @@ bool Install() {
 }
 
 bool Uninstall() {
+  {
+    LONG result = base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
+                                    KEY_SET_VALUE | KEY_WOW64_32KEY)
+                      .DeleteKey(L"");
+    VLOG_IF(1, result != ERROR_SUCCESS)
+        << "Failed to delete updater registration: " << kAppRegKey
+        << " error: " << result;
+  }
+
   const std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
     LOG(ERROR) << "Failed to get install directory";
     return false;
   }
-  base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY)
-      .DeleteKey(L"");
 
   base::FilePath cmd_exe_path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path)) {

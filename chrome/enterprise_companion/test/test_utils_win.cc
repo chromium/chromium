@@ -61,6 +61,14 @@ class TestMethodsWin : public TestMethods {
                   .DeleteKey(L""),
               ERROR_SUCCESS);
   }
+
+  void ExpectClean() override {
+    TestMethods::ExpectClean();
+    base::win::RegKey app_key;
+    EXPECT_NE(app_key.Open(HKEY_LOCAL_MACHINE, kAppRegKey,
+                           KEY_QUERY_VALUE | KEY_WOW64_32KEY),
+              ERROR_SUCCESS);
+  }
 };
 
 }  // namespace
