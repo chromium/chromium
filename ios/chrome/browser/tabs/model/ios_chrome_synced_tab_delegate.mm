@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/features.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
@@ -15,8 +16,7 @@
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -51,6 +51,20 @@ base::Time GetMostRecentActivityTime(const web::WebState* web_state) {
     }
   }
   return result;
+}
+
+// Returns whether the primary identity for `profile` is managed.
+bool ProfileHasPrimaryIdentityManaged(ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+
+  return identity_manager
+      ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin))
+      .IsManaged();
 }
 
 }  // namespace
@@ -159,10 +173,7 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
     // after the signin.
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-    AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile);
-    if (auth_service && auth_service->HasPrimaryIdentityManaged(
-                            signin::ConsentLevel::kSignin)) {
+    if (ProfileHasPrimaryIdentityManaged(profile)) {
       base::Time signin_time =
           profile->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
       // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the
