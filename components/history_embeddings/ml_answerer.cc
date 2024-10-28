@@ -185,7 +185,8 @@ class MlAnswerer::SessionManager {
       if (error == ModelExecutionError::kFiltered) {
         status = ComputeAnswerStatus::kFiltered;
       }
-      FinishCallback(AnswererResult(status, query_, Answer()));
+      FinishCallback(AnswererResult(status, query_, Answer(),
+                                    std::move(result.log_entry), "", {}));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
