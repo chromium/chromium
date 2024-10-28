@@ -253,8 +253,8 @@ function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2,
 
   if (is_canvas_element) {
     // An initial transfer on the second canvas element should not incur a copy.
-    ctx1.transferToGPUTexture({device: device, requireZeroCopy: true});
-    ctx1.transferBackFromGPUTexture();
+    ctx2.transferToGPUTexture({device: device, requireZeroCopy: true});
+    ctx2.transferBackFromGPUTexture();
   } else {
     // An initial transfer on the second offscreen canvas must incur a copy.
     try {
