@@ -261,8 +261,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   }
 
  private:
-  class PooledStreamRequestHelper;
-
   Group* GetGroup(const HttpStreamKey& stream_key);
 
   // Searches for a group that has the highest priority pending request and
@@ -279,14 +277,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       const SpdySessionKey& spdy_session_key,
       bool enable_ip_based_pooling,
       const NetLogWithSource& net_log = NetLogWithSource());
-
-  std::unique_ptr<HttpStreamRequest> CreatePooledStreamRequest(
-      HttpStreamRequest::Delegate* delegate,
-      std::unique_ptr<HttpStream> http_stream,
-      NextProto negotiated_protocol,
-      const NetLogWithSource& net_log);
-
-  void OnPooledStreamRequestComplete(PooledStreamRequestHelper* helper);
 
   // Periodically checks the total active/idle/handed-out streams are consistent
   // with per-group streams. Only used when the kEnableConsistencyCheckParamName
@@ -320,10 +310,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   size_t total_connecting_stream_count_ = 0;
 
   std::map<HttpStreamKey, std::unique_ptr<Group>> groups_;
-
-  std::set<std::unique_ptr<PooledStreamRequestHelper>,
-           base::UniquePtrComparator>
-      pooled_stream_request_helpers_;
 
   std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>
       job_controllers_;

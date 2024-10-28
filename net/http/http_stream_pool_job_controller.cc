@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
@@ -23,7 +24,9 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_pool_switching_info.h"
 #include "net/http/http_stream_request.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/socket/next_proto.h"
+#include "net/spdy/spdy_http_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -47,16 +50,53 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   CHECK(!delegate_);
   CHECK(!request_);
 
-  const HttpStreamKey& stream_key = switching_info.stream_key;
-  const url::SchemeHostPort& origin_destination = stream_key.destination();
-
-  network_anonymization_key_ = stream_key.network_anonymization_key();
-
   delegate_ = delegate;
   auto request = std::make_unique<HttpStreamRequest>(
       this, /*websocket_handshake_stream_create_helper=*/nullptr, net_log,
       HttpStreamRequest::HTTP_STREAM);
   request_ = request.get();
+
+  const HttpStreamKey& stream_key = switching_info.stream_key;
+  const url::SchemeHostPort& origin_destination = stream_key.destination();
+
+  network_anonymization_key_ = stream_key.network_anonymization_key();
+  proxy_info_ = switching_info.proxy_info;
+
+  QuicSessionAliasKey quic_session_alias_key =
+      stream_key.CalculateQuicSessionAliasKey();
+  if (pool_->CanUseExistingQuicSession(stream_key, quic_session_alias_key,
+                                       enable_ip_based_pooling,
+                                       enable_alternative_services)) {
+    QuicChromiumClientSession* quic_session =
+        quic_session_pool()->FindExistingSession(
+            quic_session_alias_key.session_key(),
+            quic_session_alias_key.destination());
+    auto http_stream = std::make_unique<QuicHttpStream>(
+        quic_session->CreateHandle(stream_key.destination()),
+        quic_session->GetDnsAliasesForSessionKey(
+            quic_session_alias_key.session_key()));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpStreamPool::JobController::CallRequestComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(http_stream),
+                       NextProto::kProtoQUIC));
+    return request;
+  }
+
+  SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
+  base::WeakPtr<SpdySession> spdy_session = pool_->FindAvailableSpdySession(
+      stream_key, spdy_session_key, enable_ip_based_pooling, net_log);
+  if (spdy_session) {
+    auto http_stream = std::make_unique<SpdyHttpStream>(
+        spdy_session, net_log.source(),
+        spdy_session_pool()->GetDnsAliasesForSessionKey(spdy_session_key));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HttpStreamPool::JobController::CallRequestComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(http_stream),
+                       NextProto::kProtoHTTP2));
+    return request;
+  }
 
   RespectLimits respect_limits =
       (switching_info.load_flags & LOAD_IGNORE_LIMITS)
@@ -158,7 +198,7 @@ LoadState HttpStreamPool::JobController::GetLoadState() const {
   if (alternative_job_) {
     return alternative_job_->GetLoadState();
   }
-  NOTREACHED_NORETURN();
+  return LOAD_STATE_IDLE;
 }
 
 void HttpStreamPool::JobController::OnRequestComplete() {
@@ -183,6 +223,24 @@ void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {
   if (alternative_job_) {
     alternative_job_->SetPriority(priority);
   }
+}
+
+QuicSessionPool* HttpStreamPool::JobController::quic_session_pool() {
+  return pool_->http_network_session()->quic_session_pool();
+}
+
+SpdySessionPool* HttpStreamPool::JobController::spdy_session_pool() {
+  return pool_->http_network_session()->spdy_session_pool();
+}
+
+void HttpStreamPool::JobController::CallRequestComplete(
+    std::unique_ptr<HttpStream> stream,
+    NextProto negotiated_protocol) {
+  CHECK(request_);
+  CHECK(delegate_);
+  request_->Complete(negotiated_protocol,
+                     ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
+  delegate_->OnStreamReady(proxy_info_, std::move(stream));
 }
 
 void HttpStreamPool::JobController::SetJobResult(Job* job, int status) {
