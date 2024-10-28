@@ -15,6 +15,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -51,6 +52,7 @@ constexpr CGFloat kVerticalInset = 12;
 @property(nonatomic, strong) UIButton* serverSideSubmitButton;
 @property(nonatomic, strong) UIButton* onDeviceSubmitButton;
 @property(nonatomic, strong) UITextField* queryField;
+@property(nonatomic, strong) UITextField* nameField;
 @property(nonatomic, strong) UITextView* responseContainer;
 
 @end
@@ -83,19 +85,20 @@ constexpr CGFloat kVerticalInset = 12;
   label.text = l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_HEADER);
 
   UIColor* primaryColor = [UIColor colorNamed:kTextPrimaryColor];
-  UIView* textFieldContainer = [[UIView alloc] init];
-  textFieldContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  textFieldContainer.layer.cornerRadius = kCornerRadius;
-  textFieldContainer.layer.masksToBounds = YES;
-  textFieldContainer.layer.borderColor = [primaryColor CGColor];
-  textFieldContainer.layer.borderWidth = kBorderWidth;
 
   _queryField = [[UITextField alloc] init];
   _queryField.translatesAutoresizingMaskIntoConstraints = NO;
   _queryField.placeholder =
       l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_QUERY_PLACEHOLDER);
+  UIView* queryFieldContainer = [self textFieldContainer];
+  [queryFieldContainer addSubview:_queryField];
 
-  [textFieldContainer addSubview:_queryField];
+  _nameField = [[UITextField alloc] init];
+  _nameField.translatesAutoresizingMaskIntoConstraints = NO;
+  _nameField.placeholder =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_NAME_PLACEHOLDER);
+  UIView* nameFieldContainer = [self textFieldContainer];
+  [nameFieldContainer addSubview:_nameField];
 
   _serverSideSubmitButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _serverSideSubmitButton.layer.borderColor = [primaryColor CGColor];
@@ -140,7 +143,8 @@ constexpr CGFloat kVerticalInset = 12;
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, textFieldContainer, _responseContainer, buttonStackView
+    label, queryFieldContainer, nameFieldContainer, _responseContainer,
+    buttonStackView
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -155,16 +159,27 @@ constexpr CGFloat kVerticalInset = 12;
     [stackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
                                              constant:-kHorizontalInset],
 
-    [textFieldContainer.heightAnchor
+    [queryFieldContainer.heightAnchor
         constraintEqualToAnchor:_queryField.heightAnchor
                        constant:kVerticalInset],
-    [textFieldContainer.widthAnchor
+    [queryFieldContainer.widthAnchor
         constraintEqualToAnchor:_queryField.widthAnchor
                        constant:kHorizontalInset],
-    [textFieldContainer.centerXAnchor
+    [queryFieldContainer.centerXAnchor
         constraintEqualToAnchor:_queryField.centerXAnchor],
-    [textFieldContainer.centerYAnchor
+    [queryFieldContainer.centerYAnchor
         constraintEqualToAnchor:_queryField.centerYAnchor],
+
+    [nameFieldContainer.heightAnchor
+        constraintEqualToAnchor:_nameField.heightAnchor
+                       constant:kVerticalInset],
+    [nameFieldContainer.widthAnchor
+        constraintEqualToAnchor:_nameField.widthAnchor
+                       constant:kHorizontalInset],
+    [nameFieldContainer.centerXAnchor
+        constraintEqualToAnchor:_nameField.centerXAnchor],
+    [nameFieldContainer.centerYAnchor
+        constraintEqualToAnchor:_nameField.centerYAnchor],
 
     [_responseContainer.heightAnchor
         constraintGreaterThanOrEqualToAnchor:self.view.heightAnchor
@@ -175,12 +190,13 @@ constexpr CGFloat kVerticalInset = 12;
 
 - (void)serverSideSubmitButtonPressed:(UIButton*)button {
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  optimization_guide::proto::StringValue request;
-  std::optional<base::TimeDelta> timeout = std::nullopt;
-  request.set_value(base::SysNSStringToUTF8(_queryField.text));
+  optimization_guide::proto::BlingPrototypingRequest request;
+  request.set_query(base::SysNSStringToUTF8(_queryField.text));
+  request.set_name(base::SysNSStringToUTF8(_nameField.text));
   __weak __typeof(self) weakSelf = self;
   _service->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kTest, request, timeout,
+      optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping, request,
+      /*execution_timeout*/ std::nullopt,
       base::BindOnce(
           ^(optimization_guide::OptimizationGuideModelExecutionResult result,
             std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
@@ -231,11 +247,12 @@ constexpr CGFloat kVerticalInset = 12;
 
   if (result.response.has_value()) {
     auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::StringValue>(result.response.value());
-    if (parsed->has_value()) {
-      response = parsed->value();
+        optimization_guide::proto::BlingPrototypingResponse>(
+        result.response.value());
+    if (!parsed->output().empty()) {
+      response = parsed->output();
     } else {
-      response = "Failed to parse server response as a string";
+      response = "Empty server response.";
     }
   } else {
     response =
@@ -271,5 +288,19 @@ constexpr CGFloat kVerticalInset = 12;
   _responseContainer.text = base::SysUTF8ToNSString(response);
 }
 #endif
+
+#pragma mark - Private
+
+// Returns a container for a text field in the menu.
+- (UIView*)textFieldContainer {
+  UIView* container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  container.layer.cornerRadius = kCornerRadius;
+  container.layer.masksToBounds = YES;
+  container.layer.borderColor =
+      [[UIColor colorNamed:kTextPrimaryColor] CGColor];
+  container.layer.borderWidth = kBorderWidth;
+  return container;
+}
 
 @end
