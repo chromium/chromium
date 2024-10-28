@@ -1620,31 +1620,22 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(ClientModeCombination::kAuto),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled,    // LinkCapturing turned on.
-                        LinkCapturing::kDisabled),  // LinkCapturing turned off.
-        testing::Values(
-            StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab),       // Starting point is a tab.
-        testing::Values(
-            Destination::kScopeA2A,   // Navigate in-scope A.
-            Destination::kScopeA2B,   // Navigate A -> B.
-            Destination::kScopeA2X),  // A -> X (X is not installed).
+        testing::Values(LinkCapturing::kEnabled, LinkCapturing::kDisabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A,
+                        Destination::kScopeA2B,
+                        Destination::kScopeA2X),
         testing::Values(RedirectType::kNone),
-        testing::Values(
-            NavigationElement::kElementLink,     // Navigate via element.
-            NavigationElement::kElementButton),  // Navigate via button.
-        testing::Values(
-            test::ClickMethod::kLeftClick,       // Simulate left-mouse click.
-            test::ClickMethod::kMiddleClick,     // Simulate middle-mouse click.
-            test::ClickMethod::kShiftClick),     // Simulate shift click.
-        testing::Values(OpenerMode::kOpener,     // Supply 'opener' property.
-                        OpenerMode::kNoOpener),  // Supply 'noopener' property.
-        testing::Values(
-            NavigationTarget::kSelf,     // Use target _self.
-            NavigationTarget::kFrame,    // Use named frame as target.
-            NavigationTarget::kBlank,    // User Target is _blank.
-            NavigationTarget::kNoFrame)  // Target is non-existing frame.
-        ),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
+        testing::Values(test::ClickMethod::kLeftClick,
+                        test::ClickMethod::kMiddleClick,
+                        test::ClickMethod::kShiftClick),
+        testing::Values(OpenerMode::kOpener, OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kSelf,
+                        NavigationTarget::kFrame,
+                        NavigationTarget::kBlank,
+                        NavigationTarget::kNoFrame)),
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1653,22 +1644,16 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(ClientModeCombination::kAuto),
         testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
-        testing::Values(LinkCapturing::kEnabled,    // LinkCapturing turned on.
-                        LinkCapturing::kDisabled),  // LinkCapturing turned off.
-        testing::Values(
-            StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab),       // Starting point is a tab.
-        testing::Values(Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(LinkCapturing::kEnabled, LinkCapturing::kDisabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
         testing::Values(RedirectType::kNone),
-        testing::Values(
-            NavigationElement::kElementLink,     // Navigate via element.
-            NavigationElement::kElementButton),  // Navigate via button.
-        testing::Values(
-            test::ClickMethod::kLeftClick,       // Simulate left-mouse click.
-            test::ClickMethod::kMiddleClick,     // Simulate middle-mouse click.
-            test::ClickMethod::kShiftClick),     // Simulate shift click.
-        testing::Values(OpenerMode::kOpener,     // Supply 'opener' property.
-                        OpenerMode::kNoOpener),  // Supply 'noopener' property.
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
+        testing::Values(test::ClickMethod::kLeftClick,
+                        test::ClickMethod::kMiddleClick,
+                        test::ClickMethod::kShiftClick),
+        testing::Values(OpenerMode::kOpener, OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
@@ -1678,29 +1663,17 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(ClientModeCombination::kAuto),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
-        testing::Values(
-            StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab         // Starting point is a tab.
-            ),
-        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
-                        Destination::kScopeA2B   // Navigate A -> B
-                        ),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
         testing::Values(RedirectType::kNone),
-        testing::Values(
-            NavigationElement::kElementLink),  // Navigate via element.
-        testing::Values(
-            test::ClickMethod::kRightClickLaunchApp),  // Simulate right-mouse
-                                                       // click.
-        testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
-                        OpenerMode::kNoOpener  // Supply 'noopener' property.
-                        ),
-        testing::Values(
-            NavigationTarget::kSelf,    // Use target _self.
-            NavigationTarget::kFrame,   // Use named frame as target.
-            NavigationTarget::kBlank,   // User Target is _blank.
-            NavigationTarget::kNoFrame  // Target is non-existing frame.
-            )),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kRightClickLaunchApp),
+        testing::Values(OpenerMode::kOpener, OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kSelf,
+                        NavigationTarget::kFrame,
+                        NavigationTarget::kBlank,
+                        NavigationTarget::kNoFrame)),
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1717,7 +1690,7 @@ INSTANTIATE_TEST_SUITE_P(
         // not an HTML element, there's no `opener` or `target` involved.
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2A),  // Navigate in-scope A.
+        testing::Values(Destination::kScopeA2A),
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementIntentPicker),
         testing::Values(test::ClickMethod::kLeftClick),
@@ -1731,15 +1704,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(ClientModeCombination::kAuto),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
-                        LinkCapturing::kDisabled  // LinkCapturing turned off.
-                        ),
-        testing::Values(
-            StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab         // Starting point is a tab.
-            ),
-        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
-                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(LinkCapturing::kEnabled, LinkCapturing::kDisabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementServiceWorkerButton),
         testing::Values(test::ClickMethod::kLeftClick),
@@ -1754,13 +1721,9 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ClientModeCombination::kBothFocusExisting,
                         ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
-                        LinkCapturing::kDisabled  // LinkCapturing turned off.
-                        ),
+        testing::Values(LinkCapturing::kEnabled, LinkCapturing::kDisabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2A,  // Navigate A -> A.
-                        Destination::kScopeA2B   // Navigate A -> B.
-                        ),
+        testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
         // TODO: Add redirection cases.
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink,
@@ -1800,12 +1763,9 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ClientModeCombination::kBothFocusExisting,
                         ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
-        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
-                        LinkCapturing::kDisabled  // LinkCapturing turned off.
-                        ),
+        testing::Values(LinkCapturing::kEnabled, LinkCapturing::kDisabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2B  // Navigate A -> B.
-                        ),
+        testing::Values(Destination::kScopeA2B),
         // TODO: Add redirection cases.
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink),
@@ -2017,18 +1977,12 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ClientModeCombination::kBothFocusExisting,
                         ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
-        testing::Values(
-            StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab         // Starting point is a tab.
-            ),
-        testing::Values(Destination::kScopeA2B),  // Navigate A -> B
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
         testing::Values(RedirectType::kNone),
-        testing::Values(
-            NavigationElement::kElementLink),  // Navigate via element.
-        testing::Values(
-            test::ClickMethod::kRightClickLaunchApp),  // Simulate right-mouse
-                                                       // click.
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kRightClickLaunchApp),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
@@ -2040,9 +1994,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ClientModeCombination::kBothFocusExisting,
                         ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
-        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
-                        LinkCapturing::kDisabled  // LinkCapturing turned off.
-                        ),
+        testing::Values(LinkCapturing::kEnabled, LinkCapturing::kDisabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
         testing::Values(Destination::kScopeA2B),
         // TODO: Add redirection cases.
@@ -2062,15 +2014,12 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2B),  // Navigate A -> B
-        testing::Values(
-            RedirectType::kServerSideViaA,
-            RedirectType::kServerSideViaB,
-            RedirectType::kServerSideViaX),  // Final navigation is A->A->B
-        testing::Values(
-            NavigationElement::kElementLink),  // Navigate via element.
-        testing::Values(
-            test::ClickMethod::kLeftClick),  // Simulate left-mouse click.
+        testing::Values(Destination::kScopeA2B),
+        testing::Values(RedirectType::kServerSideViaA,
+                        RedirectType::kServerSideViaB,
+                        RedirectType::kServerSideViaX),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
@@ -2173,17 +2122,99 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ClientModeCombination::kBothFocusExisting,
                         ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
-        testing::Values(
-            StartingPoint::kAppWindow,  // Starting point is app window.
-            StartingPoint::kTab         // Starting point is a tab.
-            ),
-        testing::Values(Destination::kScopeA2B),  // Navigate A -> B
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
         testing::Values(RedirectType::kNone),
-        testing::Values(
-            NavigationElement::kElementLink),  // Navigate via element.
-        testing::Values(
-            test::ClickMethod::kLeftClick),  // Simulate left-mouse click.
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// This is a derived test fixture that allows us to test Navigation Capturing
+// on focus-existing or navigate-existing launch handlers that open in a browser
+// tab iff there is no app launched and a browser tab is open already.
+// This additional step is performed by overriding MaybeCustomSetup to
+// navigate to a browser tab.
+//
+// For expectations, see
+// navigation_capturing_with_extra_browser_tab_b.json.
+class NavigationCapturingTestWithExtraBrowserTabB
+    : public WebAppLinkCapturingParameterizedBrowserTest {
+ public:
+  std::string GetExpectationsFileBaseName() const override {
+    return "navigation_capturing_with_extra_browser_tab_b";
+  }
+
+  void MaybeCustomSetup(const webapps::AppId& app_a,
+                        const webapps::AppId& app_b) override {
+    DLOG(INFO) << "Navigating to browser tab b.";
+    content::DOMMessageQueue message_queue;
+    // Ensure that if a fixture ended up loading a different page in the
+    // starting tab, create a new tab for the navigation.
+    GURL last_committed_url = browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetLastCommittedURL();
+    bool is_at_new_tab_page =
+        IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
+    if (!is_at_new_tab_page) {
+      LOG(ERROR) << "opening new tab due to "
+                 << last_committed_url.possibly_invalid_spec();
+      chrome::NewTab(browser());
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(kDestinationPageScopeB)));
+    content::WebContents* contents_b =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WaitForLoadStop(contents_b);
+
+    // Launching a web app should listen to a single navigation message.
+    WaitForNavigationFinishedMessage(&message_queue);
+  }
+
+  std::string GetTestClassName() const override {
+    return "NavigationCapturingTestWithExtraBrowserTabB";
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithExtraBrowserTabB,
+                       CheckLinkCaptureCombinations) {
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithExtraBrowserTabB,
+                       MAYBE_CleanupExpectations) {
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kDisabled});
+}
+
+// TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
+// them in navigation_capturing_with_extra_browser_tab_b.json when fixed.
+INSTANTIATE_TEST_SUITE_P(
+    LeftClickToBrowserTabFromFocusOrNavigateExisting,
+    NavigationCapturingTestWithExtraBrowserTabB,
+    testing::Combine(
+        testing::Values(ClientModeCombination::kBothFocusExisting,
+                        ClientModeCombination::kBothNavigateExisting),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2B),
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
