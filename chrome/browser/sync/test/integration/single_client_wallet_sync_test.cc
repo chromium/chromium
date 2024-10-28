@@ -231,10 +231,38 @@ class SingleClientWalletSyncTest : public SyncTest {
   base::HistogramTester histogram_tester_;
 };
 
+// Same as SingleClientWalletSyncTest but allows exercising tests with and
+// without `switches::IsImprovedSigninUIOnDesktopEnabled()`.
+class SingleClientWalletWithImprovedSigninUISyncTest
+    : public SingleClientWalletSyncTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SingleClientWalletWithImprovedSigninUISyncTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                switches::kImprovedSigninUIOnDesktop},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
+                                 switches::kImprovedSigninUIOnDesktop});
+    }
+
+    EXPECT_EQ(GetParam(), switches::IsImprovedSigninUIOnDesktopEnabled());
+  }
+
+  ~SingleClientWalletWithImprovedSigninUISyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
                        DownloadAccountStorage_Card) {
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
@@ -264,9 +292,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   EXPECT_EQ(1U, GetServerCards(account_data).size());
 
   // Check whether cards are stored in-memory or on-disk, which depends on
-  // feature flags.
-  EXPECT_EQ(!switches::IsImprovedSigninUIOnDesktopEnabled(),
-            GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+  // feature flags. The corresponding metric is recorded twice as an artifact
+  // of the test setup: SyncTest creates a new profile for single-client tests,
+  // disregarding the existing profile that browser tests already have.
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    EXPECT_FALSE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+    histogram_tester_.ExpectUniqueSample("WebDatabase.AutofillAccountStorage",
+                                         /*sample=*/2,  // kOnDisk_SignedOut.
+                                         /*expected_bucket_count=*/2);
+  } else {
+    EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+    histogram_tester_.ExpectUniqueSample(
+        "WebDatabase.AutofillAccountStorage",
+        /*sample=*/0,  // kInMemory_FlagDisabled.
+        /*expected_bucket_count=*/2);
+  }
 
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards =
@@ -290,16 +330,28 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   EXPECT_EQ(0U, GetServerCards(account_data).size());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
-                       DownloadAccountStorageWithImplicitSignIn_Card) {
+// PRE_ test used to ensure the user is signed in at the time the browser starts
+// up, which is more realistic for the implicit signed-in state.
+IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
+                       PRE_DownloadAccountStorageWithImplicitSignIn_Card) {
   ASSERT_TRUE(SetupClients());
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
 
   secondary_account_helper::ImplicitSignInUnconsentedAccount(
       GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
+                       DownloadAccountStorageWithImplicitSignIn_Card) {
+  ASSERT_TRUE(SetupClients());
+  GetFakeServer()->SetWalletData(
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
+
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(AwaitQuiescence());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -321,9 +373,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   EXPECT_EQ(1U, GetServerCards(account_data).size());
 
   // Check whether cards are stored in-memory (which is always the case for
-  // implicit sign-ins).
+  // implicit sign-ins). The corresponding metric is recorded twice as an
+  // artifact of the test setup: SyncTest creates a new profile for
+  // single-client tests, disregarding the existing profile that browser tests
+  // already have.
   EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    histogram_tester_.ExpectBucketCount(
+        "WebDatabase.AutofillAccountStorage",
+        /*sample=*/1,  // kInMemory_SignedInImplicitly.
+        /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        "WebDatabase.AutofillAccountStorage",
+        /*sample=*/0,  // kInMemory_FlagDisabled.
+        /*expected_bucket_count=*/2);
+  }
 
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
@@ -345,6 +412,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // Check directly in the DB that the account storage is now cleared.
   EXPECT_EQ(0U, GetServerCards(account_data).size());
 }
+
+INSTANTIATE_TEST_SUITE_P(Enabled,
+                         SingleClientWalletWithImprovedSigninUISyncTest,
+                         testing::Bool());
 
 // Wallet data should get cleared from the database when the user signs out and
 // different data should get downstreamed when the user signs in with a
