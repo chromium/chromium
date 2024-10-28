@@ -1367,17 +1367,10 @@ std::u16string AuthenticatorCreatePasskeySheetModel::GetStepDescription()
 
 std::u16string
 AuthenticatorCreatePasskeySheetModel::passkey_storage_description() const {
-#if BUILDFLAG(IS_WIN)
-  return l10n_util::GetStringUTF16(
-      dialog_model()->is_off_the_record
-          ? IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_WIN_INCOGNITO
-          : IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_WIN);
-#else
   return l10n_util::GetStringUTF16(
       dialog_model()->is_off_the_record
           ? IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_INCOGNITO
           : IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA);
-#endif
 }
 
 bool AuthenticatorCreatePasskeySheetModel::IsAcceptButtonVisible() const {
