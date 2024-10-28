@@ -128,8 +128,8 @@ class Page;
 
 // The interface provides a communication conduit with a frame in the renderer.
 // The preferred way to keep a reference to a RenderFrameHost is storing a
-// GlobalRenderFrameHostId and using RenderFrameHost::FromID() when you need to
-// access it.
+// GlobalRenderFrameHostToken and using RenderFrameHost::FromFrameToken() when
+// you need to access it.
 //
 // Any code that uses RenderFrameHost must be aware of back-forward cache, see
 // LifecycleState. The main side-effect is that any IPCs that are processed on a
