@@ -373,27 +373,6 @@ function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2,
 }
 
 /**
- * transferBackFromGPUTexture() should be a no-op if the canvas context is lost.
- */
-function test_transferBackFromGPUTexture_context_lost(device, canvas) {
-  // Begin a WebGPU access session.
-  const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToGPUTexture({device: device});
-
-  // Forcibly lose the canvas context.
-  assert_true(!!window.internals, 'Internal APIs unavailable.');
-  internals.forceLoseCanvasContext(canvas, '2d');
-
-  // End the WebGPU access session. Nothing should be thrown.
-  try {
-    ctx.transferBackFromGPUTexture(tex);
-  } catch {
-    assert_unreached('transferBackFromGPUTexture should be safe when context ' +
-                     'is lost.');
-  }
-}
-
-/**
  * transferBackFromGPUTexture() should cause the GPUTexture returned by
  * transferToGPUTexture() to enter a destroyed state.
  */

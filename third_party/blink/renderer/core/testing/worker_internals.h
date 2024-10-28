@@ -7,10 +7,12 @@
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
+class OffscreenCanvas;
 class OriginTrialsTest;
 class ScriptState;
 
@@ -26,6 +28,10 @@ class WorkerInternals final : public ScriptWrappable {
   void countDeprecation(ScriptState*, uint32_t feature, ExceptionState&);
 
   void collectGarbage(ScriptState*);
+
+  void forceLoseCanvasContext(ScriptState* script_state,
+                              OffscreenCanvas* offscreencanvas,
+                              const String& context_type);
 };
 
 }  // namespace blink
