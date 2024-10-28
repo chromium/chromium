@@ -18425,6 +18425,7 @@ from previous Chrome versions.
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
   <int value="-689481289" label="EnablePerDeskZOrder:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
+  <int value="-687907673" label="ConchExpandTranscriptionLanguage:enabled"/>
   <int value="-687302378" label="BluetoothFixA2dpPacketSize:enabled"/>
   <int value="-686788480" label="OsSettingsAppNotificationsPage:enabled"/>
   <int value="-686761381" label="UseHDRTransferFunction:enabled"/>
@@ -25399,6 +25400,7 @@ from previous Chrome versions.
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>
   <int value="2135540885" label="PrintPreviewCrosApp:disabled"/>
   <int value="2135687747" label="DelayMediaSinkDiscovery:disabled"/>
+  <int value="2135800674" label="ConchExpandTranscriptionLanguage:disabled"/>
   <int value="2137113620"
       label="ProcessSharingWithStrictSiteInstances:enabled"/>
   <int value="2137294324" label="zero-copy-video-capture"/>

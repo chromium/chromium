@@ -6330,6 +6330,11 @@ const char kCameraAppPreviewOcrDescription[] =
 const char kConchName[] = "Conch feature";
 const char kConchDescription[] = "Enable Conch on ChromeOS.";
 
+const char kConchExpandTranscriptionLanguageName[] =
+    "Transcription language options for Conch";
+const char kConchExpandTranscriptionLanguageDescription[] =
+    "Expand transcription language options for Conch on ChromeOS.";
+
 const char kConchSystemAudioFromMicName[] = "System audio capture for Conch";
 const char kConchSystemAudioFromMicDescription[] =
     "Capture system audio from microphone for Conch on ChromeOS.";

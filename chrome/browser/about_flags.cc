@@ -11097,6 +11097,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConchSystemAudioFromMicName,
      flag_descriptions::kConchSystemAudioFromMicDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kConchSystemAudioFromMic)},
+
+    {"conch-expand-transcription-language",
+     flag_descriptions::kConchExpandTranscriptionLanguageName,
+     flag_descriptions::kConchExpandTranscriptionLanguageDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kConchExpandTranscriptionLanguage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -3642,6 +3642,9 @@ extern const char kChromeboxUsbPassthroughRestrictionsDescription[];
 extern const char kConchName[];
 extern const char kConchDescription[];
 
+extern const char kConchExpandTranscriptionLanguageName[];
+extern const char kConchExpandTranscriptionLanguageDescription[];
+
 extern const char kConchSystemAudioFromMicName[];
 extern const char kConchSystemAudioFromMicDescription[];
 
