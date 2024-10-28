@@ -1788,6 +1788,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.GridTabSwitcher.ScrollToTabById.HasTab" enum="Boolean"
+    expires_after="2025-03-09">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    Records whether the scrollToTabById operation had a valid tab. This is being
+    used to investigate the frequency with which this operation fails.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.InactiveCountAtStartup" units="tabs"
     expires_after="2025-03-09">
   <owner>alionadangla@chromium.org</owner>
