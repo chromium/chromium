@@ -5450,8 +5450,6 @@ static_library("ui") {
 
   if (enable_pdf) {
     deps += [
-      "//chrome/browser/ui/pdf",
-
       # TODO(crbug.com/372750819): Remove this dependency when the following
       # files are built off of modularized GN targets:
       # - c/b/ui/browser_commands.cc
