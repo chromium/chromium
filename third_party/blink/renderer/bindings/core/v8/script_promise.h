@@ -132,20 +132,30 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
           isolate, value.V8Value(), PassThroughException(isolate));
       if (try_catch.HasCaught()) {
         DCHECK(typing_failure_callable_);
-        ApplyContextToException(script_state, try_catch.Exception(), context_);
-        return typing_failure_callable_->Call(
+        auto return_value = typing_failure_callable_->Call(
             script_state, ScriptValue(isolate, try_catch.Exception()));
+        ApplyContextToException(script_state, try_catch.Exception(), context_);
+        try_catch.ReThrow();
+        return return_value;
       }
       if constexpr (std::is_same_v<IDLUndefined, ThenReturnType>) {
         static_cast<Derived*>(this)->React(script_state,
                                            std::move(blink_value));
-        try_catch.ReThrow();
+        if (try_catch.HasCaught()) {
+          ApplyContextToException(script_state, try_catch.Exception(),
+                                  context_);
+          try_catch.ReThrow();
+        }
         return ScriptValue();
       } else {
         v8::Local<v8::Value> return_value = ToV8Traits<ThenReturnType>::ToV8(
             script_state, static_cast<Derived*>(this)->React(
                               script_state, std::move(blink_value)));
-        try_catch.ReThrow();
+        if (try_catch.HasCaught()) {
+          ApplyContextToException(script_state, try_catch.Exception(),
+                                  context_);
+          try_catch.ReThrow();
+        }
         return ScriptValue(script_state->GetIsolate(), return_value);
       }
     }
@@ -340,6 +350,16 @@ class ScriptPromise : public ScriptPromiseUntyped {
       ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>* on_fulfilled,
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
     on_fulfilled->SetTypingFailureCallable(on_rejected);
+    ThenRaw(script_state,
+            MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
+            MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
+  }
+
+  template <typename ResolveClass, typename RejectClass>
+  void ReactNoTypeChecks(
+      ScriptState* script_state,
+      ThenCallable<IDLAny, ResolveClass, IDLUndefined>* on_fulfilled,
+      ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
     ThenRaw(script_state,
             MakeGarbageCollected<ScriptFunction>(script_state, on_fulfilled),
             MakeGarbageCollected<ScriptFunction>(script_state, on_rejected));
