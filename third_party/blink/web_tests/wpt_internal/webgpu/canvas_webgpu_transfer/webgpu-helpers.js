@@ -165,19 +165,16 @@ function createBindGroupUsingTexture(device, tex) {
  * transferToGPUTexture() should create a texture which honors the requested
  * usage flags.
  */
-function test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
-                                           canvas) {
-  // Create a base-case promise that just resolves immediately.
-  let promise = new Promise((resolve, reject) => { resolve(true); });
-
+async function test_transferToGPUTexture_usage_flags(
+    adapter, adapterInfo, device, canvas) {
   // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
   if (isMacSwiftShader(adapterInfo)) {
-    return promise;
+    return;
   }
 
   // Declare a helper function which tests individual usage flags.
-  const testOneUsageFlag = function(device, canvas, usageToEnable,
-                                    usageToTest) {
+  const testOneUsageFlag = async function(
+      device, canvas, usageToEnable, usageToTest) {
     const ctx = canvas.getContext('2d');
     const tex = ctx.transferToGPUTexture({device: device,
                                            usage: usageToEnable});
@@ -202,16 +199,15 @@ function test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
       clearTextureToColor(device, tex, { r: 1.0, g: 1.0, b: 1.0, a: 1.0 });
     }
 
-    return device.popErrorScope().then((errors) => {
-      if (usageToTest == usageToEnable) {
-        assert_equals(errors, null, 'enabled ' + usageToEnable +
-                                    ', tested ' + usageToTest);
-      } else {
-        assert_not_equals(errors, null, 'enabled ' + usageToEnable +
-                                        ', tested ' + usageToTest);
-      }
-      ctx.transferBackFromGPUTexture();
-    });
+    const errors = await device.popErrorScope();
+    if (usageToTest == usageToEnable) {
+      assert_equals(errors, null, 'enabled ' + usageToEnable +
+                                  ', tested ' + usageToTest);
+    } else {
+      assert_not_equals(errors, null, 'enabled ' + usageToEnable +
+                                      ', tested ' + usageToTest);
+    }
+    ctx.transferBackFromGPUTexture();
   };
 
   // Build up a chain of promises which test each TextureUsage flag.
@@ -222,13 +218,8 @@ function test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
 
   for (const usageToEnable of supportedUsageFlags) {
     for (const usageToTest of supportedUsageFlags) {
-      promise = promise.then(() => {
-        return with_webgpu((adapter, adapterInfo, device) => {
-          return testOneUsageFlag(device, canvas, usageToEnable, usageToTest);
-        });
-      });
+      const device = await getWebGPUDevice();
+      await testOneUsageFlag(device, canvas, usageToEnable, usageToTest);
     }
   }
-
-  return promise;
 }
