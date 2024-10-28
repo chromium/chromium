@@ -24,7 +24,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -402,9 +401,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "enablePageContentSetting",
-      base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
-          base::FeatureList::IsEnabled(
-              companion::features::kCompanionEnablePageContent));
+      base::FeatureList::IsEnabled(features::kPageContentOptIn));
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",

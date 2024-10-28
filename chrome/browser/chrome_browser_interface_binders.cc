@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
@@ -194,7 +192,6 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
-#include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
@@ -1814,10 +1811,6 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<lens::mojom::SearchBubblePageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
         .Add<color_change_listener::mojom::PageHandler>();
-  }
-  if (companion::IsCompanionFeatureEnabled()) {
-    registry.ForWebUI<CompanionSidePanelUntrustedUI>()
-        .Add<side_panel::mojom::CompanionPageHandlerFactory>();
   }
   registry.ForWebUI<ReadAnythingUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();

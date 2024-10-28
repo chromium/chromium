@@ -16,8 +16,6 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/side_panel_companion_resources.h"
-#include "chrome/grit/side_panel_companion_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,9 +32,6 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
 
   // Add required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(base::make_span(
-      kSidePanelCompanionResources, kSidePanelCompanionResourcesSize));
-  html_source->AddResourcePath("", IDR_SIDE_PANEL_COMPANION_COMPANION_HTML);
   // Allow untrusted mojo resources to be loaded.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
