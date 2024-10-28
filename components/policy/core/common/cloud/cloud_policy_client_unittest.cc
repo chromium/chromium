@@ -141,7 +141,7 @@ constexpr int64_t kTimestamp = 987654321;
 constexpr em::PolicyFetchRequest::SignatureType
     kRemoteCommandsFetchSignatureType = em::PolicyFetchRequest::SHA256_RSA;
 
-constexpr PolicyFetchReason kReason = PolicyFetchReason::kTest;
+constexpr PolicyFetchReason kPolicyFetchReason = PolicyFetchReason::kTest;
 constexpr auto kProtoReason = enterprise_management::DevicePolicyRequest::TEST;
 
 MATCHER_P(MatchProto, expected, "matches protobuf") {
@@ -653,7 +653,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -670,7 +670,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
       "Enterprise.DMServerCloudPolicyRequestStatus", DM_STATUS_SUCCESS, 1);
 }
 
-class CloudPolicyClientWithFetchReasonTest
+class CloudPolicyClientWithPolicyFetchReasonTest
     : public CloudPolicyClientTest,
       public testing::WithParamInterface<
           std::tuple<PolicyFetchReason,
@@ -680,7 +680,7 @@ class CloudPolicyClientWithFetchReasonTest
   auto GetProtoReason() const { return get<1>(GetParam()); }
 };
 
-TEST_P(CloudPolicyClientWithFetchReasonTest, FetchReason) {
+TEST_P(CloudPolicyClientWithPolicyFetchReasonTest, FetchReason) {
   base::HistogramTester histogram_tester;
   RegisterClient();
   ExpectAndCaptureJob(GetPolicyResponse());
@@ -695,7 +695,7 @@ TEST_P(CloudPolicyClientWithFetchReasonTest, FetchReason) {
 
 INSTANTIATE_TEST_SUITE_P(
     CloudPolicyClientWithReasonParams,
-    CloudPolicyClientWithFetchReasonTest,
+    CloudPolicyClientWithPolicyFetchReasonTest,
     ::testing::Values(
         std::tuple(PolicyFetchReason::kUnspecified,
                    enterprise_management::DevicePolicyRequest::UNSPECIFIED),
@@ -844,7 +844,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -884,7 +884,7 @@ TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenAndPolicyFetch) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -946,7 +946,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -996,7 +996,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1064,7 +1064,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1109,7 +1109,7 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1157,7 +1157,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1201,7 +1201,7 @@ TEST_F(CloudPolicyClientTest,
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1412,7 +1412,7 @@ TEST_F(CloudPolicyClientTest, PolicyUpdate) {
 
     ExpectAndCaptureJob(policy_response);
     EXPECT_CALL(observer_, OnPolicyFetched);
-    client_->FetchPolicy(kReason);
+    client_->FetchPolicy(kPolicyFetchReason);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
               job_type_);
@@ -1429,7 +1429,7 @@ TEST_F(CloudPolicyClientTest, PolicyUpdate) {
 
     ExpectAndCaptureJob(policy_response);
     EXPECT_CALL(observer_, OnPolicyFetched);
-    client_->FetchPolicy(kReason);
+    client_->FetchPolicy(kPolicyFetchReason);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
               job_type_);
@@ -1449,7 +1449,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchSHA256) {
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
 
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
@@ -1472,7 +1472,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchDisabledSHA256) {
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
 
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
@@ -1507,7 +1507,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1537,7 +1537,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidation) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1559,7 +1559,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidationNoPayload) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1582,7 +1582,7 @@ TEST_F(CloudPolicyClientMultipleThreadsTest,
   // Make a policy fetch.
   ExpectAndCaptureJob(GetPolicyResponse());
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   task_environment_->RunUntilIdle();
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
@@ -1641,7 +1641,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchClearOAuthToken) {
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
   client_->SetOAuthTokenAsAdditionalAuth(kOAuthToken);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1654,7 +1654,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchClearOAuthToken) {
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
   client_->SetOAuthTokenAsAdditionalAuth("");
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1672,7 +1672,7 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnClientError);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1688,7 +1688,7 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
       CreatePolicyData("excess-fake-policy-data"));
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -1711,7 +1711,7 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
           service_.SendJobResponseAsync(
               net::ERR_FAILED, DeviceManagementService::kInvalidArgument)));
   EXPECT_CALL(observer_, OnClientError);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
@@ -1769,7 +1769,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   EXPECT_CALL(observer_, OnPolicyFetched);
   client_->AddPolicyTypeToFetch(dm_protocol::kChromeExtensionPolicyType,
                                 std::string());
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
@@ -2061,7 +2061,7 @@ TEST_F(CloudPolicyClientTest, UploadStatusWhilePolicyFetchActive) {
 
   ExpectAndCaptureJob(policy_response);
   EXPECT_CALL(observer_, OnPolicyFetched);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
@@ -2960,7 +2960,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistration) {
                           net::OK, DeviceManagementService::kDeviceNotFound)));
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   EXPECT_CALL(observer_, OnClientError);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
@@ -3006,7 +3006,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
                           net::OK, DeviceManagementService::kDeviceNotFound)));
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   EXPECT_CALL(observer_, OnClientError);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
@@ -3054,7 +3054,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
               net::OK, DeviceManagementService::kDeviceNotFound, response)));
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   EXPECT_CALL(observer_, OnClientError);
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
@@ -3147,7 +3147,7 @@ TEST_F(CloudPolicyClientTest,
   ExpectAndCaptureJob(GetPolicyResponse());
   EXPECT_CALL(observer_, OnPolicyFetched);
 
-  client_->FetchPolicy(kReason);
+  client_->FetchPolicy(kPolicyFetchReason);
   base::RunLoop().RunUntilIdle();
 
   // Try to manually finish the robot auth code fetch job.
