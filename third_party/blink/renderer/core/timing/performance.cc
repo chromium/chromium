@@ -29,6 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/time/time.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -855,7 +856,7 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
                                  base::TimeTicks start_time,
                                  bool is_triggered_by_soft_navigation) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
-      type, MonotonicTimeToDOMHighResTimeStamp(start_time),
+      type, RenderTimeToDOMHighResTimeStamp(start_time),
       DynamicTo<LocalDOMWindow>(GetExecutionContext()),
       is_triggered_by_soft_navigation);
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
@@ -1293,6 +1294,20 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
   return MonotonicTimeToDOMHighResTimeStamp(time_origin_, monotonic_time,
                                             false /* allow_negative_value */,
                                             cross_origin_isolated_capability_);
+}
+
+DOMHighResTimeStamp Performance::RenderTimeToDOMHighResTimeStamp(
+    base::TimeTicks monotonic_time) const {
+  constexpr base::TimeDelta kExtraCoarseResolution = base::Milliseconds(4);
+
+  if (RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
+      !cross_origin_isolated_capability_) {
+    return (monotonic_time - time_origin_)
+        .FloorToMultiple(kExtraCoarseResolution)
+        .InMillisecondsF();
+  } else {
+    return MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
+  }
 }
 
 DOMHighResTimeStamp Performance::now() const {

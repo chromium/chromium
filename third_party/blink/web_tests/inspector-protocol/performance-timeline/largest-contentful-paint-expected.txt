@@ -19,7 +19,7 @@ Basic test for LargestContentfulPaint support in PerformanceTimeline
             elementId : image
             loadTime : <number>
             nodeId : <img#image>
-            renderTime : 0
+            renderTime : <number>
             size : 65536
             url : .../images/resources/green-256x256.jpg
         }

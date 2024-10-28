@@ -201,19 +201,19 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
 
   ExpectMetricInLastUKMUpdateTraceEventNear(
       *trace_analyzer, "latest_largest_contentful_paint_ms",
-      lcp_timestamps[2].value(), 1.2);
+      lcp_timestamps[2].value(), 6);
 
   // Check UKM.
   // Since UKM rounds to an integer while the JS API returns a coarsened double,
-  // we'll assert that the UKM and JS values are within 1.2 of each other.
+  // we'll assert that the UKM and JS values are within 6ms of each other.
   // Comparing with strict equality could round incorrectly and introduce
   // flakiness into the test.
   ExpectUKMPageLoadMetricNear(
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
-      lcp_timestamps[2].value(), 1.2);
+      lcp_timestamps[2].value(), 6);
   ExpectUKMPageLoadMetricNear(
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName,
-      lcp_timestamps[2].value(), 1.2);
+      lcp_timestamps[2].value(), 6);
 
   // Check UMA.
   // Similar to UKM, rounding could introduce flakiness, so use helper to
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2", lcpTime);
 
   ExpectMetricInLastUKMUpdateTraceEventNear(
-      *trace_analyzer, "latest_largest_contentful_paint_ms", lcpTime, 2.0);
+      *trace_analyzer, "latest_largest_contentful_paint_ms", lcpTime, 5.0);
 }
 
 // TODO(crbug.com/40866505): Flaky on lacros
@@ -1014,7 +1014,9 @@ class LcpBreakdownTimingsTest : public MetricIntegrationTest {
   std::vector<double> load_start_list_;
   std::vector<double> load_end_list_;
   std::vector<double> lcp_list_;
-  double epsilon_ = 1.5;
+
+  // Render times are coarsened to 4ms.
+  double epsilon_ = 8;
 };
 
 IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, Subframe) {

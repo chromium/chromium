@@ -1010,9 +1010,15 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   if (!DomWindow()) {
     return;
   }
+
+  DOMHighResTimeStamp coarsened_load_time =
+      MonotonicTimeToDOMHighResTimeStamp(load_time);
+
+  DOMHighResTimeStamp coarsened_start_time = std::max(
+      RenderTimeToDOMHighResTimeStamp(start_time), coarsened_load_time);
+
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
-      name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
-      MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
+      name, url, rect, coarsened_start_time, coarsened_load_time, identifier,
       intrinsic_size.width(), intrinsic_size.height(), id, element,
       DomWindow());
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
@@ -1129,14 +1135,15 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     const String& url,
     Element* element,
     bool is_triggered_by_soft_navigation) {
-  DOMHighResTimeStamp start_timestamp =
-      MonotonicTimeToDOMHighResTimeStamp(start_time);
-  DOMHighResTimeStamp render_timestamp =
-      MonotonicTimeToDOMHighResTimeStamp(render_time);
   DOMHighResTimeStamp load_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
+  DOMHighResTimeStamp start_timestamp =
+      std::max(load_timestamp, RenderTimeToDOMHighResTimeStamp(start_time));
+  DOMHighResTimeStamp render_timestamp =
+      std::max(load_timestamp, RenderTimeToDOMHighResTimeStamp(render_time));
   DOMHighResTimeStamp first_animated_frame_timestamp =
-      MonotonicTimeToDOMHighResTimeStamp(first_animated_frame_time);
+      RenderTimeToDOMHighResTimeStamp(first_animated_frame_time);
+
   // TODO(yoav): Should we modify start to represent the animated frame?
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp, render_timestamp, paint_size, load_timestamp,

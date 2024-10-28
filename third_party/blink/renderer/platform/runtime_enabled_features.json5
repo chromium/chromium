@@ -1725,6 +1725,10 @@
       status: "experimental",
     },
     {
+      name: "ExposeCoarsenedRenderTime",
+      status: "experimental",
+    },
+    {
       name: "ExposeRenderTimeNonTaoDelayedImage",
     },
     {

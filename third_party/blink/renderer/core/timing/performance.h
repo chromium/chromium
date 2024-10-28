@@ -134,6 +134,10 @@ class CORE_EXPORT Performance : public EventTarget {
   // document's time origin and has a time resolution that is safe for
   // exposing to web.
   DOMHighResTimeStamp MonotonicTimeToDOMHighResTimeStamp(base::TimeTicks) const;
+
+  // This does the same as MonotonicTimeToDOMHighResTimeStamp, but applies a
+  // coarser resolution for render times.
+  DOMHighResTimeStamp RenderTimeToDOMHighResTimeStamp(base::TimeTicks) const;
   DOMHighResTimeStamp now() const;
 
   // High Resolution Time Level 3 timeOrigin.
