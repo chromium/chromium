@@ -161,10 +161,6 @@ void AuctionProcessManager::WorkletProcess::ActivateAndBindIfUnbound(
   remove_idle_process_from_manager_timer_.Stop();
 }
 
-std::string AuctionProcessManager::WorkletProcess::ComputeDisplayName() const {
-  return AuctionProcessManager::ComputeDisplayName(worklet_type_, origin_);
-}
-
 void AuctionProcessManager::WorkletProcess::SetService(
     ProcessContext service_context) {
   DCHECK(!service_);
@@ -554,21 +550,6 @@ bool AuctionProcessManager::TryToUseIdleProcessForHandle(
 
 AuctionProcessManager::AuctionProcessManager() = default;
 
-std::string AuctionProcessManager::ComputeDisplayName(
-    WorkletType worklet_type,
-    const url::Origin& origin) {
-  // Use origin and whether it's a buyer/seller in display in task manager,
-  // though admittedly, worklet processes should hopefully not be around too
-  // long.
-  std::string display_name;
-  if (worklet_type == WorkletType::kBidder) {
-    display_name = "Auction Bidder Worklet: ";
-  } else {
-    display_name = "Auction Seller Worklet: ";
-  }
-  return display_name + origin.Serialize();
-}
-
 void AuctionProcessManager::RemovePendingProcessHandle(
     ProcessHandle* process_handle) {
   DCHECK(!process_handle->worklet_process_);
@@ -711,7 +692,7 @@ DedicatedAuctionProcessManager::CreateProcessInternal(
   content::ServiceProcessHost::Launch(
       service.InitWithNewPipeAndPassReceiver(),
       ServiceProcessHost::Options()
-          .WithDisplayName(worklet_process.ComputeDisplayName())
+          .WithDisplayName("Protected Audience JavaScript Process")
 #if BUILDFLAG(IS_MAC)
           // TODO(crbug.com/40812055) add a utility helper for Jit.
           .WithChildFlags(ChildProcessHost::CHILD_RENDERER)

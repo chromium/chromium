@@ -167,12 +167,6 @@ class CONTENT_EXPORT AuctionProcessManager {
     void ActivateAndBindIfUnbound(WorkletType worklet_type,
                                   const url::Origin& origin);
 
-    // Returns the display name to use for a process.
-    std::string ComputeDisplayName() const;
-
-    // Sets `is_bound_` to true. Only used in tests.
-    void set_is_bound_to_origin_for_testing() { is_bound_to_origin_ = true; }
-
     SiteInstance* site_instance() { return site_instance_.get(); }
 
     // Returns a weak pointer so that tests can hold onto a pointer to the
@@ -414,11 +408,6 @@ class CONTENT_EXPORT AuctionProcessManager {
   //
   // `process_handle` will be already filled.
   virtual bool TryUseSharedProcess(ProcessHandle* process_handle) = 0;
-
-  // Returns the display name to use for a process. Separate method so it can be
-  // used in tests.
-  static std::string ComputeDisplayName(WorkletType worklet_type,
-                                        const url::Origin& origin);
 
  private:
   // Contains ProcessHandles which have not yet been assigned processes.

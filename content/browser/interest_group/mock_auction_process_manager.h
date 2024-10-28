@@ -548,10 +548,11 @@ class MockAuctionProcessManager
   size_t last_load_bidder_worklet_threads_count_ = 0;
 
   // ReceiverSet is last so that destroying `this` while there's a pending
-  // callback over the pipe will not DCHECK. Each entry has a string context,
-  // which is the display name. Used to verify that worklets are created in the
-  // right process.
-  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService, std::string>
+  // callback over the pipe will not DCHECK. Keeps track of the weak pointers
+  // for each WorkletProcess to make sure each process is only used for the
+  // correct worklets.
+  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService,
+                    base::WeakPtr<WorkletProcess>>
       receiver_set_;
 };
 

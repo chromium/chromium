@@ -557,22 +557,9 @@ MockAuctionProcessManager::~MockAuctionProcessManager() = default;
 AuctionProcessManager::WorkletProcess::ProcessContext
 MockAuctionProcessManager::CreateProcessInternal(
     WorkletProcess& worklet_process) {
-  // Each receiver should get a unique display name. This check serves to help
-  // ensure that processes are correctly reused.
-  std::string display_name = worklet_process.ComputeDisplayName();
-  for (auto receiver : receiver_set_.GetAllContexts()) {
-    EXPECT_NE(*receiver.second, display_name);
-  }
-
   mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
   receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver(),
-                    std::move(display_name));
-  if (!worklet_process.is_bound_to_origin()) {
-    // The display name check isn't compatible with late-binding, as it can
-    // change which origin a process is bound to, so bind processes immediately
-    // to avoid running into issues. See https://crbug.com/374790901.
-    worklet_process.set_is_bound_to_origin_for_testing();
-  }
+                    worklet_process.GetWeakPtrForTesting());
   return WorkletProcess::ProcessContext(std::move(service));
 }
 
@@ -603,11 +590,17 @@ void MockAuctionProcessManager::LoadBidderWorklet(
   load_bidder_worklet_count_++;
   last_load_bidder_worklet_threads_count_ = shared_storage_hosts.size();
 
-  // Make sure this request came over the right pipe.
-  url::Origin owner = url::Origin::Create(script_source_url);
-  EXPECT_EQ(receiver_set_.current_context(),
-            ComputeDisplayName(AuctionProcessManager::WorkletType::kBidder,
-                               url::Origin::Create(script_source_url)));
+  // Make sure this request came over the right pipe, if the WorkletProcess
+  // hasn't been destroyed yet. Can't grab the origin on creation, as the origin
+  // may change in the case of processes that have not yet been bound to an
+  // origin.
+  WorkletProcess* worklet_process = receiver_set_.current_context().get();
+  if (worklet_process) {
+    EXPECT_EQ(worklet_process->origin(),
+              url::Origin::Create(script_source_url));
+    EXPECT_EQ(worklet_process->worklet_type(),
+              AuctionProcessManager::WorkletType::kBidder);
+  }
 
   EXPECT_EQ(0u, bidder_worklets_.count(script_source_url));
   bidder_worklets_.emplace(
@@ -637,10 +630,17 @@ void MockAuctionProcessManager::LoadSellerWorklet(
     auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) {
   EXPECT_EQ(0u, seller_worklets_.count(script_source_url));
 
-  // Make sure this request came over the right pipe.
-  EXPECT_EQ(receiver_set_.current_context(),
-            ComputeDisplayName(AuctionProcessManager::WorkletType::kSeller,
-                               url::Origin::Create(script_source_url)));
+  // Make sure this request came over the right pipe, if the WorkletProcess
+  // hasn't been destroyed yet. Can't grab the origin on creation, as the origin
+  // may change in the case of processes that have not yet been bound to an
+  // origin.
+  WorkletProcess* worklet_process = receiver_set_.current_context().get();
+  if (worklet_process) {
+    EXPECT_EQ(worklet_process->origin(),
+              url::Origin::Create(script_source_url));
+    EXPECT_EQ(worklet_process->worklet_type(),
+              AuctionProcessManager::WorkletType::kSeller);
+  }
 
   seller_worklets_.emplace(
       script_source_url,

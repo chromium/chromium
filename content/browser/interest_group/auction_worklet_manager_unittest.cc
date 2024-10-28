@@ -531,25 +531,30 @@ class MockAuctionProcessManager
   MockAuctionProcessManager() = default;
   ~MockAuctionProcessManager() override = default;
 
+  struct WorkletInfo {
+    bool operator==(const WorkletInfo& other) const = default;
+
+    WorkletType worklet_type;
+    url::Origin origin;
+  };
+
   // DedicatedAuctionProcessManager implementation:
   WorkletProcess::ProcessContext CreateProcessInternal(
       WorkletProcess& worklet_process) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
 
     // Have to flush the receiver set, so that any closed receivers are removed,
-    // before searching for duplicate process names.
+    // before searching for duplicate worklets.
     receiver_set_.FlushForTesting();
 
-    // Each receiver should get a unique display name. This check serves to help
-    // ensure that processes are correctly reused.
-    std::string display_name = worklet_process.ComputeDisplayName();
+    WorkletInfo info{worklet_process.worklet_type(), worklet_process.origin()};
 
     for (auto context : receiver_set_.GetAllContexts()) {
-      EXPECT_NE(*context.second, display_name);
+      EXPECT_NE(*context.second, info);
     }
 
     receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver(),
-                      display_name);
+                      std::move(info));
 
     return WorkletProcess::ProcessContext(std::move(service));
   }
@@ -613,9 +618,10 @@ class MockAuctionProcessManager
     DCHECK(!bidder_worklet_);
 
     // Make sure this request came over the right pipe.
-    EXPECT_EQ(receiver_set_.current_context(),
-              ComputeDisplayName(AuctionProcessManager::WorkletType::kBidder,
-                                 url::Origin::Create(script_source_url)));
+    EXPECT_EQ(receiver_set_.current_context().worklet_type,
+              AuctionProcessManager::WorkletType::kBidder);
+    EXPECT_EQ(receiver_set_.current_context().origin,
+              url::Origin::Create(script_source_url));
 
     bidder_worklet_ = std::make_unique<MockBidderWorklet>(
         std::move(bidder_worklet_receiver),
@@ -650,9 +656,10 @@ class MockAuctionProcessManager
     DCHECK(!seller_worklet_);
 
     // Make sure this request came over the right pipe.
-    EXPECT_EQ(receiver_set_.current_context(),
-              ComputeDisplayName(AuctionProcessManager::WorkletType::kSeller,
-                                 url::Origin::Create(script_source_url)));
+    EXPECT_EQ(receiver_set_.current_context().worklet_type,
+              AuctionProcessManager::WorkletType::kSeller);
+    EXPECT_EQ(receiver_set_.current_context().origin,
+              url::Origin::Create(script_source_url));
 
     seller_worklet_ = std::make_unique<MockSellerWorklet>(
         std::move(seller_worklet_receiver),
@@ -713,9 +720,9 @@ class MockAuctionProcessManager
 
   // ReceiverSet is last (except for ProcessHandles) so that destroying `this`
   // while there's a pending callback over the pipe will not DCHECK. Each
-  // context is the display name associated with the WorkletProcess used to
-  // create the pipe.
-  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService, std::string>
+  // context is the WorkletProcess associated with the pipe, to make sure
+  // worklets are requested over the correct pipe.
+  mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService, WorkletInfo>
       receiver_set_;
 
   bool defer_on_launched_for_handles_ = false;
