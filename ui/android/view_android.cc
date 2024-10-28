@@ -93,7 +93,7 @@ ViewAndroid::ScopedAnchorView::view() const {
 ViewAndroid::ViewAndroid(LayoutType layout_type)
     : parent_(nullptr), layout_type_(layout_type) {}
 
-ViewAndroid::ViewAndroid() : ViewAndroid(LayoutType::NORMAL) {}
+ViewAndroid::ViewAndroid() : ViewAndroid(LayoutType::kNormal) {}
 
 ViewAndroid::~ViewAndroid() {
   RemoveAllChildren(GetWindowAndroid() != nullptr);

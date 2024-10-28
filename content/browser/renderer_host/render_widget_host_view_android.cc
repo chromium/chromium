@@ -597,7 +597,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
       selection_popup_controller_(nullptr),
       text_suggestion_host_(nullptr),
       gesture_listener_manager_(nullptr),
-      view_(ui::ViewAndroid::LayoutType::MATCH_PARENT),
+      view_(ui::ViewAndroid::LayoutType::kMatchParent),
       gesture_provider_(
           ui::GetGestureProviderConfig(
               ui::GestureProviderConfigType::CURRENT_PLATFORM,

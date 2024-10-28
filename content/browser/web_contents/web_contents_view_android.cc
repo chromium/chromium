@@ -129,7 +129,7 @@ WebContentsViewAndroid::WebContentsViewAndroid(
     std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents),
       delegate_(std::move(delegate)),
-      view_(ui::ViewAndroid::LayoutType::NORMAL),
+      view_(ui::ViewAndroid::LayoutType::kNormal),
       synchronous_compositor_client_(nullptr) {
   view_.SetLayer(cc::slim::Layer::Create());
   view_.set_event_handler(this);

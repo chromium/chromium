@@ -54,11 +54,11 @@ class TestEventHandler : public EventHandlerAndroid {
 class ViewAndroidBoundsTest : public testing::Test {
  public:
   ViewAndroidBoundsTest()
-      : root_(ViewAndroid::LayoutType::MATCH_PARENT),
-        view1_(ViewAndroid::LayoutType::NORMAL),
-        view2_(ViewAndroid::LayoutType::NORMAL),
-        view3_(ViewAndroid::LayoutType::NORMAL),
-        viewm_(ViewAndroid::LayoutType::MATCH_PARENT) {
+      : root_(ViewAndroid::LayoutType::kMatchParent),
+        view1_(ViewAndroid::LayoutType::kNormal),
+        view2_(ViewAndroid::LayoutType::kNormal),
+        view3_(ViewAndroid::LayoutType::kNormal),
+        viewm_(ViewAndroid::LayoutType::kMatchParent) {
     root_.GetEventForwarder();
     view1_.set_event_handler(&handler1_);
     view2_.set_event_handler(&handler2_);

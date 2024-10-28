@@ -143,7 +143,7 @@ class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
       nullptr;
 
   // Of the parent of this RWHVA.
-  ui::ViewAndroid parent_view_{ui::ViewAndroid::LayoutType::NORMAL};
+  ui::ViewAndroid parent_view_{ui::ViewAndroid::LayoutType::kNormal};
   scoped_refptr<cc::slim::Layer> parent_layer_;
 };
 
