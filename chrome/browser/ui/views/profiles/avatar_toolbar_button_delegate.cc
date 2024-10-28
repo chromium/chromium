@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -1131,14 +1130,14 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   if (identity_manager_) {
     identity_manager_observation_.Observe(identity_manager_);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On CrOS this button should only show as badging for Incognito, Guest and
   // captivie portal signin. It's only enabled for non captive portal Incognito
   // where a menu is available for closing all Incognito windows.
   avatar_toolbar_button_->SetEnabled(
       profile_->IsOffTheRecord() && !profile_->IsGuestSession() &&
       !profile_->GetOTRProfileID().IsCaptivePortal());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() = default;
@@ -1343,7 +1342,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       }
     } break;
     case ButtonState::kGuestSession: {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // On ChromeOS all windows are either Guest or not Guest and the Guest
       // avatar button is not actionable. Showing the number of open windows is
       // not as helpful as on other desktop platforms. Please see

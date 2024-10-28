@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"

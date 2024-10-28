@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"

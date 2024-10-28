@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"

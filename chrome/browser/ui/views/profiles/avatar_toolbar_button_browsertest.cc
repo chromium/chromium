@@ -70,7 +70,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
   EXPECT_FALSE(GetWindowCountInAvatarButtonText(avatar_button1).has_value());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, GuestWindowCount) {
   Browser* browser1 = CreateGuestBrowser();
   AvatarToolbarButton* avatar_button1 = GetAvatarToolbarButton(browser1);
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, GuestWindowCount) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class AvatarToolbarButtonAshBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  protected:
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAshBrowserTest, GuestSession) {
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, DefaultBrowser) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // No avatar button is shown in normal Ash windows.
   EXPECT_FALSE(avatar->GetVisible());
 #else
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // During test setup, number of profiles may differ per platform.
   size_t number_of_profiles =
       g_browser_process->profile_manager()->GetNumberOfProfiles();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In Ash tests setup creates more than 1 profile. When there is more than 1
   // profile (not Ash specific logic), the name is always shown on browser that
   // are signed in to show the greenting by default.
@@ -850,17 +850,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 
 // Avatar button is not shown on Ash. No need to perform those tests as the info
 // checked might not be adapted.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SignInOutIconEffect) {
   ASSERT_FALSE(IsSignedInImageUsed());
 
   SigninWithImage(u"test@gmail.com");
   EXPECT_TRUE(IsSignedInImageUsed());
 
-#if !BUILDFLAG(IS_CHROMEOS)
   Signout();
   EXPECT_FALSE(IsSignedInImageUsed());
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SignedInChangeIcon) {
