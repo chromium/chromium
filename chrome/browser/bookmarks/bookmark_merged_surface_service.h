@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace bookmarks {
@@ -112,6 +113,21 @@ class BookmarkMergedSurfaceService : public KeyedService {
   void Move(const bookmarks::BookmarkNode* node,
             const BookmarkParentFolder& new_parent,
             size_t index);
+
+  // Inserts a copy of `node` into `new_parent` at `index`.
+  // Note: If `BookmarkParentFolder` is a permanent bookmark folder, `index` is
+  // expected to be the position across storages. This can result in a copy
+  // operation within the local/account storage then a reorder operation within
+  // the `BookmarkPermanentFolderOrderingTracker` to respect the `index`.
+  void Copy(const bookmarks::BookmarkNode* node,
+            const BookmarkParentFolder& new_parent,
+            size_t index);
+
+  // Same as `Copy()` but copies `element`.
+  void CopyBookmarkNodeDataElement(
+      const bookmarks::BookmarkNodeData::Element& element,
+      const BookmarkParentFolder& new_parent,
+      size_t index);
 
   // Returns true if `parent` is managed.
   bool IsParentFolderManaged(const BookmarkParentFolder& parent) const;

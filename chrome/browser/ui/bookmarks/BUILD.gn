@@ -14,6 +14,7 @@ source_set("bookmarks") {
     "bookmark_stats_tab_helper.h",
     "bookmark_tab_helper.h",
     "bookmark_tab_helper_observer.h",
+    "bookmark_ui_operations_helper.h",
     "bookmark_utils.h",
     "bookmark_utils_desktop.h",
     "recently_used_folders_combo_model.h",
@@ -53,6 +54,7 @@ source_set("impl") {
     "bookmark_stats.cc",
     "bookmark_stats_tab_helper.cc",
     "bookmark_tab_helper.cc",
+    "bookmark_ui_operations_helper.cc",
     "bookmark_utils.cc",
     "bookmark_utils_desktop.cc",
     "recently_used_folders_combo_model.cc",
@@ -130,9 +132,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_context_menu_controller_unittest.cc",
-    "bookmark_drag_drop_unittest.cc",
     "bookmark_editor_unittest.cc",
     "bookmark_stats_tab_helper_unittest.cc",
+    "bookmark_ui_operations_helper_unittest.cc",
     "bookmark_ui_utils_desktop_unittest.cc",
     "bookmark_unittest.cc",
     "bookmark_utils_unittest.cc",

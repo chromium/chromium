@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -115,9 +116,14 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
     }
 
     bool copy = event.source_operations() == ui::DragDropTypes::DRAG_COPY;
-    output_drag_op = chrome::DropBookmarks(
-        profile_, drop_data_, drop_parent_, index_to_drop_at_, copy,
-        chrome::BookmarkReorderDropTarget::kBookmarkMenu);
+    // TODO(crbug.com/369304373): Update to use
+    // `BookmarkUIOperationsHelperMergedSurfaces` once this class is migrated to
+    // use `BookmarkMergedSurfaceService`.
+    output_drag_op =
+        BookmarkUIOperationsHelperNonMergedSurfaces(bookmark_model_,
+                                                    drop_parent_)
+            .DropBookmarks(profile_, drop_data_, index_to_drop_at_, copy,
+                           chrome::BookmarkReorderDropTarget::kBookmarkMenu);
   }
 
  private:

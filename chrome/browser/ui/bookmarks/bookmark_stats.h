@@ -11,7 +11,6 @@
 class Profile;
 
 namespace bookmarks {
-class BookmarkNode;
 struct BookmarkNodeData;
 }  // namespace bookmarks
 
@@ -108,7 +107,7 @@ void RecordBookmarkAllTabsWithTabsCount(const Profile* profile, int count);
 // Records that a bookmark or bookmarks were dropped. Determines the type of
 // drop operation based on the data and parent node.
 void RecordBookmarkDropped(const bookmarks::BookmarkNodeData& data,
-                           const bookmarks::BookmarkNode* parent_node,
+                           bool is_permanent_parent_node,
                            bool is_reorder);
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_STATS_H_

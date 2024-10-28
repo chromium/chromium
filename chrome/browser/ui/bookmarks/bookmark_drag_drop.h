@@ -19,7 +19,6 @@ class Profile;
 
 namespace bookmarks {
 class BookmarkNode;
-struct BookmarkNodeData;
 }
 
 namespace content {
@@ -82,18 +81,6 @@ void DragBookmarks(Profile* profile, const BookmarkDragParams& params);
 void DragBookmarksForTest(Profile* profile,
                           const BookmarkDragParams& params,
                           DoBookmarkDragCallback do_drag_callback);
-
-// Drops the bookmark nodes that are in |data| onto |parent_node| at |index|.
-// |copy| indicates the source operation: if true then the bookmarks in |data|
-// are copied, otherwise they are moved if they belong to the same |profile|.
-// Returns the drop type used.
-ui::mojom::DragOperation DropBookmarks(
-    Profile* profile,
-    const bookmarks::BookmarkNodeData& data,
-    const bookmarks::BookmarkNode* parent_node,
-    size_t index,
-    bool copy,
-    BookmarkReorderDropTarget target);
 
 }  // namespace chrome
 

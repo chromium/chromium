@@ -47,6 +47,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -2193,9 +2194,13 @@ void BookmarkBarView::PerformDrop(
   DCHECK_NE(index, static_cast<size_t>(-1));
 
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
-  output_drag_op = chrome::DropBookmarks(
-      browser_->profile(), data, parent_node, index, copy,
-      chrome::BookmarkReorderDropTarget::kBookmarkBarView);
+  // TODO(crbug.com/369304373): Update to use
+  // `BookmarkUIOperationsHelperMergedSurfaces` once this class is migrated to
+  // use `BookmarkMergedSurfaceService`.
+  output_drag_op =
+      BookmarkUIOperationsHelperNonMergedSurfaces(bookmark_model_, parent_node)
+          .DropBookmarks(browser_->profile(), data, index, copy,
+                         chrome::BookmarkReorderDropTarget::kBookmarkBarView);
 }
 
 int BookmarkBarView::GetDropLocationModelIndexForTesting() const {

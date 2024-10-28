@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 
@@ -181,6 +182,39 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                  index);
   } else {
     model_->Move(node, new_parent.as_non_permanent_folder(), index);
+  }
+}
+
+void BookmarkMergedSurfaceService::Copy(const bookmarks::BookmarkNode* node,
+                                        const BookmarkParentFolder& new_parent,
+                                        size_t index) {
+  CHECK(!IsParentFolderManaged(new_parent));
+  if (new_parent.as_permanent_folder()) {
+    // Note: This will be updated once support for account only bookmarks is
+    // added.
+    model_->Copy(node, PermanentFolderToNode(*new_parent.as_permanent_folder()),
+                 index);
+  } else {
+    model_->Copy(node, new_parent.as_non_permanent_folder(), index);
+  }
+}
+
+void BookmarkMergedSurfaceService::CopyBookmarkNodeDataElement(
+    const bookmarks::BookmarkNodeData::Element& element,
+    const BookmarkParentFolder& new_parent,
+    size_t index) {
+  CHECK(!IsParentFolderManaged(new_parent));
+  if (new_parent.as_permanent_folder()) {
+    // Note: This will be updated once support for account only bookmarks is
+    // added.
+    bookmarks::CloneBookmarkNode(
+        model_, {element},
+        PermanentFolderToNode(*new_parent.as_permanent_folder()), index,
+        /*reset_node_times=*/true);
+  } else {
+    bookmarks::CloneBookmarkNode(model_, {element},
+                                 new_parent.as_non_permanent_folder(), index,
+                                 /*reset_node_times=*/true);
   }
 }
 
