@@ -80,10 +80,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
                                   credit_card);
   }
 
-  std::optional<FormData>& pending_form_data() {
-    return manager_->pending_form_data_;
-  }
-
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {
     manager_->OnFormProcessed(form, form_structure);
