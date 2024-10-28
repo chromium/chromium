@@ -125,7 +125,7 @@ def create_dmg(app_bundle_path, output_dir):
             os.path.join(output_dir,
                          'ChromeEnterpriseCompanion.dmg'), '--format', 'UDBZ',
             '--volname', 'ChromeEnterpriseCompanion', '--copy',
-            '{}:/ChromeEnterpriseCompanion.app'.format(app_bundle_path),
+            '{}:/'.format(os.path.normpath(app_bundle_path)),
             '--copy', '{}:/.install'.format(install_script_path)
         ]).returncode
 
