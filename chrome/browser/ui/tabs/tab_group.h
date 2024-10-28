@@ -44,6 +44,8 @@ class TabGroup {
   // true, |is_customized| cannot be reset to false.
   void SetVisualData(tab_groups::TabGroupVisualData visual_data,
                      bool is_customized = false);
+  void SetGroupIsClosing(bool is_closing);
+  bool IsGroupClosing() { return is_closing_; }
 
   // Returns a user-visible string describing the contents of the group, such as
   // "Google Search and 3 other tabs". Used for accessibly describing the group,
@@ -106,6 +108,7 @@ class TabGroup {
 
   int tab_count_ = 0;
 
+  bool is_closing_ = false;
   bool is_customized_ = false;
 };
 

@@ -51,6 +51,10 @@ void TabGroup::SetVisualData(tab_groups::TabGroupVisualData visual_data,
   controller_->ChangeTabGroupVisuals(id_, visuals);
 }
 
+void TabGroup::SetGroupIsClosing(bool is_closing) {
+  is_closing_ = is_closing;
+}
+
 std::u16string TabGroup::GetContentString() const {
   gfx::Range tabs_in_group = ListTabs();
   DCHECK_GT(tabs_in_group.length(), 0u);
