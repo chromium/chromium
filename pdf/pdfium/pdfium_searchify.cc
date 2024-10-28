@@ -175,10 +175,8 @@ gfx::Rect GetSpaceRect(const gfx::Rect& rect1, const gfx::Rect& rect2) {
 
   // Compute the angle of text flow from `rect1` to `rect2`, to decide where the
   // space rectangle should be.
-  gfx::Point c1 = rect1.CenterPoint();
-  gfx::Point c2 = rect2.CenterPoint();
-  double text_flow_angle = base::RadToDeg(
-      gfx::Vector2dF(c2.x() - c1.x(), c2.y() - c1.y()).SlopeAngleRadians());
+  gfx::Vector2dF vec(rect2.CenterPoint() - rect1.CenterPoint());
+  double text_flow_angle = base::RadToDeg(vec.SlopeAngleRadians());
 
   int x;
   int y;
@@ -188,29 +186,29 @@ gfx::Rect GetSpaceRect(const gfx::Rect& rect1, const gfx::Rect& rect2) {
   if (IsInRange(text_flow_angle, -45, 45)) {
     // Left to Right
     x = rect1.right();
-    width = rect2.x() - rect1.right();
     y = std::min(rect1.y(), rect2.y());
+    width = rect2.x() - x;
     height = std::max(rect1.bottom(), rect2.bottom()) - y;
   } else if (IsInRange(text_flow_angle, 45, 135)) {
     // Top to Bottom.
-    y = rect1.bottom();
-    height = rect2.y() - rect1.bottom();
     x = std::min(rect1.x(), rect2.x());
+    y = rect1.bottom();
     width = std::max(rect1.right(), rect2.right()) - x;
+    height = rect2.y() - y;
   } else if (IsInRange(text_flow_angle, 135, 180) ||
              IsInRange(text_flow_angle, -180, -135)) {
     // Right to Left.
     x = rect2.right();
-    width = rect1.x() - rect2.right();
     y = std::min(rect1.y(), rect2.y());
+    width = rect1.x() - x;
     height = std::max(rect1.bottom(), rect2.bottom()) - y;
   } else {
     CHECK(IsInRange(text_flow_angle, -135, -45));
     // Bottom to Top.
-    y = rect2.bottom();
-    height = rect1.y() - rect2.bottom();
     x = std::min(rect1.x(), rect2.x());
+    y = rect2.bottom();
     width = std::max(rect1.right(), rect2.right()) - x;
+    height = rect1.y() - y;
   }
 
   // To avoid returning an empty rectangle, width and height are set to at least
