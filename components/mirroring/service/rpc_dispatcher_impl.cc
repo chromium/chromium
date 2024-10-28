@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 namespace mirroring {
 
@@ -40,7 +41,7 @@ void RpcDispatcherImpl::Unsubscribe() {
 
 bool RpcDispatcherImpl::SendOutboundMessage(base::span<const uint8_t> message) {
   const openscreen::Error error = messenger_->SendRpcMessage(
-      std::vector<uint8_t>(message.begin(), message.end()));
+      openscreen::ByteView(message.data(), message.size()));
   return error.ok();
 }
 
