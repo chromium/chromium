@@ -49,7 +49,10 @@ const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile() {
       ADDRESS_HOME_ADMIN_LEVEL2,
       ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
       EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER};
+      PHONE_HOME_WHOLE_NUMBER,
+      ALTERNATIVE_FULL_NAME,
+      ALTERNATIVE_GIVEN_NAME,
+      ALTERNATIVE_FAMILY_NAME};
   return stored_types;
 }
 
@@ -119,6 +122,11 @@ size_t DetermineExpirationYearLength(FieldType assumed_field_type) {
     default:
       NOTREACHED();
   }
+}
+
+bool IsAlternativeNameType(FieldType type) {
+  return type == ALTERNATIVE_FULL_NAME || type == ALTERNATIVE_GIVEN_NAME ||
+         type == ALTERNATIVE_FAMILY_NAME;
 }
 
 }  // namespace autofill

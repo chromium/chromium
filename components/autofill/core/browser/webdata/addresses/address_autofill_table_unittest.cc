@@ -71,6 +71,8 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests reading/writing name, email, company, address and phone number
 // information.
 TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile home_profile = CreateAutofillProfile();
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
@@ -147,7 +149,12 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca", VerificationStatus::kObserved);
-
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FULL_NAME, u"やまだ たろう", VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"たろう", VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FAMILY_NAME, u"やまだ", VerificationStatus::kObserved);
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.set_language_code("en");
 
@@ -282,6 +289,8 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
 }
 
 TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
   // Add a profile to the db.
   AutofillProfile profile = CreateAutofillProfile();
   profile.SetRawInfo(NAME_FIRST, u"John");
@@ -299,6 +308,9 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark");
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
+  profile.SetRawInfo(ALTERNATIVE_FULL_NAME, u"やまだ たろう");
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"たろう");
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"やまだ");
   profile.set_language_code("en");
   profile.FinalizeAfterImport();
   table_.AddAutofillProfile(profile);

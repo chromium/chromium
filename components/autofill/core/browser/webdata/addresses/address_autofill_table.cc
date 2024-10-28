@@ -392,6 +392,11 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
       continue;
     }
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillSupportPhoneticNameForJP) &&
+        IsAlternativeNameType(type)) {
+      continue;
+    }
     sql::Statement s;
     InsertBuilder(db, s, kAddressTypeTokensTable,
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});

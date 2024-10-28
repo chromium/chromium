@@ -21,18 +21,13 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
-namespace {
-bool IsAlternativeNameType(FieldType type) {
-  return type == ALTERNATIVE_FULL_NAME || type == ALTERNATIVE_GIVEN_NAME ||
-         type == ALTERNATIVE_FAMILY_NAME;
-}
-}  // namespace
 
 NameInfo::NameInfo()
     : name_(std::make_unique<NameFull>()),
