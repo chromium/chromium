@@ -1796,10 +1796,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
   }
   builder.SetPseudoElementStyles(match_result.PseudoElementStyles());
 
-  if (RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled() &&
-      state.HasAttrFunction()) {
-    builder.SetHasAttrFunction();
-  }
   if (element->IsPseudoElement()) {
     state.StyleBuilder().SetStyleType(element->GetPseudoIdForStyling());
   }
@@ -2288,8 +2284,8 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
                                  selector_filter_, match_result,
                                  state.ElementLinkState());
   collector.SetMode(SelectorChecker::kCollectingCSSRules);
-    CollectPseudoRulesForElement(*element, collector, pseudo_id,
-                                 view_transition_name, rules_to_include);
+  CollectPseudoRulesForElement(*element, collector, pseudo_id,
+                               view_transition_name, rules_to_include);
 
   if (tracker_) {
     AddMatchedRulesToTracker(collector);

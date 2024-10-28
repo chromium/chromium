@@ -238,7 +238,7 @@ void MatchedPropertiesCache::ClearViewportDependent() {
 
 bool MatchedPropertiesCache::IsStyleCacheable(
     const ComputedStyleBuilder& builder) {
-  // Content property with attr() values depend on the attribute value of the
+  // Properties with attr() values depend on the attribute value of the
   // originating element, thus we cannot cache based on the matched properties
   // because the value of content is retrieved from the attribute at apply time.
   if (builder.HasAttrFunction()) {
@@ -327,11 +327,6 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   if (!state.GetElement().GetCascadeFilter().IsEmpty()) {
     // The result of applying properties with the same matching declarations can
     // be different if the cascade filter is different.
-    return false;
-  }
-
-  if (state.HasAttrFunction()) {
-    DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
     return false;
   }
 

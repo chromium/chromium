@@ -194,9 +194,6 @@ class CORE_EXPORT StyleResolverState {
   void SetPositionAnchor(ScopedCSSName*);
   void SetPositionAreaOffsets(const std::optional<PositionAreaOffsets>&);
 
-  void SetHasAttrFunction() { has_attr_function_ = true; }
-  bool HasAttrFunction() const { return has_attr_function_; }
-
   CSSParserMode GetParserMode() const;
 
   // If the input CSSValue is a CSSLightDarkValuePair, return the light or dark
@@ -350,8 +347,6 @@ class CORE_EXPORT StyleResolverState {
 
   // True if the resolved ComputedStyle depends on tree-scoped references.
   bool has_tree_scoped_reference_ = false;
-
-  bool has_attr_function_ = false;
 };
 
 }  // namespace blink

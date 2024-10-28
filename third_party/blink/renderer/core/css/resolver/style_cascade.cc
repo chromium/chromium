@@ -1399,7 +1399,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
     } else if (token.FunctionId() == CSSValueID::kAttr &&
                RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
-      state_.SetHasAttrFunction();
+      state_.StyleBuilder().SetHasAttrFunction();
       success &= ResolveAttrInto(stream, resolver, context, out);
     } else if (token.FunctionId() ==
                CSSValueID::kInternalAppearanceAutoBaseSelect) {
