@@ -435,9 +435,12 @@ enum class PermissionType {
   kExplicitHost,
 };
 
+// TODO(crbug.com/40857680): This test used to be parameterized for
+// PermissionType. However, parent class needs to parameterize the test for
+// feature kExtensionsMenuAccessControl. Once feature is fully rolled out, we
+// can go back to testing::WithParamInterface<PermissionType>.
 class ExtensionActionViewControllerGrayscaleTest
-    : public ExtensionActionViewControllerBrowserTest,
-      public testing::WithParamInterface<PermissionType> {
+    : public ExtensionActionViewControllerFeatureRolloutBrowserTest {
  public:
   enum class ActionState {
     kEnabled,
@@ -527,141 +530,144 @@ ExtensionActionViewControllerGrayscaleTest::GetPageAccess(
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ExtensionActionViewControllerGrayscaleTest,
-    ::testing::Values(PermissionType::kScriptableHost,
-                      PermissionType::kExplicitHost),
-    [](const testing::TestParamInfo<PermissionType>& info) {
-      switch (info.param) {
-        case PermissionType::kScriptableHost:
-          return "ScriptableHost";
-        case PermissionType::kExplicitHost:
-          return "ExplicitHost";
-      }
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         ExtensionActionViewControllerGrayscaleTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "FeatureEnabled"
+                                             : "FeatureDisabled";
+                         });
 
 // Tests the behavior for icon grayscaling.
 IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerGrayscaleTest,
-                       GrayscaleIcon_ExplicitHosts) {
+                       GrayscaleIcon) {
   Init();
 
-  // Create an extension with google.com as either an explicit or scriptable
-  // host permission.
-  PermissionType permission_type = GetParam();
-  std::string host_permission = "https://www.google.com/*";
-  scoped_refptr<const extensions::Extension> extension =
-      CreateExtension(permission_type, host_permission);
-  extension_service()->GrantPermissions(extension.get());
-  extension_service()->AddExtension(extension.get());
+  bool is_feature_enabled = GetParam();
+  static constexpr PermissionType permission_types[] = {
+      PermissionType::kScriptableHost, PermissionType::kExplicitHost};
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(
-      browser()->profile(), extension);
-  permissions_modifier.SetWithholdHostPermissions(true);
-  const GURL kHasPermissionUrl("https://www.google.com/");
-  const GURL kNoPermissionsUrl("https://www.chromium.org/");
+  for (auto permission_type : permission_types) {
+    // Create an extension with google.com as either an explicit or scriptable
+    // host permission.
+    std::string host_permission = "https://www.google.com/*";
+    scoped_refptr<const extensions::Extension> extension =
+        CreateExtension(permission_type, host_permission);
+    extension_service()->GrantPermissions(extension.get());
+    extension_service()->AddExtension(extension.get());
 
-  // Make sure UserScriptListener doesn't hold up the navigation.
-  extensions::ExtensionsBrowserClient::Get()
-      ->GetUserScriptListener()
-      ->TriggerUserScriptsReadyForTesting(browser()->profile());
+    extensions::ScriptingPermissionsModifier permissions_modifier(
+        browser()->profile(), extension);
+    permissions_modifier.SetWithholdHostPermissions(true);
+    const GURL kHasPermissionUrl("https://www.google.com/");
+    const GURL kNoPermissionsUrl("https://www.chromium.org/");
 
-  // Load up a page that we will navigate for the different test cases.
-  AddTab(browser(), GURL("about:blank"));
+    // Make sure UserScriptListener doesn't hold up the navigation.
+    extensions::ExtensionsBrowserClient::Get()
+        ->GetUserScriptListener()
+        ->TriggerUserScriptsReadyForTesting(browser()->profile());
 
-  static constexpr struct {
-    ActionState action_state;
-    PageAccessStatus page_access;
-    Coloring expected_coloring;
-    BlockedDecoration expected_blocked_decoration;
-  } test_cases[] = {
-      {ActionState::kEnabled, PageAccessStatus::kNone, Coloring::kFull,
-       BlockedDecoration::kNotPainted},
-      {ActionState::kEnabled, PageAccessStatus::kWithheld, Coloring::kFull,
-       BlockedDecoration::kNotPainted},
-      {ActionState::kEnabled, PageAccessStatus::kBlocked, Coloring::kFull,
-       BlockedDecoration::kPainted},
-      {ActionState::kEnabled, PageAccessStatus::kGranted, Coloring::kFull,
-       BlockedDecoration::kNotPainted},
+    // Load up a page that we will navigate for the different test cases.
+    AddTab(browser(), GURL("about:blank"));
 
-      {ActionState::kDisabled, PageAccessStatus::kNone, Coloring::kGrayscale,
-       BlockedDecoration::kNotPainted},
-      {ActionState::kDisabled, PageAccessStatus::kWithheld, Coloring::kFull,
-       BlockedDecoration::kNotPainted},
-      {ActionState::kDisabled, PageAccessStatus::kBlocked, Coloring::kFull,
-       BlockedDecoration::kPainted},
-      {ActionState::kDisabled, PageAccessStatus::kGranted, Coloring::kFull,
-       BlockedDecoration::kNotPainted},
-  };
+    // Note: Action can only have a blocked decoration if the feature is
+    // disabled.
+    static struct {
+      ActionState action_state;
+      PageAccessStatus page_access;
+      Coloring expected_coloring;
+      BlockedDecoration expected_blocked_decoration;
+    } test_cases[] = {
+        {ActionState::kEnabled, PageAccessStatus::kNone, Coloring::kFull,
+         BlockedDecoration::kNotPainted},
+        {ActionState::kEnabled, PageAccessStatus::kWithheld, Coloring::kFull,
+         BlockedDecoration::kNotPainted},
+        {ActionState::kEnabled, PageAccessStatus::kBlocked, Coloring::kFull,
+         is_feature_enabled ? BlockedDecoration::kNotPainted
+                            : BlockedDecoration::kPainted},
+        {ActionState::kEnabled, PageAccessStatus::kGranted, Coloring::kFull,
+         BlockedDecoration::kNotPainted},
 
-  ExtensionActionViewController* const controller =
-      GetViewControllerForId(extension->id());
-  ASSERT_TRUE(controller);
-  content::WebContents* web_contents = GetActiveWebContents();
-  extensions::ExtensionAction* extension_action =
-      extensions::ExtensionActionManager::Get(browser()->profile())
-          ->GetExtensionAction(*extension);
-  extensions::ExtensionActionRunner* action_runner =
-      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+        {ActionState::kDisabled, PageAccessStatus::kNone, Coloring::kGrayscale,
+         BlockedDecoration::kNotPainted},
+        {ActionState::kDisabled, PageAccessStatus::kWithheld, Coloring::kFull,
+         BlockedDecoration::kNotPainted},
+        {ActionState::kDisabled, PageAccessStatus::kBlocked, Coloring::kFull,
+         is_feature_enabled ? BlockedDecoration::kNotPainted
+                            : BlockedDecoration::kPainted},
+        {ActionState::kDisabled, PageAccessStatus::kGranted, Coloring::kFull,
+         BlockedDecoration::kNotPainted},
+    };
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    SCOPED_TRACE(
-        base::StringPrintf("Running test case %d", static_cast<int>(i)));
-    const auto& test_case = test_cases[i];
+    ExtensionActionViewController* const controller =
+        GetViewControllerForId(extension->id());
+    ASSERT_TRUE(controller);
+    content::WebContents* web_contents = GetActiveWebContents();
+    extensions::ExtensionAction* extension_action =
+        extensions::ExtensionActionManager::Get(browser()->profile())
+            ->GetExtensionAction(*extension);
+    extensions::ExtensionActionRunner* action_runner =
+        extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+    int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
-    // Set up the proper state for the test case.
-    switch (test_case.page_access) {
-      case PageAccessStatus::kNone: {
-        NavigateAndCommitActiveTab(kNoPermissionsUrl);
-        // Page access should be denied; verify.
-        extensions::PermissionsData::PageAccess page_access =
-            GetPageAccess(web_contents, extension, permission_type);
-        EXPECT_EQ(extensions::PermissionsData::PageAccess::kDenied,
-                  page_access);
-        break;
+    for (size_t i = 0; i < std::size(test_cases); ++i) {
+      SCOPED_TRACE(
+          base::StringPrintf("Running test case %d", static_cast<int>(i)));
+      const auto& test_case = test_cases[i];
+
+      // Set up the proper state for the test case.
+      switch (test_case.page_access) {
+        case PageAccessStatus::kNone: {
+          NavigateAndCommitActiveTab(kNoPermissionsUrl);
+          // Page access should be denied; verify.
+          extensions::PermissionsData::PageAccess page_access =
+              GetPageAccess(web_contents, extension, permission_type);
+          EXPECT_EQ(extensions::PermissionsData::PageAccess::kDenied,
+                    page_access);
+          break;
+        }
+        case PageAccessStatus::kWithheld: {
+          NavigateAndCommitActiveTab(kHasPermissionUrl);
+          // Page access should already be withheld; verify.
+          extensions::PermissionsData::PageAccess page_access =
+              GetPageAccess(web_contents, extension, permission_type);
+          EXPECT_EQ(extensions::PermissionsData::PageAccess::kWithheld,
+                    page_access);
+          break;
+        }
+        case PageAccessStatus::kBlocked:
+          // Navigate to a page where the permission is currently withheld and
+          // try to inject a script.
+          NavigateAndCommitActiveTab(kHasPermissionUrl);
+          action_runner->RequestScriptInjectionForTesting(
+              extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
+              base::DoNothing());
+          break;
+        case PageAccessStatus::kGranted:
+          // Grant the withheld requested permission and navigate there.
+          permissions_modifier.GrantHostPermission(kHasPermissionUrl);
+          NavigateAndCommitActiveTab(kHasPermissionUrl);
+          break;
       }
-      case PageAccessStatus::kWithheld: {
-        NavigateAndCommitActiveTab(kHasPermissionUrl);
-        // Page access should already be withheld; verify.
-        extensions::PermissionsData::PageAccess page_access =
-            GetPageAccess(web_contents, extension, permission_type);
-        EXPECT_EQ(extensions::PermissionsData::PageAccess::kWithheld,
-                  page_access);
-        break;
+
+      // Enable or disable the action based on the test case.
+      extension_action->SetIsVisible(
+          tab_id, test_case.action_state == ActionState::kEnabled);
+
+      std::unique_ptr<IconWithBadgeImageSource> image_source =
+          controller->GetIconImageSourceForTesting(web_contents, view_size());
+      EXPECT_EQ(test_case.expected_coloring == Coloring::kGrayscale,
+                image_source->grayscale());
+      EXPECT_EQ(
+          test_case.expected_blocked_decoration == BlockedDecoration::kPainted,
+          image_source->paint_blocked_actions_decoration());
+
+      // Clean up permissions state.
+      if (test_case.page_access == PageAccessStatus::kGranted) {
+        permissions_modifier.RemoveGrantedHostPermission(kHasPermissionUrl);
       }
-      case PageAccessStatus::kBlocked:
-        // Navigate to a page where the permission is currently withheld and
-        // try to inject a script.
-        NavigateAndCommitActiveTab(kHasPermissionUrl);
-        action_runner->RequestScriptInjectionForTesting(
-            extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
-            base::DoNothing());
-        break;
-      case PageAccessStatus::kGranted:
-        // Grant the withheld requested permission and navigate there.
-        permissions_modifier.GrantHostPermission(kHasPermissionUrl);
-        NavigateAndCommitActiveTab(kHasPermissionUrl);
-        break;
+      action_runner->ClearInjectionsForTesting(*extension);
     }
-
-    // Enable or disable the action based on the test case.
-    extension_action->SetIsVisible(
-        tab_id, test_case.action_state == ActionState::kEnabled);
-
-    std::unique_ptr<IconWithBadgeImageSource> image_source =
-        controller->GetIconImageSourceForTesting(web_contents, view_size());
-    EXPECT_EQ(test_case.expected_coloring == Coloring::kGrayscale,
-              image_source->grayscale());
-    EXPECT_EQ(
-        test_case.expected_blocked_decoration == BlockedDecoration::kPainted,
-        image_source->paint_blocked_actions_decoration());
-
-    // Clean up permissions state.
-    if (test_case.page_access == PageAccessStatus::kGranted) {
-      permissions_modifier.RemoveGrantedHostPermission(kHasPermissionUrl);
-    }
-    action_runner->ClearInjectionsForTesting(*extension);
   }
 }
 
