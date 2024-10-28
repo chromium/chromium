@@ -206,6 +206,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTAuthTabEnableHttpsRedirects,
     &kCCTBeforeUnload,
     &kCCTClientDataHeader,
+    &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
     &kCCTFeatureUsage,
     &kCCTEphemeralMode,
@@ -552,6 +553,8 @@ BASE_FEATURE(kCCTBeforeUnload,
 BASE_FEATURE(kCCTClientDataHeader,
              "CCTClientDataHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEphemeralMode,
              "CCTEphemeralMode",

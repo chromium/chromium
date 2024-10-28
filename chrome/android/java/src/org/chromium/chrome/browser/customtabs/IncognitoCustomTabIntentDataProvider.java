@@ -215,7 +215,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         }
     }
 
-    public static boolean isValidIncognitoIntent(Intent intent) {
+    public static boolean isValidIncognitoIntent(Intent intent, boolean recordMetrics) {
         if (!isIncognitoRequested(intent)) return false;
         var session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         if (isIntentFromThirdPartyAllowed()
@@ -223,7 +223,10 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             return true;
         }
         boolean isTrusted = isTrustedCustomTab(intent, session);
-        RecordHistogram.recordBooleanHistogram("CustomTabs.IncognitoCCTCallerIsTrusted", isTrusted);
+        if (recordMetrics) {
+            RecordHistogram.recordBooleanHistogram(
+                    "CustomTabs.IncognitoCCTCallerIsTrusted", isTrusted);
+        }
         return isTrusted;
     }
 

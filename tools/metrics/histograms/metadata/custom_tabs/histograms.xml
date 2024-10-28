@@ -739,6 +739,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.Startup.StartedNavigationEarly" enum="Boolean"
+    expires_after="2025-04-10">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Whether or not Navigation was started early for Custom Tab startup. Excludes
+    WebApp/WebApk startups.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
     units="ms" expires_after="2025-03-02">
   <owner>mthiesse@chromium.org</owner>

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,11 +17,10 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.WebApkDetailsForDefaultOfflinePage;
@@ -82,11 +80,7 @@ public class WebApkDataProvider {
         return result;
     }
 
-    private static OfflineData getOfflinePageInfoForTwa(CustomTabActivity customTabActivity) {
-        BrowserServicesIntentDataProvider dataProvider = customTabActivity.getIntentDataProvider();
-        if (dataProvider == null) return null;
-
-        String clientPackageName = dataProvider.getClientPackageName();
+    private static OfflineData getOfflinePageInfoForTwa(String clientPackageName) {
         if (clientPackageName == null) return null;
 
         OfflineData result = new OfflineData();
@@ -113,12 +107,11 @@ public class WebApkDataProvider {
         return result;
     }
 
-    private static boolean isWithinScope(String url, CustomTabActivity customTabActivity) {
-        BrowserServicesIntentDataProvider dataProvider = customTabActivity.getIntentDataProvider();
+    private static boolean isWithinScope(
+            String url, String initialUrl, List<String> additionalOrigins) {
         Set<Origin> origins = new HashSet<>();
-        origins.add(Origin.create(dataProvider.getUrlToLoad()));
+        origins.add(Origin.create(initialUrl));
 
-        List<String> additionalOrigins = dataProvider.getTrustedWebActivityAdditionalOrigins();
         if (additionalOrigins != null) {
             for (String origin : additionalOrigins) {
                 origins.add(Origin.create(origin));
@@ -130,13 +123,15 @@ public class WebApkDataProvider {
 
     @CalledByNative
     public static String[] getOfflinePageInfo(int[] fields, String url, WebContents webContents) {
-        Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
-
         OfflineData offlineData = null;
-        if (activity instanceof CustomTabActivity) {
-            CustomTabActivity customTabActivity = (CustomTabActivity) activity;
-            if (isWithinScope(url, customTabActivity)) {
-                offlineData = getOfflinePageInfoForTwa(customTabActivity);
+        TwaOfflineDataProvider twaProvider =
+                TwaOfflineDataProvider.from(TabUtils.fromWebContents(webContents));
+        if (twaProvider != null) {
+            if (isWithinScope(
+                    url,
+                    twaProvider.getInitialUrlToLoad(),
+                    twaProvider.getAdditionalTwaOrigins())) {
+                offlineData = getOfflinePageInfoForTwa(twaProvider.getClientPackageName());
             }
         } else {
             offlineData = getOfflinePageInfoForPwa(url);

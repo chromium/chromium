@@ -112,7 +112,7 @@ public class WarmupManager {
         public void onCrash(Tab tab) {
             if (mSpareTab != tab) return;
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CRASHED;
-            destroySpareTabInternal();
+            destroySpareTabInternal(tab);
         }
 
         @Override
@@ -207,13 +207,15 @@ public class WarmupManager {
             ThreadUtils.assertOnUiThread();
 
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_DESTROYED;
-            destroySpareTabInternal();
+            destroySpareTabInternal(null);
         }
     }
 
-    private void destroySpareTabInternal() {
+    private void destroySpareTabInternal(Tab tab) {
         // Don't do anything if the spare tab doesn't exist.
         if (mSpareTab == null) return;
+
+        if (tab != null && tab != mSpareTab) return;
 
         // Record the SpareTabFinalStatus once its destroyed.
         recordSpareTabFinalStatusHistogram(mSpareTabFinalStatus);

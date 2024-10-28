@@ -39,13 +39,17 @@ import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -376,7 +380,11 @@ public class LaunchIntentDispatcher {
             boolean handled = getSessionDataHolder().handleIntent(mIntent);
             if (handled) return true;
         }
-        maybePrefetchDnsInBackground();
+
+        boolean startedNavigationEarly = maybeStartNavigation();
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.Startup.StartedNavigationEarly", startedNavigationEarly);
+        if (!startedNavigationEarly) maybePrefetchDnsInBackground();
 
         // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
         // the original intent so that it cannot be spoofed by CCT client apps.
@@ -390,6 +398,8 @@ public class LaunchIntentDispatcher {
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
         }
+
+        if (startedNavigationEarly) intent.putExtra(IntentHandler.EXTRA_SKIP_PRECONNECT, true);
 
         // Pass the package name obtained via identity sharing API separately from the one
         // obtained via startActivityForResult.
@@ -413,6 +423,25 @@ public class LaunchIntentDispatcher {
         mActivity.startActivity(launchIntent, null);
         RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
         return true;
+    }
+
+    private boolean maybeStartNavigation() {
+        if (!WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(false)) return false;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
+        if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
+                mIntent, /* recordMetrics= */ false)) {
+            return false;
+        }
+        if (!ProfileManager.isInitialized()) return false;
+        if (clearTopIntentsForCustomTabsEnabled(mIntent)
+                && getSessionDataHolder().getActiveHandlerClassInCurrentTask(mIntent, mActivity)
+                        != null) {
+            return false;
+        }
+        // Not opening into an existing Activity, can start navigation early if a spare tab
+        // exists.
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        return CustomTabsConnection.getInstance().startEarlyNavigationInHiddenTab(profile, mIntent);
     }
 
     private boolean launchWebApk() {

@@ -11,8 +11,11 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
@@ -247,6 +250,71 @@ public class HiddenTabHolder {
     /** Returns whether there currently is a hidden tab. */
     boolean hasHiddenTab() {
         return mSpeculation != null;
+    }
+
+    public boolean startEarlynavigation(Profile profile, Intent intent) {
+        // Don't clobber an existing speculation.
+        if (mSpeculation != null) return false;
+
+        // CCT Multi-network isn't supported here.
+        if (IntentUtils.safeGetParcelableExtra(intent, CustomTabIntentDataProvider.EXTRA_NETWORK)
+                != null) {
+            return false;
+        }
+
+        WarmupManager manager = WarmupManager.getInstance();
+        if (!manager.hasSpareTab(profile, /* targetsNetwork= */ false)) return false;
+
+        boolean isTrustedWebActivity =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
+
+        Tab tab =
+                WarmupManager.getInstance().takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
+
+        String url = IntentHandler.getUrlFromIntent(intent);
+        LoadUrlParams params = new LoadUrlParams(url);
+        IntentHandler.addReferrerAndHeaders(params, intent);
+        int transitionType =
+                isTrustedWebActivity
+                        ? PageTransition.AUTO_TOPLEVEL | PageTransition.FROM_API
+                        : PageTransition.LINK | PageTransition.FROM_API;
+        params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(intent, transitionType));
+        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+
+        String referrer = IntentHandler.getReferrerUrlIncludingExtraHeaders(intent);
+        if (referrer == null) referrer = "";
+
+        TabObserverRegistrar registrar = new TabObserverRegistrar();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabObserver customTabObserver =
+                new CustomTabObserver(/* openedByChrome= */ false, token, /* isHidden= */ true);
+        CustomTabNavigationEventObserver customTabNavigationEventObserver =
+                new CustomTabNavigationEventObserver(token, /* forPrerender= */ false);
+        CustomTabActivityTabController.addTabNavigationObservers(
+                registrar, customTabObserver, customTabNavigationEventObserver, tab, token);
+
+        if (isTrustedWebActivity) {
+            TwaOfflineDataProvider.createFor(
+                    tab,
+                    url,
+                    IntentUtils.safeGetStringArrayListExtra(
+                            intent,
+                            TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS),
+                    CustomTabsConnection.getInstance().getClientPackageNameForSession(token));
+        }
+
+        mSpeculation =
+                new SpeculationParams(
+                        token,
+                        url,
+                        tab,
+                        referrer,
+                        registrar,
+                        customTabObserver,
+                        customTabNavigationEventObserver);
+        tab.loadUrl(params);
+        return true;
     }
 
     public Tab getHiddenTabForTesting() {

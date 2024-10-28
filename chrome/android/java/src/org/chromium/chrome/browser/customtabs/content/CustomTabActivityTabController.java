@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
+import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -515,6 +516,15 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         if (!mIntentDataProvider.isWebappOrWebApkActivity()) {
             RedirectHandlerTabHelper.updateIntentInTab(tab, mIntent);
             tab.getView().requestFocus();
+        }
+
+        if (mIntentDataProvider.isTrustedWebActivity()
+                && TwaOfflineDataProvider.from(tab) == null) {
+            TwaOfflineDataProvider.createFor(
+                    tab,
+                    mIntentDataProvider.getUrlToLoad(),
+                    mIntentDataProvider.getTrustedWebActivityAdditionalOrigins(),
+                    mIntentDataProvider.getClientPackageName());
         }
 
         if (!tab.isOffTheRecord()) {

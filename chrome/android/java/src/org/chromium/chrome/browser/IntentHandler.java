@@ -253,6 +253,9 @@ public class IntentHandler {
     public static final String EXTRA_APP_SPECIFIC_HISTORY =
             "org.chromium.chrome.browser.app_specific_history";
 
+    public static final String EXTRA_SKIP_PRECONNECT =
+            "org.chromium.chrome.browser.skip_preconnect";
+
     /** The package name for the Google Search App. */
     public static final String PACKAGE_GSA = GSAUtils.GSA_PACKAGE_NAME;
 

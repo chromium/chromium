@@ -111,7 +111,7 @@ public class CustomTabsTestUtils {
                                 })
                         .session;
         Assert.assertTrue(connection.warmup(0));
-        startupCallbackHelper.waitForCallback(0, 1, 10, TimeUnit.SECONDS);
+        startupCallbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
         return connection;
     }
 

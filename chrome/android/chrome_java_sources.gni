@@ -510,6 +510,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/ReparentingTaskProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/RequestThrottler.java",
   "java/src/org/chromium/chrome/browser/customtabs/TranslucentCustomTabActivity.java",
+  "java/src/org/chromium/chrome/browser/customtabs/TwaOfflineDataProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityNavigationController.java",
   "java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java",
   "java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabFactory.java",

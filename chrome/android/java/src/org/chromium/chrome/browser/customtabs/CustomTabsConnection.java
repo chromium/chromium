@@ -1966,6 +1966,7 @@ public class CustomTabsConnection {
 
     /**
      * Discards substantial objects that are not currently in use.
+     *
      * @param level The type of signal as defined in {@link android.content.ComponentCallbacks2}.
      */
     public static void onTrimMemory(int level) {
@@ -2258,6 +2259,11 @@ public class CustomTabsConnection {
      */
     public @CalledWarmup int getWarmupState(CustomTabsSessionToken session) {
         return mClientManager.getWarmupState(session);
+    }
+
+    /** Kicks off a navigation in the background before the CustomTabActivity is started. */
+    public boolean startEarlyNavigationInHiddenTab(Profile profile, Intent intent) {
+        return mHiddenTabHolder.startEarlynavigation(profile, intent);
     }
 
     public static void setInstanceForTesting(CustomTabsConnection connection) {
