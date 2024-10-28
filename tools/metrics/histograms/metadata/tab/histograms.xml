@@ -2251,7 +2251,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Tabs.RecentlyClosed.EntriesRestoredInPage.{RecentlyClosedType}"
-    units="entries restored" expires_after="2024-12-08">
+    units="entries restored" expires_after="2025-12-08">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -2276,7 +2276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RecentlyClosed.HistoricalSaverCloseType"
-    enum="HistoricalSaverCloseType" expires_after="2024-12-08">
+    enum="HistoricalSaverCloseType" expires_after="2025-12-08">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -2286,20 +2286,6 @@ chromium-metrics-reviews@google.com.
     single tab group and Bulk for a combination of tabs and groups or more than
     one of either.
   </summary>
-</histogram>
-
-<histogram
-    name="Tabs.RecentlyClosed.PercentOfEntriesRestoredInPage.{RecentlyClosedType}"
-    units="percentage restored" expires_after="2024-12-08">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    The percentage of entries from TabRestoreService of {RecentlyClosedType}
-    type that were restored relative to the number shown in one Recent Tabs page
-    session on Android. This is recorded when destroying the Recent Tabs page if
-    any entires of {RecentlyClosedType} type were shown.
-  </summary>
-  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
 
 <histogram name="Tabs.RestoreAllArchivedTabsMenuItem.TabCount" units="tabs"

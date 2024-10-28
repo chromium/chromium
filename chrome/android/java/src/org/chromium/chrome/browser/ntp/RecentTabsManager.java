@@ -170,10 +170,6 @@ public class RecentTabsManager
             final int restoredCount = countSessionIdsRestored(sessionIdToRestoredState);
             RecordHistogram.recordCount1000Histogram(
                     "Tabs.RecentlyClosed.EntriesRestoredInPage." + entryType, restoredCount);
-            final int percentRestored = Math.round((restoredCount * 100.0f) / shownCount);
-            RecordHistogram.recordPercentageHistogram(
-                    "Tabs.RecentlyClosed.PercentOfEntriesRestoredInPage." + entryType,
-                    percentRestored);
         }
     }
 
