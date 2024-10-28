@@ -161,6 +161,10 @@ class ExtensionActionViewControllerBrowserTest : public InProcessBrowserTest {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
+  extensions::SidePanelService* side_panel_service() {
+    return extensions::SidePanelService::Get(browser()->profile());
+  }
+
   // The standard size associated with a toolbar action view.
   gfx::Size view_size() { return container()->GetToolbarActionSize(); }
 };
@@ -1198,17 +1202,9 @@ IN_PROC_BROWSER_TEST_F(
             HoverCardState::SiteAccess::kAllExtensionsAllowed);
 }
 
-class ExtensionActionViewControllerWithSidePanelBrowserTest
-    : public ExtensionActionViewControllerBrowserTest {
- protected:
-  extensions::SidePanelService* side_panel_service() {
-    return extensions::SidePanelService::Get(browser()->profile());
-  }
-};
-
 // Test that the extension action is enabled if opening the side panel on icon
 // click is enabled and the extension has a side panel for the current tab.
-IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerWithSidePanelBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
                        ActionEnabledIfSidePanelPresent) {
   Init();
   scoped_refptr<const extensions::Extension> extension =
