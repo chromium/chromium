@@ -5,10 +5,36 @@
 #define GOOGLE_APIS_PEOPLE_PEOPLE_API_REQUEST_TYPES_H_
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/values.h"
 
 namespace google_apis::people {
+
+// A person's email address.
+// The API may silently reject values if the `value` field is not set.
+//
+// https://developers.google.com/people/api/rest/v1/people#Person.EmailAddress
+struct EmailAddress {
+  // Predefined values for `type`.
+  static constexpr std::string_view kHomeType = "home";
+  static constexpr std::string_view kWorkType = "work";
+  static constexpr std::string_view kOtherType = "other";
+
+  // The email address.
+  std::string value;
+  // The type of the email address. The type can be custom or one of the
+  // predefined values above.
+  std::string type;
+
+  // Converts this struct to a dict. Requires an rvalue reference, and leaves
+  // this struct in a valid but unspecified state.
+  //
+  // This should be called either with a moved struct, or an explicit copy of
+  // one.
+  base::Value::Dict ToDict() &&;
+};
 
 // From the People API reference:
 //
@@ -37,6 +63,12 @@ struct Name {
 // Documentation for a generic Person:
 // https://developers.google.com/people/api/rest/v1/people#resource:-person
 struct Contact {
+  // The person's email addresses. For `people.connections.list` and
+  // `otherContacts.list` the number of email addresses is limited to 100. If a
+  // Person has more email addresses the entire set can be obtained by calling
+  // `people.getBatchGet`.
+  std::vector<EmailAddress> email_addresses;
+
   // The person's name.
   //
   // As this is a contact-based Person, this is enforced to be a singleton.

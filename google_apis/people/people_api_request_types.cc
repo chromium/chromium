@@ -6,9 +6,23 @@
 
 #include <utility>
 
+#include "base/containers/to_value_list.h"
 #include "base/values.h"
 
 namespace google_apis::people {
+
+base::Value::Dict EmailAddress::ToDict() && {
+  base::Value::Dict dict;
+
+  if (!value.empty()) {
+    dict.Set("value", std::move(value));
+  }
+  if (!type.empty()) {
+    dict.Set("type", std::move(type));
+  }
+
+  return dict;
+}
 
 base::Value::Dict Name::ToDict() && {
   base::Value::Dict dict;
@@ -33,6 +47,12 @@ Contact::~Contact() = default;
 base::Value::Dict Contact::ToDict() && {
   base::Value::Dict dict;
 
+  if (!email_addresses.empty()) {
+    base::Value::List emails = base::ToValueList(
+        email_addresses,
+        [](EmailAddress& email) { return std::move(email).ToDict(); });
+    dict.Set("emailAddresses", std::move(emails));
+  }
   if (base::Value::Dict name_dict = std::move(name).ToDict();
       !name_dict.empty()) {
     auto names = base::Value::List::with_capacity(1);
