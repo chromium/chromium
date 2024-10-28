@@ -614,29 +614,14 @@ class WritableClientCertSource
 
   void DeleteCertificate(
       const std::string& sha256hash_hex,
+      const std::string& display_name,
       CertificateManagerPageHandler::DeleteCertificateCallback callback)
       override {
-    scoped_refptr<net::X509Certificate> cert =
-        cert_loader_->FindCertificate(sha256hash_hex);
-    if (!cert) {
-      // This error is not expected to be displayed under normal circumstances,
-      // so it's not localized.
-      std::move(callback).Run(
-          certificate_manager_v2::mojom::ActionResult::NewError(
-              "cert not found"));
-      return;
-    }
-
-    std::u16string cert_title =
-        base::UTF8ToUTF16(x509_certificate_model::X509CertificateModel(
-                              bssl::UpRef(cert->cert_buffer()), "")
-                              .GetTitle());
-
     (*remote_client_)
         ->AskForConfirmation(
             l10n_util::GetStringFUTF8(
                 IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CERT_TITLE,
-                cert_title),
+                base::UTF8ToUTF16(display_name)),
             l10n_util::GetStringUTF8(
                 IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CLIENT_CERT_DESCRIPTION),
             base::BindOnce(

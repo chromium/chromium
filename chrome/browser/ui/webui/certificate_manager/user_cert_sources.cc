@@ -191,6 +191,7 @@ void UserCertSource::ExportCertificates(
 
 void UserCertSource::DeleteCertificate(
     const std::string& sha256hash_hex,
+    const std::string& display_name,
     CertificateManagerPageHandler::DeleteCertificateCallback callback) {
   // TODO(crbug.com/40928765): This should early return if
   // CACertificateManagementAllowed is set to None.
@@ -198,7 +199,7 @@ void UserCertSource::DeleteCertificate(
       ->AskForConfirmation(
           l10n_util::GetStringFUTF8(
               IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CERT_TITLE,
-              base::UTF8ToUTF16(sha256hash_hex)),
+              base::UTF8ToUTF16(display_name)),
           l10n_util::GetStringUTF8(
               IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_SERVER_CERT_DESCRIPTION),
           base::BindOnce(&GotDeleteConfirmation, sha256hash_hex,

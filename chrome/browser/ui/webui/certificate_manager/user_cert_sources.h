@@ -35,6 +35,7 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource {
 
   void DeleteCertificate(
       const std::string& sha256hash_hex,
+      const std::string& display_name,
       CertificateManagerPageHandler::DeleteCertificateCallback callback)
       override;
 

@@ -33,7 +33,8 @@ class FakePageHandler extends TestBrowserProxy implements
   };
 
   private deleteCertificateCallback_:
-      (source: CertificateSource, sha256hashHex: string) => {
+      (source: CertificateSource, displayName: string,
+       sha256hashHex: string) => {
         result:
           ActionResult,
       } = (_) => {
@@ -94,10 +95,11 @@ class FakePageHandler extends TestBrowserProxy implements
     return Promise.resolve(this.importAndBindCertificateCallback_(source));
   }
 
-  deleteCertificate(source: CertificateSource, sha256hashHex: string) {
-    this.methodCalled('deleteCertificate', source, sha256hashHex);
+  deleteCertificate(
+      source: CertificateSource, displayName: string, sha256hashHex: string) {
+    this.methodCalled('deleteCertificate', source, displayName, sha256hashHex);
     return Promise.resolve(
-        this.deleteCertificateCallback_(source, sha256hashHex));
+        this.deleteCertificateCallback_(source, displayName, sha256hashHex));
   }
 
   setCertificatesCallback(callbackFn: (source: CertificateSource) => {
@@ -107,9 +109,11 @@ class FakePageHandler extends TestBrowserProxy implements
   }
 
   setDeleteCertificateCallback(
-      callbackFn: (source: CertificateSource, sha256hashHex: string) => {
-        result: ActionResult,
-      }) {
+      callbackFn:
+          (source: CertificateSource, displayName: string,
+           sha256hashHex: string) => {
+            result: ActionResult,
+          }) {
     this.deleteCertificateCallback_ = callbackFn;
   }
 

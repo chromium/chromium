@@ -74,7 +74,9 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
   private onDeleteCertificate_() {
     assert(this.isDeletable);
     CertificatesV2BrowserProxy.getInstance()
-        .handler.deleteCertificate(this.certSource, this.sha256hashHex)
+        .handler
+        .deleteCertificate(
+            this.certSource, this.displayName, this.sha256hashHex)
         .then((value: {result: ActionResult|null}) => {
           this.dispatchEvent(new CustomEvent('delete-result', {
             composed: true,

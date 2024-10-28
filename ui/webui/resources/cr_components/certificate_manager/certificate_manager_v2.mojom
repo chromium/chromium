@@ -141,8 +141,8 @@ interface CertificateManagerPageHandler {
   // deletion succeeded and the certificate list should be refreshed, `error`
   // on failure with an error message to display, or null if the delete was
   // cancelled.
-  DeleteCertificate(CertificateSource source, string sha256_hash_hex)
-      => (ActionResult? result);
+  DeleteCertificate(CertificateSource source, string display_name,
+    string sha256_hash_hex) => (ActionResult? result);
 
   // Show the platform's native certificate management UI.
   [EnableIf=native_cert_management]
