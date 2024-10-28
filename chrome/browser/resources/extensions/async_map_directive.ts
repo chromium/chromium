@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {AsyncDirective, directive, html, noChange, PartType} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {ChildPart, DirectiveParameters, PartInfo, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {AsyncDirective, directive, html, PartType} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PartInfo, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 // Directive to render some items in an array asynchronously. Initially
 // renders `initialCount` items, and renders remaining items asynchronously
@@ -12,24 +12,18 @@ import type {ChildPart, DirectiveParameters, PartInfo, TemplateResult} from 'chr
 // frame. Chunk size is initialized to `initialCount` and increases by
 // `initialCount` when frames render more quickly than the target, and halves if
 // frames render more slowly than the target (20fps).
-// Also supports passing a filter function, to only render items in the array
-// that match the filter (i.e. items for which filter(item) === true).
-// Dispatches a 'rendered-items-changed' event, with a `detail` property set
-// to the total number of rendered items, each time the rendered items are
-// updated.
 class AsyncMapDirective<T> extends AsyncDirective {
   template: (item: T) => TemplateResult = _item => html``;
   initialCount: number = -1;
   items: T[] = [];
-  filter: ((item: T) => boolean)|null = null;
 
   private chunkSize_: number = -1;
-  private filteredItems_: T[] = [];
   private renderedItems_: T[] = [];
   private renderStartTime_: number = 0;
   private targetElapsedTime_: number = 50;  // 20fps
   private eventTarget_: EventTarget|null = null;
   private requestId_: number|null = null;
+  private timeout_: number|null = null;
 
   constructor(partInfo: PartInfo) {
     super(partInfo);
@@ -39,88 +33,81 @@ class AsyncMapDirective<T> extends AsyncDirective {
         'asyncMap() can only be used in text expressions');
   }
 
-  override update(part: ChildPart, [
-    items,
-    template,
-    initialCount,
-    filter,
-  ]: DirectiveParameters<this>) {
-    this.eventTarget_ = part.parentNode instanceof ShadowRoot ?
-        part.parentNode.host :
-        part.parentNode;
-    return this.render(items, template, initialCount, filter);
-  }
-
   render(
-      items: T[], template: ((item: T) => TemplateResult), initialCount: number,
-      filter: (((item: T) => boolean)|null) = null) {
-    if (items === this.items && filter === this.filter) {
-      return noChange;
+      items: T[], template: ((item: T) => TemplateResult),
+      initialCount: number) {
+    // Clear any outstanding timeout or animation frame.
+    if (this.timeout_) {
+      clearTimeout(this.timeout_);
+      this.timeout_ = null;
+    }
+    if (this.requestId_) {
+      cancelAnimationFrame(this.requestId_);
+      this.requestId_ = null;
     }
 
-    if (!this.isConnected) {
-      return html``;
-    }
-
+    this.renderStartTime_ = 0;
     this.template = template;
     this.items = items;
-    this.filter = filter;
-    this.filteredItems_ = filter ? items.filter(i => filter(i)) : items;
     assert(initialCount > 0);
     this.initialCount = initialCount;
     if (this.chunkSize_ === -1) {
       this.chunkSize_ = this.initialCount;
     }
-    this.renderedItems_ = this.filteredItems_.slice(0, this.initialCount);
-    const initialRender = this.renderItems_();
-    this.renderInChunks_();
-    return initialRender;
+
+    // Don't unnecessarily fully remove items. This will create a larger
+    // change in the template. Instead, update the number of items already
+    // rendered + the current chunk size initially.
+    const count =
+        Math.min(items.length, this.renderedItems_.length + this.chunkSize_);
+    this.renderedItems_ = this.items.slice(0, count);
+    if (count < items.length) {
+      this.timeout_ = setTimeout(() => this.renderInChunks_(), 0);
+    }
+    return this.renderItems_();
   }
 
-  private renderItems_(): TemplateResult {
-    // Notify interested parties. Async so that rendering the new items is
-    // done before the event is fired.
-    const numItems = this.renderedItems_.length;
-    setTimeout(() => {
-      if (this.eventTarget_) {
-        this.eventTarget_.dispatchEvent(new CustomEvent(
-            'rendered-items-changed',
-            {bubbles: true, composed: true, detail: numItems}));
-      }
-    }, 0);
-    this.renderStartTime_ = performance.now();
-    return html`${this.renderedItems_.map(item => this.template(item))}`;
+  private renderItems_(): TemplateResult[] {
+    return this.renderedItems_.map(item => this.template(item));
   }
 
   private async renderInChunks_() {
+    this.timeout_ = null;
+
     let length = this.renderedItems_.length;
-    const arrayRef = this.filteredItems_;
+    const arrayRef = this.items;
     while (length < arrayRef.length) {
       await new Promise<void>((resolve) => {
         this.requestId_ = requestAnimationFrame(() => {
           if (this.requestId_) {
             cancelAnimationFrame(this.requestId_);
+            this.requestId_ = null;
           }
           resolve();
         });
       });
 
-      if (!this.isConnected || this.filteredItems_ !== arrayRef) {
+      if (this.items !== arrayRef) {
         return;  // value updated, no longer our loop
       }
 
-      const elapsed = performance.now() - this.renderStartTime_;
+      // Adjust the chunk size if needed.
+      if (this.renderStartTime_ > 0) {
+        const elapsed = performance.now() - this.renderStartTime_;
 
-      // Additive increase, multiplicative decrease
-      if (elapsed < this.targetElapsedTime_) {
-        this.chunkSize_ += this.initialCount;
-      } else {
-        this.chunkSize_ = Math.max(1, Math.floor(this.chunkSize_ / 2));
+        // Additive increase, multiplicative decrease
+        if (elapsed < this.targetElapsedTime_) {
+          this.chunkSize_ += this.initialCount;
+        } else {
+          this.chunkSize_ =
+              Math.max(this.initialCount, Math.floor(this.chunkSize_ / 2));
+        }
       }
 
       const newLength = Math.min(length + this.chunkSize_, arrayRef.length);
-      this.renderedItems_.push(...this.filteredItems_.slice(length, newLength));
+      this.renderedItems_.push(...this.items.slice(length, newLength));
       length = newLength;
+      this.renderStartTime_ = performance.now();
       this.setValue(this.renderItems_());
     }
   }
@@ -131,7 +118,6 @@ export interface AsyncMapDirectiveFn {
       items: T[],
       template: (item: T) => TemplateResult,
       initialCount: number,
-      filter?: ((item: T) => boolean)|null,
       ): unknown;
 }
 
