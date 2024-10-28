@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <sstream>
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "build/buildflag.h"
@@ -17,6 +18,7 @@
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/feed_feature_list.h"
 #include "net/http/http_status_code.h"
 
 namespace feed {
@@ -247,6 +249,10 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Success) {
 }
 
 TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_ZeroCards) {
+  // InjectRealFeedQueryResponse is only supported in old feed query request.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kDiscoFeedEndpoint);
+
   network_.InjectRealFeedQueryResponseWithNoContent();
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();

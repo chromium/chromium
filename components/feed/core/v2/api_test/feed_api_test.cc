@@ -650,7 +650,8 @@ void TestFeedNetwork::SendDiscoverApiRequest(
         break;
       }
 
-        // For FeedQuery requests, emulate a successful response.
+        // For FeedQuery requests, emulate a response. The status code of the
+        // response is controlled by `error` and `http_status_code` fields.
         // The response body is currently an empty message, because most of
         // the time we want to inject a translated response for ease of
         // test-writing.

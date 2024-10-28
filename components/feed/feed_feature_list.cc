@@ -45,7 +45,7 @@ BASE_FEATURE(kInterestFeedNoticeCardAutoDismiss,
 
 BASE_FEATURE(kDiscoFeedEndpoint,
              "DiscoFeedEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kXsurfaceMetricsReporting,
              "XsurfaceMetricsReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
