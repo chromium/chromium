@@ -193,7 +193,7 @@ BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/40233408): Remove if the change is fully launched.
 BASE_FEATURE(kNewGuestProfile,
              "NewGuestProfile",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes the ChromeOS notification width size from 360px to 400px for pop-up
 // notifications and 344px to 400px for notifications in the message center.
