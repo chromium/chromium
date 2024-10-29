@@ -431,6 +431,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   // The lens searchboxes overrides this to true to adjust various color and
   // layout options.
   source->AddBoolean("isLensSearchbox", false);
+  source->AddBoolean("queryAutocompleteOnEmptyInput", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
