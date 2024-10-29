@@ -266,7 +266,6 @@
   E_CPONLY(kColorNewTabPageMenuOuterShadow) \
   E_CPONLY(kColorNewTabPageMicBorderColor) \
   E_CPONLY(kColorNewTabPageMicIconColor) \
-  E_CPONLY(kColorNewTabPageMobilePromoDismissButton) \
   E_CPONLY(kColorNewTabPageModuleControlBorder) \
   E_CPONLY(kColorNewTabPageModuleContextMenuDivider) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
