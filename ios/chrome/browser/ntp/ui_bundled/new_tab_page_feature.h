@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_
 
 #include "base/feature_list.h"
-#include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+
+class PrefService;
 
 #pragma mark - Feature declarations
 
