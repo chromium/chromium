@@ -103,6 +103,7 @@ using Step = AuthenticatorRequestDialogModel::Step;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 using device::AuthenticatorType;
+using device::FidoRequestType;
 
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {
@@ -321,8 +322,7 @@ std::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
   bool win_handles_internal;
   bool win_handles_hybrid;
   bool win_handles_security_key;
-  if (transport_availability.request_type ==
-      device::FidoRequestType::kGetAssertion) {
+  if (transport_availability.request_type == FidoRequestType::kGetAssertion) {
     win_handles_internal =
         (transport_availability.transport_list_did_include_internal ||
          transport_availability.has_empty_allow_list) &&
@@ -499,6 +499,15 @@ void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
 void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
   if (model_->step() == Step::kGPMReauthForPinReset) {
     ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCancelled);
+  }
+  // For modal get requests, fallback to the credential selector if the user
+  // dismissed the recovery window. This will ensure the users to have a backup
+  // such as hybrid.
+  if (transport_availability_.request_type == FidoRequestType::kGetAssertion &&
+      !use_conditional_mediation_ &&
+      model_->step() == Step::kRecoverSecurityDomain) {
+    model_->StartOver();
+    return;
   }
   CancelAuthenticatorRequest();
 }
@@ -680,8 +689,7 @@ void AuthenticatorRequestDialogController::StartFlow(
   DCHECK_EQ(model_->step(), Step::kNotStarted);
   DCHECK_EQ(
       transport_availability.attestation_conveyance_preference.has_value(),
-      transport_availability.request_type ==
-          device::FidoRequestType::kMakeCredential);
+      transport_availability.request_type == FidoRequestType::kMakeCredential);
 
   started_ = true;
   transport_availability_ = std::move(transport_availability);
@@ -748,7 +756,7 @@ void AuthenticatorRequestDialogController::
       SetCurrentStep(Step::kErrorNoAvailableTransports);
     }
   } else if (transport_availability_.request_type ==
-                 device::FidoRequestType::kMakeCredential &&
+                 FidoRequestType::kMakeCredential &&
              hints_.transport && StartGuidedFlowForHint(*hints_.transport)) {
   } else if (model_->priority_mechanism_index) {
     Mechanism& mechanism =
@@ -788,7 +796,7 @@ void AuthenticatorRequestDialogController::
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
-                   device::FidoRequestType::kGetAssertion ||
+                   FidoRequestType::kGetAssertion ||
                !StartGuidedFlowForHint(*hints_.transport)) {
       if (absl::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
         device::enclave::RecordEvent(
@@ -834,7 +842,7 @@ void AuthenticatorRequestDialogController::
         // If not doing UV, but the allowlist matches an enclave credential,
         // show UI to serve as user presence.
         if (!enclave_will_do_uv && transport_availability_.request_type ==
-                                       device::FidoRequestType::kGetAssertion) {
+                                       FidoRequestType::kGetAssertion) {
           for (auto& cred : transport_availability_.recognized_credentials) {
             if (cred.source == AuthenticatorType::kEnclave) {
               model_->creds = {cred};
@@ -884,7 +892,7 @@ void AuthenticatorRequestDialogController::
     }
     if (!hints_.transport.has_value() ||
         transport_availability_.request_type !=
-            device::FidoRequestType::kGetAssertion ||
+            FidoRequestType::kGetAssertion ||
         // If there were any matches, ignore a hint and show the user the list.
         base::ranges::any_of(model_->mechanisms,
                              [](const auto& mech) {
@@ -995,8 +1003,8 @@ void AuthenticatorRequestDialogController::
 
   ephemeral_state_.dispatched_platform_authenticator_type_ =
       platform_authenticator_it->type;
-  bool is_make_credential = transport_availability_.request_type ==
-                            device::FidoRequestType::kMakeCredential;
+  bool is_make_credential =
+      transport_availability_.request_type == FidoRequestType::kMakeCredential;
   if (platform_authenticator_it->type == AuthenticatorType::kICloudKeychain) {
     webauthn::user_actions::RecordICloudShown(is_make_credential);
   } else if (platform_authenticator_it->type == AuthenticatorType::kTouchID) {
@@ -1124,8 +1132,7 @@ void AuthenticatorRequestDialogController::TryUsbDevice() {
 }
 
 void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
-  if (transport_availability_.request_type ==
-      device::FidoRequestType::kGetAssertion) {
+  if (transport_availability_.request_type == FidoRequestType::kGetAssertion) {
     switch (transport_availability_.has_platform_authenticator_credential) {
       case device::FidoRequestHandlerBase::RecognizedCredential::kUnknown:
         CHECK(false);
@@ -1180,7 +1187,7 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
   }
 
   if (transport_availability_.request_type ==
-      device::FidoRequestType::kMakeCredential) {
+      FidoRequestType::kMakeCredential) {
     if (kShowCreatePlatformPasskeyStep) {
       SetCurrentStep(Step::kCreatePasskey);
       return;
@@ -1641,7 +1648,7 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
 
   std::optional<MacOsHistogramValues> v;
   if (transport_availability_.request_type ==
-          device::FidoRequestType::kMakeCredential &&
+          FidoRequestType::kMakeCredential &&
       transport_availability_.make_credential_attachment.has_value() &&
       *transport_availability_.make_credential_attachment !=
           device::AuthenticatorAttachment::kCrossPlatform) {
@@ -1659,7 +1666,7 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
                     kStartedCreateForProfileAuthenticatorICloudDriveDisabled;
     }
   } else if (transport_availability_.request_type ==
-                 device::FidoRequestType::kGetAssertion &&
+                 FidoRequestType::kGetAssertion &&
              !use_conditional_mediation_) {
     const bool profile =
         transport_availability_.has_platform_authenticator_credential ==
@@ -1686,7 +1693,7 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
 }
 
 void AuthenticatorRequestDialogController::RecordMacOsSuccessHistogram(
-    device::FidoRequestType request_type,
+    FidoRequestType request_type,
     AuthenticatorType authenticator_type) {
   if (!did_record_macos_start_histogram_) {
     return;
@@ -1695,7 +1702,7 @@ void AuthenticatorRequestDialogController::RecordMacOsSuccessHistogram(
   std::optional<MacOsHistogramValues> v;
 
   if (transport_availability_.request_type ==
-      device::FidoRequestType::kMakeCredential) {
+      FidoRequestType::kMakeCredential) {
     if (authenticator_type == AuthenticatorType::kTouchID) {
       v = has_icloud_drive_enabled_
               ? MacOsHistogramValues::
@@ -1854,7 +1861,7 @@ void AuthenticatorRequestDialogController::ContactPhone(
   }
 
   if (transport_availability_.request_type ==
-          device::FidoRequestType::kMakeCredential &&
+          FidoRequestType::kMakeCredential &&
       transport_availability_.is_off_the_record_context) {
     after_off_the_record_interstitial_ =
         base::BindOnce(&AuthenticatorRequestDialogController::
@@ -2069,8 +2076,8 @@ void AuthenticatorRequestDialogController::SortRecognizedCredentials() {
 }
 
 void AuthenticatorRequestDialogController::PopulateMechanisms() {
-  const bool is_get_assertion = transport_availability_.request_type ==
-                                device::FidoRequestType::kGetAssertion;
+  const bool is_get_assertion =
+      transport_availability_.request_type == FidoRequestType::kGetAssertion;
   SetPriorityPhoneIndex(GetIndexOfMostRecentlyUsedPhoneFromSync());
   bool list_phone_passkeys =
       is_get_assertion && priority_phone_index_ &&
@@ -2344,9 +2351,9 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
   }
 
   switch (transport_availability_.request_type) {
-    case device::FidoRequestType::kGetAssertion:
+    case FidoRequestType::kGetAssertion:
       return IndexOfGetAssertionPriorityMechanism();
-    case device::FidoRequestType::kMakeCredential:
+    case FidoRequestType::kMakeCredential:
       return IndexOfMakeCredentialPriorityMechanism();
   }
 }
@@ -2354,7 +2361,7 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
 std::optional<size_t>
 AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
   CHECK_EQ(transport_availability_.request_type,
-           device::FidoRequestType::kGetAssertion);
+           FidoRequestType::kGetAssertion);
 
   // If there is a single mechanism, go to that.
   if (model_->mechanisms.size() == 1) {
@@ -2416,7 +2423,7 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
 std::optional<size_t>
 AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
   CHECK_EQ(transport_availability_.request_type,
-           device::FidoRequestType::kMakeCredential);
+           FidoRequestType::kMakeCredential);
 
   if (model_->mechanisms.size() == 1) {
     return 0;
