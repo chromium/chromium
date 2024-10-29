@@ -810,11 +810,6 @@ BASE_FEATURE(kEnableKioskLoginScreen,
              "EnableKioskLoginScreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables showing notification after the password change for SAML users.
-BASE_FEATURE(kEnableSamlNotificationOnPasswordChangeSuccess,
-             "EnableSamlNotificationOnPasswordChangeSuccess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 BASE_FEATURE(kEnableAllSystemWebApps,
@@ -4673,11 +4668,6 @@ bool IsResetShortcutCustomizationsEnabled() {
 
 bool IsSameAppWindowCycleEnabled() {
   return base::FeatureList::IsEnabled(kSameAppWindowCycle);
-}
-
-bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
-  return base::FeatureList::IsEnabled(
-      kEnableSamlNotificationOnPasswordChangeSuccess);
 }
 
 bool IsSavedDeskUiRevampEnabled() {
