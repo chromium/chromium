@@ -459,8 +459,6 @@ union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
   GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
-  [EnableIf=is_linux_or_chromeos]
-  MailboxVideoFrameData mailbox_data;
   SharedImageVideoFrameData shared_image_data;
   OpaqueVideoFrameData opaque_data;
 };
@@ -484,12 +482,6 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
   gpu.mojom.ExportedSharedImage? shared_image;
   gpu.mojom.SyncToken sync_token;
-};
-
-[EnableIf=is_linux_or_chromeos]
-// This defines video frame data stored in texture mailbox.
-struct MailboxVideoFrameData {
-  gpu.mojom.Mailbox mailbox;
 };
 
 // This defines video frame data stored in texture shared images.

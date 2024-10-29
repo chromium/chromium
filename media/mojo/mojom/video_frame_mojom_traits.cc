@@ -150,13 +150,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(input->ycbcr_info())));
   }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  if (input->HasOOPVDMailbox()) {
-    return media::mojom::VideoFrameData::NewMailboxData(
-        media::mojom::MailboxVideoFrameData::New(input->oopvd_mailbox()));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
   if (input->storage_type() == media::VideoFrame::STORAGE_OPAQUE) {
     return media::mojom::VideoFrameData::NewOpaqueData(
         media::mojom::OpaqueVideoFrameData::New());
@@ -326,20 +319,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
         sync_token, base::NullCallback(), timestamp);
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  } else if (data.is_mailbox_data()) {
-    media::mojom::MailboxVideoFrameDataDataView mailbox_data;
-    data.GetMailboxDataDataView(&mailbox_data);
-
-    gpu::Mailbox mailbox;
-    if (!mailbox_data.ReadMailbox(&mailbox)) {
-      return false;
-    }
-
-    frame = media::VideoFrame::WrapOOPVDMailbox(
-        format, mailbox, media::VideoFrame::ReleaseMailboxCB(), coded_size,
-        visible_rect, natural_size, timestamp);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   } else if (data.is_shared_image_data()) {
     media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
     data.GetSharedImageDataDataView(&shared_image_data);

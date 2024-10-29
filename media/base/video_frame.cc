@@ -466,33 +466,6 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
 }
 
 // static
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-scoped_refptr<VideoFrame> VideoFrame::WrapOOPVDMailbox(
-    VideoPixelFormat format,
-    const gpu::Mailbox& mailbox,
-    ReleaseMailboxCB mailbox_holder_release_cb,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
-      format, coded_size, visible_rect, natural_size, timestamp);
-  if (!frame) {
-    return nullptr;
-  }
-
-  frame->oopvd_mailbox_ = mailbox;
-  frame->mailbox_holder_and_gmb_release_cb_ =
-      WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
-
-  // Wrapping native textures should... have textures. https://crbug.com/864145.
-  DCHECK(frame->HasOOPVDMailbox());
-
-  return frame;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
-// static
 scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     VideoPixelFormat format,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
@@ -1277,13 +1250,6 @@ void VideoFrame::BackWithOwnedSharedMemory(
 bool VideoFrame::IsMappable() const {
   return IsStorageTypeMappable(storage_type_);
 }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-bool VideoFrame::HasOOPVDMailbox() const {
-  return wrapped_frame_ ? wrapped_frame_->HasOOPVDMailbox()
-                        : !oopvd_mailbox_.IsZero();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 bool VideoFrame::HasSharedImage() const {
   return wrapped_frame_ ? wrapped_frame_->HasSharedImage()

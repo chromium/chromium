@@ -256,27 +256,6 @@ TEST_F(VideoFrameStructTraitsTest, TrackingTokenVideoFrame) {
   ASSERT_EQ(*frame->metadata().tracking_token, tracking_token);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-TEST_F(VideoFrameStructTraitsTest, OOPVDMailboxVideoFrame) {
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapOOPVDMailbox(
-      PIXEL_FORMAT_ARGB, mailbox, VideoFrame::ReleaseMailboxCB(),
-      gfx::Size(100, 100), gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100),
-      base::Seconds(100));
-
-  ASSERT_TRUE(RoundTrip(&frame));
-  ASSERT_TRUE(frame);
-  EXPECT_FALSE(frame->metadata().end_of_stream);
-  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ARGB);
-  EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
-  EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
-  EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
-  EXPECT_EQ(frame->timestamp(), base::Seconds(100));
-  ASSERT_TRUE(frame->HasOOPVDMailbox());
-  ASSERT_EQ(frame->oopvd_mailbox(), mailbox);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
 TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       gpu::ClientSharedImage::CreateForTesting();

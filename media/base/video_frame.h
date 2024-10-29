@@ -238,21 +238,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp,
       bool zero_initialize_memory);
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  // Wraps RegisteredMailboxFrameConverter mailbox with a VideoFrame. This is
-  // used only by ChromeOS/Linux's out-of-process video decoder.
-  // |mailbox_holder_release_cb| will be called with a sync token as the
-  // argument when the VideoFrame is to be destroyed.
-  static scoped_refptr<VideoFrame> WrapOOPVDMailbox(
-      VideoPixelFormat format,
-      const gpu::Mailbox& mailbox,
-      ReleaseMailboxCB mailbox_holder_release_cb,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      base::TimeDelta timestamp);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
   // Wraps a native texture shared image with a VideoFrame.
   // |mailbox_holder_release_cb| will be called with a sync token as the
   // argument when the VideoFrame is to be destroyed.
@@ -549,11 +534,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // visible_data() etc.
   bool IsMappable() const;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Returns true if `frame` has `oopvd_mailbox`.
-  bool HasOOPVDMailbox() const;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImage() const;
 
@@ -703,14 +683,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   scoped_refptr<gpu::ClientSharedImage> shared_image() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Returns the OOPVD mailbox set by `WrapOOPVDMailbox`.
-  // Only valid to call if this is a NATIVE_TEXTURE frame. Before using the
-  // mailbox, the caller must wait for the included sync point.
-  const gpu::Mailbox oopvd_mailbox() const {
-    CHECK(!oopvd_mailbox_.IsZero());
-    return wrapped_frame_ ? wrapped_frame_->oopvd_mailbox() : oopvd_mailbox_;
-  }
-
   // The number of DmaBufs will be equal or less than the number of planes of
   // the frame. If there are less, this means that the last FD contains the
   // remaining planes. Should be > 0 for STORAGE_DMABUFS.
@@ -949,11 +921,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // to std::unique_ptr<uint8_t, AlignedFreeDeleter> after refactoring
   // VideoFrame.
   const uint8_t* data_[kMaxPlanes];
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Native texture mailbox, if this frame HasOOPVDMailbox().
-  gpu::Mailbox oopvd_mailbox_;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Sync token associated with the `shared_image_`.
   gpu::SyncToken acquire_sync_token_;
