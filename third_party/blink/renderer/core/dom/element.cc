@@ -3858,14 +3858,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
-    if (const ElementRareDataVector* data = GetElementRareData()) {
-      if (const ColumnPseudoElementsVector* columns =
-              data->GetColumnPseudoElements()) {
-        for (ColumnPseudoElement* column : *columns) {
-          column->RecalcStyle(child_change, child_recalc_context);
-        }
-      }
-    }
+    UpdateColumnPseudoElements(child_change, child_recalc_context);
 
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       if (DynamicTo<HTMLOptionElement>(this)) {
@@ -4178,15 +4171,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (new_style && new_style->ContainsStyle()) {
       tree.CreateScopeForElement(*this);
     }
-  }
-
-  // If element doesn't have ::column rules anymore clear column pseudo
-  // elements.
-  if ((old_style && old_style->CanGeneratePseudoElement(kPseudoIdColumn) &&
-       new_style && !new_style->CanGeneratePseudoElement(kPseudoIdColumn)) ||
-      (old_style && old_style->CanGeneratePseudoElement(kPseudoIdColumn) &&
-       !new_style)) {
-    ClearColumnPseudoElements();
   }
 
   ProcessContainIntrinsicSizeChanges();
@@ -8168,6 +8152,26 @@ void Element::ClearPseudoElement(PseudoId pseudo_id,
   GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
                                          view_transition_name);
   GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+}
+
+void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
+                                         const StyleRecalcContext& context) {
+  const ElementRareDataVector* data = GetElementRareData();
+  if (!data) {
+    return;
+  }
+  const ColumnPseudoElementsVector* columns = data->GetColumnPseudoElements();
+  if (!columns) {
+    return;
+  }
+  if (!CanGeneratePseudoElement(kPseudoIdColumn)) {
+    return ClearColumnPseudoElements();
+  }
+  for (ColumnPseudoElement* column : *columns) {
+    if (change.ShouldUpdatePseudoElement(*column)) {
+      column->RecalcStyle(change, context);
+    }
+  }
 }
 
 PseudoElement* Element::UpdatePseudoElement(

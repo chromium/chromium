@@ -1743,6 +1743,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
                                        const Node* node_after_change);
 
+  void UpdateColumnPseudoElements(const StyleRecalcChange,
+                                  const StyleRecalcContext&);
   PseudoElement* UpdatePseudoElement(
       PseudoId,
       const StyleRecalcChange,

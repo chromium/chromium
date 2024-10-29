@@ -151,7 +151,7 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker() {
       continue;
     }
     const LayoutBox* scroll_marker_box = scroll_marker->GetLayoutBox();
-    DCHECK(scroll_marker_box);
+    CHECK(scroll_marker_box);
     PhysicalBoxStrut scroll_margin =
         target_box->Style() ? target_box->Style()->ScrollMarginStrut()
                             : PhysicalBoxStrut();
