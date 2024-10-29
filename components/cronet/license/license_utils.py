@@ -1,16 +1,6 @@
-# Copyright (C) 2024 The Android Open Source Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 import os.path
 from typing import List, Callable
@@ -178,12 +168,27 @@ def parse_chromium_readme_file(readme_path: str,
   return metadata
 
 
-def resolve_license_path(repo_path: str, license_path: str) -> str:
+def resolve_license_path(readme_chromium_path: str,
+    license_path: str) -> str:
+  """
+  Resolves the relative path from the repository root to the license file.
+
+  :param readme_chromium_path: Relative path to the README.chromium starting
+  from the root of the repository.
+  :param license_path: The field value of `License File` in the README.chromium.
+  If the value of the license_path starts with `//` then that means that the
+  license file path is already relative from the repo path. Otherwise, it is
+  assumed that the provided path is relative from the README.chromium path.
+  :return: The relative path from the repository root to the declared license
+  file.
+  """
   if license_path.startswith("//"):
-    # This is an absolute path that starts from the root of external/cronet
+    # This is an relative path that starts from the root of external/cronet
     # repository, we should not use the directory path for resolution here.
     # See https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/bytes/v1/README.chromium as
     # an example of such case.
-    return os.path.abspath(os.path.relpath(license_path[2:], repo_path))
-  # Relative path from the README.chromium, return as-is.
-  return license_path
+    return license_path[2:]
+  # Relative path from the README.chromium, append the path from root of repo
+  # until the README.chromium so it becomes a relative path from the root of
+  # repo.
+  return os.path.join(readme_chromium_path, license_path)
