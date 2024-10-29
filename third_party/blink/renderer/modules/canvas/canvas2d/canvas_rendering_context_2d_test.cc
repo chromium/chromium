@@ -264,6 +264,11 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
     return static_cast<CanvasRenderingContext2D*>(
         CanvasElement().RenderingContext());
   }
+
+  CanvasRenderingContext2DState& GetContext2DState() {
+    return Context2D()->GetState();
+  }
+
   void DrawSomething() {
     CanvasElement().DidDraw();
     CanvasElement().PreFinalizeFrame();
@@ -1998,6 +2003,40 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
+TEST_P(CanvasRenderingContext2DTest, TextRenderingTest) {
+  CreateContext(kNonOpaque, kLowLatency);
+  Context2D()->setFont("10px sans-serif");
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kAutoTextRendering);
+  // Update the textRendering to "geometricPrecision"
+  std::optional<V8CanvasTextRendering> textRendering =
+      V8CanvasTextRendering::Create("geometricPrecision");
+  Context2D()->setTextRendering(textRendering.value());
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kGeometricPrecision);
+  Context2D()->setFont("12px sans-serif");
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kGeometricPrecision);
+
+  // Update the textRendering to "optimizeLegibility"
+  textRendering = V8CanvasTextRendering::Create("optimizeLegibility");
+  Context2D()->setTextRendering(textRendering.value());
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kOptimizeLegibility);
+  Context2D()->setFont("12px sans-serif");
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kOptimizeLegibility);
+
+  // Update the textRendering to "optimizeSpeed"
+  textRendering = V8CanvasTextRendering::Create("optimizeSpeed");
+  Context2D()->setTextRendering(textRendering.value());
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kOptimizeSpeed);
+  Context2D()->setFont("12px sans-serif");
+  EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
+            TextRenderingMode::kOptimizeSpeed);
+}
+
 class CanvasRenderingContext2DTestAccelerated
     : public CanvasRenderingContext2DTest {
  protected:
@@ -3365,5 +3404,4 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
-
 }  // namespace blink
