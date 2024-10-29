@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MahiUntrustedPageCallbackRouter, MahiUntrustedServiceRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedPageCallbackRouter, OcrUntrustedServiceRemote, UntrustedPageHandlerFactory} from './media_app_ui_untrusted.mojom-webui.js';
+import {MahiUntrustedPageCallbackRouter, MahiUntrustedServiceRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedPageCallbackRouter, OcrUntrustedServiceRemote, UntrustedServiceFactory} from './media_app_ui_untrusted.mojom-webui.js';
 
 // Used to make calls on the remote OcrUntrustedService interface. Singleton
 // that client modules can use directly.
@@ -14,7 +14,7 @@ export const ocrCallbackRouter = new OcrUntrustedPageCallbackRouter();
 
 // Used to create a connection to the services used in the untrusted context
 // (Mahi, OCR, and Mantis).
-const factoryRemote = UntrustedPageHandlerFactory.getRemote();
+const factoryRemote = UntrustedServiceFactory.getRemote();
 
 // Called when a new file that may require OCR is loaded. Closes the existing
 // pipe and establishes a new one.

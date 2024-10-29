@@ -49,10 +49,9 @@ class MediaAppGuestUIDelegate {
 };
 
 // The webui for chrome-untrusted://media-app.
-class MediaAppGuestUI
-    : public ui::UntrustedWebUIController,
-      public content::WebContentsObserver,
-      public media_app_ui::mojom::UntrustedPageHandlerFactory {
+class MediaAppGuestUI : public ui::UntrustedWebUIController,
+                        public content::WebContentsObserver,
+                        public media_app_ui::mojom::UntrustedServiceFactory {
  public:
   MediaAppGuestUI(content::WebUI* web_ui,
                   std::unique_ptr<MediaAppGuestUIDelegate> delegate);
@@ -70,10 +69,10 @@ class MediaAppGuestUI
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
-  // Binds UntrustedPageHandlerFactory which is used to bind other interfaces
+  // Binds UntrustedServiceFactory which is used to bind other interfaces
   // used to communicate between the untrusted MediaApp frame and the browser.
   void BindInterface(
-      mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
+      mojo::PendingReceiver<media_app_ui::mojom::UntrustedServiceFactory>
           receiver);
 
  private:
@@ -107,8 +106,8 @@ class MediaAppGuestUI
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<MantisMediaAppUntrustedService> mantis_untrusted_service_;
-  mojo::Receiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
-      untrusted_page_handler_factory_{this};
+  mojo::Receiver<media_app_ui::mojom::UntrustedServiceFactory>
+      untrusted_service_factory_{this};
   std::unique_ptr<MediaAppGuestUIDelegate> delegate_;
 
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};

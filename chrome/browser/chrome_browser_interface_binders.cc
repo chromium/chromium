@@ -1773,7 +1773,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 
   registry.ForWebUI<ash::MediaAppGuestUI>()
       .Add<color_change_listener::mojom::PageHandler>()
-      .Add<ash::media_app_ui::mojom::UntrustedPageHandlerFactory>();
+      .Add<ash::media_app_ui::mojom::UntrustedServiceFactory>();
 
   registry.ForWebUI<ash::HelpAppUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();

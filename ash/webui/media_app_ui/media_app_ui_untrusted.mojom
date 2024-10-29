@@ -7,9 +7,9 @@ module ash.media_app_ui.mojom;
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Factory interface to create an untrusted page handler (for the
+// Factory interface to create a new untrusted Mojo connection (for the
 // chrome-untrusted:// frame) communicating directly with the browser.
-interface UntrustedPageHandlerFactory {
+interface UntrustedServiceFactory {
   // Exposes OCR related APIs between the untrusted frame and the browser via
   // `receiver` and `page`.
   CreateOcrUntrustedService(

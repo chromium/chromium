@@ -275,12 +275,12 @@ void MediaAppGuestUI::BindInterface(
 }
 
 void MediaAppGuestUI::BindInterface(
-    mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
+    mojo::PendingReceiver<media_app_ui::mojom::UntrustedServiceFactory>
         receiver) {
-  if (untrusted_page_handler_factory_.is_bound()) {
-    untrusted_page_handler_factory_.reset();
+  if (untrusted_service_factory_.is_bound()) {
+    untrusted_service_factory_.reset();
   }
-  untrusted_page_handler_factory_.Bind(std::move(receiver));
+  untrusted_service_factory_.Bind(std::move(receiver));
 }
 
 void MediaAppGuestUI::CreateOcrUntrustedService(
@@ -305,7 +305,7 @@ void MediaAppGuestUI::CreateMantisUntrustedService(
     mojo::PendingReceiver<media_app_ui::mojom::MantisMediaAppUntrustedService>
         receiver) {
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantis)) {
-    untrusted_page_handler_factory_.ReportBadMessage(
+    untrusted_service_factory_.ReportBadMessage(
         "Trying to bind interface when flag is not enabled.");
     return;
   }
