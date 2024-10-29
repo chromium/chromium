@@ -254,10 +254,6 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       if (!current_bounds.IsEmpty())
         create_params.initial_bounds = current_bounds;
 
-      if (type_ == Type::kCoral) {
-        create_params.should_trigger_session_restore = false;
-      }
-
       Browser* browser = Browser::Create(create_params);
 
       std::optional<int32_t> active_tab_index =
