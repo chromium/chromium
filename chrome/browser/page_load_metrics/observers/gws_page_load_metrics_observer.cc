@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -22,8 +23,14 @@
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "components/policy/core/browser/url_blocklist_policy_handler.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -139,6 +146,19 @@ GWSPageLoadMetricsObserver::NavigationSourceType GetBackgroundedState(
       return type;
   }
 }
+
+void RecordPageLoadHistogramWithVariants(bool is_safesites_filter_enabled,
+                                         std::string_view name,
+                                         base::TimeDelta sample) {
+  constexpr char kSafeSitesFilterEnabledSuffix[] = ".SafeSitesFilterEnabled";
+  constexpr char kSafeSitesFilterDisabledSuffix[] = ".SafeSitesFilterDisabled";
+  PAGE_LOAD_HISTOGRAM(name, sample);
+  PAGE_LOAD_HISTOGRAM(
+      base::StrCat({name, is_safesites_filter_enabled
+                              ? kSafeSitesFilterEnabledSuffix
+                              : kSafeSitesFilterDisabledSuffix}),
+      sample);
+}
 }  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -173,6 +193,13 @@ GWSPageLoadMetricsObserver::OnStart(
   if (!started_in_foreground) {
     source_type_ = GetBackgroundedState(source_type_);
   }
+
+  raw_ptr<PrefService> prefs = user_prefs::UserPrefs::Get(
+      navigation_handle->GetWebContents()->GetBrowserContext());
+  is_safesites_filter_enabled_ =
+      prefs && static_cast<policy::SafeSitesFilterBehavior>(prefs->GetInteger(
+                   policy::policy_prefs::kSafeSitesFilterBehavior)) ==
+                   policy::SafeSitesFilterBehavior::kSafeSitesFilterEnabled;
 
   return CONTINUE_OBSERVING;
 }
@@ -221,8 +248,9 @@ void GWSPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     return;
   }
 
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSFirstContentfulPaint,
-                      timing.paint_timing->first_contentful_paint.value());
+  RecordPageLoadHistogramWithVariants(
+      is_safesites_filter_enabled_, internal::kHistogramGWSFirstContentfulPaint,
+      timing.paint_timing->first_contentful_paint.value());
 }
 
 void GWSPageLoadMetricsObserver::OnParseStart(
@@ -282,26 +310,34 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
         timings) {
   for (const auto& mark : timings) {
     if (mark->mark_name == internal::kGwsAFTStartMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTStart, mark->start_time);
+      RecordPageLoadHistogramWithVariants(is_safesites_filter_enabled_,
+                                          internal::kHistogramGWSAFTStart,
+                                          mark->start_time);
       aft_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEnd, mark->start_time);
+      RecordPageLoadHistogramWithVariants(is_safesites_filter_enabled_,
+                                          internal::kHistogramGWSAFTEnd,
+                                          mark->start_time);
       aft_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsHeaderChunkStartMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkStart,
-                          mark->start_time);
+      RecordPageLoadHistogramWithVariants(
+          is_safesites_filter_enabled_, internal::kHistogramGWSHeaderChunkStart,
+          mark->start_time);
       header_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsHeaderChunkEndMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkEnd,
-                          mark->start_time);
+      RecordPageLoadHistogramWithVariants(is_safesites_filter_enabled_,
+                                          internal::kHistogramGWSHeaderChunkEnd,
+                                          mark->start_time);
       header_chunk_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkStartMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkStart,
-                          mark->start_time);
+      RecordPageLoadHistogramWithVariants(is_safesites_filter_enabled_,
+                                          internal::kHistogramGWSBodyChunkStart,
+                                          mark->start_time);
       body_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkEnd,
-                          mark->start_time);
+      RecordPageLoadHistogramWithVariants(is_safesites_filter_enabled_,
+                                          internal::kHistogramGWSBodyChunkEnd,
+                                          mark->start_time);
     }
   }
 }
@@ -325,8 +361,10 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
     return;
   }
   RecordNavigationTimingHistograms();
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSLargestContentfulPaint,
-                      all_frames_largest_contentful_paint.Time().value());
+  RecordPageLoadHistogramWithVariants(
+      is_safesites_filter_enabled_,
+      internal::kHistogramGWSLargestContentfulPaint,
+      all_frames_largest_contentful_paint.Time().value());
 }
 
 void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
