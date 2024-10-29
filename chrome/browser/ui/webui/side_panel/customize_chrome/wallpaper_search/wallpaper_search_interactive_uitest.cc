@@ -484,10 +484,12 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                          kSetClassicChromeButton),
             WaitForStateChange(kNewTabPageElementId, ntp_background_reset)),
       // 9. Open wallpaper search via themes page.
-      Steps(ScrollIntoView(kReopenedCustomizeChromeElementId, kEditThemeButton),
-            ClickElement(kReopenedCustomizeChromeElementId, kEditThemeButton),
-            ClickElement(kReopenedCustomizeChromeElementId,
-                         kWallpaperSearchTile)),
+      Steps(
+          ScrollIntoView(kReopenedCustomizeChromeElementId, kEditThemeButton),
+          ClickElement(kReopenedCustomizeChromeElementId, kEditThemeButton),
+          ClickElement(kReopenedCustomizeChromeElementId, kWallpaperSearchTile),
+          WaitForElementVisible(kReopenedCustomizeChromeElementId,
+                                kHistoryCard)),
       // 10. Click the past result.
       Steps(CheckJsResultAt(
                 kReopenedCustomizeChromeElementId, kHistoryCard,
