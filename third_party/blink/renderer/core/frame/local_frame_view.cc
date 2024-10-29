@@ -2029,14 +2029,24 @@ bool LocalFrameView::NotifyResizeObservers() {
     if (resize_controller->SkippedObservations() &&
         !resize_controller->IsLoopLimitErrorDispatched()) {
       resize_controller->ClearObservations();
-      ErrorEvent* error = ErrorEvent::Create(
-          "ResizeObserver loop completed with undelivered notifications.",
-          CaptureSourceLocation(frame_->DomWindow()), nullptr);
-      // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is made
-      // by blink itself.
-      // TODO(yhirano): Reconsider this.
-      frame_->DomWindow()->DispatchErrorEvent(
-          error, SanitizeScriptErrors::kDoNotSanitize);
+
+      if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
+        ScriptState::Scope scope(script_state);
+        const String message =
+            "ResizeObserver loop completed with undelivered notifications.";
+        ScriptValue value(script_state->GetIsolate(),
+                          V8String(script_state->GetIsolate(), message));
+        // TODO(pdr): We could report the source location of one of the
+        // observers which had skipped observations.
+        ErrorEvent* error = ErrorEvent::Create(message, CaptureSourceLocation(),
+                                               value, &script_state->World());
+        // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is
+        // made by blink itself.
+        // TODO(yhirano): Reconsider this.
+        frame_->DomWindow()->DispatchErrorEvent(
+            error, SanitizeScriptErrors::kDoNotSanitize);
+      }
+
       // Ensure notifications will get delivered in next cycle.
       ScheduleAnimation();
       resize_controller->SetLoopLimitErrorDispatched(true);
