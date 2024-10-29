@@ -14,9 +14,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -27,10 +29,12 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A controller for the account mismatched notice message. */
-public class MismatchNotificationController {
+public class MismatchNotificationController implements SigninManager.SignInStateObserver {
     private final WindowAndroid mWindowAndroid;
     private final Profile mProfile;
     private final CoreAccountId mAppAccountId;
+
+    private PropertyModel mMessageProperties;
 
     @Nullable
     private static MismatchNotificationController sMismatchNotificationControllerForTesting;
@@ -52,6 +56,9 @@ public class MismatchNotificationController {
                         .getIdentityManager(profile)
                         .findExtendedAccountInfoByEmailAddress(appAccountName)
                         .getId();
+        final SigninManager signinManager =
+                IdentityServicesProvider.get().getSigninManager(mProfile);
+        signinManager.addSignInStateObserver(this);
     }
 
     public void showSignedOutMessage(Context context) {
@@ -62,7 +69,7 @@ public class MismatchNotificationController {
     public void showSignedOutMessage(Context context, Callback<Integer> onClose) {
         // TODO(crbug.com/369564573): Hook up |onClose| to return the user action (or lack thereof)
         // with which the notification is closed.
-        PropertyModel propertyModel =
+        mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
@@ -88,7 +95,7 @@ public class MismatchNotificationController {
                         .build();
 
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
-        dispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
+        dispatcher.enqueueWindowScopedMessage(mMessageProperties, /* highPriority= */ false);
     }
 
     private @PrimaryActionClickBehavior int handlePrimaryAction(Context context) {
@@ -117,6 +124,12 @@ public class MismatchNotificationController {
                 mAppAccountId);
 
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+    }
+
+    @Override
+    public void onSignedIn() {
+        MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
+        dispatcher.dismissMessage(mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
     }
 
     public static void setInstanceForTesting(

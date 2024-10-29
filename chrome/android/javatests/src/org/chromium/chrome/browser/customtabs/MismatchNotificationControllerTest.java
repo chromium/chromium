@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Tests for the {@link MismatchNotificationController} */
@@ -134,5 +135,24 @@ public class MismatchNotificationControllerTest {
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
+    }
+
+    @Test
+    @MediumTest
+    public void testUserSignsInWhileMessageDisplayed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mMismatchNotificationController.showSignedOutMessage(
+                                mActivityTestRule.getActivity(), closeType -> {}));
+
+        // Verify that the message is displayed
+        onView(withText(R.string.custom_tabs_signed_out_message_subtitle))
+                .check(matches(isDisplayed()));
+
+        // Sign in
+        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
+
+        // Verify that the message was dismissed.
+        onView(withText(R.string.custom_tabs_signed_out_message_subtitle)).check(doesNotExist());
     }
 }
