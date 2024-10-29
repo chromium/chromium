@@ -184,11 +184,11 @@ void ArcVolumeMounterBridge::SendAllMountEvents() {
 
 // Notifies ARC of MyFiles volume by sending a mount event.
 void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
-  mojom::VolumeMounterInstance* volume_mounter_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
-                                  OnMountEvent);
+  mojom::VolumeMounterInstance* const instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->volume_mounter(), OnMountEvent);
 
-  if (!volume_mounter_instance) {
+  if (!instance) {
+    VLOG(1) << "No volume mounter instance";
     return;
   }
 
@@ -201,7 +201,7 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
   // Conditionally set MyFiles to be visible for P and invisible for R. In R, we
   // use IsVisibleRead so this is not needed.
   const bool is_p = arc::GetArcAndroidSdkVersionAsInt() == arc::kArcVersionP;
-  volume_mounter_instance->OnMountEvent(mojom::MountPointInfo::New(
+  instance->OnMountEvent(mojom::MountPointInfo::New(
       DiskMountManager::MOUNTING, kMyFilesPath, kMyFilesPath, kMyFilesUuid,
       device_label, device_type, is_p));
 }
@@ -372,10 +372,10 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
       std::move(unmount_requests_.front());
   unmount_requests_.pop();
 
-  mojom::VolumeMounterInstance* volume_mounter_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
-                                  PrepareForRemovableMediaUnmount);
-  if (!volume_mounter_instance) {
+  mojom::VolumeMounterInstance* const instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->volume_mounter(), PrepareForRemovableMediaUnmount);
+  if (!instance) {
+    VLOG(1) << "No volume mounter instance";
     std::move(unmount_callback_).Run(/*success=*/false);
     if (IsArcVmEnabled()) {
       ReportRemovableMediaUnmountResult(
@@ -399,8 +399,8 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
 
   unmount_mojo_start_time_ = base::TimeTicks::Now();
 
-  volume_mounter_instance->PrepareForRemovableMediaUnmount(
-      mount_path, unmount_mojo_callback_.callback());
+  instance->PrepareForRemovableMediaUnmount(mount_path,
+                                            unmount_mojo_callback_.callback());
 
   unmount_timer_.Start(
       FROM_HERE, unmount_timeout_,
@@ -492,14 +492,14 @@ void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
     const std::string& device_label,
     ash::DeviceType device_type,
     bool visible) {
-  mojom::VolumeMounterInstance* volume_mounter_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
-                                  OnMountEvent);
+  mojom::VolumeMounterInstance* const instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->volume_mounter(), OnMountEvent);
 
-  if (!volume_mounter_instance) {
+  if (!instance) {
+    VLOG(1) << "No volume mounter instance";
     return;
   }
-  volume_mounter_instance->OnMountEvent(
+  instance->OnMountEvent(
       mojom::MountPointInfo::New(event, source_path, mount_path, fs_uuid,
                                  device_label, device_type, visible));
 }
