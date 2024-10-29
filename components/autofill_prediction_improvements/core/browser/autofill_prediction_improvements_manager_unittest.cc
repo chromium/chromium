@@ -25,6 +25,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager_test_api.h"
 #include "components/autofill_prediction_improvements/core/browser/mock_autofill_prediction_improvements_client.h"
+#include "components/autofill_prediction_improvements/core/browser/suggestion/autofill_prediction_improvements_suggestions.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -1137,6 +1138,9 @@ TEST_F(
   EXPECT_THAT(suggestions[0], HasType(kRetrievePredictionImprovements));
 }
 
+// TODO(crbug.com/376016081): Refactor test to expect if suggestions are
+// included so that `ShouldSkipAutofillSuggestion()` can be move to the
+// anonymous namespace.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        ShouldSkipAutofillSuggestion) {
   Suggestion autofill_suggestion = Suggestion(kAddressEntry);
@@ -1150,11 +1154,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   test_api(form_structure)
       .SetFieldTypes(
           {autofill::FieldType::NAME_FIRST, autofill::FieldType::NAME_LAST});
-  test_api(manager()).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {u"Jane", u"First Name", form.fields()[0].IsFocusable()}},
-      {form.fields()[1].global_id(),
-       {u"Doe", u"Last Name", form.fields()[1].IsFocusable()}}});
   EXPECT_CALL(client(), GetCachedFormStructure)
       .WillRepeatedly(Return(&form_structure));
   EXPECT_CALL(client(), GetAutofillNameFillingValue(
@@ -1163,8 +1162,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   EXPECT_CALL(client(),
               GetAutofillNameFillingValue(_, autofill::FieldType::NAME_LAST, _))
       .WillOnce(Return(u"  d o Ê"));
-  EXPECT_TRUE(test_api(manager()).ShouldSkipAutofillSuggestion(
-      form, autofill_suggestion));
+  const PredictionsByGlobalId cache = PredictionsByGlobalId{
+      {form.fields()[0].global_id(),
+       {u"Jane", u"First Name", form.fields()[0].IsFocusable()}},
+      {form.fields()[1].global_id(),
+       {u"Doe", u"Last Name", form.fields()[1].IsFocusable()}}};
+  EXPECT_TRUE(
+      ShouldSkipAutofillSuggestion(client(), cache, form, autofill_suggestion));
 }
 
 class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest

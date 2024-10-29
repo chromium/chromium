@@ -187,13 +187,6 @@ class AutofillPredictionImprovementsManager
   // the pref is enabled.
   bool IsURLEligibleForPredictionImprovements(const GURL& url) const;
 
-  // Creates filling suggestions listing the ones for prediction improvements
-  // first and `address_suggestions` afterwards.
-  std::vector<autofill::Suggestion> CreateFillingSuggestions(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& field,
-      const std::vector<autofill::Suggestion>& address_suggestions);
-
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
 
@@ -203,21 +196,6 @@ class AutofillPredictionImprovementsManager
 
   // Logger that records various prediction improvements metrics.
   AutofillPredictionImprovementsLogger logger_;
-
-  // Checks if the cached predictions for a given `form` and Autofill profile
-  // have at least one matching autofill suggestion for the specified
-  // `field_type`.
-  bool CacheHasMatchingAutofillSuggestion(
-      const autofill::FormData& form,
-      const std::string& autofill_profile_guid,
-      autofill::FieldType field_type);
-
-  // Returns true if the type of `autofill_suggestion` should not be added to
-  // prediction improvements or if `autofill_suggestion` likely matches the
-  // cached prediction improvements.
-  bool ShouldSkipAutofillSuggestion(
-      const autofill::FormData& form,
-      const autofill::Suggestion& autofill_suggestion);
 
   // Sets the potentially new state of the `form` fields' focusability in the
   // `cache_`. This is meant to be called in `GetSuggestions()`, which is

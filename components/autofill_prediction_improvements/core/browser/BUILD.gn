@@ -34,6 +34,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_prediction_improvements_utils.h",
       "autofill_prediction_improvements_value_filter.cc",
       "autofill_prediction_improvements_value_filter.h",
+      "suggestion/autofill_prediction_improvements_suggestions.cc",
+      "suggestion/autofill_prediction_improvements_suggestions.h",
     ]
 
     public_deps = [ ":features" ]

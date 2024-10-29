@@ -39,6 +39,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_logger.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_utils.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_value_filter.h"
+#include "components/autofill_prediction_improvements/core/browser/suggestion/autofill_prediction_improvements_suggestions.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -46,7 +47,6 @@
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace autofill_prediction_improvements {
 
@@ -56,195 +56,9 @@ using autofill::LogBuffer;
 using autofill::LoggingScope;
 using autofill::LogMessage;
 
-constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
-
 bool IsFormAndFieldEligible(const autofill::FormStructure& form,
                             const autofill::AutofillField& field) {
   return IsFieldEligibleByTypeCriteria(field) && IsFormEligibleForFilling(form);
-}
-
-// Define `field_types_to_fill` as Autofill address types +
-// `IMPROVED_PREDICTION`.
-// TODO(crbug.com/364808228): Remove `UNKNOWN_TYPE` from `field_types_to_fill`.
-// Also see TODO below.
-autofill::FieldTypeSet GetFieldTypesToFill() {
-  autofill::FieldTypeSet field_types_to_fill = {autofill::UNKNOWN_TYPE,
-                                                autofill::IMPROVED_PREDICTION};
-  for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
-    if (IsAddressType(field_type)) {
-      field_types_to_fill.insert(field_type);
-    }
-  }
-  return field_types_to_fill;
-}
-
-// Ignore `FieldFillingSkipReason::kNoFillableGroup` during filling because
-// `kFieldTypesToFill` contains `UNKNOWN_TYPE` which would result in false
-// positives.
-// TODO(crbug.com/364808228): Remove.
-constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
-    kIgnorableSkipReasons = {
-        autofill::FieldFillingSkipReason::kNotInFilledSection,
-        autofill::FieldFillingSkipReason::kNoFillableGroup};
-
-// Creates a child suggestion for `suggestion` given `prediction` and adds it to
-// its list of children in case it didn't exist before. Returns true if a new
-// child suggestion was added and false otherwise.
-void AddChildFillingSuggestion(
-    autofill::Suggestion& suggestion,
-    const AutofillPredictionImprovementsFillingEngine::Prediction& prediction) {
-  const std::u16string& value_to_fill = prediction.select_option_text
-                                            ? *prediction.select_option_text
-                                            : prediction.value;
-  autofill::Suggestion child_suggestion(
-      value_to_fill, autofill::SuggestionType::kFillPredictionImprovements);
-  child_suggestion.payload = autofill::Suggestion::ValueToFill(value_to_fill);
-  child_suggestion.labels = {{autofill::Suggestion::Text(prediction.label)}};
-
-  // Ensure that a similar child suggestion was not added before, as this would
-  // create unnecessary UI noise.
-  if (std::ranges::find_if(
-          suggestion.children,
-          [&child_suggestion](const autofill::Suggestion& previous_child) {
-            return previous_child.main_text == child_suggestion.main_text &&
-                   previous_child.labels == child_suggestion.labels;
-          }) == suggestion.children.end()) {
-    suggestion.children.push_back(std::move(child_suggestion));
-  }
-}
-
-autofill::Suggestion CreateFillAllSuggestion(
-    const autofill::Suggestion::PredictionImprovementsPayload& payload) {
-  autofill::Suggestion fill_all_suggestion(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
-      autofill::SuggestionType::kFillPredictionImprovements);
-  fill_all_suggestion.payload = payload;
-  return fill_all_suggestion;
-}
-
-void AddLabelToFillingSuggestion(autofill::Suggestion& suggestion) {
-  std::u16string label =
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT) +
-      u" ";
-  size_t num_valid_labels = 0;
-  for (const autofill::Suggestion& child_suggestion : suggestion.children) {
-    if (child_suggestion.type ==
-            autofill::SuggestionType::kFillPredictionImprovements &&
-        !child_suggestion.labels.empty() &&
-        !child_suggestion.labels.front().empty()) {
-      if (num_valid_labels > 0 &&
-          num_valid_labels < kNumberFieldsToShowInSuggestionLabel) {
-        label += l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_SEPARATOR);
-      }
-      if (num_valid_labels < kNumberFieldsToShowInSuggestionLabel) {
-        label += child_suggestion.labels.front().front().value;
-      }
-      ++num_valid_labels;
-    }
-  }
-  if (num_valid_labels > kNumberFieldsToShowInSuggestionLabel) {
-    // When more than `kNumberFieldsToShowInSuggestionLabel` are filled,
-    // include the "& More".
-    size_t number_of_more_fields_to_fill =
-        num_valid_labels - kNumberFieldsToShowInSuggestionLabel;
-    const std::u16string more_fields_label_substr =
-        number_of_more_fields_to_fill > 1
-            ? l10n_util::GetStringFUTF16(
-                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_N_MORE_FIELDS,
-                  base::NumberToString16(number_of_more_fields_to_fill))
-            : l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_ONE_MORE_FIELD);
-    label = base::StrCat({label, u" ", more_fields_label_substr});
-  }
-  suggestion.labels = {{autofill::Suggestion::Text(label)}};
-}
-
-autofill::Suggestion CreateTriggerSuggestion() {
-  autofill::Suggestion retrieve_suggestion(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
-      autofill::SuggestionType::kRetrievePredictionImprovements);
-  retrieve_suggestion.icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
-  return retrieve_suggestion;
-}
-
-// Creates a spinner-like suggestion shown while improved predictions are
-// loaded.
-autofill::Suggestion CreateLoadingSuggestion() {
-  autofill::Suggestion loading_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsLoadingState);
-  loading_suggestion.acceptability =
-      autofill::Suggestion::Acceptability::kUnacceptable;
-  return loading_suggestion;
-}
-
-autofill::Suggestion CreateFeedbackSuggestion() {
-  autofill::Suggestion feedback_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsFeedback);
-  feedback_suggestion.acceptability =
-      autofill::Suggestion::Acceptability::kUnacceptable;
-  feedback_suggestion.voice_over = base::JoinString(
-      {
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS),
-          l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT,
-              l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_MANAGE_LINK_A11Y_HINT)),
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_FEEDBACK_BUTTONS_A11Y_HINT),
-      },
-      u" ");
-  feedback_suggestion.highlight_on_select = false;
-  return feedback_suggestion;
-}
-
-autofill::Suggestion CreateEditPredictionImprovementsInformation() {
-  autofill::Suggestion edit_suggestion;
-  edit_suggestion.type =
-      autofill::SuggestionType::kEditPredictionImprovementsInformation;
-  edit_suggestion.icon = autofill::Suggestion::Icon::kEdit;
-  edit_suggestion.main_text = autofill::Suggestion::Text(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_EDIT_INFORMATION_SUGGESTION_MAIN_TEXT),
-      autofill::Suggestion::Text::IsPrimary(true));
-  return edit_suggestion;
-}
-
-// Creates suggestions shown when retrieving prediction improvements wasn't
-// successful or there's nothing to fill (not even by Autofill or Autocomplete).
-std::vector<autofill::Suggestion> CreateErrorOrNoInfoSuggestions(
-    int message_id) {
-  autofill::Suggestion error_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsError);
-  error_suggestion.main_text = autofill::Suggestion::Text(
-      l10n_util::GetStringUTF16(message_id),
-      autofill::Suggestion::Text::IsPrimary(true),
-      autofill::Suggestion::Text::ShouldTruncate(true));
-  error_suggestion.highlight_on_select = false;
-  error_suggestion.acceptability =
-      autofill::Suggestion::Acceptability::kUnacceptable;
-  return {error_suggestion,
-          autofill::Suggestion(autofill::SuggestionType::kSeparator),
-          CreateFeedbackSuggestion()};
-}
-
-// Creates a suggestion shown when retrieving prediction improvements wasn't
-// successful.
-std::vector<autofill::Suggestion> CreateErrorSuggestions() {
-  return CreateErrorOrNoInfoSuggestions(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT);
-}
-
-// Creates suggestions shown when there's nothing to fill (not even by Autofill
-// or Autocomplete).
-std::vector<autofill::Suggestion> CreateNoInfoSuggestions() {
-  return CreateErrorOrNoInfoSuggestions(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_NO_INFO_POPUP_MAIN_TEXT);
 }
 
 }  // namespace
@@ -341,117 +155,6 @@ AutofillPredictionImprovementsManager::GetFieldValueSensitivityMap(
 AutofillPredictionImprovementsManager::
     ~AutofillPredictionImprovementsManager() = default;
 
-bool AutofillPredictionImprovementsManager::CacheHasMatchingAutofillSuggestion(
-    const autofill::FormData& form,
-    const std::string& autofill_profile_guid,
-    autofill::FieldType field_type) {
-  autofill::FormStructure* form_structure =
-      client_->GetCachedFormStructure(form);
-  if (!form_structure) {
-    return false;
-  }
-  for (const std::unique_ptr<autofill::AutofillField>& autofill_field :
-       form_structure->fields()) {
-    // Skip fields that aren't focusable because they wouldn't be filled
-    // anyways.
-    if (!autofill_field->IsFocusable()) {
-      continue;
-    }
-    if (autofill_field->Type().GetStorableType() == field_type) {
-      const std::u16string normalized_autofill_filling_value =
-          autofill::NormalizeValue(
-              client_->GetAutofillNameFillingValue(autofill_profile_guid,
-                                                   field_type, *autofill_field),
-              /*keep_white_space=*/false);
-      if (normalized_autofill_filling_value.empty() ||
-          !cache_->contains(autofill_field->global_id())) {
-        continue;
-      }
-      const std::u16string normalized_improved_prediction =
-          autofill::NormalizeValue(
-              cache_->at(autofill_field->global_id()).value,
-              /*keep_white_space=*/false);
-      if (normalized_improved_prediction == normalized_autofill_filling_value) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-bool AutofillPredictionImprovementsManager::ShouldSkipAutofillSuggestion(
-    const autofill::FormData& form,
-    const autofill::Suggestion& autofill_suggestion) {
-  CHECK(cache_);
-  if (autofill_suggestion.type != autofill::SuggestionType::kAddressEntry &&
-      autofill_suggestion.type !=
-          autofill::SuggestionType::kAddressFieldByFieldFilling) {
-    return true;
-  }
-  const std::string autofill_profile_guid =
-      autofill_suggestion
-          .GetPayload<autofill::Suggestion::AutofillProfilePayload>()
-          .guid.value();
-  if (autofill_profile_guid.empty()) {
-    return true;
-  }
-
-  return CacheHasMatchingAutofillSuggestion(form, autofill_profile_guid,
-                                            autofill::FieldType::NAME_FIRST) &&
-         CacheHasMatchingAutofillSuggestion(form, autofill_profile_guid,
-                                            autofill::FieldType::NAME_LAST);
-}
-
-std::vector<autofill::Suggestion>
-AutofillPredictionImprovementsManager::CreateFillingSuggestions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    const std::vector<autofill::Suggestion>& autofill_suggestions) {
-  CHECK(HasImprovedPredictionsForField(field));
-  const AutofillPredictionImprovementsFillingEngine::Prediction& prediction =
-      cache_->at(field.global_id());
-  autofill::Suggestion suggestion(
-      prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
-  auto payload = autofill::Suggestion::PredictionImprovementsPayload(
-      GetValuesToFill(), GetFieldTypesToFill(), kIgnorableSkipReasons);
-  suggestion.payload = payload;
-  suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
-  // Add a `kFillPredictionImprovements` suggestion with a separator to
-  // `suggestion.children` before the field-by-field filling entries.
-  suggestion.children.emplace_back(CreateFillAllSuggestion(payload));
-  suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-
-  // Add the child suggestion for the triggering field on top, then for the
-  // remaining fields in no particular order.
-  AddChildFillingSuggestion(suggestion, prediction);
-  for (const auto& [child_field_global_id, child_prediction] : *cache_) {
-    // Only add a child suggestion if the field is not the triggering field, the
-    // value to fill is not empty and the field is focusable.
-    if (child_field_global_id != field.global_id() &&
-        !child_prediction.value.empty() && child_prediction.is_focusable) {
-      AddChildFillingSuggestion(suggestion, child_prediction);
-    }
-  }
-  AddLabelToFillingSuggestion(suggestion);
-
-  suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-  suggestion.children.emplace_back(
-      CreateEditPredictionImprovementsInformation());
-
-  // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
-  std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
-  for (const autofill::Suggestion& autofill_suggestion : autofill_suggestions) {
-    if (ShouldSkipAutofillSuggestion(form, autofill_suggestion)) {
-      continue;
-    }
-    filling_suggestions.push_back(autofill_suggestion);
-  }
-  filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
-  filling_suggestions.emplace_back(CreateFeedbackSuggestion());
-  return filling_suggestions;
-}
-
 bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
     const autofill::FormFieldData& field) {
   return cache_ && cache_->contains(field.global_id());
@@ -514,13 +217,13 @@ AutofillPredictionImprovementsManager::GetSuggestions(
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kReady:
       if (kTriggerAutomatically.Get()) {
-        return {CreateLoadingSuggestion()};
+        return CreateLoadingSuggestions();
       }
-      return {CreateTriggerSuggestion()};
+      return CreateTriggerSuggestions();
     case PredictionRetrievalState::kIsLoadingPredictions:
       // Keep showing the loading suggestion while prediction improvements are
       // being retrieved.
-      return {CreateLoadingSuggestion()};
+      return CreateLoadingSuggestions();
     case PredictionRetrievalState::kDoneSuccess:
       // The `form` fields' focusability states may have changed since the last
       // `form` field focus event, so they need to be updated in the `cache_`.
@@ -532,7 +235,8 @@ AutofillPredictionImprovementsManager::GetSuggestions(
       // it exists. This may contain additional `autofill_suggestions`, appended
       // to the prediction improvements.
       if (HasImprovedPredictionsForField(field)) {
-        return CreateFillingSuggestions(form, field, autofill_suggestions);
+        return CreateFillingSuggestions(*client_, *cache_, form, field,
+                                        autofill_suggestions);
       }
       // If there are no cached predictions for the `field`, continue the
       // regular Autofill flow if it has data to show.
@@ -547,9 +251,8 @@ AutofillPredictionImprovementsManager::GetSuggestions(
       // suggestion again.
       // TODO(crbug.com/374715268): Consider not showing the trigger suggestion
       // again, since this will also result in an error.
-      return error_or_no_info_suggestion_shown_
-                 ? std::vector<autofill::Suggestion>{CreateTriggerSuggestion()}
-                 : std::vector<autofill::Suggestion>{CreateNoInfoSuggestions()};
+      return error_or_no_info_suggestion_shown_ ? CreateTriggerSuggestions()
+                                                : CreateNoInfoSuggestions();
     case PredictionRetrievalState::kDoneError:
       // In the error state, continue the regular Autofill flow if it has data
       // to show.
@@ -561,9 +264,8 @@ AutofillPredictionImprovementsManager::GetSuggestions(
         return {};
       }
       // Show the error suggestion exactly once, otherwise show nothing.
-      return error_or_no_info_suggestion_shown_
-                 ? std::vector<autofill::Suggestion>{CreateTriggerSuggestion()}
-                 : CreateErrorSuggestions();
+      return error_or_no_info_suggestion_shown_ ? CreateTriggerSuggestions()
+                                                : CreateErrorSuggestions();
   }
 }
 
@@ -578,7 +280,7 @@ void AutofillPredictionImprovementsManager::RetrievePredictions(
   }
   update_suggestions_callback_ = std::move(update_suggestions_callback);
   if (update_to_loading_suggestion) {
-    UpdateSuggestions({CreateLoadingSuggestion()});
+    UpdateSuggestions(CreateLoadingSuggestions());
   }
   prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
   last_queried_form_global_id_ = form.global_id();
@@ -654,8 +356,8 @@ void AutofillPredictionImprovementsManager::
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
       if (HasImprovedPredictionsForField(trigger_field)) {
-        UpdateSuggestions(CreateFillingSuggestions(form, trigger_field,
-                                                   autofill_suggestions_));
+        UpdateSuggestions(CreateFillingSuggestions(
+            *client_, *cache_, form, trigger_field, autofill_suggestions_));
       } else {
         OnFailedToGenerateSuggestions();
       }
@@ -719,22 +421,6 @@ bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
     const GURL& url) const {
   return client_->IsAutofillPredictionImprovementsEnabledPref() &&
          IsUserEligible() && IsURLEligibleForPredictionImprovements(url);
-}
-
-base::flat_map<autofill::FieldGlobalId, std::u16string>
-AutofillPredictionImprovementsManager::GetValuesToFill() {
-  if (!cache_) {
-    return {};
-  }
-  std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
-      values_to_fill;
-  for (const auto& [field_global_id, prediction] : *cache_) {
-    if (!prediction.is_focusable) {
-      continue;
-    }
-    values_to_fill.emplace_back(field_global_id, prediction.value);
-  }
-  return values_to_fill;
 }
 
 void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
