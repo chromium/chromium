@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_file_util.h"
@@ -370,12 +371,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
 
+  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
   system_identity_manager_->AddIdentity(google_identity);
   // Wait for the enterprise profile to get created.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
 
-  // Ensure a second profile has been created. Find its name.
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
+  // Find the name of the new profile.
   std::string managed_profile_name =
       FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
   ASSERT_FALSE(managed_profile_name.empty());
@@ -422,12 +424,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   // Add a managed identity. This should trigger the creation of a new profile.
+  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
   system_identity_manager_->AddIdentity(google_identity);
   // Wait for the enterprise profile to get created.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
 
-  // Ensure a separate profile has been created. Find its name.
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
+  // Find the name of the new profile.
   std::string managed_profile_name1 =
       FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
   ASSERT_FALSE(managed_profile_name1.empty());
@@ -438,12 +441,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   // Add another managed identity. This should again trigger the creation of a
   // new profile.
+  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
   system_identity_manager_->AddIdentity(chromium_identity);
   // Wait for the enterprise profile to get created.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_manager_->GetLoadedProfiles().size() == 3; }));
 
-  // Ensure another profile has been created. Find its name.
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 3u);
+  // Find the name of the new profile.
   std::string managed_profile_name2 = FindCreatedProfileName(
       /*known_profile_names=*/{kPersonalProfileName, managed_profile_name1});
   ASSERT_FALSE(managed_profile_name2.empty());
@@ -486,12 +490,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   // Add a managed identity. This should trigger the creation of a new profile.
+  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
   system_identity_manager_->AddIdentity(google_identity);
   // Wait for the enterprise profile to get created.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
 
-  // Ensure another profile has been created. Find its name.
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
+  // Find the name of the new profile.
   std::string managed_profile_name;
   for (const ProfileIOS* profile : profile_manager_->GetLoadedProfiles()) {
     if (profile->GetProfileName() != kPersonalProfileName) {
@@ -574,9 +579,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   // Wait for the enterprise profile to get created.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
 
   // Ensure that only a single profile was created for the managed identity.
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
 }
 
@@ -595,9 +602,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       system_identity_manager_, profile_manager_.get());
 
   // Wait for the enterprise profile to get created.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
 
-  // Ensure a second profile has been created. Find its name.
+  // Find the name of the new profile.
   EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
   std::string managed_profile_name =
       FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
