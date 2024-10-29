@@ -1694,9 +1694,9 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void testSetGridContentSensitivity() {
         assertFalse(mModel.get(TabGridDialogProperties.IS_CONTENT_SENSITIVE));
-        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, true);
+        mMediator.setGridContentSensitivity(/* contentIsSensitive= */ true);
         assertTrue(mModel.get(TabGridDialogProperties.IS_CONTENT_SENSITIVE));
-        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, false);
+        mMediator.setGridContentSensitivity(/* contentIsSensitive= */ false);
         assertFalse(mModel.get(TabGridDialogProperties.IS_CONTENT_SENSITIVE));
     }
 
