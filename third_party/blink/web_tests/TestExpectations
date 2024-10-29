@@ -8072,9 +8072,6 @@ crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
 # Flaky on Linux
 crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-meta-enabled.html [ Failure Pass ]
 
-# Gardener 2024-08-29
-crbug.com/362787721 [ Win11 ] external/wpt/fullscreen/api/element-request-fullscreen-timing.html [ Failure ]
-
 # Gardener 2024-09-02
 crbug.com/363353213 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
 crbug.com/363353213 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]

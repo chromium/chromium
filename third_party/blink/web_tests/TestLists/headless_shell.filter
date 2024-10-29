@@ -37,6 +37,7 @@ external/wpt/css/geometry/*
 external/wpt/css/reference/*
 external/wpt/digital-credentials/*
 external/wpt/ecmascript/*
+external/wpt/fullscreen/*
 external/wpt/js*
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
