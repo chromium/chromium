@@ -1720,7 +1720,8 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
   AXID axid = node->GetDomNodeId();
   whitespace_ignored_map_.erase(axid);
 
-  if (node == active_aria_modal_dialog_) {
+  if (node == active_aria_modal_dialog_ &&
+      lifecycle_.StateAllowsAXObjectsToBeDirtied()) {
     UpdateActiveAriaModalDialog(FocusedNode());
   }
 
