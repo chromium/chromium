@@ -35,15 +35,36 @@
 namespace autofill::internal {
 
 // Traits for targets of LOG_AF(). There are currently specializations for
-// `LogManager*` and `LogBuffer*`.
+// `LogManager*` and `LogBuffer*`. The below is just a placeholder.
 template <typename T>
 struct LoggerTraits {
+  class Null {
+   public:
+    constexpr Null() = default;
+    template <typename U>
+    Null operator<<(const U&) {
+      return {};
+    }
+  };
+
   // Returns true iff logging to should be enabled.
-  static bool active(const T& logger) { return false; }
+  static bool active(const T& logger) {
+    static_assert(
+        false,
+        "Traits for this logger aren't visible. Are you missing an include of "
+        "log_manager.h and/or log_buffer.h?");
+    return false;
+  }
 
   // Returns an object that implements the stream insertion operator
   // operator<<().
-  static int get_stream(const T& logger) { return {}; }
+  static Null get_stream(const T& logger) {
+    static_assert(
+        false,
+        "Traits for this logger aren't visible. Are you missing an include of "
+        "log_manager.h and/or log_buffer.h?");
+    return {};
+  }
 };
 
 // This class is used to explicitly ignore values in the conditional
