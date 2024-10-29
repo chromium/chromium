@@ -53,6 +53,11 @@ class RuleFeatureSetTest : public testing::Test {
                              parent_rule_for_nesting);
   }
 
+  SelectorPreMatch CollectFeatures(StyleRule* style_rule,
+                                   const StyleScope* style_scope) {
+    return CollectFeaturesTo(style_rule, style_scope, rule_feature_set_);
+  }
+
   static SelectorPreMatch CollectFeaturesTo(
       base::span<CSSSelector> selector_vector,
       const StyleScope* style_scope,
@@ -2918,6 +2923,42 @@ TEST_F(RuleFeatureSetTest, BloomFilterForIdSelfInvalidation) {
     InvalidationLists invalidation_lists;
     CollectInvalidationSetsForId(invalidation_lists, "bar");
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, NestingSelectorPointingToScopeInsideHas) {
+  Document* document =
+      Document::CreateForTest(execution_context_.GetExecutionContext());
+  StyleRuleBase* parent_rule_base =
+      css_test_helpers::ParseRule(*document, "@scope (.a) { :scope {} }");
+  ASSERT_TRUE(parent_rule_base);
+
+  const StyleScope* scope = nullptr;
+
+  auto& scope_rule = To<StyleRuleScope>(*parent_rule_base);
+  scope = scope_rule.GetStyleScope().CopyWithParent(scope);
+  const HeapVector<Member<StyleRuleBase>>& scope_child_rules =
+      scope_rule.ChildRules();
+  ASSERT_EQ(1u, scope_child_rules.size());
+  parent_rule_base = scope_child_rules[0].Get();
+
+  auto* parent_rule = DynamicTo<StyleRule>(parent_rule_base);
+  ASSERT_TRUE(parent_rule);
+  CollectFeatures(parent_rule, scope);
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(&)", CSSNestingType::kNesting,
+                            /*parent_rule_for_nesting=*/parent_rule));
+
+  // TODO(crbug.com/40208848): This test currently expects whole-subtree
+  // invalidation, because we don't extract any features from :scope.
+  // That should be improved.
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasWholeSubtreeInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
   }
 }

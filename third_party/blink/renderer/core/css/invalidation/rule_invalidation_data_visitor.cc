@@ -1119,6 +1119,11 @@ bool RuleInvalidationDataVisitor<VisitorType>::
       case CSSSelector::kPseudoVisited:
         // Ignore :visited to prevent history leakage.
         break;
+      case CSSSelector::kPseudoScope:
+        // Ignore :scope inside :has() because :has() anchor element doesn't
+        // have any descendant/sibling/sibling-descendant element that matches
+        // document root or scope root.
+        break;
       default:
         if constexpr (is_builder()) {
           rule_invalidation_data_.pseudos_in_has_argument.insert(pseudo_type);
@@ -1440,7 +1445,8 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
       default:
         break;
     }
-    if (simple->Relation() != CSSSelector::kSubSelector) {
+    if (simple->Relation() != CSSSelector::kSubSelector &&
+        simple->Relation() != CSSSelector::kScopeActivation) {
       break;
     }
   }
@@ -1484,7 +1490,8 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
       compound_has_features_for_rule_set_invalidation = true;
     }
 
-    if (simple->Relation() != CSSSelector::kSubSelector) {
+    if (simple->Relation() != CSSSelector::kSubSelector &&
+        simple->Relation() != CSSSelector::kScopeActivation) {
       break;
     }
   }
