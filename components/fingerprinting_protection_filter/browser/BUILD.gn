@@ -39,8 +39,10 @@ if (use_blink) {
     ]
     deps = [
       "//components/content_settings/browser",
+      "//components/fingerprinting_protection_filter/common:exceptions",
       "//components/subresource_filter/core/common",
       "//net",
+      "//services/metrics/public/cpp:metrics_cpp",
       "//url",
     ]
   }
@@ -85,6 +87,8 @@ if (use_blink) {
       "//components/url_pattern_index/proto:url_pattern_index",
       "//content/public/browser",
       "//content/test:test_support",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//testing/gmock",
       "//testing/gtest",
       "//url",
     ]

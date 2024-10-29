@@ -37,6 +37,9 @@ const char MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName[] =
 const char DocumentLoadRulesetIsAvailableHistogramName[] =
     "FingerprintingProtection.DocumentLoad.RulesetIsAvailable";
 
+const char RefreshCountHistogramName[] =
+    "FingerprintingProtection.WebContentsObserver.RefreshCount";
+
 // Console messages
 // ----------------
 
