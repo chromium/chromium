@@ -224,4 +224,10 @@ void SerialPortUnderlyingSource::Close() {
   data_pipe_.reset();
 }
 
+void SerialPortUnderlyingSource::Dispose() {
+  // Ensure that `watcher_` is disarmed so that `OnHandleReady()` is not called
+  // after this object becomes garbage.
+  Close();
+}
+
 }  // namespace blink
