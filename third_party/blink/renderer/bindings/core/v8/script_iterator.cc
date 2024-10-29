@@ -22,8 +22,10 @@ namespace {
 class AsyncIteratorCloseFulfillFunction final
     : public ThenCallable<IDLAny, AsyncIteratorCloseFulfillFunction, IDLAny> {
  public:
-  explicit AsyncIteratorCloseFulfillFunction(ExceptionContext exception_context)
-      : exception_context_(exception_context) {}
+  explicit AsyncIteratorCloseFulfillFunction(
+      const ExceptionContext& exception_context) {
+    SetExceptionContext(exception_context);
+  }
 
   ScriptValue React(ScriptState* script_state, ScriptValue value) {
     // In a detached context, we shouldn't proceed to do things that can run
@@ -34,11 +36,9 @@ class AsyncIteratorCloseFulfillFunction final
 
     // 9.1. If Type(returnPromiseResult) is not Object, throw a TypeError.
     if (!value.V8Value()->IsObject()) {
-      auto error = V8ThrowException::CreateTypeError(
+      V8ThrowException::ThrowTypeError(
           script_state->GetIsolate(),
           "Expected return() to resolve to an Object.");
-      ApplyContextToException(script_state, error, exception_context_);
-      V8ThrowException::ThrowException(script_state->GetIsolate(), error);
       return ScriptValue();
     }
     // 9.2. Return undefined.
@@ -49,9 +49,6 @@ class AsyncIteratorCloseFulfillFunction final
     ThenCallable<IDLAny, AsyncIteratorCloseFulfillFunction, IDLAny>::Trace(
         visitor);
   }
-
- private:
-  ExceptionContext exception_context_;
 };
 
 }  // namespace

@@ -775,14 +775,12 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
                                                 PullSource2,
                                                 IDLPromise<IDLUndefined>> {
    public:
-    explicit PullSource2(ConcatenatingUnderlyingSource* source,
-                         const ExceptionContext& exception_context)
-        : source_(source), exception_context_(exception_context) {}
+    explicit PullSource2(ConcatenatingUnderlyingSource* source)
+        : source_(source) {}
 
     ScriptPromise<IDLUndefined> React(ScriptState* script_state) {
-      v8::Isolate* isolate = script_state->GetIsolate();
-      ExceptionState exception_state(isolate, exception_context_);
-      return source_->source2_->Pull(script_state, exception_state);
+      return source_->source2_->Pull(
+          script_state, PassThroughException(script_state->GetIsolate()));
     }
 
     void Trace(Visitor* visitor) const override {
@@ -793,7 +791,6 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
 
    private:
     const Member<ConcatenatingUnderlyingSource> source_;
-    const ExceptionContext exception_context_;
   };
 
   class ConcatenatingUnderlyingSourceReadRequest final : public ReadRequest {
@@ -817,14 +814,12 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
           source_->Controller()->GetOriginalController();
       auto* isolate = script_state->GetIsolate();
       if (controller) {
-        ExceptionState exception_state(script_state->GetIsolate(),
-                                       v8::ExceptionContext::kUnknown, "", "");
+        ExceptionState exception_state(script_state->GetIsolate());
         resolver_->Resolve(
             source_->source2_
                 ->StartWrapper(script_state, controller, exception_state)
                 .Then(script_state,
-                      MakeGarbageCollected<PullSource2>(
-                          source_, exception_state.GetContext())));
+                      MakeGarbageCollected<PullSource2>(source_)));
       } else {
         // TODO(crbug.com/1418910): Investigate how to handle cases when the
         // controller is cleared.

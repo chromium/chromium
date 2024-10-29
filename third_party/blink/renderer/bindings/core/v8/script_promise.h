@@ -116,49 +116,55 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
 
  private:
   ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
+    ScriptValue return_value;
+
     if constexpr (std::is_same_v<IDLType, IDLUndefined>) {
-      if constexpr (std::is_same_v<IDLPromise<IDLUndefined>, ThenReturnType>) {
-        v8::Local<v8::Value> return_value = ToV8Traits<ThenReturnType>::ToV8(
-            script_state, static_cast<Derived*>(this)->React(script_state));
-        return ScriptValue(script_state->GetIsolate(), return_value);
-      } else {
+      if constexpr (!std::is_same_v<IDLPromise<IDLUndefined>, ThenReturnType>) {
+        // Base undefined case: no input value, no return value.
         static_cast<Derived*>(this)->React(script_state);
-        return ScriptValue();
+      } else {
+        // Chain promises that resolve with undefined.
+        return_value = ScriptValue(
+            isolate, ToV8Traits<ThenReturnType>::ToV8(
+                         script_state,
+                         static_cast<Derived*>(this)->React(script_state)));
       }
     } else {
-      v8::Isolate* isolate = script_state->GetIsolate();
-      v8::TryCatch try_catch(isolate);
+      // Resolve type is not undefined - convert it to the expected type.
       auto&& blink_value = NativeValueTraits<IDLType>::NativeValue(
           isolate, value.V8Value(), PassThroughException(isolate));
-      if (try_catch.HasCaught()) {
+
+      if (try_catch.HasCaught()) [[unlikely]] {
+        // Typing failure: convert to promise rejection.
         DCHECK(typing_failure_callable_);
-        auto return_value = typing_failure_callable_->Call(
+        return_value = typing_failure_callable_->Call(
             script_state, ScriptValue(isolate, try_catch.Exception()));
-        ApplyContextToException(script_state, try_catch.Exception(), context_);
-        try_catch.ReThrow();
-        return return_value;
-      }
-      if constexpr (std::is_same_v<IDLUndefined, ThenReturnType>) {
-        static_cast<Derived*>(this)->React(script_state,
-                                           std::move(blink_value));
-        if (try_catch.HasCaught()) {
-          ApplyContextToException(script_state, try_catch.Exception(),
-                                  context_);
-          try_catch.ReThrow();
-        }
-        return ScriptValue();
       } else {
-        v8::Local<v8::Value> return_value = ToV8Traits<ThenReturnType>::ToV8(
-            script_state, static_cast<Derived*>(this)->React(
-                              script_state, std::move(blink_value)));
-        if (try_catch.HasCaught()) {
-          ApplyContextToException(script_state, try_catch.Exception(),
-                                  context_);
-          try_catch.ReThrow();
+        if constexpr (std::is_same_v<IDLUndefined, ThenReturnType>) {
+          // Promise resolves with a value, but this callable is not expected to
+          // return anything (no chaining).
+          static_cast<Derived*>(this)->React(script_state,
+                                             std::move(blink_value));
+        } else {
+          // Promise resolves with a value, and is chaining.
+          return_value = ScriptValue(
+              isolate,
+              ToV8Traits<ThenReturnType>::ToV8(
+                  script_state, static_cast<Derived*>(this)->React(
+                                    script_state, std::move(blink_value))));
         }
-        return ScriptValue(script_state->GetIsolate(), return_value);
       }
     }
+
+    // Finally: apply exception context and rethrow if needed, and return the
+    // result.
+    if (try_catch.HasCaught()) [[unlikely]] {
+      ApplyContextToException(script_state, try_catch.Exception(), context_);
+      try_catch.ReThrow();
+    }
+    return return_value;
   }
 
   Member<ScriptFunction::Callable> typing_failure_callable_;
