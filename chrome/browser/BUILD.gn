@@ -8375,6 +8375,8 @@ static_library("browser") {
       "navigation_predictor/preloading_model_executor.h",
       "navigation_predictor/preloading_model_handler.cc",
       "navigation_predictor/preloading_model_handler.h",
+      "password_manager/password_field_classification_model_handler_factory.cc",
+      "password_manager/password_field_classification_model_handler_factory.h",
     ]
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
