@@ -74,23 +74,15 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled in M130. Don't remove before kWebAuthnGpmPin is enabled!
+// Enabled in M132. Remove in or after M135 (when removing kWebAuthnGpmPin).
 BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Enabled in M130 % ChromeOs.
+// Enabled in M132. Remove in or after M135.
 const base::FeatureParam<bool> kWebAuthnGpmPin{
     &kWebAuthnEnclaveAuthenticator, kWebAuthnGpmPinFeatureParameterName,
-#if BUILDFLAG(IS_CHROMEOS)
-    /*default_value=*/false};
-#else
     /*default_value=*/true};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Development flag. Must not be enabled by default once
 // kWebAuthnEnclaveAuthenticator is enabled.

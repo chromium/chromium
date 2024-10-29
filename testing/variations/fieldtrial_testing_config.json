@@ -26021,24 +26021,6 @@
             ]
         }
     ],
-    "WebAuthenticationEnclaveAuthenticator": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "WebAuthenticationGpmPin": "true"
-                    },
-                    "enable_features": [
-                        "WebAuthenticationEnclaveAuthenticator"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebContentsCaptureHiDPI": [
         {
             "platforms": [
