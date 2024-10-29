@@ -640,12 +640,6 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
         object_cache_->MarkAXObjectDirtyWithCleanLayout(
             original_parent->ParentObject());
       }
-      // Now that we're replacing the parent, we need to update cached values
-      // for the added child's subtree, because some cached values are inherited
-      // from the parent. Invalidating the cached values at the root of the
-      // subtree is enough, as changed inherited values will propagate down.
-      // Example: the cached_is_used_for_label_or_description_ flag.
-      added_child->InvalidateCachedValues();
     }
     // Now that the child is owned, it's "included in tree" state must be
     // recomputed because owned children are always included in the tree.
