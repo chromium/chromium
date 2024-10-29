@@ -22,6 +22,7 @@
 #include "base/at_exit.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -1203,7 +1204,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                  << " must contain an absolute path";
       *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
     } else if (installer::ConfigureAppContainerSandbox(
-                   std::array<const base::FilePath*, 1>{&path})) {
+                   base::span_from_ref(&path))) {
       *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS;
     } else {
       *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;

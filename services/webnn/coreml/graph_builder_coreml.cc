@@ -545,7 +545,7 @@ template <typename DataType>
 CoreML::Specification::MILSpec::Value Create1DTensorImmediateValue(
     base::span<const DataType> value) {
   return CreateTensorImmediateValue(
-      base::span({base::checked_cast<uint32_t>(value.size())}), value);
+      base::span_from_ref(base::checked_cast<uint32_t>(value.size())), value);
 }
 
 // Special handling for string case, otherwise directly passing

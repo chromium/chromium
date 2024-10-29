@@ -76,7 +76,7 @@ char* CheckOpValueStr(std::string_view v) {
       // SAFETY: We allocated `ret` as `v.size() + 1` bytes above.
       UNSAFE_BUFFERS(base::span<char>(ret, v.size() + 1u)).split_at(v.size());
   val.copy_from(v);
-  nul.copy_from({{'\0'}});
+  nul.copy_from(base::span_from_ref('\0'));
   return ret;
 }
 

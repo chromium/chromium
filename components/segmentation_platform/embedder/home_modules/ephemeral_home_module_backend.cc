@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
@@ -178,7 +179,8 @@ TestEphemeralHomeModuleBackend::GetModelConfig() {
                                               kSignalStorageLength);
 
   writer.AddOutputConfigForMultiClassClassifier(
-      {kPriceTrackingNotificationPromo}, kMaxOutputLabelsToRank,
+      base::span_from_ref(+kPriceTrackingNotificationPromo),
+      kMaxOutputLabelsToRank,
       EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kNotShown));
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},

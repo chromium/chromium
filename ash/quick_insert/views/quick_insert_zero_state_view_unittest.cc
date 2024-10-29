@@ -32,6 +32,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -395,7 +396,8 @@ TEST_F(QuickInsertZeroStateViewTest,
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({});
           });
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
+  PickerZeroStateView view(&mock_delegate,
+                           base::span_from_ref(PickerCategory::kEditorRewrite),
                            kPickerWidth, &asset_fetcher_, &submenu_controller_,
                            &preview_controller_);
 
@@ -423,7 +425,8 @@ TEST_F(QuickInsertZeroStateViewTest,
                     "query_b"),
             });
           });
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
+  PickerZeroStateView view(&mock_delegate,
+                           base::span_from_ref(PickerCategory::kEditorRewrite),
                            kPickerWidth, &asset_fetcher_, &submenu_controller_,
                            &preview_controller_);
 
@@ -462,7 +465,8 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
                     "emojify"),
             });
           });
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
+  PickerZeroStateView view(&mock_delegate,
+                           base::span_from_ref(PickerCategory::kEditorRewrite),
                            kPickerWidth, &asset_fetcher_, &submenu_controller_,
                            &preview_controller_);
 
@@ -491,7 +495,8 @@ TEST_F(QuickInsertZeroStateViewTest,
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({});
           });
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kLobster}},
+  PickerZeroStateView view(&mock_delegate,
+                           base::span_from_ref(PickerCategory::kLobster),
                            kPickerWidth, &asset_fetcher_, &submenu_controller_,
                            &preview_controller_);
 
@@ -506,7 +511,8 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
             std::move(callback).Run({QuickInsertLobsterResult(
                 /*display_name=*/u"lobster")});
           });
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kLobster}},
+  PickerZeroStateView view(&mock_delegate,
+                           base::span_from_ref(PickerCategory::kLobster),
                            kPickerWidth, &asset_fetcher_, &submenu_controller_,
                            &preview_controller_);
 

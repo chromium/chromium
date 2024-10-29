@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
@@ -866,9 +867,9 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kGeolocation,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kPrivacyHubGeolocationAdvancedSubpagePath);
-  RegisterNestedSettingBulk(mojom::Subpage::kPrivacyHubGeolocation,
-                            {{mojom::Setting::kGeolocationAdvanced}},
-                            generator);
+  RegisterNestedSettingBulk(
+      mojom::Subpage::kPrivacyHubGeolocation,
+      base::span_from_ref(mojom::Setting::kGeolocationAdvanced), generator);
 
   // Privacy hub camera.
   generator->RegisterNestedSubpage(

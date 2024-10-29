@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
@@ -2089,7 +2090,7 @@ void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
   if (!updated_urls.empty()) {
     FetchImagesForURLs(
         updated_urls,
-        base::span({AutofillImageFetcherBase::ImageSize::kSquare}));
+        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSquare));
   }
 }
 
@@ -2112,7 +2113,7 @@ void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
   if (!updated_urls.empty()) {
     FetchImagesForURLs(
         updated_urls,
-        base::span({AutofillImageFetcherBase::ImageSize::kSquare}));
+        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSquare));
   }
 }
 

@@ -1578,7 +1578,7 @@ TEST_F(RateLimitTableTest, DeactivateSourcesForDestinationLimit) {
                        &db_, new_source, /*source_time=*/base::Time::Now())
                    ->empty());
   ASSERT_TRUE(table_.DeactivateSourcesForDestinationLimit(
-      &db_, base::span({StoredSource::Id(1)})));
+      &db_, base::span_from_ref(StoredSource::Id(1))));
   EXPECT_TRUE(table_
                   .GetSourcesToDeactivateForDestinationLimit(
                       &db_, new_source, /*source_time=*/base::Time::Now())
