@@ -372,9 +372,6 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_CHROMEOS)
         switches::kSchedulerBoostUrgent,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        switches::kEnableResourcesFileSharing,
-#endif
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
         switches::kHardwareVideoDecodeFrameRate,
 #endif

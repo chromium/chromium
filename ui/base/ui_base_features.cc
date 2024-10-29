@@ -111,13 +111,6 @@ bool IsShortcutCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kShortcutCustomization);
 }
 
-// Share the resource file with ash-chrome. This feature reduces the memory
-// consumption while the disk usage slightly increases.
-// https://crbug.com/1253280.
-BASE_FEATURE(kLacrosResourcesFileSharing,
-             "LacrosResourcesFileSharing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables settings that allow users to remap the F11 and F12 keys in the
 // "Customize keyboard keys" page.
 BASE_FEATURE(kSupportF11AndF12KeyShortcuts,

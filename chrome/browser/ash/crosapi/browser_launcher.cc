@@ -71,7 +71,6 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "third_party/widevine/cdm/buildflags.h"
-#include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -93,13 +92,6 @@ namespace {
 using LaunchParamsFromBackground = BrowserLauncher::LaunchParamsFromBackground;
 using LaunchParams = BrowserLauncher::LaunchParams;
 using LaunchResults = BrowserLauncher::LaunchResults;
-
-// Resources file sharing mode.
-enum class ResourcesFileSharingMode {
-  kDefault = 0,
-  // Failed to handle cached shared resources properly.
-  kError = 1,
-};
 
 // Global flag to skip the device ownership fetch. Global because some tests
 // need to set this value before BrowserManager is constructed.
@@ -144,72 +136,10 @@ bool RotateLacrosLogs() {
   return true;
 }
 
-ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
-    bool clear_shared_resource_file,
-    base::FilePath shared_resource_path) {
-  // If shared resource pak doesn't exit, do nothing.
-  if (!base::PathExists(shared_resource_path)) {
-    return ResourcesFileSharingMode::kDefault;
-  }
-
-  // Clear shared resource file cache if `clear_shared_resource_file` is true.
-  if (clear_shared_resource_file) {
-    if (!base::DeleteFile(shared_resource_path)) {
-      LOG(ERROR) << "Failed to delete cached shared resource file.";
-      return ResourcesFileSharingMode::kError;
-    }
-    return ResourcesFileSharingMode::kDefault;
-  }
-
-  base::FilePath renamed_shared_resource_path =
-      ui::GetPathForTemporarySharedResourceFile(shared_resource_path);
-
-  // Move shared resource pak to `renamed_shared_resource_path`.
-  if (!base::Move(shared_resource_path, renamed_shared_resource_path)) {
-    LOG(ERROR) << "Failed to move cached shared resource file to temporary "
-               << "location.";
-    return ResourcesFileSharingMode::kError;
-  }
-  return ResourcesFileSharingMode::kDefault;
-}
-
-ResourcesFileSharingMode ClearOrMoveSharedResourceFile(
-    bool clear_shared_resource_file) {
-  // Check 3 resource paks, resources.pak, chrome_100_percent.pak and
-  // chrome_200_percent.pak.
-  ResourcesFileSharingMode resources_file_sharing_mode =
-      ResourcesFileSharingMode::kDefault;
-  // Return kError if any of the resources failed to clear or move.
-  // Make sure that ClearOrMoveSharedResourceFileInternal() runs for all
-  // resources even if it already fails for some resource.
-  if (ClearOrMoveSharedResourceFileInternal(
-          clear_shared_resource_file, browser_util::GetUserDataDir().Append(
-                                          crosapi::kSharedResourcesPackName)) ==
-      ResourcesFileSharingMode::kError) {
-    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
-  }
-  if (ClearOrMoveSharedResourceFileInternal(
-          clear_shared_resource_file,
-          browser_util::GetUserDataDir().Append(
-              crosapi::kSharedChrome100PercentPackName)) ==
-      ResourcesFileSharingMode::kError) {
-    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
-  }
-  if (ClearOrMoveSharedResourceFileInternal(
-          clear_shared_resource_file,
-          browser_util::GetUserDataDir().Append(
-              crosapi::kSharedChrome200PercentPackName)) ==
-      ResourcesFileSharingMode::kError) {
-    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
-  }
-  return resources_file_sharing_mode;
-}
-
 // This method runs some work on a background thread prior to launching lacros.
 // The returns struct is used by the main thread as parameters to launch Lacros.
 void DoLacrosBackgroundWorkPreLaunch(
     const base::FilePath& lacros_dir,
-    bool clear_shared_resource_file,
     BrowserLauncher::LaunchParamsFromBackground& params) {
   if (!RotateLacrosLogs()) {
     // If log file does not exist, most likely the user directory does not
@@ -232,22 +162,6 @@ void DoLacrosBackgroundWorkPreLaunch(
   }
 
   params.logfd = base::ScopedFD(fd);
-
-  params.enable_resource_file_sharing =
-      base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing);
-  // If resource file sharing feature is disabled, clear the cached shared
-  // resource file anyway.
-  if (!params.enable_resource_file_sharing) {
-    clear_shared_resource_file = true;
-  }
-
-  // Clear shared resource file cache if it's initial lacros launch after ash
-  // reboot. If not, rename shared resource file cache to temporal name on
-  // Lacros launch.
-  if (ClearOrMoveSharedResourceFile(clear_shared_resource_file) ==
-      ResourcesFileSharingMode::kError) {
-    params.enable_resource_file_sharing = false;
-  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kLacrosChromeAdditionalArgsFile)) {
@@ -513,19 +427,6 @@ void SetUpForCrashpad(base::CommandLine& command_line) {
   command_line.AppendSwitchASCII("breakpad-dump-location", crash_dir);
 }
 
-// Sets up switches and arguments of command line for anything shared to
-// Lacros.
-void SetUpFeatures(const LaunchParamsFromBackground& params,
-                   LaunchParams& parameters) {
-  if (params.enable_resource_file_sharing) {
-    // Passes a flag to enable resources file sharing to Lacros.
-    // To use resources file sharing feature on Lacros, it's required for ash to
-    // run with enabling the feature as well since the feature is based on some
-    // ash behavior(clear or move cached shared resource file at lacros launch).
-    parameters.command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
-  }
-}
-
 }  // namespace
 
 // To be sure the lacros is running with neutral thread type.
@@ -585,8 +486,8 @@ void BrowserLauncher::Launch(
                                 is_keep_alive_enabled, std::move(callback)));
 
   // Prepare on the background thread.
-  WaitForBackgroundWorkPreLaunch(chrome_path.DirName(), is_first_lacros_launch_,
-                                 barrier_closure, *params);
+  WaitForBackgroundWorkPreLaunch(chrome_path.DirName(), barrier_closure,
+                                 *params);
 
   // Set false to prepare for the next Lacros launch.
   is_first_lacros_launch_ = false;
@@ -649,11 +550,9 @@ void BrowserLauncher::SetUpAdditionalParametersForTesting(
 
 void BrowserLauncher::WaitForBackgroundWorkPreLaunchForTesting(
     const base::FilePath& lacros_dir,
-    bool clear_shared_resource_file,
     base::OnceClosure callback,
     LaunchParamsFromBackground& params) {
-  WaitForBackgroundWorkPreLaunch(lacros_dir, clear_shared_resource_file,
-                                 std::move(callback), params);
+  WaitForBackgroundWorkPreLaunch(lacros_dir, std::move(callback), params);
 }
 
 void BrowserLauncher::set_device_ownership_waiter_for_testing(
@@ -671,13 +570,12 @@ void BrowserLauncher::SkipDeviceOwnershipWaitForTesting(bool skip) {
 
 void BrowserLauncher::WaitForBackgroundWorkPreLaunch(
     const base::FilePath& lacros_dir,
-    bool clear_shared_resource_file,
     base::OnceClosure callback,
     LaunchParamsFromBackground& params) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, base::MayBlock(),
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_dir,
-                     clear_shared_resource_file, std::ref(params)),
+                     std::ref(params)),
       base::BindOnce(std::move(callback)));
 }
 
@@ -787,8 +685,6 @@ LaunchParams BrowserLauncher::CreateLaunchParams(
   // already present, or append to the flag if it is.
   feature_engagement::Tracker::PropagateTestStateToChildProcess(
       parameters.command_line);
-
-  SetUpFeatures(params, parameters);
 
   // Process additional parameters at the end so that /etc/chrome_dev.conf can
   // override choices made by the SetUp* functions above.

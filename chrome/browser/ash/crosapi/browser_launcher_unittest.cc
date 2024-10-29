@@ -197,18 +197,12 @@ TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunch) {
   base::ScopedTempDir lacros_dir;
   ASSERT_TRUE(lacros_dir.CreateUniqueTempDir());
 
-  // Add feature and check if it's reflected to `params`.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kLacrosResourcesFileSharing);
-
   BrowserLauncher::LaunchParamsFromBackground params;
   base::test::TestFuture<void> future;
   browser_launcher()->WaitForBackgroundWorkPreLaunchForTesting(
-      lacros_dir.GetPath(), /*clear_shared_resource_file=*/true,
-      future.GetCallback(), params);
+      lacros_dir.GetPath(), future.GetCallback(), params);
 
   EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(params.enable_resource_file_sharing);
 }
 
 // TODO(elkurin): Add kLacrosChromeAdditionalArgsFile unit test.

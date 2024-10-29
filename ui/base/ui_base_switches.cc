@@ -24,13 +24,6 @@ const char kDisableModalAnimations[] = "disable-modal-animations";
 const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enable resources file sharing with ash-chrome.
-// This flag is enabled when feature::kLacrosResourcesFileSharing is set and
-// ash-side operation is successfully done.
-const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Specifies system font family name. Improves determenism when rendering
 // pages in headless mode.

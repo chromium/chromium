@@ -459,22 +459,6 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       break;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case chrome::FILE_RESOURCES_FOR_SHARING_PACK:
-      if (!GetDefaultUserDataDirectory(&cur)) {
-        return false;
-      }
-      cur = cur.Append(FILE_PATH_LITERAL(crosapi::kSharedResourcesPackName));
-      break;
-    case chrome::FILE_ASH_RESOURCES_PACK:
-      if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
-                                  &cur)) {
-        return false;
-      }
-      cur = cur.Append("resources.pak");
-      break;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case chrome::DIR_CHROMEOS_WALLPAPERS:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {

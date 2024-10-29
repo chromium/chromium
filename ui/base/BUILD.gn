@@ -75,13 +75,6 @@ component("ui_data_pack") {
 
   defines = [ "IS_UI_DATA_PACK_IMPL" ]
 
-  if (is_chromeos) {
-    sources += [
-      "resource/temporary_shared_resource_path_chromeos.cc",
-      "resource/temporary_shared_resource_path_chromeos.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

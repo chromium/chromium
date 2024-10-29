@@ -62,9 +62,6 @@ class BrowserLauncher {
     // An fd for a log file.
     base::ScopedFD logfd;
 
-    // Sets true if Lacros uses resource file sharing.
-    bool enable_resource_file_sharing = false;
-
     // Any additional args to start lacros with.
     std::vector<std::string> lacros_additional_args;
   };
@@ -186,7 +183,6 @@ class BrowserLauncher {
   // Provides public API to call WaitForBackgroundWorkPreLaunch for testing.
   void WaitForBackgroundWorkPreLaunchForTesting(
       const base::FilePath& lacros_dir,
-      bool clear_shared_resource_file,
       base::OnceClosure callback,
       LaunchParamsFromBackground& params);
 
@@ -207,7 +203,6 @@ class BrowserLauncher {
   // called on background work completion and the output result is stored in
   // `params`.
   void WaitForBackgroundWorkPreLaunch(const base::FilePath& lacros_dir,
-                                      bool clear_shared_resource_file,
                                       base::OnceClosure callback,
                                       LaunchParamsFromBackground& params);
 

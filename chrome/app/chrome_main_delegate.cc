@@ -238,7 +238,6 @@
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #endif
@@ -1457,54 +1456,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Generate shared resource file only on browser process. This is to avoid
-  // generating a file in different processes again.
-  // Also generate only when resource file sharing feature is enabled.
-  if (command_line.HasSwitch(switches::kEnableResourcesFileSharing) &&
-      process_type.empty()) {
-    // Initialize BrowserInitParams before generating and loading shared
-    // resource file since the path required for the feature is set by
-    // BrowserInitParams initialization.
-    const chromeos::BrowserParamsProxy* init_params =
-        chromeos::BrowserParamsProxy::Get();
-    chrome::SetLacrosDefaultPathsFromInitParams(
-        init_params->DefaultPaths().get());
-    // TODO(crbug.com/40861376): Currently, when launching Lacros at login
-    // screen, and if resource file sharing is also enabled, Lacros will block
-    // here waiting for login. That's before the Zygote process is forked, so we
-    // can't take full advantage of the pre-launching optimization. Investigate
-    // if we can make these two features fully compatible.
-
-    base::FilePath ash_resources_dir;
-    base::FilePath lacros_resources_dir;
-    base::FilePath user_data_dir;
-    if (base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
-                               &ash_resources_dir) &&
-        base::PathService::Get(base::DIR_ASSETS, &lacros_resources_dir) &&
-        base::PathService::Get(chromeos::lacros_paths::USER_DATA_DIR,
-                               &user_data_dir)) {
-      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
-          ash_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
-          lacros_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
-          user_data_dir.Append(crosapi::kSharedResourcesPackName),
-          ui::kScaleFactorNone);
-      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
-          ash_resources_dir.Append(FILE_PATH_LITERAL("chrome_100_percent.pak")),
-          lacros_resources_dir.Append(
-              FILE_PATH_LITERAL("chrome_100_percent.pak")),
-          user_data_dir.Append(crosapi::kSharedChrome100PercentPackName),
-          ui::k100Percent);
-      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
-          ash_resources_dir.Append(FILE_PATH_LITERAL("chrome_200_percent.pak")),
-          lacros_resources_dir.Append(
-              FILE_PATH_LITERAL("chrome_200_percent.pak")),
-          user_data_dir.Append(crosapi::kSharedChrome200PercentPackName),
-          ui::k200Percent);
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Register component_updater PathProvider after DIR_USER_DATA overridden by
   // command line flags. Maybe move the chrome PathProvider down here also?
   int updated_components_dir =
@@ -1611,28 +1562,8 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
     base::FilePath resources_pack_path;
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (command_line.HasSwitch(switches::kEnableResourcesFileSharing)) {
-      // If LacrosResourcesFileSharing feature is enabled, Lacros refers to ash
-      // resources pak file.
-      base::FilePath ash_resources_pack_path;
-      base::PathService::Get(chrome::FILE_ASH_RESOURCES_PACK,
-                             &ash_resources_pack_path);
-      base::FilePath shared_resources_pack_path;
-      base::PathService::Get(chrome::FILE_RESOURCES_FOR_SHARING_PACK,
-                             &shared_resources_pack_path);
-      ui::ResourceBundle::GetSharedInstance()
-          .AddDataPackFromPathWithAshResources(
-              shared_resources_pack_path, ash_resources_pack_path,
-              resources_pack_path, ui::kScaleFactorNone);
-    } else {
-      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-          resources_pack_path, ui::kScaleFactorNone);
-    }
-#else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::kScaleFactorNone);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_ANDROID)
     CHECK(!loaded_locale.empty()) << "Locale could not be found for " << locale;
   }
