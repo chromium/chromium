@@ -150,8 +150,17 @@ SavedTabGroupSyncBridge::CreateMetadataChangeList() {
 std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  // This method must not be called reentrantly.
+  CHECK(!ongoing_write_batch_);
+
+  // Do not commit the write batch by default because this method returns an
+  // error after the scoped write batch is destroyed (otherwise, changes would
+  // be committed in case of error).
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(
+          /*commit_write_batch_on_destroy=*/false);
+  CHECK(ongoing_write_batch_);
+
   std::set<std::string> synced_items;
 
   // MergeFullSyncData is the first command called when the user signs in/or
@@ -159,18 +168,19 @@ std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
   // metadata of the change processor. This cache guid should be used on all
   // groups and tabs that previously didnt have a cache guid attached.
   CHECK(change_processor()->IsTrackingMetadata());
-  UpdateLocalCacheGuidForGroups(write_batch.get());
+  UpdateLocalCacheGuidForGroups(ongoing_write_batch_.get());
 
   // Merge sync to local data.
   for (const auto& change : entity_changes) {
     synced_items.insert(change->storage_key());
     AddDataToLocalStorage(std::move(change->data().specifics.saved_tab_group()),
-                          metadata_change_list.get(), write_batch.get(),
+                          metadata_change_list.get(),
+                          ongoing_write_batch_.get(),
                           /*notify_sync=*/true);
   }
 
-  ResolveTabsMissingGroups(write_batch.get());
-  ResolveGroupsMissingTabs(write_batch.get());
+  ResolveTabsMissingGroups(ongoing_write_batch_.get());
+  ResolveGroupsMissingTabs(ongoing_write_batch_.get());
 
   // Update sync with any locally stored data not currently stored in sync.
   for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
@@ -189,11 +199,12 @@ std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
                metadata_change_list.get());
   }
 
-  write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ongoing_write_batch_->TakeMetadataChangesFrom(
+      std::move(metadata_change_list));
+
+  // Successfully applied all the changes. Explicitly commit the write batch to
+  // store.
+  CommitOngoingWriteBatch();
   return {};
 }
 
@@ -201,8 +212,15 @@ std::optional<syncer::ModelError>
 SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  // Do not store the write batch on destroy by default. This is only required
+  // while processing remote updates because it reports an error after the
+  // scoped write batch is destroyed. There must not be reentrant calls to
+  // ApplyIncrementalSyncChanges().
+  CHECK(!ongoing_write_batch_);
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(
+          /*commit_write_batch_on_destroy=*/false);
+  CHECK(ongoing_write_batch_);
 
   std::vector<std::string> deleted_entities;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -215,7 +233,7 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         AddDataToLocalStorage(
             std::move(change->data().specifics.saved_tab_group()),
-            metadata_change_list.get(), write_batch.get(),
+            metadata_change_list.get(), ongoing_write_batch_.get(),
             /*notify_sync=*/false);
         break;
       }
@@ -230,17 +248,18 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
   // an opportunity to resolve themselves before they become empty.
   for (const std::string& entity : deleted_entities) {
     DeleteDataFromLocalStorage(base::Uuid::ParseLowercase(entity),
-                               write_batch.get());
+                               ongoing_write_batch_.get());
   }
 
-  ResolveTabsMissingGroups(write_batch.get());
-  ResolveGroupsMissingTabs(write_batch.get());
+  ResolveTabsMissingGroups(ongoing_write_batch_.get());
+  ResolveGroupsMissingTabs(ongoing_write_batch_.get());
 
-  write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ongoing_write_batch_->TakeMetadataChangesFrom(
+      std::move(metadata_change_list));
+
+  // Successfully applied all the changes. Explicitly commit the write batch to
+  // store.
+  CommitOngoingWriteBatch();
   return {};
 }
 
@@ -285,9 +304,12 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   // Close the local groups that were created before sign-in.
   // They should still exist in sync server.
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
-  write_batch->TakeMetadataChangesFrom(std::move(delete_metadata_change_list));
+  CHECK(!ongoing_write_batch_);
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
+  ongoing_write_batch_->TakeMetadataChangesFrom(
+      std::move(delete_metadata_change_list));
   std::vector<base::Uuid> groups_to_close_locally;
   for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
     if (group->created_before_syncing_tab_groups()) {
@@ -308,7 +330,7 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
 
     for (const base::Uuid& tab_id : tabs_to_close_locally) {
       model_wrapper_->RemoveTabFromGroup(group_id, tab_id);
-      write_batch->DeleteData(tab_id.AsLowercaseString());
+      ongoing_write_batch_->DeleteData(tab_id.AsLowercaseString());
     }
 
     // The group could have been deleted when the last tab was closed, hence
@@ -316,13 +338,11 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     if (model_wrapper_->GetGroup(group_id)) {
       model_wrapper_->RemoveGroup(group_id);
     }
-    write_batch->DeleteData(group_id.AsLowercaseString());
+    ongoing_write_batch_->DeleteData(group_id.AsLowercaseString());
   }
 
   // Reset the cache guids for groups and tabs on sign-out.
-  UpdateLocalCacheGuidForGroups(write_batch.get());
-
-  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
+  UpdateLocalCacheGuidForGroups(ongoing_write_batch_.get());
 }
 
 std::string SavedTabGroupSyncBridge::GetStorageKey(
@@ -380,8 +400,9 @@ bool SavedTabGroupSyncBridge::IsEntityDataValid(
 // SavedTabGroupModelObserver
 void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
 
   const SavedTabGroup* group = model_wrapper_->GetGroup(guid);
   CHECK(group);
@@ -390,40 +411,31 @@ void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
   proto::SavedTabGroupData group_data = SavedTabGroupToData(*group);
   group_data.mutable_specifics()->mutable_group()->set_position(index);
 
-  UpsertEntitySpecific(std::move(group_data), write_batch.get());
+  UpsertEntitySpecific(std::move(group_data), ongoing_write_batch_.get());
   for (size_t i = 0; i < group->saved_tabs().size(); ++i) {
     proto::SavedTabGroupData tab_data =
         SavedTabGroupTabToData(group->saved_tabs()[i]);
     tab_data.mutable_specifics()->mutable_tab()->set_position(i);
-    UpsertEntitySpecific(std::move(tab_data), write_batch.get());
+    UpsertEntitySpecific(std::move(tab_data), ongoing_write_batch_.get());
   }
-
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
     const SavedTabGroup& removed_group) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
 
   // Intentionally only remove the group (creating orphaned tabs in the
   // process), so other devices with the group open in the Tabstrip can react to
   // the deletion appropriately (i.e. We do not have to determine if a tab
   // deletion was part of a group deletion).
-  RemoveEntitySpecific(removed_group.saved_guid(), write_batch.get());
+  RemoveEntitySpecific(removed_group.saved_guid(), ongoing_write_batch_.get());
 
   // Keep track of the newly orphaned tabs since their group no longer exists.
   for (const SavedTabGroupTab& tab : removed_group.saved_tabs()) {
     tabs_missing_groups_.emplace_back(SavedTabGroupTabToData(tab));
   }
-
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   // Update the DataTypeStore (local storage) and sync with the new positions
   // of all the groups after a remove has occurred so the positions are
@@ -434,63 +446,61 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
 void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
 
   const SavedTabGroup* const group = model_wrapper_->GetGroup(group_guid);
   CHECK(group);
 
   if (tab_guid.has_value()) {
     if (!group->ContainsTab(tab_guid.value())) {
-      RemoveEntitySpecific(tab_guid.value(), write_batch.get());
+      RemoveEntitySpecific(tab_guid.value(), ongoing_write_batch_.get());
     } else {
       int tab_index = group->GetIndexOfTab(tab_guid.value()).value();
       UpsertEntitySpecific(
           SavedTabGroupTabToData(group->saved_tabs()[tab_index]),
-          write_batch.get());
+          ongoing_write_batch_.get());
     }
 
     // There might be an updated user interaction time for the group. Hence
     // write the group to DB.
     auto group_data = SavedTabGroupToData(*group);
-    write_batch->WriteData(group_data.specifics().guid(),
-                           group_data.SerializeAsString());
+    ongoing_write_batch_->WriteData(group_data.specifics().guid(),
+                                    group_data.SerializeAsString());
   } else {
-    UpsertEntitySpecific(SavedTabGroupToData(*group), write_batch.get());
+    UpsertEntitySpecific(SavedTabGroupToData(*group),
+                         ongoing_write_batch_.get());
   }
-
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
     const base::Uuid& group_guid) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
 
   const SavedTabGroup* const group = model_wrapper_->GetGroup(group_guid);
   DCHECK(group);
 
   for (const SavedTabGroupTab& tab : group->saved_tabs()) {
-    UpsertEntitySpecific(SavedTabGroupTabToData(tab), write_batch.get());
+    UpsertEntitySpecific(SavedTabGroupTabToData(tab),
+                         ongoing_write_batch_.get());
   }
-
-  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupLocalIdChanged(
     const base::Uuid& group_guid) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
 
   const SavedTabGroup* const group = model_wrapper_->GetGroup(group_guid);
   CHECK(group);
 
   auto data = SavedTabGroupToData(*group);
-  write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
-  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
+  ongoing_write_batch_->WriteData(data.specifics().guid(),
+                                  data.SerializeAsString());
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupLastUserInteractionTimeUpdated(
@@ -498,25 +508,23 @@ void SavedTabGroupSyncBridge::SavedTabGroupLastUserInteractionTimeUpdated(
   const SavedTabGroup* const group = model_wrapper_->GetGroup(group_guid);
   CHECK(group);
 
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
   proto::SavedTabGroupData data = SavedTabGroupToData(*group);
-  write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ongoing_write_batch_->WriteData(data.specifics().guid(),
+                                  data.SerializeAsString());
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(/*commit_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
 
   for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
-    UpsertEntitySpecific(SavedTabGroupToData(*group), write_batch.get());
+    UpsertEntitySpecific(SavedTabGroupToData(*group),
+                         ongoing_write_batch_.get());
   }
-
-  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
 std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() const {
@@ -853,8 +861,14 @@ void SavedTabGroupSyncBridge::OnDatabaseLoad(
 
 void SavedTabGroupSyncBridge::MigrateSpecificsToSavedTabGroupData(
     std::unique_ptr<syncer::DataTypeStore::RecordList> entries) {
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  // The migration should never be a reentrant call. Note that it uses a custom
+  // write batch commit logic and hence should be committed explicitly.
+  CHECK(!ongoing_write_batch_);
+  base::ScopedClosureRunner scoped_write_batch_destroy_runner =
+      MaybeCreateScopedWriteBatch(
+          /*commit_write_batch_on_destroy=*/false);
+  CHECK(ongoing_write_batch_);
+
   int parse_failure_count = 0;
   for (const syncer::DataTypeStore::Record& r : *entries) {
     sync_pb::SavedTabGroupSpecifics specifics;
@@ -872,7 +886,8 @@ void SavedTabGroupSyncBridge::MigrateSpecificsToSavedTabGroupData(
     new_data.set_allocated_specifics(
         new sync_pb::SavedTabGroupSpecifics(specifics));
 
-    batch->WriteData(specifics.guid(), new_data.SerializeAsString());
+    ongoing_write_batch_->WriteData(specifics.guid(),
+                                    new_data.SerializeAsString());
   }
 
   if (parse_failure_count > 0) {
@@ -883,8 +898,10 @@ void SavedTabGroupSyncBridge::MigrateSpecificsToSavedTabGroupData(
                                             entries->size());
   }
 
+  // Do not use DestroyOngoingWriteBatch() here because the migration requires
+  // a custom logic after commit.
   store_->CommitWriteBatch(
-      std::move(batch),
+      std::move(ongoing_write_batch_),
       base::BindOnce(
           &SavedTabGroupSyncBridge::OnSpecificsToDataMigrationComplete,
           weak_ptr_factory_.GetWeakPtr()));
@@ -989,6 +1006,46 @@ bool SavedTabGroupSyncBridge::IsRemoteGroup(const SavedTabGroup& group) {
   }
 
   return local_cache_guid.value() != group_cache_guid.value();
+}
+
+base::ScopedClosureRunner SavedTabGroupSyncBridge::MaybeCreateScopedWriteBatch(
+    bool commit_write_batch_on_destroy) {
+  if (ongoing_write_batch_) {
+    // There is an ongoing write batch, hence do not create a new one and do not
+    // destroy the existing one in the current scope.
+    return base::ScopedClosureRunner(base::DoNothing());
+  }
+
+  // This is not a reentrant call, create a new write batch and return a scoped
+  // closure runner that will destroy it when it goes out of scope.
+  ongoing_write_batch_ = store_->CreateWriteBatch();
+  return base::ScopedClosureRunner(base::BindOnce(
+      &SavedTabGroupSyncBridge::DestroyOngoingWriteBatch,
+      weak_ptr_factory_.GetWeakPtr(), commit_write_batch_on_destroy));
+}
+
+void SavedTabGroupSyncBridge::CommitOngoingWriteBatch() {
+  // If the bridge is in the error state, the write batch should not be
+  // committed to avoid storing invalid state.
+  if (change_processor()->GetError().has_value()) {
+    return;
+  }
+
+  CHECK(ongoing_write_batch_);
+  store_->CommitWriteBatch(
+      std::move(ongoing_write_batch_),
+      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SavedTabGroupSyncBridge::DestroyOngoingWriteBatch(
+    bool commit_write_batch_on_destroy) {
+  // When `commit_write_batch_on_destroy` is true, `ongoing_write_batch_` must
+  // exist (the write batch must not be committed explicitly in this case).
+  if (commit_write_batch_on_destroy) {
+    CommitOngoingWriteBatch();
+  }
+  ongoing_write_batch_ = nullptr;
 }
 
 }  // namespace tab_groups
