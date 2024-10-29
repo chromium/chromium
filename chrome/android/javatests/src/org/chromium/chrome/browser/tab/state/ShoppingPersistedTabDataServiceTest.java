@@ -205,9 +205,6 @@ public class ShoppingPersistedTabDataServiceTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/false"
-    })
     public void testGetAllShoppingPersistedTabDataWithPriceDrop() throws TimeoutException {
         // tab1 is not eligible as there is no price drop.
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
