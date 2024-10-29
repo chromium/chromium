@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -116,7 +117,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
 
     case Suggestion::Icon::kAutofillPredictionImprovements:
-    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
 
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
@@ -335,8 +335,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePayDark:
 #endif
     case Suggestion::Icon::kIban:
-    case Suggestion::Icon::kAutofillPredictionImprovements:
-    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
     case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kScanCreditCard:
@@ -352,12 +350,16 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardTroy:
     case Suggestion::Icon::kCardUnionPay:
     case Suggestion::Icon::kCardVerve:
-    case Suggestion::Icon::kCardVisa:
+    case Suggestion::Icon::kCardVisa: {
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);
       DCHECK_NE(icon_id, 0);
       return ImageModelFromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
+    }
+    // A special case handled in `GetIconImageView()`.
+    case Suggestion::Icon::kAutofillPredictionImprovements:
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -403,8 +405,11 @@ std::unique_ptr<views::ImageView> GetIconImageView(
                                    suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
-                              suggestion.HasDeactivatedStyle());
+      (suggestion.icon == Suggestion::Icon::kAutofillPredictionImprovements)
+          ? autofill_prediction_improvements::
+                CreateSmallPredictionImprovementsIconImageView()
+          : ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
+                                    suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 

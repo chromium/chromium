@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
 
 #include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_animated_gradient_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -24,14 +25,13 @@ PredictionImprovementsLoadingStateView::PredictionImprovementsLoadingStateView(
 
   SetInsideBorderInsets(
       gfx::Insets(autofill::PopupBaseView::ArrowHorizontalMargin()));
+  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  if (std::unique_ptr<views::ImageView> icon =
-          autofill::popup_cell_utils::GetIconImageView(suggestion)) {
-    AddChildView(std::move(icon));
-    autofill::popup_cell_utils::AddSpacerWithSize(
-        *this, autofill::PopupBaseView::ArrowHorizontalMargin(),
-        /*resize=*/false);
-  }
+  AddChildView(autofill_prediction_improvements::
+                   CreateSmallPredictionImprovementsIconImageView());
+  autofill::popup_cell_utils::AddSpacerWithSize(
+      *this, autofill::PopupBaseView::ArrowHorizontalMargin(),
+      /*resize=*/false);
 
   AddChildView(std::make_unique<PredictionImprovementsAnimatedGradientView>());
 }

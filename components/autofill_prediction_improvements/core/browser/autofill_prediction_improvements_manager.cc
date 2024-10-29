@@ -69,15 +69,6 @@ autofill::FieldTypeSet GetFieldTypesToFill() {
   return field_types_to_fill;
 }
 
-// Return the correct prediction improvements icon depending on the current
-// theme.
-// TODO(crbug.com/372405533): Move this decision inside UI code.
-autofill::Suggestion::Icon GetAutofillPredictionImprovementsIcon() {
-  return ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-             ? autofill::Suggestion::Icon::kAutofillPredictionImprovementsDark
-             : autofill::Suggestion::Icon::kAutofillPredictionImprovements;
-}
-
 // Ignore `FieldFillingSkipReason::kNoFillableGroup` during filling because
 // `kFieldTypesToFill` contains `UNKNOWN_TYPE` which would result in false
 // positives.
@@ -167,7 +158,8 @@ autofill::Suggestion CreateTriggerSuggestion() {
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
       autofill::SuggestionType::kRetrievePredictionImprovements);
-  retrieve_suggestion.icon = GetAutofillPredictionImprovementsIcon();
+  retrieve_suggestion.icon =
+      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   return retrieve_suggestion;
 }
 
@@ -176,7 +168,6 @@ autofill::Suggestion CreateTriggerSuggestion() {
 autofill::Suggestion CreateLoadingSuggestion() {
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
-  loading_suggestion.trailing_icon = GetAutofillPredictionImprovementsIcon();
   loading_suggestion.acceptability =
       autofill::Suggestion::Acceptability::kUnacceptable;
   return loading_suggestion;
@@ -416,8 +407,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(), GetFieldTypesToFill(), kIgnorableSkipReasons);
   suggestion.payload = payload;
-  suggestion.icon = GetAutofillPredictionImprovementsIcon();
-
+  suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   suggestion.children.emplace_back(CreateFillAllSuggestion(payload));

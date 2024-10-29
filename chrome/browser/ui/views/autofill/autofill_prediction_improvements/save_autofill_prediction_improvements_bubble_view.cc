@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -41,10 +42,7 @@ constexpr int kButtonRadius = 12;
 // The padding between the header (image and title) and the elements around it.
 constexpr int kHeaderPadding = 20;
 
-constexpr int kHeaderImageWidthAndHeight = 36;
 constexpr int kBubbleWidth = 320;
-constexpr gfx::Size kHeaderImageSize(kHeaderImageWidthAndHeight,
-                                     kHeaderImageWidthAndHeight);
 
 std::unique_ptr<views::View> BuildPredictedValueRow(const std::string key,
                                                     const std::string value) {
@@ -269,7 +267,7 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetBetweenChildSpacing(kHorizontalSpacing)
           .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
           // The bottom padding has to be subtracted by the distance between the
           // information that will be saved, so to avoid double padding.
           .SetInsideBorderInsets(gfx::Insets::TLBR(
@@ -279,15 +277,9 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
                                   DISTANCE_CONTROL_LIST_VERTICAL)),
               kHeaderPadding))
           .Build();
-  auto image = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      ui::ImageModel::FromResourceId(
-          IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO),
-      ui::ImageModel::FromResourceId(
-          IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
-                          base::Unretained(this)));
-  image->SetImageSize(kHeaderImageSize);
-  header_container->AddChildView(std::move(image));
+  header_container->AddChildView(
+      autofill_prediction_improvements::
+          CreateLargePredictionImprovementsIconImageView());
   header_container->AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(

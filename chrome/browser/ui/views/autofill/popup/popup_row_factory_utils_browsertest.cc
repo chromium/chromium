@@ -95,6 +95,10 @@ const Suggestion kSuggestions[] = {
                Suggestion::Icon::kGlobe,
                SuggestionType::kSeePromoCodeDetails),
     CreatePredictionImprovementsFeedback(),
+    Suggestion("Autofill_with_AI",
+               "",
+               Suggestion::Icon::kAutofillPredictionImprovements,
+               SuggestionType::kRetrievePredictionImprovements),
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",

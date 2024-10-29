@@ -255,7 +255,6 @@ struct Suggestion {
     kCardVisa,
     kIban,
     kAutofillPredictionImprovements,
-    kAutofillPredictionImprovementsDark,
   };
 
   // This enum is used to control filtration of suggestions (see it's used in
