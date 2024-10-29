@@ -18,6 +18,8 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout.h"
@@ -65,15 +67,18 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   // rendered on top of the input field and rework the layout (probably with a
   // custom LayoutManager).
   clear_ = AddChildView(
-      views::Builder<views::ImageButton>()
-          .SetCallback(base::BindRepeating(&PopupSearchBarView::OnClearPressed,
-                                           base::Unretained(this)))
-          .SetImageModel(views::Button::STATE_NORMAL,
-                         ui::ImageModel::FromVectorIcon(
-                             vector_icons::kCloseChromeRefreshIcon))
+      views::Builder<views::ImageButton>(
+          views::CreateVectorImageButtonWithNativeTheme(
+              base::BindRepeating(&PopupSearchBarView::OnClearPressed,
+                                  base::Unretained(this)),
+              vector_icons::kCloseChromeRefreshIcon))
+          // Reset the border set by `CreateVectorImageButtonWithNativeTheme()`
+          // as it sets an unnecessary padding to the highlighting circle.
+          .SetBorder(nullptr)
           .SetAccessibleName(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME))
           .Build());
+  views::InstallCircleHighlightPathGenerator(clear_);
 }
 
 void PopupSearchBarView::AddedToWidget() {
