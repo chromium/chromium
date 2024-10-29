@@ -28,8 +28,20 @@ BASE_FEATURE(kSegmentedDefaultBrowserPromo,
              "SegmentedDefaultBrowserPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kSegmentedDefaultBrowserExperimentType[] =
+    "SegmentedDefaultBrowserExperimentType";
+
 bool IsSegmentedDefaultBrowserPromoEnabled() {
   return base::FeatureList::IsEnabled(kSegmentedDefaultBrowserPromo);
+}
+
+SegmentedDefaultBrowserExperimentType
+SegmentedDefaultBrowserExperimentTypeEnabled() {
+  return static_cast<SegmentedDefaultBrowserExperimentType>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kSegmentedDefaultBrowserPromo, kSegmentedDefaultBrowserExperimentType,
+          /*default_value=*/
+          (int)SegmentedDefaultBrowserExperimentType::kStaticPromo));
 }
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,

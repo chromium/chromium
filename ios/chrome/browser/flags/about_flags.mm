@@ -1063,6 +1063,17 @@ const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
          std::size(kSendTabIOSPushNotificationsWithMagicStackCard), nullptr},
 };
 
+const FeatureEntry::FeatureParam kSegmentedDefaultBrowserStatic[] = {
+    {kSegmentedDefaultBrowserExperimentType, "0"}};
+const FeatureEntry::FeatureParam kSegmentedDefaultBrowserAnimated[] = {
+    {kSegmentedDefaultBrowserExperimentType, "1"}};
+
+const FeatureEntry::FeatureVariation kSegmentedDefaultBrowserPromoVariations[] =
+    {{" - Static Default Browser Promo", kSegmentedDefaultBrowserStatic,
+      std::size(kSegmentedDefaultBrowserStatic), nullptr},
+     {" - Animated Default Browser Promo", kSegmentedDefaultBrowserAnimated,
+      std::size(kSegmentedDefaultBrowserAnimated), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1907,7 +1918,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"segmented-default-browser-promo",
      flag_descriptions::kSegmentedDefaultBrowserPromoName,
      flag_descriptions::kSegmentedDefaultBrowserPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSegmentedDefaultBrowserPromo)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kSegmentedDefaultBrowserPromo,
+                                    kSegmentedDefaultBrowserPromoVariations,
+                                    "SegmentedDBP-Animation")},
     {"rich-bubble-without-image",
      flag_descriptions::kRichBubbleWithoutImageName,
      flag_descriptions::kRichBubbleWithoutImageDescription, flags_ui::kOsIos,
