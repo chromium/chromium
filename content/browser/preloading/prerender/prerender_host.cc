@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -153,6 +154,11 @@ PrerenderHost::PrerenderHost(
                                               &web_contents,
                                               &web_contents,
                                               FrameTree::Type::kPrerender)) {
+#if BUILDFLAG(IS_ANDROID)
+  if (trigger_type() == PreloadingTriggerType::kSpeculationRule) {
+    base::trace_event::EmitNamedTrigger("sp-prerender-start");
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   // If the prerendering is browser-initiated, it is expected to have no
   // initiator. All initiator related information should be null or invalid. On
   // the other hand, renderer-initiated prerendering should have valid initiator
