@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -132,7 +133,9 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    /** Tests the the player correctly initializes and displays a sample paint preview with 1 frame. */
+    /**
+     * Tests the the player correctly initializes and displays a sample paint preview with 1 frame.
+     */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -173,6 +176,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/376266736")
     public void multiFrameDisplayTest_Wide() throws Exception {
         makeLayoutWide();
         displayTest(true);
