@@ -388,7 +388,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Called by a session when it blackholes after the handshake is confirmed.
   void OnBlackholeAfterHandshakeConfirmed(QuicChromiumClientSession* session);
 
-  // Cancels a pending request.
+  // Cancels a pending request. Does nothing if the request is not active.
   // This method is virtual to facilitate mocking for tests.
   virtual void CancelRequest(QuicSessionRequest* request);
 

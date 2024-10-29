@@ -768,8 +768,13 @@ void QuicSessionPool::OnBlackholeAfterHandshakeConfirmed(
 
 void QuicSessionPool::CancelRequest(QuicSessionRequest* request) {
   auto job_iter = active_jobs_.find(request->session_key());
-  CHECK(job_iter != active_jobs_.end());
-  job_iter->second->RemoveRequest(request);
+  // If an error (or network context shutdown) happens early in a
+  // `QuicSessionRequest`, before it has been added to `active_jobs_`, then
+  // this method may be called and should be resilient to the job not
+  // being in the map.
+  if (job_iter != active_jobs_.end()) {
+    job_iter->second->RemoveRequest(request);
+  }
 }
 
 void QuicSessionPool::SetRequestPriority(QuicSessionRequest* request,
