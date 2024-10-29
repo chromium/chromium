@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.view.KeyEvent;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.content_public.browser.KeyboardShortcutRecorder;
 import org.chromium.content_public.browser.KeyboardShortcutRecorder.KeyboardShortcut;
 
@@ -42,10 +41,7 @@ public class AwKeyboardShortcuts {
         int metaState = getMetaState(event);
         int keyCodeAndMeta = keyCode | metaState;
 
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS)) {
-            return handleZoomShortcut(awContents, keyCodeAndMeta);
-        }
-        return false;
+        return handleZoomShortcut(awContents, keyCodeAndMeta);
     }
 
     private static boolean handleZoomShortcut(AwContents awContents, int keyCodeAndMeta) {

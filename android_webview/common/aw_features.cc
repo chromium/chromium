@@ -197,11 +197,6 @@ BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,
              "WebViewUseInitialNetworkStateAtStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This enables zoom keyboard shortcuts for zoom-in, zoom-out and zoom reset.
-BASE_FEATURE(kWebViewZoomKeyboardShortcuts,
-             "WebViewZoomKeyboardShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This enables reducing webview user-agent android version and device model.
 BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,
              "WebViewReduceUAAndroidVersionDeviceModel",

@@ -612,9 +612,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, stylus input can be used to draw rich gestures which "
                         + "affect text in editable web content."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS,
-                "Enables WebView to use zoom keyboard shortcuts on hardware keyboards."),
-        Flag.baseFeature(
                 ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
                 "When enabled, the following ads APIs will be available: Attribution Reporting,"
                         + "FLEDGE, Topics."),

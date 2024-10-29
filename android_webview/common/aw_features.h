@@ -47,7 +47,6 @@ BASE_DECLARE_FEATURE(kWebViewUnreducedProductVersion);
 BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderControl);
 extern const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode;
 BASE_DECLARE_FEATURE(kWebViewUseInitialNetworkStateAtStartup);
-BASE_DECLARE_FEATURE(kWebViewZoomKeyboardShortcuts);
 BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
 BASE_DECLARE_FEATURE(kWebViewAsyncDns);
