@@ -29,7 +29,7 @@ canvasPromiseTest(async (canvas) => {
 
   // End the WebGPU access session. Nothing should be thrown.
   try {
-    ctx.transferBackFromGPUTexture(tex);
+    ctx.transferBackFromGPUTexture();
   } catch {
     assert_unreached('transferBackFromGPUTexture should be safe when context ' +
                      'is lost.');

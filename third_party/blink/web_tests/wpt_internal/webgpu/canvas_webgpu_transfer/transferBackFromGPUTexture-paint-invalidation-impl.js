@@ -21,7 +21,7 @@ async function transferBackFromGPUTexture_paintInvalidation(canvas) {
   const texture = ctx.transferToGPUTexture({device: device});
   clearTextureToColor(device, texture,
                       { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 });
-  ctx.transferBackFromGPUTexture(texture);
+  ctx.transferBackFromGPUTexture();
 }
 
 /**

@@ -40,7 +40,7 @@ for (const [pixelFormat, contextOptions] of [
                         { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 });
 
     // Finish our WebGPU pass and restore the canvas.
-    ctx.transferBackFromGPUTexture(tex);
+    ctx.transferBackFromGPUTexture();
 
     // Verify that the canvas contains our chosen color across every pixel.
     checkCanvasColor(ctx, [0x40, 0x80, 0xC0, 0xFF]);
