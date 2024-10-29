@@ -461,7 +461,6 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
     auto index = FindItemFromIdIndexMap(id, new_display_item_id_index_map_,
                                         new_display_item_list);
     if (index != kNotFound) {
-      StringBuilder ts;
       const auto& chunks = new_paint_artifact_->GetPaintChunks();
       auto chunk =
           std::upper_bound(chunks.begin(), chunks.end(), index,
@@ -469,41 +468,35 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
                              return index < chunk.end_index;
                            });
       DCHECK_NE(chunk, chunks.end());
-      ts << "DisplayItem "
-         << display_item.AsDebugString(*new_paint_artifact_).Utf8()
-         << " (index="
-         << new_display_item_list.size()
-         // The last chunk might not be the chunk the new item would
-         // be in because the new item might start a new chunk.
-         << " last chunk "
-         << chunks.back()
-                .ToString(*new_paint_artifact_, /*concise=*/true)
-                .Utf8()
-         << ")\n has duplicated id with previous "
-         << new_display_item_list[index]
-                .AsDebugString(*new_paint_artifact_)
-                .Utf8()
-         << " (index=" << index << " in chunk "
-         << chunk->ToString(*new_paint_artifact_, /*concise=*/true).Utf8()
-         << ")";
-      std::string message = ts.ReleaseString().Utf8();
-      LOG(ERROR) << message;
-      std::string debug_data = DebugDataAsString().Utf8();
-      LOG(ERROR) << debug_data;
+      LOG(ERROR)
+          << "DisplayItem "
+          << display_item.AsDebugString(*new_paint_artifact_).Utf8()
+          << " (index="
+          << new_display_item_list.size()
+          // The last chunk might not be the chunk the new item would
+          // be in because the new item might start a new chunk.
+          << " last chunk "
+          << chunks.back()
+                 .ToString(*new_paint_artifact_, /*concise=*/true)
+                 .Utf8()
+          << ")\n has duplicated id with previous "
+          << new_display_item_list[index]
+                 .AsDebugString(*new_paint_artifact_)
+                 .Utf8()
+          << " (index=" << index << " in chunk "
+          << chunk->ToString(*new_paint_artifact_, /*concise=*/true).Utf8()
+          << ")";
+      LOG(ERROR) << DebugDataAsString().Utf8();
       // Don't crash on the first encounter of duplicated item id. To collect
       // more data, we expect the issue will reproduce during the next paint
       // cycle, which will crash with more data.
       if (previous_stack) {
-        if (debug_data.length() > 1024) {
-          debug_data = debug_data.substr(debug_data.length() - 1024);
-        }
-        SCOPED_CRASH_KEY_STRING1024("DupItemId", "DebugData", debug_data);
         static crash_reporter::CrashKeyString<1024> previous_stack_key(
             "DupItemId-PrevStack");
         LOG(ERROR) << "previous stack: " << previous_stack->ToString();
         crash_reporter::SetCrashKeyStringToStackTrace(&previous_stack_key,
                                                       *previous_stack);
-        NOTREACHED_IN_MIGRATION() << message;
+        NOTREACHED_IN_MIGRATION();
       }
     }
     AddToIdIndexMap(id, new_display_item_list.size() - 1,
@@ -560,29 +553,21 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
   }
   auto it = new_paint_chunk_id_index_map_.find(id.AsHashKey());
   if (it != new_paint_chunk_id_index_map_.end()) {
-    StringBuilder ts;
-    ts << "New paint chunk id " << id.ToString(*new_paint_artifact_)
-       << " is already used by a previous chuck "
-       << new_paint_artifact_->GetPaintChunks()[it->value].ToString(
-              *new_paint_artifact_);
-    std::string message = ts.ReleaseString().Utf8();
-    LOG(ERROR) << message;
-    std::string debug_data = DebugDataAsString().Utf8();
-    LOG(ERROR) << debug_data;
+    LOG(ERROR) << "New paint chunk id " << id.ToString(*new_paint_artifact_)
+               << " is already used by a previous chuck "
+               << new_paint_artifact_->GetPaintChunks()[it->value].ToString(
+                      *new_paint_artifact_);
+    LOG(ERROR) << DebugDataAsString().Utf8();
     // Don't crash on the first encounter of duplicated chunk id. To collect
     // more data, we expect the issue will reproduce during the next paint
     // cycle, which will crash with more data.
     if (previous_stack) {
-      if (debug_data.length() > 1024) {
-        debug_data = debug_data.substr(debug_data.length() - 1024);
-      }
-      SCOPED_CRASH_KEY_STRING1024("DupChunkId", "DebugData", debug_data);
       static crash_reporter::CrashKeyString<1024> previous_stack_key(
           "DupChunkId-PrevStack");
       LOG(ERROR) << "previous stack: " << previous_stack->ToString();
       crash_reporter::SetCrashKeyStringToStackTrace(&previous_stack_key,
                                                     *previous_stack);
-      DUMP_WILL_BE_NOTREACHED() << message;
+      DUMP_WILL_BE_NOTREACHED();
     }
     last_duplicated_id.emplace(id.client_id, id.type, id.fragment);
   }
