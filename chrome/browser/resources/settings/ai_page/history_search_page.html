@@ -77,7 +77,7 @@
             hidden="[[!isAnswersFeatureEnabled_]]">
           $i18n{historySearchWithAnswersSettingSublabelV2}$i18n{sentenceEnd}
         </span>
-        <a href="$i18n{historySearchLearnMoreUrl}"
+        <a href="[[learnMoreUrl_]]"
             aria-label="$i18n{historySearchLearnMoreA11yLabel}"
             on-click="onLearnMoreClick_" target="_blank">
           $i18n{learnMore}
@@ -86,7 +86,7 @@
     </cr-link-row>
     <div class="separator"></div>
     <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
-        learn-more-url="$i18n{historySearchLearnMoreUrl}"
+        learn-more-url="[[learnMoreUrl_]]"
         learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
         pref="{{prefs.optimization_guide.history_search_setting_state}}"
         numeric-unchecked-values="[[numericUncheckedValues_]]"

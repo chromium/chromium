@@ -150,6 +150,17 @@ suite('HistorySearchSubpage', function() {
         AiPageActions.HISTORY_SEARCH_LEARN_MORE_CLICKED);
   });
 
+  test('historySearchLearnMoreManaged', async () => {
+    loadTimeData.overrideValues({'isManaged': true});
+    await createPage();
+
+    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        learnMoreLink.href,
+        loadTimeData.getString('historySearchLearnMoreManagedUrl'));
+  });
+
   test('historySearchTextWithAnswers', async () => {
     function checkVisibility(selector: string) {
       const element = subpage.shadowRoot!.querySelector(selector);

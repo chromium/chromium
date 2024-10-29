@@ -533,9 +533,18 @@ inline constexpr char16_t kSyncLearnMoreURL[] =
 inline constexpr char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
 
+// The URL for the "Learn more" page for Help me Write for managed users.
+inline constexpr char kComposeLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=help_me_write_settings";
+
 // The URL for the "Learn more" links for pages related to History search.
 inline constexpr char kHistorySearchLearnMorePageURL[] =
     "https://support.google.com/chrome?p=ai_history_search";
+
+// The URL for the "Learn more" links for pages related to History search for
+// managed users.
+inline constexpr char kHistorySearchLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=search_history";
 
 // The URL for the Settings page to enable history search.
 inline constexpr char16_t kHistorySearchSettingURL[] =
@@ -550,9 +559,17 @@ inline constexpr char16_t kHistorySearchV2SettingURL[] =
 inline constexpr char kWallpaperSearchLearnMorePageURL[] =
     "https://support.google.com/chrome?p=create_themes_with_ai";
 
+// The URL for the "Learn more" page for Wallpaper Search for managed users.
+inline constexpr char kWallpaperSearchLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=create_theme_settings";
+
 // The URL for the "Learn more" page for Tab Organization.
 inline constexpr char kTabOrganizationLearnMorePageURL[] =
     "https://support.google.com/chrome?p=auto_tab_group";
+
+// The URL for the "Learn more" page for Tab Organization for managed users.
+inline constexpr char kTabOrganizationLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=tab_organizer_settings";
 
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.

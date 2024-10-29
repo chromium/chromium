@@ -48,6 +48,11 @@ export class SettingsHistorySearchPageElement extends
             loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled'),
       },
 
+      learnMoreUrl_: {
+        type: String,
+        computed: 'computeLearnMoreUrl_()',
+      },
+
       numericUncheckedValues_: {
         type: Array,
         value: () =>
@@ -70,6 +75,16 @@ export class SettingsHistorySearchPageElement extends
   private numericUncheckedValues_: FeatureOptInState[];
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+
+  private isManaged_(): boolean {
+    return loadTimeData.getBoolean('isManaged');
+  }
+
+  private computeLearnMoreUrl_(): string {
+    return this.isManaged_() ?
+        loadTimeData.getString('historySearchLearnMoreManagedUrl') :
+        loadTimeData.getString('historySearchLearnMoreUrl');
+  }
 
   private recordInteractionMetrics_(
       interaction: AiPageHistorySearchInteractions, action: string) {

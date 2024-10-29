@@ -481,18 +481,28 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
+  html_source->AddString("historySearchLearnMoreManagedUrl",
+                         chrome::kHistorySearchLearnMorePageManagedURL);
   html_source->AddString("historySearchDataHomeUrl",
                          chrome::kChromeUIHistoryURL);
   html_source->AddString("compareLearnMoreUrl",
                          commerce::kChromeUICompareLearnMoreUrl);
+  html_source->AddString("compareLearnMoreManagedUrl",
+                         commerce::kChromeUICompareLearnMoreManagedUrl);
   html_source->AddString("compareDataHomeUrl",
                          commerce::kChromeUICompareListsUrl);
   html_source->AddString("composeLearnMorePageURL",
                          chrome::kComposeLearnMorePageURL);
+  html_source->AddString("composeLearnMorePageManagedURL",
+                         chrome::kComposeLearnMorePageManagedURL);
   html_source->AddString("tabOrganizationLearnMoreUrl",
                          chrome::kTabOrganizationLearnMorePageURL);
+  html_source->AddString("tabOrganizationLearnMoreManagedUrl",
+                         chrome::kTabOrganizationLearnMorePageManagedURL);
   html_source->AddString("wallpaperSearchLearnMoreUrl",
                          chrome::kWallpaperSearchLearnMorePageURL);
+  html_source->AddString("wallpaperSearchLearnMoreManagedUrl",
+                         chrome::kWallpaperSearchLearnMorePageManagedURL);
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,

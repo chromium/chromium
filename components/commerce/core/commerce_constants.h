@@ -28,6 +28,10 @@ inline constexpr char kChromeUICompareDisclosureUrl[] =
 inline constexpr char kChromeUICompareLearnMoreUrl[] =
     "https://support.google.com/chrome/?p=compare_tabs";
 
+// The URL for compare learn more page for managed users.
+inline constexpr char kChromeUICompareLearnMoreManagedUrl[] =
+    "https://support.google.com/chrome/a?p=tab_compare";
+
 // The host for the shopping insights side panel page.
 inline constexpr char kChromeUIShoppingInsightsSidePanelHost[] =
     "shopping-insights-side-panel.top-chrome";
