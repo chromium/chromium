@@ -547,6 +547,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
            WebDXFeature::kContainInlineSize},
           {CSSSampleId::kOverlay, WebDXFeature::kOverlay},
           {CSSSampleId::kContentVisibility, WebDXFeature::kContentVisibility},
+          {CSSSampleId::kCounterSet, WebDXFeature::kCounterSet},
       }};
 
   return *kMap;

@@ -33669,6 +33669,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="146" label="RegisteredCustomProperties"/>
   <int value="147" label="Accelerometer"/>
   <int value="148" label="ContentVisibility"/>
+  <int value="149" label="CounterSet"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
