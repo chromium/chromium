@@ -350,6 +350,8 @@ ci_build_perf_builder(
         category = "windows",
         short_name = "sisoci",
     ),
+    # TODO(333491525): enable no-fallback once OOM fallback mitigated.
+    siso_experiments = [],
 )
 
 cq_build_perf_builder(
