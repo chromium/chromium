@@ -24608,6 +24608,8 @@ TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdMustBeKAnonForReporting) {
       std::string(R"(
         function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
+          // This is in place for the re-run during a k-anon enforced
+          // generate bid.
           if (interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length
               === 0) {
             return;
@@ -24669,6 +24671,161 @@ TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdMustBeKAnonForReporting) {
       ASSERT_TRUE(result_.ad_descriptor.has_value());
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
       EXPECT_THAT(result_.errors, testing::ElementsAre());
+    }
+  }
+}
+
+// This test verifies all the reporting ids are where we expect them to be in
+// different scenerios involving k-anon.
+//
+// For all cases we expect the following ids to be present when selectable
+// reporting ids are present, and once is selected within generateBid:
+//
+//  - generateBid:
+//    - selectableBuyerAndSellerReportingIds
+//    - buyerReportingId
+//    - buyerAndSellerReportingId
+//  - scoreAd:
+//    - selectedBuyerAndSellerReportingId
+//    - buyerAndSellerReportingId
+//
+// When all of the following conditions are true:
+//   - selectableBuyerAndSellerReportingIds are present
+//   - one is selected within generateBid
+//   - k-anon is enforced
+//   - authorize_reporting_kanon is false
+// neither reportWin nor reportResult will be called.
+
+// When selectableBuyerAndSellerReportingIds are not present, or one is not
+// selected within generateBid, both reportWin and reportResult will be called.
+// The remaining reporting ids will be passed to reportWin and reportResult only
+// if k-anon is not enforced or authorize_reporting_kanon is true.
+TEST_P(AuctionRunnerKAnonTest,
+       SelectedReportingIdNotKAnonVerifyPassedReportingIds) {
+  constexpr char kBiddingLogicScript[] = R"(
+  function generateBid(
+      interestGroup, unusedAuctionSignals, unusedPerBuyerSignals,
+      unusedTrustedBiddingSignals, unusedBrowserSignals) {
+      const ad = interestGroup.ads[0];
+    // This is in place for the re-run during a k-anon enforced generate bid.
+    if (ad.selectableBuyerAndSellerReportingIds.length
+                === 0) {
+      if (ad.buyerReportingId !== "brid" ||
+          ad.buyerAndSellerReportingId !== "bsid" ) {
+            throw "generateBid does not contain valid reporting ids";
+      }
+      return;
+    }
+    // Verify all of these are present in generate bid,
+    // if selectableBuyerAndSellerReportingIds is present.
+    if (ad.selectableBuyerAndSellerReportingIds.length !== 2 ||
+        ad.selectableBuyerAndSellerReportingIds[0] !== "selectable_id1" ||
+        ad.selectableBuyerAndSellerReportingIds[1] !== "selectable_id2" ||
+        ad.buyerReportingId !== "brid" ||
+        ad.buyerAndSellerReportingId !== "bsid" ) {
+      throw "generateBid does not contain valid reporting ids";
+    }
+    selectedReportingId = ad.selectableBuyerAndSellerReportingIds[0];
+    return {'ad': ad, 'bid': 1, 'render': ad.renderURL,
+            'selectedBuyerAndSellerReportingId': selectedReportingId};
+  }
+
+  function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                      unusedSellerSignals, browserSignals) {
+    // This function will not be called if k-anon is enforced and
+    // authorize_reporting_kanon is false, as there will be no auction
+    // winner in that case. We don't need to check that here because other
+    // tests already verify that reportWin is only called when the auction
+    // has a winner.
+    if(browserSignals.selectedBuyerAndSellerReportingId !== undefined){
+      throw "reportWin saw " + browserSignals.selectedBuyerAndSellerReportingId +
+        " " + browserSignals.buyerAndSellerReportingId+ " " +
+        browserSignals.buyerReportingId;
+    }
+  }
+  )";
+
+  constexpr char kDecisionLogicScript[] = R"(
+  function scoreAd(
+      adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+      browserSignals) {
+    if (browserSignals.selectedBuyerAndSellerReportingId !== "selectable_id1" ||
+        browserSignals.buyerAndSellerReportingId !== "bsid") {
+      throw "scoreAd does not contain valid reporting ids";
+    }
+    return bid;
+  }
+
+  function reportResult(auctionConfig, browserSignals) {
+    // This function will not be called if k-anon is enforced and
+    // authorize_reporting_kanon is false, as there will be no auction
+    // winner in that case. We don't need to check that here because other
+    // tests already verify that reportResult is only called when the auction
+    // has a winner.
+    if(browserSignals.selectedBuyerAndSellerReportingId !== undefined){
+      throw "reportResult saw " + browserSignals.selectedBuyerAndSellerReportingId +
+        " " + browserSignals.buyerAndSellerReportingId;
+    }
+  }
+  )";
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      // bidding script tries to bid with ad that is not k-anonymous.
+      kBiddingLogicScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionLogicScript);
+
+  for (bool authorize_reporting_kanon : {false, true}) {
+    SCOPED_TRACE(authorize_reporting_kanon);
+    std::vector<StorageInterestGroup> bidders;
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, kBidder1Name, kBidder1Url,
+        /*trusted_bidding_signals_url=*/std::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+    bidders[0].interest_group.ads.value()[0].buyer_reporting_id = "brid";
+    bidders[0].interest_group.ads.value()[0].buyer_and_seller_reporting_id =
+        "bsid";
+    bidders[0]
+        .interest_group.ads.value()[0]
+        .selectable_buyer_and_seller_reporting_ids = {"selectable_id1",
+                                                      "selectable_id2"};
+    AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0],
+                     "https://ad1.com/", bidders[0]);
+    if (authorize_reporting_kanon) {
+      AuthorizeKAnonReporting(bidders[0].interest_group.ads.value()[0],
+                              "https://ad1.com/", bidders[0],
+                              std::string("selectable_id1"));
+    }
+
+    StartAuction(kSellerUrl, bidders);
+    auction_run_loop_->Run();
+    // Have to spin all message loops to flush any k-anon set join events.
+    task_environment()->RunUntilIdle();
+    EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
+                testing::UnorderedElementsAre(
+                    blink::HashedKAnonKeyForAdBid(
+                        bidders[0].interest_group,
+                        bidders[0].interest_group.ads.value()[0].render_url()),
+                    blink::HashedKAnonKeyForAdNameReporting(
+                        bidders[0].interest_group,
+                        bidders[0].interest_group.ads.value()[0],
+                        std::string("selectable_id1"))));
+
+    if (kanon_mode() == KAnonMode::kEnforce && !authorize_reporting_kanon) {
+      // When k-anon is enforced and the reporting ID is not authorized, the
+      // bid is rejected because the reporting ID cannot be made k-anonymous.
+      EXPECT_FALSE(result_.ad_descriptor.has_value());
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
+    } else {
+      ASSERT_TRUE(result_.ad_descriptor.has_value());
+      EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
+      EXPECT_THAT(result_.errors,
+                  testing::UnorderedElementsAre(
+                      "https://adstuff.publisher1.com/auction.js:19 "
+                      "Uncaught reportResult saw selectable_id1 bsid.",
+                      "https://adplatform.com/offers.js:37 Uncaught "
+                      "reportWin saw selectable_id1 bsid brid."));
     }
   }
 }
