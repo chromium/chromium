@@ -11,8 +11,6 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,8 +75,7 @@ std::u16string RemainingTimeString(base::TimeDelta time_remaining) {
 }  // namespace
 
 TimeLimitNotifier::TimeLimitNotifier(content::BrowserContext* context)
-    : TimeLimitNotifier(context, nullptr /* task_runner */) {}
-
+    : context_(context) {}
 TimeLimitNotifier::~TimeLimitNotifier() = default;
 
 void TimeLimitNotifier::MaybeScheduleLockNotifications(
@@ -157,20 +154,8 @@ void TimeLimitNotifier::ShowPolicyUpdateNotification(
 }
 
 void TimeLimitNotifier::UnscheduleNotifications() {
-  // TODO(crbug.com/40599270): Stop() should be sufficient, but doesn't have the
-  // expected effect in tests.
-  warning_notification_timer_.AbandonAndStop();
-  exit_notification_timer_.AbandonAndStop();
-}
-
-TimeLimitNotifier::TimeLimitNotifier(
-    content::BrowserContext* context,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : context_(context) {
-  if (task_runner.get()) {
-    warning_notification_timer_.SetTaskRunner(task_runner);
-    exit_notification_timer_.SetTaskRunner(task_runner);
-  }
+  warning_notification_timer_.Stop();
+  exit_notification_timer_.Stop();
 }
 
 }  // namespace ash
