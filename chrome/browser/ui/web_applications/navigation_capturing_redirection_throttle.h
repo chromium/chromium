@@ -42,8 +42,6 @@ class NavigationCapturingRedirectionThrottle
   explicit NavigationCapturingRedirectionThrottle(
       content::NavigationHandle* navigation_handle);
 
-  ThrottleCheckResult HandleRequest();
-
   raw_ref<Profile> profile_;
 };
 

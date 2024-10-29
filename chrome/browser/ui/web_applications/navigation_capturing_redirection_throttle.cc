@@ -103,10 +103,7 @@ const char* NavigationCapturingRedirectionThrottle::GetNameForLogging() {
 ThrottleCheckResult
 NavigationCapturingRedirectionThrottle::WillProcessResponse() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return HandleRequest();
-}
 
-ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // Bail out if there's no Navigation Capturing data attached. Note: this
   // cannot be checked in `MaybeCreate()` since the data might get attached
   // after it's executed.
@@ -131,11 +128,6 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   }
   const GURL& final_url = navigation_handle()->GetURL();
   if (!final_url.is_valid()) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
-  // Only http-style schemes are allowed.
-  if (!final_url.SchemeIsHTTPOrHTTPS()) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -167,10 +159,6 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::optional<webapps::AppId> target_app_id =
       registrar.FindAppThatCapturesLinksInScope(final_url);
-  std::optional<blink::mojom::DisplayMode> target_display_mode =
-      target_app_id.has_value()
-          ? std::optional(registrar.GetAppEffectiveDisplayMode(*target_app_id))
-          : std::nullopt;
 
   // "Same first navigation state" case:
   // First, we can exit early if the first navigation app id matches the target
@@ -184,12 +172,29 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // After this point:
   // - The browsing context is a top-level browsing context.
   // - The initial navigation capturing app_id does not match the final
-  // navigation
-  //   captured app_id (and either can be std::nullopt, but not both).
+  //   navigation captured app_id (and either can be std::nullopt, but not
+  //   both).
   // - Navigation is only triggered as part of left, middle or shift clicks.
 
   bool is_source_app_matching_final_target =
       target_app_id && source_app_id && target_app_id == source_app_id;
+
+  // First, handle cases where the final url is not in scope of any app. These
+  // can mostly proceed as is, except for two cases where the initial navigation
+  // ended up in an app window but should now be in a browser tab.
+  if (!target_app_id.has_value()) {
+    if (initial_nav_handling_result ==
+            NavigationHandlingInitialResult::kForcedNewAppContextAppWindow ||
+        initial_nav_handling_result ==
+            NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
+      ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
+                                         link_click_disposition);
+    }
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // For the remaining cases we know that the navigation ended up in scope of a
+  // target application.
 
   // First, handle the case where a new app window was force-created for an app
   // for user modified clicks. This refers to the use-cases here:
@@ -212,13 +217,9 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
     // happen).
     CHECK(chrome::FindBrowserWithTab(web_contents_for_navigation)
               ->app_controller());
-    if (target_app_id.has_value() && !is_source_app_matching_final_target) {
+    if (!is_source_app_matching_final_target) {
       ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
                                               *target_app_id, final_url);
-      return content::NavigationThrottle::PROCEED;
-    } else {
-      ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
-                                         link_click_disposition);
       return content::NavigationThrottle::PROCEED;
     }
   }
@@ -236,8 +237,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
            NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab ||
        initial_nav_handling_result ==
            NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab) &&
-      is_user_modified && target_app_id.has_value() &&
-      source_app_id.has_value()) {
+      is_user_modified && source_app_id.has_value()) {
     if ((link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
          is_source_app_matching_final_target) ||
         (link_click_disposition == WindowOpenDisposition::NEW_WINDOW)) {
@@ -268,29 +268,18 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // Handle the use-case where the first result was navigation captured
   // into an app window and both apps had NavigateNew as launch handlers,
   // triggered via a non user modified.
-  std::optional<ClientModeAndBrowser> client_mode_and_browser;
-  if (target_app_id) {
-    CHECK(target_display_mode.has_value());
-    client_mode_and_browser =
-        GetEffectiveClientModeAndBrowserForCapturing(*profile_, *target_app_id);
-  }
+  ClientModeAndBrowser client_mode_and_browser =
+      GetEffectiveClientModeAndBrowserForCapturing(*profile_, *target_app_id);
 
   // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
   // redirection.
   if (initial_nav_handling_result ==
-      NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
-    if (!target_app_id) {
-      ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
-                                         link_click_disposition);
-      return content::NavigationThrottle::PROCEED;
-    }
-
-    if (target_app_id && client_mode_and_browser->effective_client_mode ==
-                             LaunchHandler::ClientMode::kNavigateNew) {
-      ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
-                                              *target_app_id, final_url);
-      return content::NavigationThrottle::PROCEED;
-    }
+          NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow &&
+      client_mode_and_browser.effective_client_mode ==
+          LaunchHandler::ClientMode::kNavigateNew) {
+    ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
+                                            *target_app_id, final_url);
+    return content::NavigationThrottle::PROCEED;
   }
 
   // Only proceed from now on if the final app can be capturable depending on
@@ -316,14 +305,14 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
   // kFocusExisting, and there is an existing app window already present that
   // can be focused. The existing window is focused, and navigation is
   // aborted.
-  if (target_app_id && client_mode_and_browser->effective_client_mode ==
-                           LaunchHandler::ClientMode::kFocusExisting) {
-    CHECK(client_mode_and_browser->browser);
-    CHECK(client_mode_and_browser->tab_index.has_value());
+  if (client_mode_and_browser.effective_client_mode ==
+      LaunchHandler::ClientMode::kFocusExisting) {
+    CHECK(client_mode_and_browser.browser);
+    CHECK(client_mode_and_browser.tab_index.has_value());
     // Focus any existing app window if it exist1s.
     content::WebContents* pre_existing_contents =
-        client_mode_and_browser->browser->tab_strip_model()->GetWebContentsAt(
-            *client_mode_and_browser->tab_index);
+        client_mode_and_browser.browser->tab_strip_model()->GetWebContentsAt(
+            *client_mode_and_browser.tab_index);
     CHECK(pre_existing_contents);
 
     pre_existing_contents->Focus();
@@ -334,7 +323,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleRequest() {
     EnqueueLaunchParams(pre_existing_contents, *target_app_id, final_url,
                         /*wait_for_navigation_to_complete=*/false);
     MaybeShowNavigationCaptureIph(*target_app_id, &profile_.get(),
-                                  client_mode_and_browser->browser);
+                                  client_mode_and_browser.browser);
     RecordLaunchMetrics(*target_app_id,
                         apps::LaunchContainer::kLaunchContainerWindow,
                         apps::LaunchSource::kFromNavigationCapturing, final_url,
