@@ -25,6 +25,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -135,6 +136,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      const net::HttpRequestHeaders& additional_headers = {},
       std::optional<PrefetchStartCallback> prefetch_start_callback =
           std::nullopt);
 
@@ -786,6 +788,7 @@ class CONTENT_EXPORT PrefetchContainer {
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
+      const net::HttpRequestHeaders& additional_headers,
       std::optional<PrefetchStartCallback> prefetch_start_callback,
       bool is_javascript_enabled);
 
@@ -1012,6 +1015,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // TODO(crbug.com/353490734): Remove it.
   base::OnceCallback<void(PrefetchContainer&)>
       on_maybe_determined_head_callback_;
+
+  // Additional headers for WebView initiated prefetch.
+  // This must be empty for non-WebView initiated prefetches.
+  // TODO(crbug.com/369859822): Revisit the semantics if needed.
+  const net::HttpRequestHeaders additional_headers_;
 
   // Browser callbacks.
   std::optional<PrefetchStartCallback> prefetch_start_callback_;

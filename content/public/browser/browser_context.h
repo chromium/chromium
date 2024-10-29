@@ -21,14 +21,19 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
+#include "content/public/browser/prefetch_browser_callbacks.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -195,6 +200,14 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       base::OnceClosure done);
 
   StoragePartition* GetDefaultStoragePartition();
+
+  // Starts a prefetch network request for the given |url|.
+  void StartBrowserPrefetchRequest(
+      const GURL& url,
+      bool javascript_enabled,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      const net::HttpRequestHeaders& additional_headers,
+      std::optional<PrefetchStartCallback> prefetch_start_callback);
 
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =

@@ -405,7 +405,8 @@ PrefetchContainer::PrefetchContainer(
           std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
           referring_render_frame_host.GetDevToolsNavigationToken(),
-          /* prefetch_start_callback=*/std::nullopt,
+          /*Must be empty: additional_headers=*/{},
+          /*prefetch_start_callback=*/std::nullopt,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled) {
@@ -438,7 +439,8 @@ PrefetchContainer::PrefetchContainer(
           std::move(attempt),
           holdback_status_override,
           /*initiator_devtools_navigation_token=*/std::nullopt,
-          /* prefetch_start_callback=*/std::nullopt,
+          /*Must be empty: additional_headers=*/{},
+          /*prefetch_start_callback=*/std::nullopt,
           referring_web_contents.GetOrCreateWebPreferences()
               .javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
@@ -454,6 +456,7 @@ PrefetchContainer::PrefetchContainer(
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PreloadingAttempt> attempt,
+    const net::HttpRequestHeaders& additional_headers,
     std::optional<PrefetchStartCallback> prefetch_start_callback)
     : PrefetchContainer(GlobalRenderFrameHostId(),
                         referring_origin,
@@ -471,6 +474,7 @@ PrefetchContainer::PrefetchContainer(
                         std::move(attempt),
                         /*holdback_status_override=*/std::nullopt,
                         /*initiator_devtools_navigation_token=*/std::nullopt,
+                        additional_headers,
                         std::move(prefetch_start_callback),
                         javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
@@ -492,6 +496,7 @@ PrefetchContainer::PrefetchContainer(
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
+    const net::HttpRequestHeaders& additional_headers,
     std::optional<PrefetchStartCallback> prefetch_start_callback,
     bool is_javascript_enabled)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
@@ -510,6 +515,7 @@ PrefetchContainer::PrefetchContainer(
       holdback_status_override_(holdback_status_override),
       initiator_devtools_navigation_token_(
           std::move(initiator_devtools_navigation_token)),
+      additional_headers_(additional_headers),
       prefetch_start_callback_(std::move(prefetch_start_callback)),
       is_javascript_enabled_(is_javascript_enabled) {
   is_likely_ahead_of_prerender_ =
@@ -1771,6 +1777,7 @@ void PrefetchContainer::MakeResourceRequest(
   // not be visible outside of the network context.
   request->load_flags = net::LOAD_PREFETCH;
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+  request->headers.MergeFrom(additional_headers_);
   request->headers.MergeFrom(additional_headers);
   request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
   request->headers.SetHeader("Sec-Purpose", GetSecPurposeHeaderValue(url));

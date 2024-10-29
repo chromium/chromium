@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -37,6 +38,9 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/media/browser_feature_provider.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/push_messaging/push_messaging_router.h"
 #include "content/browser/site_info.h"
 #include "content/browser/storage_partition_impl_map.h"
@@ -46,6 +50,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/prefetch_browser_callbacks.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -56,13 +62,17 @@
 #include "media/capabilities/video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
+#include "net/http/http_request_headers.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "url/gurl.h"
 
 namespace content {
+
+class PrefetchService;
 
 namespace {
 
@@ -179,6 +189,34 @@ void BrowserContext::GarbageCollectStoragePartitions(
 
 StoragePartition* BrowserContext::GetDefaultStoragePartition() {
   return GetStoragePartition(StoragePartitionConfig::CreateDefault(this));
+}
+
+void BrowserContext::StartBrowserPrefetchRequest(
+    const GURL& url,
+    bool javascript_enabled,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+    const net::HttpRequestHeaders& additional_headers,
+    std::optional<PrefetchStartCallback> prefetch_start_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(this)->GetPrefetchService();
+  if (!prefetch_service) {
+    if (prefetch_start_callback.has_value()) {
+      std::move(prefetch_start_callback.value())
+          .Run(PrefetchStartResultCode::kFailed);
+    }
+    return;
+  }
+
+  PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
+                             /*use_prefetch_proxy=*/false);
+  auto container = std::make_unique<PrefetchContainer>(
+      this, url, prefetch_type, blink::mojom::Referrer(), javascript_enabled,
+      /*referring_origin=*/std::nullopt, std::move(no_vary_search_expected),
+      /*attempt=*/nullptr, additional_headers,
+      std::move(prefetch_start_callback));
+  prefetch_service->AddPrefetchContainer(std::move(container));
 }
 
 void BrowserContext::CreateMemoryBackedBlob(base::span<const uint8_t> data,
