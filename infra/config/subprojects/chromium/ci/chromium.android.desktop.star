@@ -210,9 +210,9 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    targets = targets.bundle(
-        additional_compile_targets = "all",
-    ),
+    # This is empty because we automatically compile any tests required for
+    # the builders that triggered this.
+    targets = targets.bundle(targets = []),
     gardener_rotations = gardener_rotations.ANDROID,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
