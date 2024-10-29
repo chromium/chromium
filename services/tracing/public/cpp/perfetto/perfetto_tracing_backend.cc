@@ -512,7 +512,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     NOTREACHED();
   }
 
-  void CloneSession(perfetto::TracingSessionID, CloneSessionArgs) override {
+  void CloneSession(CloneSessionArgs) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Not implemented yet.
     NOTREACHED();
