@@ -126,14 +126,6 @@ BASE_FEATURE(kNormalizeSearchSuggestions,
              "NormalizeSearchSuggestions",
              DISABLED);
 
-// Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
-// requests with an empty input on Web/SRP on Mobile. Enabled by default on
-// Desktop because it is also used by Desktop in the cross-platform code in the
-// OmniboxEditModel for triggering zero-suggest prefetching on Web/SRP.
-BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
-             "OmniboxOnClobberFocusTypeOnContent",
-             enable_if(!IS_IOS));
-
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
 BASE_FEATURE(kZeroSuggestInMemoryCaching,

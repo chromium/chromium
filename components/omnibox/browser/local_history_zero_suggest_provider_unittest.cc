@@ -318,15 +318,20 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
     // Enable local history zero-prefix suggestions beyond NTP.
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP,
-                              },
-        /*disabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent});
+        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP},
+        /*disabled_features=*/{});
+#if BUILDFLAG(IS_IOS)
     StartProviderAndWaitUntilDone(
         /*text=*/"https://example.com/",
         metrics::OmniboxFocusType::INTERACTION_FOCUS,
         OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         /*current_url=*/"https://example.com/");
-
+#else
+    StartProviderAndWaitUntilDone(
+        /*text=*/"", metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+#endif
     // Local history zero-prefix suggestions are enabled for on-focus SRP.
     ExpectMatches(
         {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});

@@ -56,6 +56,8 @@ OmniboxController::OmniboxController(
   }
 }
 
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+
 OmniboxController::~OmniboxController() = default;
 
 void OmniboxController::StartAutocomplete(
@@ -83,20 +85,18 @@ void OmniboxController::StartZeroSuggestPrefetch() {
   }
 
   const bool is_ntp_page = omnibox::IsNTPPage(page_classification);
-  const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
-      omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
   GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 
-  if (is_ntp_page || interaction_clobber_focus_type) {
+  if (is_ntp_page || !is_ios) {
     text.clear();
   }
 
   AutocompleteInput input(text, page_classification,
                           client_->GetSchemeClassifier());
   input.set_current_url(current_url);
-  input.set_focus_type(interaction_clobber_focus_type && !is_ntp_page
+  input.set_focus_type(!is_ios && !is_ntp_page
                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller_->StartPrefetch(input);

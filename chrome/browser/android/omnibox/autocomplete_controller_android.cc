@@ -189,10 +189,6 @@ void AutocompleteControllerAndroid::StartPrefetch(
   }
 
   const bool is_ntp_page = omnibox::IsNTPPage(page_classification);
-  const bool interaction_clobber_focus_type =
-      base::FeatureList::IsEnabled(
-          omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
-      !is_ntp_page;
 
   GURL current_url;
   std::u16string auto_complete_text;
@@ -202,7 +198,7 @@ void AutocompleteControllerAndroid::StartPrefetch(
 
     // We will not assign text to autocomplete input when on NTP page and input
     // type is not clobber focus type.
-    if (!is_ntp_page && !interaction_clobber_focus_type) {
+    if (!is_ntp_page) {
       auto_complete_text = ConvertJavaStringToUTF16(env, j_current_url);
     }
   }
@@ -210,7 +206,7 @@ void AutocompleteControllerAndroid::StartPrefetch(
   AutocompleteInput input(auto_complete_text, page_classification,
                           ChromeAutocompleteSchemeClassifier(profile_));
   input.set_current_url(current_url);
-  input.set_focus_type(interaction_clobber_focus_type
+  input.set_focus_type(!is_ntp_page
                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller_->StartPrefetch(input);

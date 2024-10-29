@@ -45,6 +45,7 @@
 
 using testing::_;
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 
 namespace {
 
@@ -174,69 +175,38 @@ class ZeroSuggestProviderTest : public testing::Test,
   }
 
   // An AutocompleteInput that gets Zero Prefix Suggestions on WEB.
-  // TODO(ananyaseelam): Clean up this function after removing
-  // kOmniboxOnClobberFocusTypeOnContent.
   AutocompleteInput ZeroPrefixInputForWeb(
       const bool is_prefetch,
-      const bool is_text_empty,
       const std::string& input_url = "https://example.com/") {
-    if (is_prefetch) {
-      AutocompleteInput input(base::FeatureList::IsEnabled(
-                                  omnibox::kOmniboxOnClobberFocusTypeOnContent)
-                                  ? u""
-                                  : base::ASCIIToUTF16(input_url),
-                              metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH,
-                              TestSchemeClassifier());
-      input.set_current_url(GURL(input_url));
-      input.set_focus_type(base::FeatureList::IsEnabled(
-                               omnibox::kOmniboxOnClobberFocusTypeOnContent)
-                               ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
-                               : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-      return input;
-    } else {
-      AutocompleteInput input(
-          is_text_empty ? u"" : base::ASCIIToUTF16(input_url),
-          metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
-      input.set_current_url(GURL(input_url));
-      input.set_focus_type(is_text_empty
-                               ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
-                               : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-      return input;
-    }
+    // On IOS WEB/SRP, input text is not empty.
+    AutocompleteInput input(is_ios ? base::ASCIIToUTF16(input_url) : u"",
+                            is_prefetch
+                                ? metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH
+                                : metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
+    input.set_focus_type(is_ios
+                             ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    return input;
   }
 
   // An AutocompleteInput that gets Zero Prefix Suggestions on SRP.
-  // TODO(ananyaseelam): Clean up this function after removing
-  // kOmniboxOnClobberFocusTypeOnContent.
   AutocompleteInput ZeroPrefixInputForSRP(
       const bool is_prefetch,
-      const bool is_text_empty,
       const std::string& input_url = "https://www.google.com/search?q=foo") {
-    if (is_prefetch) {
-      AutocompleteInput input(base::FeatureList::IsEnabled(
-                                  omnibox::kOmniboxOnClobberFocusTypeOnContent)
-                                  ? u""
-                                  : base::ASCIIToUTF16(input_url),
-                              metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
-                              TestSchemeClassifier());
-      input.set_current_url(GURL(input_url));
-      input.set_focus_type(base::FeatureList::IsEnabled(
-                               omnibox::kOmniboxOnClobberFocusTypeOnContent)
-                               ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
-                               : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-      return input;
-    } else {
-      AutocompleteInput input(
-          is_text_empty ? u"" : base::ASCIIToUTF16(input_url),
-          metrics::OmniboxEventProto::
-              SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-          TestSchemeClassifier());
-      input.set_current_url(GURL(input_url));
-      input.set_focus_type(is_text_empty
-                               ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
-                               : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-      return input;
-    }
+    AutocompleteInput input(
+        // On IOS WEB/SRP, input text is not empty.
+        is_ios ? base::ASCIIToUTF16(input_url) : u"",
+        is_prefetch ? metrics::OmniboxEventProto::SRP_ZPS_PREFETCH
+                    : metrics::OmniboxEventProto::
+                          SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
+    input.set_focus_type(is_ios
+                             ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    return input;
   }
 
   // An AutocompleteInput that gets Prefix Suggestions on WEB.
@@ -365,22 +335,13 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsOnSearchActivity) {
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   AutocompleteInput prefix_web_input = PrefixInputForWeb();
   AutocompleteInput prefix_srp_input = PrefixInputForSRP();
-  AutocompleteInput on_focus_web_input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/false);
-  AutocompleteInput on_focus_srp_input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/false);
-  AutocompleteInput on_clobber_web_input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
-  AutocompleteInput on_clobber_srp_input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
-  AutocompleteInput on_focus_lens_input = ZeroPrefixInputForLens();
+  AutocompleteInput zero_prefix_web_input =
+      ZeroPrefixInputForWeb(/*is_prefetch=*/false);
+  AutocompleteInput zero_prefix_srp_input =
+      ZeroPrefixInputForSRP(/*is_prefetch=*/false);
+  AutocompleteInput zero_prefix_lens_input = ZeroPrefixInputForLens();
 
-  // Disable interaction clobber on content.
   {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        omnibox::kOmniboxOnClobberFocusTypeOnContent);
-
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), prefix_web_input));
@@ -390,74 +351,24 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
                   client_.get(), prefix_srp_input));
 
     EXPECT_EQ(
-        std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_focus_web_input));
-    EXPECT_EQ(
-        std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_focus_srp_input));
-
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_clobber_web_input));
-
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_clobber_srp_input));
-
-    EXPECT_EQ(
         std::make_pair(ZeroSuggestProvider::ResultType::kRemoteNoURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_focus_lens_input));
-  }
-  // Disable on-clobber for OTHER.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
-        /*disabled_features=*/{});
-
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), prefix_web_input));
-
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), prefix_srp_input));
-
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_focus_web_input));
-
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_focus_srp_input));
+        ZeroSuggestProvider::GetResultTypeAndEligibility(
+            client_.get(), zero_prefix_lens_input));
 
     EXPECT_EQ(
         std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_clobber_web_input));
+        ZeroSuggestProvider::GetResultTypeAndEligibility(
+            client_.get(), zero_prefix_srp_input));
 
     EXPECT_EQ(
         std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_clobber_srp_input));
-
-    EXPECT_EQ(
-        std::make_pair(ZeroSuggestProvider::ResultType::kRemoteNoURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_focus_lens_input));
+        ZeroSuggestProvider::GetResultTypeAndEligibility(
+            client_.get(), zero_prefix_web_input));
   }
 }
 
 // Tests whether zero-suggest is allowed on NTP/Web/SRP with various external
-// request conditions and that the appropriate eligibility metrics are logged.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
-  // Enable on-focus for OTHER and SRP.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kOmniboxOnClobberFocusTypeOnContent);
-
   // Keep a reference to the Google default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   const TemplateURL* google_provider =
@@ -483,8 +394,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
 
   // Benchmark test for valid page URL.
   auto test_other = [this]() {
-    const auto& input = ZeroPrefixInputForWeb(/*is_prefetch=*/false,
-                                              /*is_text_empty=*/false);
+    const auto& input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
@@ -495,7 +405,6 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   auto test_srp = [this](const TemplateURL* template_url) {
     const auto& input = ZeroPrefixInputForSRP(
         /*is_prefetch=*/false,
-        /*is_text_empty=*/false,
         /*input_url= */
         template_url->GenerateSearchURL(SearchTermsData()).spec());
     const auto [result_type, eligible] =
@@ -510,7 +419,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   {
     // Zero-suggest is generally not allowed for invalid or non-HTTP(S) URLs.
     AutocompleteInput on_focus_ineligible_url_input = ZeroPrefixInputForWeb(
-        /*is_prefetch=*/false, /*is_text_empty=*/false,
+        /*is_prefetch=*/false,
         /*input_url= */ "chrome://history");
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
@@ -536,6 +445,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     // Zero-suggest request can be made from Lens searchboxes.
     EXPECT_TRUE(test_lens());
   }
+
   {
     // Valid SRP URLs can be sent in the zero-suggest request.
     EXPECT_TRUE(test_srp(google_provider));
@@ -757,9 +667,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
 
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
-      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
+  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response(
@@ -767,14 +675,14 @@ TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
       input.current_url().spec());
 
   // Make sure valid input starts the provider.
@@ -826,9 +734,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopWeb) {
 
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
-      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
+  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response(
@@ -837,13 +743,14 @@ TEST_F(ZeroSuggestProviderTest, StartStopWeb) {
       R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
   AutocompleteInput input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+      /*is_prefetch=*/false);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
   GURL suggest_url =
       GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                     input.current_url().spec());
 
   // Make sure valid input starts the provider.
@@ -959,13 +866,12 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
   // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
-                            omnibox::kZeroSuggestPrefetchingOnSRP},
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
-  AutocompleteInput input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
   provider_->Start(input, false);
+
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
             provider_->GetResultTypeRunningForTesting());
 
@@ -973,7 +879,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
       input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
@@ -1027,12 +934,10 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
   // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
-                            omnibox::kZeroSuggestPrefetchingOnWeb},
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
-  AutocompleteInput input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
             provider_->GetResultTypeRunningForTesting());
@@ -1041,7 +946,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
 
   GURL suggest_url =
       GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                     input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
@@ -1130,17 +1036,15 @@ TEST_F(ZeroSuggestProviderTest,
 
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
-      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
+  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
-  AutocompleteInput input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
   input.set_omit_asynchronous_matches(true);
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
       input.current_url().spec());
 
   // Ensure the cache is empty.
@@ -1171,17 +1075,15 @@ TEST_F(ZeroSuggestProviderTest,
 
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
-      /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
+  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
-  AutocompleteInput input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
   input.set_omit_asynchronous_matches(true);
 
   GURL suggest_url =
       GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                     input.current_url().spec());
 
   // Ensure the cache is empty.
@@ -1370,8 +1272,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
   // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
-                            omnibox::kZeroSuggestPrefetchingOnSRP},
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1380,8 +1281,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
@@ -1397,7 +1297,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
       input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
@@ -1457,7 +1358,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
-                            omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{});
 
@@ -1466,8 +1366,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
       R"(["",["search1", "search2", "search3"],)"
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
-  AutocompleteInput input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
   cache_svc->StoreZeroSuggestResponse(input.current_url().spec(),
                                       json_response);
@@ -1484,7 +1383,8 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
       input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
@@ -1543,8 +1443,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
   // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
-                            omnibox::kZeroSuggestPrefetchingOnWeb},
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1553,8 +1452,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
@@ -1570,7 +1468,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
 
   GURL suggest_url =
       GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                     input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
@@ -1630,7 +1529,6 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
-                            omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{});
 
@@ -1639,8 +1537,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
       R"(["",["search1", "search2", "search3"],)"
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
-  AutocompleteInput input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
   cache_svc->StoreZeroSuggestResponse(input.current_url().spec(),
                                       json_response);
@@ -1657,7 +1554,8 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
 
   GURL suggest_url =
       GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                     input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
@@ -1794,8 +1692,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
-                            omnibox::kZeroSuggestPrefetchingOnSRP},
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1804,8 +1701,7 @@ TEST_F(ZeroSuggestProviderTest,
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = ZeroPrefixInputForSRP(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
@@ -1821,7 +1717,8 @@ TEST_F(ZeroSuggestProviderTest,
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
       input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
@@ -1877,8 +1774,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
-                            omnibox::kZeroSuggestPrefetchingOnWeb},
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1887,8 +1783,7 @@ TEST_F(ZeroSuggestProviderTest,
       R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
       R"("google:verbatimrelevance":1300}])");
   PrefService* prefs = client_->GetPrefs();
-  AutocompleteInput input = ZeroPrefixInputForWeb(
-      /*is_prefetch=*/false, /*is_text_empty=*/true);
+  AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
@@ -1904,7 +1799,8 @@ TEST_F(ZeroSuggestProviderTest,
 
   GURL suggest_url =
       GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                     input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
@@ -2173,7 +2069,7 @@ TEST_F(ZeroSuggestProviderTest, TestMultipleZeroSuggestPrefetchesInFlight) {
   test_loader_factory()->AddResponse(suggest_url.spec(), json_response);
 
   // Start a prefetch request on SRP.
-  input = ZeroPrefixInputForSRP(/*is_prefetch=*/true, /*is+text_empty=*/false);
+  input = ZeroPrefixInputForSRP(/*is_prefetch=*/true);
   provider_->StartPrefetch(input);
   EXPECT_TRUE(provider_->done());
 
@@ -2256,7 +2152,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and disable in-memory caching and prefetching on SRP.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
+      /*enabled_features=*/{},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
                              omnibox::kZeroSuggestPrefetchingOnSRP});
 
@@ -2271,8 +2167,7 @@ TEST_F(ZeroSuggestProviderTest,
     base::HistogramTester histogram_tester;
 
     // Start a prefetch request.
-    AutocompleteInput input = ZeroPrefixInputForSRP(
-        /*is_prefetch=*/true, /*is+text_empty=*/false);
+    AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/true);
     // Set up the pref to cache the response from the previous run.
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs, input.current_url().spec(), json_response);
@@ -2326,8 +2221,7 @@ TEST_F(ZeroSuggestProviderTest,
     base::HistogramTester histogram_tester;
 
     // Start a non-prefetch request.
-    AutocompleteInput input = ZeroPrefixInputForSRP(
-        /*is_prefetch=*/false, /*is_text_empty=*/true);
+    AutocompleteInput input = ZeroPrefixInputForSRP(/*is_prefetch=*/false);
     provider_->Start(input, false);
     EXPECT_FALSE(provider_->done());
     ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
@@ -2339,7 +2233,8 @@ TEST_F(ZeroSuggestProviderTest,
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::
                           SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-                      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                       input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(
@@ -2394,7 +2289,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and disable in-memory caching and prefetching on Web.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
+      /*enabled_features=*/{},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
                              omnibox::kZeroSuggestPrefetchingOnWeb});
 
@@ -2409,8 +2304,7 @@ TEST_F(ZeroSuggestProviderTest,
     base::HistogramTester histogram_tester;
 
     // Start a prefetch request.
-    AutocompleteInput input = ZeroPrefixInputForWeb(
-        /*is_prefetch=*/true, /*is_text_empty=*/false);
+    AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/true);
     // Set up the pref to cache the response from the previous run.
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs, input.current_url().spec(), json_response);
@@ -2464,8 +2358,7 @@ TEST_F(ZeroSuggestProviderTest,
     base::HistogramTester histogram_tester;
 
     // Start a non-prefetch request.
-    AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false,
-                                                    /*is_text_empty=*/true);
+    AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
     provider_->Start(input, false);
     EXPECT_FALSE(provider_->done());
     ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
@@ -2476,7 +2369,8 @@ TEST_F(ZeroSuggestProviderTest,
 
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
+                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
                       input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(

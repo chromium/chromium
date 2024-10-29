@@ -53,6 +53,7 @@ using OIT = metrics::OmniboxInputType;
 namespace {
 
 using ResultType = ZeroSuggestProvider::ResultType;
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 
 // Represents whether ZeroSuggestProvider is allowed to display zero-prefix
 // suggestions, and if not, why not.
@@ -275,14 +276,12 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
       omnibox::IsSearchResultsPage(page_class)) {
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
-        !base::FeatureList::IsEnabled(
-            omnibox::kOmniboxOnClobberFocusTypeOnContent)) {
+        is_ios) {
       return ResultType::kRemoteSendURL;
     }
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
-        (base::FeatureList::IsEnabled(
-            omnibox::kOmniboxOnClobberFocusTypeOnContent))) {
+        !is_ios) {
       return ResultType::kRemoteSendURL;
     }
   }
