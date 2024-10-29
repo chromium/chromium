@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_SELECTION_UTIL_H_
 
 #include "base/feature_list.h"
+#import "ios/web/public/web_state.h"
 
 // Feature parameters for long-press and one-tap for
 // `kEnableExpKitTextClassifierAddress` feature.
@@ -31,5 +32,8 @@ bool IsExpKitTextClassifierEntityEnabled();
 
 // Flag used only for confidence threshold (confidence_score_threshold)
 BASE_DECLARE_FEATURE(kEnableExpKitTextClassifier);
+
+// Returns whether entity detection is allowed for URL.
+bool IsEntitySelectionAllowedForURL(web::WebState* web_state);
 
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_SELECTION_UTIL_H_

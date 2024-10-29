@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros_local.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -47,6 +48,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -278,22 +280,28 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                            params:params]];
   }
 
-  // Insert any provided menu items. Do after Link and/or Image to allow
-  // inserting at beginning or adding to end.
-  ElementsToAddToContextMenu* result =
-      ios::provider::GetContextMenuElementsToAdd(
-          webState, params, self.baseViewController,
-          HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             MiniMapCommands),
-          HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             UnitConversionCommands));
-  if (result && result.elements) {
-    [menuElements addObjectsFromArray:result.elements];
-    menuTitle = result.title;
-    if (menuTitle.length > kContextMenuMaxTitleLength) {
-      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxTitleLength - 1]
-          stringByAppendingString:kContextMenuEllipsis];
+  // This check skips every internal context menu entry. This may need to be
+  // changed to only affect entity detection entries.
+  if (IsEntitySelectionAllowedForURL(webState)) {
+    // Insert any provided menu items. Do after Link and/or Image to allow
+    // inserting at beginning or adding to end.
+    ElementsToAddToContextMenu* result =
+        ios::provider::GetContextMenuElementsToAdd(
+            webState, params, self.baseViewController,
+            HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                               MiniMapCommands),
+            HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                               UnitConversionCommands));
+    if (result && result.elements) {
+      [menuElements addObjectsFromArray:result.elements];
+      menuTitle = result.title;
+      if (menuTitle.length > kContextMenuMaxTitleLength) {
+        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxTitleLength - 1]
+            stringByAppendingString:kContextMenuEllipsis];
+      }
     }
+    LOCAL_HISTOGRAM_BOOLEAN("IOS.Mobile.ContextMenu.EntitySelectionAllowed",
+                            true);
   }
 
   if (menuElements.count == 0) {

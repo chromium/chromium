@@ -26,7 +26,13 @@ source_set("model_utils") {
     "text_selection_util.h",
     "text_selection_util.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+  ]
 }
 
 source_set("test_support") {
