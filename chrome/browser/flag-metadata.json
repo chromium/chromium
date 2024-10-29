@@ -6776,7 +6776,7 @@
   {
     "name": "page-content-annotations-remote-page-metadata",
     "owners": [ "sophiechang@chromium.org", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "page-image-service-optimization-guide-salient-images",
