@@ -305,9 +305,4 @@ bool IsAshBrowserSyncEnabled() {
   return true;
 }
 
-bool ShouldEnforceAshExtensionKeepList() {
-  return IsLacrosEnabled() && base::FeatureList::IsEnabled(
-                                  ash::features::kEnforceAshExtensionKeeplist);
-}
-
 }  // namespace crosapi::browser_util

@@ -15335,7 +15335,6 @@ from previous Chrome versions.
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>
-  <int value="-1948261745" label="EnforceAshExtensionKeeplist:disabled"/>
   <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
   <int value="-1946595906" label="enable-push-api-background-mode"/>
   <int value="-1946522787" label="VrCustomTabBrowsing:disabled"/>
@@ -18398,6 +18397,8 @@ from previous Chrome versions.
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
   <int value="-704459022" label="ContinuousSearch:enabled"/>
   <int value="-704232562" label="UseMonitorColorSpace:enabled"/>
+  <int value="-704105887"
+      label="(Obsolete) EnforceAshExtensionKeeplist:enabled"/>
   <int value="-703851482" label="AudioPeripheralVolumeGranularity:enabled"/>
   <int value="-703552662" label="PrefetchAndroidFonts:disabled"/>
   <int value="-703519655" label="SystemLiveCaption:enabled"/>
@@ -20032,6 +20033,8 @@ from previous Chrome versions.
   <int value="-35002051" label="DefaultBucketUsesRelaxedDurability:enabled"/>
   <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
+  <int value="-31484570"
+      label="(Obsolete) EnforceAshExtensionKeeplist:disabled"/>
   <int value="-31444029" label="MediaInspectorLogging:disabled"/>
   <int value="-31053177" label="TerminalMultiProfile:enabled"/>
   <int value="-30997499" label="ForceReSyncDrive:disabled"/>
@@ -22533,7 +22536,6 @@ from previous Chrome versions.
   <int value="991641564" label="TaskManagerClank:disabled"/>
   <int value="992066588" label="SHA1ServerSignature:disabled"/>
   <int value="993486662" label="BorealisForceBetaClient:enabled"/>
-  <int value="993539774" label="EnforceAshExtensionKeeplist:enabled"/>
   <int value="993850099" label="FedCmButtonMode:disabled"/>
   <int value="994317727"
       label="AutofillSaveCreditCardUsesStrikeSystem:disabled"/>

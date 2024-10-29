@@ -867,12 +867,6 @@ BASE_FEATURE(kEnableWifiQosEnterprise,
              "EnableWifiQosEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enforces Ash extension keep-list. Only the extensions/Chrome apps in the
-// keep-list are enabled in Ash.
-BASE_FEATURE(kEnforceAshExtensionKeeplist,
-             "EnforceAshExtensionKeeplist",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables entering overview mode by clicking the wallpaper with the mouse.
 BASE_FEATURE(kEnterOverviewFromWallpaper,
              "EnterOverviewFromWallpaper",

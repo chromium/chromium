@@ -3873,9 +3873,6 @@ extern const char kPanelSelfRefresh2Description[];
 extern const char kEnableVariableRefreshRateName[];
 extern const char kEnableVariableRefreshRateDescription[];
 
-extern const char kEnforceAshExtensionKeeplistName[];
-extern const char kEnforceAshExtensionKeeplistDescription[];
-
 extern const char kEnterOverviewFromWallpaperName[];
 extern const char kEnterOverviewFromWallpaperDescription[];
 

@@ -224,9 +224,6 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 void SetLacrosLaunchSwitchSourceForTest(
     ash::standalone_browser::LacrosAvailability test_value);
 
-// Returns true if ash 1st party extension keep list should be enforced.
-bool ShouldEnforceAshExtensionKeepList();
-
 }  // namespace crosapi::browser_util
 
 #endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_

@@ -1160,8 +1160,6 @@ source_set("extensions") {
       "api/terminal/terminal_private_api.h",
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.cc",
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h",
-      "ash_extension_keeplist_manager.cc",
-      "ash_extension_keeplist_manager.h",
       "chrome_kiosk_delegate_chromeos.cc",
       "extension_assets_manager_chromeos.cc",
       "extension_assets_manager_chromeos.h",

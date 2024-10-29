@@ -4328,11 +4328,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enforce-ash-extension-keeplist",
-    "owners": ["jennyz@chromium.org", "erikchen@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enforce-system-aec",
     "owners": [ "peah@chromium.org" ],
     "expiry_milestone": 128

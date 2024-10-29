@@ -859,14 +859,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
 
     // QuickOffice has file_handlers which we need to register.
     if (extension_misc::IsQuickOfficeExtension(extension->id())) {
-      // Don't publish quickoffice in ash if 1st party ash extension keep list
-      // is enforced, since quickoffice extension is published in Lacros.
-      return !crosapi::browser_util::ShouldEnforceAshExtensionKeepList();
-    }
-
-    // Do not publish extensions in Ash if it should run in Lacros instead.
-    if (crosapi::browser_util::ShouldEnforceAshExtensionKeepList()) {
-      return false;
+      return true;
     }
 
     // Allow MV3 file handlers.

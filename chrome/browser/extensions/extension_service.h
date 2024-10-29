@@ -55,10 +55,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/extensions/ash_extension_keeplist_manager.h"
-#endif
-
 class BlocklistedExtensionSyncServiceTest;
 class Profile;
 class ProfileManager;
@@ -797,10 +793,6 @@ class ExtensionService : public ExtensionServiceInterface,
   using InstallGateRegistry = std::map<ExtensionPrefs::DelayReason,
                                        raw_ptr<InstallGate, CtnExperimental>>;
   InstallGateRegistry install_delayer_registry_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  AshExtensionKeeplistManager ash_keeplist_manager_;
-#endif
 
   PrefChangeRegistrar pref_change_registrar_;
 

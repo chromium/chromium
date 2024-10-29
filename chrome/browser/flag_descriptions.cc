@@ -6739,12 +6739,6 @@ const char kEnableOngoingProcessesDescription[] =
     "Enables use of the new PinnedNotificationView for all ash pinned "
     "notifications, which are now referred to as Ongoing Processes";
 
-const char kEnforceAshExtensionKeeplistName[] =
-    "Enforce Ash extension keeplist";
-const char kEnforceAshExtensionKeeplistDescription[] =
-    "Enforce the Ash extension keeplist. Only the extensions and Chrome apps on"
-    " the keeplist are enabled in Ash.";
-
 const char kEnterOverviewFromWallpaperName[] =
     "Enable entering overview from wallpaper";
 const char kEnterOverviewFromWallpaperDescription[] =
