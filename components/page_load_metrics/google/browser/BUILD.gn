@@ -4,6 +4,8 @@
 
 source_set("browser") {
   sources = [
+    "google_url_util.cc",
+    "google_url_util.h",
     "gws_abandoned_page_load_metrics_observer.cc",
     "gws_abandoned_page_load_metrics_observer.h",
   ]
@@ -12,5 +14,18 @@ source_set("browser") {
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/common",
     "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "google_url_util_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
   ]
 }
