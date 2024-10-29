@@ -69,6 +69,52 @@ std::array<gfx::PointF, 3> TransformTriangle(
           transform.MapPoint({triangle.p2.x, triangle.p2.y})};
 }
 
+// Creates a path on `page` using `triangle`.
+// `transform` converts the positions in `triangle` to PDF coordinates.
+//
+// The returned page object is always a `FPDF_PAGEOBJ_PATH` and never null.
+ScopedFPDFPageObject CreatePathFromTriangle(
+    FPDF_PAGE page,
+    const ink::Triangle& triangle,
+    const gfx::AxisTransform2d& transform) {
+  CHECK(page);
+
+  std::array<gfx::PointF, 3> transformed_triangle =
+      TransformTriangle(transform, triangle);
+  ScopedFPDFPageObject path(FPDFPageObj_CreateNewPath(
+      transformed_triangle[0].x(), transformed_triangle[0].y()));
+  CHECK(path);
+
+  bool result = FPDFPath_LineTo(path.get(), transformed_triangle[1].x(),
+                                transformed_triangle[1].y());
+  CHECK(result);
+  result = FPDFPath_LineTo(path.get(), transformed_triangle[2].x(),
+                           transformed_triangle[2].y());
+  CHECK(result);
+
+  return path;
+}
+
+// Appends `triangle` to `path`. `transform` is the same as the
+// CreatePathFromTriangle() parameter with the same name.
+void AppendTriangleToPath(FPDF_PAGEOBJECT path,
+                          const ink::Triangle& triangle,
+                          const gfx::AxisTransform2d& transform) {
+  CHECK(path);
+
+  std::array<gfx::PointF, 3> transformed_triangle =
+      TransformTriangle(transform, triangle);
+  bool result = FPDFPath_MoveTo(path, transformed_triangle[0].x(),
+                                transformed_triangle[0].y());
+  CHECK(result);
+  result = FPDFPath_LineTo(path, transformed_triangle[1].x(),
+                           transformed_triangle[1].y());
+  CHECK(result);
+  result = FPDFPath_LineTo(path, transformed_triangle[2].x(),
+                           transformed_triangle[2].y());
+  CHECK(result);
+}
+
 ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
                                                FPDF_PAGE page) {
   CHECK(page);
@@ -91,37 +137,19 @@ ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
       {kScreenToPageScale, -kScreenToPageScale},
       {0, FPDF_GetPageHeightF(page)});
 
-  std::array<gfx::PointF, 3> transformed_triangle =
-      TransformTriangle(transform, triangle.value());
-  ScopedFPDFPageObject path(FPDFPageObj_CreateNewPath(
-      transformed_triangle[0].x(), transformed_triangle[0].y()));
-  CHECK(path);
 
   // Outline the edges of the first triangle.
-  bool result = FPDFPath_LineTo(path.get(), transformed_triangle[1].x(),
-                                transformed_triangle[1].y());
-  CHECK(result);
-  result = FPDFPath_LineTo(path.get(), transformed_triangle[2].x(),
-                           transformed_triangle[2].y());
-  CHECK(result);
+  ScopedFPDFPageObject path =
+      CreatePathFromTriangle(page, triangle.value(), transform);
 
   // Work through the remaining triangles, which are part of the same path.
   for (triangle = triangle_iter.GetAndAdvance(); triangle.has_value();
        triangle = triangle_iter.GetAndAdvance()) {
-    transformed_triangle = TransformTriangle(transform, triangle.value());
-    result = FPDFPath_MoveTo(path.get(), transformed_triangle[0].x(),
-                             transformed_triangle[0].y());
-    CHECK(result);
-    result = FPDFPath_LineTo(path.get(), transformed_triangle[1].x(),
-                             transformed_triangle[1].y());
-    CHECK(result);
-    result = FPDFPath_LineTo(path.get(), transformed_triangle[2].x(),
-                             transformed_triangle[2].y());
-    CHECK(result);
+    AppendTriangleToPath(path.get(), triangle.value(), transform);
   }
 
-  result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
-                                /*stroke=*/false);
+  bool result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
+                                     /*stroke=*/false);
   CHECK(result);
 
   // Path completed, close and mark it with an ID.
