@@ -53,6 +53,16 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*"],
         }
+        fg[path.join(toolchain, "bin") + ":llddeps"] = {
+            "type": "glob",
+            "includes": [
+                "*lld*",
+                "*clang*",
+                "llvm-nm*",
+                "llvm-readelf*",
+                "llvm-readobj*",
+            ],
+        }
         fg[path.join(toolchain, "lib") + ":libs"] = {
             "type": "glob",
             "includes": ["*.so", "*.so.*", "*.a", "*.o"],
@@ -68,9 +78,8 @@ def __filegroups(ctx):
         fg[path.join(toolchain, "usr/bin") + ":clang"] = {
             "type": "glob",
             "includes": [
-                "clang*",
+                "*clang*",
                 "sysroot_wrapper.hardened.ccache*",
-                "x86_64-cros-linux-gnu-clang*",
             ],
         }
     sysroot = __custom_sysroot(ctx)
@@ -207,15 +216,7 @@ def __step_config(ctx, step_config):
             path.join(toolchain, "usr/lib64") + ":libs",
         ],
         path.join(toolchain, "bin/ld.lld"): [
-            path.join(toolchain, "bin/lld"),
-            path.join(toolchain, "bin/lld.elf"),
-            path.join(toolchain, "bin/llvm-nm"),
-            path.join(toolchain, "bin/llvm-nm.elf"),
-            path.join(toolchain, "bin/llvm-readelf"),
-            path.join(toolchain, "bin/llvm-readobj"),
-            path.join(toolchain, "bin/llvm-readobj.elf"),
-            path.join(toolchain, "bin/x86_64-cros-linux-gnu-clang++"),
-            path.join(toolchain, "bin/x86_64-cros-linux-gnu-ld.lld"),
+            path.join(toolchain, "bin:llddeps"),
             path.join(toolchain, "lib") + ":libs",
             path.join(toolchain, "lib64") + ":libs",
             path.join(toolchain, "usr/bin:clang"),
