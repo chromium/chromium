@@ -9,6 +9,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.ui.signin.R;
+
 /* Class containing IDs of resources for the history sync opt-in view. */
 public final class HistorySyncConfig implements Parcelable {
     public final @StringRes int titleId;
@@ -26,6 +28,11 @@ public final class HistorySyncConfig implements Parcelable {
                     return new HistorySyncConfig[size];
                 }
             };
+
+    public HistorySyncConfig() {
+        this.titleId = R.string.history_sync_title;
+        this.subtitleId = R.string.history_sync_subtitle;
+    }
 
     public HistorySyncConfig(@StringRes int titleId, @StringRes int subtitleId) {
         this.titleId = titleId;

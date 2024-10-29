@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -496,6 +497,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                         mActivity,
                         this,
                         profile,
+                        new HistorySyncConfig(),
                         mSigninAccessPoint,
                         /* showEmailInFooter= */ !mDidShowSigninStep,
                         shouldSignOutOnDecline,

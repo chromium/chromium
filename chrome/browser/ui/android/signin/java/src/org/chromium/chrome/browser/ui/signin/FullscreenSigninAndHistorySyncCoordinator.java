@@ -88,11 +88,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     private final ModalDialogManager mModalDialogManager;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
-
-    // TODO(crbug.com/372685598): Remove once implementation is complete.
-    @SuppressWarnings("UnusedVariable")
     private final FullscreenSigninAndHistorySyncConfig mConfig;
-
     private final Delegate mDelegate;
     private final boolean mDidShowSignin;
     private @ChildView int mCurrentView;
@@ -365,6 +361,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                         mActivity,
                         this,
                         mProfileSupplier.get().getOriginalProfile(),
+                        mConfig.historySyncConfig,
                         SigninAccessPoint.SIGNIN_PROMO,
                         /* showEmailInFooter= */ isSignedIn(),
                         /* shouldSignOutOnDecline= */ false,

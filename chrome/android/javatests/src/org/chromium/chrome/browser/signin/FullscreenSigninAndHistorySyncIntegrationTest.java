@@ -378,20 +378,32 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @LargeTest
     public void testFullscreenSigninCustomisation() {
+        // Create a config which only uses non-default resource values to test customisation.
+        // For instance, the default sign-in strings are used for history sync and vice versa.
         FullscreenSigninAndHistorySyncConfig config =
                 new FullscreenSigninAndHistorySyncConfig.Builder()
-                        .signinTitleId(R.string.signin_account_picker_dialog_title)
-                        .signinSubtitleId(R.string.signin_add_account_to_device)
+                        .signinTitleId(R.string.history_sync_title)
+                        .signinSubtitleId(R.string.history_sync_subtitle)
                         .signinLogoId(R.drawable.ic_globe_24dp)
+                        .historySyncTitleId(R.string.signin_fre_title)
+                        .historySyncSubtitleId(R.string.signin_fre_subtitle)
                         .build();
         launchActivity(/* shouldReplaceProgressBars= */ true, config);
 
         // Verify that the strings are corrects and that the logo is shown.
-        onView(allOf(withId(R.id.title), withText(R.string.signin_account_picker_dialog_title)))
+        onView(allOf(withId(R.id.title), withText(R.string.history_sync_title)))
                 .check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.subtitle), withText(R.string.signin_add_account_to_device)))
+        onView(allOf(withId(R.id.subtitle), withText(R.string.history_sync_subtitle)))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.signin_fre_continue_button)).perform(click());
+
+        // Verify that the history opt-in dialog is shown with custom strings.
+        onView(allOf(withId(R.id.history_sync_title), withText(R.string.signin_fre_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.history_sync_subtitle), withText(R.string.signin_fre_subtitle)))
+                .check(matches(isDisplayed()));
     }
 
     private void launchActivity() {

@@ -80,6 +80,7 @@ public class HistorySyncTest {
 
     private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
     private static final int MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS = 1000;
+    private static final HistorySyncConfig CONFIG = new HistorySyncConfig();
 
     @Mock private SyncService mSyncServiceMock;
     @Mock private HistorySyncCoordinator.HistorySyncDelegate mHistorySyncDelegateMock;
@@ -498,6 +499,7 @@ public class HistorySyncTest {
                                     mActivityTestRule.getActivity(),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
+                                    CONFIG,
                                     SIGNIN_ACCESS_POINT,
                                     false,
                                     false,
@@ -549,6 +551,7 @@ public class HistorySyncTest {
                                     mActivityTestRule.getActivity(),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
+                                    CONFIG,
                                     SIGNIN_ACCESS_POINT,
                                     false,
                                     false,
@@ -625,6 +628,7 @@ public class HistorySyncTest {
                                     mActivityTestRule.getActivity(),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
+                                    CONFIG,
                                     SIGNIN_ACCESS_POINT,
                                     showEmailInFooter,
                                     shouldSignOutOnDecline,
