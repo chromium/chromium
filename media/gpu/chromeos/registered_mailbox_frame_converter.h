@@ -12,10 +12,10 @@ namespace media {
 
 class MailboxFrameRegistry;
 
-// This class is used for converting FrameResources to gpu::Mailbox-backed
-// FrameResources. It is constructed with a MailboxFrameRegistry which it uses
-// to register frames that it converts. The frame's gpu::Mailbox can be used as
-// a handle to access the original frame in the MailboxFrameRegistry. The
+// This class is used for converting FrameResources to opaque |VideoFrame|'s. It
+// is constructed with a MailboxFrameRegistry which it uses to register frames
+// that it converts. The output VideoFrame's |tracking_token| can be used as a
+// handle to access the original frame in the MailboxFrameRegistry. The
 // MailboxFrameRegistry retains a reference to the FrameResource passed to
 // ConvertFrame() until the returned frame is destroyed.
 class RegisteredMailboxFrameConverter : public FrameResourceConverter {
@@ -37,8 +37,9 @@ class RegisteredMailboxFrameConverter : public FrameResourceConverter {
   // FrameConverter overrides
   void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override;
 
-  // A frame registry, indexed by Mailbox. A reference to the original frame is
-  // taken until the generated frame's release mailbox CB is called.
+  // A frame registry, indexed by the frame's tracking token. A reference to the
+  // original FrameResource is taken until the generated VideoFrame is
+  // destroyed.
   scoped_refptr<MailboxFrameRegistry> registry_;
 };
 

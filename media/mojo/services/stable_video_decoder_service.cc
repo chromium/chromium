@@ -29,9 +29,9 @@ gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(
       return media_frame->GetGpuMemoryBufferHandle();
     case VideoFrame::STORAGE_OPAQUE: {
       CHECK(mailbox_frame_registry);
-      CHECK(media_frame->HasOOPVDMailbox());
-      auto frame_resource =
-          mailbox_frame_registry->AccessFrame(media_frame->oopvd_mailbox());
+      CHECK(media_frame->metadata().tracking_token.has_value());
+      auto frame_resource = mailbox_frame_registry->AccessFrame(
+          *media_frame->metadata().tracking_token);
       CHECK(frame_resource);
       return frame_resource->CreateGpuMemoryBufferHandle();
     }

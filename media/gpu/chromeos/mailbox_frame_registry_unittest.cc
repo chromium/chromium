@@ -21,6 +21,7 @@ scoped_refptr<FrameResource> GenerateFrame(base::TimeDelta timestamp) {
 
   auto video_frame = VideoFrame::CreateFrame(
       kPixelFormat, kCodedSize, kVisibleRect, kNaturalSize, timestamp);
+  video_frame->metadata().tracking_token = base::UnguessableToken::Create();
   return VideoFrameResource::Create(std::move(video_frame));
 }
 
@@ -43,20 +44,22 @@ class MailboxFrameRegistryTest : public ::testing::Test {
 TEST_F(MailboxFrameRegistryTest, RegisterAccessUnregister) {
   constexpr base::TimeDelta kTimestamp = base::Microseconds(42);
   auto frame = GenerateFrame(kTimestamp);
+  const base::UnguessableToken token = frame->tracking_token();
+
   ASSERT_TRUE(!!frame);
   // Transfer the reference to |frame| to the registry.
-  const auto mailbox = registry_->RegisterFrame(std::move(frame));
+  registry_->RegisterFrame(std::move(frame));
 
   // We should be able to access the frame in the registry. Accessing the frame
   // creates a new reference in the returned value.
   scoped_refptr<const FrameResource> retrieved_frame =
-      registry_->AccessFrame(mailbox);
+      registry_->AccessFrame(token);
   ASSERT_TRUE(!!retrieved_frame);
   EXPECT_EQ(kTimestamp, retrieved_frame->timestamp());
 
   // We can even retrieve it twice (which makes another reference).
   scoped_refptr<const FrameResource> retrieved_frame_two =
-      registry_->AccessFrame(mailbox);
+      registry_->AccessFrame(token);
   ASSERT_TRUE(!!retrieved_frame_two);
   EXPECT_EQ(kTimestamp, retrieved_frame_two->timestamp());
 
@@ -71,26 +74,28 @@ TEST_F(MailboxFrameRegistryTest, RegisterAccessUnregister) {
 
   // Resetting the registry should release one reference to the frame. Now,
   // there should be exactly one reference.
-  registry_->UnregisterFrame(mailbox);
+  registry_->UnregisterFrame(token);
   EXPECT_TRUE(retrieved_frame->HasOneRef());
 
-  // After unregistering a frame with its mailbox, that mailbox cannot be used
+  // After unregistering a frame with its token, that token cannot be used
   // to access the frame again.
-  ASSERT_DEATH({ registry_->AccessFrame(mailbox); }, "");
+  ASSERT_DEATH({ registry_->AccessFrame(token); }, "");
 }
 
 // This tests registering a frame, accessing it, and the frame's lifecycle.
 TEST_F(MailboxFrameRegistryTest, CheckRegistryLifecycle) {
   constexpr base::TimeDelta kTimestamp = base::Microseconds(42);
   auto frame = GenerateFrame(kTimestamp);
+  const base::UnguessableToken token = frame->tracking_token();
+
   ASSERT_TRUE(!!frame);
   // Transfer the reference to |frame| to the registry.
-  const auto mailbox = registry_->RegisterFrame(std::move(frame));
+  registry_->RegisterFrame(std::move(frame));
 
   // We should be able to access the frame in the registry. Accessing the frame
   // creates a new reference in the returned value.
   scoped_refptr<const FrameResource> retrieved_frame =
-      registry_->AccessFrame(mailbox);
+      registry_->AccessFrame(token);
   ASSERT_TRUE(!!retrieved_frame);
   EXPECT_EQ(kTimestamp, retrieved_frame->timestamp());
 
@@ -106,10 +111,10 @@ TEST_F(MailboxFrameRegistryTest, CheckRegistryLifecycle) {
   EXPECT_TRUE(retrieved_frame->HasOneRef());
 }
 
-// The does a negative test of registering a frame with an unregistered mailbox.
+// The does a negative test of registering a frame with an unregistered token.
 TEST_F(MailboxFrameRegistryTest, InvalidFrameAccess) {
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  ASSERT_DEATH({ auto frame = registry_->AccessFrame(mailbox); }, "");
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  ASSERT_DEATH({ auto frame = registry_->AccessFrame(token); }, "");
 }
 
 }  // namespace media

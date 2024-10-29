@@ -32,35 +32,31 @@ void RegisteredMailboxFrameConverter::ConvertFrameImpl(
     return OnError(FROM_HERE, "Invalid frame.");
   }
 
-  // A reference to |frame| is stored in |registry_|. Later, a reference to
-  // |registry_| will be stored in the release mailbox callback for the
-  // generated frame, |mailbox_frame|. So, the local reference to |frame| can be
-  // safely dropped at the end of this function.
-  const gpu::Mailbox mailbox = registry_->RegisterFrame(frame);
-
-  // Creates a mailbox-backed VideoFrame with |mailbox| and |frame|'s metadata.
-  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapOOPVDMailbox(
-      frame->format(), mailbox, VideoFrame::ReleaseMailboxCB(),
-      frame->coded_size(), frame->visible_rect(), frame->natural_size(),
-      frame->timestamp());
-  if (!mailbox_frame) {
-    // Removes the reference to |frame| from |registry_|.
-    registry_->UnregisterFrame(mailbox);
-    return OnError(FROM_HERE, "Failed to create a mailbox frame.");
+  // Creates a VideoFrame that wraps |frame|'s identifying token.
+  scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapTrackingToken(
+      frame->format(), frame->tracking_token(), frame->coded_size(),
+      frame->visible_rect(), frame->natural_size(), frame->timestamp());
+  if (!video_frame) {
+    return OnError(FROM_HERE, "Failed to create VideoFrame.");
   }
 
-  mailbox_frame->set_color_space(frame->ColorSpace());
-  mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
-  mailbox_frame->set_metadata(frame->metadata());
-  // Adds a destruction observer such that when |mailbox_frame| is destroyed,
-  // the reference to |frame| is dropped from |registry_|. This lets it be
-  // returned the decoder's frame pool.
-  mailbox_frame->AddDestructionObserver(base::BindOnce(
-      [](scoped_refptr<MailboxFrameRegistry> registry,
-         const gpu::Mailbox& mailbox) { registry->UnregisterFrame(mailbox); },
-      registry_, mailbox));
+  // Merges the metadata from the frame. Use of MergeMetadataFrom() avoids
+  // overwriting |video_frame->metadata()->tracking_token|.
+  video_frame->metadata().MergeMetadataFrom(frame->metadata());
 
-  Output(std::move(mailbox_frame));
+  // A reference to |frame| is stored in |registry_|. Next, a reference to
+  // |registry_| is stored in the destruction observer of the generated
+  // frame, |video_frame|. So, the local reference to |frame| can be safely
+  // dropped at the end of this function.
+  registry_->RegisterFrame(frame);
+  video_frame->AddDestructionObserver(base::BindOnce(
+      [](scoped_refptr<MailboxFrameRegistry> registry,
+         const base::UnguessableToken& token) {
+        registry->UnregisterFrame(token);
+      },
+      registry_, frame->tracking_token()));
+
+  Output(std::move(video_frame));
 }
 
 }  // namespace media

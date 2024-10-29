@@ -4,38 +4,30 @@
 
 #include "media/gpu/chromeos/mailbox_frame_registry.h"
 
-#include "base/containers/contains.h"
-
 namespace media {
 
 MailboxFrameRegistry::MailboxFrameRegistry() = default;
 MailboxFrameRegistry::~MailboxFrameRegistry() = default;
 
-gpu::Mailbox MailboxFrameRegistry::RegisterFrame(
+void MailboxFrameRegistry::RegisterFrame(
     scoped_refptr<const FrameResource> frame) {
-  gpu::Mailbox mailbox;
-  gpu::Mailbox::Name name{};
+  CHECK(frame);
+  CHECK(!frame->tracking_token().is_empty());
   base::AutoLock auto_lock(lock_);
-  CHECK_LT(mailbox_id_counter_, std::numeric_limits<uint64_t>::max());
-  ++mailbox_id_counter_;
-  static_assert(sizeof(mailbox_id_counter_) <= sizeof(name));
-  memcpy(name, &mailbox_id_counter_, sizeof(mailbox_id_counter_));
-  mailbox.SetName(name);
-  CHECK(!mailbox.IsZero());
-  map_.emplace(mailbox, std::move(frame));
-  return mailbox;
+  map_.emplace(frame->tracking_token(), std::move(frame));
 }
 
-void MailboxFrameRegistry::UnregisterFrame(const gpu::Mailbox& mailbox) {
+void MailboxFrameRegistry::UnregisterFrame(
+    const base::UnguessableToken& token) {
   base::AutoLock auto_lock(lock_);
-  CHECK_EQ(map_.erase(mailbox), 1u);
+  CHECK_EQ(map_.erase(token), 1u);
 }
 
 scoped_refptr<const FrameResource> MailboxFrameRegistry::AccessFrame(
-    const gpu::Mailbox& mailbox) const {
+    const base::UnguessableToken& token) const {
   base::AutoLock auto_lock(lock_);
-  // Ensures that |mailbox| exists in |map_|.
-  auto it = map_.find(mailbox);
+  // Ensures that |token| exists in |map_|.
+  auto it = map_.find(token);
   CHECK(it != map_.end());
   return it->second;
 }
