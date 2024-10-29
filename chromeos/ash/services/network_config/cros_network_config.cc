@@ -3641,7 +3641,8 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
     NET_LOG(ERROR) << "CreateCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
     CellularNetworkMetricsLogger::LogCreateCustomApnResult(
-        /*success=*/false, std::move(apn));
+        CellularNetworkMetricsLogger::CreateCustomApnResult::kNetworkNotFound,
+        std::move(apn), std::nullopt);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -3672,8 +3673,13 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                   << guid << ": [" << message << ']';
             }
             std::move(callback).Run(success);
+            CellularNetworkMetricsLogger::CreateCustomApnResult result =
+                success ? CellularNetworkMetricsLogger::CreateCustomApnResult::
+                              kSuccess
+                        : CellularNetworkMetricsLogger::CreateCustomApnResult::
+                              kShillError;
             CellularNetworkMetricsLogger::LogCreateCustomApnResult(
-                success, std::move(apn));
+                result, std::move(apn), message);
           },
           network_guid, new_apn_list->Clone(), std::move(apn),
           std::move(callback)));

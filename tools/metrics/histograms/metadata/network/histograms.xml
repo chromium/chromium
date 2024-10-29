@@ -167,10 +167,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.Result"
-    enum="BooleanSuccess" expires_after="2025-02-20">
+    enum="CreateCustomApnResult" expires_after="2025-02-20">
   <owner>nikhilcn@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Records the result of an attempt to create a custom APN.</summary>
+</histogram>
+
+<histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.ShillError"
+    enum="ShillConnectResult" expires_after="2025-02-20">
+  <owner>nikhilcn@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>Records shill errors of an attempt to create a custom APN.</summary>
 </histogram>
 
 <histogram

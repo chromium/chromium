@@ -234,6 +234,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Aborted"/>
 </enum>
 
+<enum name="CreateCustomApnResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Shill error"/>
+</enum>
+
 <enum name="DnsProxy.DnsOverHttpsMode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Off"/>
