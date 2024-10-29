@@ -22,7 +22,6 @@
 #include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/common/content_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

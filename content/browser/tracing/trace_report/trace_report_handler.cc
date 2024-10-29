@@ -11,7 +11,6 @@
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

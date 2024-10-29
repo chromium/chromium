@@ -18,10 +18,6 @@ namespace switches {
 //  < {input txt config}.pbtxt > {output proto config}.pb
 const char kEnableBackgroundTracing[] = "enable-background-tracing";
 
-// Enables background tracing by passing legacy trigger rules as an argument.
-const char kEnableLegacyBackgroundTracing[] =
-    "enable-legacy-background-tracing";
-
 // Causes TRACE_EVENT flags to be recorded from startup.
 // This flag will be ignored if --trace-startup or --trace-shutdown is provided.
 const char kTraceConfigFile[]               = "trace-config-file";

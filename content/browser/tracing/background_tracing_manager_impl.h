@@ -21,7 +21,6 @@
 #include "base/timer/timer.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
-#include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
@@ -127,8 +126,6 @@ class BackgroundTracingManagerImpl
   bool SetEnabledScenarios(
       std::vector<std::string> enabled_scenarios_hashes) override;
 
-  bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,
-                         DataFiltering data_filtering) override;
   bool HasActiveScenario() override;
   void DeleteTracesInDateRange(base::Time start, base::Time end) override;
 
@@ -163,8 +160,6 @@ class BackgroundTracingManagerImpl
   void GetTraceToUpload(
       base::OnceCallback<void(std::optional<std::string>,
                               std::optional<std::string>)>) override;
-  std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
-      const std::string& trial_name) override;
   void SetSystemProfileRecorder(
       base::RepeatingCallback<std::string()> recorder) override;
 
@@ -197,7 +192,6 @@ class BackgroundTracingManagerImpl
 
   void AddMetadataGeneratorFunction();
 
-  // Called by BackgroundTracingActiveScenario
   void OnStartTracingDone();
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
@@ -215,6 +209,8 @@ class BackgroundTracingManagerImpl
                                           const std::string& scenario_name,
                                           const std::string& rule_name,
                                           const base::Token& uuid) override;
+  CONTENT_EXPORT void SetUploadLimitsForTesting(size_t upload_limit_kb,
+                                                size_t upload_limit_network_kb);
   CONTENT_EXPORT void SetPreferenceManagerForTesting(
       std::unique_ptr<PreferenceManager> preferences);
 
@@ -256,7 +252,6 @@ class BackgroundTracingManagerImpl
   size_t GetTraceUploadLimitKb() const;
 
   std::unique_ptr<TracingDelegate> delegate_;
-  std::unique_ptr<BackgroundTracingActiveScenario> legacy_active_scenario_;
   std::vector<std::unique_ptr<TracingScenario>> field_scenarios_;
   base::flat_map<std::string, std::unique_ptr<TracingScenario>>
       preset_scenarios_;

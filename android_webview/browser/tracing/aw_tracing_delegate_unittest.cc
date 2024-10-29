@@ -14,7 +14,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/pref_names.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,24 +49,6 @@ class AwTracingDelegateTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<android_webview::AwTracingDelegate> delegate_;
 };
-
-std::unique_ptr<content::BackgroundTracingConfig> CreateValidConfig() {
-  base::Value::Dict dict;
-  dict.Set("scenario_name", "TestScenario");
-  dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
-  dict.Set("custom_categories", "toplevel");
-  base::Value::List rules_list;
-
-  {
-    base::Value::Dict rules_dict;
-    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    rules_dict.Set("trigger_name", "test");
-    rules_list.Append(std::move(rules_dict));
-  }
-
-  dict.Set("configs", std::move(rules_list));
-  return content::BackgroundTracingConfig::FromDict(std::move(dict));
-}
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
   EXPECT_TRUE(delegate_->OnBackgroundTracingActive(

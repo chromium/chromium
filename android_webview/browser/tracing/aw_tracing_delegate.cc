@@ -13,7 +13,6 @@
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/pref_names.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace android_webview {
@@ -21,8 +20,6 @@ namespace android_webview {
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
   if (tracing_mode ==
-          tracing::BackgroundTracingSetupMode::kFromJsonConfigFile ||
-      tracing_mode ==
           tracing::BackgroundTracingSetupMode::kFromProtoConfigFile) {
     return true;
   }

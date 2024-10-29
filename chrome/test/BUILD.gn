@@ -47,6 +47,7 @@ import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/gl/features.gni")
@@ -1856,6 +1857,7 @@ if (!is_android) {
       "//base",
       "//base:i18n",
       "//base/allocator:buildflags",
+      "//base/test:proto_test_support",
       "//base/test:test_proto",
       "//base/test:test_support",
       "//build:branding_buildflags",
@@ -2517,6 +2519,7 @@ if (!is_android) {
       "//testing/buildbot/filters:browser_tests_filters",
       "//testing/buildbot/filters:linux_trusty_rel_browser_tests_filters",
       "//third_party/angle:includes",
+      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
       "//third_party/private_membership:private_membership_proto",
       "//third_party/shell-encryption:serialization_proto",
       "//third_party/widevine/cdm:widevine_test_license_server",
@@ -2608,6 +2611,7 @@ if (!is_android) {
       "//third_party/simplejson/",
       "//third_party/webrtc/rtc_tools/compare_videos.py",
       "//ui/webui/resources/",
+      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
     ]
 
     if (is_chromeos_ash) {

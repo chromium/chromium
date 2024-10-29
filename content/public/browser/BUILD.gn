@@ -59,8 +59,6 @@ source_set("browser_sources") {
     "background_sync_parameters.h",
     "background_sync_registration.cc",
     "background_sync_registration.h",
-    "background_tracing_config.cc",
-    "background_tracing_config.h",
     "background_tracing_manager.h",
     "blob_handle.h",
     "bluetooth_chooser.cc",

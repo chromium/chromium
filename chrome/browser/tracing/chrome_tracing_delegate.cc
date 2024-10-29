@@ -30,7 +30,6 @@
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -60,8 +59,7 @@ using tracing::BackgroundTracingStateManager;
 
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode == BackgroundTracingSetupMode::kFromJsonConfigFile ||
-      tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile) {
+  if (tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile) {
     return true;
   }
   return false;

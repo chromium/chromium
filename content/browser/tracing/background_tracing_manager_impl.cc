@@ -26,7 +26,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/variations/hashing.h"
-#include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
@@ -65,8 +64,6 @@ const base::TimeDelta kMinTimeUntilNextUpload = base::Days(7);
 // 100 per day.
 const size_t kMaxTracesPerScenario = 100;
 const base::TimeDelta kMaxTracesPerScenarioDuration = base::Days(1);
-
-const char kBackgroundTracingConfig[] = "config";
 
 // |g_background_tracing_manager| is intentionally leaked on shutdown.
 BackgroundTracingManager* g_background_tracing_manager = nullptr;
@@ -197,10 +194,6 @@ BASE_FEATURE(kBackgroundTracingDatabase,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
-const char BackgroundTracingManager::kContentTriggerConfig[] =
-    "content-trigger-config";
-
-// static
 std::unique_ptr<BackgroundTracingManager>
 BackgroundTracingManager::CreateInstance() {
   return std::make_unique<BackgroundTracingManagerImpl>();
@@ -268,9 +261,6 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
     for (auto& scenario : enabled_scenarios_) {
       scenario->Disable();
     }
-  }
-  if (legacy_active_scenario_) {
-    legacy_active_scenario_->AbortScenario();
   }
   for (auto& rule : trigger_rules_) {
     rule->Uninstall();
@@ -442,11 +432,6 @@ bool BackgroundTracingManagerImpl::RequestActivateScenario() {
   if (!trigger_rules_.empty()) {
     return false;
   }
-  if (legacy_active_scenario_ &&
-      (legacy_active_scenario_->state() !=
-       BackgroundTracingActiveScenario::State::kIdle)) {
-    return false;
-  }
 
   // If we don't have a high resolution timer available, traces will be
   // too inaccurate to be useful.
@@ -467,7 +452,6 @@ bool BackgroundTracingManagerImpl::InitializePerfettoTriggerRules(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Trigger rules can't be initialized twice.
   DCHECK(trigger_rules_.empty());
-  DCHECK_EQ(legacy_active_scenario_, nullptr);
 
   // Bail on setting up trigger rules if scenarios are already enabled.
   if (!enabled_scenarios_.empty()) {
@@ -495,7 +479,6 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     bool force_uploads,
     size_t upload_limit_kb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(legacy_active_scenario_, nullptr);
   if (!RequestActivateScenario()) {
     return false;
   }
@@ -631,58 +614,6 @@ std::vector<std::string> BackgroundTracingManagerImpl::GetEnabledScenarios()
   return scenario_hashes;
 }
 
-bool BackgroundTracingManagerImpl::SetActiveScenario(
-    std::unique_ptr<BackgroundTracingConfig> config,
-    DataFiltering data_filtering) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!config) {
-    return false;
-  }
-  std::unique_ptr<BackgroundTracingConfigImpl> config_impl(
-      static_cast<BackgroundTracingConfigImpl*>(config.release()));
-
-  if (!RequestActivateScenario()) {
-    return false;
-  }
-
-  if (config_impl->upload_limit_kb()) {
-    upload_limit_kb_ = *config_impl->upload_limit_kb();
-  }
-  if (config_impl->upload_limit_network_kb()) {
-    upload_limit_network_kb_ = *config_impl->upload_limit_network_kb();
-  }
-
-  bool requires_anonymized_data = (data_filtering != NO_DATA_FILTERING);
-  config_impl->set_requires_anonymized_data(requires_anonymized_data);
-
-  bool enable_package_name_filter =
-      (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
-  config_impl->SetPackageNameFilteringEnabled(enable_package_name_filter);
-
-  // TODO(oysteine): Retry when time_until_allowed has elapsed.
-  if (delegate_ &&
-      !delegate_->OnBackgroundTracingActive(requires_anonymized_data)) {
-    return false;
-  }
-
-  legacy_active_scenario_ = std::make_unique<BackgroundTracingActiveScenario>(
-      std::move(config_impl), delegate_.get(),
-      base::BindOnce(&BackgroundTracingManagerImpl::OnScenarioAborted,
-                     base::Unretained(this)));
-  for (EnabledStateTestObserver* observer : background_tracing_observers_) {
-    observer->OnScenarioActive(
-        legacy_active_scenario_->GetConfig()->scenario_name());
-  }
-
-  InitializeTraceReportDatabase();
-
-  legacy_active_scenario_->StartTracingIfConfigNeedsIt();
-  RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
-
-  return true;
-}
-
 void BackgroundTracingManagerImpl::InitializeTraceReportDatabase(
     bool open_in_memory) {
   std::optional<base::FilePath> database_dir;
@@ -776,7 +707,7 @@ void BackgroundTracingManagerImpl::SaveTrace(
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
-  return legacy_active_scenario_ != nullptr || active_scenario_ != nullptr;
+  return active_scenario_ != nullptr;
 }
 
 bool BackgroundTracingManagerImpl::HasTraceToUpload() {
@@ -903,21 +834,9 @@ void BackgroundTracingManagerImpl::RemoveAgentObserver(
   }
 }
 
-BackgroundTracingActiveScenario*
-BackgroundTracingManagerImpl::GetActiveScenarioForTesting() {
-  DCHECK(legacy_active_scenario_);
-  return legacy_active_scenario_.get();
-}
-
 bool BackgroundTracingManagerImpl::IsTracingForTesting() {
-  if (legacy_active_scenario_) {
-    return legacy_active_scenario_->state() ==
-           BackgroundTracingActiveScenario::State::kTracing;
-  } else if (active_scenario_) {
-    return active_scenario_->current_state() ==
-           TracingScenario::State::kRecording;
-  }
-  return false;
+  return active_scenario_->current_state() ==
+         TracingScenario::State::kRecording;
 }
 
 void BackgroundTracingManagerImpl::SaveTraceForTesting(
@@ -929,6 +848,13 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
                       /*privacy_filter_enabled*/ true,
                       /*force_upload=*/force_uploads_, uuid);
+}
+
+void BackgroundTracingManagerImpl::SetUploadLimitsForTesting(
+    size_t upload_limit_kb,
+    size_t upload_limit_network_kb) {
+  upload_limit_kb_ = upload_limit_kb;
+  upload_limit_network_kb_ = upload_limit_network_kb;
 }
 
 void BackgroundTracingManagerImpl::SetPreferenceManagerForTesting(
@@ -1008,24 +934,6 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
   }
 }
 
-std::unique_ptr<content::BackgroundTracingConfig>
-BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
-    const std::string& trial_name) {
-  std::string config_text =
-      base::GetFieldTrialParamValue(trial_name, kBackgroundTracingConfig);
-  if (config_text.empty())
-    return nullptr;
-
-  auto value = base::JSONReader::Read(config_text);
-  if (!value)
-    return nullptr;
-
-  if (!value->is_dict())
-    return nullptr;
-
-  return BackgroundTracingConfig::FromDict(std::move(*value).TakeDict());
-}
-
 void BackgroundTracingManagerImpl::SetSystemProfileRecorder(
     base::RepeatingCallback<std::string()> recorder) {
   system_profile_recorder_ = std::move(recorder);
@@ -1075,30 +983,15 @@ void BackgroundTracingManagerImpl::GenerateMetadataProto(
     perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
     bool privacy_filtering_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (legacy_active_scenario_) {
-    legacy_active_scenario_->GenerateMetadataProto(metadata);
-  } else if (active_scenario_) {
+  if (active_scenario_) {
     active_scenario_->GenerateMetadataProto(metadata);
   }
 }
 
 void BackgroundTracingManagerImpl::AbortScenarioForTesting() {
-  if (legacy_active_scenario_) {
-    legacy_active_scenario_->AbortScenario();
-  } else if (active_scenario_) {
+  if (active_scenario_) {
     active_scenario_->Abort();
   }
-}
-
-void BackgroundTracingManagerImpl::OnScenarioAborted() {
-  DCHECK(legacy_active_scenario_);
-
-  for (EnabledStateTestObserver* observer : background_tracing_observers_) {
-    observer->OnScenarioIdle(
-        legacy_active_scenario_->GetConfig()->scenario_name());
-  }
-
-  legacy_active_scenario_.reset();
 }
 
 void BackgroundTracingManagerImpl::CleanDatabase() {

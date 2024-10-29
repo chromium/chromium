@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/background_tracing_test_support.h"
 #include "content/public/test/browser_task_environment.h"

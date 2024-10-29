@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
 namespace tracing {
@@ -39,10 +38,6 @@ enum class BackgroundTracingSetupMode {
   // Background tracing config comes from a field trial.
   kFromFieldTrial,
 
-  // Background tracing config comes from a json config file passed on
-  // the command-line (for local testing).
-  kFromJsonConfigFile,
-
   // Background tracing config comes from a proto config file passed on
   // the command-line (for local testing).
   kFromProtoConfigFile,
@@ -50,10 +45,6 @@ enum class BackgroundTracingSetupMode {
   // Background tracing is disabled due to invalid command-line flags.
   kDisabledInvalidCommandLine,
 };
-
-COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool SetupBackgroundTracingFromJsonConfigFile(
-    const base::FilePath& config_file);
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetupBackgroundTracingFromProtoConfigFile(
