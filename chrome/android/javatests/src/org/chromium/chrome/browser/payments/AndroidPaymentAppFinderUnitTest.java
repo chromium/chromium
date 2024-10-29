@@ -82,6 +82,10 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
     @Mock private PaymentManifestParser mPaymentManifestParser;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private PaymentAppFactoryParams mParams;
+    @Mock private WebContents mWebContents;
+    @Mock private PaymentAppFactoryDelegate mDelegate;
 
     private WindowAndroid mWindowAndroid;
 
@@ -139,34 +143,30 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
             data.stringifiedData = "{\"key\":\"value\"}";
             methodData.put(methodName, data);
         }
-        PaymentAppFactoryParams params = Mockito.mock(PaymentAppFactoryParams.class);
-        WebContents webContents = Mockito.mock(WebContents.class);
-        TabModelSelector tabModelSelector = Mockito.mock(TabModelSelector.class);
-        TabModelSelectorSupplier.setInstanceForTesting(tabModelSelector);
-        Mockito.when(tabModelSelector.isIncognitoSelected()).thenReturn(false);
-        Mockito.when(webContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        Mockito.when(params.getWebContents()).thenReturn(webContents);
-        Mockito.when(params.getId()).thenReturn("id");
-        Mockito.when(params.getMethodData()).thenReturn(methodData);
-        Mockito.when(params.getTopLevelOrigin()).thenReturn("https://chromium.org");
-        Mockito.when(params.getPaymentRequestOrigin()).thenReturn("https://chromium.org");
-        Mockito.when(params.getCertificateChain()).thenReturn(null);
-        Mockito.when(params.getUnmodifiableModifiers())
+        TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
+        Mockito.when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        Mockito.when(mParams.getWebContents()).thenReturn(mWebContents);
+        Mockito.when(mParams.getId()).thenReturn("id");
+        Mockito.when(mParams.getMethodData()).thenReturn(methodData);
+        Mockito.when(mParams.getTopLevelOrigin()).thenReturn("https://chromium.org");
+        Mockito.when(mParams.getPaymentRequestOrigin()).thenReturn("https://chromium.org");
+        Mockito.when(mParams.getCertificateChain()).thenReturn(null);
+        Mockito.when(mParams.getUnmodifiableModifiers())
                 .thenReturn(new HashMap<String, PaymentDetailsModifier>());
-        Mockito.when(params.getMayCrawl()).thenReturn(false);
-        PaymentAppFactoryDelegate delegate = Mockito.mock(PaymentAppFactoryDelegate.class);
-        Mockito.when(delegate.getParams()).thenReturn(params);
+        Mockito.when(mParams.getMayCrawl()).thenReturn(false);
+        Mockito.when(mDelegate.getParams()).thenReturn(mParams);
         AndroidPaymentAppFinder finder =
                 new AndroidPaymentAppFinder(
                         mPaymentManifestWebDataService,
                         downloader,
                         parser,
                         packageManagerDelegate,
-                        delegate,
+                        mDelegate,
                         /* factory= */ null);
         finder.bypassIsReadyToPayServiceInTest();
         finder.findAndroidPaymentApps();
-        return delegate;
+        return mDelegate;
     }
 
     private void verifyNoAppsFound(PaymentAppFactoryDelegate delegate) {
