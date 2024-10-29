@@ -11,12 +11,16 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace views {
+class Label;
+class Textfield;
+}  // namespace views
 
 namespace autofill {
 

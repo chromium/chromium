@@ -23,6 +23,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -243,8 +244,7 @@ void CardUnmaskAuthenticationSelectionDialogView::AddFooterText() {
 void CardUnmaskAuthenticationSelectionDialogView::
     ReplaceContentWithProgressThrobber() {
   RemoveAllChildViews();
-  AddChildView(std::make_unique<ProgressBarWithTextView>(
-      controller_->GetProgressLabel()));
+  AddChildView(CreateProgressBarWithTextView(controller_->GetProgressLabel()));
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::OnChallengeOptionSelected(

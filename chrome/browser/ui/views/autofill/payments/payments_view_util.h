@@ -15,14 +15,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view.h"
 
 class GURL;
 
 namespace views {
-class Label;
-class Throbber;
 class Widget;
 }  // namespace views
 
@@ -75,23 +72,10 @@ class LegalMessageView : public views::BoxLayoutView {
 PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
     const views::Widget* widget);
 
-// TODO(crbug.com/40197696): Replace all payments' progress bar usages with
-// this. Creates a progress bar with an explanatory text below.
-class ProgressBarWithTextView : public views::BoxLayoutView {
-  METADATA_HEADER(ProgressBarWithTextView, views::BoxLayoutView)
-
- public:
-  explicit ProgressBarWithTextView(const std::u16string& progress_bar_text);
-  ~ProgressBarWithTextView() override;
-
- private:
-  // views::View:
-  void OnThemeChanged() override;
-  void AddedToWidget() override;
-
-  raw_ptr<views::Label> progress_label_ = nullptr;
-  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
-};
+// TODO(crbug.com/40197696): Replace all payments' progress bars with this.
+// Creates a progress bar with an explanatory text below.
+std::unique_ptr<views::View> CreateProgressBarWithTextView(
+    const std::u16string& progress_bar_text);
 
 }  // namespace autofill
 

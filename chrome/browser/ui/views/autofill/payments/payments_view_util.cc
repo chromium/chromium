@@ -223,33 +223,24 @@ PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
   }
 }
 
-ProgressBarWithTextView::ProgressBarWithTextView(
+std::unique_ptr<views::View> CreateProgressBarWithTextView(
     const std::u16string& progress_bar_text) {
-  SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  progress_throbber_ = AddChildView(std::make_unique<views::Throbber>());
-  progress_label_ =
-      AddChildView(std::make_unique<views::Label>(progress_bar_text));
+  views::Throbber* throbber = nullptr;
+  auto result =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_CONTROL_VERTICAL))
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .AddChildren(
+              views::Builder<views::Throbber>().CopyAddressTo(&throbber),
+              views::Builder<views::Label>()
+                  .SetText(progress_bar_text)
+                  .SetEnabledColorId(ui::kColorThrobber))
+          .Build();
+  throbber->Start();
+  return result;
 }
-
-ProgressBarWithTextView::~ProgressBarWithTextView() = default;
-
-void ProgressBarWithTextView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  // We need to ensure |progress_label_|'s color matches the color of the
-  // throbber above it.
-  progress_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorThrobber));
-}
-
-void ProgressBarWithTextView::AddedToWidget() {
-  progress_throbber_->Start();
-}
-
-BEGIN_METADATA(ProgressBarWithTextView)
-END_METADATA
 
 }  // namespace autofill

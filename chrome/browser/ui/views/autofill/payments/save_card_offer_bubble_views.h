@@ -20,6 +20,7 @@ class WebContents;
 
 namespace views {
 class Combobox;
+class Throbber;
 }  // namespace views
 
 namespace autofill {
