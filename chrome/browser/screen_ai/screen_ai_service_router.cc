@@ -9,8 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -304,20 +302,16 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
 
   auto* state_instance = ScreenAIInstallState::GetInstance();
 
-  // Callers of the service should ensure that the component is downloaded
-  // before promising it to the users and triggering its launch.
+  // To have a smooth user experience, the callers of the service should ensure
+  // that the component is downloaded before promising it to the users and
+  // triggering its launch.
   // If it is not done, the calling feature will receive no reply when it tries
-  // to use this service.
-  // If the below check fails, look in to the client feature that is triggering
-  // the service and ensure it checks for service readiness before triggering
-  // it.
+  // to use this service. However, they can detect it by using an on-disconnect
+  // handler.
   if (!state_instance->IsComponentAvailable()) {
     LOG(ERROR) << "ScreenAI service launch triggered when component is not "
                   "available.";
-    screen_ai::ScreenAIInstallState::State install_state =
-        state_instance->get_state();
-    base::debug::Alias(&install_state);
-    base::debug::DumpWithoutCrashing();
+    state_instance->DownloadComponent();
     return;
   }
 
