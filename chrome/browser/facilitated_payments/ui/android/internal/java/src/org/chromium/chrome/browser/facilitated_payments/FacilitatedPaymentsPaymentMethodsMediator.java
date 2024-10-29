@@ -62,8 +62,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Contains the logic for the facilitated payments component. It sets the state of the model and
@@ -108,7 +106,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         screenItems.add(buildAdditionalInfo());
 
-        maybeShowContinueButton(screenItems);
+        maybeShowContinueButton(screenItems, BANK_ACCOUNT);
 
         screenItems.add(0, buildHeader());
         screenItems.add(buildFooter());
@@ -134,7 +132,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             screenItems.add(new ListItem(EWALLET, model));
         }
 
-        maybeShowContinueButtonForEwallet(screenItems);
+        maybeShowContinueButton(screenItems, EWALLET);
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
@@ -306,34 +304,25 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         }
     }
 
-    private void maybeShowContinueButton(ModelList screenItems) {
-        if (StreamSupport.stream(screenItems.spliterator(), false)
-                        .filter(item -> item.type == BANK_ACCOUNT)
-                        .count()
-                != 1) {
-            return;
+    private static ListItem findOnlyItemOfType(ModelList screenItems, int targetType) {
+        // Look for exactly one match.
+        ListItem foundItem = null;
+        for (ListItem item : screenItems) {
+            if (item.type == targetType) {
+                if (foundItem != null) {
+                    return null;
+                }
+                foundItem = item;
+            }
         }
-        PropertyModel model =
-                StreamSupport.stream(screenItems.spliterator(), false)
-                        .filter(item -> item.type == BANK_ACCOUNT)
-                        .findFirst()
-                        .get()
-                        .model;
-        screenItems.add(new ListItem(CONTINUE_BUTTON, model));
+        return foundItem;
     }
 
-    private void maybeShowContinueButtonForEwallet(ModelList screenItems) {
-        List<ListItem> ewalletItems =
-                StreamSupport.stream(screenItems.spliterator(), false)
-                        .filter(item -> item.type == EWALLET)
-                        .collect(Collectors.toList());
-
-        if (ewalletItems.size() != 1) {
-            return;
+    private static void maybeShowContinueButton(ModelList screenItems, int targetType) {
+        ListItem item = findOnlyItemOfType(screenItems, targetType);
+        if (item != null) {
+            screenItems.add(new ListItem(CONTINUE_BUTTON, item.model));
         }
-
-        PropertyModel model = ewalletItems.get(0).model;
-        screenItems.add(new ListItem(CONTINUE_BUTTON, model));
     }
 
     void setInputProtectorForTesting(InputProtector inputProtector) {

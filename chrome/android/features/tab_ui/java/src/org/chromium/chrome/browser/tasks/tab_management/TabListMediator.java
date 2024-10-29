@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
@@ -114,7 +115,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -123,7 +123,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Mediator for business logic for the tab grid. This class should be initialized with a list of
@@ -2604,9 +2603,7 @@ class TabListMediator implements TabListNotificationHandler {
         getOrderOfTabsForQuickDeleteAnimation(recyclerView, tabs, bottomValuesToTabIndexes);
 
         setQuickDeleteAnimationStatusForTabIndexes(
-                bottomValuesToTabIndexes.values().stream()
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toList()),
+                CollectionUtil.flatten(bottomValuesToTabIndexes.values()),
                 QuickDeleteAnimationStatus.TAB_PREPARE);
 
         // Create the gradient drawable and prepare the animator.

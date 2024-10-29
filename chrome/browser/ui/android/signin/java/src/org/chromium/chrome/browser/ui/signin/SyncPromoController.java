@@ -826,11 +826,11 @@ public class SyncPromoController {
     static boolean existsNonGmailAccount(
             SigninManager signinManager, List<CoreAccountInfo> accounts) {
         assert accounts != null && !accounts.isEmpty();
-        return !accounts.stream()
-                .allMatch(
-                        coreAccountInfo ->
-                                signinManager
-                                        .extractDomainName(coreAccountInfo.getEmail())
-                                        .equals(GMAIL_DOMAIN));
+        for (CoreAccountInfo coreAccountInfo : accounts) {
+            if (!signinManager.extractDomainName(coreAccountInfo.getEmail()).equals(GMAIL_DOMAIN)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

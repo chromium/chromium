@@ -91,4 +91,13 @@ public final class CollectionUtil {
         }
         return ret;
     }
+
+    /** Flattens a collection of collections. */
+    public static <T> List<T> flatten(Collection<? extends Collection<T>> input) {
+        List<T> ret = new ArrayList<>();
+        for (Collection<T> inner : input) {
+            ret.addAll(inner);
+        }
+        return ret;
+    }
 }

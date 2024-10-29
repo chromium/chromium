@@ -32,12 +32,10 @@ import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /** This class creates a {@link BottomBarConfig} based on provided params. */
 public class BottomBarConfigCreator {
@@ -214,16 +212,14 @@ public class BottomBarConfigCreator {
                 // EncodedButtonIdList = {0, SHARE, CUSTOM}
                 // SupportedCustomButtonParamIds = {101 - SHARE, 105 - CUSTOM}
                 // As a result SAVE button will be added to the toolbar.
-                List<Integer> supportedCustomButtonParamIdList =
-                        new ArrayList<>(CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet());
                 List<Integer> encodedButtonIdList = getEncodedLayoutList(intentParams);
-                return supportedCustomButtonParamIdList.stream()
-                        .filter(
-                                customButtonParamId ->
-                                        encodedButtonIdList.contains(
-                                                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(
-                                                        customButtonParamId)))
-                        .collect(Collectors.toSet());
+                Set<Integer> ret = new HashSet<>();
+                for (var entry : CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.entrySet()) {
+                    if (encodedButtonIdList.contains(entry.getValue())) {
+                        ret.add(entry.getKey());
+                    }
+                }
+                return ret;
             }
         }
         return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet();
@@ -541,13 +537,13 @@ public class BottomBarConfigCreator {
             return false;
         }
 
-        long validButtonListSize =
-                buttonIdList.stream().filter(BottomBarConfigCreator::isValidButtonId).count();
-
-        if (validButtonListSize != buttonIdList.size()) {
-            Log.e(TAG, "The list has non-valid button ids");
-            return false;
+        for (int buttonId : buttonIdList) {
+            if (!isValidButtonId(buttonId)) {
+                Log.e(TAG, "The list has non-valid button ids");
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -638,16 +634,14 @@ public class BottomBarConfigCreator {
     }
 
     private static List<Integer> getEncodedListFromString(String encodedConfig) {
-        List<Integer> result;
+        List<Integer> result = new ArrayList<>();
 
         try {
-            result =
-                    Arrays.stream(encodedConfig.split(","))
-                            .mapToInt(Integer::parseInt)
-                            .boxed()
-                            .collect(Collectors.toList());
+            for (String value : encodedConfig.split(",")) {
+                result.add(Integer.parseInt(value));
+            }
         } catch (NumberFormatException e) {
-            result = Collections.emptyList();
+            result.clear();
         }
 
         return result;

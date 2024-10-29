@@ -46,8 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 
 /**
  * This is the second part of the controller of the keyboard accessory component. It is responsible
@@ -396,14 +394,13 @@ class KeyboardAccessoryMediator
     }
 
     private @StringRes int getCaptionIdForCredManEntry() {
-        Predicate<BarItem> hasWebAuthnCredential =
-                barItem ->
-                        barItem.getViewType() == BarItem.Type.SUGGESTION
-                                && ((AutofillBarItem) barItem).getSuggestion().getSuggestionType()
-                                        == SuggestionType.WEBAUTHN_CREDENTIAL;
-        return StreamSupport.stream(mModel.get(BAR_ITEMS).spliterator(), true)
-                        .anyMatch(hasWebAuthnCredential)
-                ? R.string.more_passkeys
-                : R.string.select_passkey;
+        for (var barItem : mModel.get(BAR_ITEMS)) {
+            if (barItem.getViewType() == BarItem.Type.SUGGESTION
+                    && ((AutofillBarItem) barItem).getSuggestion().getSuggestionType()
+                            == SuggestionType.WEBAUTHN_CREDENTIAL) {
+                return R.string.more_passkeys;
+            }
+        }
+        return R.string.select_passkey;
     }
 }
