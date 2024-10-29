@@ -368,7 +368,7 @@ void AIAssistant::CountPromptTokens(
   *request.add_current_prompts() =
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
 
-  session_->GetContextSizeInTokens(
+  session_->GetExecutionInputSizeInTokens(
       *context_->MaybeFormatRequest(request),
       base::BindOnce(
           [](mojo::Remote<blink::mojom::AIAssistantCountPromptTokensClient>

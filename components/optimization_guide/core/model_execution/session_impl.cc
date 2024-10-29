@@ -987,21 +987,18 @@ void SessionImpl::GetSizeInTokens(
   GetOrCreateSession().GetSizeInTokens(std::move(input), std::move(callback));
 }
 
-void SessionImpl::GetContextSizeInTokens(
-    const google::protobuf::MessageLite& request,
+void SessionImpl::GetExecutionInputSizeInTokens(
+    const google::protobuf::MessageLite& request_metadata,
     OptimizationGuideModelSizeInTokenCallback callback) {
-  if (!ShouldUseOnDeviceModel()) {
-    std::move(callback).Run(0);
-    return;
-  }
-  auto input = on_device_state_->opts.adapter->ConstructInputString(
-      request, /*want_input_context=*/true);
-  if (!input) {
-    std::move(callback).Run(0);
-    return;
-  }
-  GetOrCreateSession().GetSizeInTokens(std::move(input->input),
-                                       std::move(callback));
+  GetSizeInTokensInternal(request_metadata, std::move(callback),
+                          /*want_input_context=*/false);
+}
+
+void SessionImpl::GetContextSizeInTokens(
+    const google::protobuf::MessageLite& request_metadata,
+    OptimizationGuideModelSizeInTokenCallback callback) {
+  GetSizeInTokensInternal(request_metadata, std::move(callback),
+                          /*want_input_context=*/true);
 }
 
 const proto::Any& SessionImpl::GetOnDeviceFeatureMetadata() const {
@@ -1010,6 +1007,24 @@ const proto::Any& SessionImpl::GetOnDeviceFeatureMetadata() const {
 
 const SamplingParams SessionImpl::GetSamplingParams() const {
   return sampling_params_;
+}
+
+void SessionImpl::GetSizeInTokensInternal(
+    const google::protobuf::MessageLite& request,
+    OptimizationGuideModelSizeInTokenCallback callback,
+    bool want_input_context) {
+  if (!ShouldUseOnDeviceModel()) {
+    std::move(callback).Run(0);
+    return;
+  }
+  auto input = on_device_state_->opts.adapter->ConstructInputString(
+      request, want_input_context);
+  if (!input) {
+    std::move(callback).Run(0);
+    return;
+  }
+  GetOrCreateSession().GetSizeInTokens(std::move(input->input),
+                                       std::move(callback));
 }
 
 }  // namespace optimization_guide

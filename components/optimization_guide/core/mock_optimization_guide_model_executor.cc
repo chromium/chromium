@@ -61,6 +61,10 @@ void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
       .WillByDefault([impl](const auto& input, auto callback) {
         impl->GetSizeInTokens(input, std::move(callback));
       });
+  ON_CALL(*this, GetExecutionInputSizeInTokens)
+      .WillByDefault([impl](const auto& input, auto callback) {
+        impl->GetExecutionInputSizeInTokens(input, std::move(callback));
+      });
   ON_CALL(*this, GetContextSizeInTokens)
       .WillByDefault([impl](const auto& input, auto callback) {
         impl->GetContextSizeInTokens(input, std::move(callback));

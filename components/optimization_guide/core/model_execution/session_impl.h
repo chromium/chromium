@@ -156,6 +156,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void GetSizeInTokens(
       const std::string& text,
       OptimizationGuideModelSizeInTokenCallback callback) override;
+  void GetExecutionInputSizeInTokens(
+      const google::protobuf::MessageLite& request_metadata,
+      OptimizationGuideModelSizeInTokenCallback callback) override;
   void GetContextSizeInTokens(
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
@@ -345,6 +348,13 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Sends the success completion callback and destroys any state.
   void SendSuccessCompletionCallback(
       const proto::Any& success_response_metadata);
+
+  // Helper function to get the size of request in tokens with boolean flag to
+  // control if we are extracting the context or the execution text.
+  void GetSizeInTokensInternal(
+      const google::protobuf::MessageLite& request,
+      OptimizationGuideModelSizeInTokenCallback callback,
+      bool want_input_context);
 
   const ModelBasedCapabilityKey feature_;
   ExecuteRemoteFn execute_remote_fn_;

@@ -341,6 +341,13 @@ class AIAssistantTest : public AITestUtils::AITestBase {
             [](const std::string& text,
                optimization_guide::OptimizationGuideModelSizeInTokenCallback
                    callback) { std::move(callback).Run(text.size()); });
+    ON_CALL(session, GetExecutionInputSizeInTokens(_, _))
+        .WillByDefault(
+            [](const google::protobuf::MessageLite& request_metadata,
+               optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                   callback) {
+              std::move(callback).Run(ToString(request_metadata).size());
+            });
     ON_CALL(session, GetContextSizeInTokens(_, _))
         .WillByDefault(
             [](const google::protobuf::MessageLite& request_metadata,
