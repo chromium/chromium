@@ -61,6 +61,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
     policy_capture_path_ = policy_capture_path;
   }
   int num_capture_image_attempts() const { return num_capture_image_attempts_; }
+  int num_multimodal_search_requests() const {
+    return num_multimodal_search_requests_;
+  }
 
   // Resets |is_allowed_by_policy_| and |is_allowed_by_dlp_| back to true.
   void ResetAllowancesToDefault();
@@ -165,6 +168,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   // Counter to track number of times `OnCaptureImageAttempted()` is called, for
   // testing purposes.
   int num_capture_image_attempts_ = 0;
+  int num_multimodal_search_requests_ = 0;
   base::ScopedTempDir fake_drive_fs_mount_path_;
   base::ScopedTempDir fake_android_files_path_;
   base::ScopedTempDir fake_linux_files_path_;

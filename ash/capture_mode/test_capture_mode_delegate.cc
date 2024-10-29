@@ -242,6 +242,7 @@ void TestCaptureModeDelegate::SendMultimodalSearch(
     const gfx::Rect& region,
     const std::string& text,
     ash::OnSearchUrlFetchedCallback callback) {
+  ++num_multimodal_search_requests_;
   std::move(callback).Run(GURL("kTestUrl"));
 }
 

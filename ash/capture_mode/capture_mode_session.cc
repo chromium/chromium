@@ -1015,6 +1015,13 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
+SearchResultsPanel* CaptureModeSession::GetSearchResultsPanel() const {
+  return search_results_panel_widget_
+             ? views::AsViewClass<SearchResultsPanel>(
+                   search_results_panel_widget_->GetContentsView())
+             : nullptr;
+}
+
 views::Widget* CaptureModeSession::GetCaptureModeBarWidget() {
   return capture_mode_bar_widget_.get();
 }
@@ -1399,8 +1406,7 @@ void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   }
   // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
   // region selection and/or session is started.
-  auto* search_results_panel = views::AsViewClass<SearchResultsPanel>(
-      search_results_panel_widget_->GetContentsView());
+  auto* search_results_panel = GetSearchResultsPanel();
   search_results_panel->SetSearchBoxImage(image);
   search_results_panel->search_results_view()->Navigate(url);
 }
@@ -1499,6 +1505,12 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     if (folder_selection_dialog_controller_->ShouldConsumeEvent(event)) {
       event->StopPropagation();
     }
+    return;
+  }
+
+  // If the results panel is visible and focused, let it handle key events.
+  if (auto* search_results_panel = GetSearchResultsPanel();
+      search_results_panel && search_results_panel->HasFocus()) {
     return;
   }
 

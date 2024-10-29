@@ -52,6 +52,7 @@ class CaptureRegionOverlayController;
 class CaptureWindowObserver;
 class CursorSetter;
 class RecordingTypeMenuView;
+class SearchResultsPanel;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -151,6 +152,9 @@ class ASH_EXPORT CaptureModeSession
   // the `current_root_`, potentially moving the bar to a new display if
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
+
+  // Returns the search results panel, or nullptr if none exists.
+  SearchResultsPanel* GetSearchResultsPanel() const;
 
   // BaseCaptureModeSession:
   views::Widget* GetCaptureModeBarWidget() override;

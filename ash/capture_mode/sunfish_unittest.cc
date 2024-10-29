@@ -49,6 +49,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -735,6 +736,57 @@ TEST_F(SunfishTest, SearchActionButton) {
   EXPECT_TRUE(session->search_results_panel_widget());
 
   // TODO(b/373896226): Determine whether to end capture mode session.
+}
+
+// Tests that the search box sends multimodal search requests.
+TEST_F(SunfishTest, SearchBoxTextfield) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_EQ(0, test_delegate->num_multimodal_search_requests());
+
+  // Test in both Default and Sunfish behavior.
+  for (const BehaviorType behavior_type :
+       {BehaviorType::kDefault, BehaviorType::kSunfish}) {
+    if (behavior_type == BehaviorType::kDefault) {
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+    } else {
+      controller->StartSunfishSession();
+    }
+    VerifyActiveBehavior(behavior_type);
+    auto* session =
+        static_cast<CaptureModeSession*>(controller->capture_mode_session());
+
+    // Open the search results panel.
+    SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                            /*release_mouse=*/true, /*verify_region=*/true);
+    if (behavior_type == BehaviorType::kDefault) {
+      CaptureModeSessionTestApi session_test_api(session);
+      ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+      LeftClickOn(session_test_api.GetActionButtons()[0]);
+    }
+
+    WaitForImageCapturedForSearch();
+    auto* widget = session->search_results_panel_widget();
+    ASSERT_TRUE(widget);
+
+    // Click on the search box.
+    auto* search_results_panel =
+        views::AsViewClass<SearchResultsPanel>(widget->GetContentsView());
+    ASSERT_TRUE(search_results_panel);
+    views::Textfield* textfield = search_results_panel->GetSearchBoxTextfield();
+    LeftClickOn(textfield);
+    EXPECT_TRUE(textfield->HasFocus());
+
+    // Type and press Enter. Test it makes a multimodal search.
+    const int num_requests_before_search =
+        test_delegate->num_multimodal_search_requests();
+    PressAndReleaseKey(ui::VKEY_A);
+    EXPECT_EQ(u"a", textfield->GetText());
+    PressAndReleaseKey(ui::VKEY_RETURN);
+    EXPECT_EQ(num_requests_before_search + 1,
+              test_delegate->num_multimodal_search_requests());
+  }
 }
 
 class ScannerTest : public AshTestBase {

@@ -12,6 +12,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 
+namespace views {
+class Textfield;
+}  // namespace views
+
 namespace ash {
 
 class AshWebView;
@@ -31,9 +35,13 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   static std::unique_ptr<views::Widget> CreateWidget(aura::Window* const root);
 
   AshWebView* search_results_view() const { return search_results_view_; }
+  views::Textfield* GetSearchBoxTextfield() const;
 
   // Sets the search box image thumbnail.
   void SetSearchBoxImage(const gfx::ImageSkia& image);
+
+  // SystemPanelView:
+  bool HasFocus() const override;
 
  private:
   // Owned by the views hierarchy.

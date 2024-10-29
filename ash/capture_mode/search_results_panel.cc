@@ -94,8 +94,7 @@ class SunfishSearchBoxView : public views::View,
       return false;
     }
 
-    // TODO(crbug.com/375670205): Debug why `kKeyPressed` doesn't work.
-    if (event.type() == ui::EventType::kKeyReleased &&
+    if (event.type() == ui::EventType::kKeyPressed &&
         event.key_code() == ui::VKEY_RETURN) {
       const std::u16string& text = sender->GetText();
       CaptureModeController::Get()->SendMultimodalSearch(
@@ -107,6 +106,8 @@ class SunfishSearchBoxView : public views::View,
   }
 
  private:
+  friend class SearchResultsPanel;
+
   // Owned by the views hierarchy.
   raw_ptr<views::ImageView> image_view_;
   raw_ptr<views::Textfield> textfield_;
@@ -164,8 +165,27 @@ std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget(
   return widget;
 }
 
+views::Textfield* SearchResultsPanel::GetSearchBoxTextfield() const {
+  return search_box_view_->textfield_;
+}
+
 void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
   search_box_view_->SetImage(image);
+}
+
+bool SearchResultsPanel::HasFocus() const {
+  // Returns true if `this` or any of its child views has focus.
+  const views::FocusManager* focus_manager = GetFocusManager();
+  if (!focus_manager) {
+    return false;
+  }
+
+  const views::View* focused_view = focus_manager->GetFocusedView();
+  if (!focused_view) {
+    return false;
+  }
+
+  return Contains(focused_view);
 }
 
 BEGIN_METADATA(SearchResultsPanel)
