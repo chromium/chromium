@@ -1673,10 +1673,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     return response;
 
   PhysicalAxes physical = kPhysicalAxesNone;
-  // TODO(crbug.com/1378237): Need to keep the broken behavior of querying the
-  // inline-axis by default to avoid even worse behavior before devtools-
-  // frontend catches up. Change value here to kLogicalAxesNone.
-  LogicalAxes logical = kLogicalAxesInline;
+  LogicalAxes logical = kLogicalAxesNone;
 
   if (physical_axes.has_value()) {
     if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Horizontal) {
