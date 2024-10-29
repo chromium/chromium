@@ -158,6 +158,7 @@ public abstract class ChromeFeatureList {
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ALWAYS_BLOCK_3PCS_INCOGNITO = "AlwaysBlock3pcsIncognito";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
+    public static final String ANDROID_APP_INTEGRATION_V2 = "AndroidAppIntegrationV2";
     public static final String ANDROID_APP_INTEGRATION_WITH_FAVICON =
             "AndroidAppIntegrationWithFavicon";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
@@ -554,6 +555,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
+    public static final CachedFlag sAndroidAppIntegrationV2 =
+            newCachedFlag(ANDROID_APP_INTEGRATION_V2, false);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
             newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, false);
     public static final CachedFlag sAndroidBottomToolbar =
@@ -733,6 +736,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAccountReauthenticationRecentTimeWindow,
                     sAndroidAppIntegration,
+                    sAndroidAppIntegrationV2,
                     sAndroidAppIntegrationWithFavicon,
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,

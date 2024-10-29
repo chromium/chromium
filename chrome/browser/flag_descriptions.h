@@ -70,6 +70,9 @@ extern const char kAllowInsecureLocalhostDescription[];
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
+extern const char kAndroidAppIntegrationV2Name[];
+extern const char kAndroidAppIntegrationV2Description[];
+
 extern const char kAndroidAppIntegrationWithFaviconName[];
 extern const char kAndroidAppIntegrationWithFaviconDescription[];
 

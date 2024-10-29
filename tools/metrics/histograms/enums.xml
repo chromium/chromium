@@ -20178,6 +20178,7 @@ from previous Chrome versions.
   <int value="23556595" label="MarkHttpAs:enabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
   <int value="24559850" label="WinPdfUseFontProxy:enabled"/>
+  <int value="25271976" label="AndroidAppIntegrationV2:enabled"/>
   <int value="25864495" label="StarterPackExpansion:disabled"/>
   <int value="26632553"
       label="NtpHistoryClustersModuleUseModelRanking:enabled"/>
@@ -23303,6 +23304,7 @@ from previous Chrome versions.
   <int value="1295688198" label="ClipboardHistoryRefresh:enabled"/>
   <int value="1295887301" label="ShowNtpAtStartupAndroid:disabled"/>
   <int value="1296474231" label="SafetyHubAndroidSurvey:disabled"/>
+  <int value="1296512860" label="AndroidAppIntegrationV2:disabled"/>
   <int value="1296661698" label="CrOSLateBootMediaDynamicCgroup:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>

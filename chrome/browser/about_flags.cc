@@ -6224,6 +6224,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},
 
+    {"android-app-integration-v2",
+     flag_descriptions::kAndroidAppIntegrationV2Name,
+     flag_descriptions::kAndroidAppIntegrationV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegrationV2)},
+
     {"android-app-integration-with-favicon",
      flag_descriptions::kAndroidAppIntegrationWithFaviconName,
      flag_descriptions::kAndroidAppIntegrationWithFaviconDescription,
