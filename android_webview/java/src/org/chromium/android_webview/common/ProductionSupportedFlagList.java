@@ -241,6 +241,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                 "Enables various improvements to handling expiration dates."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PARSING_WITH_SHARED_LABELS,
+                "Splits Autofill labels among consecutive fields for better heuristic"
+                        + " predictions."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
                 "Rationalizes city-and-number and city-code fields to the "
                         + "correct trunk-prefix types."),
