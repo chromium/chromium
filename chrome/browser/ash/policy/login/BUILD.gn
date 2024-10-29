@@ -50,6 +50,7 @@ static_library("test_support") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//components/policy/proto",
