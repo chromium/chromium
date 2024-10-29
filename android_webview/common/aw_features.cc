@@ -166,12 +166,6 @@ BASE_FEATURE(kWebViewUnreducedProductVersion,
              "WebViewUnreducedProductVersion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable raster in wide color gamut for apps that use webview in a wide color
-// gamut activity.
-BASE_FEATURE(kWebViewWideColorGamutSupport,
-             "WebViewWideColorGamutSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Control the default behaviour for the XRequestedWith header.
 // TODO(crbug.com/40286009): enable by default after M120 branch point.
 BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
