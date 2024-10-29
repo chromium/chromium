@@ -112,9 +112,11 @@ suite('NetworkNetworkApnlistTest', function() {
     selectEl.dispatchEvent(new Event('change'));
     await flushAsync();
 
-    const propertyList = apnlist.$$('network-property-list-mojo');
-    const button = apnlist.$$('#saveButton');
-    const attachApnToggle = apnlist.$$('#attachApnControl');
+    const propertyList =
+        apnlist.shadowRoot.querySelector('network-property-list-mojo');
+    const button = apnlist.shadowRoot.querySelector('#saveButton');
+    const attachApnToggle =
+        apnlist.shadowRoot.querySelector('#attachApnControl');
 
     assertFalse(selectEl.disabled);
     assertFalse(propertyList.disabled);
@@ -141,12 +143,13 @@ suite('NetworkNetworkApnlistTest', function() {
   test('Attach APN does not occur', async function() {
     setCustomApnListWithAttachValue('');
     const attachApnToggle =
-        apnlist.$$('#otherApnProperties').querySelector('#attachApnControl');
+        apnlist.shadowRoot.querySelector('#otherApnProperties')
+            .querySelector('#attachApnControl');
     assertEquals(false, attachApnToggle.checked);
 
     // Expect that attach APN will not occur
     const expectedNoAttachEvent = apnEventToPromise('');
-    apnlist.$$('#saveButton').click();
+    apnlist.shadowRoot.querySelector('#saveButton').click();
     await expectedNoAttachEvent;
   });
 
@@ -154,12 +157,13 @@ suite('NetworkNetworkApnlistTest', function() {
     const attachApnStr = OncMojo.USE_ATTACH_APN_NAME;
     setCustomApnListWithAttachValue(attachApnStr);
     const attachApnToggle =
-        apnlist.$$('#otherApnProperties').querySelector('#attachApnControl');
+        apnlist.shadowRoot.querySelector('#otherApnProperties')
+            .querySelector('#attachApnControl');
     assertEquals(true, attachApnToggle.checked);
 
     // Expect that attach APN will occur
     const expectedAttachEvent = apnEventToPromise(OncMojo.USE_ATTACH_APN_NAME);
-    apnlist.$$('#saveButton').click();
+    apnlist.shadowRoot.querySelector('#saveButton').click();
     await expectedAttachEvent;
   });
 });
