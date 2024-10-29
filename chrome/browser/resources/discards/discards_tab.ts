@@ -233,8 +233,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
     switch (state) {
       case LifecycleUnitState.ACTIVE:
         return pageLifecycleStateFromVisibilityAndFocus();
-      case LifecycleUnitState.THROTTLED:
-        return pageLifecycleStateFromVisibilityAndFocus() + ' (throttled)';
       case LifecycleUnitState.FROZEN:
         return 'frozen';
       case LifecycleUnitState.DISCARDED:

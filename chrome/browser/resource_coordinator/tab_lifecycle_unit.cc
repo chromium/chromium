@@ -76,9 +76,6 @@ bool IsValidStateChange(LifecycleUnitState from,
           return false;
       }
     }
-    case LifecycleUnitState::THROTTLED: {
-      return false;
-    }
     case LifecycleUnitState::FROZEN: {
       switch (to) {
         // The renderer notifies the browser that the page was unfrozen after
