@@ -276,6 +276,10 @@ const base::FeatureParam<int> kNonMerchantWideBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
     kNonMerchantWideBehaviorParam, 2};
 
+BASE_FEATURE(kDiscountDialogAutoPopupCounterfactual,
+             "DiscountDialogAutoPopupCounterfactual",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDiscountsUiRefactor,
              "DiscountsUiRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);

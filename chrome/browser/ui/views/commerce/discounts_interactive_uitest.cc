@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
@@ -130,7 +131,7 @@ class DiscountsInteractiveTest : public InteractiveBrowserTest,
             .InSecondsFSinceUnixEpoch();
     discount_info_ = commerce::CreateValidDiscountInfo(
         detail, terms_and_conditions, value_in_text, discount_code, /*id=*/1,
-        /*is_merchant_wide=*/true, expiry_time_sec,
+        /*is_merchant_wide=*/false, expiry_time_sec,
         test_discount_cluster_type_);
 
     ShoppingService()->SetResponseForGetDiscountInfoForUrl({discount_info_});
@@ -489,4 +490,67 @@ IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
       EnsureNotPresent(kDiscountsBubbleMainPageId),
       PressButton(kSubpageBackButtonElementId),
       EnsurePresent(kDiscountsBubbleMainPageId));
+}
+
+class DiscountDialogAutoPopupCounterfactual : public DiscountsInteractiveTest {
+ public:
+  DiscountDialogAutoPopupCounterfactual() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {commerce::kDiscountDialogAutoPopupBehaviorSetting,
+         {{commerce::kMerchantWideBehaviorParam, "2"},
+          {commerce::kNonMerchantWideBehaviorParam, "1"}}}};
+
+    if (GetParam().enabled_feature.has_value()) {
+      is_counterfactual_enabled = true;
+      enabled_features.emplace_back(GetParam().enabled_feature.value());
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  bool is_counterfactual_enabled = false;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DiscountDialogAutoPopupCounterfactual,
+    testing::Values(
+        TestData{"CounterfactualDisabled",
+                 commerce::DiscountClusterType::kOfferLevel},
+        TestData{"CounterfactualEnabled",
+                 commerce::DiscountClusterType::kOfferLevel,
+                 std::make_optional<base::test::FeatureRefAndParams>(
+                     {commerce::kDiscountDialogAutoPopupCounterfactual, {}})}),
+    GetTestParamName);
+
+IN_PROC_BROWSER_TEST_P(DiscountDialogAutoPopupCounterfactual,
+                       RecordDiscountAutoPopupEligibleButSuppressed) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_Discounts::kEntryName);
+  ASSERT_EQ(0u, entries.size());
+
+  RunTestSequence(
+      InstrumentTab(kShoppingTab),
+      NavigateWebContents(kShoppingTab,
+                          embedded_test_server()->GetURL(kShoppingURL)),
+      WaitForShow(kDiscountsChipElementId),
+      WaitForViewProperty(kDiscountsChipElementId, DiscountsIconView,
+                          IsLabelExpanded, true),
+      If([&]() { return is_counterfactual_enabled; },
+         EnsureNotPresent(kDiscountsBubbleDialogId),
+         WaitForShow(kDiscountsBubbleDialogId)),
+      Do([&]() {
+        entries = test_ukm_recorder.GetEntriesByName(
+            ukm::builders::Shopping_Discounts::kEntryName);
+        ASSERT_EQ(1u, entries.size());
+        test_ukm_recorder.ExpectEntryMetric(
+            entries[0],
+            ukm::builders::Shopping_Discounts::
+                kAutoPopupEligibleButSuppressedName,
+            is_counterfactual_enabled ? 1 : 0);
+      }));
 }

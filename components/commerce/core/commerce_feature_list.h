@@ -113,6 +113,7 @@ enum class DiscountDialogAutoPopupBehavior {
 BASE_DECLARE_FEATURE(kEnableDiscountInfoApi);
 BASE_DECLARE_FEATURE(kEnableDiscountInfoApiRegionLaunched);
 BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting);
+BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupCounterfactual);
 extern const char kHistoryClustersBehaviorParam[];
 extern const base::FeatureParam<int> kHistoryClustersBehavior;
 extern const char kMerchantWideBehaviorParam[];

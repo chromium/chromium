@@ -20328,6 +20328,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.Discounts">
+  <owner>meiliang@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping-eng@google.com</owner>
+  <summary>
+    Recorded when a user navigates to a product details page with an available
+    discount that is eligible for auto popup. This gives us the true auto popup
+    population.
+  </summary>
+  <metric name="AutoPopupEligibleButSuppressed" enum="Boolean">
+    <summary>
+      Whether the eligible popup bubble was suppressed. This is controlled by a
+      feature flag. Logging the feature flag value to create two groups for data
+      analysis.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.FormSubmitted">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
