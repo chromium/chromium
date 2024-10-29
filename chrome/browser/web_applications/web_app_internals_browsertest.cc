@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
   auto* handler = OpenWebAppInternals();
 
-  const GURL& update_manifest_url = update_server_mixin_.GetUpdateManifestUrl(
+  GURL update_manifest_url = update_server_mixin_.GetUpdateManifestUrl(
       test::GetDefaultEd25519WebBundleId());
   base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
       um_future;
@@ -265,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
       install_future;
   auto params = ::mojom::InstallFromBundleUrlParams::New();
   params->web_bundle_url = web_bundle_url;
-  params->update_info = ::mojom::UpdateInfo::New(update_manifest_url);
+  params->update_info = ::mojom::UpdateInfo::New(
+      update_manifest_url, UpdateChannel::default_channel().ToString());
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());
@@ -280,6 +282,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
     EXPECT_EQ(iwa.isolation_data()->version(), base::Version("1.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+    EXPECT_EQ(iwa.isolation_data()->update_channel(),
+              UpdateChannel::default_channel());
   }
 
   // Run an update check on the same manifest.
@@ -307,6 +311,52 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
     EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+    EXPECT_EQ(iwa.isolation_data()->update_channel(),
+              UpdateChannel::default_channel());
+  }
+
+  // Set the channel to "beta" and verify that other fields of IsolationData
+  // stay intact.
+  auto beta_channel = *UpdateChannel::Create("beta");
+  {
+    base::test::TestFuture<bool> set_channel_future;
+    handler->SetUpdateChannelForIsolatedWebApp(
+        app_id, beta_channel.ToString(), set_channel_future.GetCallback());
+    EXPECT_TRUE(set_channel_future.Get());
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+    EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
+  }
+
+  // Now add new entries with v2.1.0 for the `beta` channel and v2.2.0 for the
+  // `default` channel and force an update check.
+  update_server_mixin_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.1.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair()),
+      /*update_channels=*/{{beta_channel}});
+  update_server_mixin_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.2.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair()));
+
+  // The update logic must pick up the v2.1.0 for `beta` instead of a higher
+  // v2.2.0 for `default`.
+  {
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.1.0 successful"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.1.0"));
+    EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+    EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
   }
 }
 

@@ -565,3 +565,11 @@ void WebAppInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
   iwa_handler_.UpdateManifestInstalledIsolatedWebApp(app_id,
                                                      std::move(callback));
 }
+
+void WebAppInternalsHandler::SetUpdateChannelForIsolatedWebApp(
+    const webapps::AppId& app_id,
+    const std::string& update_channel,
+    SetUpdateChannelForIsolatedWebAppCallback callback) {
+  iwa_handler_.SetUpdateChannelForIsolatedWebApp(app_id, update_channel,
+                                                 std::move(callback));
+}

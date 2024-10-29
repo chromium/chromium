@@ -160,10 +160,15 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
     }
 
     update_requests_.emplace(app_id, std::move(callback));
-    // TODO(b/371521930): introduce channel switching for dev mode apps.
+
+    // Some older installs might not have the `update_channel` field set -- in
+    // this case we fall back to the `default` channel.
     provider_->iwa_update_manager().DiscoverUpdatesForApp(
         url_info, *isolation_data.update_manifest_url(),
-        UpdateChannel::default_channel(), /*dev_mode=*/true);
+        /*update_channel=*/
+        isolation_data.update_channel().value_or(
+            UpdateChannel::default_channel()),
+        /*dev_mode=*/true);
   }
 
   // IsolatedWebAppUpdateManager::Observer:
@@ -449,7 +454,10 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
                   app.isolation_data()->version().GetString(),
                   /*update_info=*/isolation_data.update_manifest_url()
                       ? ::mojom::UpdateInfo::New(
-                            *isolation_data.update_manifest_url())
+                            *isolation_data.update_manifest_url(),
+                            isolation_data.update_channel()
+                                .value_or(UpdateChannel::default_channel())
+                                .ToString())
                       : nullptr));
             },
             [&](const IwaSourceProxy& source) {
@@ -544,6 +552,43 @@ void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
                                                          std::move(callback));
 }
 
+void IwaInternalsHandler::SetUpdateChannelForIsolatedWebApp(
+    const webapps::AppId& app_id,
+    const std::string& update_channel,
+    Handler::SetUpdateChannelForIsolatedWebAppCallback callback) {
+  auto* provider = WebAppProvider::GetForWebApps(profile());
+  if (!provider) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  provider->scheduler().ScheduleCallbackWithResult(
+      "WebAppInternalsHandler::SetUpdateChannel",
+      web_app::AppLockDescription(app_id),
+      base::BindOnce(
+          [](const webapps::AppId& app_id, const std::string& update_channel,
+             AppLock& lock, base::Value::Dict& debug_value) {
+            web_app::ScopedRegistryUpdate update =
+                lock.sync_bridge().BeginUpdate();
+
+            web_app::WebApp* web_app = update->UpdateApp(app_id);
+            auto channel = UpdateChannel::Create(update_channel);
+            if (!web_app || !web_app->isolation_data() ||
+                !web_app->isolation_data()->update_manifest_url() ||
+                !channel.has_value()) {
+              return false;
+            }
+
+            web_app->SetIsolationData(
+                web_app::IsolationData::Builder(*web_app->isolation_data())
+                    .SetUpdateChannel(std::move(*channel))
+                    .Build());
+
+            return true;
+          },
+          app_id, update_channel),
+      std::move(callback), /*arg_for_shutdown=*/false);
+}
+
 void IwaInternalsHandler::DownloadWebBundleToFile(
     const GURL& web_bundle_url,
     ::mojom::UpdateInfoPtr update_info,
@@ -624,9 +669,19 @@ void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(
                   return ::mojom::InstallIsolatedWebAppResult::NewError(
                       "Something went wrong while setting the update info.");
                 }
+
+                auto update_channel =
+                    UpdateChannel::Create(update_info->update_channel);
+                if (!update_channel.has_value()) {
+                  return ::mojom::InstallIsolatedWebAppResult::NewError(
+                      "Something went wrong while setting the update "
+                      "channel.");
+                }
+
                 web_app->SetIsolationData(
                     web_app::IsolationData::Builder(*web_app->isolation_data())
                         .SetUpdateManifestUrl(update_info->update_manifest_url)
+                        .SetUpdateChannel(std::move(*update_channel))
                         .Build());
 
                 auto success = ::mojom::InstallIsolatedWebAppSuccess::New();

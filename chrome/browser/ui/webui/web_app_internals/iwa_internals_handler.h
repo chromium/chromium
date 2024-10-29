@@ -74,6 +74,11 @@ class IwaInternalsHandler {
       const webapps::AppId& app_id,
       Handler::UpdateManifestInstalledIsolatedWebAppCallback callback);
 
+  void SetUpdateChannelForIsolatedWebApp(
+      const webapps::AppId& app_id,
+      const std::string& update_channel,
+      Handler::SetUpdateChannelForIsolatedWebAppCallback callback);
+
  private:
   class IsolatedWebAppDevBundleSelectListener;
   class IwaManifestInstallUpdateHandler;

@@ -20,6 +20,7 @@ union InstallIsolatedWebAppResult {
 // Describes how a manifest-installed app should perform update checks.
 struct UpdateInfo {
   url.mojom.Url update_manifest_url;
+  string update_channel;
 };
 
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
@@ -98,6 +99,11 @@ interface WebAppInternalsHandler {
   // Triggers an update for a manifest-installed dev mode app.
   // Returns a string containing a success or error message.
   UpdateManifestInstalledIsolatedWebApp(string app_id) => (string result);
+
+  // Sets `web_app.isolation_data.update_channel` to `update_channel` for this
+  // `app_id`.
+  SetUpdateChannelForIsolatedWebApp(string app_id, string update_channel) =>
+      (bool success);
 
   // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
   // Returns a string containing a success or error message.

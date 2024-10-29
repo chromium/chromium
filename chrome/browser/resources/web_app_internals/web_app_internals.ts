@@ -31,6 +31,9 @@ const iwaDevUpdateManifestUrl =
 const iwaDevUpdateManifestDialog =
     getRequiredElement('iwa-update-manifest-dialog') as HTMLDialogElement;
 
+const iwaSwitchChannelDialog =
+    getRequiredElement('iwa-switch-channel-input-dialog') as HTMLDialogElement;
+
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
  * @param origin Origin to convert
@@ -247,6 +250,8 @@ async function iwaDevFetchUpdateManifest() {
           webBundleUrl: selectedVersionEntry.webBundleUrl,
           updateInfo: {
             updateManifestUrl,
+            // TODO(crbug.com/373396075): Allow selecting the channel.
+            updateChannel: 'default',
           },
         })).result;
     if (installResult.success) {
@@ -270,6 +275,49 @@ getRequiredElement('iwa-update-manifest-dialog-close')
     .addEventListener('click', () => {
       getRequiredElement('iwa-dev-install-message').innerText = '';
       iwaDevUpdateManifestDialog.close();
+    });
+
+async function showSwitchChannelDialog(
+    appId: string, name: string, messageDiv: HTMLDivElement) {
+  const switchButton = getRequiredElement('iwa-switch-channel-dialog-switch') as
+      HTMLButtonElement;
+
+  const updateChannel =
+      getRequiredElement('iwa-update-channel') as HTMLInputElement;
+
+  switchButton.addEventListener('click', async () => {
+    iwaSwitchChannelDialog.close();
+
+    const channel = updateChannel.value;
+    messageDiv.innerText =
+        `Switching update channel for ${name} to ${channel}...`;
+    const {success}: {success: boolean} =
+        await webAppInternalsHandler.setUpdateChannelForIsolatedWebApp(
+            appId,
+            channel,
+        );
+
+    updateChannel.value = '';
+    if (success) {
+      messageDiv.innerText = `Successfully switched the update channel of ${
+          name} to ${channel}; refreshing the apps...`;
+      setTimeout(async () => {
+        refreshDevModeAppList(/*showPlaceholder*/ false);
+      }, 2000);
+    } else {
+      messageDiv.innerText =
+          `Something went wrong while switching the update channel of ${
+              name} to ${channel}.`;
+    }
+  }, {once: true});
+
+  iwaSwitchChannelDialog.showModal();
+}
+
+getRequiredElement('iwa-switch-channel-dialog-close')
+    .addEventListener('click', () => {
+      getRequiredElement('iwa-dev-install-message').innerText = '';
+      iwaSwitchChannelDialog.close();
     });
 
 iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
@@ -353,7 +401,7 @@ function describeIsolatedWebApp(
     updateInfo: UpdateInfo|null): string {
   if (updateInfo) {
     return `${name} (${installedVersion}) → ${
-        updateInfo.updateManifestUrl.url}`;
+        updateInfo.updateManifestUrl.url} (${updateInfo.updateChannel})`;
   }
   return `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
 }
@@ -363,9 +411,11 @@ function showIwaSection(containerId: string) {
   getRequiredElement('iwa-container').style.display = '';
 }
 
-async function refreshDevModeAppList() {
+async function refreshDevModeAppList(showPlaceholder: boolean = true) {
   const devModeUpdatesMessage = getRequiredElement('iwa-dev-updates-message');
-  devModeUpdatesMessage.innerText = 'Loading...';
+  if (showPlaceholder) {
+    devModeUpdatesMessage.innerText = 'Loading...';
+  }
   const devModeApps: IwaDevModeAppInfo[] =
       (await webAppInternalsHandler.getIsolatedWebAppDevModeAppInfo()).apps;
   const devModeAppList = getRequiredElement('iwa-dev-updates-app-list');
@@ -416,6 +466,16 @@ async function refreshDevModeAppList() {
           updateBtn.disabled = false;
         }
       };
+
+      if (updateInfo) {
+        const switchChannelBtn = document.createElement('button');
+        switchChannelBtn.className = 'iwa-dev-switch-channel-button';
+        switchChannelBtn.innerText = 'Switch channel';
+        switchChannelBtn.onclick = async () => {
+          showSwitchChannelDialog(appId, name, updateMsg);
+        };
+        li.appendChild(switchChannelBtn);
+      }
 
       li.appendChild(updateBtn);
       li.appendChild(updateMsg);

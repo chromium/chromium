@@ -70,6 +70,10 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void UpdateManifestInstalledIsolatedWebApp(
       const webapps::AppId& app_id,
       UpdateManifestInstalledIsolatedWebAppCallback callback) override;
+  void SetUpdateChannelForIsolatedWebApp(
+      const webapps::AppId& app_id,
+      const std::string& update_channel,
+      SetUpdateChannelForIsolatedWebAppCallback callback) override;
 
  private:
   const raw_ref<content::WebUI> web_ui_;
