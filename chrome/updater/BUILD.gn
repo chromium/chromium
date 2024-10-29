@@ -67,9 +67,13 @@ if (is_win || is_mac || is_linux) {
   action("generate_updater_license") {
     script = "//tools/licenses/licenses.py"
     _license_path = "$target_gen_dir/UNTRIMMED_LICENSE.chromium_updater"
+    depfile = "$target_gen_dir/$target_name.d"
+
     args = [
       "license_file",
       rebase_path(_license_path, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
       "--gn-target",
       "//chrome/updater:updater",
       "--gn-out-dir",
