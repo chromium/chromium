@@ -60,6 +60,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 import java.util.Optional;
@@ -575,6 +576,13 @@ public class LocationBarCoordinator
      */
     public String getUrlBarTextWithoutAutocomplete() {
         return mUrlCoordinator.getTextWithoutAutocomplete();
+    }
+
+    /**
+     * @see UrlBarCoordinator#getViewRectProvider()
+     */
+    public ViewRectProvider getUrlBarViewRectProvider() {
+        return mUrlCoordinator.getViewRectProvider();
     }
 
     /**

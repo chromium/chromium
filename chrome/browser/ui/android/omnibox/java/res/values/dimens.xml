@@ -17,6 +17,7 @@ found in the LICENSE file.
 
     <!-- URL bar -->
     <dimen name="url_bar_vertical_padding">@dimen/location_bar_vertical_margin</dimen>
+    <dimen name="url_bar_vertical_margin">3dp</dimen>
 
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>

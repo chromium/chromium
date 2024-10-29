@@ -192,6 +192,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -792,7 +793,8 @@ public class ToolbarManager
                         /* context= */ mActivity,
                         mIsCustomTab,
                         mOmniboxFocusStateSupplier,
-                        () -> getUrlBarTextWithoutAutocomplete());
+                        () -> getUrlBarTextWithoutAutocomplete(),
+                        () -> getUrlBarViewRectProvider());
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 
@@ -1594,6 +1596,13 @@ public class ToolbarManager
         assert mLocationBar instanceof LocationBarCoordinator
                 : "LocationBar should be an instance of LocationBarCoordinator.";
         return ((LocationBarCoordinator) mLocationBar).getUrlBarTextWithoutAutocomplete();
+    }
+
+    /** Returns the {@link ViewRectProvider} for the UrlBar. */
+    public ViewRectProvider getUrlBarViewRectProvider() {
+        assert mLocationBar instanceof LocationBarCoordinator
+                : "LocationBar should be an instance of LocationBarCoordinator.";
+        return ((LocationBarCoordinator) mLocationBar).getUrlBarViewRectProvider();
     }
 
     /** Enable the bottom controls. */

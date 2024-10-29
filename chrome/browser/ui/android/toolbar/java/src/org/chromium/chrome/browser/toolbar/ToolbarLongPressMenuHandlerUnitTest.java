@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
@@ -59,15 +60,23 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.UiWidgetFactory;
+import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ToolbarLongPressMenuHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
 public final class ToolbarLongPressMenuHandlerUnitTest {
+    private static final int URLBAR_LEFT = 100;
+    private static final int URLBAR_TOP = 20;
+    private static final int URLBAR_RIGHT = 300;
+    private static final int URLBAR_BOTTOM = 150;
+    private static final int LONG_PRESS_MENU_WIDTH = 80;
+    private static final int LONG_PRESS_MENU_HEIGHT = 30;
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -76,6 +85,8 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Mock private UrlBar mUrlBar;
     @Mock private ViewGroup mContentViewGroup;
+    @Mock private BasicListMenu mBasicListMenu;
+    @Mock private ViewRectProvider mViewRectProvider;
     @Mock UiWidgetFactory mMockUiWidgetFactory;
     @Spy PopupWindow mSpyPopupWindow;
 
@@ -99,8 +110,20 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         mOmniboxFocusStateSupplier.set(false);
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
-                        mActivity, false, mOmniboxFocusStateSupplier, () -> mUrlString);
+                        mActivity,
+                        false,
+                        mOmniboxFocusStateSupplier,
+                        () -> mUrlString,
+                        () -> mViewRectProvider);
         mUrlBar.setOnLongClickListener(mToolbarLongPressMenuHandler.getOnLongClickListener());
+
+        doReturn(new Rect(URLBAR_LEFT, URLBAR_TOP, URLBAR_RIGHT, URLBAR_BOTTOM))
+                .when(mViewRectProvider)
+                .getRect();
+
+        doReturn(new int[] {LONG_PRESS_MENU_WIDTH, LONG_PRESS_MENU_HEIGHT})
+                .when(mBasicListMenu)
+                .getMenuDimensions();
 
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
@@ -162,7 +185,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testbuildMenuItemsWhenToolbarOnTop() {
-        ModelList list = mToolbarLongPressMenuHandler.buildMenuItems();
+        ModelList list = mToolbarLongPressMenuHandler.buildMenuItems(true);
 
         assertEquals(
                 R.string.toolbar_move_to_the_bottom,
@@ -182,8 +205,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testbuildMenuItemsWhenToolbarOnBottom() {
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false);
-        ModelList list = mToolbarLongPressMenuHandler.buildMenuItems();
+        ModelList list = mToolbarLongPressMenuHandler.buildMenuItems(false);
 
         assertEquals(
                 R.string.toolbar_move_to_the_top,
@@ -230,5 +252,37 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
         assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
         assertEquals(mUrlString, clipCaptor.getValue().getItemAt(0).getText());
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateShowLocationOnTop() {
+        int[] location = mToolbarLongPressMenuHandler.calculateShowLocation(true, mBasicListMenu);
+        assertEquals(
+                URLBAR_LEFT
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                location[0]);
+        assertEquals(URLBAR_BOTTOM, location[1]);
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateShowLocationOnBottom() {
+        int[] location = mToolbarLongPressMenuHandler.calculateShowLocation(false, mBasicListMenu);
+        assertEquals(
+                URLBAR_LEFT
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                location[0]);
+        assertEquals(URLBAR_TOP - LONG_PRESS_MENU_HEIGHT, location[1]);
     }
 }

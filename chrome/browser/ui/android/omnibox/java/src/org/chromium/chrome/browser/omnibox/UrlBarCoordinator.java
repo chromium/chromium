@@ -23,6 +23,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -225,6 +226,11 @@ public class UrlBarCoordinator
     @Override
     public String getTextWithoutAutocomplete() {
         return mUrlBar.getTextWithoutAutocomplete();
+    }
+
+    /** Returns the {@link ViewRectProvider} for the UrlBar. */
+    public ViewRectProvider getViewRectProvider() {
+        return new ViewRectProvider(mUrlBar);
     }
 
     /**
