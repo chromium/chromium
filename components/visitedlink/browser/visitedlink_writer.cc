@@ -179,7 +179,7 @@ VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
   memcpy(this->salt, salt, LINK_SALT_LENGTH);
 }
 
-VisitedLinkWriter::LoadFromFileResult::~LoadFromFileResult() {}
+VisitedLinkWriter::LoadFromFileResult::~LoadFromFileResult() = default;
 
 // TableBuilder ---------------------------------------------------------------
 
