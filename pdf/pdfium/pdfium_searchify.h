@@ -64,6 +64,8 @@ FS_MATRIX CalculateWordMoveMatrixForTesting(
     bool word_is_rtl);
 gfx::Rect GetSpaceRectForTesting(const gfx::Rect& rect1,
                                  const gfx::Rect& rect2);
+std::vector<screen_ai::mojom::WordBox> GetWordsAndSpacesForTesting(
+    const std::vector<screen_ai::mojom::WordBoxPtr>& words);
 
 }  // namespace chrome_pdf
 

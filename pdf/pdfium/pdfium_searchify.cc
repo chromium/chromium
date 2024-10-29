@@ -173,6 +173,12 @@ gfx::Rect GetSpaceRect(const gfx::Rect& rect1, const gfx::Rect& rect2) {
     return gfx::Rect();
   }
 
+  // Return empty if the two rects intersect.
+  gfx::Rect r1 = rect1;
+  if (r1.InclusiveIntersect(rect2)) {
+    return gfx::Rect();
+  }
+
   // Compute the angle of text flow from `rect1` to `rect2`, to decide where the
   // space rectangle should be.
   gfx::Vector2dF vec(rect2.CenterPoint() - rect1.CenterPoint());
@@ -217,6 +223,37 @@ gfx::Rect GetSpaceRect(const gfx::Rect& rect1, const gfx::Rect& rect2) {
   height = std::max(1, height);
 
   return gfx::Rect(x, y, width, height);
+}
+
+// If OCR has recognized a space character between two consecutive words,
+// inserts a new word between them to represent it, and returns the vector of
+// words and spaces.
+std::vector<screen_ai::mojom::WordBox> GetWordsAndSpaces(
+    const std::vector<screen_ai::mojom::WordBoxPtr>& words) {
+  std::vector<screen_ai::mojom::WordBox> words_and_spaces;
+
+  size_t original_word_count = words.size();
+  if (original_word_count) {
+    words_and_spaces.reserve(original_word_count * 2 - 1);
+  }
+
+  for (size_t i = 0; i < original_word_count; i++) {
+    auto& current_word = words[i];
+    words_and_spaces.push_back(*current_word);
+    if (current_word->has_space_after && i + 1 < original_word_count) {
+      gfx::Rect space_rect =
+          GetSpaceRect(current_word->bounding_box, words[i + 1]->bounding_box);
+      if (!space_rect.IsEmpty()) {
+        words_and_spaces.push_back(screen_ai::mojom::WordBox(
+            /*word=*/" ", /*dictionary_word=*/false, current_word->language,
+            /*has_space_after=*/false, space_rect,
+            current_word->bounding_box_angle, current_word->direction,
+            /*confidence=*/1));
+      }
+    }
+  }
+
+  return words_and_spaces;
 }
 
 }  // namespace
@@ -322,27 +359,8 @@ std::vector<FPDF_PAGEOBJECT> AddTextOnImage(
         ConvertToPdfOrigin(line->baseline_box, line->baseline_box_angle,
                            image_pixel_size.height());
 
-    // If OCR has recognized a space character between two consecutive words,
-    // insert a new word between them to represent it.
-    size_t original_word_count = line->words.size();
-    std::vector<screen_ai::mojom::WordBox> words_and_spaces;
-    words_and_spaces.reserve(original_word_count * 2 + 1);
-
-    for (size_t i = 0; i < original_word_count; i++) {
-      auto& current_word = line->words[i];
-      words_and_spaces.push_back(*current_word);
-      if (current_word->has_space_after && i + 1 < original_word_count) {
-        gfx::Rect space_rect = GetSpaceRect(current_word->bounding_box,
-                                            line->words[i + 1]->bounding_box);
-        if (!space_rect.IsEmpty()) {
-          words_and_spaces.push_back(screen_ai::mojom::WordBox(
-              /*word=*/" ", /*dictionary_word=*/false, current_word->language,
-              /*has_space_after=*/false, space_rect,
-              current_word->bounding_box_angle, current_word->direction,
-              /*confidence=*/1));
-        }
-      }
-    }
+    std::vector<screen_ai::mojom::WordBox> words_and_spaces =
+        GetWordsAndSpaces(line->words);
 
     for (const auto& word : words_and_spaces) {
       if (word.bounding_box.IsEmpty()) {
@@ -381,6 +399,11 @@ FS_MATRIX CalculateWordMoveMatrixForTesting(
 gfx::Rect GetSpaceRectForTesting(const gfx::Rect& rect1,  // IN-TEST
                                  const gfx::Rect& rect2) {
   return GetSpaceRect(rect1, rect2);
+}
+
+std::vector<screen_ai::mojom::WordBox> GetWordsAndSpacesForTesting(  // IN-TEST
+    const std::vector<screen_ai::mojom::WordBoxPtr>& words) {
+  return GetWordsAndSpaces(words);
 }
 
 ScopedFPDFFont CreateFont(FPDF_DOCUMENT document) {
