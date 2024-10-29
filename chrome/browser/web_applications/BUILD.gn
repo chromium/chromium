@@ -1118,6 +1118,7 @@ source_set("web_applications_browser_tests") {
 
   if (is_chromeos) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/login:test_support",
       "//chrome/browser/ash/policy/core",
@@ -1126,6 +1127,7 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/ui/ash/login",
+      "//chrome/browser/web_applications/ash/migrations:browser_tests",
     ]
   }
 }

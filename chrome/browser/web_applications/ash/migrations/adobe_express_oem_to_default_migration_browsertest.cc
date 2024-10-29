@@ -65,20 +65,17 @@ IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
   ASSERT_EQ(app_id, ash::kAdobeExpressAppId);
 
   auto* provider = WebAppProvider::GetForWebApps(profile());
-  ASSERT_EQ(provider->registrar_unsafe().GetAppById(app_id)->GetSources(),
-            WebAppManagementTypes({WebAppManagement::Type::kUserInstalled,
-                                   WebAppManagement::Type::kSync}));
+  ASSERT_TRUE(provider->registrar_unsafe().GetAppById(app_id)->HasOnlySource(
+      WebAppManagement::Type::kSync));
 }
 
 // Verifies that the user-installed app is not changed on next startup.
 IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
                        DoNotMigrateUserInstall) {
   auto* provider = WebAppProvider::GetForWebApps(profile());
-  ASSERT_EQ(provider->registrar_unsafe()
-                .GetAppById(ash::kAdobeExpressAppId)
-                ->GetSources(),
-            WebAppManagementTypes({WebAppManagement::Type::kUserInstalled,
-                                   WebAppManagement::Type::kSync}));
+  ASSERT_TRUE(provider->registrar_unsafe()
+                  .GetAppById(ash::kAdobeExpressAppId)
+                  ->HasOnlySource(WebAppManagement::Type::kSync));
 }
 
 }  // namespace
