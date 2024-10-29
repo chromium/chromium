@@ -13,9 +13,9 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
-import type {MahiUntrustedPageHandlerRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
+import type {MahiUntrustedServiceRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
-import {connectToMahiHandler, connectToMantisUntrustedService, connectToOcrUntrustedService, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
+import {connectToMahiUntrustedService, connectToMantisUntrustedService, connectToOcrUntrustedService, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -300,7 +300,7 @@ parentMessagePipe.registerHandler(
 parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
 let ocrUntrustedService: OcrUntrustedServiceRemote;
-let mahiUntrustedPageHandler: MahiUntrustedPageHandlerRemote;
+let mahiUntrustedService: MahiUntrustedServiceRemote;
 let mantisUntrustedService: MantisMediaAppUntrustedServiceRemote;
 
 ocrCallbackRouter.requestBitmap.addListener(async (requestedPageId: string) => {
@@ -379,20 +379,20 @@ const DELEGATE: ClientApiDelegate = {
   notifyFileOpened(name?: string, type?: string) {
     // Close any existing pipes when opening a new file.
     ocrUntrustedService?.$.close();
-    mahiUntrustedPageHandler?.$.close();
+    mahiUntrustedService?.$.close();
     mantisUntrustedService?.$.close();
 
     if (type === 'application/pdf') {
       ocrUntrustedService = connectToOcrUntrustedService();
-      mahiUntrustedPageHandler = connectToMahiHandler(name);
+      mahiUntrustedService = connectToMahiUntrustedService(name);
     }
-    if (loadTimeData.getBoolean(MANTIS_FLAG) && type != null &&
+    if (loadTimeData.getBoolean(MANTIS_FLAG) && type !== undefined &&
         MANTIS_ALLOWED_TYPES.includes(type)) {
       mantisUntrustedService = connectToMantisUntrustedService();
     }
   },
   notifyFilenameChanged(name: string) {
-    mahiUntrustedPageHandler?.onPdfFileNameUpdated(name);
+    mahiUntrustedService?.onPdfFileNameUpdated(name);
   },
   async extractPreview(file: Blob) {
     try {
@@ -442,16 +442,16 @@ const DELEGATE: ClientApiDelegate = {
     }
 
     if (!hasText) {
-      mahiUntrustedPageHandler?.$.close();
+      mahiUntrustedService?.$.close();
     } else {
-      await mahiUntrustedPageHandler?.onPdfLoaded();
+      await mahiUntrustedService?.onPdfLoaded();
     }
   },
   async onPdfContextMenuShow(anchor: RectF, selectedText: string) {
-    await mahiUntrustedPageHandler?.onPdfContextMenuShow(anchor, selectedText);
+    await mahiUntrustedService?.onPdfContextMenuShow(anchor, selectedText);
   },
   async onPdfContextMenuHide() {
-    await mahiUntrustedPageHandler?.onPdfContextMenuHide();
+    await mahiUntrustedService?.onPdfContextMenuHide();
   },
 };
 

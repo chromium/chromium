@@ -11,19 +11,20 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // chrome-untrusted:// frame) communicating directly with the browser.
 interface UntrustedPageHandlerFactory {
   // Exposes OCR related APIs between the untrusted frame and the browser via
-  // |receiver| and |page|.
+  // `receiver` and `page`.
   CreateOcrUntrustedService(
       pending_receiver<OcrUntrustedService> receiver,
       pending_remote<OcrUntrustedPage> page);
 
-  // Create a page handler for the untrusted frame exposing Mahi related APIs
-  // between it and the browser via `receiver` and `page`.
-  CreateMahiUntrustedPageHandler(
-      pending_receiver<MahiUntrustedPageHandler> receiver,
+  // Exposes Mahi related APIs between the untrusted frame and the browser via
+  // `receiver` and `page`.
+  CreateMahiUntrustedService(
+  pending_receiver<MahiUntrustedService> receiver,
       pending_remote<MahiUntrustedPage> page,
       string file_name);
 
-  // Create an untrusted service exposing Mantis related APIs via `receiver`.
+  // Exposes Mantis related APIs betwen the untrusted frame and the browser via
+  // `receiver`.
   CreateMantisUntrustedService(
       pending_receiver<MantisMediaAppUntrustedService> receiver);
 };
@@ -96,7 +97,7 @@ interface OcrUntrustedPage {
 
 // Interface implemented in the browser process and called by the
 // chrome-untrusted:// Media App page.
-interface MahiUntrustedPageHandler {
+interface MahiUntrustedService {
   // Notifies when media app finishes loading a PDF file. This may be used for
   // Mahi refresh availability.
   OnPdfLoaded();

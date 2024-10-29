@@ -40,8 +40,8 @@ class MediaAppGuestUIDelegate {
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) = 0;
 
-  virtual void CreateAndBindMahiHandler(
-      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+  virtual void CreateAndBindMahiUntrustedService(
+      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name,
@@ -83,9 +83,8 @@ class MediaAppGuestUI
   void CreateOcrUntrustedService(
       mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedService> receiver,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) override;
-  void CreateMahiUntrustedPageHandler(
-      mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
-          receiver,
+  void CreateMahiUntrustedService(
+      mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedService> receiver,
       mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name) override;
   void CreateMantisUntrustedService(

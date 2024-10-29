@@ -14,8 +14,8 @@ static_library("media_app") {
     "mahi_media_app_content_manager_impl.h",
     "mahi_media_app_events_proxy_impl.cc",
     "mahi_media_app_events_proxy_impl.h",
-    "mahi_media_app_handler_factory.cc",
-    "mahi_media_app_handler_factory.h",
+    "mahi_media_app_service_factory.cc",
+    "mahi_media_app_service_factory.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

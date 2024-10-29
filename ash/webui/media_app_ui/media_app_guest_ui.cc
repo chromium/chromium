@@ -292,12 +292,11 @@ void MediaAppGuestUI::CreateOcrUntrustedService(
       std::move(receiver), std::move(page));
 }
 
-void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
-        receiver,
+void MediaAppGuestUI::CreateMahiUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedService> receiver,
     mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name) {
-  delegate_->CreateAndBindMahiHandler(
+  delegate_->CreateAndBindMahiUntrustedService(
       std::move(receiver), std::move(page), file_name,
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
 }

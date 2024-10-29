@@ -35,8 +35,8 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page)
       override;
 
-  void CreateAndBindMahiHandler(
-      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+  void CreateAndBindMahiUntrustedService(
+      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name,

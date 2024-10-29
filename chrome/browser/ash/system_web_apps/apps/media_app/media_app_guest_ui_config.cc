@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/mahi/media_app/mahi_media_app_handler_factory.h"
+#include "chrome/browser/ash/mahi/media_app/mahi_media_app_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -106,10 +106,9 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
 
-  // TODO(b:356518781): rename the boolean to e.g. pdfContextMenu.
-  // If true, show a context menu on right click on PDF surface. And if Mahi
-  // message pipe is connected (see `CreateAndBindMahiHandler` below), also show
-  // the Mahi card for the user to use HelpMeRead feature for the PDF.
+  // If true and the Mahi message pipe is connected (see
+  // `CreateAndBindMahiUntrustedService` below), shows the entry point for Mahi
+  // when the user triggers the right click context menu.
   source->AddBoolean(
       "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
 
@@ -133,16 +132,16 @@ void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrUntrustedService(
                                          std::move(receiver), std::move(page));
 }
 
-void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiHandler(
-    mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiUntrustedService(
+    mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedService>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name,
     aura::Window* window) {
   if (chromeos::MahiManager::Get() &&
       chromeos::MahiManager::Get()->IsEnabled()) {
-    ash::MahiMediaAppHandlerFactory::GetInstance()
-        ->CreateMahiMediaAppUntrustedHandler(
+    ash::MahiMediaAppServiceFactory::GetInstance()
+        ->CreateMahiMediaAppUntrustedService(
             std::move(receiver), std::move(page), file_name, window);
   }
 }
