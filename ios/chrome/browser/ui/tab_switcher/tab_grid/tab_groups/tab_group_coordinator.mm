@@ -11,6 +11,7 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/data_sharing/model/features.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -366,20 +367,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
 
   // Determine if the tab group is shared and get the collaboration ID.
-  BOOL isShared = NO;
-  NSString* savedCollabID = nil;
   tab_groups::TabGroupSyncService* syncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  if (syncService) {
-    std::optional<tab_groups::SavedTabGroup> savedTabGroup =
-        syncService->GetGroup(_tabGroup->tab_group_id());
-    isShared = savedTabGroup.has_value() &&
-               savedTabGroup->collaboration_id().has_value();
-    if (isShared) {
-      savedCollabID =
-          base::SysUTF8ToNSString(savedTabGroup->collaboration_id().value());
-    }
-  }
+  NSString* savedCollabID =
+      tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
+  BOOL isShared = savedCollabID != nil;
 
   // Initialize the `_viewController`.
   _viewController = [[TabGroupViewController alloc]

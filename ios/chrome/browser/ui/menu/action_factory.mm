@@ -592,6 +592,21 @@
   return action;
 }
 
+- (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(IsTabGroupInGridEnabled());
+  CHECK(IsTabGroupSyncEnabled());
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP)
+                      image:image
+                       type:MenuActionType::ManageSharedTabGroup
+                      block:block];
+  return action;
+}
+
 #pragma mark - Private
 
 // Creates a UIAction instance for closing a tab with a provided `title`.

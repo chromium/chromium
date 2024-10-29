@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -286,6 +287,31 @@ bool IsSaveableNavigation(web::NavigationContext* navigation_context) {
   }
 
   return IsURLValidForSavedTabGroups(navigation_context->GetUrl());
+}
+
+bool IsTabGroupShared(const TabGroup* tab_group,
+                      TabGroupSyncService* sync_service) {
+  BOOL shared = false;
+  if (sync_service && tab_group) {
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        sync_service->GetGroup(tab_group->tab_group_id());
+    shared =
+        saved_group.has_value() && saved_group->collaboration_id().has_value();
+  }
+  return shared;
+}
+
+NSString* GetTabGroupCollabID(const TabGroup* tab_group,
+                              TabGroupSyncService* sync_service) {
+  if (sync_service && tab_group) {
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        sync_service->GetGroup(tab_group->tab_group_id());
+    if (saved_group.has_value() &&
+        saved_group->collaboration_id().has_value()) {
+      return base::SysUTF8ToNSString(saved_group->collaboration_id().value());
+    }
+  }
+  return nil;
 }
 
 }  // namespace utils

@@ -196,6 +196,9 @@ class TabGroup;
 // Creates a UIAction instance for closing a tab group.
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for managing the sharing of a tab group.
+- (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance whose title and icon are configured for showing
 // details, which will invoke the given `block` when executed.
 - (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block;

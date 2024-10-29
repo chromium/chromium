@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/memory/raw_ptr.h"
 #import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -77,6 +79,15 @@ bool ShouldUpdateHistory(web::NavigationContext* navigation_context);
 // Whether the destination URL from a NavigationContext can be saved and
 // can be reloaded later on another machine.
 bool IsSaveableNavigation(web::NavigationContext* navigation_context);
+
+// Whether the given `tab_group` is shared or not.
+bool IsTabGroupShared(const TabGroup* tab_group,
+                      TabGroupSyncService* sync_service);
+
+// Returns the collabID of the given `tab_group` if it's shared.
+// Otherwise returns nil.
+NSString* GetTabGroupCollabID(const TabGroup* tab_group,
+                              TabGroupSyncService* sync_service);
 
 }  // namespace utils
 }  // namespace tab_groups

@@ -10,7 +10,10 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/data_sharing/model/features.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -314,13 +317,20 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       [[ActionFactory alloc] initWithScenario:scenario];
 
   const TabGroup* group = cell.itemIdentifier.tabGroupItem.tabGroup;
+  CHECK(group);
   base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
   BOOL incognito = self.incognito;
-  CHECK(group);
+  BOOL isShared = tab_groups::utils::IsTabGroupShared(
+      group, tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
+  if (isShared) {
+    [menuElements addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                    [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
+                  }]];
+  }
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
                   [weakSelf.contextMenuDelegate editTabGroup:weakGroup
                                                    incognito:incognito];
