@@ -36,3 +36,17 @@
 # crbug.com/375710620
 -org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigation
 -org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testNoSpuriousResizeEventOverlaysContent
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testResizesVisualMetaTag
+
+# crbug.com/376100658
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_Complete
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_UserAbort
+
+# crbug.com/376168546
+-org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.*
+
+# crbug.com/376169912
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testFakeSearchBoxWidth
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testMvtLayoutHorizontalMargin
