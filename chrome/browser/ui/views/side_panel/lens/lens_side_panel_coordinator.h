@@ -24,7 +24,6 @@ class SidePanelCoordinator;
 // LensUnifiedSidePanelEntry.
 class LensSidePanelCoordinator
     : public BrowserUserData<LensSidePanelCoordinator>,
-      public SidePanelViewStateObserver,
       public SidePanelEntryObserver,
       public TemplateURLServiceObserver {
  public:
@@ -83,9 +82,6 @@ class LensSidePanelCoordinator
 
   // TemplateURLServiceObserver
   void OnTemplateURLServiceChanged() override;
-
-  // SidePanelViewStateObserver
-  void OnSidePanelDidClose() override;
 
   std::unique_ptr<views::View> CreateLensWebView(
       const content::OpenURLParams& params);
