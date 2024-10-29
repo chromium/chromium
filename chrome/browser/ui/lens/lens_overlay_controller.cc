@@ -1616,8 +1616,12 @@ void LensOverlayController::TryUpdatePageContextualization() {
 void LensOverlayController::UpdatePageContextualization(
     std::vector<uint8_t> bytes,
     lens::PageContentMimeType content_type) {
+  initialization_data_->page_content_bytes_ = bytes;
+  initialization_data_->page_content_type_ = content_type;
+
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
-      bytes, content_type, GetPageURL());
+      initialization_data_->page_content_bytes_,
+      initialization_data_->page_content_type_, GetPageURL());
 }
 
 void LensOverlayController::SetLiveBlur(bool enabled) {
