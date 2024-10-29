@@ -511,10 +511,14 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
       if (tipIdentifier != TipIdentifier::kUnknown) {
+        BOOL shouldShowTipsWithProductImage =
+            tipIdentifier == TipIdentifier::kLensShop &&
+            TipsLensShopExperimentTypeEnabled() ==
+                TipsLensShopExperimentType::kWithProductImage &&
+            _tipsMediator.state.productImageData.length > 0;
+
         _ephemeralCardToShow =
-            (tipIdentifier == TipIdentifier::kLensShop &&
-             TipsLensShopExperimentTypeEnabled() ==
-                 TipsLensShopExperimentType::kWithProductImage)
+            shouldShowTipsWithProductImage
                 ? ContentSuggestionsModuleType::kTipsWithProductImage
                 : ContentSuggestionsModuleType::kTips;
 

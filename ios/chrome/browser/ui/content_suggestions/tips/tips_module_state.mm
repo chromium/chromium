@@ -26,14 +26,14 @@ using segmentation_platform::TipIdentifier;
 - (ContentSuggestionsModuleType)type {
   CHECK(IsTipsMagicStackEnabled());
 
-  if (_identifier != TipIdentifier::kLensShop ||
-      (TipsLensShopExperimentTypeEnabled() ==
-           TipsLensShopExperimentType::kWithProductImage &&
-       !_productImageData)) {
-    return ContentSuggestionsModuleType::kTips;
+  if (_identifier == TipIdentifier::kLensShop &&
+      TipsLensShopExperimentTypeEnabled() ==
+          TipsLensShopExperimentType::kWithProductImage &&
+      _productImageData.length > 0) {
+    return ContentSuggestionsModuleType::kTipsWithProductImage;
   }
 
-  return ContentSuggestionsModuleType::kTipsWithProductImage;
+  return ContentSuggestionsModuleType::kTips;
 }
 
 @end

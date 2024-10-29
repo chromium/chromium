@@ -607,21 +607,25 @@ using segmentation_platform::TipIdentifier;
     case TipIdentifier::kLensTranslate: {
       LensEntrypoint entryPoint = tip == TipIdentifier::kLensTranslate
                                       ? LensEntrypoint::TranslateOnebox
-                                      : LensEntrypoint::HomeScreenWidget;
+                                      : LensEntrypoint::NewTabPage;
 
       if (tip == TipIdentifier::kLensShop &&
-          _tipsMediator.state.productImageData != nil) {
+          TipsLensShopExperimentTypeEnabled() ==
+              TipsLensShopExperimentType::kWithProductImage &&
+          _tipsMediator.state.productImageData.length > 0) {
         UIImage* productImage =
             [UIImage imageWithData:_tipsMediator.state.productImageData];
 
-        SearchImageWithLensCommand* command =
-            [[SearchImageWithLensCommand alloc] initWithImage:productImage
-                                                   entryPoint:entryPoint];
+        if (productImage) {
+          SearchImageWithLensCommand* command =
+              [[SearchImageWithLensCommand alloc] initWithImage:productImage
+                                                     entryPoint:entryPoint];
 
-        [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands)
-            searchImageWithLens:command];
+          [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                              LensCommands) searchImageWithLens:command];
 
-        break;
+          break;
+        }
       }
 
       OpenLensInputSelectionCommand* command =
