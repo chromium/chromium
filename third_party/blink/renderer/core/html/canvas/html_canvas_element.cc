@@ -1503,7 +1503,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
-  SetCanvas2DLayerBridgeInternal();
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
   ReplaceResourceProvider(std::move(provider));
 }
 
