@@ -4,12 +4,12 @@
 
 package org.chromium.wolvic.installedapp;
 
-import org.chromium.wolvic.instantapps.InstantAppsHandler;
 import org.chromium.components.installedapp.InstalledAppProviderImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.services.service_manager.InterfaceFactory;
+import org.chromium.wolvic.WolvicBrowserContext;
 
 /** Factory to create instances of the InstalledAppProvider Mojo service. */
 public class WolvicInstalledAppProviderFactory implements InterfaceFactory<InstalledAppProvider> {
@@ -23,7 +23,6 @@ public class WolvicInstalledAppProviderFactory implements InterfaceFactory<Insta
     public InstalledAppProvider createImpl() {
         return new InstalledAppProviderImpl(
                 WolvicBrowserContext.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost)),
-                mRenderFrameHost,
-                InstantAppsHandler.getInstance()::isInstantAppAvailable);
+                mRenderFrameHost, null);
     }
 }
