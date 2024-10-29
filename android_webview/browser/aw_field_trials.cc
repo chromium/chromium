@@ -268,13 +268,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(b/344852824): Enable the feature for WebView
   aw_feature_overrides.DisableFeature(::features::kDIPS);
 
-  // Async Safe Browsing check will be rolled out together with
-  // kHashPrefixRealTimeLookups on WebView.
-  aw_feature_overrides.DisableFeature(
-      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
-  aw_feature_overrides.DisableFeature(
-      safe_browsing::kHashPrefixRealTimeLookups);
-
   // TODO(crbug.com/41492947): See crrev.com/c/5744034 for details, but I was
   // unable to add this feature to fieldtrial_testing_config and pass all tests.
   aw_feature_overrides.EnableFeature(blink::features::kElementGetInnerHTML);
