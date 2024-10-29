@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/url_constants.h"
@@ -23,8 +25,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/l10n/l10n_util.h"
 
 // static
 Browser* LockedSessionWindowTracker::GetBrowserWithTab(
@@ -45,7 +51,8 @@ Browser* LockedSessionWindowTracker::GetBrowserWithTab(
 
 LockedSessionWindowTracker::LockedSessionWindowTracker(
     std::unique_ptr<OnTaskBlocklist> on_task_blocklist)
-    : on_task_blocklist_(std::move(on_task_blocklist)) {}
+    : on_task_blocklist_(std::move(on_task_blocklist)),
+      notifications_manager_(ash::boca::OnTaskNotificationsManager::Create()) {}
 
 LockedSessionWindowTracker::~LockedSessionWindowTracker() {
   CleanupWindowTracker();
@@ -167,6 +174,18 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   }
 }
 
+void LockedSessionWindowTracker::ShowURLBlockedToast() {
+  ash::boca::OnTaskNotificationsManager::ToastCreateParams toast_create_params(
+      ash::boca::kOnTaskUrlBlockedToastId,
+      ash::ToastCatalogName::kOnTaskUrlBlocked,
+      /*text_description_callback=*/
+      base::BindRepeating([](base::TimeDelta countdown_period) {
+        return l10n_util::GetStringUTF16(
+            IDS_ON_TASK_URL_BLOCKED_NOTIFICATION_MESSAGE);
+      }));
+  notifications_manager_->CreateToast(std::move(toast_create_params));
+}
+
 // TabStripModel Implementation
 void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
                                               int index,
@@ -174,6 +193,12 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   if (change_type == TabChangeType::kAll) {
     RefreshUrlBlocklist();
   }
+}
+
+void LockedSessionWindowTracker::SetNotificationManagerForTesting(
+    std::unique_ptr<ash::boca::OnTaskNotificationsManager>
+        notifications_manager) {
+  notifications_manager_ = std::move(notifications_manager);
 }
 
 void LockedSessionWindowTracker::OnTabStripModelChanged(

@@ -16,6 +16,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -66,6 +67,26 @@ class MockBocaWindowObserver : public ash::boca::BocaWindowObserver {
   MOCK_METHOD(void, OnTabRemoved, (SessionID tab_id), (override));
 };
 
+// Fake delegate implementation for the `OnTaskNotificationsManager` to minimize
+// dependency on Ash UI.
+class FakeOnTaskNotificationsManagerDelegate
+    : public ash::boca::OnTaskNotificationsManager::Delegate {
+ public:
+  FakeOnTaskNotificationsManagerDelegate() = default;
+  ~FakeOnTaskNotificationsManagerDelegate() override = default;
+
+  void ShowToast(ash::ToastData toast_data) override {
+    notifications_shown_.insert(toast_data.id);
+  }
+
+  bool WasNotificationShown(const std::string& id) {
+    return notifications_shown_.contains(id);
+  }
+
+ private:
+  std::set<std::string> notifications_shown_;
+};
+
 // TODO(b/36741761): Migrate to browser test.
 // TODO(b/36741761): Refactor existing browser init timing after migrate to
 // browser test, right now it's very hard to tell when does tab strip update
@@ -103,8 +124,14 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
     }));
     LockedSessionWindowTrackerFactory::GetForBrowserContext(profile())
         ->AddObserver(&boca_window_observer_);
+    auto fake_notifications_delegate =
+        std::make_unique<FakeOnTaskNotificationsManagerDelegate>();
+    fake_notifications_delegate_ptr_ = fake_notifications_delegate.get();
+    LockedSessionWindowTrackerFactory::GetForBrowserContext(profile())
+        ->SetNotificationManagerForTesting(
+            ash::boca::OnTaskNotificationsManager::CreateForTest(
+                std::move(fake_notifications_delegate)));
   }
-
   void TearDown() override {
     task_environment()->RunUntilIdle();
 
@@ -114,11 +141,14 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
         LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
     if (window_tracker) {
       window_tracker->InitializeBrowserInfoForTracking(nullptr);
+      fake_notifications_delegate_ptr_ = nullptr;
     }
     BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
+  raw_ptr<FakeOnTaskNotificationsManagerDelegate>
+      fake_notifications_delegate_ptr_;
   StrictMock<MockBocaWindowObserver> boca_window_observer_;
 };
 
@@ -891,6 +921,10 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlSuccessfullyForRestrictedNav) {
         tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               simulator->GetLastThrottleCheckResult());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return fake_notifications_delegate_ptr_->WasNotificationShown(
+          ash::boca::kOnTaskUrlBlockedToastId);
+    }));
   }
   {
     auto simulator = StartNavigation(
@@ -898,6 +932,10 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlSuccessfullyForRestrictedNav) {
         tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               simulator->GetLastThrottleCheckResult());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return fake_notifications_delegate_ptr_->WasNotificationShown(
+          ash::boca::kOnTaskUrlBlockedToastId);
+    }));
   }
   {
     auto simulator = StartNavigation(
@@ -905,12 +943,20 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlSuccessfullyForRestrictedNav) {
         tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               simulator->GetLastThrottleCheckResult());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return fake_notifications_delegate_ptr_->WasNotificationShown(
+          ash::boca::kOnTaskUrlBlockedToastId);
+    }));
   }
   {
     auto simulator = StartNavigation(
         url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               simulator->GetLastThrottleCheckResult());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return fake_notifications_delegate_ptr_->WasNotificationShown(
+          ash::boca::kOnTaskUrlBlockedToastId);
+    }));
   }
 }
 
@@ -960,12 +1006,20 @@ TEST_F(OnTaskNavigationThrottleTest,
         tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               simulator->GetLastThrottleCheckResult());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return fake_notifications_delegate_ptr_->WasNotificationShown(
+          ash::boca::kOnTaskUrlBlockedToastId);
+    }));
   }
   {
     auto simulator = StartNavigation(
         url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               simulator->GetLastThrottleCheckResult());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return fake_notifications_delegate_ptr_->WasNotificationShown(
+          ash::boca::kOnTaskUrlBlockedToastId);
+    }));
   }
 }
 
@@ -1009,6 +1063,10 @@ TEST_F(OnTaskNavigationThrottleTest,
             simulator_on_new_page->GetLastThrottleCheckResult());
   EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskUrlBlockedToastId);
+  }));
 }
 
 TEST_F(OnTaskNavigationThrottleTest,
@@ -1071,6 +1129,10 @@ TEST_F(OnTaskNavigationThrottleTest,
       url_c, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             simulator_on_new_page->GetLastThrottleCheckResult());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskUrlBlockedToastId);
+  }));
 
   // One level deep navigation should still be possible for the original tab.
   browser()->tab_strip_model()->ActivateTabAt(1);
@@ -1134,6 +1196,10 @@ TEST_F(OnTaskNavigationThrottleTest,
       simulator_on_new_page_after_one_level_deep->GetLastThrottleCheckResult());
   EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskUrlBlockedToastId);
+  }));
 }
 
 TEST_F(OnTaskNavigationThrottleTest,
@@ -1206,6 +1272,11 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Sanity check to make sure child tabs aren't added as parent tabs.
   EXPECT_FALSE(
       on_task_blocklist->IsParentTab(tab_strip_model->GetWebContentsAt(0)));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskUrlBlockedToastId);
+  }));
 }
 
 TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
@@ -1383,6 +1454,10 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlInNewTabShouldClose) {
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             simulator->GetLastThrottleCheckResult());
   EXPECT_EQ(tab_strip_model->count(), 1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskUrlBlockedToastId);
+  }));
 }
 
 TEST_F(OnTaskNavigationThrottleTest, BackForwardReloadNavigationSuccess) {
@@ -1548,6 +1623,10 @@ TEST_F(OnTaskNavigationThrottleTest, BlockNavigationForPostMethodRequest) {
   simulator->Start();
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             simulator->GetLastThrottleCheckResult());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskUrlBlockedToastId);
+  }));
 }
 
 TEST_F(OnTaskNavigationThrottleTest,

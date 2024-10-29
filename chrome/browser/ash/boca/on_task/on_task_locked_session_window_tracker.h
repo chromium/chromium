@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -55,6 +56,9 @@ class LockedSessionWindowTracker : public KeyedService,
   // Starts tracking the `browser` for navigation changes.
   void InitializeBrowserInfoForTracking(Browser* browser);
 
+  // Displays a toast that indicates the URL was blocked.
+  void ShowURLBlockedToast();
+
   // Updates the current blocklist with its appropriate restriction. This should
   // rarely be explicitly called except for when we start tracking a new browser
   // window. All other calls should come from tab strip model changes (ex:
@@ -81,6 +85,10 @@ class LockedSessionWindowTracker : public KeyedService,
   void set_oauth_in_progress(bool in_progress) {
     oauth_in_progress_ = in_progress;
   }
+
+  void SetNotificationManagerForTesting(
+      std::unique_ptr<ash::boca::OnTaskNotificationsManager>
+          notification_manager);
 
   OnTaskBlocklist* on_task_blocklist();
   Browser* browser();
@@ -114,6 +122,7 @@ class LockedSessionWindowTracker : public KeyedService,
   bool can_start_navigation_throttle_ = true;
   bool oauth_in_progress_ = false;
   const std::unique_ptr<OnTaskBlocklist> on_task_blocklist_;
+  std::unique_ptr<ash::boca::OnTaskNotificationsManager> notifications_manager_;
   raw_ptr<Browser> browser_ = nullptr;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>

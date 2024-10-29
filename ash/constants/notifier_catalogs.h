@@ -318,7 +318,8 @@ enum class ToastCatalogName {
   kTouchpadDisabled = 52,
   kOnTaskEnterLockedMode = 53,
   kOnTaskSessionEnd = 54,
-  kMaxValue = kOnTaskSessionEnd
+  kOnTaskUrlBlocked = 55,
+  kMaxValue = kOnTaskUrlBlocked
 };
 
 }  // namespace ash

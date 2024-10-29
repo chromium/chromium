@@ -21,6 +21,9 @@ inline constexpr char kOnTaskEnterLockedModeNotificationId[] =
 inline constexpr char kOnTaskSessionEndNotificationId[] =
     "OnTaskSessionEndNotification";
 
+// Toast id for the toast shown after a URL is blocked.
+inline constexpr char kOnTaskUrlBlockedToastId[] = "OnTaskURLBlockedToast";
+
 }  // namespace ash::boca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_NOTIFICATION_CONSTANTS_H_

@@ -6875,6 +6875,9 @@
       <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Toast message telling students that their class session ended.">
         Your teacher has ended class
       </message>
+      <message name="IDS_ON_TASK_URL_BLOCKED_NOTIFICATION_MESSAGE" desc="Toast message telling students that the url is blocked.">
+        Access isn’t allowed for this link. Check with your teacher if you need access.
+      </message>
     </messages>
   </release>
 </grit>

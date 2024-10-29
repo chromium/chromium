@@ -49,6 +49,10 @@ class OnTaskLockedSessionNavigationThrottle
   // `kLimitedNavigation`.
   bool MaybeProceedForOneLevelDeep(content::WebContents* tab, const GURL& url);
 
+  // Displays the blocked URL toast when a navigation is cancelled. This should
+  // only be blocked if the navigation was user-initiated.
+  void MaybeShowBlockedURLToast();
+
   // `should_redirects_pass` allows url redirects to go through without going
   // through the blocklist checks. This should only be flipped to true after the
   // navigation request is started and the url is allowed to pass. This is used

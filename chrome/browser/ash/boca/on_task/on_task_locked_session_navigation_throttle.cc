@@ -102,6 +102,22 @@ OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
   return base::WrapUnique(new OnTaskLockedSessionNavigationThrottle(handle));
 }
 
+void OnTaskLockedSessionNavigationThrottle::MaybeShowBlockedURLToast() {
+  // Display the toast when the navigation is user-initiated. Note that
+  // `HasUserGesture` does not capture browser-initiated navigations. The
+  // negation of `IsRendererInitiated` tells us whether the navigation is
+  // browser-generated.
+  if (navigation_handle()->HasUserGesture() ||
+      !navigation_handle()->IsRendererInitiated()) {
+    LockedSessionWindowTracker* const window_tracker =
+        LockedSessionWindowTrackerFactory::GetForBrowserContext(
+            navigation_handle()->GetWebContents()->GetBrowserContext());
+    if (window_tracker) {
+      window_tracker->ShowURLBlockedToast();
+    }
+  }
+}
+
 bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
     content::WebContents* tab,
     const GURL& url) {
@@ -158,6 +174,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
 
   if (ShouldBlockSensitiveUrlNavigation() &&
       !window_tracker->oauth_in_progress()) {
+    MaybeShowBlockedURLToast();
     return CANCEL;
   }
   const GURL& url = navigation_handle()->GetURL();
@@ -228,6 +245,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
       on_task_blocklist->GetURLBlocklistState(url);
   if (blocklist_state ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    MaybeShowBlockedURLToast();
     return content::NavigationThrottle::CANCEL;
   }
 
@@ -245,6 +263,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
         LockedNavigationOptions::LIMITED_NAVIGATION) {
       if (!MaybeProceedForOneLevelDeep(on_task_blocklist->previous_tab(),
                                        url)) {
+        MaybeShowBlockedURLToast();
         return content::NavigationThrottle::CANCEL;
       }
     } else if (on_task_blocklist->current_page_restriction_level() ==
@@ -275,6 +294,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
         } else {
           if (!MaybeProceedForOneLevelDeep(
                   navigation_handle()->GetWebContents(), url)) {
+            MaybeShowBlockedURLToast();
             return content::NavigationThrottle::CANCEL;
           }
         }
@@ -290,6 +310,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     should_redirects_pass_ = true;
     return PROCEED;
   }
+  MaybeShowBlockedURLToast();
   return content::NavigationThrottle::CANCEL;
 }
 
@@ -305,6 +326,7 @@ OnTaskLockedSessionNavigationThrottle::WillProcessResponse() {
           navigation_handle()->GetWebContents()->GetBrowserContext());
   if (ShouldBlockSensitiveUrlNavigation() &&
       !window_tracker->oauth_in_progress()) {
+    MaybeShowBlockedURLToast();
     return CANCEL;
   }
   return PROCEED;
@@ -342,6 +364,7 @@ OnTaskLockedSessionNavigationThrottle::WillRedirectRequest() {
     if (window_tracker->oauth_in_progress()) {
       return content::NavigationThrottle::PROCEED;
     }
+    MaybeShowBlockedURLToast();
     return content::NavigationThrottle::CANCEL;
   }
 
