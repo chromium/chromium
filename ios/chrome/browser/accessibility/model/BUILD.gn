@@ -12,6 +12,8 @@ source_set("model") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ui/base",
