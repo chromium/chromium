@@ -9,9 +9,6 @@
 
 class SidePanelViewStateObserver : public base::CheckedObserver {
  public:
-  // Called after opening the SidePanel.
-  virtual void OnSidePanelDidOpen() {}
-
   // Called after closing the SidePanel.
   virtual void OnSidePanelDidClose() {}
 

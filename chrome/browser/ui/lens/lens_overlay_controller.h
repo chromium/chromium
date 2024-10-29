@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -109,7 +108,6 @@ class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensSidePanelPageHandler,
                               public content::WebContentsDelegate,
                               public FullscreenObserver,
-                              public SidePanelViewStateObserver,
                               public views::ViewObserver,
                               public views::WidgetObserver,
                               public OmniboxTabHelper::Observer,
@@ -802,8 +800,9 @@ class LensOverlayController : public LensSearchboxClient,
   void OnPageBound() override;
   void OnAutocompleteStopTimerTriggered() override;
 
-  // SidePanelViewStateObserver:
-  void OnSidePanelDidOpen() override;
+  // Called anytime the side panel opens. Used to close lens overlay when
+  // another side panel opens.
+  void OnSidePanelDidOpen();
 
   // Called to continue the screenshot process while opening lens overlay.
   void FinishedWaitingForReflow();
@@ -1114,8 +1113,7 @@ class LensOverlayController : public LensSearchboxClient,
   // backgrounded, since the tab may move between browser windows.
 
   // Observes the side panel of the browser window.
-  base::ScopedObservation<SidePanelCoordinator, SidePanelViewStateObserver>
-      side_panel_state_observer_{this};
+  base::CallbackListSubscription side_panel_shown_subscription_;
 
   // Observer to check for browser window entering fullscreen.
   base::ScopedObservation<FullscreenController, FullscreenObserver>

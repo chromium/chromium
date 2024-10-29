@@ -264,7 +264,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
  public:
   MOCK_METHOD(void, OnSidePanelDidClose, (), (override));
-  MOCK_METHOD(void, OnSidePanelDidOpen, (), (override));
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
@@ -514,7 +513,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        DontNotifySidePanelObserverOfChangingContent) {
   Init();
   MockSidePanelViewStateObserver view_state_observer;
-  EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(1);
   EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(0);
 
   coordinator()->AddSidePanelViewStateObserver(&view_state_observer);
@@ -535,7 +533,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
   coordinator()->DisableAnimationsForTesting();
 
   MockSidePanelViewStateObserver view_state_observer;
-  EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(3);
   EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(2);
 
   coordinator()->AddSidePanelViewStateObserver(&view_state_observer);

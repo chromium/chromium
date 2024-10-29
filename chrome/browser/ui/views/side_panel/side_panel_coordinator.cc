@@ -526,6 +526,11 @@ void SidePanelCoordinator::Show(
                      base::Unretained(this), suppress_animations, input));
 }
 
+base::CallbackListSubscription SidePanelCoordinator::RegisterSidePanelShown(
+    ShownCallback callback) {
+  return shown_callback_list_.Add(std::move(callback));
+}
+
 // There are 3 different contexts in which the side panel can be closed. All go
 // through Close(). These are:
 //   (1) Some C++ code called Close(). This includes built-in features such as
@@ -616,8 +621,6 @@ void SidePanelCoordinator::PopulateSidePanel(
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
 
-  const bool opening_side_panel = !IsSidePanelShowing();
-
   content_wrapper->SetVisible(true);
   browser_view_->unified_side_panel()->Open(/*animated=*/!suppress_animations);
 
@@ -668,12 +671,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     browser_view_->unified_side_panel()->UpdateWidthOnEntryChanged();
   }
 
-  // Notify the observers when the side panel is opened (made visible). However,
-  // the observers are not renotified when the side panel entry changes.
-  if (opening_side_panel) {
-    view_state_observers_.Notify(
-        &SidePanelViewStateObserver::OnSidePanelDidOpen);
-  }
+  shown_callback_list_.Notify();
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews() {

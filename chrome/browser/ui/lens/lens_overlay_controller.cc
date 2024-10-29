@@ -455,7 +455,10 @@ void LensOverlayController::ShowUI(
   CHECK(side_panel_coordinator_);
 
   // Setup observer to be notified of side panel opens and closes.
-  side_panel_state_observer_.Observe(side_panel_coordinator_);
+  side_panel_shown_subscription_ =
+      side_panel_coordinator_->RegisterSidePanelShown(
+          base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
+                              weak_factory_.GetWeakPtr()));
 
   if (find_in_page::FindTabHelper* const find_tab_helper =
           find_in_page::FindTabHelper::FromWebContents(tab_->GetContents())) {
@@ -545,7 +548,7 @@ void LensOverlayController::CloseUISync(
   state_ = State::kClosing;
   if (side_panel_coordinator_->GetCurrentEntryId() ==
       SidePanelEntry::Id::kLensOverlayResults) {
-    side_panel_state_observer_.Reset();
+    side_panel_shown_subscription_ = base::CallbackListSubscription();
     side_panel_coordinator_->Close();
   }
 
@@ -1776,7 +1779,7 @@ void LensOverlayController::CloseUIPart2(
   side_panel_searchbox_handler_.reset();
   results_side_panel_coordinator_.reset();
 
-  side_panel_state_observer_.Reset();
+  side_panel_shown_subscription_ = base::CallbackListSubscription();
   side_panel_coordinator_ = nullptr;
 
   // Re-enable mouse and keyboard events to the tab contents web view.

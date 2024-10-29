@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -144,6 +145,12 @@ class SidePanelCoordinator final : public TabStripModelObserver,
             bool suppress_animations);
 
   std::optional<UniqueKey> current_key() { return current_key_; }
+
+  // Register for this callback to detect when the side panel opens or changes.
+  // If the open is animated, this will be called at the beginning of the
+  // animation.
+  using ShownCallback = base::RepeatingCallback<void()>;
+  base::CallbackListSubscription RegisterSidePanelShown(ShownCallback callback);
 
  private:
   friend class SidePanelCoordinatorTest;
@@ -308,6 +315,8 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       pinned_model_observation_{this};
+
+  base::RepeatingCallbackList<void()> shown_callback_list_;
 };
 
 namespace base {
