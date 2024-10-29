@@ -2511,7 +2511,7 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return NO;
 
-  if ([self isMigratingAttribute:attribute]) {
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
     return NO;
   }
 
@@ -2665,7 +2665,7 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return;
 
-  if ([self isMigratingAttribute:attribute]) {
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
     return;
   }
 

@@ -54,7 +54,6 @@ int kLiveRegionDebounceMillis = 20;
 
 using RoleMap = std::map<ax::mojom::Role, NSString*>;
 using EventMap = std::map<ax::mojom::Event, NSString*>;
-using ActionList = std::vector<std::pair<ax::mojom::Action, NSString*>>;
 
 RoleMap BuildSubroleMap() {
   const RoleMap::value_type subroles[] = {
@@ -158,8 +157,9 @@ EventMap BuildEventMap() {
   return EventMap(begin(events), end(events));
 }
 
-ActionList BuildActionList() {
-  const ActionList::value_type entries[] = {
+// Builds the pairings of accessibility actions and their Cocoa equivalents.
+ui::CocoaActionList BuildActionList() {
+  const ui::CocoaActionList::value_type entries[] = {
       // NSAccessibilityPressAction must come first in this list.
       {ax::mojom::Action::kDoDefault, NSAccessibilityPressAction},
 
@@ -167,12 +167,15 @@ ActionList BuildActionList() {
       {ax::mojom::Action::kIncrement, NSAccessibilityIncrementAction},
       {ax::mojom::Action::kShowContextMenu, NSAccessibilityShowMenuAction},
   };
-  return ActionList(begin(entries), end(entries));
+  return ui::CocoaActionList(begin(entries), end(entries));
 }
 
-const ActionList& GetActionList() {
-  static const base::NoDestructor<ActionList> action_map(BuildActionList());
-  return *action_map;
+// Returns a static vector of pairings of accessibility actions and their Cocoa
+// equivalents.
+const ui::CocoaActionList& GetCocoaActionList() {
+  static const base::NoDestructor<ui::CocoaActionList> action_list(
+      BuildActionList());
+  return *action_list;
 }
 
 void PostAnnouncementNotification(NSString* announcement,
@@ -229,6 +232,12 @@ void CollectAncestorRoles(
 
 }  // namespace
 
+namespace ui {
+const ui::CocoaActionList& GetCocoaActionListForTesting() {
+  return GetCocoaActionList();
+}
+}  // namespace ui
+
 @interface AXPlatformNodeCocoa (Private)
 // Helper function for string attributes that don't require extra processing.
 - (NSString*)getStringAttribute:(ax::mojom::StringAttribute)attribute;
@@ -258,7 +267,7 @@ void CollectAncestorRoles(
 // is attribute-based. For every method, there is a corresponding attribute.
 // This function returns the map between the methods and the attributes
 // for purposes of migrating to the new API.
-- (NSDictionary*)methodToAttributeMap {
++ (NSDictionary*)newAccessibilityAPIMethodToAttributeMap {
   static NSDictionary* dict = nil;
   static dispatch_once_t onceToken;
 
@@ -274,58 +283,59 @@ void CollectAncestorRoles(
   return dict;
 }
 
-// While the migration to the new NSAccessibility API in progress, this
-// function returns all attributes that are being replaced by methods.
-- (NSSet<NSString*>*)migratingAttributes {
+// Returns the set of attributes available through the new Cocoa
+// accessibility API.
++ (NSSet<NSString*>*)attributesAvailableThroughNewAccessibilityAPI {
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set =
-        [NSSet<NSString*> setWithArray:[[self methodToAttributeMap] allValues]];
+    set = [NSSet<NSString*>
+        setWithArray:[[self newAccessibilityAPIMethodToAttributeMap]
+                         allValues]];
   });
   return set;
 }
 
-// While the migration to the new NSAccessibility API in progress, this
-// function returns all new API endpoints.
-- (NSSet<NSString*>*)migratingMethods {
+// Returns YES if `attribute` is available through a method implemented for
+// the new accessibility API.
++ (BOOL)isAttributeAvailableThroughNewAccessibilityAPI:(NSString*)attribute {
+  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+    return [[self attributesAvailableThroughNewAccessibilityAPI]
+        containsObject:attribute];
+  }
+  return NO;
+}
+
+// Returns the set of methods implemented to support the new Cocoa
+// accessibility API.
++ (NSSet<NSString*>*)newAccessibilityAPIMethods {
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set = [NSSet<NSString*> setWithArray:[[self methodToAttributeMap] allKeys]];
+    set = [NSSet<NSString*>
+        setWithArray:[[self newAccessibilityAPIMethodToAttributeMap] allKeys]];
   });
   return set;
 }
 
-// Returns true if the migration flag is enabled and the attribute
-// is contained in the migratingAttributes list.
-- (BOOL)isMigratingAttribute:(NSString*)attribute {
+// Returns true if `method` has been implemented in the transition to the new
+// accessibility API.
++ (BOOL)isMethodImplementedForNewAccessibilityAPI:(NSString*)method {
   if (features::IsMacAccessibilityAPIMigrationEnabled()) {
-    return [[self migratingAttributes] containsObject:attribute];
+    return [[self newAccessibilityAPIMethods] containsObject:method];
   }
   return NO;
 }
 
-// Returns true if the migration flag is enabled and the method
-// is contained in the migratingMethods list.
-- (BOOL)isMigratingMethod:(NSString*)method {
-  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
-    return [[self migratingMethods] containsObject:method];
-  }
-  return NO;
-}
-
-// Returns whether a method-based NSAccessibility API endpoint is supported for
-// this node. Support is based on this node's role and is calculated in
-// internalAccessibilityAttribueNames.
-// Can only be used for migrated methods, all other methods will
-// return "NO".
-- (BOOL)isMigratingMethodSupported:(NSString*)method {
+// Returns true if `method` has been implemented in the transition to the new
+// accessibility API, and is supported by this node (based on its role).
+- (BOOL)supportsNewAccessibilityAPIMethod:(NSString*)method {
   if (!_node) {
     return NO;
   }
 
-  NSString* attribute = [[self methodToAttributeMap] objectForKey:method];
+  NSString* attribute = [[[self class] newAccessibilityAPIMethodToAttributeMap]
+      objectForKey:method];
   if (attribute) {
     // Check whether the corresponding attribute is supported for this node.
     NSArray* attributeNames = [self internalAccessibilityAttributeNames];
@@ -335,8 +345,10 @@ void CollectAncestorRoles(
 }
 
 - (BOOL)respondsToSelector:(SEL)selector {
+  // If we're in old-accessibility-API mode, disable methods that we've added
+  // to support the new API.
   if (!features::IsMacAccessibilityAPIMigrationEnabled()) {
-    if ([[self migratingMethods]
+    if ([[[self class] newAccessibilityAPIMethods]
             containsObject:NSStringFromSelector(selector)]) {
       return NO;
     }
@@ -1142,7 +1154,7 @@ void CollectAncestorRoles(
     return @[];
 
   NSMutableArray* axActions = [NSMutableArray array];
-  const ActionList& action_list = GetActionList();
+  const ui::CocoaActionList& action_list = GetCocoaActionList();
 
   // VoiceOver expects the "press" action to be first. Note that some roles
   // should be given a press action implicitly.
@@ -1169,7 +1181,7 @@ void CollectAncestorRoles(
       AlsoUseShowMenuActionForDefaultAction(*_node)) {
     data.action = ax::mojom::Action::kDoDefault;
   } else {
-    for (const ActionList::value_type& entry : GetActionList()) {
+    for (const ui::CocoaActionList::value_type& entry : GetCocoaActionList()) {
       if ([action isEqualToString:entry.second]) {
         data.action = entry.first;
         break;
@@ -1428,14 +1440,15 @@ void CollectAncestorRoles(
 
   NSMutableArray* attributes = [self internalAccessibilityAttributeNames];
 
-  // Exclude migrating attributes from being exposed.
+  // Exclude attributes available through the new accessibility API.
   if (features::IsMacAccessibilityAPIMigrationEnabled()) {
-    [attributes filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
-                                                      id evaluatedObject,
-                                                      NSDictionary* bindings) {
-                  return ![[self migratingAttributes]
-                      containsObject:evaluatedObject];
-                }]];
+    [attributes
+        filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                              id evaluatedObject,
+                                              NSDictionary* bindings) {
+          return ![[[self class] attributesAvailableThroughNewAccessibilityAPI]
+              containsObject:evaluatedObject];
+        }]];
   }
 
   return attributes;
@@ -1459,15 +1472,15 @@ void CollectAncestorRoles(
   return ret;
 }
 
-// Despite it being deprecated, AppKit internally calls this function sometimes
+// This API is deprecated.
+// Despite its deprecation, the AppKit internally calls this function sometimes
 // in unclear circumstances. It is implemented in terms of the new a11y API
 // here.
-// This API is deprecated.
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   if (!_node)
     return;
 
-  if ([self isMigratingAttribute:attribute]) {
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
     return;
   }
 
@@ -2417,8 +2430,8 @@ void CollectAncestorRoles(
   }
 
   NSString* selectorString = NSStringFromSelector(selector);
-  if ([self isMigratingMethod:selectorString] &&
-      ![self isMigratingMethodSupported:selectorString]) {
+  if ([[self class] isMethodImplementedForNewAccessibilityAPI:selectorString] &&
+      ![self supportsNewAccessibilityAPIMethod:selectorString]) {
     return NO;
   }
 
