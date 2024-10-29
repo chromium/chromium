@@ -49,7 +49,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 
@@ -74,21 +74,7 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testZeroPrefixSuggestions_oneTab() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
-
-        mRenderTestRule.render(
-                searchActivity.findViewById(android.R.id.content), "hub_search_zps_singletab");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testRenderZeroPrefixSuggestions() throws IOException {
+    public void testZeroPrefixSuggestions() throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
@@ -97,9 +83,29 @@ public class TabSwitcherSearchRenderTest {
 
         SearchActivity searchActivity =
                 TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.checkSuggestionsShown(true);
+
+        mRenderTestRule.render(searchActivity.findViewById(android.R.id.content), "hub_search_zps");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testZeroPrefixSuggestions_Incognito() throws IOException {
+        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
+        TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ true);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.checkSuggestionsShown(false);
 
         mRenderTestRule.render(
-                searchActivity.findViewById(android.R.id.content), "hub_search_zps_maxtab");
+                searchActivity.findViewById(android.R.id.content), "hub_search_zps_incognito");
     }
 
     @Test
@@ -118,9 +124,31 @@ public class TabSwitcherSearchRenderTest {
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.requestFocus();
         omniboxTestUtils.typeText("one.html", /* execute= */ false);
-        omniboxTestUtils.waitAnimationsComplete();
+        omniboxTestUtils.checkSuggestionsShown(true);
 
         mRenderTestRule.render(
                 searchActivity.findViewById(android.R.id.content), "hub_search_typed");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderTypedSuggestions_Incognito() throws IOException {
+        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ true);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.requestFocus();
+        omniboxTestUtils.typeText("one.html", /* execute= */ false);
+        omniboxTestUtils.checkSuggestionsShown(true);
+
+        mRenderTestRule.render(
+                searchActivity.findViewById(android.R.id.content), "hub_search_typed_incognito");
     }
 }

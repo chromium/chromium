@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -829,20 +828,6 @@ public class SearchActivityUnitTest {
         assertNull(mProfileSupplier.get());
         ShadowProfileManager.setProfile(mProfile);
         assertEquals(mProfile, mProfileSupplier.get());
-    }
-
-    @Test
-    public void createProfileProvider_throwsWhenCreatingIncognitoProfile() {
-        ShadowProfileManager.setProfile(mProfile);
-        assertThrows(
-                IllegalStateException.class,
-                () -> mProfileProviderSupplier.get().getOffTheRecordProfile(false));
-        assertThrows(
-                IllegalStateException.class,
-                () -> mProfileProviderSupplier.get().getOffTheRecordProfile(true));
-        assertThrows(
-                IllegalStateException.class,
-                () -> mProfileProviderSupplier.get().hasOffTheRecordProfile());
     }
 
     @Test

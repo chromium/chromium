@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -65,12 +66,14 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -523,15 +526,37 @@ public class SearchActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.onUrlChangedForTesting();
-                    Assert.assertTrue(urlBar.getText().toString().isEmpty());
+                    assertTrue(urlBar.getText().toString().isEmpty());
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.clearOmniboxFocus();
                     locationBarCoordinator.onUrlChangedForTesting();
-                    Assert.assertTrue(urlBar.getText().toString().isEmpty());
+                    assertTrue(urlBar.getText().toString().isEmpty());
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunchIncognitoSearchActivity() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        SearchActivity searchActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SearchActivity.class,
+                        () -> {
+                            SearchActivityClientImpl client =
+                                    new SearchActivityClientImpl(
+                                            mActivityTestRule.getActivity(), IntentOrigin.HUB);
+                            client.requestOmniboxForResult(
+                                    client.newIntentBuilder()
+                                            .setPageUrl(new GURL(UrlConstants.NTP_NON_NATIVE_URL))
+                                            .setIncognito(true)
+                                            .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                                            .build());
+                        });
+        assertTrue(searchActivity.getProfileSupplierForTesting().get().isOffTheRecord());
     }
 
     private SearchActivity startSearchActivity() {
@@ -559,13 +584,13 @@ public class SearchActivityTest {
         try {
             SearchWidgetProvider.createIntent(instrumentation.getContext(), isVoiceSearch).send();
         } catch (PendingIntent.CanceledException e) {
-            Assert.assertTrue("Intent canceled", false);
+            assertTrue("Intent canceled", false);
         }
         Activity searchActivity =
                 instrumentation.waitForMonitorWithTimeout(
                         searchMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);
-        Assert.assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
+        assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
         instrumentation.removeMonitor(searchMonitor);
         mOmnibox = new OmniboxTestUtils(searchActivity);
         return (SearchActivity) searchActivity;

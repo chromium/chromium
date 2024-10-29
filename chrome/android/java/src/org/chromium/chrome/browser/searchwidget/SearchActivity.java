@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
@@ -57,7 +56,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -473,18 +471,12 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        boolean isIncognito = SearchActivityUtils.getIntentIncognitoStatus(getIntent());
         ActivityProfileProvider profileProvider =
-                new ActivityProfileProvider(getLifecycleDispatcher()) {
-                    @Nullable
-                    @Override
-                    protected OtrProfileId createOffTheRecordProfileId() {
-                        throw new IllegalStateException(
-                                "Attempting to access incognito from the search activity");
-                    }
-                };
+                new ActivityProfileProvider(getLifecycleDispatcher());
         profileProvider.onAvailable(
                 (provider) -> {
-                    mProfileSupplier.set(profileProvider.get().getOriginalProfile());
+                    mProfileSupplier.set(ProfileProvider.getOrCreateProfile(provider, isIncognito));
                 });
         return profileProvider;
     }

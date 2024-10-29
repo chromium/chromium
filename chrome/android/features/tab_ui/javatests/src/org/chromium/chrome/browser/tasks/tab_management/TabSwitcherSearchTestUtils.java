@@ -8,7 +8,6 @@ import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -19,7 +18,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.List;
 
@@ -38,9 +36,6 @@ public class TabSwitcherSearchTestUtils {
         // On Android P devices, the omnibox needs to be focused for the suggestions to show.
         omniboxTestUtils.requestFocus();
         closeSoftKeyboard();
-
-        ViewUtils.waitForView(
-                searchActivity.findViewById(R.id.control_container), withText("Last open tabs"));
 
         return searchActivity;
     }
@@ -61,19 +56,5 @@ public class TabSwitcherSearchTestUtils {
             activityTestRule.loadUrlInNewTab(
                     activityTestRule.getTestServer().getURL(url), incognito);
         }
-    }
-
-    /** Opens the search activity. */
-    public static SearchActivity openSearchActivity() {
-        SearchActivity searchActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SearchActivity.class,
-                        () -> onView(withId(R.id.search_box_text)).perform(click()));
-        ViewUtils.waitForView(
-                searchActivity.findViewById(R.id.control_container), withText("Last open tabs"));
-        closeSoftKeyboard();
-
-        return searchActivity;
     }
 }
