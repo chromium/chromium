@@ -2709,7 +2709,7 @@ void LensOverlayController::MaybeLaunchSurvey() {
       lens::features::GetLensOverlaySurveyResultsTime().InMilliseconds(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
-      {{"Lens request flow ID",
+      {{"ID that's tied to your Google Lens session",
         base::NumberToString(lens_overlay_query_controller_->gen204_id())}});
 }
 
