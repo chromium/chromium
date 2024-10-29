@@ -663,15 +663,15 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
 
   // Set the dirty bit for the root AX object when created. For all other
   // objects, this is set by a descendant needing to be updated, and
-  // AXObjectCacheImpl::UpdateTreeIfNeeded will therefore process an object
+  // AXObjectCacheImpl::FinalizeTree() will therefore process an object
   // if its parent has has_dirty_descendants_ set. The root, however, has no
   // parent, so there is no parent to mark in order to cause the root to update
   // itself. Therefore this bit serves a second purpose of determining
-  // whether AXObjectCacheImpl::UpdateTreeIfNeeded needs to update the root
+  // whether AXObjectCacheImpl::FinalizeTree() needs to update the root
   // object.
   if (IsRoot()) {
     // Need at least the root object to be flagged in order for
-    // UpdateTreeIfNeeded() to do anything.
+    // FinalizeTree() to do anything.
     SetHasDirtyDescendants(true);
     return;
   }
@@ -701,7 +701,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
     // IsIncludedInTree is false, since those objects are omitted
     // from the generated tree. However, don't set the bit on unincluded
     // objects, during the clearing phase in
-    // AXObjectCacheImpl::UpdateTreeIfNeeded(), only included nodes are
+    // AXObjectCacheImpl::FinalizeTree(), only included nodes are
     // visited.
     if (!ancestor->CachedIsIncludedInTree()) {
       continue;
@@ -3621,7 +3621,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 void AXObject::OnInheritedCachedValuesChanged() {
   // When a cached value that can inherit its value changes, it means that
   // all descendants need to recompute its value. We do this by ensuring
-  // that UpdateTreeIfNeeded() will visit all descendants and recompute
+  // that FinalizeTree() will visit all descendants and recompute
   // cached values.
   if (!CanHaveChildren()) {
     return;  // Nothing to do.
@@ -3642,7 +3642,7 @@ void AXObject::OnInheritedCachedValuesChanged() {
     // set a flag so that
     children_dirty_ = true;
     if (AXObject* parent = ParentObjectIncludedInTree()) {
-      // Make sure the loop in UpdateTreeIfNeeded() recursively will continue
+      // Make sure the loop in FinalizeTree() recursively will continue
       // and rebuild children whenever cached values of children have changed.
       // The loop continues if |has_dirty_descendants_| is set on the parent
       // that added this child.
@@ -3650,7 +3650,7 @@ void AXObject::OnInheritedCachedValuesChanged() {
     }
   } else {
     // Ensure that all children of this node will be updated during the next
-    // tree update in AXObjectCacheImpl::UpdateTreeIfNeeded().
+    // tree update in AXObjectCacheImpl::FinalizeTree().
     SetNeedsToUpdateChildren();
     if (!IsIncludedInTree()) {
       // Make sure that, starting at an included node, children will
@@ -6369,7 +6369,7 @@ void AXObject::UpdateChildrenIfNecessary() {
   if (AXObjectCache().IsFrozen()) {
     DUMP_WILL_BE_CHECK(!AXObjectCache().IsFrozen())
         << "Object should have already had its children updated in "
-           "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
+           "AXObjectCacheImpl::FinalizeTree(): "
         << this;
     return;
   }

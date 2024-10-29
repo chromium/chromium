@@ -291,7 +291,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Sets, clears or queries the has_dirty_descendants_ bit. This dirty
   // bit controls whether the object, or a descendant, needs to be visited
   // a tree walk to update the AX tree via
-  // AXObjectCacheImpl::UpdateTreeIfNeeded. It does not directly indicate
+  // AXObjectCacheImpl::FinalizeTree(). It does not directly indicate
   // whether children, parent or other pointers are actually out of date; there
   // are other dirty bits such as children_dirty_ for that.
   void SetAncestorsHaveDirtyDescendants();
