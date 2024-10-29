@@ -588,6 +588,7 @@ crbug.com/953120 [ angle-disabled no-asan no-passthrough ] conformance/programs/
 
 crbug.com/949249 [ win passthrough angle-d3d11 ] conformance2/extensions/ovr_multiview2.html [ Failure ]
 crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_multiview2.html [ Failure ]
+crbug.com/949249 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ovr_multiview2.html [ Failure ]
 
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
