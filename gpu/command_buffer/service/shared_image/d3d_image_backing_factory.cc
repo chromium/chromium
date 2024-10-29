@@ -500,8 +500,19 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   HRESULT hr = d3d11_device_->CreateTexture2D(
       &desc, initial_data.pSysMem ? &initial_data : nullptr, &d3d11_texture);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "CreateTexture2D failed with error " << std::hex << hr;
+  if (!SUCCEEDED(hr)) {
+    LOG(ERROR) << "CreateTexture2D failed with size " << size.ToString()
+               << " error " << std::hex << hr;
+    if (format == viz::MultiPlaneFormat::kNV12) {
+      // Set crash keys for the size, error code.
+      SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 size",
+                                size.ToString());
+      SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
+                                base::NumberToString(hr));
+      // DumpWithoutCrashing to get crash reports for cases where d3d11 device
+      // does not support NV12 textures.
+      base::debug::DumpWithoutCrashing();
+    }
     return nullptr;
   }
 
