@@ -14,6 +14,11 @@ namespace android {
 
 // Android only payment features in alphabetical order:
 
+// If enabled, use Android intents for the following payment methods:
+// - https://google.com/pay
+// - https://pay.google.com/authentication.
+BASE_DECLARE_FEATURE(kGooglePayViaAndroidIntents);
+
 // If enabled, then the web merchant origin and web wallet parameters will be
 // omitted from the isReadyToPayRequest. See: https://crbug.com/1406655.
 BASE_DECLARE_FEATURE(kOmitParametersInReadyToPay);
