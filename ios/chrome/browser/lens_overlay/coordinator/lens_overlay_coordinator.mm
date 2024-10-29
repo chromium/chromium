@@ -110,6 +110,9 @@ const CGFloat kMenuSymbolSize = 18;
                                       LensOverlayConsentViewControllerDelegate,
                                       LensOverlayPanTrackerDelegate>
 
+// Whether the `_containerViewController` is currently presented.
+@property(nonatomic, assign, readonly) BOOL isOverlayPresented;
+
 @end
 
 @implementation LensOverlayCoordinator {
@@ -355,7 +358,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)showLensUI:(BOOL)animated {
-  if (![self isUICreated]) {
+  if (![self isUICreated] || self.isOverlayPresented) {
     return;
   }
 
@@ -411,7 +414,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)hideLensUI:(BOOL)animated {
-  if (![self isUICreated]) {
+  if (![self isUICreated] || !self.isOverlayPresented) {
     return;
   }
   [self lockOrientationInPortrait:NO];
@@ -909,6 +912,10 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (BOOL)isUICreated {
   return _containerViewController != nil;
+}
+
+- (BOOL)isOverlayPresented {
+  return _containerViewController.presentingViewController != nil;
 }
 
 - (BOOL)isResultsBottomSheetOpen {
