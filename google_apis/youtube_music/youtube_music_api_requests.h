@@ -216,6 +216,8 @@ class ReportPlaybackRequest : public SignedRequest {
   ReportPlaybackRequest& operator=(const ReportPlaybackRequest&) = delete;
   ~ReportPlaybackRequest() override;
 
+  void SetBaseUrlForTesting(const GURL& base_url);
+
  protected:
   // UrlFetchRequestBase:
   GURL GetURL() const override;
@@ -238,6 +240,7 @@ class ReportPlaybackRequest : public SignedRequest {
 
   const std::unique_ptr<ReportPlaybackRequestPayload> payload_;
 
+  GURL base_url_;
   Callback callback_;
 
   base::WeakPtrFactory<ReportPlaybackRequest> weak_ptr_factory_{this};

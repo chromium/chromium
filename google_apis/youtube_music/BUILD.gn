@@ -26,7 +26,10 @@ static_library("youtube_music") {
 source_set("youtube_music_unittests") {
   testonly = true
 
-  sources = [ "youtube_music_api_request_types_unittest.cc" ]
+  sources = [
+    "youtube_music_api_request_types_unittest.cc",
+    "youtube_music_api_requests_unittest.cc",
+  ]
 
   deps = [
     ":youtube_music",

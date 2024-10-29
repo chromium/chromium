@@ -431,6 +431,7 @@ ReportPlaybackRequest::ReportPlaybackRequest(
     Callback callback)
     : SignedRequest(sender),
       payload_(std::move(payload)),
+      base_url_("https://youtubemediaconnect.googleapis.com"),
       callback_(std::move(callback)) {
   CHECK(payload_);
   CHECK(!callback_.is_null());
@@ -438,9 +439,13 @@ ReportPlaybackRequest::ReportPlaybackRequest(
 
 ReportPlaybackRequest::~ReportPlaybackRequest() = default;
 
+void ReportPlaybackRequest::SetBaseUrlForTesting(const GURL& base_url) {
+  base_url_ = base_url;
+}
+
 GURL ReportPlaybackRequest::GetURL() const {
   // TODO(b/341324009): Move to an util file or class.
-  return GURL("https://youtubemediaconnect.googleapis.com/v1/reports/playback");
+  return base_url_.Resolve("/v1/reports/playback");
 }
 
 ApiErrorCode ReportPlaybackRequest::MapReasonToError(
