@@ -42,9 +42,7 @@ def _find_all_host_cargo_flags_files(out_dir: str) -> Set[str]:
 
 def _get_args_for_arch(arch: str) -> List[str]:
   default_args = cronet_utils.get_android_gn_args(True, arch)
-  return ' '.join(
-      cronet_utils.filter_gn_args(default_args,
-                                  ["use_remoteexec", "enable_rust"]))
+  return ' '.join(cronet_utils.filter_gn_args(default_args, ["use_remoteexec"]))
 
 
 def _build_rust_build_script_actions(out_path: str):
