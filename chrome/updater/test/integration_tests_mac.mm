@@ -279,28 +279,33 @@ bool WaitForUpdaterExit() {
       [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
-std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths() {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+  base::Version old_updater_version;
 
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   old_updater_path = old_updater_path.Append("chromium_mac_arm64");
+  old_updater_version = base::Version("119.0.6008.0");
 #elif defined(ARCH_CPU_X86_64)
   old_updater_path = old_updater_path.Append("chromium_mac_amd64");
+  old_updater_version = base::Version("119.0.6008.0");
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("chrome_mac_universal");
+  old_updater_version = base::Version("119.0.5999.0");
 #endif
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
-  return {old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-              .Append("Contents")
-              .Append("MacOS")
-              .Append(PRODUCT_FULLNAME_STRING "_test")};
+  return {{old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
+               .Append("Contents")
+               .Append("MacOS")
+               .Append(PRODUCT_FULLNAME_STRING "_test"),
+           old_updater_version}};
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

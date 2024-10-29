@@ -206,9 +206,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetupFakeUpdaterLowerVersion(updater_scope_);
   }
 
-  void SetupRealUpdaterLowerVersion(
-      const base::FilePath& updater_path) const override {
-    updater::test::SetupRealUpdaterLowerVersion(updater_scope_, updater_path);
+  void SetupRealUpdater(const base::FilePath& updater_path) const override {
+    updater::test::SetupRealUpdater(updater_scope_, updater_path);
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,
@@ -261,8 +260,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectNotActive(updater_scope_, app_id);
   }
 
-  void RunWake(int exit_code) const override {
-    updater::test::RunWake(updater_scope_, exit_code);
+  void RunWake(int exit_code, const base::Version& version) const override {
+    updater::test::RunWake(updater_scope_, exit_code, version);
   }
 
   void RunWakeAll() const override {

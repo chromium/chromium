@@ -1635,27 +1635,32 @@ void InvokeTestServiceFunction(const std::string& function_name,
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
-std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths() {
-  std::vector<std::wstring> supported_archs;
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
+  struct LowerVersion {
+    base::FilePath arch_dir;
+    base::Version version;
+  };
+
+  std::vector<LowerVersion> lower_versions;
 
 // TODO(crbug.com/374217027): Test with newer x64 chrome-branded executables
 // that install to %ProgramFiles(x86)%.
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  supported_archs = {
-      L"chromium_win_arm64",
-      L"chromium_win_x86_64",
-      L"chromium_win_x86",
+  lower_versions = {
+      {base::FilePath(L"chromium_win_arm64"), base::Version("132.0.6792.0")},
+      {base::FilePath(L"chromium_win_x86_64"), base::Version("132.0.6792.0")},
+      {base::FilePath(L"chromium_win_x86"), base::Version("132.0.6793.0")},
   };
 #elif defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
-  supported_archs = {
-      L"chromium_win_x86_64",
-      L"chromium_win_x86",
+  lower_versions = {
+      {base::FilePath(L"chromium_win_x86_64"), base::Version("132.0.6792.0")},
+      {base::FilePath(L"chromium_win_x86"), base::Version("132.0.6793.0")},
   };
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  supported_archs = {
-      L"chrome_win_x86",
+  lower_versions = {
+      {base::FilePath(L"chrome_win_x86"), base::Version("119.0.5999.0")},
   };
 #endif
 
@@ -1670,13 +1675,15 @@ std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths() {
 #endif
   path_suffix = path_suffix.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe"));
 
-  std::vector<base::FilePath> updater_paths;
+  std::vector<TestUpdaterVersion> updater_versions;
   base::ranges::transform(
-      supported_archs, std::back_inserter(updater_paths),
-      [&](const std::wstring& arch) {
-        return old_updater_path.Append(arch).Append(path_suffix);
+      lower_versions, std::back_inserter(updater_versions),
+      [&](const LowerVersion& lower_version) -> TestUpdaterVersion {
+        return {
+            old_updater_path.Append(lower_version.arch_dir).Append(path_suffix),
+            lower_version.version};
       });
-  return updater_paths;
+  return updater_versions;
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {

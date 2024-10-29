@@ -114,8 +114,7 @@ class IntegrationTestCommands
   virtual void CopyLog(const std::string& infix) const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
-  virtual void SetupRealUpdaterLowerVersion(
-      const base::FilePath& updater_path) const = 0;
+  virtual void SetupRealUpdater(const base::FilePath& updater_path) const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
@@ -129,7 +128,7 @@ class IntegrationTestCommands
                          const std::string& tag) const = 0;
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
-  virtual void RunWake(int exit_code) const = 0;
+  virtual void RunWake(int exit_code, const base::Version& version) const = 0;
   virtual void RunWakeAll() const = 0;
   virtual void RunWakeActive(int exit_code) const = 0;
   virtual void RunCrashMe() const = 0;

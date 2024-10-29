@@ -389,8 +389,8 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetupFakeUpdaterLowerVersion();
   }
 
-  void SetupRealUpdaterLowerVersion(const base::FilePath& updater_path) {
-    test_commands_->SetupRealUpdaterLowerVersion(updater_path);
+  void SetupRealUpdater(const base::FilePath& updater_path) {
+    test_commands_->SetupRealUpdater(updater_path);
   }
 
   void SetActive(const std::string& app_id) {
@@ -446,9 +446,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->UninstallApp(app_id);
   }
 
-  void RunWake(int exit_code) {
+  void RunWake(int exit_code,
+               const base::Version& version = base::Version(kUpdaterVersion)) {
     ASSERT_TRUE(WaitForUpdaterExit());
-    test_commands_->RunWake(exit_code);
+    test_commands_->RunWake(exit_code, version);
   }
 
   void RunWakeAll() {
@@ -800,16 +801,15 @@ TEST_F(IntegrationTest, OverinstallRedundant) {
 }
 
 class IntegrationLowerVersionTest
-    : public ::testing::WithParamInterface<base::FilePath>,
+    : public ::testing::WithParamInterface<TestUpdaterVersion>,
       public IntegrationTest {};
 
-INSTANTIATE_TEST_SUITE_P(
-    IntegrationLowerVersionTestCases,
-    IntegrationLowerVersionTest,
-    ::testing::ValuesIn(GetRealUpdaterLowerVersionPaths()));
+INSTANTIATE_TEST_SUITE_P(IntegrationLowerVersionTestCases,
+                         IntegrationLowerVersionTest,
+                         ::testing::ValuesIn(GetRealUpdaterLowerVersions()));
 
 TEST_P(IntegrationLowerVersionTest, OverinstallWorking) {
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
@@ -841,7 +841,7 @@ TEST_P(IntegrationLowerVersionTest, OverinstallWorking) {
 }
 
 TEST_P(IntegrationLowerVersionTest, OverinstallBroken) {
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(DeleteActiveUpdaterExecutable());
@@ -856,7 +856,7 @@ TEST_P(IntegrationLowerVersionTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 
   // Cleanup the older version by reinstalling and uninstalling.
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -941,17 +941,31 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, CleanupOldVersion) {
+class IntegrationCleanupOldVersionTest
+    : public ::testing::WithParamInterface<TestUpdaterVersion>,
+      public IntegrationTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationCleanupOldVersionTestCases,
+    IntegrationCleanupOldVersionTest,
+    ::testing::ValuesIn([] {
+      std::vector<TestUpdaterVersion> v = GetRealUpdaterLowerVersions();
+      v.push_back({GetSetupExecutablePath(), base::Version(kUpdaterVersion)});
+      return v;
+    }()));
+
+TEST_P(IntegrationCleanupOldVersionTest, VariousArchitectures) {
   ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
 
-  // Since the old version is not working, the new version should install and
-  // become active.
-  ASSERT_NO_FATAL_FAILURE(Install());
+  // Since the old version is not working, the real version should install and
+  // become active, even if the real version is a different architecture from
+  // the native architecture.
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(GetParam().version.GetString()));
 
   // Waking the new version should clean up the old.
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0, GetParam().version));
   ASSERT_TRUE(WaitForUpdaterExit());
   std::optional<base::FilePath> path =
       GetInstallDirectory(GetUpdaterScopeForTesting());
@@ -965,6 +979,9 @@ TEST_F(IntegrationTest, CleanupOldVersion) {
       });
   EXPECT_EQ(dirs, 1);
 
+  // Cleanup by overinstalling the current version and uninstalling.
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -1584,7 +1601,7 @@ TEST_F(IntegrationTest, RotateLog) {
 TEST_P(IntegrationLowerVersionTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
   // Trigger an old instance update check.
@@ -1611,7 +1628,7 @@ TEST_P(IntegrationLowerVersionTest, SelfUpdateFromOldReal) {
 TEST_P(IntegrationLowerVersionTest, UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
 
   // Trigger an old instance update check.
@@ -1643,7 +1660,7 @@ TEST_P(IntegrationLowerVersionTest, UninstallIfUnusedSelfAndOldReal) {
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
 TEST_P(IntegrationLowerVersionTest, InstallLowerVersion) {
-  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion(GetParam()));
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 

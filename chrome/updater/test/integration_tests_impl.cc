@@ -823,9 +823,10 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
   }
 }
 
-void RunWake(UpdaterScope scope, int expected_exit_code) {
-  RunUpdaterWithSwitches(base::Version(kUpdaterVersion), scope, {kWakeSwitch},
-                         expected_exit_code);
+void RunWake(UpdaterScope scope,
+             int expected_exit_code,
+             const base::Version& version) {
+  RunUpdaterWithSwitches(version, scope, {kWakeSwitch}, expected_exit_code);
 }
 
 void RunWakeAll(UpdaterScope scope) {
@@ -1179,8 +1180,7 @@ void ExpectCliResult(base::CommandLine command_line,
   }
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope,
-                                  const base::FilePath& updater_path) {
+void SetupRealUpdater(UpdaterScope scope, const base::FilePath& updater_path) {
   base::CommandLine command_line(updater_path);
   command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
@@ -1545,14 +1545,9 @@ std::set<base::FilePath::StringType> GetCompanionAppProcessNames() {
 VersionProcessFilter::VersionProcessFilter()
     : versions_([] {
         std::vector<base::Version> versions = {base::Version(kUpdaterVersion)};
-        for (const auto& updater_path : GetRealUpdaterLowerVersionPaths()) {
-          const std::unique_ptr<FileVersionInfoWin> version_info =
-              FileVersionInfoWin::CreateFileVersionInfoWin(updater_path);
-          CHECK(version_info);
-          const base::Version version(
-              base::UTF16ToUTF8(version_info->file_version()));
-          CHECK(version.IsValid());
-          versions.push_back(version);
+        for (const auto& updater_version : GetRealUpdaterLowerVersions()) {
+          CHECK(updater_version.version.IsValid());
+          versions.push_back(updater_version.version);
         }
         return versions;
       }()) {}

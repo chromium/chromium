@@ -289,9 +289,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
-  void SetupRealUpdaterLowerVersion(
-      const base::FilePath& updater_path) const override {
-    RunCommand("setup_real_updater_lower_version",
+  void SetupRealUpdater(const base::FilePath& updater_path) const override {
+    RunCommand("setup_real_updater",
                {Param("updater_path", updater_path.MaybeAsASCII())});
   }
 
@@ -339,9 +338,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     updater::test::SetActive(updater_scope_, app_id);
   }
 
-  void RunWake(int expected_exit_code) const override {
+  void RunWake(int expected_exit_code,
+               const base::Version& version) const override {
     RunCommand("run_wake",
-               {Param("exit_code", base::NumberToString(expected_exit_code))});
+               {Param("exit_code", base::NumberToString(expected_exit_code)),
+                Param("version", version.GetString())});
   }
 
   void RunWakeAll() const override { RunCommand("run_wake_all", {}); }

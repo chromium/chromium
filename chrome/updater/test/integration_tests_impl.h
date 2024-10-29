@@ -93,6 +93,11 @@ struct AppUpdateExpectation {
   const std::string response_status;
 };
 
+struct TestUpdaterVersion {
+  base::FilePath updater_setup_path;
+  base::Version version;
+};
+
 // Returns the path to the updater installer program (in the build output
 // directory). This is typically the updater setup, or the updater itself for
 // the platforms where a setup program is not provided.
@@ -206,7 +211,7 @@ void Uninstall(UpdaterScope scope);
 
 // Runs the wake client and wait for it to exit. Assert that it exits with
 // `exit_code`. The server should exit a few seconds after.
-void RunWake(UpdaterScope scope, int exit_code);
+void RunWake(UpdaterScope scope, int exit_code, const base::Version& version);
 
 // Runs the wake-all client and wait for it to exit. Assert that it exits with
 // kErrorOk. The server should exit a few seconds after.
@@ -278,13 +283,12 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
-// Gets the file paths for the real updater lower version.
-std::vector<base::FilePath> GetRealUpdaterLowerVersionPaths();
+// Gets the real updater lower version paths/versions.
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions();
 
-// Sets up a real updater on the system at a version lower than the test. The
-// exact version of the updater is not defined.
-void SetupRealUpdaterLowerVersion(UpdaterScope scope,
-                                  const base::FilePath& updater_path);
+// Sets up a real updater on the system given any (higher or lower) version of
+// `UpdaterSetup.exe` in `updater_path`.
+void SetupRealUpdater(UpdaterScope scope, const base::FilePath& updater_path);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
