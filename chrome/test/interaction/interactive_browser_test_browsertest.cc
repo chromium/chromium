@@ -68,8 +68,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, DumpElements) {
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(InstrumentTab(kWebContentsId),
                   InContext(incog->window()->GetElementContext(),
-                            Steps(PressButton(kToolbarAppMenuButtonElementId),
-                                  DumpElements())));
+                            PressButton(kToolbarAppMenuButtonElementId)),
+                  DumpElements());
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,

@@ -181,8 +181,10 @@ class InteractiveTestPrivate {
  protected:
   // Dumps the entire tree of named elements. Default implementation organizes
   // all elements by context. This is the entry point when printing test failure
-  // information.
-  virtual DebugTreeNode DebugDumpElements() const;
+  // information. The `current_context` is the current context in the test, if
+  // known.
+  virtual DebugTreeNode DebugDumpElements(
+      ui::ElementContext current_context) const;
 
   // Dumps the contents of a particular context.
   virtual DebugTreeNode DebugDumpContext(

@@ -191,7 +191,7 @@ void InteractiveTestPrivate::OnSequenceAborted(
              "Wrap waiting for the hide and subsequent checks in a "
              "WithoutDelay() to avoid possible access-after-delete.";
     }
-    DebugDumpElements().PrintTo(additional_message);
+    DebugDumpElements(data.context).PrintTo(additional_message);
     GTEST_FAIL() << "Interactive test failed " << data
                  << additional_message.str();
   }
@@ -238,19 +238,23 @@ void InteractiveTestPrivate::DebugTreeNode::PrintTo(
   PrintDebugTree(stream, *this, "", true);
 }
 
-InteractiveTestPrivate::DebugTreeNode
-InteractiveTestPrivate::DebugDumpElements() const {
+InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpElements(
+    ui::ElementContext current_context) const {
   DebugTreeNode node("UI Elements");
   const auto* const tracker = ui::ElementTracker::GetElementTracker();
   for (const auto ctx : tracker->GetAllContextsForTesting()) {
-    node.children.emplace_back(DebugDumpContext(ctx));
+    DebugTreeNode ctx_node = DebugDumpContext(ctx);
+    if (ctx == current_context) {
+      ctx_node.text = "[CURRENT CONTEXT] " + ctx_node.text;
+    }
+    node.children.emplace_back(std::move(ctx_node));
   }
   return node;
 }
 
 InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpContext(
     ui::ElementContext context) const {
-  DebugTreeNode node(DebugDescribeContext(context));
+  DebugTreeNode node(DebugDescribeContext(context).c_str());
   auto* const tracker = ui::ElementTracker::GetElementTracker();
   for (const auto* const element : tracker->GetAllElementsForTesting(context)) {
     node.children.emplace_back(DebugDumpElement(element));

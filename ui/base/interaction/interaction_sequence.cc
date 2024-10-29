@@ -597,6 +597,10 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
                                    : std::nullopt);
         }
       }
+      if (const auto* ctx =
+              std::get_if<ui::ElementContext>(&next_step()->context)) {
+        aborted_data.context = *ctx;
+      }
     }
   } else if (current_step_) {
     aborted_data.step_type = current_step_->type;
@@ -612,6 +616,16 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       waiting_for.element_id = next_step()->id;
       waiting_for.step_description = next_step()->description;
       aborted_data.subsequence_failures.emplace_back(std::move(waiting_for));
+      if (const auto* ctx =
+              std::get_if<ui::ElementContext>(&next_step()->context)) {
+        aborted_data.context = *ctx;
+      }
+    }
+    if (!aborted_data.context && current_step_) {
+      if (const auto* ctx =
+              std::get_if<ui::ElementContext>(&current_step_->context)) {
+        aborted_data.context = *ctx;
+      }
     }
   }
   return aborted_data;

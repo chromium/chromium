@@ -211,10 +211,12 @@ InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
 }
 
 InteractionSequence::StepBuilder InteractiveTestApi::DumpElements() {
-  return Do([this]() {
-    private_test_impl().DebugDumpElements().PrintTo(
-        COMPACT_GOOGLE_LOG_INFO.stream());
-  });
+  return WithElement(kInteractiveTestPivotElementId,
+                     [this](ui::TrackedElement* el) {
+                       private_test_impl()
+                           .DebugDumpElements(el->context())
+                           .PrintTo(COMPACT_GOOGLE_LOG_INFO.stream());
+                     });
 }
 
 InteractionSequence::StepBuilder InteractiveTestApi::DumpElementsInContext() {
@@ -425,18 +427,19 @@ bool InteractiveTestApi::RunTestSequenceImpl(
             [](base::WeakPtr<InteractionSequence> sequence,
                base::WeakPtr<internal::InteractiveTestPrivate> impl) {
               std::ostringstream oss;
+              ui::ElementContext context;
               if (sequence) {
-                oss << internal::kInteractiveTestFailedMessagePrefix
-                    << sequence->BuildAbortedData(
-                           InteractionSequence::AbortedReason::
-                               kSequenceTimedOut);
+                const auto data = sequence->BuildAbortedData(
+                    InteractionSequence::AbortedReason::kSequenceTimedOut);
+                oss << internal::kInteractiveTestFailedMessagePrefix << data;
+                context = data.context;
               } else {
                 oss << "Interactive test: timeout after test sequence "
                        "destroyed; a failure message may already have been "
                        "logged.";
               }
               if (impl) {
-                impl->DebugDumpElements().PrintTo(oss);
+                impl->DebugDumpElements(context).PrintTo(oss);
               }
               return oss.str();
             },
