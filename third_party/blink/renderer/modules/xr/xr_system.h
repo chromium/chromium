@@ -383,7 +383,7 @@ class XRSystem final : public EventTarget,
       const PendingRequestSessionQuery& query);
 
   RequestedXRSessionFeatureSet ParseRequestedFeatures(
-      const HeapVector<ScriptValue>& features,
+      const Vector<String>& features,
       const device::mojom::blink::XRSessionMode& session_mode,
       XRSessionInit* session_init,
       mojom::ConsoleMessageLevel error_level);

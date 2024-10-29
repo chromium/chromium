@@ -1170,7 +1170,7 @@ void XRSystem::RequestInlineSession(PendingRequestSessionQuery* query,
 }
 
 XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
-    const HeapVector<ScriptValue>& features,
+    const Vector<String>& features,
     const device::mojom::blink::XRSessionMode& session_mode,
     XRSessionInit* session_init,
     mojom::blink::ConsoleMessageLevel error_level) {
@@ -1180,41 +1180,35 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
 
   // Iterate over all requested features, even if intermediate
   // elements are found to be invalid.
-  for (const auto& feature : features) {
-    String feature_string;
-    if (feature.ToString(feature_string)) {
-      auto feature_enum = StringToXRSessionFeature(feature_string);
+  for (const auto& feature_string : features) {
+    auto feature_enum = StringToXRSessionFeature(feature_string);
 
-      if (!feature_enum) {
-        AddConsoleMessage(error_level,
-                          "Unrecognized feature requested: " + feature_string);
-        result.invalid_features = true;
-      } else if (!IsFeatureEnabledForContext(feature_enum.value(),
-                                             GetExecutionContext())) {
-        AddConsoleMessage(error_level,
-                          "Unsupported feature requested: " + feature_string);
-        result.invalid_features = true;
-      } else if (!IsFeatureValidForMode(feature_enum.value(), session_mode,
-                                        session_init, GetExecutionContext(),
-                                        error_level)) {
-        AddConsoleMessage(error_level, "Feature '" + feature_string +
-                                           "' is not supported for mode: " +
-                                           SessionModeToString(session_mode));
-        result.invalid_features = true;
-      } else if (!HasRequiredPermissionsPolicy(GetExecutionContext(),
-                                               feature_enum.value())) {
-        AddConsoleMessage(error_level,
-                          "Feature '" + feature_string +
-                              "' is not permitted by permissions policy");
-        result.invalid_features = true;
-      } else {
-        DVLOG(3) << __func__ << ": Adding feature " << feature_string
-                 << " to valid_features.";
-        result.valid_features.insert(feature_enum.value());
-      }
-    } else {
-      AddConsoleMessage(error_level, "Unrecognized feature value");
+    if (!feature_enum) {
+      AddConsoleMessage(error_level,
+                        "Unrecognized feature requested: " + feature_string);
       result.invalid_features = true;
+    } else if (!IsFeatureEnabledForContext(feature_enum.value(),
+                                           GetExecutionContext())) {
+      AddConsoleMessage(error_level,
+                        "Unsupported feature requested: " + feature_string);
+      result.invalid_features = true;
+    } else if (!IsFeatureValidForMode(feature_enum.value(), session_mode,
+                                      session_init, GetExecutionContext(),
+                                      error_level)) {
+      AddConsoleMessage(error_level, "Feature '" + feature_string +
+                                         "' is not supported for mode: " +
+                                         SessionModeToString(session_mode));
+      result.invalid_features = true;
+    } else if (!HasRequiredPermissionsPolicy(GetExecutionContext(),
+                                             feature_enum.value())) {
+      AddConsoleMessage(error_level,
+                        "Feature '" + feature_string +
+                            "' is not permitted by permissions policy");
+      result.invalid_features = true;
+    } else {
+      DVLOG(3) << __func__ << ": Adding feature " << feature_string
+               << " to valid_features.";
+      result.valid_features.insert(feature_enum.value());
     }
   }
 
