@@ -203,7 +203,6 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
     const lens::TextLayout_Line& proto_line,
     const lens::TranslationData_Line& translated_line,
     const std::string& line_translation,
-    const gfx::Size& resized_bitmap_size,
     lens::WritingDirection writing_direction) {
   lens::mojom::TranslatedLinePtr line = lens::mojom::TranslatedLine::New();
 
@@ -300,10 +299,11 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
     auto translated_line = translation_data.line()[line_index];
     lines.push_back(CreateTranslatedLineMojomFromProto(
         proto_line, translated_line, translation_data.translation(),
-        resized_bitmap_size, translation_data.writing_direction()));
+        translation_data.writing_direction()));
   }
 
   paragraph->lines = std::move(lines);
+  paragraph->resized_bitmap_size = gfx::Size(resized_bitmap_size);
   paragraph->content_language = translation_data.target_language();
   paragraph->alignment = ProtoToMojo(translation_data.alignment());
   paragraph->writing_direction =

@@ -1082,9 +1082,15 @@ export class TextLayerElement extends PolymerElement {
       return '';
     }
 
+    // Get screenshot aspect ratio to get correct paddings for image data.
+    const paragraph =
+        this.renderedTranslateParagraphs[translatedLineData.paragraphIndex];
+    const screenshotAspectRatio =
+        paragraph.resizedBitmapSize.width / paragraph.resizedBitmapSize.height;
+
     // Both background image padding values are relative to the line height.
-    const horizontalPadding =
-        backgroundImageData.horizontalPadding * lineBoundingBox.box.height;
+    const horizontalPadding = backgroundImageData.horizontalPadding *
+        lineBoundingBox.box.height / screenshotAspectRatio;
     const verticalPadding =
         backgroundImageData.verticalPadding * lineBoundingBox.box.height;
 
