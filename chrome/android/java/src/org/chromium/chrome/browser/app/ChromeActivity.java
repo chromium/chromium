@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -198,7 +197,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubbleBackPressHandler;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -217,7 +215,6 @@ import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
 import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstallBottomSheetCoordinator;
-import org.chromium.components.webxr.XrDelegate;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -2178,15 +2175,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * Called when the back button is pressed.
-     * @return Whether or not the back button was handled.
-     */
-    protected abstract boolean handleBackPressed();
-
-    /**
-     * @return If no higher priority back actions occur, whether pressing the back button
-     *         would result in closing the tab. A true return value does not guarantee that
-     *         a subsequent call to {@link #handleBackPressed()} will close the tab.
+     * @return If no higher priority back actions occur, whether pressing the back button would
+     *     result in closing the tab. A true return value does not guarantee that a subsequent call
+     *     to {@link #handleBackPressed()} will close the tab.
      */
     public boolean backShouldCloseTab(Tab tab) {
         return false;
@@ -2300,70 +2291,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return true;
     }
 
-    /** Handles back press events for Chrome in various states. */
-    protected final boolean handleOnBackPressed() {
-        RecordUserAction.record(
-                mNativeInitialized ? "SystemBack" : "SystemBackBeforeNativeInitialized");
-        if (isActivityFinishingOrDestroyed()) {
-            RecordUserAction.record("SystemBackOnActivityFinishingOrDestroyed");
-        }
-
-        if (TextBubble.getCountSupplier().get() != null
-                && TextBubble.getCountSupplier().get() > 0) {
-            // TODO(crbug.com/40208738): should this stop propagating the event?
-            TextBubble.dismissBubbles();
-            BackPressManager.record(Type.TEXT_BUBBLE);
-        }
-
-        XrDelegate xrDelegate = XrDelegateProvider.getDelegate();
-        if (xrDelegate != null && xrDelegate.onBackPressed()) {
-            BackPressManager.record(Type.XR_DELEGATE);
-            return true;
-        }
-
-        if (mRootUiCoordinator.getBottomSheetController() != null
-                && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
-            BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
-            return true;
-        }
-
-        if (mCompositorViewHolderSupplier.hasValue()) {
-            LayoutManagerImpl layoutManager =
-                    mCompositorViewHolderSupplier.get().getLayoutManager();
-            if (layoutManager != null && layoutManager.onBackPressed()) {
-                // Back press metrics recording is handled by LayoutManagerImpl internally.
-                return true;
-            }
-        }
-
-        // Fullscreen must be before selection popup. crbug.com/1454817.
-        if (exitFullscreenIfShowing()) {
-            BackPressManager.record(Type.FULLSCREEN);
-            return true;
-        }
-
-        SelectionPopupController controller = getSelectionPopupController();
-        if (controller != null && controller.isSelectActionBarShowing()) {
-            controller.clearSelection();
-            BackPressManager.record(Type.SELECTION_POPUP);
-            return true;
-        }
-
-        if (getManualFillingComponent().onBackPressed()) {
-            BackPressManager.record(Type.MANUAL_FILLING);
-            return true;
-        }
-
-        if (mRootUiCoordinator.getFindToolbarManager() != null
-                && mRootUiCoordinator.getFindToolbarManager().isShowing()) {
-            BackPressManager.record(BackPressHandler.Type.FIND_TOOLBAR);
-            mRootUiCoordinator.getFindToolbarManager().hideToolbar();
-            return true;
-        }
-
-        return handleBackPressed();
-    }
-
     private void initializeBackPressHandling() {
         mBackPressManager.setIsGestureNavEnabledSupplier(
                 () -> UiUtils.isGestureNavigationMode(getWindow()));
@@ -2378,70 +2305,48 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         mLegacyTabStartupMetricsTracker.onBackPressed();
                     }
                 };
-        if (BackPressManager.isEnabled()) {
-            mBackPressManager.setOnBackPressedListener(callbackForLegacyTabStartupMetricsTracker);
-            getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
-            // TODO(crbug.com/40208738): consider move to RootUiCoordinator.
-            mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
-            mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
 
-            if (XrDelegateProvider.getDelegate() != null) {
-                mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
-            }
+        mBackPressManager.setOnBackPressedListener(callbackForLegacyTabStartupMetricsTracker);
+        getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
+        // TODO(crbug.com/40208738): consider move to RootUiCoordinator.
+        mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
+        mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
 
-            mLayoutManagerSupplier.addObserver(
-                    (layoutManager) -> {
-                        assert !mBackPressManager.has(Type.SCENE_OVERLAY)
-                                : "LayoutManager should be only set at most once";
-                        mBackPressManager.addHandler(layoutManager, Type.SCENE_OVERLAY);
-                    });
-
-            mSelectionPopupBackPressInitCallback =
-                    (tabModelSelector) -> {
-                        assert !mBackPressManager.has(Type.SELECTION_POPUP)
-                                : "Tab Model Selector should be set at most once";
-                        mSelectionPopupBackPressHandler =
-                                new SelectionPopupBackPressHandler(tabModelSelector);
-                        mBackPressManager.addHandler(
-                                mSelectionPopupBackPressHandler, Type.SELECTION_POPUP);
-                        getTabModelSelectorSupplier()
-                                .removeObserver(mSelectionPopupBackPressInitCallback);
-                    };
-            getTabModelSelectorSupplier().addObserver(mSelectionPopupBackPressInitCallback);
-
-            mBrowserControlsManagerSupplier.addObserver(
-                    (controlManager) -> {
-                        assert !mBackPressManager.has(Type.FULLSCREEN)
-                                : "BrowserControlManager should be set at most once";
-                        mBackPressManager.addHandler(
-                                new FullscreenBackPressHandler(
-                                        controlManager.getFullscreenManager()),
-                                BackPressHandler.Type.FULLSCREEN);
-                    });
-
-            mCloseListenerManager = new CloseListenerManager(getActivityTabProvider());
-            mBackPressManager.addHandler(
-                    mCloseListenerManager, BackPressHandler.Type.CLOSE_WATCHER);
-        } else {
-            OnBackPressedCallback callback =
-                    new OnBackPressedCallback(true) {
-                        @Override
-                        public void handleOnBackPressed() {
-                            mBackPressManager.recordSystemBackCountIfBeforeFirstVisibleContent();
-                            callbackForLegacyTabStartupMetricsTracker.run();
-                            if (!ChromeActivity.this.handleOnBackPressed()) {
-                                if (BackPressManager.shouldMoveToBackDuringStartup()) {
-                                    moveTaskToBack(true);
-                                } else {
-                                    setEnabled(false);
-                                    getOnBackPressedDispatcher().onBackPressed();
-                                    setEnabled(true);
-                                }
-                            }
-                        }
-                    };
-            getOnBackPressedDispatcher().addCallback(this, callback);
+        if (XrDelegateProvider.getDelegate() != null) {
+            mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
         }
+
+        mLayoutManagerSupplier.addObserver(
+                (layoutManager) -> {
+                    assert !mBackPressManager.has(Type.SCENE_OVERLAY)
+                            : "LayoutManager should be only set at most once";
+                    mBackPressManager.addHandler(layoutManager, Type.SCENE_OVERLAY);
+                });
+
+        mSelectionPopupBackPressInitCallback =
+                (tabModelSelector) -> {
+                    assert !mBackPressManager.has(Type.SELECTION_POPUP)
+                            : "Tab Model Selector should be set at most once";
+                    mSelectionPopupBackPressHandler =
+                            new SelectionPopupBackPressHandler(tabModelSelector);
+                    mBackPressManager.addHandler(
+                            mSelectionPopupBackPressHandler, Type.SELECTION_POPUP);
+                    getTabModelSelectorSupplier()
+                            .removeObserver(mSelectionPopupBackPressInitCallback);
+                };
+        getTabModelSelectorSupplier().addObserver(mSelectionPopupBackPressInitCallback);
+
+        mBrowserControlsManagerSupplier.addObserver(
+                (controlManager) -> {
+                    assert !mBackPressManager.has(Type.FULLSCREEN)
+                            : "BrowserControlManager should be set at most once";
+                    mBackPressManager.addHandler(
+                            new FullscreenBackPressHandler(controlManager.getFullscreenManager()),
+                            BackPressHandler.Type.FULLSCREEN);
+                });
+
+        mCloseListenerManager = new CloseListenerManager(getActivityTabProvider());
+        mBackPressManager.addHandler(mCloseListenerManager, BackPressHandler.Type.CLOSE_WATCHER);
     }
 
     @Override

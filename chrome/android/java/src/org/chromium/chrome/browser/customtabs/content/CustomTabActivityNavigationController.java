@@ -42,12 +42,9 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -117,8 +114,6 @@ public class CustomTabActivityNavigationController
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>(false);
 
-    @Nullable private ToolbarManager mToolbarManager;
-
     @Nullable private FinishHandler mFinishHandler;
 
     private boolean mIsFinishing;
@@ -178,18 +173,8 @@ public class CustomTabActivityNavigationController
     }
 
     /**
-     * Notifies the navigation controller that the ToolbarManager has been created and is ready for
-     * use. ToolbarManager isn't passed directly to the constructor because it's not guaranteed to
-     * be initialized yet.
-     */
-    public void onToolbarInitialized(ToolbarManager manager) {
-        assert manager != null : "Toolbar manager not initialized";
-        mToolbarManager = manager;
-    }
-
-    /**
-     * Performs navigation using given {@link LoadUrlParams}.
-     * The source Intent is used for tracking page loading times (see {@link CustomTabObserver}).
+     * Performs navigation using given {@link LoadUrlParams}. The source Intent is used for tracking
+     * page loading times (see {@link CustomTabObserver}).
      */
     public void navigate(final LoadUrlParams params, Intent sourceIntent) {
         Tab tab = mTabProvider.getTab();
@@ -244,32 +229,7 @@ public class CustomTabActivityNavigationController
                         != 0;
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
-        if (!BackPressManager.isEnabled()) {
-            // If enabled, BackPressManager, rather than this class, will trigger their custom
-            // logic of handling back press.
-            final WebContents webContents = mTabProvider.getTab().getWebContents();
-            if (webContents != null) {
-                RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-                if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) {
-                    BackPressManager.record(BackPressHandler.Type.CLOSE_WATCHER);
-                    BackPressManager.recordForCustomTab(
-                            BackPressHandler.Type.CLOSE_WATCHER, separateTask);
-                    return true;
-                }
-            }
-
-            if (mToolbarManager != null && mToolbarManager.back()) {
-                BackPressManager.record(BackPressHandler.Type.TAB_HISTORY);
-                BackPressManager.recordForCustomTab(
-                        BackPressHandler.Type.TAB_HISTORY, separateTask);
-                return true;
-            }
-            // If enabled, BackPressManager will record this internally. Otherwise, this should
-            // be recorded manually.
-            BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
-            BackPressManager.recordForCustomTab(
-                    BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB, separateTask);
-        } else if (BackPressManager.correctTabNavigationOnFallback()) {
+        if (BackPressManager.correctTabNavigationOnFallback()) {
             if (mTabProvider.getTab().canGoBack()) {
                 return false;
             }

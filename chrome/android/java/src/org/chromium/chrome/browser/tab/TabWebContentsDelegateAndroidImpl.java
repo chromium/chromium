@@ -21,7 +21,6 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.gesturenav.NativePageBitmapCapturer;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
@@ -196,10 +195,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void navigationStateChanged(int flags) {
-        if (BackPressManager.isEnabled()) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) observers.next().onNavigationStateChanged();
-        }
+        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+        while (observers.hasNext()) observers.next().onNavigationStateChanged();
+
         if ((flags & InvalidateTypes.TAB) != 0) {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(),
@@ -226,7 +224,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             mTab.updateTitle();
         }
         if ((flags & InvalidateTypes.URL) != 0) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            observers = mTab.getTabObservers();
             while (observers.hasNext()) observers.next().onUrlUpdated(mTab);
         }
         mDelegate.navigationStateChanged(flags);

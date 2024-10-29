@@ -8,7 +8,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -62,10 +61,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         if (controlsCoordinator != null && controlsCoordinator.onBackPressed()) {
             return true;
         }
-        Tab tab =
-                BackPressManager.shouldUseActivityTabProvider()
-                        ? mActivityTabSupplier.get()
-                        : mTabSupplier.get();
+        Tab tab = mActivityTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
             NativePage nativePage = tab.getNativePage();
             if (nativePage != null) {
@@ -143,10 +139,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                         controlsCoordinator.getHandleBackPressChangedSupplier().get())) {
             return true;
         }
-        Tab tab =
-                BackPressManager.shouldUseActivityTabProvider()
-                        ? mActivityTabSupplier.get()
-                        : mTabSupplier.get();
+        Tab tab = mActivityTabSupplier.get();
         return tab != null && tab.canGoBack();
     }
 

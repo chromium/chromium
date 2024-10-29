@@ -129,14 +129,13 @@ public class TabModalLifetimeHandler
         mHideContextualSearch = hideContextualSearch;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBackPressManager = backPressManager;
-        if (BackPressManager.isEnabled()) {
-            mManager.addObserver(this);
-            backPressManager.addHandler(this, Type.TAB_MODAL_HANDLER);
-        }
+        mManager.addObserver(this);
+        backPressManager.addHandler(this, Type.TAB_MODAL_HANDLER);
     }
 
     /**
      * Notified when the focus of the omnibox has changed.
+     *
      * @param hasFocus Whether the omnibox currently has focus.
      */
     public void onOmniboxFocusChanged(boolean hasFocus) {

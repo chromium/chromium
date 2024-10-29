@@ -19,9 +19,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 import java.util.concurrent.TimeoutException;
@@ -29,7 +26,6 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link BackPressManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
 public class BackPressManagerUnitTest {
 
     private static class EmptyBackPressHandler implements BackPressHandler {
@@ -375,43 +371,6 @@ public class BackPressManagerUnitTest {
         h1.getHandleBackPressChangedSupplier().set(null);
         Assert.assertFalse(
                 "Callback should be disabled if no handler is enabled",
-                manager.getCallback().isEnabled());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
-    public void testAlwaysEnabledCallback_TabbedActivity() {
-        BackPressManager manager = new BackPressManager();
-        manager.setHasSystemBackArm(true);
-        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
-        EmptyBackPressHandler h2 = new EmptyBackPressHandler();
-        manager.addHandler(h1, 0);
-        manager.addHandler(h2, 1);
-        h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue(
-                "Callback should be enabled if any of handlers are enabled",
-                manager.getCallback().isEnabled());
-        h1.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
-        Assert.assertTrue("Callback is always enabled", manager.getCallback().isEnabled());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
-    public void testAlwaysEnabledCallback_NonTabbedActivity() {
-        BackPressManager manager = new BackPressManager();
-        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
-        EmptyBackPressHandler h2 = new EmptyBackPressHandler();
-        manager.addHandler(h1, 0);
-        manager.addHandler(h2, 1);
-        h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue(
-                "Callback should be enabled if any of handlers are enabled",
-                manager.getCallback().isEnabled());
-        h1.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
-        Assert.assertFalse(
-                "Callback should not be always enabled on non tabbed activity",
                 manager.getCallback().isEnabled());
     }
 

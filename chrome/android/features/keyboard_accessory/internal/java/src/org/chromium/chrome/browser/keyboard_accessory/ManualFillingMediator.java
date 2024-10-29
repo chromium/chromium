@@ -206,9 +206,7 @@ class ManualFillingMediator
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
         mBackPressManager = backPressManager;
         mBackPressChangedSupplier.set(shouldHideOnBackPress());
-        if (BackPressManager.isEnabled()) {
-            mBackPressManager.addHandler(this, Type.MANUAL_FILLING);
-        }
+        mBackPressManager.addHandler(this, Type.MANUAL_FILLING);
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         mTabModelObserver =

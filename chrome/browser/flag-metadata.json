@@ -894,21 +894,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "back-gesture-activity-tab-provider",
-    "owners": ["lazzzis@google.com", "donnd@chromium.org", "twellington@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "back-gesture-refactor-android",
-    "owners": ["lazzzis@google.com", "jinsukkim@chromium.org", "twellington@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "back-to-home-animation",
-    "owners": ["lazzzis@google.com", "twellington@chromium.org"],
-    "expiry_milestone": 129
-  },
-  {
     "name": "backdrop-filter-mirror-edge",
     "owners": [ "flackr@chromium.org", "michaelludwig@google.com"],
     "expiry_milestone": 140

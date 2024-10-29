@@ -74,7 +74,6 @@ import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -300,7 +299,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         mProfileSupplier,
                         mSearchBoxDataProvider,
                         null,
-                        new WindowDelegate(getWindow()),
                         getWindowAndroid(),
                         /* activityTabSupplier= */ () -> null,
                         getModalDialogManagerSupplier(),

@@ -189,7 +189,6 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -711,7 +710,8 @@ public class ToolbarManager
                         ToolbarManager::homepageUrl,
                         this::updateButtonStatus,
                         mActivityTabProvider);
-        if (backPressManager != null && BackPressManager.isEnabled()) {
+
+        if (backPressManager != null) {
             mBackPressHandler = new OnBackPressHandler();
             backPressManager.addHandler(mBackPressHandler, BackPressHandler.Type.TAB_HISTORY);
             mBackPressManager = backPressManager;
@@ -866,7 +866,6 @@ public class ToolbarManager
                             profileSupplier,
                             mLocationBarModel,
                             mActionModeController.getActionModeCallback(),
-                            new WindowDelegate(mActivity.getWindow()),
                             windowAndroid,
                             mActivityTabProvider,
                             modalDialogManagerSupplier,
@@ -890,7 +889,7 @@ public class ToolbarManager
                             merchantTrustSignalsCoordinatorSupplier,
                             omniboxActionDelegate,
                             mControlsVisibilityDelegate,
-                            BackPressManager.isEnabled() ? backPressManager : null,
+                            backPressManager,
                             scrollListener,
                             tabModelSelectorSupplier,
                             new LocationBarEmbedderUiOverrides(),

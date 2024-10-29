@@ -236,7 +236,6 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
@@ -260,7 +259,6 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -2979,72 +2977,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    @Override
-    public boolean handleBackPressed() {
-        // Back press event should be handled through the back press handler.
-        assert !BackPressManager.isEnabled() : "Incorrect way of handling back press.";
-        if (!mUIWithNativeInitialized) {
-            RecordUserAction.record("SystemBackBeforeUINativeInitialized");
-            return false;
-        }
-
-        if (getToolbarManager() != null && getToolbarManager().unfocusUrlBarOnBackPress()) {
-            BackPressManager.record(BackPressHandler.Type.LOCATION_BAR);
-            return true;
-        }
-
-        if (getTabModalLifetimeHandler().onBackPressed()) {
-            BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
-            return true;
-        }
-
-        final Tab activityTab =
-                BackPressManager.shouldUseActivityTabProvider()
-                        ? getActivityTabProvider().get()
-                        : getActivityTab();
-        final Tab currentTab = activityTab;
-
-        if (currentTab == null) {
-            minimizeAppAndCloseTabOnBackPress(null);
-            return true;
-        }
-
-        final WebContents webContents = currentTab.getWebContents();
-        if (webContents != null) {
-            RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-            if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) {
-                BackPressManager.record(BackPressHandler.Type.CLOSE_WATCHER);
-                return true;
-            }
-        }
-
-        if (getToolbarManager().back()) {
-            BackPressManager.record(BackPressHandler.Type.TAB_HISTORY);
-            return true;
-        }
-
-        final @TabLaunchType int type = currentTab.getLaunchType();
-
-        if (type == TabLaunchType.FROM_READING_LIST) {
-            assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
-            assert mReadingListBackPressHandler != null;
-            mReadingListBackPressHandler.handleBackPress();
-            BackPressManager.record(BackPressHandler.Type.SHOW_READING_LIST);
-            return true;
-        }
-
-        // At this point we know either the tab will close or the app will minimize.
-        NativePage nativePage = currentTab.getNativePage();
-        if (nativePage != null) {
-            nativePage.notifyHidingWithBack();
-        }
-
-        if (minimizeAppAndCloseTabOnBackPress(currentTab)) return true;
-
-        assert false : "The back button should have already been handled by this point";
-        return false;
-    }
-
     private boolean minimizeAppAndCloseTabOnBackPress(@Nullable Tab currentTab) {
         if (currentTab == null) {
             BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
@@ -3104,10 +3036,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // Initialize some back press handlers early to reduce code duplication.
         mReadingListBackPressHandler =
                 new ReadingListBackPressHandler(getActivityTabProvider(), mBookmarkModelSupplier);
-
-        if (!BackPressManager.isEnabled()) {
-            return;
-        }
 
         mBackPressManager.setHasSystemBackArm(true);
         if (!isTablet()) {

@@ -95,11 +95,6 @@ public class ChromeActivityUnitTest {
         }
 
         @Override
-        protected boolean handleBackPressed() {
-            return true;
-        }
-
-        @Override
         protected OneshotSupplier<ProfileProvider> createProfileProvider() {
             return null;
         }

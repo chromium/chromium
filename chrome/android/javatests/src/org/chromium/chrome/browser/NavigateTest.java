@@ -35,13 +35,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -569,8 +566,14 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @DisabledTest(message = "https://crbug.com/1410635")
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testNavigateBackWithTabSwitcher() throws Exception {
+        // Disable iph
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager backPressManager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
+                });
         final String[] urls = {
             mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
             mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
@@ -615,23 +618,6 @@ public class NavigateTest {
             tabSwitcherHistogram.assertExpected(
                     "Either start surface or tab switcher handles back press.");
         }
-    }
-
-    /** Test back with tab switcher. */
-    @Test
-    @MediumTest
-    @Feature({"Navigation"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    @DisabledTest(message = "https://crbug.com/1410635")
-    public void testNavigateBackWithTabSwitcher_BackPressRefactor() throws Exception {
-        // Disable iph
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BackPressManager backPressManager =
-                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
-                    backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
-                });
-        testNavigateBackWithTabSwitcher();
     }
 
     @Test

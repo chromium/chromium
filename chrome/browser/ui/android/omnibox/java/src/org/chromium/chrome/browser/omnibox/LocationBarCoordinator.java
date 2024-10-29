@@ -58,7 +58,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -121,7 +120,6 @@ public class LocationBarCoordinator
      * @param locationBarDataProvider {@link LocationBarDataProvider} to be used for accessing
      *     Toolbar state.
      * @param actionModeCallback The default callback for text editing action bar to use.
-     * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
      * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
      * @param activityTabSupplier A Supplier to access the activity's current tab.
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} object.
@@ -162,7 +160,6 @@ public class LocationBarCoordinator
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ActionMode.Callback actionModeCallback,
-            WindowDelegate windowDelegate,
             WindowAndroid windowAndroid,
             @NonNull Supplier<Tab> activityTabSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -244,7 +241,6 @@ public class LocationBarCoordinator
                 new UrlBarCoordinator(
                         context,
                         (UrlBar) mUrlBar,
-                        windowDelegate,
                         actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator,

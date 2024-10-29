@@ -260,7 +260,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         /* statusBarColorProvider= */ this,
                         getIntentRequestTracker(),
                         () -> mToolbarCoordinator,
-                        () -> mNavigationController,
                         () -> mIntentDataProvider,
                         mBackPressManager,
                         () -> mTabController,
@@ -354,11 +353,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                     if (reason == USER_NAVIGATION) connectionKeeper.recordClientConnectionStatus();
                     handleFinishAndClose(warmupOnFinish);
                 });
-        if (BackPressManager.isEnabled()) {
-            mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
-            mBackPressManager.addHandler(
-                    mNavigationController, BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
-        }
+
+        mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
+        mBackPressManager.addHandler(
+                mNavigationController, BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+
         component.resolveSessionHandler();
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
@@ -653,14 +652,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         return (mode == TabCreationMode.HIDDEN || mode == TabCreationMode.EARLY);
     }
 
-    @Override
     protected boolean handleBackPressed() {
-        if (!BackPressManager.isEnabled()
-                && getTabModalLifetimeHandler() != null
-                && getTabModalLifetimeHandler().onBackPressed()) {
-            BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
-            return true;
-        }
         if (BackPressManager.correctTabNavigationOnFallback()) {
             if (getToolbarManager() != null && getToolbarManager().back()) {
                 return true;

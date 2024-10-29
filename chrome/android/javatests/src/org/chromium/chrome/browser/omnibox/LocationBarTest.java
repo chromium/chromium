@@ -45,8 +45,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -737,23 +735,8 @@ public class LocationBarTest {
     /** Test that back press should make the omnibox unfocused. */
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_backPress() {
-        startActivityNormally();
-
-        mOmnibox.requestFocus();
-        mOmnibox.checkFocus(true);
-        ThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.backKeyPressed());
-        mOmnibox.checkFocus(false);
-    }
-
-    /** Same with {@link #testFocusLogic_backPress()}, but with predictive back gesture enabled. */
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @Restriction(DeviceFormFactor.PHONE)
-    public void testFocusLogic_backPress_Refactored() {
         startActivityNormally();
 
         mOmnibox.requestFocus();

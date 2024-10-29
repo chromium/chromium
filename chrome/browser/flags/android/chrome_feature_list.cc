@@ -191,10 +191,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAutomotiveFullscreenToolbarImprovements,
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
-    &kBackGestureActivityTabProvider,
-    &kBackGestureMoveToBackDuringStartup,
-    &kBackGestureRefactorAndroid,
-    &kBackToHomeAnimation,
     &kBackgroundThreadPool,
     &kBlockIntentsWhileLocked,
     &kBottomBrowserControlsRefactor,
@@ -832,22 +828,6 @@ BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPwaRestoreUiAtStartup,
              "PwaRestoreUiAtStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBackGestureActivityTabProvider,
-             "BackGestureActivityTabProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBackGestureMoveToBackDuringStartup,
-             "BackGestureMoveToBackDuringStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBackGestureRefactorAndroid,
-             "BackGestureRefactorAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBackToHomeAnimation,
-             "BackToHomeAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHideTabletToolbarDownloadButton,
              "HideTabletToolbarDownloadButton",

@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -73,7 +72,6 @@ public class UrlBarCoordinator
     public UrlBarCoordinator(
             @NonNull Context context,
             @NonNull UrlBar urlBar,
-            @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
             @NonNull Callback<Boolean> focusChangeCallback,
             @NonNull UrlBarDelegate delegate,
@@ -87,7 +85,6 @@ public class UrlBarCoordinator
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
                         .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
-                        .with(UrlBarProperties.WINDOW_DELEGATE, windowDelegate)
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)

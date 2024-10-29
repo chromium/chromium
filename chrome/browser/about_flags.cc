@@ -5487,17 +5487,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReengagementNotificationName,
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReengagementNotification)},
-    {"back-gesture-activity-tab-provider",
-     flag_descriptions::kBackGestureActivityTabProviderName,
-     flag_descriptions::kBackGestureActivityTabProviderDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBackGestureRefactorAndroid)},
-    {"back-gesture-refactor-android",
-     flag_descriptions::kBackGestureRefactorAndroidName,
-     flag_descriptions::kBackGestureRefactorAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBackGestureRefactorAndroid)},
-    {"back-to-home-animation", flag_descriptions::kBackToHomeAnimationName,
-     flag_descriptions::kBackToHomeAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBackToHomeAnimation)},
 
     // Android Edge to edge
     {"draw-cutout-edge-to-edge", flag_descriptions::kDrawCutoutEdgeToEdgeName,

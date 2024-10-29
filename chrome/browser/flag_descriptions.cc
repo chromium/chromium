@@ -4253,21 +4253,6 @@ const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";
 
-const char kBackGestureActivityTabProviderName[] =
-    "Back Gesture Refactor (Activity Tab Provider)";
-const char kBackGestureActivityTabProviderDescription[] =
-    "When enabled, ChromeTabActivity will use getActivityTabProvider to "
-    "get current tab, rather than getActivityTab if predictive back gesture"
-    "is disabled.";
-
-const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
-const char kBackGestureRefactorAndroidDescription[] =
-    "Enable Back Gesture Refactor.";
-
-const char kBackToHomeAnimationName[] = "Back to home animation";
-const char kBackToHomeAnimationDescription[] =
-    "Enable Back to home animation on supported devices.";
-
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 

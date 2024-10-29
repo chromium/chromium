@@ -48,12 +48,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -420,7 +418,6 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testDismiss_BackPressed() {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
@@ -467,14 +464,6 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    public void testDismiss_BackPressed_BackPressRefactor() {
-        testDismiss_BackPressed();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ModalDialog"})
     public void testDismiss_CancelOnTouchOutside() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
 
@@ -505,7 +494,6 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK;
@@ -518,14 +506,6 @@ public class ChromeTabModalPresenterTest {
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ModalDialog"})
-    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    public void testDismiss_DismissalCause_BackPressed_BackPressRefactor() throws Exception {
-        testDismiss_DismissalCause_BackPressed();
     }
 
     @Test

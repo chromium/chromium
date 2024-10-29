@@ -97,7 +97,7 @@ public class FindToolbarManager {
                         }
                     });
         }
-        if (mBackPressManager != null && BackPressManager.isEnabled()) {
+        if (mBackPressManager != null) {
             if (mBackPressManager.has(BackPressHandler.Type.FIND_TOOLBAR)) {
                 mBackPressManager.removeHandler(BackPressHandler.Type.FIND_TOOLBAR);
             }

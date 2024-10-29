@@ -16,7 +16,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
@@ -99,7 +98,6 @@ public class ChromeCachedFlags {
                         AuxiliarySearchProvider.MAX_FAVICON_NUMBER,
                         AuxiliarySearchProvider.USE_LARGE_FAVICON,
                         AuxiliarySearchProvider.SCHEDULE_DELAY_TIME_MS,
-                        BackPressManager.TAB_HISTORY_RECOVER,
                         ChimeFeatures.ALWAYS_REGISTER,
                         TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,

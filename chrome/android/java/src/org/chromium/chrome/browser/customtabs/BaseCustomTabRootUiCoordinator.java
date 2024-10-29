@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
@@ -111,7 +110,6 @@ import java.util.function.BooleanSupplier;
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
-    private final Supplier<CustomTabActivityNavigationController> mNavigationController;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     private final Supplier<CustomTabActivityTabController> mTabController;
     private final Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
@@ -162,7 +160,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param statusBarColorProvider Provides the status bar color.
      * @param intentRequestTracker Tracks intent requests.
      * @param customTabToolbarCoordinator Coordinates the custom tab toolbar.
-     * @param customTabNavigationController Controls the custom tab navigation.
      * @param intentDataProvider Contains intent information used to start the Activity.
      * @param tabController Activity tab controller.
      * @param minimizeDelegateSupplier Supplies the {@link CustomTabMinimizeDelegate} used to
@@ -205,7 +202,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull Supplier<CustomTabToolbarCoordinator> customTabToolbarCoordinator,
-            @NonNull Supplier<CustomTabActivityNavigationController> customTabNavigationController,
             @NonNull Supplier<BrowserServicesIntentDataProvider> intentDataProvider,
             @NonNull BackPressManager backPressManager,
             @NonNull Supplier<CustomTabActivityTabController> tabController,
@@ -256,7 +252,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 baseChromeLayout,
                 edgeToEdgeStateProvider);
         mToolbarCoordinator = customTabToolbarCoordinator;
-        mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
         mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);
 
@@ -359,7 +354,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         super.initializeToolbar();
 
         mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
-        mNavigationController.get().onToolbarInitialized(mToolbarManager);
 
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
         if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {

@@ -1294,7 +1294,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     new UrlBarCoordinator(
                             getContext(),
                             (UrlBar) mUrlBar,
-                            /* windowDelegate= */ null,
                             actionModeCallback,
                             /* focusChangeCallback= */ (unused) -> {},
                             this,

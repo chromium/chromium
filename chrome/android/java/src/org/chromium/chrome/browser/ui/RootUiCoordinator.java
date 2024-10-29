@@ -1946,15 +1946,13 @@ public class RootUiCoordinator
                         mLayoutStateProviderOneShotSupplier);
 
         // TODO(crbug.com/40208738): Consider moving handler registration to feature code.
-        if (BackPressManager.isEnabled()) {
-            assert mBackPressManager != null
-                    && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);
-            BackPressHandler mBottomSheetBackPressHandler =
-                    mBottomSheetController.getBottomSheetBackPressHandler();
-            if (mBottomSheetBackPressHandler != null) {
-                mBackPressManager.addHandler(
-                        mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
-            }
+        assert mBackPressManager != null
+                && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);
+        BackPressHandler mBottomSheetBackPressHandler =
+                mBottomSheetController.getBottomSheetBackPressHandler();
+        if (mBottomSheetBackPressHandler != null) {
+            mBackPressManager.addHandler(
+                    mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
         }
     }
 

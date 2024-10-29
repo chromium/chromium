@@ -2454,15 +2454,6 @@ extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 
-extern const char kBackGestureActivityTabProviderName[];
-extern const char kBackGestureActivityTabProviderDescription[];
-
-extern const char kBackGestureRefactorAndroidName[];
-extern const char kBackGestureRefactorAndroidDescription[];
-
-extern const char kBackToHomeAnimationName[];
-extern const char kBackToHomeAnimationDescription[];
-
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];
 

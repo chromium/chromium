@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -138,7 +137,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
     @Mock private IntentRequestTracker mIntentRequestTracker;
     @Mock private Supplier<CustomTabToolbarCoordinator> mCustomTabToolbarCoordinator;
-    @Mock private Supplier<CustomTabActivityNavigationController> mCustomTabNavigationController;
     @Mock private Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
     @Mock private BackPressManager mBackPressManager;
@@ -207,7 +205,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mStatusBarColorProvider,
                         mIntentRequestTracker,
                         mCustomTabToolbarCoordinator,
-                        mCustomTabNavigationController,
                         mIntentDataProvider,
                         mBackPressManager,
                         mTabController,

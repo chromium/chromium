@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -380,7 +379,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         boolean isAtLeastT =
                 (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
                         >= VERSION_CODES.TIRAMISU;
-        return isAtLeastT && ChromeFeatureList.sBackToHomeAnimation.isEnabled();
+        return isAtLeastT;
     }
 
     static void setVersionForTesting(Integer version) {

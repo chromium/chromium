@@ -221,12 +221,6 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
-    public static final String BACK_GESTURE_ACTIVITY_TAB_PROVIDER =
-            "BackGestureActivityTabProvider";
-    public static final String BACK_GESTURE_MOVE_TO_BACK_DURING_STARTUP =
-            "BackGestureMoveToBackDuringStartup";
-    public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
-    public static final String BACK_TO_HOME_ANIMATION = "BackToHomeAnimation";
     public static final String BCIV_PHONE_ONLY = "AndroidBcivPhoneOnly";
     public static final String BCIV_WITH_SUPPRESSION = "AndroidBcivWithSuppression";
     public static final String BCIV_ZERO_BROWSER_FRAMES = "AndroidBcivZeroBrowserFrames";
@@ -581,14 +575,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false);
-    public static final CachedFlag sBackGestureActivityTabProvider =
-            newCachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
-    public static final CachedFlag sBackGestureMoveToBackDuringStartup =
-            newCachedFlag(BACK_GESTURE_MOVE_TO_BACK_DURING_STARTUP, true);
-    public static final CachedFlag sBackGestureRefactorAndroid =
-            newCachedFlag(BACK_GESTURE_REFACTOR, true);
-    public static final CachedFlag sBackToHomeAnimation =
-            newCachedFlag(BACK_TO_HOME_ANIMATION, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, true);
@@ -755,10 +741,6 @@ public abstract class ChromeFeatureList {
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
-                    sBackGestureActivityTabProvider,
-                    sBackGestureMoveToBackDuringStartup,
-                    sBackGestureRefactorAndroid,
-                    sBackToHomeAnimation,
                     sBlockIntentsWhileLocked,
                     sCctAuthTab,
                     sCctAuthTabDisableAllExternalIntents,

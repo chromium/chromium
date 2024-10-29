@@ -197,7 +197,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         activity,
                         lifecycleDispatcher,
                         new DefaultBrowserProviderImpl());
-        controller.onToolbarInitialized(toolbarManager);
         return controller;
     }
 

@@ -23,7 +23,6 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -246,8 +245,7 @@ public class TabSwitcherPaneMediator
         }
 
         if (Boolean.FALSE.equals(mIsVisibleSupplier.get())) {
-            assert !BackPressManager.isEnabled()
-                    : "Invisible container backpress should be handled.";
+            assert false : "Invisible container backpress should be handled.";
             return BackPressResult.FAILURE;
         }
 

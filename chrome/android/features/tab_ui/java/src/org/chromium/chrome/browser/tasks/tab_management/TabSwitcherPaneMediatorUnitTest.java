@@ -45,8 +45,6 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -321,7 +319,6 @@ public class TabSwitcherPaneMediatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPress() {
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
         assertEquals(BackPressResult.FAILURE, mMediator.handleBackPress());
@@ -353,15 +350,6 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabGridDialogController.isVisible()).thenReturn(false);
         when(mTabGridDialogController.handleBackPressed()).thenReturn(false);
         mDialogBackPressChangedSupplier.set(false);
-        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
-
-        // Remove this section when removing the BACK_GESTURE_REFACTOR_ANDROID annotation. This is
-        // here to assert in a legacy edgecase where back could be called without checking if it is
-        // supported.
-        mIsVisibleSupplier.set(false);
-        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
-        assertEquals(BackPressResult.FAILURE, mMediator.handleBackPress());
-        mIsVisibleSupplier.set(true);
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
     }
 

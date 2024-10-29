@@ -48,14 +48,12 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -99,12 +97,6 @@ public class UrlBar extends AutocompleteEditText {
     private Optional<OnKeyListener> mKeyDownListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private Callback<Integer> mUrlDirectionListener;
-
-    /**
-     * The gesture detector is used to detect long presses. Long presses require special treatment
-     * because the URL bar has custom touch event handling. See: {@link #onTouchEvent}.
-     */
-    private final KeyboardHideHelper mKeyboardHideHelper;
 
     private final Rect mClipBounds = new Rect();
     @VisibleForTesting final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
@@ -238,15 +230,6 @@ public class UrlBar extends AutocompleteEditText {
                 getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
         setPaddingRelative(0, verticalPadding, 0, verticalPadding);
 
-        mKeyboardHideHelper =
-                new KeyboardHideHelper(
-                        this,
-                        () -> {
-                            if (mUrlBarDelegate != null && !BackPressManager.isEnabled()) {
-                                mUrlBarDelegate.backKeyPressed();
-                            }
-                        });
-
         setTextClassifier(TextClassifier.NO_OP);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setIsHandwritingDelegate(true);
@@ -282,11 +265,6 @@ public class UrlBar extends AutocompleteEditText {
         mTypingStartedListener = Optional.empty();
     }
 
-    /** Initialize the delegate that allows interaction with the Window. */
-    public void setWindowDelegate(WindowDelegate windowDelegate) {
-        mKeyboardHideHelper.setWindowDelegate(windowDelegate);
-    }
-
     /** Set the delegate to be used for text context menu actions. */
     public void setTextContextMenuDelegate(UrlBarTextContextMenuDelegate delegate) {
         mTextContextMenuDelegate = delegate;
@@ -298,10 +276,6 @@ public class UrlBar extends AutocompleteEditText {
      */
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (KeyEvent.KEYCODE_BACK == keyCode && event.getAction() == KeyEvent.ACTION_UP) {
-            mKeyboardHideHelper.monitorForKeyboardHidden();
-        }
-
         // NOTE: Do not pass ENTER key to listeners from here. This is because Enter key may also
         // come from a software keyboard.
         // - If we pass the event here, it will be emitted twice (once before IME and once after),

@@ -359,11 +359,6 @@ public class TabPersistentStoreTest {
                     mChromeActivity =
                             new ChromeActivity() {
                                 @Override
-                                protected boolean handleBackPressed() {
-                                    return false;
-                                }
-
-                                @Override
                                 protected Pair<? extends TabCreator, ? extends TabCreator>
                                         createTabCreators() {
                                     return null;

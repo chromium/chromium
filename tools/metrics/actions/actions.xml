@@ -41357,22 +41357,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SystemBackBeforeNativeInitialized">
-  <owner>lazzzis@google.com</owner>
-  <description>
-    The user triggered system back **before** Native is initialized. This action
-    is mutually exclusive with SystemBack. Android only.
-  </description>
-</action>
-
-<action name="SystemBackBeforeUINativeInitialized">
-  <owner>lazzzis@google.com</owner>
-  <description>
-    The user triggered system back **before UI** with Native is initialized.
-    Recorded on Android only.
-  </description>
-</action>
-
 <action name="SystemBackForNavigation">
   <obsolete>
     Deprecated as of 02/2016. Now recorded in the histogram
@@ -41382,14 +41366,6 @@ should be able to be added at any place in this file.
   <description>
     The user navigated backward in the tab's history using the system back
     button.
-  </description>
-</action>
-
-<action name="SystemBackOnActivityFinishingOrDestroyed">
-  <owner>lazzzis@google.com</owner>
-  <description>
-    The user triggered system back when activity is finishing or has been
-    destroyed. Android only.
   </description>
 </action>
 

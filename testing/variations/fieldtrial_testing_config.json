@@ -344,48 +344,6 @@
             ]
         }
     ],
-    "AndroidBackPressRefactor": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithSystemBack_20230404",
-                    "params": {
-                        "system_back": "true"
-                    },
-                    "enable_features": [
-                        "BackGestureRefactorAndroid"
-                    ],
-                    "disable_features": [
-                        "BackGestureActivityTabProvider"
-                    ]
-                },
-                {
-                    "name": "EnabledWithoutSystemBack_20230404",
-                    "params": {
-                        "system_back": "false"
-                    },
-                    "enable_features": [
-                        "BackGestureRefactorAndroid"
-                    ],
-                    "disable_features": [
-                        "BackGestureActivityTabProvider"
-                    ]
-                },
-                {
-                    "name": "ControlWithActivityTabProvider_20230404",
-                    "enable_features": [
-                        "BackGestureActivityTabProvider"
-                    ],
-                    "disable_features": [
-                        "BackGestureRefactorAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidBrowserControlsInViz": [
         {
             "platforms": [
