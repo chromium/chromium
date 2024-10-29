@@ -62,6 +62,13 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
   }
 };
 
+// This test checks that all of the UI elements in the browser can be dumped.
+// The output must be manually verified.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, DumpElements) {
+  CreateIncognitoBrowser();
+  RunTestSequence(InstrumentTab(kWebContentsId), DumpElements());
+}
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
                        EnsurePresentNotPresent) {
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);

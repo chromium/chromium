@@ -197,4 +197,16 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromContext(
                                         : gfx::NativeWindow();
 }
 
+InteractiveViewsTestPrivate::DebugTreeNode
+InteractiveViewsTestPrivate::DebugDumpElement(
+    const ui::TrackedElement* el) const {
+  if (const auto* view = el->AsA<TrackedElementViews>()) {
+    return DebugTreeNode(base::StringPrintf(
+        "%s%s - %s at %s", (view->view()->HasFocus() ? "[FOCUSED] " : ""),
+        view->view()->GetClassName(), el->identifier().GetName().c_str(),
+        DebugDumpBounds(el->GetScreenBounds())));
+  }
+  return InteractiveTestPrivate::DebugDumpElement(el);
+}
+
 }  // namespace views::test::internal

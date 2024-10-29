@@ -1381,6 +1381,49 @@ TEST_F(InteractiveTestTest, Log) {
           "\nfunction pointer - should be 5: ", &ValueGeneratingFunction));
 }
 
+// This test that the element tree can be dumped.
+// The output of this test must be checked manually.
+TEST_F(InteractiveTestTest, DumpElements) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+  TestElement e3(kTestId1, kTestContext1);
+  TestElement e4(kTestId3, kTestContext1);
+  TestElement e5(kTestId1, kTestContext2);
+  TestElement e6(kTestId2, kTestContext2);
+  TestElement e7(kTestId3, kTestContext2);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+  e4.Show();
+  e5.Show();
+  // e6 not shown
+  e7.Show();
+
+  RunTestSequenceInContext(e1.context(), DumpElements());
+}
+
+// This test that the element tree can be dumped.
+// The output of this test must be checked manually.
+TEST_F(InteractiveTestTest, DumpElementsInContext) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+  TestElement e3(kTestId1, kTestContext1);
+  TestElement e4(kTestId3, kTestContext1);
+  TestElement e5(kTestId1, kTestContext2);
+  TestElement e6(kTestId2, kTestContext2);
+  TestElement e7(kTestId3, kTestContext2);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+  e4.Show();
+  e5.Show();
+  // e6 not shown
+  e7.Show();
+
+  RunTestSequenceInContext(e1.context(), DumpElementsInContext(),
+                           InContext(e5.context(), DumpElementsInContext()));
+}
+
 // This test ensures that binding of various types of functions and function
 // arguments works correctly with actions. If the template logic is not correct,
 // this test will likely not compile.

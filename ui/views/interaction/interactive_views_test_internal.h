@@ -65,6 +65,9 @@ class InteractiveViewsTestPrivate
     return widget_focus_supplier_frame_->supplier_list();
   }
 
+  // InteractiveTestPrivate:
+  DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const override;
+
  private:
   friend class views::test::InteractiveViewsTestApi;
 

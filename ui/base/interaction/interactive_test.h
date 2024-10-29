@@ -143,6 +143,12 @@ class InteractiveTestApi {
   template <typename... Args>
   [[nodiscard]] static StepBuilder Log(Args... args);
 
+  // Dumps all of the elements in the current UI tree in all contexts.
+  [[nodiscard]] StepBuilder DumpElements();
+
+  // Dumps all of the elements in the current UI tree in the current context.
+  [[nodiscard]] StepBuilder DumpElementsInContext();
+
   // Does an action at this point in the test sequence.
   template <typename A>
     requires internal::HasSignature<A, void()>
