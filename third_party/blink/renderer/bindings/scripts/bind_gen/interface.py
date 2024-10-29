@@ -2671,13 +2671,17 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
           "v8::Isolate* ${isolate} = ${v8_arg_callback_options}.isolate;"),
         S("v8_receiver", ("v8::Local<v8::Object> ${v8_receiver} = "
                           "${v8_arg0_receiver};")),
+        S("handle_scope", "v8::HandleScope handle_scope(${isolate});")
     ])
     bind_callback_local_vars(body, cg_context)
 
-    body.extend([
-        T("v8::HandleScope handle_scope(${isolate});"),
-        EmptyNode(),
-    ])
+    if cg_context.may_throw_exception:
+        body.append(T("<% handle_scope.request_symbol_definition() %>"))
+
+    for argument in function_like.arguments[:argument_count]:
+        u = argument.idl_type.unwrap()
+        if (not u.is_numeric) and (not u.is_boolean):
+            body.append(T("<% handle_scope.request_symbol_definition() %>"))
 
     # If [CallWith=Isolate] is specified, make sure ${isolate} is passed first.
     blink_arguments = list()
