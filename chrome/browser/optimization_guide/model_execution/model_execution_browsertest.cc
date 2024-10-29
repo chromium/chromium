@@ -670,7 +670,8 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {::switches::kExplicitBrowserSigninUIOnDesktop},
+        {::switches::kExplicitBrowserSigninUIOnDesktop,
+         features::internal::kHistorySearchSettingsVisibility},
         {features::internal::kTabOrganizationGraduated});
   }
 };
@@ -745,7 +746,11 @@ IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
     PRE_HistorySearchRecordsSyntheticFieldTrial) {
   EnableSignin();
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+#else
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+#endif
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kHistorySearch),
@@ -826,6 +831,9 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
       enabled_features.push_back(
           {features::internal::kHistorySearchSettingsVisibility,
            {{"enable_feature_when_main_toggle_on", "false"}}});
+    } else {
+      disabled_features.push_back(
+          features::internal::kHistorySearchSettingsVisibility);
     }
     enabled_features.push_back(
         {::switches::kExplicitBrowserSigninUIOnDesktop, {}});
