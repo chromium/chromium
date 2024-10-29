@@ -303,16 +303,15 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     }
   }
 
-  if (config->hasBitrateMode() && config->bitrateMode() == "quantizer") {
+  if (config->bitrateMode() == V8VideoEncoderBitrateMode::Enum::kQuantizer) {
     result->options.bitrate = media::Bitrate::ExternalRateControl();
   } else if (config->hasBitrate()) {
     uint32_t bps = base::saturated_cast<uint32_t>(config->bitrate());
     if (bps == 0) {
-      result->not_supported_error_message =
-          String::Format("Unsupported bitrate: %u", bps);
-      return result;
+      exception_state.ThrowTypeError("Bitrate must be greater than zero.");
+      return nullptr;
     }
-    if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
+    if (config->bitrateMode() == V8VideoEncoderBitrateMode::Enum::kConstant) {
       result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
     } else {
       // VBR in media:Bitrate supports both target and peak bitrate.
