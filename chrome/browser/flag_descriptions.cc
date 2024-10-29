@@ -3748,7 +3748,7 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const char kTranslationAPIName[] = "Experimental translation API";
 const char kTranslationAPIDescription[] =
-    "Eables the on-device language translation API. "
+    "Enables the on-device language translation API. "
     "See https://github.com/WICG/translation-api/blob/main/README.md";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
