@@ -28,6 +28,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/activity_log_private",
     "//chrome/browser/extensions/api/autofill_private",
     "//chrome/browser/extensions/api/command_line_private",
+    "//chrome/browser/extensions/api/content_settings",
     "//chrome/browser/extensions/api/context_menus",
     "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/desktop_capture",

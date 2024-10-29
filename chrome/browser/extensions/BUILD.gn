@@ -77,8 +77,6 @@ source_set("extensions") {
     "api/chrome_extensions_api_client.h",
     "api/commands/commands.cc",
     "api/commands/commands.h",
-    "api/content_settings/content_settings_api.cc",
-    "api/content_settings/content_settings_api.h",
     "api/debugger/debugger_api.cc",
     "api/debugger/debugger_api.h",
     "api/debugger/extension_dev_tools_infobar_delegate.cc",
