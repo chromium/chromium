@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '../line_chart/line_chart.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,6 +33,7 @@ export class HealthdInternalsGenericChartElement extends PolymerElement
   static get properties() {
     return {
       chartHeader: {type: String},
+      isSummaryTableDisplayed: {type: Boolean},
     };
   }
 
@@ -48,6 +50,9 @@ export class HealthdInternalsGenericChartElement extends PolymerElement
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
   private updateHelper: UiUpdateHelper;
+
+  // Whether the chart summary table is displayed.
+  private isSummaryTableDisplayed: boolean = true;
 
   setupChartHeader(header: string) {
     this.chartHeader = header;
@@ -78,6 +83,11 @@ export class HealthdInternalsGenericChartElement extends PolymerElement
 
   updateUiUpdateInterval(intervalSeconds: number) {
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
+  }
+
+  private toggleChartSummaryTable() {
+    this.isSummaryTableDisplayed = !this.isSummaryTableDisplayed;
+    this.$.lineChart.renderChartSummaryTable(this.isSummaryTableDisplayed);
   }
 }
 

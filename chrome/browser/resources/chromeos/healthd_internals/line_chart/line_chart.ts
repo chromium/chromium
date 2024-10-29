@@ -32,6 +32,7 @@ export interface HealthdInternalsLineChartElement {
     mainCanvas: HTMLCanvasElement,
     chartMenu: HealthdInternalsLineChartMenuElement,
     chartScrollbar: HealthdInternalsLineChartScrollbarElement,
+    chartContainer: HTMLElement,
   };
 }
 
@@ -158,6 +159,11 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
       return;
     }
     this.canvasDrawer.setFixedMaxValue(maxValue);
+  }
+
+  renderChartSummaryTable(isVisible: boolean) {
+    this.$.chartContainer.style.setProperty(
+        '--summary-table-height', isVisible ? '200px' : '0px');
   }
 
   // Handle the wheeling, mouse dragging and touching events.
