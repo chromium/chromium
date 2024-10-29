@@ -468,6 +468,27 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     query_params.push_back(search_terms_args.additional_query_params);
   if (!gurl.query().empty())
     query_params.push_back(gurl.query());
+
+  if (type_ == SEARCH || type_ == SUGGEST) {
+    auto regulatory_extension_type = owner_->GetRegulatoryExtensionType();
+    base::UmaHistogramEnumeration(
+        type_ == SEARCH
+            ? "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"
+            : "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+        regulatory_extension_type);
+
+    auto* regulatory_extension =
+        owner_->GetRegulatoryExtension(regulatory_extension_type);
+    if (regulatory_extension) {
+      const char* regulatory_params =
+          type_ == SEARCH ? regulatory_extension->search_params
+                          : regulatory_extension->suggest_params;
+      if (regulatory_params && strlen(regulatory_params) > 0) {
+        query_params.push_back(regulatory_params);
+      }
+    }
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           switches::kRemoveSearchEngineChoiceAttribution) &&
@@ -1959,21 +1980,9 @@ GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
   if (!url_ref().SupportsReplacement(search_terms_data))
     return GURL(url());
 
-  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
-  auto regulatory_extension_type = GetRegulatoryExtensionType();
-  base::UmaHistogramEnumeration(
-      "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant",
-      regulatory_extension_type);
-
-  auto* regulatory_extension =
-      GetRegulatoryExtension(regulatory_extension_type);
-  if (regulatory_extension && regulatory_extension->search_params) {
-    search_terms_args.additional_query_params =
-        regulatory_extension->search_params;
-  }
-
-  return GURL(url_ref().ReplaceSearchTerms(std::move(search_terms_args),
-                                           search_terms_data, nullptr));
+  return GURL(url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(search_terms), search_terms_data,
+      nullptr));
 }
 
 GURL TemplateURL::GenerateSuggestionURL(
@@ -1984,21 +1993,8 @@ GURL TemplateURL::GenerateSuggestionURL(
   if (!suggestions_url_ref().SupportsReplacement(search_terms_data))
     return GURL(suggestions_url());
 
-  TemplateURLRef::SearchTermsArgs search_terms_args{};
-  auto regulatory_extension_type = GetRegulatoryExtensionType();
-  base::UmaHistogramEnumeration(
-      "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
-      regulatory_extension_type);
-
-  auto* regulatory_extension =
-      GetRegulatoryExtension(regulatory_extension_type);
-  if (regulatory_extension && regulatory_extension->suggest_params) {
-    search_terms_args.additional_query_params =
-        regulatory_extension->suggest_params;
-  }
-
   return GURL(suggestions_url_ref().ReplaceSearchTerms(
-      std::move(search_terms_args), search_terms_data, nullptr));
+      TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
 }
 
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
