@@ -98,6 +98,7 @@ class ArcVolumeMounterBridge
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
+  void OnConnectionReady() override;
   void OnConnectionClosed() override;
 
   // mojom::VolumeMounterHost overrides:

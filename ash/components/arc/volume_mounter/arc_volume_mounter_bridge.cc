@@ -135,7 +135,6 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
   DiskMountManager* const manager = DiskMountManager::GetInstance();
   DCHECK(manager);
   manager->AddObserver(this);
-  manager->SetArcDelegate(this);
 
   chromeos::PowerManagerClient::Get()->AddObserver(this);
 
@@ -153,7 +152,6 @@ ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
 
   DiskMountManager* const manager = DiskMountManager::GetInstance();
   DCHECK(manager);
-  manager->SetArcDelegate(nullptr);
   manager->RemoveObserver(this);
 
   arc_bridge_service_->volume_mounter()->SetHost(nullptr);
@@ -504,9 +502,21 @@ void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
                                  device_label, device_type, visible));
 }
 
+void ArcVolumeMounterBridge::OnConnectionReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DiskMountManager* const manager = DiskMountManager::GetInstance();
+  DCHECK(manager);
+  manager->SetArcDelegate(this);
+}
+
 void ArcVolumeMounterBridge::OnConnectionClosed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   external_storage_mount_points_are_ready_ = false;
+
+  DiskMountManager* const manager = DiskMountManager::GetInstance();
+  DCHECK(manager);
+  manager->SetArcDelegate(nullptr);
 }
 
 void ArcVolumeMounterBridge::RequestAllMountPoints() {
