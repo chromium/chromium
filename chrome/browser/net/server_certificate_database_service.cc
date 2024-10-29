@@ -55,25 +55,14 @@ void ServerCertificateDatabaseService::GetAllCertificates(
     base::OnceCallback<
         void(std::vector<net::ServerCertificateDatabase::CertInformation>)>
         callback) {
-  server_cert_database_
-      .AsyncCall(&net::ServerCertificateDatabase::RetrieveAllCertificates)
-      .Then(std::move(callback));
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
-void ServerCertificateDatabaseService::
-    GetAllCertificatesMigrateFromNSSFirstIfNeeded(
-        base::OnceCallback<
-            void(std::vector<net::ServerCertificateDatabase::CertInformation>)>
-            callback) {
+  // Migrate certificates from NSS and then read all certificates from the
+  // database. Migration will only be done once per profile. If called multiple
+  // times before migration completes, all the callbacks will be queued and
+  // processed once the migration is done.
   if (profile_->GetPrefs()->GetInteger(
-          prefs::kNSSCertsMigratedToServerCertDb) !=
+          prefs::kNSSCertsMigratedToServerCertDb) ==
       static_cast<int>(NSSMigrationResultPref::kNotMigrated)) {
-    DVLOG(1) << "Migration already done, starting GetAllCertificates";
-    // If the NSS certs are already migrated, just get the certs from the DB
-    // immediately..
-    GetAllCertificates(std::move(callback));
-  } else {
     if (!nss_migrator_) {
       DVLOG(1) << "starting migration for profile "
                << profile_->GetPath().AsUTF8Unsafe();
@@ -87,9 +76,16 @@ void ServerCertificateDatabaseService::
     }
     DVLOG(1) << "queuing migration request";
     get_certificates_pending_migration_.push_back(std::move(callback));
+    return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  server_cert_database_
+      .AsyncCall(&net::ServerCertificateDatabase::RetrieveAllCertificates)
+      .Then(std::move(callback));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void ServerCertificateDatabaseService::NSSMigrationComplete(
     ServerCertificateDatabaseNSSMigrator::MigrationResult result) {
   DVLOG(1) << "Migration for " << profile_->GetPath().AsUTF8Unsafe()

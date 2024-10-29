@@ -797,17 +797,10 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
         net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
             profile_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-    cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
-        base::BindOnce(&ProfileNetworkContextService::
-                           UpdateAdditionalCertificatesWithUserAddedCerts,
-                       weak_factory_.GetWeakPtr()));
-#else
     cert_db_service->GetAllCertificates(
         base::BindOnce(&ProfileNetworkContextService::
                            UpdateAdditionalCertificatesWithUserAddedCerts,
                        weak_factory_.GetWeakPtr()));
-#endif
   } else {
     profile_->ForEachLoadedStoragePartition(
         [&](content::StoragePartition* storage_partition) {

@@ -148,25 +148,21 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
   // Verify that server cert database starts empty and migration pref default
   // is false.
   {
-    base::test::TestFuture<
-        std::vector<net::ServerCertificateDatabase::CertInformation>>
-        get_certs_waiter;
-    cert_db_service->GetAllCertificates(get_certs_waiter.GetCallback());
-    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos =
-        get_certs_waiter.Take();
-    EXPECT_TRUE(cert_infos.empty());
+    base::test::TestFuture<uint32_t> get_certs_count_waiter;
+    cert_db_service->GetCertificatesCount(get_certs_count_waiter.GetCallback());
+    EXPECT_EQ(0U, get_certs_count_waiter.Get());
     EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                   prefs::kNSSCertsMigratedToServerCertDb),
               static_cast<int>(ServerCertificateDatabaseService::
                                    NSSMigrationResultPref::kNotMigrated));
   }
 
-  // Call GetAllCertificatesMigrateFromNSSFirstIfNeeded to begin the migration.
+  // Call GetAllCertificates to begin the migration.
   {
     base::test::TestFuture<
         std::vector<net::ServerCertificateDatabase::CertInformation>>
         migrate_and_get_certs_waiter;
-    cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
+    cert_db_service->GetAllCertificates(
         migrate_and_get_certs_waiter.GetCallback());
     std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos =
         migrate_and_get_certs_waiter.Take();
@@ -196,14 +192,14 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
     EXPECT_TRUE(update_cert_waiter.Take());
   }
 
-  // Call GetAllCertificatesMigrateFromNSSFirstIfNeeded again. Since the
-  // migration already completed, this should just get the current contents of
-  // the database without re-doing the migration.
+  // Call GetAllCertificates again. Since the migration already completed, this
+  // should just get the current contents of the database without re-doing the
+  // migration.
   {
     base::test::TestFuture<
         std::vector<net::ServerCertificateDatabase::CertInformation>>
         migrate_and_get_certs_waiter;
-    cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
+    cert_db_service->GetAllCertificates(
         migrate_and_get_certs_waiter.GetCallback());
     std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos =
         migrate_and_get_certs_waiter.Take();
@@ -237,17 +233,15 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, SimultaneousCalls) {
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile());
 
-  // Call GetAllCertificatesMigrateFromNSSFirstIfNeeded multiple times.
+  // Call GetAllCertificates multiple times.
   base::test::TestFuture<
       std::vector<net::ServerCertificateDatabase::CertInformation>>
       waiter1;
   base::test::TestFuture<
       std::vector<net::ServerCertificateDatabase::CertInformation>>
       waiter2;
-  cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
-      waiter1.GetCallback());
-  cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
-      waiter2.GetCallback());
+  cert_db_service->GetAllCertificates(waiter1.GetCallback());
+  cert_db_service->GetAllCertificates(waiter2.GetCallback());
   // Migration pref should be false still.
   EXPECT_EQ(
       profile()->GetPrefs()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),

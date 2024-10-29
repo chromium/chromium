@@ -72,16 +72,6 @@ class ServerCertificateDatabaseService : public KeyedService {
   // Read all certificates from the database.
   void GetAllCertificates(GetCertificatesCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Migrate certificates from NSS and then read all certificates from the
-  // database. Migration will only be done once per profile. If called multiple
-  // times before migration completes, all the callbacks will be queued and
-  // processed once the migration is done. If called after migration is
-  // complete it is equivalent to calling `GetAllCertificates`.
-  void GetAllCertificatesMigrateFromNSSFirstIfNeeded(
-      GetCertificatesCallback callback);
-#endif
-
   // Run callback with `server_cert_database_`. The callback will be run on a
   // thread pool sequence where it is allowed to call methods on the database
   // object. This can be used to do multiple operations on the database without
