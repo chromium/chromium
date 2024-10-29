@@ -4,45 +4,15 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
 
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Only main profile should be allowed to access the API.
-bool IsContextForMainProfile(content::BrowserContext* context) {
-  return Profile::FromBrowserContext(context)->IsMainProfile();
-}
-
-crosapi::mojom::PrintingMetrics* GetPrintingMetrics() {
-  auto* service = chromeos::LacrosService::Get();
-  if (!service->IsRegistered<crosapi::mojom::PrintingMetrics>() ||
-      !service->IsAvailable<crosapi::mojom::PrintingMetrics>()) {
-    LOG(ERROR) << "chrome.printingMetrics is not available in Lacros";
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::PrintingMetrics>().get();
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-}  // namespace
 
 namespace extensions {
 
@@ -58,11 +28,6 @@ PrintingMetricsService::GetFactoryInstance() {
 // static
 PrintingMetricsService* PrintingMetricsService::Get(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!IsContextForMainProfile(context) || !GetPrintingMetrics()) {
-    return nullptr;
-  }
-#endif  // BUIDLFLAG(IS_CHROMEOS_LACROS)
   return BrowserContextKeyedAPIFactory<PrintingMetricsService>::Get(context);
 }
 
@@ -88,24 +53,6 @@ void PrintingMetricsService::OnListenerAdded(const EventListenerInfo&) {
 void PrintingMetricsService::GetPrintJobs(
     crosapi::mojom::PrintingMetricsForProfile::GetPrintJobsCallback callback) {
   EnsureInit();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We might need to call the older version if Ash version is not up-to-date.
-  if (chromeos::LacrosService::Get()
-          ->GetInterfaceVersion<crosapi::mojom::PrintingMetricsForProfile>() <
-      static_cast<int>(
-          crosapi::mojom::PrintingMetricsForProfile::kGetPrintJobsMinVersion)) {
-    remote_->DeprecatedGetPrintJobs(
-        base::BindOnce([](std::vector<base::Value> print_jobs) {
-          base::Value::List jobs;
-          for (auto& print_job : print_jobs) {
-            jobs.Append(std::move(print_job));
-          }
-          return jobs;
-        }).Then(std::move(callback)));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   remote_->GetPrintJobs(std::move(callback));
 }
 
@@ -129,21 +76,12 @@ void PrintingMetricsService::EnsureInit() {
   }
   initialized_ = true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::PrintingMetricsAsh* printing_metrics_ash =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->printing_metrics_ash();
-
-  printing_metrics_ash->RegisterForProfile(
-      Profile::FromBrowserContext(context_),
-      remote_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  GetPrintingMetrics()->RegisterForMainProfile(
-      remote_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->printing_metrics_ash()
+      ->RegisterForProfile(Profile::FromBrowserContext(context_),
+                           remote_.BindNewPipeAndPassReceiver(),
+                           receiver_.BindNewPipeAndPassRemote());
 }
 
 }  // namespace extensions
