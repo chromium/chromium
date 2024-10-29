@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -690,17 +689,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         return LocalizationUtils.isLayoutRtl();
     }
 
-    /**
-     * Returns the current window width, which is affected by orientation changes or resizing. For
-     * some usage (e.g., fake drag updates) we'd need to call this function frequently and avoid
-     * using a stale value.
-     */
-    private int getWindowWidth() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        return metrics.widthPixels;
-    }
-
     /** Returns whether the set attempt will lead to transition to an existing Fragment. */
     private boolean setCurrentItemForPager(int position, boolean smoothScroll) {
         // Debounce page changes while animation is in flight.
@@ -745,7 +733,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float frac = ((Float) animation.getAnimatedValue()).floatValue();
-                    int animatedValue = Math.round(frac * getWindowWidth());
+                    // Get the up-to-date width, which is subject to user change, e.g., by
+                    // orientation changes or window resize.
+                    int width = mPager.getWidth();
+                    int animatedValue = Math.round(frac * width);
                     float deltaPx = dragSign * (animatedValue - mPrevAnimatedValue);
                     mPager.fakeDragBy(deltaPx);
                     mPrevAnimatedValue = animatedValue;
