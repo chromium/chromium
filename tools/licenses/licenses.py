@@ -19,16 +19,17 @@ import argparse
 import codecs
 import csv
 import io
+import itertools
 import json
 import logging
 import os
 import pathlib
-import shutil
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 if sys.version_info.major == 2:
   import cgi as html
@@ -1096,21 +1097,66 @@ def GenerateCredits(file_template_file,
     print(template_contents)
 
   if depfile:
-    assert output_file
-    # Add in build.ninja so that the target will be considered dirty whenever
-    # gn gen is run. Otherwise, it will fail to notice new files being added.
-    # This is still no perfect, as it will fail if no build files are changed,
-    # but a new README.chromium / LICENSE is added. This shouldn't happen in
-    # practice however.
-    license_file_list = []
-    for entry in entries:
-      license_file_list.extend(entry['license_file'])
-    license_file_list = (os.path.relpath(p) for p in license_file_list)
-    license_file_list = sorted(set(license_file_list))
-    action_helpers.write_depfile(depfile, output_file,
-                                 license_file_list + ['build.ninja'])
+    GenerateDepfile(entries, depfile, output_file)
 
   return True
+
+
+def GenerateDepfile(records: Iterable[Dict[str, Any]], depfile: str,
+                    output_file: str) -> None:
+  """Writes a depfile listing all the LICENSE files we used, plus build.ninja.
+
+  Args:
+    records: An iterable collection containing metadata records or template
+      entries. These are dicts which contain a key, named either 'license_file'
+      or 'License File', which is mapped to a list of str representing paths to
+      license files.
+    depfile: The path to store the generated depfile at.
+    output_file: The path to the primary output of this script invocation.
+      The generated depfile refers to this path, but this function does not
+      touch this file.
+  """
+  assert depfile
+  assert output_file
+
+  license_file_list = ListLicenseFiles(records)
+  # Add in build.ninja so that the target will be considered dirty whenever
+  # gn gen is run. Otherwise, it will fail to notice new files being added.
+  # This is still not perfect, as it will fail if no build files are changed,
+  # but a new README.chromium / LICENSE is added. This shouldn't happen in
+  # practice however.
+  license_file_list.append('build.ninja')
+
+  action_helpers.write_depfile(depfile, output_file, license_file_list)
+
+
+def ListLicenseFiles(records: Iterable[Dict[str, Any]]) -> List[str]:
+  """Collects license file paths from a set of metadata or template records.
+
+  Arg:
+    records: An iterable collection containing metadata records or template
+      entries. These are dicts which contain a key, named either 'license_file'
+      or 'License File', which is mapped to a list of str representing paths to
+      license files.
+
+  Returns:
+    Relative paths to all unique license files in the provided records, sorted.
+"""
+
+  license_file_list = []
+  for record in records:
+    # Metadata records and template entries store the same license file data
+    # under slightly different keys. Allow either.
+    if 'license_file' in record:
+      record_licenses = record['license_file']
+    else:
+      record_licenses = record['License File']
+    license_file_list.extend(record_licenses)
+
+  license_file_list = (os.path.relpath(p) for p in license_file_list)
+  license_file_list = sorted(set(license_file_list))
+
+  return license_file_list
 
 
 def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
@@ -1169,15 +1215,16 @@ def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
                                           args.spdx_doc_namespace)
   elif args.format == 'txt':
     license_txt = GenerateLicenseFilePlainText(metadatas)
-
   elif args.format == 'csv':
     license_txt = GenerateLicenseFileCsv(metadatas)
-
   elif args.format == 'notice':
     license_txt = GenerateNoticeFilePlainText(metadatas)
-
   else:
     raise ValueError(f'Unknown license format: {args.format}')
+
+  if args.depfile:
+    GenerateDepfile(itertools.chain.from_iterable(metadatas.values()),
+                    args.depfile, args.output_file)
 
   if args.output_file:
     with open(args.output_file, 'w', encoding='utf-8') as f:
