@@ -422,6 +422,8 @@ const CGFloat kMenuSymbolSize = 18;
   _foregroundTime = base::TimeTicks();
 
   _associatedTabHelper->UpdateSnapshotStorage();
+  _restorationWindow.hidden = YES;
+  _restorationWindow = nil;
 
   [_containerViewController.presentingViewController
       dismissViewControllerAnimated:animated
@@ -662,6 +664,7 @@ const CGFloat kMenuSymbolSize = 18;
                      immediately:YES];
   } else {
     [self openURLInNewTab:URL];
+    [self showRestorationWindowIfNeeded];
   }
 }
 
