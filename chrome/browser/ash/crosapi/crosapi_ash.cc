@@ -116,8 +116,6 @@
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
-#include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
-#include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -977,14 +975,7 @@ void CrosapiAsh::BindSuggestionService(
 
 void CrosapiAsh::BindSyncService(
     mojo::PendingReceiver<mojom::SyncService> receiver) {
-  ash::SyncMojoServiceAsh* sync_mojo_service_ash =
-      ash::SyncMojoServiceFactoryAsh::GetForProfile(GetAshProfile());
-  if (!sync_mojo_service_ash) {
-    // |sync_mojo_service_ash| is not always available. In particular, sync can
-    // be completely disabled via command line flags.
-    return;
-  }
-  sync_mojo_service_ash->BindReceiver(std::move(receiver));
+  // Can be safely removed from Crosapi.
 }
 
 void CrosapiAsh::BindTaskManager(

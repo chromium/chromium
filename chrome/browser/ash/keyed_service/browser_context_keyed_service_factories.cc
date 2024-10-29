@@ -113,7 +113,6 @@
 #include "chrome/browser/ash/sparky/sparky_manager_service_factory.h"
 #include "chrome/browser/ash/sync/sync_appsync_service_factory.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
-#include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
@@ -258,7 +257,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   SyncAppsyncServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();
   SyncErrorNotifierFactory::GetInstance();
-  SyncMojoServiceFactoryAsh::GetInstance();
   SystemLiveCaptionServiceFactory::GetInstance();
   SystemWebAppManagerFactory::GetInstance();
   tether::TetherServiceFactory::GetInstance();
