@@ -234,7 +234,8 @@ void SparkyManagerImpl::OpenMahiPanel(int64_t display_id,
   // instead sparky panel open.
   sparky_provider_->ClearDialog();
 
-  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
+                               /*elucidation_in_use=*/false);
 }
 
 bool SparkyManagerImpl::IsEnabled() {

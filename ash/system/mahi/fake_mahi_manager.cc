@@ -188,7 +188,8 @@ void FakeMahiManager::OnContextMenuClicked(
 
 void FakeMahiManager::OpenMahiPanel(int64_t display_id,
                                     const gfx::Rect& mahi_menu_bounds) {
-  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
+                               /*elucidation_in_use=*/false);
 }
 
 bool FakeMahiManager::IsEnabled() {

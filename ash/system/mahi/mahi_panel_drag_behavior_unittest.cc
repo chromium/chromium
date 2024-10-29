@@ -46,7 +46,8 @@ class MahiPanelDragBehaviorTest : public AshTestBase {
         /*disabled_features=*/{});
     AshTestBase::SetUp();
     ui_controller_.OpenMahiPanel(GetPrimaryDisplay().id(),
-                                 /*mahi_menu_bounds=*/gfx::Rect());
+                                 /*mahi_menu_bounds=*/gfx::Rect(),
+                                 /*elucidation_in_use=*/false);
   }
 
   void TearDown() override {

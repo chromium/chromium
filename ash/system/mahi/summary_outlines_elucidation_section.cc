@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/mahi/summary_outlines_section.h"
+#include "ash/system/mahi/summary_outlines_elucidation_section.h"
 
 #include <memory>
 
@@ -72,7 +72,8 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
 
 }  // namespace
 
-SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
+SummaryOutlinesElucidationSection::SummaryOutlinesElucidationSection(
+    MahiUiController* ui_controller)
     : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
 
@@ -86,7 +87,7 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
 
   AddChildView(
       views::Builder<views::AnimatedImageView>()
-          .CopyAddressTo(&summary_loading_animated_image_)
+          .CopyAddressTo(&summary_or_elucidation_loading_animated_image_)
           .SetID(mahi_constants::ViewId::kSummaryLoadingAnimatedImage)
           .SetAccessibleName(
               l10n_util::GetStringUTF16(IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME))
@@ -96,7 +97,7 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
 
   AddChildView(
       views::Builder<views::Label>()
-          .CopyAddressTo(&summary_label_)
+          .CopyAddressTo(&summary_or_elucidation_label_)
           .SetVisible(false)
           .SetID(mahi_constants::ViewId::kSummaryLabel)
           .SetSelectable(true)
@@ -146,33 +147,41 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
           .Build());
 }
 
-SummaryOutlinesSection::~SummaryOutlinesSection() = default;
+SummaryOutlinesElucidationSection::~SummaryOutlinesElucidationSection() =
+    default;
 
-views::View* SummaryOutlinesSection::GetView() {
+views::View* SummaryOutlinesElucidationSection::GetView() {
   return this;
 }
 
-bool SummaryOutlinesSection::GetViewVisibility(VisibilityState state) const {
+bool SummaryOutlinesElucidationSection::GetViewVisibility(
+    VisibilityState state) const {
   switch (state) {
     case VisibilityState::kError:
     case VisibilityState::kQuestionAndAnswer:
       return false;
-    case VisibilityState::kSummaryAndOutlines:
+    case VisibilityState::kSummaryAndOutlinesAndElucidation:
       return true;
   }
 }
 
-void SummaryOutlinesSection::OnUpdated(const MahiUiUpdate& update) {
+void SummaryOutlinesElucidationSection::OnUpdated(const MahiUiUpdate& update) {
   switch (update.type()) {
     case MahiUiUpdateType::kContentsRefreshInitiated:
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
-      LoadSummaryAndOutlines();
+      LoadContentForDisplay(ContentType::kSummaryAndOutline);
       return;
     case MahiUiUpdateType::kOutlinesLoaded:
       HandleOutlinesLoaded(update.GetOutlines());
       return;
     case MahiUiUpdateType::kSummaryLoaded:
-      HandleSummaryLoaded(update.GetSummary());
+      HandleSummaryOrElucidationLoaded(update.GetSummary());
+      return;
+    case MahiUiUpdateType::kElucidationRequested:
+      LoadContentForDisplay(ContentType::kElucidation);
+      return;
+    case MahiUiUpdateType::kElucidationLoaded:
+      HandleSummaryOrElucidationLoaded(update.GetElucidation());
       return;
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kErrorReceived:
@@ -185,17 +194,17 @@ void SummaryOutlinesSection::OnUpdated(const MahiUiUpdate& update) {
   }
 }
 
-void SummaryOutlinesSection::AddedToWidget() {
+void SummaryOutlinesElucidationSection::AddedToWidget() {
   // When the view is first constructed, we need to wait until the view is added
   // to the widget to announce loading state.
-  if (summary_loading_animated_image_->GetVisible() ||
+  if (summary_or_elucidation_loading_animated_image_->GetVisible() ||
       outlines_loading_animated_image_->GetVisible()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME));
   }
 }
 
-void SummaryOutlinesSection::HandleOutlinesLoaded(
+void SummaryOutlinesElucidationSection::HandleOutlinesLoaded(
     const std::vector<chromeos::MahiOutline>& outlines) {
   outlines_container_->RemoveAllChildViews();
   for (auto outline : outlines) {
@@ -225,29 +234,31 @@ void SummaryOutlinesSection::HandleOutlinesLoaded(
   // here.
 }
 
-void SummaryOutlinesSection::HandleSummaryLoaded(
-    const std::u16string& summary_text) {
-  summary_label_->SetVisible(true);
-  summary_label_->SetText(summary_text);
-  summary_loading_animated_image_->Stop();
-  summary_loading_animated_image_->SetVisible(false);
+void SummaryOutlinesElucidationSection::HandleSummaryOrElucidationLoaded(
+    const std::u16string& result_text) {
+  summary_or_elucidation_label_->SetVisible(true);
+  summary_or_elucidation_label_->SetText(result_text);
+  summary_or_elucidation_loading_animated_image_->Stop();
+  summary_or_elucidation_loading_animated_image_->SetVisible(false);
 
+  // TODO(b:375944345): deal with metrics properly
   base::UmaHistogramTimes(mahi_constants::kSummaryLoadingTimeHistogramName,
-                          base::Time::Now() - summary_start_loading_time_);
+                          base::Time::Now() - start_loading_time_);
 
   GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_LOADED_ACCESSIBLE_NAME));
 }
 
-void SummaryOutlinesSection::LoadSummaryAndOutlines() {
+void SummaryOutlinesElucidationSection::LoadContentForDisplay(
+    ContentType content_type) {
   if (!chromeos::MahiManager::Get()) {
     CHECK_IS_TEST();
     return;
   }
 
-  if (summary_label_->GetVisible()) {
-    summary_label_->SetVisible(false);
-    summary_loading_animated_image_->SetVisible(true);
+  if (summary_or_elucidation_label_->GetVisible()) {
+    summary_or_elucidation_label_->SetVisible(false);
+    summary_or_elucidation_loading_animated_image_->SetVisible(true);
   }
 
   if (outlines_container_->GetVisible()) {
@@ -256,9 +267,10 @@ void SummaryOutlinesSection::LoadSummaryAndOutlines() {
   }
 
   // Plays loading animation before summary and outlines are loaded.
-  summary_loading_animated_image_->Play(
+  summary_or_elucidation_loading_animated_image_->Play(
       mahi_animation_utils::GetLottiePlaybackConfig(
-          *summary_loading_animated_image_->animated_image()->skottie(),
+          *summary_or_elucidation_loading_animated_image_->animated_image()
+               ->skottie(),
           IDR_MAHI_LOADING_SUMMARY_ANIMATION));
   outlines_loading_animated_image_->Play(
       mahi_animation_utils::GetLottiePlaybackConfig(
@@ -268,12 +280,19 @@ void SummaryOutlinesSection::LoadSummaryAndOutlines() {
   GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME));
 
-  summary_start_loading_time_ = base::Time::Now();
+  start_loading_time_ = base::Time::Now();
 
-  ui_controller_->UpdateSummaryAndOutlines();
+  // TODO(b:374173466): need a label to indicate the result type.
+  switch (content_type) {
+    case ContentType::kSummaryAndOutline:
+      ui_controller_->UpdateSummaryAndOutlines();
+      return;
+    case ContentType::kElucidation:
+      ui_controller_->UpdateElucidation();
+  }
 }
 
-BEGIN_METADATA(SummaryOutlinesSection)
+BEGIN_METADATA(SummaryOutlinesElucidationSection)
 END_METADATA
 
 }  // namespace ash

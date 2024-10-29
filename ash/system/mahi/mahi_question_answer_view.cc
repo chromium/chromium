@@ -254,7 +254,7 @@ bool MahiQuestionAnswerView::GetViewVisibility(VisibilityState state) const {
     case VisibilityState::kQuestionAndAnswer:
       return true;
     case VisibilityState::kError:
-    case VisibilityState::kSummaryAndOutlines:
+    case VisibilityState::kSummaryAndOutlinesAndElucidation:
       return false;
   }
 }
@@ -336,6 +336,8 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+    case MahiUiUpdateType::kElucidationRequested:
+    case MahiUiUpdateType::kElucidationLoaded:
       return;
   }
 }

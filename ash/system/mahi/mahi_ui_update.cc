@@ -105,6 +105,11 @@ const std::u16string& MahiUiUpdate::GetSummary() const {
   return std::get<std::reference_wrapper<const std::u16string>>(*payload_);
 }
 
+const std::u16string& MahiUiUpdate::GetElucidation() const {
+  CHECK_EQ(type_, MahiUiUpdateType::kElucidationLoaded);
+  return std::get<std::reference_wrapper<const std::u16string>>(*payload_);
+}
+
 void MahiUiUpdate::CheckTypeMatchesPayload() {
   switch (type_) {
     case MahiUiUpdateType::kAnswerLoaded:
@@ -156,6 +161,15 @@ void MahiUiUpdate::CheckTypeMatchesPayload() {
       break;
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       CHECK(!payload_.has_value());
+      break;
+    case MahiUiUpdateType::kElucidationRequested:
+      CHECK(!payload_.has_value());
+      break;
+    case MahiUiUpdateType::kElucidationLoaded:
+      CHECK(payload_.has_value());
+      CHECK(
+          std::holds_alternative<std::reference_wrapper<const std::u16string>>(
+              *payload_));
       break;
   }
 }

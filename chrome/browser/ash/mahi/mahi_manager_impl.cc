@@ -506,7 +506,11 @@ void MahiManagerImpl::OnContextMenuClicked(
 
   switch (action_type) {
     case MahiContextMenuActionType::kElucidation:
-      // TODO(b:372741602): Open Panel for elucidation
+      OpenMahiPanelForElucidation(
+          context_menu_request->display_id,
+          context_menu_request->mahi_menu_bounds.has_value()
+              ? context_menu_request->mahi_menu_bounds.value()
+              : gfx::Rect());
       return;
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
@@ -593,7 +597,15 @@ void MahiManagerImpl::OpenFeedbackDialog() {
 
 void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
                                     const gfx::Rect& mahi_menu_bounds) {
-  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
+                               /*elucidation_in_use=*/false);
+}
+
+void MahiManagerImpl::OpenMahiPanelForElucidation(
+    int64_t display_id,
+    const gfx::Rect& mahi_menu_bounds) {
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
+                               /*elucidation_in_use=*/true);
 }
 
 bool MahiManagerImpl::IsEnabled() {

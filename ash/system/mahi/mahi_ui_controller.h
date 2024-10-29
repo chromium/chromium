@@ -79,7 +79,11 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
 
   // Opens/closes the mahi panel on the display associated with `display_id`.
   // The panel is positioned on top of the provided `mahi_menu_bounds`.
-  void OpenMahiPanel(int64_t display_id, gfx::Rect mahi_menu_bounds);
+  // `elucidation_in_use` indicates this panel is to present simplified text
+  // (instead of summary).
+  void OpenMahiPanel(int64_t display_id,
+                     const gfx::Rect& mahi_menu_bounds,
+                     bool elucidation_in_use);
   void CloseMahiPanel();
 
   bool IsMahiPanelOpen();
@@ -120,6 +124,11 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
   // requests are fulfilled.
   void UpdateSummaryAndOutlines();
 
+  // Sends requests to the backend to update elucidation.
+  // `delegates_` will be notified of the updated elucidation when requests are
+  // fulfilled.
+  void UpdateElucidation();
+
   // Records histogram that tracks the amount of times the panel was opened
   // during an active session.
   void RecordTimesPanelOpenedMetric();
@@ -148,15 +157,19 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
   void OnOutlinesLoaded(std::vector<chromeos::MahiOutline> outlines,
                         chromeos::MahiResponseStatus status);
 
+  // TODO(crbug.com/375944360): avoid u16string copy
   void OnSummaryLoaded(std::u16string summary_text,
                        chromeos::MahiResponseStatus status);
 
+  void OnElucidationLoaded(std::u16string elucidation_text,
+                           chromeos::MahiResponseStatus status);
   // Invalidates pending summary/outline/QA requests on new request to avoid
   // racing.
   void InvalidatePendingRequests();
 
   // The current state. Use `VisibilityState::kSummaryAndOutlines` by default.
-  VisibilityState visibility_state_ = VisibilityState::kSummaryAndOutlines;
+  VisibilityState visibility_state_ =
+      VisibilityState::kSummaryAndOutlinesAndElucidation;
 
   base::ObserverList<Delegate> delegates_;
 
@@ -174,6 +187,10 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
 
   // Indicates that we need to update summary after answer is fully loaded.
   bool update_summary_after_answer_question_ = false;
+
+  // Indicates that the active result panel is for elucidation (simplified
+  // text).
+  bool elucidation_in_use_ = false;
 
   base::WeakPtrFactory<MahiUiController> weak_ptr_factory_{this};
 };

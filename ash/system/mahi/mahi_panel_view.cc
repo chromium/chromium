@@ -28,7 +28,7 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/mahi_utils.h"
-#include "ash/system/mahi/summary_outlines_section.h"
+#include "ash/system/mahi/summary_outlines_elucidation_section.h"
 #include "ash/wm/system_panel_view.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -260,7 +260,7 @@ class GoToSummaryOutlinesButton : public IconButton,
         return GetVisible();
       case VisibilityState::kQuestionAndAnswer:
         return true;
-      case VisibilityState::kSummaryAndOutlines:
+      case VisibilityState::kSummaryAndOutlinesAndElucidation:
         return false;
     }
   }
@@ -318,7 +318,7 @@ class GoToQuestionAndAnswerButton : public IconButton,
         return GetVisible();
       case VisibilityState::kQuestionAndAnswer:
         return false;
-      case VisibilityState::kSummaryAndOutlines:
+      case VisibilityState::kSummaryAndOutlinesAndElucidation:
         return question_answer_view_has_contents_;
     }
   }
@@ -343,6 +343,8 @@ class GoToQuestionAndAnswerButton : public IconButton,
       case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
       case MahiUiUpdateType::kSummaryLoaded:
+      case MahiUiUpdateType::kElucidationRequested:
+      case MahiUiUpdateType::kElucidationLoaded:
         return;
     }
   }
@@ -454,6 +456,8 @@ class MahiScrollView : public views::ScrollView,
       case MahiUiUpdateType::kRefreshAvailabilityUpdated:
       case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
       case MahiUiUpdateType::kSummaryLoaded:
+      case MahiUiUpdateType::kElucidationRequested:
+      case MahiUiUpdateType::kElucidationLoaded:
         break;
     }
     if (old_scroll_position != default_scroll_position_) {
@@ -598,8 +602,9 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                               mahi_constants::kScrollContentsViewBottomPadding,
                               0))
                           .AddChildren(
-                              views::Builder<SummaryOutlinesSection>(
-                                  std::make_unique<SummaryOutlinesSection>(
+                              views::Builder<SummaryOutlinesElucidationSection>(
+                                  std::make_unique<
+                                      SummaryOutlinesElucidationSection>(
                                       ui_controller_))
                                   .SetID(mahi_constants::ViewId::
                                              kSummaryOutlinesSection)
@@ -888,6 +893,8 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+    case MahiUiUpdateType::kElucidationRequested:
+    case MahiUiUpdateType::kElucidationLoaded:
       return;
   }
 }

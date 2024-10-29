@@ -104,6 +104,9 @@ class MahiManagerImpl : public chromeos::MahiManager,
 
   void MaybeObserveHistoryService();
 
+  void OpenMahiPanelForElucidation(int64_t display_id,
+                                   const gfx::Rect& mahi_menu_bounds);
+
   void OnGetPageContent(crosapi::mojom::MahiPageInfoPtr request_page_info,
                         MahiContentCallback callback,
                         crosapi::mojom::MahiPageContentPtr mahi_content_ptr);

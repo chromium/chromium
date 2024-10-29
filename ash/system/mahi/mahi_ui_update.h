@@ -28,8 +28,9 @@ enum class VisibilityState {
   // The state that shows the view displaying questions and answers.
   kQuestionAndAnswer,
 
-  // The state that shows the view displaying summary and outlines.
-  kSummaryAndOutlines,
+  // The state that shows the view displaying summary or elucidation or outlines
+  // (not implemented yet).
+  kSummaryAndOutlinesAndElucidation,
 };
 
 enum class MahiUiUpdateType {
@@ -65,6 +66,12 @@ enum class MahiUiUpdateType {
 
   // The summary and outlines are requested to reload.
   kSummaryAndOutlinesReloaded,
+
+  // An elucidation for selected text is requested.
+  kElucidationRequested,
+
+  // An elucidation is loaded with a success.
+  kElucidationLoaded,
 };
 
 // Contains the params required to send a question to the Mahi backend.
@@ -147,6 +154,11 @@ class ASH_EXPORT MahiUiUpdate {
   // NOTE: This function should be called only if `type` is `kSummaryLoaded`.
   const std::u16string& GetSummary() const;
 
+  // Returns the elucidation/simplication from `payload`.
+  // NOTE: This function should be called only if `type` is
+  // `kElucidationLoaded`.
+  const std::u16string& GetElucidation() const;
+
   MahiUiUpdateType type() const { return type_; }
 
  private:
@@ -167,6 +179,8 @@ class ASH_EXPORT MahiUiUpdate {
   // For `kSummaryAndOutlinesSectionNavigated`, `payload` is `std::nullopt`;
   // For `kSummaryLoaded`, `payload` is a summary;
   // For `kSummaryAndOutlinesReloaded`, `payload` is `std::nullopt`.
+  // For `kElucidationLoaded`, `payload` is an elucidation;
+  // For `kElucidationRequested`, `payload` is `std::nullopt`;
   using PayloadType = std::variant<
       std::reference_wrapper<const std::u16string>,
       std::reference_wrapper<const MahiQuestionParams>,

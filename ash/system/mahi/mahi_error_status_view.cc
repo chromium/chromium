@@ -148,6 +148,8 @@ class ErrorContentsView : public views::FlexLayoutView,
       case MahiUiUpdateType::kSummaryLoaded:
       case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
       case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+      case MahiUiUpdateType::kElucidationRequested:
+      case MahiUiUpdateType::kElucidationLoaded:
         return;
     }
   }
@@ -188,7 +190,7 @@ bool MahiErrorStatusView::GetViewVisibility(VisibilityState state) const {
     case VisibilityState::kError:
       return true;
     case VisibilityState::kQuestionAndAnswer:
-    case VisibilityState::kSummaryAndOutlines:
+    case VisibilityState::kSummaryAndOutlinesAndElucidation:
       return false;
   }
 }
