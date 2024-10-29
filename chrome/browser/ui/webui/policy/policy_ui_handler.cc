@@ -112,6 +112,7 @@ namespace {
 
 // Key under which extension policies are grouped in JSON policy exports.
 constexpr char kExtensionsKey[] = "extensions";
+constexpr char kPolicyPromotionBannerLocale[] = "en-US";
 
 }  // namespace
 
@@ -500,6 +501,7 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
           policy::ManagementServiceFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))
               ->IsAccountManaged() &&
+          g_browser_process->GetApplicationLocale() == kPolicyPromotionBannerLocale &&
           !Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
               policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner)));
 }

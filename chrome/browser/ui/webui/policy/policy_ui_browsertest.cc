@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/policy/schema_registry_service.h"
@@ -1033,11 +1034,19 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
   static constexpr std::string_view kBannerVisible = "visible";
   static constexpr std::string_view kBannerHidden = "hidden";
 
+  // The browser's locale needs to be "en-US" to be able to see the banner
+  static constexpr std::string_view kValidLocale = "en-US";
+  static constexpr std::string_view kInvalidLocale = "not-en-US";
+
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {
     auto* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner,
                       is_dismissed);
+  }
+
+  void SetBrowserLocale(std::string_view locale){
+    g_browser_process->SetApplicationLocale(std::string(locale));
   }
 
  private:
@@ -1049,6 +1058,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetBrowserLocale(kValidLocale);
 
   SetPromotionBannerDismissedPref(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -1071,6 +1082,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::NONE);
 
+  SetBrowserLocale(kValidLocale);
+
   SetPromotionBannerDismissedPref(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
@@ -1086,6 +1099,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetBrowserLocale(kValidLocale);
 
   SetPromotionBannerDismissedPref(true);
 
@@ -1104,6 +1119,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
 
+  SetBrowserLocale(kValidLocale);
+
   SetPromotionBannerDismissedPref(false);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -1111,6 +1128,24 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
 
   EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
                      kPromotionBannerDismissJavaScript));
+
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+  EXPECT_EQ(result, kBannerHidden);
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, HandleLocaleNotEnUSHidden) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetBrowserLocale(kInvalidLocale);
+
+  SetPromotionBannerDismissedPref(false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
 
   auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
