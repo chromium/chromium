@@ -17,7 +17,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * is reused in non-autofill contexts, this hardcoded value should be replaced
  * with a param.
  */
-const NATIVE_MESSAGE_HANDLER = 'FormHandlersMessage';
+const NATIVE_MESSAGE_HANDLER = 'FrameRegistrationMessage';
 
 /**
  * An identifying string used by interframe messages.
@@ -88,7 +88,6 @@ function updateRegistrationLogbook(remoteToken: string, count: number) {
  */
 function registerSelfWithRemoteToken(remoteId: string): void {
   sendWebKitMessage(NATIVE_MESSAGE_HANDLER, {
-    'command': REGISTER_AS_CHILD_FRAME_COMMAND,
     'local_frame_id': getFrameId(),
     'remote_frame_id': remoteId,
   });
@@ -196,12 +195,8 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
   return remoteFrameId;
 }
 
-// TODO(crbug.com/40263245): This is exposed via gCrWeb to enable use in
-// form_handlers.js. When that file is converted to TS, this can be removed.
-gCrWeb.child_frame_registration = {processChildFrameMessage};
-
-export {
+gCrWeb.remoteFrameRegistration = {
+  processChildFrameMessage,
   registerChildFrame,
   registerSelfWithRemoteToken,
-  processChildFrameMessage,
 };

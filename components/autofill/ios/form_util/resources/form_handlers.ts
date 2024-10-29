@@ -8,9 +8,9 @@
  * Autofill keyboard accessory.
  */
 
-// Requires functions from fill.ts, form.ts, and autofill_form_features.ts.
+// Requires functions from fill.ts, form.ts, autofill_form_features.ts and
+// child_frame_registration_lib.ts.
 
-import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -221,7 +221,7 @@ function sendFormMutationMessagesAfterDelay(
  */
 function processInboundMessage(event: MessageEvent<any>): void {
   if (gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
-    processChildFrameMessage(event);
+    gCrWeb.remoteFrameRegistration.processChildFrameMessage(event);
   }
 }
 

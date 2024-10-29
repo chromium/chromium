@@ -55,10 +55,10 @@ source_set("form_handler_feature") {
   deps = [
     ":autofill_form_features",
     ":autofill_renderer_id_feature",
-    ":child_frame_registrar",
     ":form_handlers_js",
     ":form_util",
     ":form_util_feature",
+    ":frame_registration_feature",
     ":register_remote_frame_token_js",
     "//base",
     "//components/autofill/core/common:features",
@@ -87,7 +87,24 @@ optimize_js("autofill_form_features_ts_bundling") {
   sources = _script
 }
 
-compile_ts("child_frame_registration_ts_lib") {
+source_set("frame_registration_feature") {
+  sources = [
+    "remote_frame_registration_java_script_feature.h",
+    "remote_frame_registration_java_script_feature.mm",
+  ]
+  deps = [
+    ":autofill_form_features",
+    ":child_frame_registrar",
+    ":child_frame_registration_ts",
+    "//base",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+optimize_ts("child_frame_registration_ts") {
   sources = [ "resources/child_frame_registration_lib.ts" ]
   deps = [
     ":autofill_form_features_ts",
@@ -99,10 +116,7 @@ compile_ts("child_frame_registration_ts_lib") {
 
 optimize_ts("child_frame_registration_test_ts") {
   sources = [ "resources/child_frame_registration_test.ts" ]
-  deps = [
-    ":child_frame_registration_ts_lib",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 compile_ts("fill_js_dependencies") {
@@ -133,7 +147,6 @@ optimize_ts("fill_js") {
   sources = [ "resources/fill.ts" ]
 
   deps = [
-    ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
     ":fill_js_namespace",
     "//ios/web/public/js_messaging:frame_id",
@@ -155,7 +168,6 @@ optimize_ts("form_js") {
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
-    ":child_frame_registration_ts_lib",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -165,9 +177,9 @@ optimize_ts("register_remote_frame_token_js") {
   sources = [ "resources/register_remote_frame_token.ts" ]
 
   deps = [
-    ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
     "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
   ]
 }
 

@@ -140,6 +140,7 @@ source_set("test_support") {
     "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
+    "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/leveldb_proto:leveldb_proto",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

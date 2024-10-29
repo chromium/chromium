@@ -1618,7 +1618,7 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Notify) {
 
   {
     const std::u16string script = base::StrCat(
-        {u"__gCrWeb.common.sendWebKitMessage('FormHandlersMessage', "
+        {u"__gCrWeb.common.sendWebKitMessage('FrameRegistrationMessage', "
          u"{'command': 'registerAsChildFrame', 'local_frame_id': "
          u"__gCrWeb.frameId, 'remote_frame_id':'",
          base::UTF8ToUTF16(stolen_remote_token.ToString()), u"'});"});

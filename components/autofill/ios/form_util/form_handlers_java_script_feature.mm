@@ -11,9 +11,9 @@
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
-#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -25,7 +25,6 @@ constexpr char kFormHandlerScriptName[] = "form_handlers";
 constexpr char kRemoteTokenRegistrationScriptName[] =
     "register_remote_frame_token";
 constexpr char kScriptMessageName[] = "FormHandlersMessage";
-constexpr char kChildFrameCommand[] = "registerAsChildFrame";
 
 std::vector<web::JavaScriptFeature::FeatureScript> GetFeatureScripts() {
   std::vector<FeatureScript> feature_scripts;
@@ -60,10 +59,13 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
     : web::JavaScriptFeature(
           ContentWorldForAutofillJavascriptFeatures(),
           GetFeatureScripts(),
-          {web::java_script_features::GetCommonJavaScriptFeature(),
-           autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
-           autofill::FormUtilJavaScriptFeature::GetInstance(),
-           AutofillRendererIDJavaScriptFeature::GetInstance()}) {}
+          {
+              web::java_script_features::GetCommonJavaScriptFeature(),
+              autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
+              autofill::FormUtilJavaScriptFeature::GetInstance(),
+              AutofillRendererIDJavaScriptFeature::GetInstance(),
+              RemoteFrameRegistrationJavaScriptFeature::GetInstance(),
+          }) {}
 
 FormHandlersJavaScriptFeature::~FormHandlersJavaScriptFeature() = default;
 
@@ -89,24 +91,6 @@ FormHandlersJavaScriptFeature::GetScriptMessageHandlerName() const {
 void FormHandlersJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  // Delegate to ChildFrameRegistrar for kChildFrameCommand messages.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos) ||
-      base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    if (message.body() && message.body()->is_dict()) {
-      const std::string* command =
-          message.body()->GetDict().FindString("command");
-      if (command && *command == kChildFrameCommand) {
-        ChildFrameRegistrar* registrar =
-            ChildFrameRegistrar::GetOrCreateForWebState(web_state);
-        if (registrar) {
-          registrar->ProcessRegistrationMessage(message.body());
-        }
-        return;
-      }
-    }
-  }
-
   // Delegate to FormActivityTabHelper for all other messages.
   FormActivityTabHelper* helper =
       FormActivityTabHelper::GetOrCreateForWebState(web_state);
@@ -116,7 +100,9 @@ void FormHandlersJavaScriptFeature::ScriptMessageReceived(
 FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
     AutofillFormFeaturesJavaScriptFeature*
         autofill_form_features_java_script_feature,
-    AutofillRendererIDJavaScriptFeature* renderer_id_feature)
+    AutofillRendererIDJavaScriptFeature* renderer_id_feature,
+    RemoteFrameRegistrationJavaScriptFeature*
+        remote_frame_registration_java_script_feature)
     : web::JavaScriptFeature(
           ContentWorldForAutofillJavascriptFeatures(),
           GetFeatureScripts(),
@@ -125,6 +111,7 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
               FormUtilJavaScriptFeature::GetInstance(),
               autofill_form_features_java_script_feature,
               renderer_id_feature,
+              remote_frame_registration_java_script_feature,
           }) {}
 
 }  // namespace autofill

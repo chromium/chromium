@@ -17,6 +17,7 @@ namespace autofill {
 
 class AutofillFormFeaturesJavaScriptFeature;
 class AutofillRendererIDJavaScriptFeature;
+class RemoteFrameRegistrationJavaScriptFeature;
 
 // Registers listeners that are used to handle forms, enabling autofill and the
 // replacement method to dismiss the keyboard needed because of the Autofill
@@ -60,7 +61,9 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   FormHandlersJavaScriptFeature(
       AutofillFormFeaturesJavaScriptFeature*
           autofill_form_features_java_script_feature,
-      AutofillRendererIDJavaScriptFeature* renderer_id_feature);
+      AutofillRendererIDJavaScriptFeature* renderer_id_feature,
+      RemoteFrameRegistrationJavaScriptFeature*
+          remote_frame_registration_java_script_feature);
 };
 
 }  // namespace autofill
