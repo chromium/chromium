@@ -310,9 +310,4 @@ bool ShouldEnforceAshExtensionKeepList() {
                                   ash::features::kEnforceAshExtensionKeeplist);
 }
 
-bool IsAshDevToolEnabled() {
-  return IsAshWebBrowserEnabled() ||
-         base::FeatureList::IsEnabled(ash::features::kAllowDevtoolsInSystemUI);
-}
-
 }  // namespace crosapi::browser_util

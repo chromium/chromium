@@ -15156,7 +15156,6 @@ from previous Chrome versions.
   <int value="-2020721975" label="smart-virtual-keyboard"/>
   <int value="-2020024440" label="scroll-end-effect"/>
   <int value="-2018579114" label="ImprovedKeyboardShortcuts:enabled"/>
-  <int value="-2018031171" label="AllowDevtoolsInSystemUI:disabled"/>
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017821808" label="PrivacySandboxAdsAPIsOverride:disabled"/>
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
@@ -17051,7 +17050,6 @@ from previous Chrome versions.
   <int value="-1256823053" label="WebRtcHWVP9Encoding:enabled"/>
   <int value="-1256747007"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:disabled"/>
-  <int value="-1256279698" label="AllowDevtoolsInSystemUI:enabled"/>
   <int value="-1256187739" label="ClientStorageAccessContextAuditing:disabled"/>
   <int value="-1255571408"
       label="UsernameFirstFlowWithIntermediateValues:enabled"/>
@@ -19154,6 +19152,7 @@ from previous Chrome versions.
   <int value="-395259448" label="VideoPlayerJsModules:disabled"/>
   <int value="-394734604" label="FillingPasswordsFromAnyOrigin:disabled"/>
   <int value="-392813122" label="LibinputHandleTouchpad"/>
+  <int value="-390998835" label="(Obsolete) AllowDevtoolsInSystemUI:disabled"/>
   <int value="-390984438" label="FastPairHandshakeRefactor:disabled"/>
   <int value="-390798267" label="DynamicColorButtonsAndroid:disabled"/>
   <int value="-390734327" label="WallpaperGooglePhotosIntegration:disabled"/>
@@ -20537,6 +20536,7 @@ from previous Chrome versions.
       label="OmniboxRemoveSuggestionHeaderCapitalization:enabled"/>
   <int value="173288154" label="PrintPdfAsImage:enabled"/>
   <int value="173339199" label="SmsReceiverCrossDevice:disabled"/>
+  <int value="173563834" label="(Obsolete) AllowDevtoolsInSystemUI:enabled"/>
   <int value="173738967" label="WebRtcStatsReportIdl:enabled"/>
   <int value="174759256" label="LockScreenMediaControls:enabled"/>
   <int value="174917935" label="ReengagementNotification:disabled"/>

@@ -5770,14 +5770,6 @@ const char kLinkCrossDeviceInternalsDescription[] =
     "Improves debugging of Cross-Device features by recording more verbose "
     "logs and attaching these logs to filed Feedback reports.";
 
-const char kAllowDevtoolsInSystemUIName[] = "Enable DevTools in System UI";
-const char kAllowDevtoolsInSystemUIDescription[] =
-    "Enable the developer tools (DevTools) including the page source viewer "
-    "(view-source) in Ash. By default, these tools are disabled if Lacros is "
-    "the only browser, so as not to confuse the user by opening an Ash window. "
-    "By enabling this flag, you can access them via the context menu or "
-    "shortcuts to debug the system UI.";
-
 const char kAllowFpmcuBetaFirmwareName[] =
     "Allow using beta firmware for the FPMCU";
 const char kAllowFpmcuBetaFirmwareDescription[] =

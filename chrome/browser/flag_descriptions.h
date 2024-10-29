@@ -3319,9 +3319,6 @@ extern const char kAllowCrossDeviceFeatureSuiteDescription[];
 extern const char kLinkCrossDeviceInternalsName[];
 extern const char kLinkCrossDeviceInternalsDescription[];
 
-extern const char kAllowDevtoolsInSystemUIName[];
-extern const char kAllowDevtoolsInSystemUIDescription[];
-
 extern const char kAllowFpmcuBetaFirmwareName[];
 extern const char kAllowFpmcuBetaFirmwareDescription[];
 

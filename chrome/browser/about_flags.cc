@@ -10224,10 +10224,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"allow-devtools-in-system-ui",
-     flag_descriptions::kAllowDevtoolsInSystemUIName,
-     flag_descriptions::kAllowDevtoolsInSystemUIDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAllowDevtoolsInSystemUI)},
     {"separate-web-app-shortcut-badge-icon",
      flag_descriptions::kSeparateWebAppShortcutBadgeIconName,
      flag_descriptions::kSeparateWebAppShortcutBadgeIconDescription, kOsCrOS,

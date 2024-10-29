@@ -61,12 +61,6 @@ BASE_FEATURE(kAllowCrossDeviceFeatureSuite,
              "AllowCrossDeviceFeatureSuite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows DevTools to open from the context menu and shortcut keys in Ash if
-// Lacros is the only browser.
-BASE_FEATURE(kAllowDevtoolsInSystemUI,
-             "AllowDevtoolsInSystemUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether devices are updated before reboot after the first update.
 BASE_FEATURE(kAllowRepeatedUpdates,
              "AllowRepeatedUpdates",
