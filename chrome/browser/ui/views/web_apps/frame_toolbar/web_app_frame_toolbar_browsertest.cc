@@ -282,13 +282,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 
-// TODO(crbug.com/40940526): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ThemeChange DISABLED_ThemeChange
-#else
-#define MAYBE_ThemeChange ThemeChange
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MAYBE_ThemeChange) {
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
   ASSERT_TRUE(https_server()->Started());
   const GURL app_url = https_server()->GetURL("/banners/theme-color.html");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
@@ -1378,6 +1372,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // TODO(https://crbug.com/329235190): Lacros using accelerated widget for
   // bubble, so the point within browser_view is still draggable and returns
   // `HTCAPTION`.
+  //
+  // TODO(https://crbug.com/375937556): Revise this now that Lacros support is
+  // removed.
   if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
     GTEST_SKIP();
   }
@@ -2084,8 +2081,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test to ensure crbug.com/1513330 won't reproduce.
-// TODO(b/41492287, b/336264927): Flaky on Linux, Mac, and Lacros.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/41492287, b/336264927): Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
   DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
 #else

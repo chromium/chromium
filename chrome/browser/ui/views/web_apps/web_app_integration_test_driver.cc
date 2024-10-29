@@ -172,15 +172,6 @@
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/version.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 
@@ -725,14 +716,9 @@ WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
 }
 #endif
 
+// TODO(crbug.com/375937556): Remove this method now that Lacros support is
+// gone.
 void ActivateBrowserAndWait(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(browser);
-  ASSERT_TRUE(browser->window());
-  auto waiter = ui_test_utils::BrowserActivationWaiter(browser);
-  browser->window()->Activate();
-  waiter.WaitForActivation();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
@@ -748,28 +734,6 @@ void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::AcceptDialog(widget);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Clear any apps that may have been left in the Ash App Service cache by
-// earlier tests.
-void ReinitializeAppService(Profile* profile) {
-  if (chromeos::IsAshVersionAtLeastForTesting(base::Version({108, 0, 5354}))) {
-    base::test::TestFuture<void> future;
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::TestController>()
-        ->ReinitializeAppService(future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->ReinitializeForTesting(profile);
-    apps::AppTypeInitializationWaiter(profile, apps::AppType::kWeb).Await();
-  } else {
-    LOG(ERROR) << "Cannot ReinitializeAppService - Unsupported ash version.";
-  }
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Determines whether, when attempting to load a path, we want to, instead of
 // using the regular handler, load it from a file on disk.
@@ -956,10 +920,6 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   if (!delegate_->IsSyncTest()) {
     observation_.Observe(&provider()->install_manager());
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ReinitializeAppService(browser()->profile());
-#endif
 
   // Add chrome://webapps_integration_tests/ date source.
   auto root_path = base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
@@ -2551,13 +2511,6 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
 
   ASSERT_NE(nullptr, AppUninstallDialogView::GetActiveViewForTesting());
   AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The lacros implementation doesn't use a confirmation dialog so we can
-  // call the normal method.
-  apps::AppServiceProxy* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  app_service_proxy->Uninstall(app_id, apps::UninstallSource::kAppList,
-                               nullptr);
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -2567,6 +2520,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home_page_handler.UninstallApp(app_id);
 #endif
+
   uninstall_waiter.Wait();
   site_remember_deny_open_file_.erase(site);
 
@@ -4788,6 +4742,9 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
   // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
   // enabled.
+  //
+  // TODO(crbug.com/375937556): Revise this now that the Lacros support is
+  // removed.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)

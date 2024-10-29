@@ -66,13 +66,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
-#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace web_app {
 namespace {
 
@@ -214,9 +207,6 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
     TestingProfile::Builder profile_builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = profile_builder.Build();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -224,13 +214,6 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         ->SetTestingFactory(profile_.get(),
                             base::BindRepeating(&NullServiceFactory));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Set up Lacros so the AppService -> LaunchWebAppCommand plumbing works.
-    extensions::SetEmptyAshKeeplistForTest();
-    app_service_proxy_ =
-        std::make_unique<LoopbackCrosapiAppServiceProxy>(profile_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Launching requires real os integration.
     fake_provider()->UseRealOsIntegrationManager();
@@ -281,10 +264,6 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestingProfile> profile_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<LoopbackCrosapiAppServiceProxy> app_service_proxy_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
