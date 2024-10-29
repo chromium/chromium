@@ -6838,20 +6838,6 @@
        null,
        {}
       ]
-     ],
-     "chrome-1312699.html": [
-      "c783b0d9cc9634654f59654945a1bdcf38539cc8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "content-visibility-crash.html": [
-      "63111d03e3fab4673ec4d14cff6ad5737fd4f39c",
-      [
-       null,
-       {}
-      ]
      ]
     }
    },
@@ -275280,62 +275266,6 @@
      ]
     ]
    },
-   "fullscreen": {
-    "rendering": {
-     "backdrop-iframe.html": [
-      "dbdf9c841a4685160987ed5df0ba5e632b754669",
-      [
-       null,
-       [
-        [
-         "/fullscreen/rendering/backdrop-green-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "backdrop-inherit.html": [
-      "3a38dc4c815269bcba1fb570c1b0ee1a06ff8b2e",
-      [
-       null,
-       [
-        [
-         "/fullscreen/rendering/backdrop-green-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "backdrop-object.html": [
-      "be285b76124def6099b9954d0125117ed65a4917",
-      [
-       null,
-       [
-        [
-         "/fullscreen/rendering/backdrop-object-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "fullscreen-root-fills-page.html": [
-      "e2a6217346db1a4f7850446760f8be43532fa4d2",
-      [
-       null,
-       [
-        [
-         "/fullscreen/rendering/fullscreen-root-fills-page-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ]
-    }
-   },
    "html": {
     "browsers": {
      "sandboxing": {
@@ -374406,10 +374336,6 @@
       "ba11aa463eb03b057c33e58b4d93d2204faf6338",
       []
      ],
-     "element-request-fullscreen-timing-expected.txt": [
-      "2ea65e602a138b822257b973d25161ef286817b1",
-      []
-     ],
      "historical-expected.txt": [
       "66aa848d244fc8d8461919f0feff565d14d414cd",
       []
@@ -374432,20 +374358,6 @@
        []
       ]
      }
-    },
-    "rendering": {
-     "backdrop-green-ref.html": [
-      "3126fe194261f7ce7f6039885e4ec73e7a997468",
-      []
-     ],
-     "backdrop-object-ref.html": [
-      "6c7071a727dd27d182ae017e9f6dbc0834361ddc",
-      []
-     ],
-     "fullscreen-root-fills-page-ref.html": [
-      "b2bf13557a2c3540645e3aa45a0850a61f8f0b28",
-      []
-     ]
     },
     "trusted-click.js": [
      "51fbce7ee4355ec4ac2b923f24feb75a944f4390",
@@ -395901,7 +395813,7 @@
     ]
    },
    "lint.ignore": [
-    "cee60ba906e7fa2028fee655f4a175dbbab59032",
+    "ee19f061a74aa80a8aae9eff62261865144cc125",
     []
    ],
    "loading": {
@@ -398387,6 +398299,10 @@
     ],
     "MediaStream-MediaElement-firstframe.https-expected.txt": [
      "84d2ee09bc12c702c21c37b9faee2bc5758ebc74",
+     []
+    ],
+    "MediaStream-default-feature-policy.https-expected.txt": [
+     "1968348d51e7dbf419ee06694d8ae1cda03fa885",
      []
     ],
     "MediaStream-removetrack.https-expected.txt": [
@@ -414999,14 +414915,6 @@
     ],
     "video-decoder.https.any.worker-expected.txt": [
      "3893314ee160f59883efd7f9bc8f9591b5bb64c8",
-     []
-    ],
-    "video-encoder-config.https.any-expected.txt": [
-     "50fd1a0d1ca1df5d73befd0f2fb0c0e04990888a",
-     []
-    ],
-    "video-encoder-config.https.any.worker-expected.txt": [
-     "50fd1a0d1ca1df5d73befd0f2fb0c0e04990888a",
      []
     ],
     "video-encoder-h264.https.any.worker_high-6.2-expected.txt": [
@@ -467410,6 +467318,36 @@
       }
      }
     },
+    "css-color-hdr": {
+     "computed.html": [
+      "7ee1a96297723ae937ea4d3ce9e36b12760a9475",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inheritance.html": [
+      "4f7a44a77290736703b170425f5b15e0ca445039",
+      [
+       null,
+       {}
+      ]
+     ],
+     "interpolation.html": [
+      "62e079f6366d7979e130e72dfec8d7f9fede07b7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "parsing.html": [
+      "5d377a1ca7ab3633639bf6290f9106b705a9d93c",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-conditional": {
      "at-supports-whitespace.html": [
       "12683ab92bb46af035b5bfa17b466b23736d1c5c",
@@ -482036,6 +481974,13 @@
       ],
       "the-check-pseudo-element.tentative.html": [
        "70f35091bc9484ae6e6802e64aa18bab9b0b8610",
+       [
+        null,
+        {}
+       ]
+      ],
+      "the-select-arrow-pseudo-element.tentative.html": [
+       "b71bfe2363475442a9b0a151b72f9884ec14f240",
        [
         null,
         {}
@@ -507591,7 +507536,7 @@
       ]
      ],
      "ParentNode-append.html": [
-      "4e101f73a25719af97280f56cbfe8b463e1f5339",
+      "928c184b8d56198e230d33f8a6f7787203b8e375",
       [
        null,
        {}
@@ -508251,6 +508196,13 @@
        ],
        "focus-preserve.html": [
         "a00e8b77880697a51d4418fc15637b1dcef6914b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "focus-within.html": [
+        "18d8c93b9982dd96a14c5548257292ad7b76c315",
         [
          null,
          {}
@@ -612446,6 +612398,13 @@
         }
        ]
       ],
+      "popover-minimum-role.html": [
+       "8606f983969b9fc94e2684073a4946e9358e3507",
+       [
+        null,
+        {}
+       ]
+      ],
       "popover-move-documents.html": [
        "11f52c2f2f0d14c74649cc7c52ac6e5ac68058b1",
        [
@@ -643501,7 +643460,7 @@
      ]
     ],
     "pointerevent_sequence_at_implicit_release_on_click.html": [
-     "bfcc8ad54a8d74bbc5a1a0fa7ae756b0f32c5d1b",
+     "8fac36797dcfbec1cf5e17bbcd04000c6da01e31",
      [
       "pointerevents/pointerevent_sequence_at_implicit_release_on_click.html?mouse",
       {

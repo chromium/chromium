@@ -34,7 +34,8 @@
         on_event(document.getElementById("done"), "click", function() {
           test_pointer_event.step(function () {
             var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
-            assert_equals(event_log.join(", "), expected_events);
+            assert_true(event_log.join(", ").startsWith(expected_events), "Boundary events are emitted after lostpointercapture");
+            assert_equals(event_log.join(", "), expected_events, "No extra events are emitted");
           });
           // Make sure the test finishes after all the input actions are completed.
           actions_promise.then( () => {
