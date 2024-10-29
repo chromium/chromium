@@ -88,6 +88,7 @@
     "android-chrome-13-x64-wpt-android-specific": "ci/android-chrome-13-x64-wpt-android-specific/gn-args.json",
     "android-chrome-pie-x86-wpt-fyi-rel": "ci/android-chrome-pie-x86-wpt-fyi-rel/gn-args.json",
     "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
+    "android-pie-x86-fyi-rel": "ci/android-pie-x86-fyi-rel/gn-args.json",
     "android-tablet-14-arm64-fyi-rel": "ci/android-tablet-14-arm64-fyi-rel/gn-args.json",
     "android-webview-13-x64-wpt-android-specific": "ci/android-webview-13-x64-wpt-android-specific/gn-args.json",
     "android-webview-pie-x86-wpt-fyi-rel": "ci/android-webview-pie-x86-wpt-fyi-rel/gn-args.json"

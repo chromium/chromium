@@ -608,6 +608,25 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_pie_emulator_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+        "android_emulator_specific_network_enabled_content_browsertests",
+        "android_monochrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",
+        "android_wpr_record_replay_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",
+        "webview_cts_tests_gtest",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_pie_rel_gtests",
     targets = [
         # TODO(crbug.com/40142574): Deprecate this when all the test suites below
@@ -5248,6 +5267,18 @@ targets.bundle(
 
 targets.bundle(
     name = "oreo_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "monochrome_public_apk_checker_isolated_script",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
+)
+
+targets.bundle(
+    name = "pie_isolated_scripts",
     targets = [
         "android_isolated_scripts",
         "chromium_junit_tests_scripts",

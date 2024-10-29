@@ -272,14 +272,16 @@ ci.builder(
 # disabled tests.
 ci.builder(
     name = "android-pie-x86-fyi-rel",
-    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
-    # builds. Also we don't set any `schedule` since this builder is for
-    # reference only and should not run any new builds.
-    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["android"],
+            apply_configs = [
+                "android",
+                # This is necessary due to this builder running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+                "enable_wpr_tests",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
@@ -290,6 +292,144 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "x86_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_pie_emulator_gtests",
+            "pie_isolated_scripts",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "pie-x86-emulator",
+            "emulator-4-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                args = [
+                    # https://crbug.com/1034001
+                    "--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        # crbug.com/1292221
+                        "cores": "8",
+                    },
+                    shards = 9,
+                ),
+            ),
+            "android_sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "cc_unittests": targets.mixin(
+                args = [
+                    # https://crbug.com/1039860
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter",
+                ],
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    # https://crbug.com/1046059
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        "cores": "8",
+                    },
+                    # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
+                    shards = 75,
+                ),
+            ),
+            "components_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        # use 8-core to shorten runtime
+                        "cores": "8",
+                    },
+                    shards = 75,
+                ),
+            ),
+            "content_shell_test_apk": targets.mixin(
+                args = [
+                    "--gtest_filter=-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode*",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        # use 8-core to shorten runtime
+                        "cores": "8",
+                    },
+                    shards = 6,
+                ),
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
+                ],
+            ),
+            "net_unittests": targets.mixin(
+                # crbug.com/1046060
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter",
+                ],
+            ),
+            "perfetto_unittests": targets.remove(
+                reason = "TODO(crbug.com/41440830): Fix permission issue when creating tmp files",
+            ),
+            "services_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/40203477): Fix the failed tests
+                    "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*",
+                ],
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
+                ],
+                swarming = targets.swarming(
+                    # crbug.com/1294924
+                    shards = 15,
+                ),
+            ),
+            "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
+                ],
+                swarming = targets.swarming(
+                    # crbug.com/1294924
+                    shards = 9,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x86|rel",

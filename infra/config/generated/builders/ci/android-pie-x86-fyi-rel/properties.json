@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/android-pie-x86-fyi-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -27,7 +30,9 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android"
+                  "android",
+                  "chromium_with_telemetry_dependencies",
+                  "enable_wpr_tests"
                 ],
                 "config": "chromium"
               }
@@ -41,7 +46,8 @@
           "builder": "android-pie-x86-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-pie-x86-fyi-rel/targets"
     }
   },
   "$build/reclient": {
