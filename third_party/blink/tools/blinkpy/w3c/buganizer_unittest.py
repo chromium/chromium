@@ -19,6 +19,27 @@ from blinkpy.w3c.buganizer import (
 
 class BuganizerIssueTest(unittest.TestCase):
 
+    @staticmethod
+    def create_mock_issue_payload(issue_id='12345'):
+        return {
+            'issueId': issue_id,
+            'issueState': {
+                'title': 'test title',
+                'componentId': 999,
+                'status': 'NEW',
+                'severity': 'S2',
+                'priority': 'P1',
+                # `emailAddress` may be blank if the user is not visible to the
+                # caller.
+                'ccs': [{}, {
+                    'emailAddress': 'test@chromium.org',
+                }],
+            },
+            'issueComment': {
+                'comment': 'test description',
+            },
+        }
+
     def test_display(self):
         issue = BuganizerIssue(title='test',
                                description='ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ',
@@ -76,25 +97,8 @@ class BuganizerIssueTest(unittest.TestCase):
         self.assertIsNone(issue.link)
 
     def test_build_from_payload(self):
-        issue = BuganizerIssue.from_payload({
-            'issueId': 12345,
-            'issueState': {
-                'title': 'test title',
-                'componentId': 999,
-                'status': 'NEW',
-                'severity': 'S2',
-                'priority': 'P1',
-                # `emailAddress` may be blank if the user is not visible to the
-                # caller.
-                'ccs': [{}, {
-                    'emailAddress': 'test@chromium.org',
-                }],
-            },
-            'issueComment': {
-                'comment': 'test description',
-            },
-        })
-        self.assertEqual(issue.issue_id, 12345)
+        issue = BuganizerIssue.from_payload(self.create_mock_issue_payload())
+        self.assertEqual(issue.issue_id, '12345')
         self.assertEqual(issue.title, 'test title')
         self.assertEqual(issue.component_id, '999')
         self.assertIs(issue.status, Status.NEW)
@@ -148,3 +152,42 @@ class BuganizerClientTest(unittest.TestCase):
             self.client.GetIssue(123)
         fake_get = self.service.issues.return_value.get
         fake_get.assert_not_called()
+
+    def test_get_issue_list_with_pagination(self):
+        first_page_response = {
+            'issues': [
+                BuganizerIssueTest.create_mock_issue_payload(issue_id='1'),
+                BuganizerIssueTest.create_mock_issue_payload(issue_id='2')
+            ],
+            'nextPageToken':
+            'next_page_token',
+        }
+        second_page_response = {
+            'issues': [
+                BuganizerIssueTest.create_mock_issue_payload(issue_id='3'),
+                BuganizerIssueTest.create_mock_issue_payload(issue_id='4')
+            ],
+        }
+
+        self.service.issues.return_value.list.side_effect = [
+            mock.Mock(execute=mock.Mock(return_value=first_page_response)),
+            mock.Mock(execute=mock.Mock(return_value=second_page_response)),
+        ]
+
+        issues = self.client.GetIssueList('test query', limit=3)
+
+        self.assertEqual(len(issues), 3)
+        self.assertEqual(issues[0].issue_id, '1')
+        self.assertEqual(issues[1].issue_id, '2')
+        self.assertEqual(issues[2].issue_id, '3')
+
+        self.service.issues.return_value.list.assert_has_calls([
+            mock.call(query='test query',
+                      pageSize=3,
+                      view='FULL',
+                      pageToken=None),
+            mock.call(query='test query',
+                      pageSize=1,
+                      view='FULL',
+                      pageToken='next_page_token'),
+        ])

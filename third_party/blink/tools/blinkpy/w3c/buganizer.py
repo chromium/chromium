@@ -167,25 +167,36 @@ class BuganizerClient:
                      query_string,
                      limit: int = MAX_PAGE_SIZE) -> List[BuganizerIssue]:
         """Makes a request to the issue tracker to get list of issues by query"""
-        # TODO(crbug.com/333112144) : Use nextPageToken in response to support
-        # more than 500 issues
-        request = self._service.issues().list(query=query_string,
-                                              pageSize=min(
-                                                  MAX_PAGE_SIZE, limit),
-                                              view='FULL')
-        try:
-            response = self._ExecuteRequest(request)
+        return list(self._GetIssueListGenerator(query_string, limit))
+
+    def _GetIssueListGenerator(self, query_string, limit: int = MAX_PAGE_SIZE):
+        """Helper generator for GetIssueList."""
+        page_token = None
+        remaining_limit = limit
+        while remaining_limit > 0:
+            request = self._service.issues().list(query=query_string,
+                                                  pageSize=min(
+                                                      MAX_PAGE_SIZE,
+                                                      remaining_limit),
+                                                  view='FULL',
+                                                  pageToken=page_token)
+            try:
+                response = self._ExecuteRequest(request)
+            except Exception as e:
+                raise BuganizerError(f'failed to get issue list: {e}') from e
             logging.debug('[BuganizerClient] GetIssueList response: %s',
                           response)
             if not response:
-                return []
-            issues = [
-                BuganizerIssue.from_payload(issue_payload)
-                for issue_payload in response.get('issues', [])
-            ]
-            return issues
-        except Exception as e:
-            raise BuganizerError(f'failed to get issue list: {e}') from e
+                return
+
+            issues = response.get('issues', [])[:remaining_limit]
+            for issue_payload in issues:
+                yield BuganizerIssue.from_payload(issue_payload)
+            remaining_limit -= len(issues)
+
+            page_token = response.get('nextPageToken')
+            if not page_token or not issues:
+                return
 
     def GetIssueComments(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get all the comments."""
