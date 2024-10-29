@@ -20,7 +20,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/root_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #endif
 
@@ -64,12 +64,12 @@ class WebAppIdentityUpdateConfirmationViewBrowserTest
       return false;
 
     views::Widget::Widgets widgets;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
       views::Widget::GetAllChildWidgets(root_window, &widgets);
 #else
     widgets = views::test::WidgetTest::GetAllWidgets();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     for (views::Widget* widget : widgets) {
       if (!widget->GetRootView())

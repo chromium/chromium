@@ -1317,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
                                u"Favicon only"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Browser tests that verify web-app tab strip behavior when locked (and not
 // locked) for OnTask. Only relevant for non-web browser scenarios.

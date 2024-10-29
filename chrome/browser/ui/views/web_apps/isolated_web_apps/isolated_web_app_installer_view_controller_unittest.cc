@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
@@ -57,14 +56,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 namespace {
@@ -129,11 +125,11 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
   return manifest;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<KeyedService> NullServiceFactory(content::BrowserContext*) {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MockView : public IsolatedWebAppInstallerView {
  public:
@@ -209,11 +205,11 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::full_restore::FullRestoreServiceFactory::GetInstance()
         ->SetTestingFactory(profile_.get(),
                             base::BindRepeating(&NullServiceFactory));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Launching requires real os integration.
     fake_provider()->UseRealOsIntegrationManager();

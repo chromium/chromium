@@ -41,7 +41,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -159,17 +158,14 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #else
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -948,13 +944,13 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   LOG(INFO) << "TearDownOnMainThread: Start.";
   observation_.Reset();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (delegate_->IsSyncTest()) {
     SyncTurnOff();
   }
 #endif
   for (auto* profile : GetAllProfiles()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     if (delegate_->IsSyncTest()) {
       delegate_->SyncSignOut(profile);
     }
@@ -2500,7 +2496,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apps::AppServiceProxy* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   base::RunLoop run_loop;
@@ -4738,7 +4734,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
   enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
   // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
   // enabled.
@@ -4746,8 +4742,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // TODO(crbug.com/375937556): Revise this now that the Lacros support is
   // removed.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
+
   // TODO(crbug.com/40236806): Update test driver to work with new UI.
   enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else

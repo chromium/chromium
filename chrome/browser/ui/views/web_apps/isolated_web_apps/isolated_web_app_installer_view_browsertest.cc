@@ -40,9 +40,9 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/test/test_browser_dialog_mac.h"
@@ -189,7 +189,7 @@ class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
   // Stores the current widgets in |widgets_|.
   void UpdateWidgets() {
     widgets_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
       views::Widget::GetAllChildWidgets(root_window, &widgets_);
     }
