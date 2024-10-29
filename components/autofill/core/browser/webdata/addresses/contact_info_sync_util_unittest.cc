@@ -683,6 +683,7 @@ class ContactInfoSyncUtilTest
                                 features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
                                 features::kAutofillUseITAddressModel,
+                                features::kAutofillUseNLAddressModel,
                                 features::kAutofillTrackMultipleUseDates},
                                {});
   }

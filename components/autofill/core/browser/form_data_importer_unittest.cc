@@ -530,7 +530,8 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseFRAddressModel,
          features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel},
+         features::kAutofillUseITAddressModel,
+         features::kAutofillUseNLAddressModel},
         {});
 
     // Advance the clock to year 20XX.

@@ -26,7 +26,8 @@ class AddressFieldParserTest : public FormFieldParserTestBase,
                                        features::kAutofillUseFRAddressModel,
                                        features::kAutofillUsePLAddressModel,
                                        features::kAutofillUseINAddressModel,
-                                       features::kAutofillUseITAddressModel},
+                                       features::kAutofillUseITAddressModel,
+                                       features::kAutofillUseNLAddressModel},
                                       {});
   }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;

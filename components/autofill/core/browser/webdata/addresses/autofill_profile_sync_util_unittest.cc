@@ -923,7 +923,9 @@ class AutofillProfileSyncUtilTest
                                 features::kAutofillUseDEAddressModel,
                                 features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel},
+                                features::kAutofillUseITAddressModel,
+                                features::kAutofillUseNLAddressModel,
+                               },
                                {});
     task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
   }
