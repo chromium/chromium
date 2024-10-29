@@ -27,6 +27,7 @@ class OptimizationGuideDecider;
 
 namespace autofill {
 class FormStructure;
+class LogManager;
 }  // namespace autofill
 
 namespace autofill_prediction_improvements {
@@ -222,6 +223,8 @@ class AutofillPredictionImprovementsManager
   // `cache_`. This is meant to be called in `GetSuggestions()`, which is
   // expected to be called on field focus.
   void UpdateFieldFocusabilityInCache(const autofill::FormData& form);
+
+  autofill::LogManager* GetLogManager() const;
 
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =

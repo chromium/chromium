@@ -18,15 +18,20 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -46,6 +51,10 @@
 namespace autofill_prediction_improvements {
 
 namespace {
+
+using autofill::LogBuffer;
+using autofill::LoggingScope;
+using autofill::LogMessage;
 
 constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
 
@@ -601,6 +610,24 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     AutofillPredictionImprovementsFillingEngine::PredictionsOrError
         predictions_or_error,
     std::optional<std::string> model_execution_id) {
+  LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
+                          << LogMessage::kAutofillAi
+                          << "Received predictions:" <<
+      [&] {
+        LogBuffer buffer;
+        if (!predictions_or_error.has_value()) {
+          buffer << "Error";
+          return buffer;
+        }
+        buffer << autofill::Tag{"table"};
+        for (const auto& [field_id, prediction] :
+             predictions_or_error.value()) {
+          buffer << autofill::Tr{} << field_id << prediction.value;
+        }
+        buffer << autofill::CTag{"table"};
+        return buffer;
+      }();
+
   form_filling_predictions_model_execution_id_ = model_execution_id;
 
   if (predictions_or_error.has_value()) {
@@ -784,7 +811,13 @@ void AutofillPredictionImprovementsManager::OnFormSeen(
     HasDataStored(base::BindOnce(
         [](base::WeakPtr<AutofillPredictionImprovementsManager> manager,
            autofill::FormGlobalId form_id, HasData has_data) {
-          if (manager && has_data) {
+          if (!manager) {
+            return;
+          }
+          LOG_AF(manager->GetLogManager())
+              << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+              << "Has data for " << form_id;
+          if (has_data) {
             manager->logger_.OnFormHasDataToFill(form_id);
           }
         },
@@ -840,6 +873,11 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
         const bool autofill_ai_shows_bubble =
             self && form_annotation_response &&
             !form_annotation_response->to_be_upserted_entries.empty();
+        LOG_AF(self ? self->GetLogManager() : nullptr)
+            << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
+            << form->global_id() << " submission is "
+            << (autofill_ai_shows_bubble ? "" : "not ")
+            << "showing import bubble";
         if (autofill_ai_shows_bubble) {
           self->client_->ShowSaveAutofillPredictionImprovementsBubble(
               std::move(form_annotation_response),
@@ -861,16 +899,28 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     // `autofill::prefs::kAutofillPredictionImprovementsEnabled` is disabled.
     skip_import = true;
+    LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
+                            << LogMessage::kAutofillAi << "Pref is disabled";
   } else if (!annotation_service) {
     // The import is skipped because the annotation service is not available.
     skip_import = true;
+    LOG_AF(GetLogManager())
+        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+        << "Annotation service is not available";
   } else if (!annotation_service->ShouldAddFormSubmissionForURL(
                  form->source_url())) {
     // The import is disabled because the origin criteria is not fulfilled.
     skip_import = true;
+    LOG_AF(GetLogManager())
+        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
+        << form->global_id() << " is ineligible due to URL "
+        << form->source_url();
   } else if (!IsFormEligibleForImportByFieldCriteria(*form.get())) {
     // The form does not contain enough values that can be imported.
     skip_import = true;
+    LOG_AF(GetLogManager())
+        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
+        << form->global_id() << " is ineligible due to field criteria.";
   }
 
   if (skip_import) {
@@ -921,11 +971,26 @@ void AutofillPredictionImprovementsManager::HasDataStored(
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {
     user_annotations_service->RetrieveAllEntries(base::BindOnce(
-        [](HasDataCallback callback,
+        [](base::WeakPtr<AutofillPredictionImprovementsManager> self,
+           HasDataCallback callback,
            const user_annotations::UserAnnotationsEntries entries) {
+          LOG_AF(self ? self->GetLogManager() : nullptr)
+              << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+              << "Received user annotation entries:" << [&] {
+                   LogBuffer buffer;
+                   buffer << autofill::Tag{"table"};
+                   for (const optimization_guide::proto::UserAnnotationsEntry&
+                            entry : entries) {
+                     buffer << autofill::Tr{} << entry.entry_id() << entry.key()
+                            << entry.value()
+                            << autofill::SetParentTagContainsPII{};
+                   }
+                   buffer << autofill::CTag{"table"};
+                   return buffer;
+                 }();
           std::move(callback).Run(HasData(!entries.empty()));
         },
-        std::move(callback)));
+        GetWeakPtr(), std::move(callback)));
     return;
   }
   std::move(callback).Run(HasData(false));
@@ -969,6 +1034,11 @@ void AutofillPredictionImprovementsManager::OnFailedToGenerateSuggestions() {
       UpdateSuggestions(CreateErrorSuggestions());
       break;
   }
+}
+
+autofill::LogManager* AutofillPredictionImprovementsManager::GetLogManager()
+    const {
+  return client_->GetAutofillClient().GetLogManager();
 }
 
 base::WeakPtr<AutofillPredictionImprovementsManager>

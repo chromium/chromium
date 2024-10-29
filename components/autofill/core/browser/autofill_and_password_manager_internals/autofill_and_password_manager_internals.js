@@ -114,8 +114,7 @@ function getUrlHashParam(key) {
 // is explicit set by the user that PII values can be displayed.
 function nodeToDomNode(node, parentContainsPII = false) {
   if (node.type === 'text') {
-    const displayPIIEnabled =
-        document.getElementById('display-pii-on-submission').checked;
+    const displayPIIEnabled = document.getElementById('display-pii').checked;
     const canDisplayNodeValue = !parentContainsPII || displayPIIEnabled;
     return document.createTextNode(
         canDisplayNodeValue ? node.value : 'PII stripped');
@@ -503,7 +502,6 @@ function setUpSubmittedFormsJSONDataDownload() {
 // Sets up the top bar with checkboxes to show/hide the different sorts of log
 // event types, a checkbox to enable/disable autoscroll.
 function setUpLogDisplayConfig() {
-  const FAST_CHECKOUT = 'FastCheckout';
   const SCOPES = [
     'Context',
     'Parsing',
@@ -514,10 +512,12 @@ function setUpLogDisplayConfig() {
     'Metrics',
     'AddressProfileFormImport',
     'WebsiteModifiedFieldValue',
-    FAST_CHECKOUT,
+    'FastCheckout',
+    'TouchToFill',
+    'AutofillAi',
   ];
   const DEFAULT_UNCHECKED_SCOPES = new Set([
-    FAST_CHECKOUT,
+    'FastCheckout',
   ]);
   const logDiv = document.getElementById('log-entries');
   const autoScrollInput = document.getElementById('enable-autoscroll');

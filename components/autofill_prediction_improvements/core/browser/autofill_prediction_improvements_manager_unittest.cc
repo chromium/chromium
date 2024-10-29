@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -119,6 +120,8 @@ const url::Origin& origin() {
 class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
  public:
   BaseAutofillPredictionImprovementsManagerTest() {
+    ON_CALL(client(), GetAutofillClient)
+        .WillByDefault(ReturnRef(autofill_client_));
     ON_CALL(client(), IsAutofillPredictionImprovementsEnabledPref)
         .WillByDefault(Return(true));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
@@ -137,6 +140,7 @@ class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
+  autofill::TestAutofillClient autofill_client_;
   NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
   NiceMock<MockAutofillPredictionImprovementsFillingEngine> filling_engine_;
   NiceMock<MockAutofillPredictionImprovementsClient> client_;

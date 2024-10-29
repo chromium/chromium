@@ -10,11 +10,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -112,22 +114,26 @@ class BaseAutofillPredictionImprovementsTest : public testing::Test {
          {"extract_ax_tree_for_predictions", "true"}});
     manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
         &client_, &decider_, &strike_database_);
+    ON_CALL(client_, GetAutofillClient)
+        .WillByDefault(testing::ReturnRef(autofill_client_));
     ON_CALL(client_, GetUserAnnotationsService)
         .WillByDefault(testing::Return(&user_annotations_service_));
   }
 
   AutofillPredictionImprovementsManager& manager() { return *manager_; }
 
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  autofill::TestAutofillClient autofill_client_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
   testing::NiceMock<MockAutofillPredictionImprovementsClient> client_;
   std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
   user_annotations::TestUserAnnotationsService user_annotations_service_;
-
- private:
-  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
 };
 
 // Test that the funnel metrics are logged correctly given different scenarios.
