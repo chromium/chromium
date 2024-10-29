@@ -8050,8 +8050,6 @@ crbug.com/362506646 [ Debug ] external/wpt/longtask-timing/longtask-in-raf.html 
 
 # Gardener 2024-08-14
 crbug.com/359628062 [ Mac12 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/mismatched-snapshot-containing-block-size-skips.html [ Failure Pass ]
-crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.html?gpu [ Failure Pass ]
-crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.worker.html?gpu [ Failure Pass ]
 
 # Flaky scheduler/integration_tests
 crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure Pass ]
