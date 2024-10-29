@@ -298,6 +298,10 @@ void BirchChipButton::OnSelectionWidgetVisibilityChanged() {
               : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
 }
 
+void BirchChipButton::ShutdownSelectionWidget() {
+  tab_app_selection_widget_.reset();
+}
+
 void BirchChipButton::Init(BirchItem* item) {
   item_ = item;
 

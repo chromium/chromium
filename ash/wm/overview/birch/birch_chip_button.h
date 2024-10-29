@@ -48,6 +48,8 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
 
   void OnSelectionWidgetVisibilityChanged();
 
+  void ShutdownSelectionWidget();
+
   // BirchChipButtonBase:
   void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;

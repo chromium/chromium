@@ -719,6 +719,14 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   }
 
   if (birch_bar_widget_) {
+    // Shutdown the selection widget so its ownership is not passed as well.
+    base::ranges::for_each(
+        birch_bar_view_->chips(), [](BirchChipButtonBase* chip) {
+          if (auto* chip_button = views::AsViewClass<BirchChipButton>(chip)) {
+            chip_button->ShutdownSelectionWidget();
+          }
+        });
+
     // Cache the widget since we may need to pass the ownership to animation
     // observer.
     auto birch_bar_widget = std::move(birch_bar_widget_);
