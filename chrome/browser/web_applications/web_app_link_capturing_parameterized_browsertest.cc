@@ -293,36 +293,19 @@ enum class ClientModeCombination {
   kAppANavigateExistingAppBFocusExisting,
 };
 
-// TODO(crbug.com/351775835): Remove this, and consolidate behavior inside
-// ToParamString(ClientModeCombination).
-blink::mojom::ManifestLaunchHandler_ClientMode
-GetLaunchHandlingClientModeFromCombinations(
-    ClientModeCombination test_client_mode) {
-  switch (test_client_mode) {
-    case ClientModeCombination::kAuto:
-      return blink::mojom::ManifestLaunchHandler_ClientMode::kAuto;
-    case ClientModeCombination::kBothNavigateNew:
-      return blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew;
-    case ClientModeCombination::kBothNavigateExisting:
-      return blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting;
-    case ClientModeCombination::kBothFocusExisting:
-      return blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting;
-    case ClientModeCombination::kAppANavigateExistingAppBFocusExisting:
-      NOTREACHED_NORETURN();
-  }
-}
-
 std::string ToParamString(ClientModeCombination client_mode_combo) {
-  if (client_mode_combo == ClientModeCombination::kAuto) {
-    return "";
+  switch (client_mode_combo) {
+    case ClientModeCombination::kAuto:
+      return "";
+    case ClientModeCombination::kBothFocusExisting:
+      return "kFocusExisting";
+    case ClientModeCombination::kBothNavigateNew:
+      return "kNavigateNew";
+    case ClientModeCombination::kBothNavigateExisting:
+      return "kNavigateExisting";
+    case ClientModeCombination::kAppANavigateExistingAppBFocusExisting:
+      return "kAppANavigateExistingAppBFocusExisting";
   }
-
-  if (client_mode_combo ==
-      ClientModeCombination::kAppANavigateExistingAppBFocusExisting) {
-    return "kAppANavigateExistingAppBFocusExisting";
-  }
-  return base::ToString(
-      GetLaunchHandlingClientModeFromCombinations(client_mode_combo));
 }
 
 std::string_view ToParamString(OpenerMode opener) {
@@ -1360,21 +1343,39 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     // Install apps for scope A and B (note: scope X is deliberately excluded)
     // with the correct launch handling client modes defined.
-    // TODO(crbug.com/351775835): Remove
-    // GetLaunchHandlingClientModeFromCombinations() and add the switch case
-    // combination here.
-    blink::mojom::ManifestLaunchHandler_ClientMode client_mode_a =
-        GetClientModeCombination() ==
-                ClientModeCombination::kAppANavigateExistingAppBFocusExisting
-            ? blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting
-            : GetLaunchHandlingClientModeFromCombinations(
-                  GetClientModeCombination());
-    blink::mojom::ManifestLaunchHandler_ClientMode client_mode_b =
-        GetClientModeCombination() ==
-                ClientModeCombination::kAppANavigateExistingAppBFocusExisting
-            ? blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting
-            : GetLaunchHandlingClientModeFromCombinations(
-                  GetClientModeCombination());
+
+    blink::mojom::ManifestLaunchHandler_ClientMode client_mode_a;
+    blink::mojom::ManifestLaunchHandler_ClientMode client_mode_b;
+    switch (GetClientModeCombination()) {
+      case ClientModeCombination::kAuto:
+        client_mode_a = blink::mojom::ManifestLaunchHandler_ClientMode::kAuto;
+        client_mode_b = blink::mojom::ManifestLaunchHandler_ClientMode::kAuto;
+        break;
+      case ClientModeCombination::kBothNavigateNew:
+        client_mode_a =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew;
+        client_mode_b =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew;
+        break;
+      case ClientModeCombination::kBothNavigateExisting:
+        client_mode_a =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting;
+        client_mode_b =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting;
+        break;
+      case ClientModeCombination::kBothFocusExisting:
+        client_mode_a =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting;
+        client_mode_b =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting;
+        break;
+      case ClientModeCombination::kAppANavigateExistingAppBFocusExisting:
+        client_mode_a =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting;
+        client_mode_b =
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting;
+        break;
+    }
 
     const webapps::AppId app_a = InstallTestWebApp(
         embedded_test_server()->GetURL(kDestinationPageScopeA), client_mode_a);
