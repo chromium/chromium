@@ -441,7 +441,7 @@ BASE_FEATURE(kConchExpandTranscriptionLanguage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, conch will provide available GenAI features.
-BASE_FEATURE(kConchGenAi, "ConchGenAi", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kConchGenAi, "ConchGenAi", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, conch will use microphone to capture system audio.
 BASE_FEATURE(kConchSystemAudioFromMic,
@@ -1064,6 +1064,14 @@ BASE_FEATURE(kFeatureManagement16Desks,
 // guarantee borealis will be available (due to additional hardware checks).
 BASE_FEATURE(kFeatureManagementBorealis,
              "FeatureManagementBorealis",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Restricts GenAi features in Conch to the intended target population, while
+// the `kConchGenAi` flag controls the feature's rollout within said target
+// population. This flag is only intended to be modified by the
+// feature_management module.
+BASE_FEATURE(kFeatureManagementConchGenAi,
+             "FeatureManagementConchGenAi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Restricts some content in the Help app to the intended target population.
