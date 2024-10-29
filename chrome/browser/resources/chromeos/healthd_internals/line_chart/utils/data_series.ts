@@ -13,6 +13,20 @@ export interface DataPoint {
 }
 
 /**
+ * The interface for the statistics of the data points.
+ */
+export interface DataPointsStatistics {
+  // The latest value.
+  latest: number;
+  // The minimum value.
+  min: number;
+  // The maximum value.
+  max: number;
+  // The average value.
+  average: number;
+}
+
+/**
  * Get the average point from a range of points.
  */
 function getAveragePoint(points: DataPoint[]): DataPoint {
@@ -239,5 +253,41 @@ export class DataSeries {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Get the statistics data for the data points within visible time frame.
+   *
+   * @param startTime - The visible start time.
+   * @param endTime - The visible end time.
+   * @returns - The statistics data of visible data points.
+   */
+  getLatestStatistics(startTime: number, endTime: number):
+      DataPointsStatistics {
+    let output: DataPointsStatistics = {
+      latest: 0,
+      min: Number.POSITIVE_INFINITY,
+      max: Number.NEGATIVE_INFINITY,
+      average: 0
+    };
+    let count = 0;
+
+    const lowerBound: number = this.findLowerBoundPointIndex(startTime);
+    for (let i = lowerBound; i < this.dataPoints.length; ++i) {
+      if (this.dataPoints[i].time > endTime) {
+        break;
+      }
+      output.latest = this.dataPoints[i].value;
+      output.min = Math.min(this.dataPoints[i].value, output.min);
+      output.max = Math.max(this.dataPoints[i].value, output.max);
+      output.average += this.dataPoints[i].value;
+      count += 1;
+    }
+
+    if (count !== 0) {
+      output.average /= count;
+    }
+
+    return output;
   }
 }

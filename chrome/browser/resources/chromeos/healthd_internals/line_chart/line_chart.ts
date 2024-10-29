@@ -4,9 +4,11 @@
 
 import './menu.js';
 import './scrollbar.js';
+import './chart_summary_table.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {HealthdInternalsChartSummaryTableElement} from './chart_summary_table.js';
 import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
 import {getTemplate} from './line_chart.html.js';
 import type {HealthdInternalsLineChartMenuElement} from './menu.js';
@@ -25,6 +27,7 @@ function getTouchsDistance(touchA: Touch, touchB: Touch): number {
 
 export interface HealthdInternalsLineChartElement {
   $: {
+    summaryTable: HealthdInternalsChartSummaryTableElement,
     chartRoot: HTMLElement,
     mainCanvas: HTMLCanvasElement,
     chartMenu: HealthdInternalsLineChartMenuElement,
@@ -109,6 +112,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     }
     this.canvasDrawer.addDataSeries(dataSeries);
     this.$.chartMenu.addDataSeries(dataSeries);
+    this.$.summaryTable.addDataSeries(dataSeries);
     this.resizeChart();
     this.updateChart();
   }
@@ -371,6 +375,11 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.canvasDrawer.renderCanvas(
         context, this.$.mainCanvas.width, this.$.mainCanvas.height,
         visibleStartTime, visibleEndTime, this.timeScale);
+
+    this.$.summaryTable.updateDisplayedInfo(
+        visibleStartTime, visibleEndTime,
+        this.canvasDrawer.getCurrentUnitString(),
+        this.canvasDrawer.getCurrentUnitScale());
   }
 }
 

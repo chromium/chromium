@@ -197,7 +197,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
     this.$.memoryChart.initCanvasDrawer(['KiB', 'MiB', 'GiB'], 1024);
 
     this.$.thermalChart.setupChartHeader('Thermal');
-    this.$.thermalChart.initCanvasDrawer(['C'], 1);
+    this.$.thermalChart.initCanvasDrawer(['°C'], 1);
 
     this.$.zramChart.setupChartHeader('Zram');
     this.$.zramChart.initCanvasDrawer(['B', 'KiB', 'MiB', 'GiB'], 1024);

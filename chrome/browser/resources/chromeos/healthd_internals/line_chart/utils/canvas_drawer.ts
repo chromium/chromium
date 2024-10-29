@@ -111,6 +111,21 @@ export class CanvasDrawer {
         context, visibleStartTime, visibleEndTime, timeScale, stepSize);
   }
 
+  /**
+   * Get current displayed unit string.
+   */
+  getCurrentUnitString(): string {
+    return this.unitLabel.getCurrentUnitString();
+  }
+
+  /**
+   * Get current unit scale, which is a multiplier to convert displayed value to
+   * real value.
+   */
+  getCurrentUnitScale(): number {
+    return this.unitLabel.getCurrentUnitScale();
+  }
+
   private initAndClearContext(
       context: CanvasRenderingContext2D, canvasWidth: number,
       canvasHeight: number) {

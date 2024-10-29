@@ -21,6 +21,7 @@ build_webui("build") {
     "info_card/memory_card.ts",
     "info_card/power_card.ts",
     "info_card/thermal_card.ts",
+    "line_chart/chart_summary_table.ts",
     "line_chart/line_chart.ts",
     "line_chart/menu.ts",
     "line_chart/scrollbar.ts",

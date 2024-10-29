@@ -156,15 +156,23 @@ export class UnitLabel {
   /**
    * Get current suitable unit.
    */
-  private getCurrentUnitString(): string {
+  getCurrentUnitString(): string {
     return this.units[this.currentUnitIdx];
+  }
+
+  /**
+   * Get current unit scale, which is a multiplier to convert displayed value to
+   * real value.
+   */
+  getCurrentUnitScale(): number {
+    return Math.pow(this.unitBase, this.currentUnitIdx);
   }
 
   /**
    * Transform the value in the current suitable unit to the real value.
    */
   private getRealValueWithCurrentUnit(value: number): number {
-    return value * Math.pow(this.unitBase, this.currentUnitIdx);
+    return value * this.getCurrentUnitScale();
   }
 
   /**
