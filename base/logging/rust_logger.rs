@@ -29,8 +29,11 @@ impl log::Log for RustLogger {
         // TODO(thiruak1024@gmail.com): Rather than using heap allocation to pass |msg|
         // and |file|, we should return a pointer and size object to leverage the
         // string_view object in C++. https://crbug.com/371112531
-        let msg = CString::new(record.args().as_str().unwrap())
-            .expect("CString::new failed to create the log message!");
+        let msg = match record.args().as_str() {
+            Some(s) => CString::new(s),
+            None => CString::new(&*record.args().to_string()),
+        }
+        .expect("CString::new failed to create the log message!");
         let file = CString::new(record.file().unwrap())
             .expect("CString::new failed to create the log file name!");
         unsafe {
