@@ -328,7 +328,10 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture() const override { return true; }
-  bool ShouldShowSearchButtonAfterRegionSelected() const override {
+  bool ShouldShowDefaultActionButtonsAfterRegionSelected() const override {
+    // We show action buttons in Sunfish mode for individual Scanner actions,
+    // which is a different set of buttons to the default action buttons shown
+    // in normal capture mode (search, copy text, smart actions button).
     return false;
   }
   bool ShouldShowCaptureButtonAfterRegionSelected() const override {
@@ -487,7 +490,8 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture() const {
   return CaptureModeController::Get()->type() != CaptureModeType::kImage;
 }
 
-bool CaptureModeBehavior::ShouldShowSearchButtonAfterRegionSelected() const {
+bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
+    const {
   auto* controller = CaptureModeController::Get();
   return controller->type() == CaptureModeType::kImage &&
          controller->source() == CaptureModeSource::kRegion;

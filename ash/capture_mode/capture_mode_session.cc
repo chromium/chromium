@@ -2503,7 +2503,7 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (features::IsSunfishFeatureEnabled() &&
-      active_behavior_->ShouldShowSearchButtonAfterRegionSelected()) {
+      active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
     DCHECK(action_container_widget_);
     // TODO(b/373896226): Update string and icon with UX specs.
     capture_mode_util::AddActionButton(
@@ -3091,7 +3091,7 @@ bool CaptureModeSession::IsPointOverSelectedWindow(
 void CaptureModeSession::UpdateActionContainerWidget() {
   const bool show_action_container =
       active_behavior_->behavior_type() == BehaviorType::kSunfish ||
-      active_behavior_->ShouldShowSearchButtonAfterRegionSelected();
+      active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected();
   if (!show_action_container) {
     return;
   }
