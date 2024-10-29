@@ -316,11 +316,10 @@ void BrowserState::SeedWithCompletion(
   fetcher_ = CreateFetcher<std::string>(
       caller_identity_manager, caller_url_loader_factory,
       {.request_body = intent_->GetRequest()},
-      base::BindLambdaForTesting([&](const ProtoFetcherStatus& status,
-                                     std::unique_ptr<std::string> response) {
+      base::BindOnce([](const ProtoFetcherStatus& status,
+                        std::unique_ptr<std::string> response) {
         CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
-        std::move(completion).Run();
-      }),
+      }).Then(std::move(completion)),
       intent_->GetConfig(), {std::string(subject_account_id)},
       version_info::Channel::UNKNOWN);
 }
