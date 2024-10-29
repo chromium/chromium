@@ -213,13 +213,6 @@ BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
              "EnterprisePasswordReuseUiRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHashDatabaseOffsetMap,
-             "SafeBrowsingHashDatabaseOffsetMap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset{
-    &kHashDatabaseOffsetMap, "HashDatabaseOffsetMapBytesPerOffset",
-    /*default_value=*/0};
-
 BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",
              base::FEATURE_DISABLED_BY_DEFAULT);

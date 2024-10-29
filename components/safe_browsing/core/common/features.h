@@ -198,12 +198,6 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
 
-// If enabled, hash databases will compute an "offset map" that allows
-// prefix lookups to quickly narrow the search to a subrange of the
-// database. This will tradeoff memory for lookup time.
-BASE_DECLARE_FEATURE(kHashDatabaseOffsetMap);
-extern const base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset;
-
 // If enabled, fetching lists from Safe Browsing and performing checks on those
 // lists uses the v5 APIs instead of the v4 Update API. There is no change to
 // how often the checks are triggered (they are still not in real time).

@@ -686,29 +686,6 @@ void V4Store::InitializeIteratorMap(const HashPrefixMapView& hash_prefix_map,
   }
 }
 
-// static
-void V4Store::ReserveSpaceInPrefixMap(const HashPrefixMapView& old_map,
-                                      const HashPrefixMapView& additions_map,
-                                      size_t removals_count,
-                                      HashPrefixMap* prefix_map_to_update) {
-  std::unordered_map<PrefixSize, size_t> size_to_reserve;
-  for (const auto& [prefix_size, prefixes] : old_map) {
-    size_to_reserve[prefix_size] += prefixes.size();
-  }
-  for (const auto& [prefix_size, prefixes] : additions_map) {
-    size_to_reserve[prefix_size] += prefixes.size();
-  }
-
-  for (const auto& [prefix_size, capacity] : size_to_reserve) {
-    // Subtract the removals from capacity. Note this probably overcounts the
-    // removals since we subtract from all prefix sizes, but this shouldn't
-    // matter in practice since we usually only use a single prefix size per
-    // store.
-    size_t removals_size = std::min(capacity, removals_count * prefix_size);
-    prefix_map_to_update->Reserve(prefix_size, capacity - removals_size);
-  }
-}
-
 ApplyUpdateResult V4Store::MergeUpdate(
     const HashPrefixMapView& old_prefixes_map,
     const HashPrefixMapView& additions_map,
@@ -724,9 +701,6 @@ ApplyUpdateResult V4Store::MergeUpdate(
   }
 
   hash_prefix_map_->Clear();
-  ReserveSpaceInPrefixMap(old_prefixes_map, additions_map,
-                          raw_removals ? raw_removals->size() : 0,
-                          hash_prefix_map_.get());
 
   IteratorMap old_iterator_map;
   HashPrefixStr next_smallest_prefix_old;

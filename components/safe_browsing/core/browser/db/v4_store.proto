@@ -18,9 +18,7 @@ message HashFile {
   // of the store path.
   optional string extension = 2;
 
-  // A list of offsets into the hash prefix file which can be used to optimize
-  // checks.
-  repeated uint32 offsets = 3;
+  reserved 3;
 
   // The total size of the file.
   optional uint64 file_size = 4;
