@@ -610,8 +610,7 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a Canvas2DLayerBridge instance to make the canvas paintable and a
-  // CanvasResourceProvider that does not support direct compositing.
+  // Install a CanvasResourceProvider that does not support direct compositing.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
@@ -635,9 +634,8 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a Canvas2DLayerBridge instance to make the canvas paintable and a
-  // CanvasResourceProvider that supports direct compositing to make the canvas
-  // composited.
+  // Install a CanvasResourceProvider that supports direct compositing to make
+  // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
@@ -659,9 +657,8 @@ TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a Canvas2DLayerBridge instance to make the canvas paintable and a
-  // CanvasResourceProvider that supports direct compositing to make the canvas
-  // composited.
+  // Install a CanvasResourceProvider that supports direct compositing to make
+  // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
@@ -716,8 +713,7 @@ TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
   // to the raster mode that has been set as preferred.
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  // This will cause SkSurface_Gpu creation to fail without
-  // Canvas2DLayerBridge otherwise detecting that anything was disabled.
+  // This will cause SkSurface_Gpu creation to fail.
   SharedGpuContext::ContextProviderWrapper()
       ->ContextProvider()
       ->GetGrContext()
