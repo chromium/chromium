@@ -1073,7 +1073,7 @@ const base::FeatureParam<SkiaFontServiceTypefaceType>
 // initialize COM.
 BASE_FEATURE(kUtilityWithUiPumpInitializesCom,
              "UtilityWithUiPumpInitializesCom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // When enabled, OOPIFs will not try to reuse compatible processes from

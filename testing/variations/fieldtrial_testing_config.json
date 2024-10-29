@@ -5933,22 +5933,6 @@
             ]
         }
     ],
-    "ComInitForUtilWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UtilWinProcessUsesUiPump",
-                        "UtilityWithUiPumpInitializesCom"
-                    ]
-                }
-            ]
-        }
-    ],
     "CommerceHintAndroid": [
         {
             "platforms": [
