@@ -1512,7 +1512,7 @@ void MaybeRegisterChromeTutorials(
             // Bubble step - Pin icon
             TutorialDescription::BubbleStep(kSidePanelPinButtonElementId)
                 .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_PIN_ICON)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
+                .SetBubbleArrow(HelpBubbleArrow::kRightBottom),
 
             // Wait for pin icon click
             HiddenStep::WaitForActivated(kSidePanelPinButtonElementId),
