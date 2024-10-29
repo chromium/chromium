@@ -437,9 +437,6 @@ class FormStructure {
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
                                     LogManager* log_manager = nullptr) const;
 
-  // Further processes the extracted |fields_|.
-  void ProcessExtractedFields();
-
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();
 

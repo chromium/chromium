@@ -150,7 +150,12 @@ FormStructure::FormStructure(const FormData& form)
   form_signature_ = CalculateFormSignature(form);
   alternative_form_signature_ = CalculateAlternativeFormSignature(form);
   // Do further processing on the fields, as needed.
-  ProcessExtractedFields();
+  // Computes the `parseable_name_` of the fields by removing common affixes
+  // from their names.
+  ExtractParseableFieldNames();
+  // Computes the `parseable_label_` of the fields by splitting labels among
+  // consecutive fields by common separators.
+  ExtractParseableFieldLabels();
   SetFieldTypesFromAutocompleteAttribute();
   DetermineFieldRanks();
 }
@@ -811,19 +816,6 @@ FormData FormStructure::ToFormData() const {
   return data;
 }
 
-void FormStructure::ProcessExtractedFields() {
-  // Extracts the |parseable_name_| by removing common affixes from the
-  // field names.
-  ExtractParseableFieldNames();
-
-  // TODO(crbug.com/40741721): Remove once shared labels are launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForParsingWithSharedLabels)) {
-    // Extracts the |parsable_label_| for each field.
-    ExtractParseableFieldLabels();
-  }
-}
-
 void FormStructure::ExtractParseableFieldLabels() {
   std::vector<std::u16string_view> field_labels;
   field_labels.reserve(field_count());
@@ -848,7 +840,9 @@ void FormStructure::ExtractParseableFieldLabels() {
       continue;
     }
     CHECK(it != parsable_labels.rend());
-    if (field->label() != *it) {
+    if (field->label() != *it &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForParsingWithSharedLabels)) {
       field->set_parseable_label(std::u16string(*it));
     }
     it++;
