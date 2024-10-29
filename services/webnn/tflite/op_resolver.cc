@@ -124,8 +124,12 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_LOG,
              ::tflite::ops::builtin::Register_LOG());
+  AddBuiltin(::tflite::BuiltinOperator_LOGICAL_AND,
+             ::tflite::ops::builtin::Register_LOGICAL_AND());
   AddBuiltin(::tflite::BuiltinOperator_LOGICAL_NOT,
              ::tflite::ops::builtin::Register_LOGICAL_NOT());
+  AddBuiltin(::tflite::BuiltinOperator_LOGICAL_OR,
+             ::tflite::ops::builtin::Register_LOGICAL_OR());
   AddBuiltin(::tflite::BuiltinOperator_LOGISTIC,
              ::tflite::ops::builtin::Register_LOGISTIC(),
              /* min_version = */ 1,
@@ -156,6 +160,8 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              /* max_version = */ 4);
   AddBuiltin(::tflite::BuiltinOperator_NEG,
              ::tflite::ops::builtin::Register_NEG());
+  AddBuiltin(::tflite::BuiltinOperator_NOT_EQUAL,
+             ::tflite::ops::builtin::Register_NOT_EQUAL());
   AddBuiltin(::tflite::BuiltinOperator_PAD,
              ::tflite::ops::builtin::Register_PAD(),
              /* min_version = */ 1,
