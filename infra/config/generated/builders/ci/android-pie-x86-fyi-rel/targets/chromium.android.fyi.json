@@ -1,5 +1,8 @@
 {
   "android-pie-x86-fyi-rel": {
+    "additional_compile_targets": [
+      "chrome_nocompile_tests"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -7,6 +10,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -53,6 +57,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -100,6 +105,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -146,6 +152,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -190,6 +197,7 @@
           "-v",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -230,6 +238,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -275,6 +284,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -320,6 +330,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -366,6 +377,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -416,6 +428,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -461,6 +474,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -507,6 +521,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -552,6 +567,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -598,6 +614,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -644,6 +661,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -694,6 +712,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -741,6 +760,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -793,6 +813,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -844,6 +865,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -890,6 +912,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -937,6 +960,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -985,6 +1009,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1032,6 +1057,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1078,6 +1104,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1124,6 +1151,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1169,6 +1197,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1214,6 +1243,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1259,6 +1289,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1305,6 +1336,7 @@
           "--recover-devices"
         ],
         "ci_only": true,
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1350,6 +1382,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1395,6 +1428,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1440,6 +1474,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1485,6 +1520,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1530,6 +1566,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1577,6 +1614,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1622,6 +1660,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1667,6 +1706,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1712,6 +1752,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1757,6 +1798,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1802,6 +1844,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1847,6 +1890,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1893,6 +1937,7 @@
           "--recover-devices"
         ],
         "ci_only": true,
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1938,6 +1983,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1983,6 +2029,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2028,6 +2075,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2073,6 +2121,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2118,6 +2167,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2163,6 +2213,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2208,6 +2259,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2253,6 +2305,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2299,6 +2352,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2345,6 +2399,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2391,6 +2446,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2437,6 +2493,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2482,6 +2539,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2527,6 +2585,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2572,6 +2631,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2617,6 +2677,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2662,6 +2723,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2707,6 +2769,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2752,6 +2815,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2797,6 +2861,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2843,6 +2908,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2888,6 +2954,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2933,6 +3000,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2980,6 +3048,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3035,6 +3104,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3083,6 +3153,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3129,6 +3200,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3174,6 +3246,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3219,6 +3292,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3261,9 +3335,7 @@
     ],
     "isolated_scripts": [
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3279,26 +3351,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "android_webview_junit_tests",
         "test_id_prefix": "ninja://android_webview/test:android_webview_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3314,26 +3373,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_junit_tests",
         "test_id_prefix": "ninja://base:base_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3349,26 +3395,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_junit_tests",
         "test_id_prefix": "ninja://build/android:build_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3384,26 +3417,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_java_test_pagecontroller_junit_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3419,26 +3439,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_junit_tests",
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3454,17 +3461,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_junit_tests",
@@ -3475,6 +3471,7 @@
           "--gtest-benchmark-name=components_perftests",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--smoke-test-mode"
@@ -3512,9 +3509,7 @@
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3530,17 +3525,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_junit_tests",
@@ -3551,6 +3535,7 @@
           "--platform=android",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3585,9 +3570,7 @@
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3603,26 +3586,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "device_junit_tests",
         "test_id_prefix": "ninja://device:device_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3638,26 +3608,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "junit_unit_tests",
         "test_id_prefix": "ninja://testing/android/junit:junit_unit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3673,26 +3630,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "keyboard_accessory_junit_tests",
         "test_id_prefix": "ninja://chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3708,26 +3652,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_base_junit_tests",
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3743,17 +3674,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "module_installer_junit_tests",
@@ -3763,6 +3683,7 @@
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3799,9 +3720,7 @@
         "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3817,26 +3736,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_junit_tests",
         "test_id_prefix": "ninja://net/android:net_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3852,26 +3758,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "paint_preview_junit_tests",
         "test_id_prefix": "ninja://components/paint_preview/player/android:paint_preview_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3887,26 +3780,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "password_check_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_check/android:password_check_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3922,26 +3802,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "password_manager_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_manager/android:password_manager_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3957,17 +3824,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_junit_tests",
@@ -3982,6 +3838,7 @@
           "--retry-limit=2",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4024,6 +3881,7 @@
           "--retry-limit=2",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4062,6 +3920,7 @@
           "--extra-browser-args=--enable-crashpad",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4098,9 +3957,7 @@
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4116,26 +3973,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "touch_to_fill_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4151,26 +3995,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_junit_tests",
         "test_id_prefix": "ninja://ui:ui_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4186,26 +4017,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "webapk_client_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/libs/client:webapk_client_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4221,26 +4039,13 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "webapk_shell_apk_h2o_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4256,21 +4061,20 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "webapk_shell_apk_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/"
+      }
+    ],
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py"
       }
     ]
   }

@@ -308,11 +308,20 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_pie_emulator_gtests",
-            "pie_isolated_scripts",
+            targets.bundle(
+                targets = [
+                    "android_pie_emulator_gtests",
+                    "pie_isolated_scripts",
+                ],
+            ),
+            "chromium_android_scripts",
+        ],
+        additional_compile_targets = [
+            "chrome_nocompile_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
+            "isolate_profile_data",
             "pie-x86-emulator",
             "emulator-4-cores",
             "linux-jammy",
