@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
-#import "ios/chrome/browser/text_selection/model/text_selection_util.h"
+#import "ios/chrome/browser/text_selection/model/text_classifier_util.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"

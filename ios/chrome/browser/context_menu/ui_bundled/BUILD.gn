@@ -37,7 +37,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/shared/ui/util/image:web",
-    "//ios/chrome/browser/text_selection/model:model_utils",
+    "//ios/chrome/browser/text_selection/model:text_classifier_utils",
     "//ios/chrome/browser/ui/lens:lens_availability",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/menu",
