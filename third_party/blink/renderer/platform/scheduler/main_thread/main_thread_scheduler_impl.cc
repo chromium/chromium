@@ -86,16 +86,6 @@ const int64_t kSecondsPerMinute = 60;
 
 constexpr int kDefaultPrioritizeCompositingAfterDelayMs = 100;
 
-v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
-  switch (rail_mode) {
-    case RAILMode::kDefault:
-      return v8::RAILMode::PERFORMANCE_IDLE;
-    case RAILMode::kLoad:
-      return v8::RAILMode::PERFORMANCE_LOAD;
-  }
-  NOTREACHED();
-}
-
 void AddRAILModeToProto(perfetto::protos::pbzero::TrackEvent* event,
                         RAILMode mode) {
   using perfetto::protos::pbzero::ChromeRAILMode;
@@ -1490,7 +1480,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   main_thread_only().rail_mode_for_tracing = new_policy.rail_mode;
   if (new_policy.rail_mode != main_thread_only().current_policy.rail_mode) {
     if (isolate()) {
-      isolate()->SetRAILMode(RAILModeToV8RAILMode(new_policy.rail_mode));
+      isolate()->SetIsLoading(new_policy.rail_mode == RAILMode::kLoad);
     }
     for (auto& observer : main_thread_only().rail_mode_observers) {
       observer.OnRAILModeChanged(new_policy.rail_mode);
@@ -1959,8 +1949,12 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
       ResetForNavigationLocked();
       new_rail_mode = main_thread_only().current_policy.rail_mode;
     }
-    if (old_rail_mode == new_rail_mode && isolate())
-      isolate()->UpdateLoadStartTime();
+    if (old_rail_mode == RAILMode::kLoad && new_rail_mode == RAILMode::kLoad &&
+        isolate()) {
+      // V8 was already informed that the load started, but now that the load is
+      // committed, update the start timestamp.
+      isolate()->SetIsLoading(true);
+    }
   }
 }
 
