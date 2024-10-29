@@ -11822,6 +11822,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueing)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+    {"partitioned-popins", flag_descriptions::kPartitionedPopinsName,
+     flag_descriptions::kPartitionedPopinsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kPartitionedPopins)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

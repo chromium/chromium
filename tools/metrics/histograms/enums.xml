@@ -19331,6 +19331,7 @@ from previous Chrome versions.
   <int value="-319002650" label="ArcUsbStorageUI:enabled"/>
   <int value="-318702417" label="DeviceBoundSessions:disabled"/>
   <int value="-317758331" label="WebViewThreadSafeMedia:disabled"/>
+  <int value="-317666960" label="PartitionedPopins:enabled"/>
   <int value="-317195508" label="TabGroupsContinuationAndroid:disabled"/>
   <int value="-316343353" label="WebViewSupervisedUserSiteDetection:enabled"/>
   <int value="-315741215"
@@ -24904,6 +24905,7 @@ from previous Chrome versions.
   <int value="1925213304" label="FillingAcrossAffiliatedWebsites:enabled"/>
   <int value="1925346911" label="AssistEmojiEnhanced:enabled"/>
   <int value="1925627218" label="FullscreenToolbarReveal:disabled"/>
+  <int value="1925846639" label="PartitionedPopins:disabled"/>
   <int value="1926334447" label="AccessibilityService:enabled"/>
   <int value="1926524951" label="SystemWebApps:disabled"/>
   <int value="1927218315" label="ShelfNewUi:disabled"/>

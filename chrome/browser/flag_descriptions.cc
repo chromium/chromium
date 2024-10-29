@@ -2949,6 +2949,10 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPartitionedPopinsName[] = "Partitioned Popins";
+const char kPartitionedPopinsDescription[] =
+    "Allows Partitioned Popins to be opened.";
+
 const char kPasswordFormClientsideClassifierName[] =
     "Clientside password form classifier.";
 const char kPasswordFormClientsideClassifierDescription[] =
