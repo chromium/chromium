@@ -381,7 +381,7 @@ class MediaDevicesDispatcherHostTest
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    ASSERT_FALSE(enumerated_devices_.empty());
+    EXPECT_FALSE(enumerated_devices_.empty());
     if (enumerate_audio_input)
       EXPECT_FALSE(enumerated_devices_[static_cast<size_t>(
                                            MediaDeviceType::kMediaAudioInput)]
@@ -440,8 +440,9 @@ class MediaDevicesDispatcherHostTest
             found_match = true;
           }
         }
-        if (!found_match)
+        if (!found_match) {
           return false;
+        }
       }
     }
     return true;
@@ -484,6 +485,39 @@ class MediaDevicesDispatcherHostTest
         return false;
     }
     return true;
+  }
+
+  std::string TranslateHMACToRawId(const std::string& hmac_device_id) {
+    base::test::TestFuture<const MediaDeviceSaltAndOrigin&> salt_future;
+    GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId(-1, -1),
+                                salt_future.GetCallback());
+    MediaDeviceSaltAndOrigin salt_and_origin = salt_future.Get();
+
+    base::test::TestFuture<const std::optional<std::string>&> translate_future;
+    GetRawDeviceIDForMediaDeviceHMAC(
+        MediaDeviceType::kMediaAudioOutput, salt_and_origin, hmac_device_id,
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        translate_future.GetCallback());
+    std::optional<std::string> raw_device_id = translate_future.Get();
+
+    CHECK(raw_device_id.has_value());
+    return *raw_device_id;
+  }
+
+  void EnumerateAudioOutputDevicesAndWaitForResult(
+      bool permission_override_value = true) {
+    media_stream_manager_->media_devices_manager()->SetPermissionChecker(
+        std::make_unique<MediaDevicesPermissionChecker>(
+            permission_override_value));
+    base::RunLoop run_loop;
+    host_->EnumerateDevices(
+        /*request_audio_input=*/false, /*request_video_input=*/false,
+        /*request_audio_output=*/true,
+        /*request_video_input_capabilities=*/false,
+        /*request_audio_input_capabilities=*/false,
+        base::BindOnce(&MediaDevicesDispatcherHostTest::DevicesEnumerated,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void SubscribeAndWaitForResult(bool has_permission) {
@@ -598,6 +632,84 @@ TEST_P(MediaDevicesDispatcherHostTest, EnumerateAudioOutputDevicesNoAccess) {
 TEST_P(MediaDevicesDispatcherHostTest, EnumerateAllDevicesNoAccess) {
   EnumerateDevicesAndWaitForResult(true, true, true, false);
   EXPECT_TRUE(DoesNotContainLabels(enumerated_devices_));
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       EnumerateAuthorizedAudioOutputDeviceAndNoAudioInputPermission) {
+  constexpr size_t kAudioOutputDeviceIndex =
+      static_cast<size_t>(MediaDeviceType::kMediaAudioOutput);
+
+  EnumerateAudioOutputDevicesAndWaitForResult(
+      /*permission_override_value=*/false);
+  EXPECT_EQ(enumerated_devices_[kAudioOutputDeviceIndex].size(), 1u);
+  EXPECT_TRUE(
+      enumerated_devices_[kAudioOutputDeviceIndex][0].device_id.empty());
+
+  EnumerateAudioOutputDevicesAndWaitForResult(
+      /*permission_override_value=*/true);
+  // Get an existing device from a full enumeration of output devices and
+  // authorize it individually by adding it to the map. Use the last device to
+  // ensure it is not the default device, which is always authorized.
+  ASSERT_TRUE(!enumerated_devices_.empty());
+  auto hmac_device_info = enumerated_devices_[kAudioOutputDeviceIndex].back();
+  EXPECT_FALSE(hmac_device_info.device_id.empty());
+  EXPECT_FALSE(hmac_device_info.label.empty());
+  EXPECT_FALSE(media::AudioDeviceDescription::IsDefaultDevice(
+      hmac_device_info.device_id));
+
+  auto raw_device_info = hmac_device_info;
+  raw_device_info.device_id = TranslateHMACToRawId(raw_device_info.device_id);
+
+  media_stream_manager_->media_devices_manager()->AddAudioDeviceToOriginMap(
+      render_frame_host_->GetGlobalId(), raw_device_info);
+
+  EnumerateAudioOutputDevicesAndWaitForResult(
+      /*permission_override_value=*/false);
+  const auto& audio_output_devices =
+      enumerated_devices_[kAudioOutputDeviceIndex];
+
+  ASSERT_EQ(audio_output_devices.size(), 1u);
+  EXPECT_EQ(audio_output_devices[0].device_id, hmac_device_info.device_id);
+  EXPECT_EQ(audio_output_devices[0].label, hmac_device_info.label);
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       EnumerateTwoAuthorizedAudioOutputDevicesAndNoAudioInputPermission) {
+  constexpr size_t kAudioOutputDeviceIndex =
+      static_cast<size_t>(MediaDeviceType::kMediaAudioOutput);
+
+  EnumerateAudioOutputDevicesAndWaitForResult(
+      /*permission_override_value=*/true);
+
+  ASSERT_GE(enumerated_devices_[kAudioOutputDeviceIndex].size(), 3u);
+  auto hmac_device_info1 = enumerated_devices_[kAudioOutputDeviceIndex][1];
+  auto hmac_device_info2 = enumerated_devices_[kAudioOutputDeviceIndex][2];
+  EXPECT_FALSE(hmac_device_info1.device_id.empty());
+  EXPECT_FALSE(hmac_device_info2.device_id.empty());
+  EXPECT_NE(hmac_device_info1.device_id, hmac_device_info2.device_id);
+
+  auto raw_device_info1 = hmac_device_info1;
+  raw_device_info1.device_id = TranslateHMACToRawId(raw_device_info1.device_id);
+  auto raw_device_info2 = hmac_device_info2;
+  raw_device_info2.device_id = TranslateHMACToRawId(raw_device_info2.device_id);
+
+  // Authorize both devices by adding them to the map.
+  media_stream_manager_->media_devices_manager()->AddAudioDeviceToOriginMap(
+      render_frame_host_->GetGlobalId(), raw_device_info1);
+  media_stream_manager_->media_devices_manager()->AddAudioDeviceToOriginMap(
+      render_frame_host_->GetGlobalId(), raw_device_info2);
+
+  // Enumerate again without permissions.
+  EnumerateAudioOutputDevicesAndWaitForResult(
+      /*permission_override_value=*/false);
+  const auto& audio_output_devices =
+      enumerated_devices_[kAudioOutputDeviceIndex];
+
+  // Verify that both added devices are present and only those.
+  ASSERT_EQ(audio_output_devices.size(), 2u);
+
+  EXPECT_TRUE(base::Contains(audio_output_devices, hmac_device_info1));
+  EXPECT_TRUE(base::Contains(audio_output_devices, hmac_device_info2));
 }
 
 TEST_P(MediaDevicesDispatcherHostTest, SubscribeDeviceChange) {

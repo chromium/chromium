@@ -543,6 +543,13 @@ void MediaDevicesManager::EnumerateAndRankDevices(
               request_audio_input_capabilities, std::move(callback)))));
 }
 
+void MediaDevicesManager::AddAudioDeviceToOriginMap(
+    GlobalRenderFrameHostId render_frame_host_id,
+    const blink::WebMediaDeviceInfo& device_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  audio_device_origin_map_[render_frame_host_id].insert(device_info);
+}
+
 void MediaDevicesManager::IsSpeakerSelectionPermissionDenied(
     GlobalRenderFrameHostId render_frame_host_id,
     base::OnceCallback<void(PermissionDeniedState)> callback) {
@@ -808,13 +815,14 @@ void MediaDevicesManager::OnPermissionsCheckDone(
   EnumerateAndRankDevices(
       render_frame_host_id, internal_requested_types,
       base::BindOnce(&MediaDevicesManager::OnDevicesEnumerated,
-                     weak_factory_.GetWeakPtr(), requested_types,
-                     request_video_input_capabilities,
+                     weak_factory_.GetWeakPtr(), render_frame_host_id,
+                     requested_types, request_video_input_capabilities,
                      request_audio_input_capabilities, std::move(callback),
                      std::move(salt_and_origin), has_permissions));
 }
 
 void MediaDevicesManager::OnDevicesEnumerated(
+    GlobalRenderFrameHostId render_frame_host_id,
     const MediaDevicesManager::BoolDeviceTypes& requested_types,
     bool request_video_input_capabilities,
     bool request_audio_input_capabilities,
@@ -845,6 +853,30 @@ void MediaDevicesManager::OnDevicesEnumerated(
 
       translation[i].push_back(TranslateMediaDeviceInfo(
           has_permissions[i], salt_and_origin, device_info));
+    }
+  }
+
+  // Expose devices authorized by selectAudioOutput.
+  if (!audio_device_origin_map_.empty() &&
+      !has_permissions[static_cast<size_t>(
+          MediaDeviceType::kMediaAudioInput)] &&
+      translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+              .size() == 1 &&
+      translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)][0]
+          .device_id.empty()) {
+    translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+        .clear();
+    auto authorized_devices =
+        audio_device_origin_map_.find(render_frame_host_id);
+    if (authorized_devices != audio_device_origin_map_.end()) {
+      for (const auto& enum_device : enumeration[static_cast<size_t>(
+               MediaDeviceType::kMediaAudioOutput)]) {
+        if (base::Contains(authorized_devices->second, enum_device)) {
+          translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+              .push_back(TranslateMediaDeviceInfo(
+                  /*has_permission=*/true, salt_and_origin, enum_device));
+        }
+      }
     }
   }
 

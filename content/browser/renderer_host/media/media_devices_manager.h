@@ -130,6 +130,9 @@ class CONTENT_EXPORT MediaDevicesManager
                                bool request_audio_input_capabilities,
                                EnumerateDevicesCallback callback);
 
+  void AddAudioDeviceToOriginMap(GlobalRenderFrameHostId render_frame_host_id,
+                                 const blink::WebMediaDeviceInfo& device_info);
+
   void IsSpeakerSelectionPermissionDenied(
       GlobalRenderFrameHostId render_frame_host_id,
       base::OnceCallback<void(PermissionDeniedState)> callback);
@@ -294,6 +297,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
+      GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -406,6 +410,18 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Callback used to obtain the current device ID salt and security origin.
   GetMediaDeviceSaltAndOriginCallback get_salt_and_origin_cb_;
+
+  struct WebMediaDeviceInfoComparator {
+    bool operator()(const blink::WebMediaDeviceInfo& a,
+                    const blink::WebMediaDeviceInfo& b) const {
+      return a.device_id < b.device_id;
+    }
+  };
+
+  base::flat_map<
+      GlobalRenderFrameHostId,
+      std::set<blink::WebMediaDeviceInfo, WebMediaDeviceInfoComparator>>
+      audio_device_origin_map_;
 
   class AudioServiceDeviceListener;
   std::unique_ptr<AudioServiceDeviceListener> audio_service_device_listener_;

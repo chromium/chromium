@@ -470,6 +470,13 @@ class MediaDevicesManagerTest : public ::testing::Test {
     media_devices_manager_->OnDevicesChanged(type);
     task_environment_.RunUntilIdle();
   }
+  const base::flat_map<
+      GlobalRenderFrameHostId,
+      std::set<blink::WebMediaDeviceInfo,
+               MediaDevicesManager::WebMediaDeviceInfoComparator>>&
+  GetAudioDeviceOriginMap() {
+    return media_devices_manager_->audio_device_origin_map_;
+  }
 
   // Must outlive MediaDevicesManager as ~MediaDevicesManager() verifies it's
   // running on the IO thread.
@@ -1604,6 +1611,22 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
                                                   media::PIXEL_FORMAT_I420);
   video_capture_device_factory_->SetToCustomDevicesConfig(device_config);
   FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+}
+
+TEST_F(MediaDevicesManagerTest, AddAudioDeviceToOriginMap) {
+  blink::WebMediaDeviceInfo device_info;
+  device_info.device_id = "test_device_id";
+
+  media_devices_manager_->AddAudioDeviceToOriginMap(kRenderFrameHostId,
+                                                    device_info);
+
+  // Access the map using the helper function.
+  const auto& map = GetAudioDeviceOriginMap();
+
+  auto it = map.find(kRenderFrameHostId);
+  ASSERT_NE(it, map.end());
+  EXPECT_EQ(it->second.size(), 1u);
+  EXPECT_EQ(it->second.begin()->device_id, "test_device_id");
 }
 
 }  // namespace content
