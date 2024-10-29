@@ -203,8 +203,10 @@ class CC_EXPORT GpuImageDecodeCache
   void UploadImageInTask(const DrawImage& image);
 
   // Called by Decode / Upload tasks when tasks are finished.
-  void OnImageDecodeTaskCompleted(const DrawImage& image, TaskType task_type);
-  void OnImageUploadTaskCompleted(const DrawImage& image);
+  void OnImageDecodeTaskCompleted(const DrawImage& image,
+                                  TaskType task_type,
+                                  ClientId client_id);
+  void OnImageUploadTaskCompleted(const DrawImage& image, ClientId client_id);
 
   bool SupportsColorSpaceConversion() const;
 
