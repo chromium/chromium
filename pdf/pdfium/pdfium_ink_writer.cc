@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_ink_writer.h"
 
+#include <array>
 #include <optional>
 
 #include "base/check.h"
@@ -14,6 +15,8 @@
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
+#include "ui/gfx/geometry/point_f.h"
 
 using printing::kPixelsPerInch;
 using printing::kPointsPerInch;
@@ -58,6 +61,14 @@ class TriangleIterator {
   uint32_t triangle_index_ = 0;
 };
 
+std::array<gfx::PointF, 3> TransformTriangle(
+    const gfx::AxisTransform2d& transform,
+    const ink::Triangle& triangle) {
+  return {transform.MapPoint({triangle.p0.x, triangle.p0.y}),
+          transform.MapPoint({triangle.p1.x, triangle.p1.y}),
+          transform.MapPoint({triangle.p2.x, triangle.p2.y})};
+}
+
 ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
                                                FPDF_PAGE page) {
   CHECK(page);
@@ -71,42 +82,43 @@ ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
     return nullptr;  // No meshes with actual shape data.
   }
 
-  ScopedFPDFPageObject path(
-      FPDFPageObj_CreateNewPath(triangle.value().p0.x, triangle.value().p0.y));
-  CHECK(path);
-
-  // Outline the edges of the first triangle.
-  bool result =
-      FPDFPath_LineTo(path.get(), triangle.value().p1.x, triangle.value().p1.y);
-  CHECK(result);
-  result =
-      FPDFPath_LineTo(path.get(), triangle.value().p2.x, triangle.value().p2.y);
-  CHECK(result);
-
-  // Work through the remaining triangles, which are part of the same path.
-  for (triangle = triangle_iter.GetAndAdvance(); triangle.has_value();
-       triangle = triangle_iter.GetAndAdvance()) {
-    result = FPDFPath_MoveTo(path.get(), triangle.value().p0.x,
-                             triangle.value().p0.y);
-    CHECK(result);
-    result = FPDFPath_LineTo(path.get(), triangle.value().p1.x,
-                             triangle.value().p1.y);
-    CHECK(result);
-    result = FPDFPath_LineTo(path.get(), triangle.value().p2.x,
-                             triangle.value().p2.y);
-    CHECK(result);
-  }
-
-  // All triangles of the shape completed.  Initialize the path's transform,
-  // draw mode, and color.
   // The transform converts from canonical coordinates (which has a top-left
   // origin and a different DPI), to PDF coordinates (which has a bottom-left
   // origin).
   constexpr float kScreenToPageScale =
       static_cast<float>(kPointsPerInch) / kPixelsPerInch;
-  FS_MATRIX transform{kScreenToPageScale,  0, 0,
-                      -kScreenToPageScale, 0, FPDF_GetPageHeightF(page)};
-  FPDFPageObj_TransformF(path.get(), &transform);
+  const auto transform = gfx::AxisTransform2d::FromScaleAndTranslation(
+      {kScreenToPageScale, -kScreenToPageScale},
+      {0, FPDF_GetPageHeightF(page)});
+
+  std::array<gfx::PointF, 3> transformed_triangle =
+      TransformTriangle(transform, triangle.value());
+  ScopedFPDFPageObject path(FPDFPageObj_CreateNewPath(
+      transformed_triangle[0].x(), transformed_triangle[0].y()));
+  CHECK(path);
+
+  // Outline the edges of the first triangle.
+  bool result = FPDFPath_LineTo(path.get(), transformed_triangle[1].x(),
+                                transformed_triangle[1].y());
+  CHECK(result);
+  result = FPDFPath_LineTo(path.get(), transformed_triangle[2].x(),
+                           transformed_triangle[2].y());
+  CHECK(result);
+
+  // Work through the remaining triangles, which are part of the same path.
+  for (triangle = triangle_iter.GetAndAdvance(); triangle.has_value();
+       triangle = triangle_iter.GetAndAdvance()) {
+    transformed_triangle = TransformTriangle(transform, triangle.value());
+    result = FPDFPath_MoveTo(path.get(), transformed_triangle[0].x(),
+                             transformed_triangle[0].y());
+    CHECK(result);
+    result = FPDFPath_LineTo(path.get(), transformed_triangle[1].x(),
+                             transformed_triangle[1].y());
+    CHECK(result);
+    result = FPDFPath_LineTo(path.get(), transformed_triangle[2].x(),
+                             transformed_triangle[2].y());
+    CHECK(result);
+  }
 
   result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
                                 /*stroke=*/false);
