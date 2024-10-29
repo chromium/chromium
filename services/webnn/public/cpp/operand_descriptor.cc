@@ -32,13 +32,19 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
         "Invalid descriptor: All dimensions must be in the range of int32_t.");
   }
 
+  base::CheckedNumeric<size_t> checked_number_of_elements =
+      std::accumulate(shape.begin(), shape.end(),
+                      base::CheckedNumeric<size_t>(1), std::multiplies());
+  if (!checked_number_of_elements.IsValid()) {
+    return base::unexpected(
+        "Invalid descriptor: The number of elements is too large.");
+  }
+
   // Since the data stored in memory are in 8-bits bytes, here we need to make
   // up an integer multiple of 8 to calculate the `checked_number_of_bytes`.
   base::CheckedNumeric<uint64_t> checked_number_of_bytes =
-      (std::accumulate(
-           shape.begin(), shape.end(),
-           base::CheckedNumeric<uint64_t>(GetBitsPerElement(data_type)),
-           std::multiplies()) +
+      (checked_number_of_elements.Cast<uint64_t>() *
+           GetBitsPerElement(data_type) +
        7) /
       8;
 
@@ -120,8 +126,8 @@ size_t OperandDescriptor::PackedByteLength() const {
 
 size_t OperandDescriptor::NumberOfElements() const {
   // See `PackedByteLength()` for why overflow checks are not needed here.
-  // Note that NumberOfElements() <= PackedByteLength().
-  return std::accumulate(shape_.begin(), shape_.end(), 1, std::multiplies());
+  return std::accumulate(shape_.begin(), shape_.end(), static_cast<size_t>(1),
+                         std::multiplies());
 }
 
 }  // namespace webnn
