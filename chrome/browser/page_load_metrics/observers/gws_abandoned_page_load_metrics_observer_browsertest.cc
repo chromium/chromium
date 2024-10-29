@@ -128,34 +128,34 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
 
   GURL url_srp() {
     GURL url(embedded_test_server()->GetURL(kSRPDomain, kSRPPath));
-    CHECK(page_load_metrics::IsGoogleSearchResultUrl(url));
+    EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }
   GURL url_srp_redirect() {
     GURL url(embedded_test_server()->GetURL(kSRPDomain, kSRPRedirectPath));
-    CHECK(page_load_metrics::IsGoogleSearchResultUrl(url));
+    EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }
   GURL url_non_srp() {
     GURL url(embedded_test_server()->GetURL("a.test", "/title1.html"));
-    CHECK(!page_load_metrics::IsGoogleSearchResultUrl(url));
+    EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }
   GURL url_non_srp_2() {
     GURL url(embedded_test_server()->GetURL("b.test", "/title2.html"));
-    CHECK(!page_load_metrics::IsGoogleSearchResultUrl(url));
+    EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }
 
   GURL url_non_srp_redirect_to_srp() {
     GURL url(embedded_test_server()->GetURL("a.test", "/redirect-to-srp"));
-    CHECK(!page_load_metrics::IsGoogleSearchResultUrl(url));
+    EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }
 
   GURL url_srp_redirect_to_non_srp() {
     GURL url(embedded_test_server()->GetURL(kSRPDomain, "/webhp?q="));
-    CHECK(page_load_metrics::IsGoogleSearchResultUrl(url));
+    EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }
 
