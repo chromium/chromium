@@ -412,8 +412,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kTouchTextEditingRedesign)},
           {"TrustedTypesFromLiteral",
            raw_ref(features::kTrustedTypesFromLiteral)},
-          {"WebSerialBluetooth",
-           raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
           {"MediaStreamTrackTransfer",
            raw_ref(features::kMediaStreamTrackTransfer)},
           {"PrivateNetworkAccessPermissionPrompt",

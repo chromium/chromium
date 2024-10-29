@@ -19,10 +19,6 @@ BASE_FEATURE(kComputePressureBreakCalibrationMitigation,
 BASE_FEATURE(kGenericSensorExtraClasses,
              "GenericSensorExtraClasses",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enable serial communication for SPP devices.
-BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
-             "EnableBluetoothSerialPortProfileInSerialApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Expose serial port logical connection state and dispatch connection events
 // for Bluetooth serial ports when the Bluetooth device connection state
 // changes.

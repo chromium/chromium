@@ -241,9 +241,6 @@ extern const char kMainThreadCompositingPriorityDescription[];
 extern const char kMediaSessionEnterPictureInPictureName[];
 extern const char kMediaSessionEnterPictureInPictureDescription[];
 
-extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
-extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
-
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 

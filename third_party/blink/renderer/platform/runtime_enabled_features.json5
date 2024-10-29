@@ -4846,11 +4846,6 @@
       name: "WebPrinting",
       status: {"Android": "", "default": "test"},
     },
-    {
-      name: "WebSerialBluetooth",
-      status: "stable",
-      base_feature: "none",
-    },
     // WebShare is enabled by default on Android.
     {
       name: "WebShare",

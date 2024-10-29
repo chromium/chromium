@@ -21,8 +21,6 @@ namespace features {
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kComputePressureBreakCalibrationMitigation);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kGenericSensorExtraClasses);
-DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
-    kEnableBluetoothSerialPortProfileInSerialApi);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialPortConnected);
 #if BUILDFLAG(IS_WIN)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWinSystemLocationPermission);

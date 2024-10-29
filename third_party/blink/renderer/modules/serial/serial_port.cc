@@ -92,8 +92,7 @@ SerialPortInfo* SerialPort::getInfo() {
     info->setUsbVendorId(info_->usb_vendor_id);
   if (info_->has_usb_product_id)
     info->setUsbProductId(info_->usb_product_id);
-  if (RuntimeEnabledFeatures::WebSerialBluetoothEnabled() &&
-      info_->bluetooth_service_class_id) {
+  if (info_->bluetooth_service_class_id) {
     info->setBluetoothServiceClassId(
         MakeGarbageCollected<V8UnionStringOrUnsignedLong>(
             info_->bluetooth_service_class_id->uuid));
