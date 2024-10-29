@@ -356,16 +356,6 @@
              "--disable-field-trial-config"],
     "expires": "never"
   },
-  {
-    "prefix": "feature-policy-permissions",
-    "owners": ["guidou@chromium.org", "agpalak@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/mediacapture-streams"],
-    "exclusive_tests": ["external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html"],
-    "args": ["--use-fake-device-for-media-stream",
-             "--use-fake-ui-for-media-stream"],
-    "expires": "Jul 1, 2023"
-  },
   "The origin trials suite tests that OT-controlled features are exposed to",
   "the web as expected, so should not expire.",
   {
