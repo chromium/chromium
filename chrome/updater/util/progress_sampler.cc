@@ -9,7 +9,6 @@
 #include <queue>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/time/time.h"
 
 namespace updater {

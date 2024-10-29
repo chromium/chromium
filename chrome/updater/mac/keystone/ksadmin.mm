@@ -20,7 +20,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"

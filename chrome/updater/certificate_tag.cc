@@ -17,7 +17,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
