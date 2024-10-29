@@ -690,7 +690,7 @@ void FederatedAuthRequestImpl::RequestToken(
         break;
       default:
         break;
-    };
+    }
     RecordLifecycleStateFailureReason(reason);
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
@@ -996,7 +996,7 @@ void FederatedAuthRequestImpl::RequestToken(
   // is needed even if the LoginStatus is "logged-out" because we need to fetch
   // the config file to get the login_url which may take some time.
   if (rp_mode_ == RpMode::kActive) {
-    CHECK(idp_order_.size() > 0);
+    CHECK_GT(idp_order_.size(), 0u);
     // TODO(crbug.com/40218857): Handle active mode with multiple IdP.
     const GURL& idp_config_url = idp_order_[0];
     auto get_info_it = token_request_get_infos_.find(idp_config_url);
@@ -1012,7 +1012,8 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   CHECK(!unique_idps.empty());
-  FetchEndpointsForIdps(std::move(unique_idps), /*for_idp_signin=*/false);
+  FetchEndpointsForIdps(std::move(unique_idps),
+                        /*num_fetches_for_idp_signin=*/0);
 }
 
 void FederatedAuthRequestImpl::RequestUserInfo(
@@ -1159,7 +1160,10 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
   for (const auto& [get_idp_config_url, get_info] : token_request_get_infos_) {
     if (url::Origin::Create(get_idp_config_url) == idp_config_origin) {
       permission_delegate_->RemoveIdpSigninStatusObserver(this);
-      FetchEndpointsForIdps({get_idp_config_url}, /*for_idp_signin=*/true);
+      FetchEndpointsForIdps({get_idp_config_url},
+                            /*num_fetches_for_idp_signin=*/fetch_data_
+                                    .num_fetches_for_idp_signin +
+                                1);
       break;
     }
   }
@@ -1174,7 +1178,7 @@ bool FederatedAuthRequestImpl::HasPendingRequest() const {
 
 void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     const std::set<GURL>& idp_config_urls,
-    bool for_idp_signin) {
+    int num_fetches_for_idp_signin) {
   int icon_ideal_size =
       request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
   int icon_minimum_size =
@@ -1185,7 +1189,7 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     pending_idps.insert(idp_config_urls.begin(), idp_config_urls.end());
     fetch_data_ = FetchData();
     fetch_data_.pending_idps = std::move(pending_idps);
-    fetch_data_.for_idp_signin = for_idp_signin;
+    fetch_data_.num_fetches_for_idp_signin = num_fetches_for_idp_signin;
   }
 
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
@@ -1679,7 +1683,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // - If the FedCM dialog has not already been shown, do not show the dialog
   // if the RenderFrameHost is hidden because the user does not seem interested
   // in the contents of the current page.
-  if (!fetch_data_.for_idp_signin) {
+  if (!fetch_data_.num_fetches_for_idp_signin) {
     bool is_active = IsFrameActive(render_frame_host().GetMainFrame());
     fedcm_metrics_->RecordWebContentsStatusUponReadyToShowDialog(
         IsFrameVisible(render_frame_host().GetMainFrame()), is_active);
@@ -1904,7 +1908,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
     return;
   }
 
-  CHECK(idp_data_for_display_.size() == 1u);
+  CHECK_EQ(idp_data_for_display_.size(), 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
       *idp_data_for_display_[0], has_shown_mismatch, has_hints);
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
@@ -2031,7 +2035,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         return account->is_filtered_out;
       };
       if (!IsFedCmShowFilteredAccountsEnabled() ||
-          !fetch_data_.for_idp_signin ||
+          fetch_data_.num_fetches_for_idp_signin <= 1 ||
           login_url_ != idp_info->metadata.idp_login_url) {
         std::erase_if(accounts, filter);
       } else {

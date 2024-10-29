@@ -236,8 +236,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     // Whether accounts endpoint fetch succeeded for at least one IdP.
     bool did_succeed_for_at_least_one_idp{false};
 
-    // Whether the fetch was triggered by an IdP sign-in status update.
-    bool for_idp_signin{false};
+    // How many fetches were triggered by an IdP sign-in status update from the
+    // start of the request. For the initial fetch, this is 0.
+    int num_fetches_for_idp_signin{0};
   };
 
   FederatedAuthRequestImpl(
@@ -252,10 +253,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
-  // `for_idp_signin` indicates whether the fetch is as a result of an IdP
-  // sign-in status update.
+  // `num_fetches_for_idp_signin` indicates the number of fetches triggered as a
+  // result of an IdP sign-in status update from the beginning of the request.
   void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls,
-                             bool for_idp_signin);
+                             int num_fetches_for_idp_signin);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
