@@ -669,8 +669,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     cell.accessoryType = [itemIdentifier isEqual:_selectedIdentifier]
                              ? UITableViewCellAccessoryCheckmark
                              : UITableViewCellAccessoryNone;
-  } else {
+  } else if (item.type == DriveItemType::kFolder ||
+             item.type == DriveItemType::kSharedDrive) {
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryNone;
   }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.accessibilityIdentifier = item.identifier;

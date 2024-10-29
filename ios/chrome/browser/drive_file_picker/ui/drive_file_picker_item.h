@@ -12,6 +12,7 @@ enum class DriveItemType : NSUInteger {
   // "Real" items which can be mapped to a corresponding `DriveItem`.
   kFile,
   kFolder,
+  kShortcut,
   kSharedDrive,
   // "Virtual" items which cannot be mapped to a corresponding `DriveItem`.
   kMyDrive,

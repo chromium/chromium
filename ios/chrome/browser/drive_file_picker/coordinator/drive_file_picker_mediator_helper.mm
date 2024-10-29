@@ -437,6 +437,8 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     type = DriveItemType::kFolder;
   } else if (item.is_shared_drive) {
     type = DriveItemType::kSharedDrive;
+  } else if ([item.mime_type isEqualToString:kShortcutMIMEType]) {
+    type = DriveItemType::kShortcut;
   } else {
     type = DriveItemType::kFile;
   }
