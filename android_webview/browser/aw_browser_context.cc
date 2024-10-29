@@ -4,10 +4,14 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 
+#include <jni.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
@@ -31,6 +35,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/base_paths_posix.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -68,12 +73,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/prefetch_browser_callbacks.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
 #include "net/base/features.h"
+#include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -84,6 +92,9 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
+#include "android_webview/browser_jni_headers/AwNoVarySearchData_jni.h"
+#include "android_webview/browser_jni_headers/AwPrefetchParameters_jni.h"
+#include "url/gurl.h"
 
 using base::FilePath;
 using content::BrowserThread;
@@ -686,6 +697,103 @@ void AwBrowserContext::SetServiceWorkerIoThreadClient(
     const base::android::JavaParamRef<jobject>& io_thread_client) {
   sw_io_thread_client_ =
       base::android::ScopedJavaGlobalRef<jobject>(io_thread_client);
+}
+
+void AwBrowserContext::StartPrefetchRequest(
+    JNIEnv* env,
+    const std::string& url,
+    const base::android::JavaParamRef<jobject>& prefetch_params,
+    const base::android::JavaParamRef<jobject>& callback,
+    const base::android::JavaParamRef<jobject>& callback_executor) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  GURL pf_url = GURL(url);
+  net::HttpRequestHeaders pf_additional_headers =
+      GetPrefetchAdditionalHeaders(env, prefetch_params);
+  std::optional<net::HttpNoVarySearchData> pf_expected_no_vary_search =
+      GetPrefetchExpectedNoVarySearch(env, prefetch_params);
+  base::android::ScopedJavaGlobalRef<jobject> pf_callback(callback);
+  base::android::ScopedJavaGlobalRef<jobject> pf_callback_executor(
+      callback_executor);
+  content::PrefetchStartCallback pf_start_callback =
+      base::BindOnce(&AwBrowserContext::HandlePrefetchStartCallback,
+                     weak_method_factory_.GetWeakPtr(), std::move(pf_callback),
+                     std::move(pf_callback_executor));
+  StartBrowserPrefetchRequest(
+      pf_url,
+      Java_AwPrefetchParameters_getIsJavascriptEnabled(env, prefetch_params),
+      pf_expected_no_vary_search, pf_additional_headers,
+      std::move(pf_start_callback));
+}
+
+void AwBrowserContext::HandlePrefetchStartCallback(
+    const base::android::ScopedJavaGlobalRef<jobject> callback,
+    const base::android::ScopedJavaGlobalRef<jobject> callback_executor,
+    const content::PrefetchStartResultCode result_code) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  switch (result_code) {
+    case content::PrefetchStartResultCode::kSuccess:
+      Java_AwBrowserContext_onPrefetchStarted(env, obj_, callback,
+                                              callback_executor);
+      break;
+    case content::PrefetchStartResultCode::kFailed:
+      Java_AwBrowserContext_onPrefetchStartFailed(env, obj_, callback,
+                                                  callback_executor);
+      break;
+  }
+}
+
+net::HttpRequestHeaders AwBrowserContext::GetPrefetchAdditionalHeaders(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& prefetch_params) {
+  // TODO (crbug.com/372915075) : Implement tests for adding additional headers.
+  net::HttpRequestHeaders additional_headers = {};
+  if (prefetch_params) {
+    std::map<std::string, std::string> additional_headers_map =
+        Java_AwPrefetchParameters_getAdditionalHeaders(env, prefetch_params);
+
+    for (const auto& header : additional_headers_map) {
+      additional_headers.SetHeader(header.first, header.second);
+    }
+  }
+  return additional_headers;
+}
+
+std::optional<net::HttpNoVarySearchData>
+AwBrowserContext::GetPrefetchExpectedNoVarySearch(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& prefetch_params) {
+  // TODO (crbug.com/372915075) : Implement tests for constructing expected no
+  // vary search.
+  std::optional<net::HttpNoVarySearchData> expected_no_vary_search;
+  if (prefetch_params) {
+    base::android::ScopedJavaLocalRef<jobject> no_vary_search_jobj =
+        Java_AwPrefetchParameters_getExpectedNoVarySearch(env, prefetch_params);
+
+    if (no_vary_search_jobj) {
+      const bool vary_on_key_order = static_cast<bool>(
+          Java_AwNoVarySearchData_getVaryOnKeyOrder(env, no_vary_search_jobj));
+      const bool ignore_differences_in_params = static_cast<bool>(
+          Java_AwNoVarySearchData_getIgnoreDifferencesInParameters(
+              env, no_vary_search_jobj));
+
+      if (ignore_differences_in_params) {
+        expected_no_vary_search =
+            net::HttpNoVarySearchData::CreateFromVaryParams(
+                Java_AwNoVarySearchData_getConsideredQueryParameters(
+                    env, no_vary_search_jobj),
+                vary_on_key_order);
+      } else {
+        expected_no_vary_search =
+            net::HttpNoVarySearchData::CreateFromNoVaryParams(
+                Java_AwNoVarySearchData_getIgnoredQueryParameters(
+                    env, no_vary_search_jobj),
+                vary_on_key_order);
+      }
+    }
+  }
+  return expected_no_vary_search;
 }
 
 std::unique_ptr<AwContentsIoThreadClient>

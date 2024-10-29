@@ -10,10 +10,12 @@ import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -22,15 +24,20 @@ import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PermissionStatus;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one browsing
@@ -275,6 +282,53 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
+    @UiThread
+    public void startPrefetchRequest(
+            @NonNull String url,
+            @Nullable AwPrefetchParameters prefetchParameters,
+            @NonNull AwPrefetchOperationCallback<Integer> callback,
+            @NonNull Executor callbackExecutor) {
+        assert ThreadUtils.runningOnUiThread();
+        if (!UrlUtilities.isHttps(url)) {
+            callbackExecutor.execute(
+                    () ->
+                            callback.onError(
+                                    new IllegalArgumentException(
+                                            "URL must have HTTPS scheme for prefetch.")));
+        }
+
+        if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
+            callbackExecutor.execute(
+                    () ->
+                            callback.onError(
+                                    new IllegalStateException(
+                                            "WebView initiated prefetching feature is not"
+                                                    + " enabled.")));
+        }
+
+        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START")) {
+            AwBrowserContextJni.get()
+                    .startPrefetchRequest(
+                            mNativeAwBrowserContext,
+                            url,
+                            prefetchParameters,
+                            callback,
+                            callbackExecutor);
+        }
+    }
+
+    @CalledByNative
+    public void onPrefetchStarted(
+            AwPrefetchOperationCallback<Integer> callback, Executor callbackExecutor) {
+        callbackExecutor.execute(() -> callback.onResult(AwPrefetchStartResultCode.SUCCESS));
+    }
+
+    @CalledByNative
+    public void onPrefetchStartFailed(
+            AwPrefetchOperationCallback<Integer> callback, Executor callbackExecutor) {
+        callbackExecutor.execute(() -> callback.onResult(AwPrefetchStartResultCode.FAILURE));
+    }
+
     private void migrateGeolocationPreferences() {
         // Prefs dir will be created if it doesn't exist, so must allow writes
         // for this and so that the actual prefs can be written to the new
@@ -399,5 +453,14 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
+
+        // TODO (crbug.com/372915956) Consider flattening the prefetch parameters before passing to
+        // native.
+        void startPrefetchRequest(
+                long nativeAwBrowserContext,
+                @JniType("std::string") String url,
+                AwPrefetchParameters prefetchParameters,
+                AwPrefetchOperationCallback<Integer> callback,
+                Executor callbackExecutor);
     }
 }

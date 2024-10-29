@@ -53,4 +53,7 @@ public class ContentFeatureList {
     public static final String WEB_NFC = "WebNFC";
 
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
+
+    public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
+            "PrefetchBrowserInitiatedTriggers";
 }
