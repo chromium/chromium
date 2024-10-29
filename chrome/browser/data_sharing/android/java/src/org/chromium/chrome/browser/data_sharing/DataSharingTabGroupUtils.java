@@ -88,7 +88,7 @@ public class DataSharingTabGroupUtils {
             if (group.localId == null) continue;
 
             boolean isCollaboration = !TextUtils.isEmpty(group.collaborationId);
-            if (willRemoveAllTabsInGroup(group.savedTabs, tabsToRemove)) {
+            if (willRemoveAllTabsInGroup(tabModel, group.savedTabs, tabsToRemove)) {
                 if (isCollaboration) {
                     destroyedGroups.collaborationGroupsDestroyed.add(group.localId);
                 } else {
@@ -173,13 +173,24 @@ public class DataSharingTabGroupUtils {
     }
 
     private static boolean willRemoveAllTabsInGroup(
-            List<SavedTabGroupTab> savedTabs, List<Tab> tabsToRemove) {
+            TabModel tabModel, List<SavedTabGroupTab> savedTabs, List<Tab> tabsToRemove) {
         for (SavedTabGroupTab savedTab : savedTabs) {
             // First check that we have local IDs for the tab. It is possible that we don't if the
             // tab group is open in another window that hasn't been foregrounded yet as the tabs are
             // loaded lazily and so won't be tracked yet. If this happens we won't destroy the
             // collaboration as the tabs cannot be removed.
-            //
+            if (savedTab.localId == null) {
+                return false;
+            }
+
+            // If the saved tab has a local id, but it is not in the current tab model it is either
+            // currently closing or in another window. In either case, the tabsToRemove belong to
+            // the tabModel so we can skip this tab as it is either closing or not relevant.
+            int localId = savedTab.localId;
+            if (tabModel.getTabById(localId) == null) {
+                continue;
+            }
+
             // If any of the tabs in the saved group are missing from the list of tabsToRemove we
             // can assume the collaboration will not be destroyed and early out. This check is
             // technically O(n^2) if every group is a collaboration and all tabs are closing. We
