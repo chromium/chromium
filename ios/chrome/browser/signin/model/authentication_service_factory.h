@@ -8,7 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -20,21 +20,29 @@ class AuthenticationService;
 class AuthenticationServiceDelegate;
 
 // Singleton that owns all `AuthenticationServices` and associates them with
-// profiles. Listens for the `BrowserState`'s destruction notification and
-// cleans up the associated `AuthenticationService`.
-class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
+// profiles. Listens for the profile's destruction notification and cleans up
+// the associated `AuthenticationService`.
+class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Factory for AuthenticationServiceDelegate.
+  using AuthenticationServiceDelegateFactory =
+      base::OnceCallback<std::unique_ptr<AuthenticationServiceDelegate>(
+          ProfileIOS*)>;
+
   static AuthenticationService* GetForProfile(ProfileIOS* profile);
   static AuthenticationServiceFactory* GetInstance();
 
   // Force the instantiation of AuthenticationService and initialize it with
   // the given delegate. Must be called before GetForProfile (not doing
   // so is a security issue and the app will terminate).
+  // DEPRECATED: install a factory returned by GetFactoryWithDelegate()
+  // or GetFactoryWithDelegateFactory() instead of calling this method.
   static void CreateAndInitializeForProfile(
       ProfileIOS* profile,
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
-  // Deprecated, use CreateAndInitializeForProfile() instead.
+  // DEPRECATED: install a factory returned by GetFactoryWithDelegate()
+  // or GetFactoryWithDelegateFactory() instead of calling this method.
   static void CreateAndInitializeForBrowserState(
       ProfileIOS* profile,
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
@@ -43,9 +51,15 @@ class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
-  AuthenticationServiceFactory(const AuthenticationServiceFactory&) = delete;
-  AuthenticationServiceFactory& operator=(const AuthenticationServiceFactory&) =
-      delete;
+  // Returns a factory that builds an AuthenticationService using a custom
+  // delegate instance (needs to be constructible before the profile).
+  static TestingFactory GetFactoryWithDelegate(
+      std::unique_ptr<AuthenticationServiceDelegate> delegate);
+
+  // Returns a factory that builds an AuthenticationService using a custom
+  // delegate factory.
+  static TestingFactory GetFactoryWithDelegateFactory(
+      AuthenticationServiceDelegateFactory delegate_factory);
 
  private:
   friend class base::NoDestructor<AuthenticationServiceFactory>;
@@ -58,9 +72,6 @@ class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  // KeyedServiceBaseFactory implementation.
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_FACTORY_H_

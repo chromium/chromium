@@ -67,8 +67,6 @@
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/browser/accessibility/model/window_accessibility_change_notifier_app_agent.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
@@ -124,8 +122,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
@@ -267,75 +263,6 @@ void BeginMemoryExperimentationAfterDelay() {
                  dispatch_get_main_queue(), ^{
                    ios::provider::BeginMemoryExperimentation();
                  });
-}
-
-// Delegate for the AuthenticationService.
-// TODO(crbug.com/325612973): When browsing data removal is factored into a
-// keyed service, make that service an AuthenticationServiceDelegate and just
-// assign it directly to the authentication service. That eliminates the need
-// for this class.
-class MainControllerAuthenticationServiceDelegate
-    : public AuthenticationServiceDelegate {
- public:
-  explicit MainControllerAuthenticationServiceDelegate(ProfileIOS* profile);
-
-  MainControllerAuthenticationServiceDelegate(
-      const MainControllerAuthenticationServiceDelegate&) = delete;
-  MainControllerAuthenticationServiceDelegate& operator=(
-      const MainControllerAuthenticationServiceDelegate&) = delete;
-
-  ~MainControllerAuthenticationServiceDelegate() override;
-
-  // AuthenticationServiceDelegate implementation.
-  void ClearBrowsingData(base::OnceClosure completion) override;
-  void ClearBrowsingDataForSignedinPeriod(
-      base::OnceClosure completion) override;
-
- private:
-  const raw_ptr<ProfileIOS> profile_ = nullptr;
-};
-
-MainControllerAuthenticationServiceDelegate::
-    MainControllerAuthenticationServiceDelegate(ProfileIOS* profile)
-    : profile_(profile) {}
-
-MainControllerAuthenticationServiceDelegate::
-    ~MainControllerAuthenticationServiceDelegate() = default;
-
-void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
-    base::OnceClosure completion) {
-  BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForProfile(profile_);
-  browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
-                              BrowsingDataRemoveMask::REMOVE_ALL,
-                              (std::move(completion)));
-}
-
-void MainControllerAuthenticationServiceDelegate::
-    ClearBrowsingDataForSignedinPeriod(base::OnceClosure completion) {
-  base::Time last_signin_timestamp =
-      profile_->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
-
-  BrowsingDataRemoveMask remove_mask =
-      BrowsingDataRemoveMask::REMOVE_ALL_FOR_TIME_PERIOD;
-
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-    // If fast account switching via the account particle disk on the NTP is
-    // enabled, then also close any tabs that were used since the signin. This
-    // requires separately querying the tab-usage timestamps first.
-    remove_mask |= BrowsingDataRemoveMask::CLOSE_TABS;
-  }
-
-  // If `kLastSigninTimestamp` has the default base::Time() value, data will be
-  // cleared for all time, which is intended to happen in this case.
-  BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForProfile(profile_);
-  BrowsingDataRemover::RemovalParams params;
-  params.keep_active_tab =
-      BrowsingDataRemover::KeepActiveTabPolicy::kKeepActiveTab;
-  browsingDataRemover->RemoveInRange(last_signin_timestamp, base::Time::Now(),
-                                     remove_mask, std::move(completion),
-                                     params);
 }
 
 }  // namespace
@@ -710,19 +637,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   DCHECK(insertion_result.second);
 
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(profile->GetPrefs());
-
-  // Force an obvious initialization of the AuthenticationService. This must
-  // be done before creation of the UI to ensure the service is initialised
-  // before use (it is a security issue, so accessing the service CHECKs if
-  // this is not the case). It is important to do this during background
-  // initialization when the app is cold started directly into the background
-  // because it is used by the DiscoverFeedService, which is started in the
-  // background to perform background refresh. There is no downside to doing
-  // this during background initialization when the app is launched into the
-  // foreground.
-  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      profile,
-      std::make_unique<MainControllerAuthenticationServiceDelegate>(profile));
 
   // Force desktop mode when raccoon is enabled.
   if (ios::provider::IsRaccoonEnabled()) {
