@@ -65,8 +65,11 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
 // This test checks that all of the UI elements in the browser can be dumped.
 // The output must be manually verified.
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, DumpElements) {
-  CreateIncognitoBrowser();
-  RunTestSequence(InstrumentTab(kWebContentsId), DumpElements());
+  auto* const incog = CreateIncognitoBrowser();
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  InContext(incog->window()->GetElementContext(),
+                            Steps(PressButton(kToolbarAppMenuButtonElementId),
+                                  DumpElements())));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,

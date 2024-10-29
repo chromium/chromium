@@ -264,7 +264,7 @@ InteractiveBrowserTestPrivate::DebugDumpElement(
       index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
     }
     return DebugTreeNode(base::StringPrintf(
-        "WebContents %s - %s at %s with URL %s",
+        "WebContents %s - %s at %s with URL \"%s\"",
         (index == TabStripModel::kNoTab
              ? "in secondary UI"
              : base::StringPrintf("in tab %d", index).c_str()),
