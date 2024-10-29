@@ -171,9 +171,7 @@ class SettingsTableViewControllerTest
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
 
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForProfile(
-            profile_.get()));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     password_store_mock_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(

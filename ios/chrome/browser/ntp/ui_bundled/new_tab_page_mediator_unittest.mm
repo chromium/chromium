@@ -85,9 +85,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForProfile(
-            profile_.get()));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());

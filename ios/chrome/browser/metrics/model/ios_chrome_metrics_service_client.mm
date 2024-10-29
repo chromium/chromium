@@ -476,8 +476,7 @@ bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS);
   ObserveServiceForDeletions(history_service);
-  syncer::SyncService* sync =
-      SyncServiceFactory::GetInstance()->GetForProfile(profile);
+  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
   StartObserving(sync, profile->GetPrefs());
   return (history_service != nullptr && sync != nullptr);
 }

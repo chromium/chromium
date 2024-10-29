@@ -374,7 +374,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   NSString* privacyFooterText;
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetInstance()->GetForProfile(_profile);
+      SyncServiceFactory::GetForProfile(_profile);
 
   NSMutableArray* urls = [[NSMutableArray alloc] init];
   // TODO(crbug.com/40066949): Remove IsSyncFeatureEnabled() usage after kSync

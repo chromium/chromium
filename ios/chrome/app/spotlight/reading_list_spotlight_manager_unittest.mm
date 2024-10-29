@@ -84,8 +84,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
 
     profile_ = std::move(builder).Build();
 
-    model_ =
-        ReadingListModelFactory::GetInstance()->GetForProfile(profile_.get());
+    model_ = ReadingListModelFactory::GetForProfile(profile_.get());
 
     CreateMockLargeIconService();
     spotlightInterface_ = [[FakeSpotlightInterface alloc] init];

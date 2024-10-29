@@ -28,9 +28,7 @@ class PriceAlertUtilTest : public PlatformTest {
     profile_ = BuildProfileIOS();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForProfile(
-            profile_.get()));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
   }
 

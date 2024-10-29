@@ -116,7 +116,7 @@ const base::FilePath& GetTestDataDir() {
 
 + (BOOL)shortcutsBackendInitialized {
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetInstance()->GetForProfileIfExists(
+      ios::ShortcutsBackendFactory::GetForProfileIfExists(
           chrome_test_util::GetOriginalProfile());
   if (shortcuts_backend) {
     return shortcuts_backend->initialized();
@@ -126,7 +126,7 @@ const base::FilePath& GetTestDataDir() {
 
 + (NSInteger)numberOfShortcutsInDatabase {
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetInstance()->GetForProfileIfExists(
+      ios::ShortcutsBackendFactory::GetForProfileIfExists(
           chrome_test_util::GetOriginalProfile());
   if (shortcuts_backend && shortcuts_backend->initialized()) {
     return static_cast<NSInteger>(shortcuts_backend->shortcuts_map().size());

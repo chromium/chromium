@@ -46,7 +46,7 @@ std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
     ProfileIOS* profile,
     const device_reauth::DeviceAuthParams& params) {
   DeviceAuthenticatorProxy* proxy =
-      DeviceAuthenticatorProxyFactory::GetInstance()->GetForProfile(profile);
+      DeviceAuthenticatorProxyFactory::GetForProfile(profile);
   CHECK(proxy);
   return std::make_unique<IOSDeviceAuthenticator>(reauth_module, proxy, params);
 }

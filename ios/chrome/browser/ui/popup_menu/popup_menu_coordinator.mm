@@ -303,8 +303,7 @@ using base::UserMetricsAction;
     mediator.navigationAgent = WebNavigationBrowserAgent::FromBrowser(browser);
     mediator.baseViewController = self.baseViewController;
     mediator.bookmarkModel = ios::BookmarkModelFactory::GetForProfile(profile);
-    mediator.readingListModel =
-        ReadingListModelFactory::GetInstance()->GetForProfile(profile);
+    mediator.readingListModel = ReadingListModelFactory::GetForProfile(profile);
     mediator.profilePrefs = profile->GetPrefs();
     mediator.engagementTracker = tracker;
     mediator.webContentAreaOverlayPresenter = overlayPresenter;

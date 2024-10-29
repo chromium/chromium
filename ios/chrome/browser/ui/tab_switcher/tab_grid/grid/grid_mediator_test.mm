@@ -107,9 +107,7 @@ void GridMediatorTestClass::SetUp() {
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(identity);
-  auth_service_ = static_cast<AuthenticationService*>(
-      AuthenticationServiceFactory::GetInstance()->GetForProfile(
-          profile_.get()));
+  auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
   auth_service_->SignIn(identity,
                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   scene_state_ = OCMClassMock([SceneState class]);

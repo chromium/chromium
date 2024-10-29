@@ -132,8 +132,7 @@
   ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
 
   // Create the mediator.
-  ReadingListModel* model =
-      ReadingListModelFactory::GetInstance()->GetForProfile(profile);
+  ReadingListModel* model = ReadingListModelFactory::GetForProfile(profile);
   _syncService = SyncServiceFactory::GetForProfile(profile);
   ReadingListListItemFactory* itemFactory =
       [[ReadingListListItemFactory alloc] init];

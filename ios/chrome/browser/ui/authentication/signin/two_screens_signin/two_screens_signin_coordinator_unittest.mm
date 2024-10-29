@@ -106,9 +106,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 
   // Signs in a fake identity.
   void SigninFakeIdentity() {
-    AuthenticationService* auth_service = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForProfile(
-            profile_.get()));
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service->SignIn(fake_identity_,
                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }

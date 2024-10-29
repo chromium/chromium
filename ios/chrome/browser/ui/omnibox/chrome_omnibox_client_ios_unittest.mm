@@ -93,8 +93,7 @@ void ChromeOmniboxClientIOSTest::SetUp() {
   navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 
   shortcuts_backend_ =
-      ios::ShortcutsBackendFactory::GetInstance()->GetForProfile(
-          profile_.get());
+      ios::ShortcutsBackendFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(shortcuts_backend_.get());
   shortcuts_backend_->AddObserver(this);
 }

@@ -150,9 +150,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
     AuthenticationServiceFactory::CreateAndInitializeForProfile(
         profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForProfile(
-            profile_.get()));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
