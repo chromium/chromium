@@ -1080,8 +1080,7 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
                                        base::TRIM_TRAILING);
 
   const std::string prefix("mst:");
-  if (!base::StartsWith(path_string_piece, prefix,
-                        base::CompareCase::SENSITIVE)) {
+  if (!path_string_piece.starts_with(prefix)) {
     LOG(ERROR) << "Invalid PATH string prefix. Does not contain '" << prefix
                << "'. Input: '" << path_str << "'";
     return {};

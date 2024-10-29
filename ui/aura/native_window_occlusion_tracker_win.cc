@@ -268,7 +268,7 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   // Window or the Windows Taskbar
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
     std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
-    if (!base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") &&
+    if (!hwnd_class_name.starts_with(L"Chrome_WidgetWin_") &&
         hwnd_class_name != L"Shell_TrayWnd") {
       return false;
     }
@@ -840,9 +840,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   bool calculate_occlusion = true;
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
     std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
-    calculate_occlusion =
-        base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") ||
-        hwnd_class_name == L"Shell_TrayWnd";
+    calculate_occlusion = hwnd_class_name.starts_with(L"Chrome_WidgetWin_") ||
+                          hwnd_class_name == L"Shell_TrayWnd";
   }
 
   // Detect if either the alt tab view or the task list thumbnail is being

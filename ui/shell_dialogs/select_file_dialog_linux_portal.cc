@@ -763,7 +763,7 @@ SelectFileDialogLinuxPortal::DialogInfo::ConvertUrisToPaths(
     const std::vector<std::string>& uris) {
   std::vector<base::FilePath> paths;
   for (const std::string& uri : uris) {
-    if (!base::StartsWith(uri, kFileUriPrefix, base::CompareCase::SENSITIVE)) {
+    if (!uri.starts_with(kFileUriPrefix)) {
       LOG(WARNING) << "Ignoring unknown file chooser URI: " << uri;
       continue;
     }

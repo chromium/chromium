@@ -262,14 +262,14 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
   // Methods whose names start with "isAccessibility" returns a BOOL, so we
   // need to handle the returned value differently than methods whose return
   // types are id.
-  if (base::StartsWith(property_node.name_or_value, "isAccessibility")) {
+  if (property_node.name_or_value.starts_with("isAccessibility")) {
     std::optional<SEL> optional_arg_selector;
     std::string selector_string = property_node.name_or_value;
     // In some cases, we might want to pass a SEL as argument instead of an id.
     // When an argument is prefixed with "@SEL:", transform the string into a
     // valid SEL to pass to the main selector.
     if (property_node.arguments.size() == 1 &&
-        base::StartsWith(property_node.arguments[0].name_or_value, "@SEL:")) {
+        property_node.arguments[0].name_or_value.starts_with("@SEL:")) {
       optional_arg_selector = NSSelectorFromString(base::SysUTF8ToNSString(
           property_node.arguments[0].name_or_value.substr(5)));
       selector_string += ":";
@@ -310,7 +310,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     return AXOptionalNSObject::Error();
   }
 
-  if (base::StartsWith(property_node.name_or_value, "accessibility")) {
+  if (property_node.name_or_value.starts_with("accessibility")) {
     if (property_node.arguments.size() == 1) {
       std::optional<id> optional_id =
           ax_element.PerformSelector(property_node.name_or_value,

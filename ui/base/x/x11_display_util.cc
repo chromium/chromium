@@ -454,7 +454,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     const std::string name(output_info->name.begin(), output_info->name.end());
     auto process_type =
         command_line->GetSwitchValueASCII("type");
-    if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS")) {
+    if (name.starts_with("eDP") || name.starts_with("LVDS")) {
       display::SetInternalDisplayIds({display_id});
       // For browser process which has access to resource bundle,
       // use localized variant of "Built-in display" for internal displays.

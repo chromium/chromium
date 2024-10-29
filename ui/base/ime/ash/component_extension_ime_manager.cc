@@ -22,14 +22,14 @@ namespace {
 int GetInputMethodCategory(const std::string& id) {
   const std::string engine_id =
       extension_ime_util::GetComponentIDByInputMethodID(id);
-  if (base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("xkb:")) {
     return 0;
   }
-  if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("vkd_")) {
     return 1;
   }
   if (engine_id.find("-t-i0-") != std::string::npos &&
-      !base::StartsWith(engine_id, "zh-", base::CompareCase::SENSITIVE)) {
+      !engine_id.starts_with("zh-")) {
     return 2;
   }
   return 3;

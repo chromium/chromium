@@ -448,7 +448,7 @@ WindowManagerName GuessWindowManager() {
   if (name == "i3") {
     return WM_I3;
   }
-  if (base::StartsWith(name, "IceWM", base::CompareCase::SENSITIVE)) {
+  if (name.starts_with("IceWM")) {
     return WM_ICE_WM;
   }
   if (name == "ion3") {

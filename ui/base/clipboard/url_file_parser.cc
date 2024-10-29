@@ -63,7 +63,7 @@ std::string ExtractURLFromURLFileContents(std::string_view file_contents) {
     // Otherwise, it should be a key-value pair delimited by "=". However,
     // splitting on "=" doesn't work because URLs can contain that character, so
     // just look for the prefix.
-    if (base::StartsWith(line, kURL)) {
+    if (line.starts_with(kURL)) {
       // Success! Strip off the prefix and return what was found.
       return std::string(line.substr(kURL.length()));
     }

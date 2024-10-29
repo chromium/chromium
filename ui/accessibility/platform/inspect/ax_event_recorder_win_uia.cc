@@ -50,12 +50,15 @@ static std::pair<uintptr_t, uintptr_t> GetModuleAddressRange(
 std::string UiaIdentifierToStringPretty(int32_t id) {
   auto str = base::WideToUTF8(UiaIdentifierToString(id));
   // Remove UIA_ prefix, and EventId/PropertyId suffixes
-  if (base::StartsWith(str, "UIA_", base::CompareCase::SENSITIVE))
+  if (str.starts_with("UIA_")) {
     str = str.substr(std::size("UIA_") - 1);
-  if (base::EndsWith(str, "EventId", base::CompareCase::SENSITIVE))
+  }
+  if (str.ends_with("EventId")) {
     str = str.substr(0, str.size() - std::size("EventId") + 1);
-  if (base::EndsWith(str, "PropertyId", base::CompareCase::SENSITIVE))
+  }
+  if (str.ends_with("PropertyId")) {
     str = str.substr(0, str.size() - std::size("PropertyId") + 1);
+  }
   return str;
 }
 

@@ -76,7 +76,7 @@ AXInspectScenario AXInspectScenario::From(
     }
 
     // Implicit directive case: use the most recent directive.
-    if (!base::StartsWith(line, "@")) {
+    if (!line.starts_with("@")) {
       if (directive != kNone) {
         std::string_view trimmed_value =
             base::TrimWhitespaceASCII(line, base::TRIM_ALL);

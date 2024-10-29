@@ -285,8 +285,7 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
     out_content->append(base::UTF16ToUTF8(html_content->html));
     return true;
   }
-  if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream) &&
-      HasFileContents()) {
+  if (mime_type.starts_with(ui::kMimeTypeOctetStream) && HasFileContents()) {
     std::optional<FileContentsInfo> file_contents = GetFileContents();
     out_content->append(file_contents->file_contents);
     return true;
