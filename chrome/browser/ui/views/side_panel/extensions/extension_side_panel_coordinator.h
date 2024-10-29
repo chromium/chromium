@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
@@ -39,8 +38,7 @@ class Extension;
 // contextual extension side panels given the difference in behavior betweeen
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
-                                      public SidePanelService::Observer,
-                                      public TabStripModelObserver {
+                                      public SidePanelService::Observer {
  public:
   explicit ExtensionSidePanelCoordinator(Profile* profile,
                                          Browser* browser,
@@ -67,14 +65,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   bool IsGlobalCoordinator() const;
 
-  // Returns if this extension's side panel is explicitly disabled for the given
-  // `tab_id`.
-  bool IsDisabledForTab(int tab_id) const;
-
-  // Deregisters this extension's SidePanelEntry from the global
-  // SidePanelRegistry and caches the entry's view into `global_entry_view_`.
-  void DeregisterGlobalEntryAndCacheView();
-
   // SidePanelService::Observer:
   void OnPanelOptionsChanged(
       const ExtensionId& extension_id,
@@ -84,15 +74,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // ExtensionViewViews::Observer
   void OnViewDestroying() override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // Creates and registers the SidePanelEntry for this extension, and observes
-  // the entry. This is called if the extension has a default side panel path
-  // when the browser view is created or when the extension is loaded.
+  // the entry.
   void CreateAndRegisterEntry();
 
   // Creates a view for the extension's resource URL. This is called when this
@@ -155,10 +138,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // The extension's own icon for its side panel entry.
   std::unique_ptr<IconImage> extension_icon_;
-
-  // Cached view for global entry if it was disabled for a specific tab and may
-  // be shown again on a different tab where it's enabled.
-  std::unique_ptr<views::View> global_entry_view_;
 
   // Whether this coordinator is tab-scoped or window-scoped.
   const bool for_tab_;

@@ -35,12 +35,6 @@ class SidePanelUtil {
   static SidePanelContentProxy* GetSidePanelContentProxy(
       views::View* content_view);
 
-  // Deregister the entry with the key from the registry and return the view if
-  // exists.
-  static std::unique_ptr<views::View> DeregisterAndReturnView(
-      SidePanelRegistry* registry,
-      SidePanelEntry::Key key);
-
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(std::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelShowOrChangeEntryTrigger(
