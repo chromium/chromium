@@ -41,16 +41,16 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
 
 ChildAccountServiceFactory::~ChildAccountServiceFactory() = default;
 
-KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChildAccountServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 
   CHECK(profile->GetPrefs());
   CHECK(ListFamilyMembersServiceFactory::GetForProfile(profile));
 
-  return new supervised_user::ChildAccountService(
-      *profile->GetPrefs(),
-      IdentityManagerFactory::GetForProfile(profile),
+  return std::make_unique<supervised_user::ChildAccountService>(
+      *profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(),
       base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile),
       *ListFamilyMembersServiceFactory::GetForProfile(profile));
