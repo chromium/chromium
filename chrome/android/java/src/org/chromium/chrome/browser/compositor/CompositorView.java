@@ -347,15 +347,6 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
     }
 
-    private void setWindowAndroid(WindowAndroid windowAndroid) {
-        assert mWindowAndroid != null;
-        mWindowAndroid.removeSelectionHandlesObserver(this);
-
-        mWindowAndroid = windowAndroid;
-        mWindowAndroid.addSelectionHandlesObserver(this);
-        onWindowVisibilityChangedInternal(getWindowVisibility());
-    }
-
     /**
      * Enables/disables overlay video mode. Affects alpha blending on this view.
      * @param enabled Whether to enter or leave overlay video mode.
