@@ -136,6 +136,7 @@
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge_impl.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
@@ -175,6 +176,7 @@
 #if BUILDFLAG(IS_ANDROID)
 using base::android::BuildInfo;
 using password_manager::CredentialCache;
+using password_manager_android_util::GmsVersionCohort;
 #endif
 
 using autofill::mojom::FocusedFieldType;
@@ -206,22 +208,18 @@ url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
 }
 
-void MaybeShowAccessLossWarning(
-    PrefService* prefs,
-    base::WeakPtr<content::WebContents> web_contents,
-    Profile* profile) {
+void ShowAccessLossWarning(PrefService* prefs,
+                           base::WeakPtr<content::WebContents> web_contents,
+                           Profile* profile) {
   if (!web_contents) {
     return;
   }
   PasswordAccessLossWarningBridgeImpl bridge;
-  if (bridge.ShouldShowAccessLossNoticeSheet(prefs,
-                                             /*called_at_startup=*/true)) {
-    bridge.MaybeShowAccessLossNoticeSheet(
-        prefs, web_contents->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/true,
-        password_manager_android_util::PasswordAccessLossWarningTriggers::
-            kChromeStartup);
-  }
+  bridge.MaybeShowAccessLossNoticeSheet(
+      prefs, web_contents->GetTopLevelNativeWindow(), profile,
+      /*called_at_startup=*/true,
+      password_manager_android_util::PasswordAccessLossWarningTriggers::
+          kChromeStartup);
 }
 
 void MaybeShowPostMigrationSheetWrapper(
@@ -2000,7 +1998,7 @@ void ChromePasswordManagerClient::TryToShowLocalPasswordMigrationWarning() {
 }
 
 void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
-  // This is to let the method run after all the initialization tasks have been
+  // This is to run the function after all the initialization tasks have been
   // completed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MaybeShowPostMigrationSheetWrapper,
@@ -2008,11 +2006,72 @@ void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
 }
 
 void ChromePasswordManagerClient::TryToShowAccessLossWarningSheet() {
-  // This is to let the method run after all the initialization tasks have been
-  // completed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&MaybeShowAccessLossWarning, GetPrefs(),
-                                web_contents()->GetWeakPtr(), profile_));
+  PasswordAccessLossWarningBridgeImpl bridge;
+  // If the feature is not enabled or it's too early to show the startup warning
+  // sheet, the method ends.
+  if (!bridge.ShouldShowAccessLossNoticeSheet(GetPrefs(),
+                                              /*called_at_startup=*/true)) {
+    return;
+  }
+
+  GmsVersionCohort gms_version_cohort =
+      password_manager_android_util::GetGmsVersionCohort();
+  if (gms_version_cohort == GmsVersionCohort::kFullUpmSupport &&
+      !password_manager_android_util::LastMigrationAttemptToUpmLocalFailed()) {
+    // There is already full UPM support. No need to show any warning.
+    return;
+  }
+
+  if (GetPrefs()
+          ->FindPreference(
+              password_manager::prefs::kEmptyProfileStoreLoginDatabase)
+          ->IsDefaultValue()) {
+    // The state of the login db is unknown. This pref is initialized on
+    // startup, so it should be available in the next session at the latest.
+    return;
+  }
+
+  if (!GetPrefs()->GetBoolean(
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+    // This is to run the function after all the initialization tasks have been
+    // completed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ShowAccessLossWarning, GetPrefs(),
+                                  web_contents()->GetWeakPtr(), profile_));
+    return;
+  }
+
+  // Unless a user has account UPM support, no passwords in the login DB means
+  // they're not a password manager user, so they shouldn't see the warning.
+  if (gms_version_cohort != GmsVersionCohort::kOnlyAccountUpmSupport) {
+    return;
+  }
+
+  // If the user has only account UPM support, they might still have passwords
+  // in GMS core. The support for this state will be removed in the future, so
+  // they also need to see the warning.
+  const syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  // If the user hasn't chosen to sync passwords, they don't store passwords in
+  // this version of GMS Core.
+  if (!sync_service ||
+      !password_manager::sync_util::HasChosenToSyncPasswords(sync_service)) {
+    return;
+  }
+
+  // The user is syncing, the login DB is empty and the GMS Core version only
+  // supports account passwords. An empty login DB combined with the other two
+  // conditions implies that the user has access to the GMS core storage,
+  // because either all their passwords were migrated and then removed or they
+  // never had any passwords in the first place, so they never needed migration.
+  password_manager::PasswordStoreInterface* profile_password_store =
+      GetProfilePasswordStore();
+  password_access_loss_warning_startup_launcher_ =
+      std::make_unique<PasswordAccessLossWarningStartupLauncher>(
+          base::BindOnce(&ShowAccessLossWarning, GetPrefs(),
+                         web_contents()->GetWeakPtr(), profile_));
+  password_access_loss_warning_startup_launcher_->FetchPasswordsAndShowWarning(
+      profile_password_store);
 }
 #endif
 

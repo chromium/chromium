@@ -46,6 +46,7 @@
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
+#include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
@@ -537,6 +538,11 @@ class ChromePasswordManagerClient
   // have been fetched. Only invoked once on startup.
   std::unique_ptr<PasswordMigrationWarningStartupLauncher>
       password_migration_warning_startup_launcher_;
+
+  // Launcher used to trigger the password access loss warning once passwords
+  // have been fetched. Only invoked once on startup.
+  std::unique_ptr<PasswordAccessLossWarningStartupLauncher>
+      password_access_loss_warning_startup_launcher_;
 
   // Recorder of metrics that is associated with the first page loaded by a
   // CCT. Created only if the WebContents corresponds to a CCT. Records
