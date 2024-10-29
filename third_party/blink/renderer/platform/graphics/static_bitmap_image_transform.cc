@@ -275,7 +275,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   // Early-out for empty transformations.
-  if (options.source_rect.IsEmpty() || options.dest_size.IsEmpty()) {
+  if (!source || options.source_rect.IsEmpty() || options.dest_size.IsEmpty()) {
     return nullptr;
   }
 
@@ -311,6 +311,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source) {
+  if (!source) {
+    return nullptr;
+  }
   const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
@@ -325,13 +328,15 @@ StaticBitmapImageTransform::GetWithAlphaDisposition(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     AlphaDisposition alpha_disposition) {
+  if (!source) {
+    return nullptr;
+  }
   switch (alpha_disposition) {
     case kPremultiplyAlpha:
       break;
     case kDontChangeAlpha:
       return source;
   }
-
   const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
