@@ -388,7 +388,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightSchedule"
-    enum="DisplaySettingsNightLightScheduleOption" expires_after="2025-02-23">
+    enum="DisplaySettingsNightLightScheduleOption" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -402,7 +402,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightStatus"
-    enum="DisplaySettingsBoolean" expires_after="2025-02-23">
+    enum="DisplaySettingsBoolean" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -788,7 +788,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.VerifiedAccessEnabled"
-    enum="BooleanEnabled" expires_after="2025-02-23">
+    enum="BooleanEnabled" expires_after="2025-04-27">
   <owner>jpachara@google.com</owner>
   <owner>pwg-cros@google.com</owner>
   <summary>

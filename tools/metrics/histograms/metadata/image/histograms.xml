@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.DescFailure"
-    enum="DescFailureReason" expires_after="2025-01-20">
+    enum="DescFailureReason" expires_after="2025-04-27">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>

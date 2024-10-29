@@ -744,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.MainAccountResolution.Status{ArcUserTypes}"
-    enum="ArcAuthMainAccountResolutionStatus" expires_after="2025-02-23">
+    enum="ArcAuthMainAccountResolutionStatus" expires_after="2025-04-27">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -2818,7 +2818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

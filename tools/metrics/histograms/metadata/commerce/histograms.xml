@@ -401,7 +401,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ParcelTracking.{ParcelRequestTypes}.RequestStatus"
-    enum="ParcelRequestStatus" expires_after="2025-02-23">
+    enum="ParcelRequestStatus" expires_after="2025-04-27">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

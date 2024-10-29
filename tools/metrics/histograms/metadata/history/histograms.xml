@@ -1746,7 +1746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.ComputeAnswerTime{ComputeAnswerStatus}"
-    units="ms" expires_after="2024-12-31">
+    units="ms" expires_after="2025-04-27">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2672,7 +2672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" enum="Boolean"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
   <summary>
@@ -2683,7 +2683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.VisitLoggedFromTransition"
-    enum="PageTransitionForVisitedLinks" expires_after="2025-02-23">
+    enum="PageTransitionForVisitedLinks" expires_after="2025-04-27">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
   <summary>

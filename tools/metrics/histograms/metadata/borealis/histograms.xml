@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.VMPerformance.Generic.{Variant}" units="fps"
-    expires_after="2024-12-30">
+    expires_after="2025-04-27">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

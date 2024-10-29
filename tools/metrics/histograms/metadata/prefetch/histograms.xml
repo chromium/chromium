@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
-    units="hours" expires_after="2025-02-23">
+    units="hours" expires_after="2025-04-27">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

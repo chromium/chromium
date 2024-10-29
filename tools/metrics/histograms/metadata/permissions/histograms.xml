@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="BrowserDialogs.ExternalProtocol.BlockState"
-    enum="BlockStateMetric" expires_after="2025-02-23">
+    enum="BlockStateMetric" expires_after="2025-04-27">
   <owner>rsesek@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoStatus"
-    enum="PermissionEmbargoStatus" expires_after="2025-02-23">
+    enum="PermissionEmbargoStatus" expires_after="2025-04-27">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -481,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Dismissed" units="%"
-    expires_after="2025-01-21">
+    expires_after="2025-04-27">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.OnDevicePredictionService.Response.{PermissionType}"
-    enum="BooleanIgnored" expires_after="2025-02-23">
+    enum="BooleanIgnored" expires_after="2025-04-27">
   <owner>ravjit@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1370,7 +1370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2025-02-23">
+    enum="SiteEngagementServiceEngagementType" expires_after="2025-04-27">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

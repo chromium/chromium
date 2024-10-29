@@ -158,7 +158,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceSet"
-    enum="AudioSelectionDeviceSet" expires_after="2025-02-25">
+    enum="AudioSelectionDeviceSet" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -202,7 +202,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet"
-    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-02-25">
+    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -247,7 +247,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet"
-    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-02-25">
+    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

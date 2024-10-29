@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime"
-    units="ms" expires_after="2025-01-30">
+    units="ms" expires_after="2025-04-27">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -681,7 +681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -693,7 +693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2025-02-23">
+    enum="ColorCorrectionFilterTypes" expires_after="2025-04-27">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

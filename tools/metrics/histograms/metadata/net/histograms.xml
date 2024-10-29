@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2174,7 +2174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpNoVarySearch.HasUnrecognizedKeys" enum="Boolean"
-    expires_after="2025-02-20">
+    expires_after="2025-04-27">
   <owner>jbroman@chromium.org</owner>
   <owner>liviutinta@chromium.org</owner>
   <summary>
@@ -4050,7 +4050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketLossRate" units="1/10th Percent"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4073,7 +4073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketsBeforeEcnTransition" units="packets"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>martinduke@google.com</owner>
   <owner>rch@chromium.org</owner>
   <summary>
@@ -4704,7 +4704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ZeroRttReasonGoogle"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2025-01-24">
+    enum="SSLHandshakeEarlyDataReason" expires_after="2025-04-27">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4732,7 +4732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ZeroRttState" enum="ZeroRttState"
-    expires_after="2025-01-24">
+    expires_after="2025-04-27">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5023,7 +5023,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount"
-    units="count" expires_after="2025-02-23">
+    units="count" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5033,7 +5033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount"
-    units="count" expires_after="2025-02-23">
+    units="count" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5044,7 +5044,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount"
-    units="count" expires_after="2025-02-23">
+    units="count" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5055,7 +5055,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.TotalDictionaryCountWhenAdded"
-    units="count" expires_after="2025-02-23">
+    units="count" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5067,7 +5067,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeKBWhenAdded"
-    units="KB" expires_after="2025-02-23">
+    units="KB" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5079,7 +5079,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryOnDisk.OpenEntryLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5090,7 +5090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryOnDisk.ReadDataLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5101,7 +5101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse"
-    enum="Boolean" expires_after="2025-02-23">
+    enum="Boolean" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5111,7 +5111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.MetadataReadTime.{Result}"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5137,7 +5137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStore.DictionarySizeKBPerSiteWhenAdded"
-    units="KB" expires_after="2025-02-23">
+    units="KB" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5148,7 +5148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStore.{MethodName}.Error"
-    enum="SharedDictionaryStoreError" expires_after="2025-02-23">
+    enum="SharedDictionaryStoreError" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5174,7 +5174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryTransaction.AbortedWhileReadingDictionary.{SuccessOrFailure}"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5188,7 +5188,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5200,7 +5200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryTransaction.NetResultWithDict.{CertState}"
-    enum="NetErrorCodes" expires_after="2025-02-23">
+    enum="NetErrorCodes" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5217,7 +5217,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedByResponseWhenAvailable2.MainFrame.{ConnectionType}.{CertState}"
-    enum="Boolean" expires_after="2025-02-23">
+    enum="Boolean" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5240,7 +5240,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedResponseErrorCodes2.{DestinationType}.{CertState}"
-    enum="NetErrorCodes" expires_after="2025-02-23">
+    enum="NetErrorCodes" expires_after="2025-04-27">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5461,7 +5461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySessionErrorDetails2" enum="SpdyProtocolErrorDetails2"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The type of SPDY Protocol error encountered.</summary>
@@ -5727,7 +5727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Error" units="ms"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

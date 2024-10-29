@@ -178,7 +178,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1350,7 +1350,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeveloperModeEnabled" enum="Boolean"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4125,7 +4125,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}3"
-    enum="ExtensionLocation" expires_after="2025-02-23">
+    enum="ExtensionLocation" expires_after="2025-04-27">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4827,7 +4827,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
-    enum="Boolean" expires_after="2025-02-23">
+    enum="Boolean" expires_after="2025-04-27">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -5136,7 +5136,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds"
-    units="microseconds" expires_after="2025-02-23">
+    units="microseconds" expires_after="2025-04-27">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -5167,7 +5167,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestListenerEvaluationTimeInMicroseconds.{HandlerTypes}"
-    units="microseconds" expires_after="2025-02-23">
+    units="microseconds" expires_after="2025-04-27">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>

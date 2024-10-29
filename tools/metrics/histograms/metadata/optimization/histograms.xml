@@ -754,7 +754,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelAdaptationLoadResult"
-    enum="OnDeviceModelLoadResult" expires_after="2025-02-16">
+    enum="OnDeviceModelLoadResult" expires_after="2025-04-27">
   <owner>rajendrant@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>

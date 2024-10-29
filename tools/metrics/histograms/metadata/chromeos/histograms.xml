@@ -420,7 +420,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Camera.Effects.NpuToGpuFallbackEvent" enum="Boolean"
-    expires_after="2025-02-15">
+    expires_after="2025-04-27">
   <owner>imranziad@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -1359,7 +1359,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>dpad@chromium.org</owner>
   <owner>michaelcheco@chromium.org</owner>
@@ -1429,7 +1429,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2025-02-23">
+    enum="CrosDiagnosticsRoutineResult" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
@@ -2676,7 +2676,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.LockScreenReauth.LockScreenReauthReason"
-    enum="LoginReauthReasons" expires_after="2025-02-23">
+    enum="LoginReauthReasons" expires_after="2025-04-27">
   <owner>ayag@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>

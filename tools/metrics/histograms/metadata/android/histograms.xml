@@ -777,7 +777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.SecondaryActivity" enum="SecondaryActivity"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildProcessBinding.TotalConnections"
-    units="connections" expires_after="2025-02-23">
+    units="connections" expires_after="2025-04-27">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -826,7 +826,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.ChildProcessBinding.{ChildProcessConnectionMetricsBindingState}Connections"
-    units="connections" expires_after="2025-02-23">
+    units="connections" expires_after="2025-04-27">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1369,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.Size" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2025-04-27">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1913,7 +1913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-hub-dev@google.com</owner>
   <summary>
@@ -2147,7 +2147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Android.IsolatedSplits.ContextCreateTime"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
 
   <owner>cduvall@chromium.org</owner>
@@ -2344,7 +2344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Stacking.Hidden" enum="MessageIdentifier"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -4487,7 +4487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Sync.ActualSyncedTabCountPercentage"
-    units="% of tab count" expires_after="2025-02-23">
+    units="% of tab count" expires_after="2025-04-27">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>

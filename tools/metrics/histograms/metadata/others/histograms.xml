@@ -1913,7 +1913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.ServerAuction.Request.NumIterations"
-    units="count" expires_after="2025-02-23">
+    units="count" expires_after="2025-04-27">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -3680,7 +3680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.MirrorModeTypes" enum="DisplayMirrorModeTypes"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -3695,7 +3695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.MultiDisplayMode" enum="MultiDisplayModes"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -3706,7 +3706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.UnifiedDesktopDisplayCountRange"
-    enum="MultiDisplayModeDisplayCountRanges" expires_after="2025-02-23">
+    enum="MultiDisplayModeDisplayCountRanges" expires_after="2025-04-27">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -5212,7 +5212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Activated2"
-    enum="GestureNavigationDirection" expires_after="2025-02-23">
+    enum="GestureNavigationDirection" expires_after="2025-04-27">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5224,7 +5224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Cancelled2"
-    enum="GestureNavigationDirection" expires_after="2025-02-23">
+    enum="GestureNavigationDirection" expires_after="2025-04-27">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5235,7 +5235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Completed2"
-    enum="GestureNavigationDirection" expires_after="2025-02-23">
+    enum="GestureNavigationDirection" expires_after="2025-04-27">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5245,7 +5245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Reversed2" enum="GestureNavigationDirection"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5256,7 +5256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Type2" enum="GestureNavigationType"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -7571,7 +7571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.AddOrReplaceEntry" enum="ReadingListStorageState"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>mastiz@chromium.org</owner>
   <owner>mmrashad@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -7703,7 +7703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadDocumentTime" units="ms"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -9660,7 +9660,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.UploadingTraceSizeInKB" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2025-04-27">
   <owner>oksamyt@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
@@ -10221,7 +10221,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebDatabase.SucceededMigrationToVersion" units="version"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>battre@chromium.org</owner>
   <owner>fleimgruber@google.com</owner>
   <summary>

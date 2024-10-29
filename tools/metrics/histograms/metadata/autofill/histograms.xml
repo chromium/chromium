@@ -684,7 +684,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-04-27">
   <expired_intentionally>
     This is for an ablation study that we may want to reactivate at some points
     in the future.
@@ -703,7 +703,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.Ablation.FormSubmissionAfterInteraction.{FormType}.{Group}"
-    enum="Boolean" expires_after="2025-02-23">
+    enum="Boolean" expires_after="2025-04-27">
   <expired_intentionally>
     This is for an ablation study that we may want to reactivate at some points
     in the future.
@@ -898,7 +898,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.NotOff.FillingAcceptance.{FormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2025-02-23">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2025-04-27">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2801,7 +2801,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration"
-    units="microseconds" expires_after="2025-01-26">
+    units="microseconds" expires_after="2025-04-27">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2815,7 +2815,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormForest.UpdateTreeOfRendererForm.Duration"
-    units="microseconds" expires_after="2025-01-26">
+    units="microseconds" expires_after="2025-04-27">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4393,7 +4393,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.PopupInteraction.PopupLevel.{AutofillPopupInteractionLevel}"
-    enum="AutofillPopupInteraction" expires_after="2025-02-23">
+    enum="AutofillPopupInteraction" expires_after="2025-04-27">
   <owner>brunobraga@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <summary>
@@ -4407,7 +4407,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.PopupInteraction.PopupLevel.{AutofillPopupInteractionLevel}.{FillingProduct}"
-    enum="AutofillPopupInteraction" expires_after="2025-02-23">
+    enum="AutofillPopupInteraction" expires_after="2025-04-27">
   <owner>brunobraga@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <summary>
@@ -4446,7 +4446,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldStatus.ByFieldType"
-    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2025-02-23">
+    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2025-04-27">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4456,7 +4456,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldStatus.{FormType}"
-    enum="AutofillPreFilledFieldStatus" expires_after="2025-02-23">
+    enum="AutofillPreFilledFieldStatus" expires_after="2025-04-27">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4828,7 +4828,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.ProfileTokenQuality.StoredObservationTypes.{Type}"
     enum="AutofillProfileTokenQualityObservationType"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4983,7 +4983,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.RendererFillSkipReason" enum="RendererFillSkipReason"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>jihadghanna@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5620,7 +5620,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.StoredProfileUsedPercentage.{Category}"
-    units="Profiles" expires_after="2025-01-05">
+    units="Profiles" expires_after="2025-04-27">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5949,7 +5949,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram name="Autofill.TestAddressSelected"
     enum="AutofillInDevtoolsAvailableTestAddressesCountries"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -6959,7 +6959,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.WebView.AutofillSessionWithBottomSheet"
-    enum="AutofillSessionStates" expires_after="2025-02-10">
+    enum="AutofillSessionStates" expires_after="2025-04-27">
   <owner>jkeitel@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
