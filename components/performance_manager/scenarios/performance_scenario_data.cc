@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -42,6 +43,16 @@ void RefCountedScenarioState::RegisterTracingTracks(
       "LoadingPerformanceScenario", track_id, parent_track));
   input_tracing_track_.emplace(
       perfetto::NamedTrack("InputPerformanceScenario", track_id, parent_track));
+}
+
+// static
+PerformanceScenarioMemoryData& PerformanceScenarioMemoryData::GetOrCreate(
+    const ProcessNode* process_node) {
+  auto* process_node_impl = ProcessNodeImpl::FromNode(process_node);
+  if (Exists(process_node_impl)) {
+    return Get(process_node_impl);
+  }
+  return Create(process_node_impl);
 }
 
 PerformanceScenarioMemoryData::PerformanceScenarioMemoryData() = default;

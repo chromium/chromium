@@ -5,7 +5,6 @@
 #include "components/performance_manager/public/scenarios/performance_scenarios.h"
 
 #include <atomic>
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,9 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/scenarios/performance_scenario_observer.h"
 #include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -26,6 +28,27 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
+
+// Shim to get observer lists from PerformanceScenarioNotifier.
+class PerformanceScenarioNotifierAccessor {
+ public:
+  static base::ObserverList<PerformanceScenarioObserver>* GetGlobalObservers(
+      Graph* graph) {
+    if (auto* notifier = PerformanceScenarioNotifier::GetFromGraph(graph)) {
+      return notifier->GetGlobalObservers();
+    }
+    return nullptr;
+  }
+
+  static base::ObserverList<PerformanceScenarioObserver>* GetProcessObservers(
+      const ProcessNode* process_node) {
+    if (auto* notifier = PerformanceScenarioNotifier::GetFromGraph(
+            process_node->GetGraph())) {
+      return notifier->GetProcessObservers(process_node);
+    }
+    return nullptr;
+  }
+};
 
 namespace {
 
@@ -42,6 +65,15 @@ struct ScenarioTraits {
 
   // Closes the trace event for `scenario` if a tracing track is registered.
   void MaybeEndTraceEvent(Scenario scenario) const;
+
+  // ProcessObserver methods called by ObserverList::Notify() for this scenario.
+  static constexpr void (PerformanceScenarioObserver::*kGlobalNotifyMethod)(
+      Scenario,
+      Scenario) = nullptr;
+  static constexpr void (PerformanceScenarioObserver::*kProcessNotifyMethod)(
+      const ProcessNode*,
+      Scenario,
+      Scenario) = nullptr;
 };
 
 template <>
@@ -94,6 +126,17 @@ struct ScenarioTraits<LoadingScenario> {
     NOTREACHED();
   }
 
+  static constexpr void (PerformanceScenarioObserver::*kGlobalNotifyMethod)(
+      LoadingScenario,
+      LoadingScenario) =
+      &PerformanceScenarioObserver::OnGlobalLoadingScenarioChanged;
+
+  static constexpr void (PerformanceScenarioObserver::*kProcessNotifyMethod)(
+      const ProcessNode*,
+      LoadingScenario,
+      LoadingScenario) =
+      &PerformanceScenarioObserver::OnProcessLoadingScenarioChanged;
+
   scoped_refptr<RefCountedScenarioState> state_ptr;
 };
 
@@ -130,6 +173,16 @@ struct ScenarioTraits<InputScenario> {
     NOTREACHED();
   }
 
+  static constexpr void (PerformanceScenarioObserver::*kGlobalNotifyMethod)(
+      InputScenario,
+      InputScenario) =
+      &PerformanceScenarioObserver::OnGlobalInputScenarioChanged;
+  static constexpr void (PerformanceScenarioObserver::*kProcessNotifyMethod)(
+      const ProcessNode*,
+      InputScenario,
+      InputScenario) =
+      &PerformanceScenarioObserver::OnProcessInputScenarioChanged;
+
   scoped_refptr<RefCountedScenarioState> state_ptr;
 };
 
@@ -139,14 +192,6 @@ scoped_refptr<RefCountedScenarioState>& GlobalSharedStatePtr() {
   return *state_ptr;
 }
 
-PerformanceScenarioMemoryData& GetOrCreatePerformanceScenarioMemoryData(
-    ProcessNodeImpl* process_node_impl) {
-  if (PerformanceScenarioMemoryData::Exists(process_node_impl)) {
-    return PerformanceScenarioMemoryData::Get(process_node_impl);
-  }
-  return PerformanceScenarioMemoryData::Create(process_node_impl);
-}
-
 // Returns a pointer to the shared memory region for communicating private state
 // for `process_node`. Creates a region if none exists yet, returning nullptr on
 // failure. The region's lifetime is tied to `process_node`. Must be called from
@@ -154,8 +199,7 @@ PerformanceScenarioMemoryData& GetOrCreatePerformanceScenarioMemoryData(
 scoped_refptr<RefCountedScenarioState> GetSharedStateForProcessNode(
     const ProcessNode* process_node,
     uint64_t process_track_id = 0u) {
-  auto& data = GetOrCreatePerformanceScenarioMemoryData(
-      ProcessNodeImpl::FromNode(process_node));
+  auto& data = PerformanceScenarioMemoryData::GetOrCreate(process_node);
   if (process_track_id && data.state_ptr) {
     data.state_ptr->RegisterTracingTracks(
         perfetto::Track::Global(process_track_id));
@@ -173,10 +217,10 @@ scoped_refptr<RefCountedScenarioState> GetGlobalSharedState() {
 }
 
 // Sets the value for Scenario in the memory region held in `state_ptr` to
-// `new_scenario`.
+// `new_scenario`, and returns the old value.
 template <typename Scenario>
-void SetScenarioValue(Scenario new_scenario,
-                      scoped_refptr<RefCountedScenarioState> state_ptr) {
+Scenario SetScenarioValue(Scenario new_scenario,
+                          scoped_refptr<RefCountedScenarioState> state_ptr) {
   if (state_ptr) {
     ScenarioTraits<Scenario> traits(std::move(state_ptr));
     // std::memory_order_relaxed is sufficient since no other memory depends on
@@ -187,13 +231,25 @@ void SetScenarioValue(Scenario new_scenario,
       traits.MaybeEndTraceEvent(old_scenario);
       traits.MaybeBeginTraceEvent(new_scenario);
     }
+    return old_scenario;
   }
+  // Pretend the scenario already had this value, to not trigger observers.
+  return new_scenario;
 }
 
 template <typename Scenario>
 void SetScenarioValueForProcessNode(Scenario scenario,
                                     const ProcessNode* process_node) {
-  SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node));
+  Scenario old_scenario =
+      SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node));
+  if (old_scenario != scenario) {
+    auto* observers =
+        PerformanceScenarioNotifierAccessor::GetProcessObservers(process_node);
+    if (observers) {
+      observers->Notify(ScenarioTraits<Scenario>::kProcessNotifyMethod,
+                        process_node, old_scenario, scenario);
+    }
+  }
 }
 
 template <typename Scenario>
@@ -205,8 +261,7 @@ void SetScenarioValueForRenderProcessHost(Scenario scenario,
       base::BindOnce(
           [](Scenario scenario, base::WeakPtr<ProcessNode> process_node) {
             if (process_node) {
-              SetScenarioValue(
-                  scenario, GetSharedStateForProcessNode(process_node.get()));
+              SetScenarioValueForProcessNode(scenario, process_node.get());
             }
           },
           scenario,
@@ -215,7 +270,24 @@ void SetScenarioValueForRenderProcessHost(Scenario scenario,
 
 template <typename Scenario>
 void SetGlobalScenarioValue(Scenario scenario) {
-  SetScenarioValue(scenario, GetGlobalSharedState());
+  Scenario old_scenario = SetScenarioValue(scenario, GetGlobalSharedState());
+  if (old_scenario == scenario) {
+    return;
+  }
+  // The global scenario can be set on any thread, but the observers must be
+  // notified on the PM sequence.
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(
+          [](Scenario scenario, Scenario old_scenario, Graph* graph) {
+            auto* observers =
+                PerformanceScenarioNotifierAccessor::GetGlobalObservers(graph);
+            if (observers) {
+              observers->Notify(ScenarioTraits<Scenario>::kGlobalNotifyMethod,
+                                old_scenario, scenario);
+            }
+          },
+          scenario, old_scenario));
 }
 
 }  // namespace
