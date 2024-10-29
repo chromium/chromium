@@ -39,14 +39,12 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.ServiceStatus;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -273,8 +271,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                                 mTabStripCoordinator.getTabListNotificationHandler(),
                                 mCurrentTabGroupId);
             }
-
-            TabGroupUtils.startObservingForCreationIph();
         }
     }
 
@@ -293,15 +289,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      */
     @Override
     public void resetStripWithListOfTabs(List<Tab> tabs) {
-        if (tabs != null
-                && mBottomSheetController.getSheetState()
-                        == BottomSheetController.SheetState.HIDDEN) {
-            TabGroupUtils.maybeShowIph(
-                    mTabModelSelector.getModel(false).getProfile(),
-                    FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-                    mTabStripCoordinator.getContainerView(),
-                    mBottomSheetController);
-        }
         mTabStripCoordinator.resetWithListOfTabs(tabs, false);
 
         mCurrentTabGroupId.set(tabs == null || tabs.isEmpty() ? null : tabs.get(0).getTabGroupId());

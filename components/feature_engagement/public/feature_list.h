@@ -153,10 +153,6 @@ DEFINE_VARIATION_PARAM(kIPHShoppingListMenuItemFeature,
                        "IPH_ShoppingListMenuItem");
 DEFINE_VARIATION_PARAM(kIPHShoppingListSaveFlowFeature,
                        "IPH_ShoppingListSaveFlow");
-DEFINE_VARIATION_PARAM(kIPHTabGroupsQuicklyComparePagesFeature,
-                       "IPH_TabGroupsQuicklyComparePages");
-DEFINE_VARIATION_PARAM(kIPHTabGroupsTapToSeeAnotherTabFeature,
-                       "IPH_TabGroupsTapToSeeAnotherTab");
 DEFINE_VARIATION_PARAM(kIPHTabGroupCreationDialogSyncTextFeature,
                        "IPH_TabGroupCreationDialogSyncText");
 DEFINE_VARIATION_PARAM(kIPHTabGroupSyncOnStripFeature,
@@ -573,8 +569,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHShoppingListMenuItemFeature),
         VARIATION_ENTRY(kIPHShoppingListSaveFlowFeature),
         VARIATION_ENTRY(kIPHTabGroupCreationDialogSyncTextFeature),
-        VARIATION_ENTRY(kIPHTabGroupsQuicklyComparePagesFeature),
-        VARIATION_ENTRY(kIPHTabGroupsTapToSeeAnotherTabFeature),
         VARIATION_ENTRY(kIPHTabGroupsDragAndDropFeature),
         VARIATION_ENTRY(kIPHTabGroupsRemoteGroupFeature),
         VARIATION_ENTRY(kIPHTabGroupsSurfaceFeature),

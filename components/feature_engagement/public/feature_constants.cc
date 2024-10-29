@@ -394,12 +394,6 @@ BASE_FEATURE(kIPHPriceDropNTPFeature,
 BASE_FEATURE(kIPHShoppingListMenuItemFeature,
              "IPH_ShoppingListMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature,
-             "IPH_TabGroupsQuicklyComparePages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature,
-             "IPH_TabGroupsTapToSeeAnotherTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabGroupCreationDialogSyncTextFeature,
              "IPH_TabGroupCreationDialogSyncText",
              base::FEATURE_ENABLED_BY_DEFAULT);

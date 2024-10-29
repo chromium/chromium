@@ -83,8 +83,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHRequestDesktopSiteWindowSettingFeature,
     &kIPHShoppingListMenuItemFeature,
     &kIPHShoppingListSaveFlowFeature,
-    &kIPHTabGroupsQuicklyComparePagesFeature,
-    &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
     &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabGroupsDragAndDropFeature,

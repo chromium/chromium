@@ -61,8 +61,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_FEATURE,
     FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
-    FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
-    FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
     FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
@@ -212,12 +210,6 @@ public @interface FeatureConstants {
      * item is available to track price.
      */
     String SHOPPING_LIST_MENU_ITEM_FEATURE = "IPH_ShoppingListMenuItem";
-
-    /** An IPH feature to prompt the user to long press on pages with links to open them in a group. */
-    String TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE = "IPH_TabGroupsQuicklyComparePages";
-
-    /** An IPH feature to show when the tabstrip shows to explain what each button does. */
-    String TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE = "IPH_TabGroupsTapToSeeAnotherTab";
 
     /**
      * An IPH feature to show description text on the tab group creation dialog teaching the user
