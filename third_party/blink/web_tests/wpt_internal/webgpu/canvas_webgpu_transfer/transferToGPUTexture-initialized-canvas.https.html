@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./canvas-test.js"></script>
 <script src="./webgpu-helpers.js"></script>
-</head>
 
 <h1>Canvas2D WebGPU Transfer: transferToGPUTexture-initialized-canvas</h1>
-
 <p>transferToGPUTexture() creates a texture from an initialized canvas.</p>
 
 <script>
 
-runCanvasTestsInWorker({dependencies: './webgpu-helpers.js'});
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
 
 /**
  * transferToGPUTexture() should create a texture from an initialized canvas.

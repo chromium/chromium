@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./canvas-test.js"></script>
 <script src="./webgpu-helpers.js"></script>
-</head>
 
 <h1>Canvas2D WebGPU Transfer:
 transferBackFromGPUTexture-disallows-transfer-back-after-draw</h1>
-
 <p>WebGPU access does not allow transferring back after drawing to the canvas.
 </p>
 
 <script>
 
-runCanvasTestsInWorker({dependencies: './webgpu-helpers.js'});
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
 
 /**
  * WebGPU access should not allow transferring back after drawing to the canvas.

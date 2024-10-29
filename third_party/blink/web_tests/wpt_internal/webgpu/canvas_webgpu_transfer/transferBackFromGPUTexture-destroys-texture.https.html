@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./canvas-test.js"></script>
 <script src="./webgpu-helpers.js"></script>
-</head>
 
 <h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-destroys-texture</h1>
-
 <p>transferBackFromGPUTexture() causes the GPUTexture returned by
 transferToGPUTexture() to enter a destroyed state.</p>
 
 <script>
 
-runCanvasTestsInWorker({dependencies: './webgpu-helpers.js'});
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
 
 /**
  * transferBackFromGPUTexture() should cause the GPUTexture returned by

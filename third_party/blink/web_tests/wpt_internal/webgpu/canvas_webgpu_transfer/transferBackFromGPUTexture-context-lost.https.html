@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./canvas-test.js"></script>
 <script src="./webgpu-helpers.js"></script>
-</head>
 
 <h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-context-lost</h1>
-
 <p>transferBackFromGPUTexture() should be a no-op if the canvas context is lost.
 </p>
 
 <script>
 
-runCanvasTestsInWorker({dependencies: './webgpu-helpers.js'});
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
 
 /**
  * transferBackFromGPUTexture() should be a no-op if the canvas context is lost.
