@@ -8235,3 +8235,7 @@ crbug.com/375006417 [ Linux ] external/wpt/fledge/tentative/trusted-scoring-sign
 # Gardener 2024-10-24
 # Platform specific failure expectations were previosly added after a wpt roll for crbug.com/367497041
 crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+
+# Gardener 2024-10-29
+# TODO(crbug.com/376320405): Fails inconsistently on Win10.
+crbug.com/376320405 [ Win10.20h2 ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
