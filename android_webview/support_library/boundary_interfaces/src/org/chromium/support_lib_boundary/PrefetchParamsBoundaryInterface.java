@@ -18,4 +18,8 @@ public interface PrefetchParamsBoundaryInterface {
 
     @Nullable
     /* NoVarySearchDataBoundaryInterface */ InvocationHandler getNoVarySearchData();
+
+    default boolean isJavaScriptEnabled() {
+        return false;
+    }
 }

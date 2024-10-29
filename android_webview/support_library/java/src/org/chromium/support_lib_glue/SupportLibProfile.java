@@ -106,7 +106,8 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                 url,
                 new PrefetchParams(
                         prefetchParams.getAdditionalHeaders(),
-                        mapNoVarySearchData(noVarySearchData)),
+                        mapNoVarySearchData(noVarySearchData),
+                        prefetchParams.isJavaScriptEnabled()),
                 value ->
                         resultCallback.onReceiveValue(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(

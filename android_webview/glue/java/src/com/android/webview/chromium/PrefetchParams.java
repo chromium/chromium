@@ -15,11 +15,14 @@ import java.util.Map;
 public class PrefetchParams {
     public final @Nullable Map<String, String> additionalHeaders;
     public final @Nullable NoVarySearchData noVarySearchData;
+    public final boolean isJavaScriptEnabled;
 
     public PrefetchParams(
             @Nullable Map<String, String> additionalHeaders,
-            @Nullable NoVarySearchData noVarySearchData) {
+            @Nullable NoVarySearchData noVarySearchData,
+            boolean isJavaScriptEnabled) {
         this.additionalHeaders = additionalHeaders;
         this.noVarySearchData = noVarySearchData;
+        this.isJavaScriptEnabled = isJavaScriptEnabled;
     }
 }
