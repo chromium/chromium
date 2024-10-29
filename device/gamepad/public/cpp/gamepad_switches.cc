@@ -6,11 +6,6 @@
 
 namespace switches {
 
-// Enables gamepadbuttondown, gamepadbuttonup, gamepadbuttonchange,
-// gamepadaxismove non-standard gamepad events.
-const char kEnableGamepadButtonAxisEvents[] =
-    "enable-gamepad-button-axis-events";
-
 // Enables Feature Policy and Secure Context requirements on getGamepads.
 const char kRestrictGamepadAccess[] = "restrict-gamepad-access";
 

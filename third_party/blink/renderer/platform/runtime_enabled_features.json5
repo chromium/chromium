@@ -2199,10 +2199,6 @@
       status: "experimental",
     },
     {
-      name: "GamepadButtonAxisEvents",
-      status: "experimental",
-    },
-    {
       name: "GamepadMultitouch",
       status: "experimental",
       public: true,

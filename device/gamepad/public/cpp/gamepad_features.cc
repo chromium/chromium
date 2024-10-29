@@ -14,12 +14,6 @@
 
 namespace features {
 
-// Enables gamepadbuttondown, gamepadbuttonup, gamepadbuttonchange,
-// gamepadaxismove non-standard gamepad events.
-BASE_FEATURE(kEnableGamepadButtonAxisEvents,
-             "EnableGamepadButtonAxisEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRestrictGamepadAccess,
              "RestrictGamepadAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -28,21 +22,6 @@ BASE_FEATURE(kRestrictGamepadAccess,
 BASE_FEATURE(kEnableGamepadMultitouch,
              "EnableGamepadMultitouch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool AreGamepadButtonAxisEventsEnabled() {
-  // Check if button and axis events are enabled by a field trial.
-  if (base::FeatureList::IsEnabled(kEnableGamepadButtonAxisEvents))
-    return true;
-
-  // Check if button and axis events are enabled by a command-line flag.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line &&
-      command_line->HasSwitch(switches::kEnableGamepadButtonAxisEvents)) {
-    return true;
-  }
-
-  return false;
-}
 
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {

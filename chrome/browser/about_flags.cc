@@ -7670,11 +7670,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersMaterialNextUI)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"enable-gamepad-button-axis-events",
-     flag_descriptions::kEnableGamepadButtonAxisEventsName,
-     flag_descriptions::kEnableGamepadButtonAxisEventsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableGamepadButtonAxisEvents)},
-
     {"enable-gamepad-multitouch",
      flag_descriptions::kEnableGamepadMultitouchName,
      flag_descriptions::kEnableGamepadMultitouchDescription, kOsWin,

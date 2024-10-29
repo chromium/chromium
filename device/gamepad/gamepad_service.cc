@@ -169,15 +169,6 @@ void GamepadService::OnGamepadConnectionChange(bool connected,
   }
 }
 
-void GamepadService::OnGamepadChange(mojom::GamepadChangesPtr changes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (auto& it : consumers_) {
-    if (it.did_observe_user_gesture && it.is_active)
-      it.consumer->OnGamepadChanged(*changes);
-  }
-}
-
 void GamepadService::OnGamepadConnected(uint32_t index, const Gamepad& pad) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

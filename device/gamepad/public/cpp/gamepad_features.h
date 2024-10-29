@@ -10,11 +10,9 @@
 
 namespace features {
 
-GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEnableGamepadButtonAxisEvents);
 GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kRestrictGamepadAccess);
 GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEnableGamepadMultitouch);
 
-GAMEPAD_FEATURES_EXPORT bool AreGamepadButtonAxisEventsEnabled();
 GAMEPAD_FEATURES_EXPORT bool IsGamepadMultitouchEnabled();
 
 }  // namespace features
