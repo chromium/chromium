@@ -254,6 +254,18 @@ class WebIdlSchemaTest(unittest.TestCase):
         getType(schema, 'ExampleType'),
     )
 
+  # Tests that a top level API comment is processed into a description
+  # attribute, with HTML paragraph nodes added due to the blank commented line.
+  def testApiDescriptionComment(self):
+    schema = self.idl_basics
+    expected_description = (
+        '<p>This comment is an example of a top level API description, which'
+        ' will be extracted and added to the processed python dictionary as a'
+        ' description.</p><p>Note: All comment lines preceding the thing they'
+        ' are attached to will be part of the description, until a blank new'
+        ' line or non-comment is reached.</p>')
+    self.assertEqual(expected_description, schema['description'])
+
   # Tests that if the nodoc extended attribute is not specified on the API
   # interface the related attribute is set to false after processing.
   def testNodocUnspecifiedOnNamespace(self):

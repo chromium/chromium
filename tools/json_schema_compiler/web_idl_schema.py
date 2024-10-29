@@ -6,6 +6,7 @@
 import json
 import os.path
 import sys
+import linecache
 from typing import List, Optional
 from json_parse import OrderedDict
 
@@ -90,6 +91,57 @@ def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
   if ext_attribute_node is None:
     return []
   return ext_attribute_node.GetListOf('ExtAttribute')
+
+
+def GetNodeDescription(node: IDLNode) -> str:
+  """Extract file comments above a node and convert them to description strings
+
+  For comments to be converted to description properties they must be on the
+  lines directly preceding the node they apply to and must use the '//' form.
+  All contiguous preceding commented lines will be grouped together for the
+  description, until a non-commented line is reached. New lines and leading/
+  trailing whitespace are removed, but if an empty commented line is used for
+  formatting, each "paragraph" of the comment  will be wrapped with a <p> tag.
+
+  TODO(crbug.com/340297705): Add support for parameter comments and call this
+  for functions, events, types and properties.
+
+  Args:
+    node: The IDL node to look for a descriptive comment above.
+
+  Returns:
+    The formatted string expected for the description of the node.
+  """
+
+  # Look through the lines above the current node and extract every consecutive
+  # line that is a comment until a blank or non-comment line is found.
+  filename, line_number = node.GetFileAndLine()
+  lines = []
+  while line_number > 0:
+    line = linecache.getline(filename, line_number - 1)
+    # If the line starts with a double slash we treat it as a comment and add it
+    # to the lines for the description.
+    if line.lstrip()[:2] == '//':
+      lines.insert(0, line.lstrip()[2:])
+    else:
+      # If we've got to a line without comment characters we've collected them
+      # all and are done.
+      break
+
+    line_number -= 1
+    # TODO(crbug.com/340297705): Emit a SchemaCompilerError if we reach the top
+    # of the file, as in practice it should never happen.
+  description = ''.join(lines)
+
+  # Remove new line characters and add HTML paragraphing to comments formatted
+  # with intentional blank commented lines in them.
+  def add_paragraphs(content):
+    paragraphs = content.split('\n\n')
+    if len(paragraphs) < 2:
+      return content
+    return '<p>' + '</p><p>'.join(p.strip() for p in paragraphs) + '</p>'
+
+  return add_paragraphs(description.strip()).replace('\n', '')
 
 
 class Type:
@@ -269,6 +321,7 @@ class Namespace:
   def process(self) -> dict:
     functions = []
     types = []
+    description = GetNodeDescription(self.namespace)
 
     for node in self.namespace.GetListOf('Operation'):
       functions.append(Operation(node).process())
@@ -289,6 +342,7 @@ class Namespace:
         'functions': functions,
         'types': types,
         'nodoc': nodoc,
+        'description': description,
     }
 
 
