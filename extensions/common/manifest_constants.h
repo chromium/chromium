@@ -723,6 +723,7 @@ inline constexpr char16_t kOneUISurfaceOnly[] =
     u"Only one of 'browser_action', 'page_action', and 'app' can be specified.";
 inline constexpr char kPageCaptureNeeded[] =
     "'pageCapture' permission is required.";
+inline constexpr char kPatternMalformed[] = "URL pattern '*' is malformed.";
 inline constexpr char kPermissionCannotBeOptional[] =
     "Permission '*' cannot be listed as optional. This permission will be "
     "omitted.";
@@ -731,6 +732,7 @@ inline constexpr char kPermissionMarkedOptionalAndRequired[] =
     "this permission will be omitted.";
 inline constexpr char kPermissionNotAllowed[] =
     "Access to permission '*' denied.";
+inline constexpr char kPermissionUnknown[] = "Permission '*' is unknown.";
 inline constexpr char kPermissionUnknownOrMalformed[] =
     "Permission '*' is unknown or URL pattern is malformed.";
 inline constexpr char kPluginsRequirementDeprecated[] =
