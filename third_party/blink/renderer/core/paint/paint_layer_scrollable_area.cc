@@ -194,7 +194,7 @@ void PaintLayerScrollableArea::DisposeImpl() {
       frame_view->RemoveUserScrollableArea(this);
       frame_view->RemoveAnimatingScrollableArea(this);
       frame_view->RemovePendingSnapUpdate(this);
-      probe::UpdateScrollableFlag(GetLayoutBox()->GetNode());
+      probe::UpdateScrollableFlag(GetLayoutBox()->GetNode(), false);
     }
   }
 
@@ -2562,7 +2562,7 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   } else {
     frame_view->RemoveUserScrollableArea(this);
   }
-  probe::UpdateScrollableFlag(GetLayoutBox()->GetNode());
+  probe::UpdateScrollableFlag(GetLayoutBox()->GetNode(), std::nullopt);
 
   layer_->DidUpdateScrollsOverflow();
 

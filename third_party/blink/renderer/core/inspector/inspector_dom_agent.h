@@ -311,7 +311,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void TopLayerElementsChanged();
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
-  void UpdateScrollableFlag(Node* node);
+  void UpdateScrollableFlag(Node* node, std::optional<bool>);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;
