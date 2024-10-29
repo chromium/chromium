@@ -74,6 +74,7 @@ namespace {
 static const char kSettingsOrigin[] = "Chrome settings";
 static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
+static const char kErrorFormsAIUnavailable[] = "Forms AI data unavailable.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
 // Constant to assign a user-verified verification status to the autofill
@@ -1061,9 +1062,8 @@ AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
       Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
   user_annotations::UserAnnotationsService* user_annotations_service =
       profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
-
   if (!user_annotations_service) {
-    return RespondNow(Error(kErrorDataUnavailable));
+    return RespondNow(Error(kErrorFormsAIUnavailable));
   }
 
   user_annotations_service->RetrieveAllEntries(base::BindOnce(
@@ -1105,7 +1105,7 @@ AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
       profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
 
   if (!user_annotations_service) {
-    return RespondNow(Error(kErrorDataUnavailable));
+    return RespondNow(Error(kErrorFormsAIUnavailable));
   }
 
   user_annotations_service->RemoveEntry(
@@ -1232,7 +1232,7 @@ AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::Run() {
       profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
 
   if (!user_annotations_service) {
-    return RespondNow(Error(kErrorDataUnavailable));
+    return RespondNow(Error(kErrorFormsAIUnavailable));
   }
 
   user_annotations_service->RemoveAllEntries(
