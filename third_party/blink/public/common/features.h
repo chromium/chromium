@@ -1420,13 +1420,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 // Data producer side for the V8 Crowdsourced Compile hints feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProduceCompileHints2);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kProduceCompileHintsOnIdleDelayParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kProduceCompileHintsNoiseLevel;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                               kProduceCompileHintsNoiseLevel);
 // The proportion of the clients producing data.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kProduceCompileHintsDataProductionLevel;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kProduceCompileHintsDataProductionLevel);
 // For forcing producing compile hints independent of the platform and
 // kProduceCompileHintsDataProductionLevel.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceProduceCompileHints);
@@ -1447,14 +1446,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kQuoteEmptySecChUaStringHeadersConsistently);
 
 // A parameter for kReduceUserAgentMinorVersion;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kUserAgentFrozenBuildVersion;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
+                                               kUserAgentFrozenBuildVersion);
 
 // Parameters for kReduceUserAgentPlatformOsCpu;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kAllExceptLegacyWindowsPlatform;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLegacyWindowsPlatform;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kAllExceptLegacyWindowsPlatform);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
@@ -1469,11 +1466,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);
 // Max milliseconds from navigation start that fonts can block rendering.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxBlockingTimeMsForRenderBlockingFonts;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMaxBlockingTimeMsForRenderBlockingFonts);
 // Max milliseconds that font are allowed to delay of FCP.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxFCPDelayMsForRenderBlockingFonts;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMaxFCPDelayMsForRenderBlockingFonts);
 
 // Enable the optional renderSize field in the browserSignals parameter of
 // scoreAd function of Protected Audience API.
@@ -1522,6 +1521,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScriptStreamingForNonHTTP);
 // param. See https://crbug.com/1356396
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectiveInOrderScript);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectiveInOrderScriptTarget);
+// Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
+// gets this value only once to construct a static local variable.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kSelectiveInOrderScriptAllowList;
 
@@ -1542,62 +1543,65 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPI);
 
 // Maximum number of URLs allowed to be included in the input parameter for
 // runURLSelectionOperation().
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageURLSelectionOperationInputURLSizeLimit;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kSharedStorageURLSelectionOperationInputURLSizeLimit);
 // Maximum number of total bytes in database entries at a time that any single
 // origin is permitted.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStorageBytesPerOrigin;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kMaxSharedStorageBytesPerOrigin);
 // Maximum database page size in bytes. Must be a power of two between
 // 512 and 65536, inclusive.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStoragePageSize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStoragePageSize);
 // Maximum database in-memory cache size, in pages.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStorageCacheSize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStorageCacheSize);
 // Maximum number of tries to initialize the database.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStorageInitTries;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStorageInitTries);
 // Maximum number of keys or key-value pairs returned in each batch by
 // the async `keys()` and `entries()` iterators, respectively.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxSharedStorageIteratorBatchSize;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kMaxSharedStorageIteratorBatchSize);
 // Maximum number of bits of entropy allowed per origin to output via the Shared
 // Storage API.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageBitBudget;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSharedStorageBitBudget);
 // Interval over which `kSharedStorageBitBudget` is defined.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageBudgetInterval;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kSharedStorageBudgetInterval);
 // Initial interval from service startup after which
 // SharedStorageManager first checks for any stale entries, purging any that it
 // finds.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStalePurgeInitialInterval;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kSharedStorageStalePurgeInitialInterval);
 // Second and subsequent intervals from service startup after
 // which SharedStorageManager checks for any stale entries, purging any that it
 // finds.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStalePurgeRecurringInterval;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kSharedStorageStalePurgeRecurringInterval);
 // Length of time between last key write access and key expiration. When an
 // entry's data is older than this threshold, it will be auto-purged.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStalenessThreshold;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kSharedStorageStalenessThreshold);
 // Maximum depth of fenced frame where sharedStorage.selectURL() is allowed to
 // be invoked. The depth of a fenced frame is the number of the fenced frame
 // boundaries above that frame (i.e. the outermost main frame's frame tree has
 // fenced frame depth 0, a topmost fenced frame tree embedded in the outermost
 // main frame has fenced frame depth 1, etc).
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageMaxAllowedFencedFrameDepthForSelectURL;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kSharedStorageMaxAllowedFencedFrameDepthForSelectURL);
 // If enabled, sends additional details in the error message for the
 // rejected promise when shared storage is disabled, for local troubleshooting
 // and use in testing.
 //
 // NOTE: To preserve user privacy, this feature param MUST remain false by
 // default.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kSharedStorageExposeDebugMessageForSettingsStatus;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kSharedStorageExposeDebugMessageForSettingsStatus);
 
 // If enabled, limits the number of times per origin per pageload that
 // `sharedStorage.selectURL()` is allowed to be invoked.

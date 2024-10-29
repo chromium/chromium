@@ -2137,14 +2137,9 @@ TEST_F(ContextRecyclerTest,
 TEST_F(ContextRecyclerTest, SharedStorageMethods) {
   using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
+  // Divide the byte limit by two to get the character limit for a key or value.
   const std::string kInvalidValue(
-      static_cast<size_t>(
-          // Divide the byte limit by two to get the character limit for a key
-          // or value.
-          blink::features::kMaxSharedStorageBytesPerOrigin.Get()) /
-              2 +
-          1,
-      '*');
+      blink::features::kMaxSharedStorageBytesPerOrigin.Get() / 2u + 1u, '*');
 
   const char kScript[] = R"(
     function testSet(...args) {

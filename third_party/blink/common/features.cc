@@ -2211,12 +2211,16 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kProduceCompileHints2,
              "ProduceCompileHints2",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
-    &kProduceCompileHints2, "delay-in-ms", 10000};
-const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
-    &kProduceCompileHints2, "noise-probability", 0.5};
-const base::FeatureParam<double> kProduceCompileHintsDataProductionLevel{
-    &kProduceCompileHints2, "data-production-probability", 0.005};
+BASE_FEATURE_PARAM(double,
+                   kProduceCompileHintsNoiseLevel,
+                   &kProduceCompileHints2,
+                   "noise-probability",
+                   0.5);
+BASE_FEATURE_PARAM(double,
+                   kProduceCompileHintsDataProductionLevel,
+                   &kProduceCompileHints2,
+                   "data-production-probability",
+                   0.005);
 BASE_FEATURE(kForceProduceCompileHints,
              "ForceProduceCompileHints",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2239,13 +2243,17 @@ BASE_FEATURE(kReducedReferrerGranularity,
              "ReducedReferrerGranularity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
-    &kReduceUserAgentMinorVersion, "build_version", "0"};
+BASE_FEATURE_PARAM(std::string,
+                   kUserAgentFrozenBuildVersion,
+                   &kReduceUserAgentMinorVersion,
+                   "build_version",
+                   "0");
 
-const base::FeatureParam<bool> kAllExceptLegacyWindowsPlatform = {
-    &kReduceUserAgentPlatformOsCpu, "all_except_legacy_windows_platform", true};
-const base::FeatureParam<bool> kLegacyWindowsPlatform = {
-    &kReduceUserAgentPlatformOsCpu, "legacy_windows_platform", true};
+BASE_FEATURE_PARAM(bool,
+                   kAllExceptLegacyWindowsPlatform,
+                   &kReduceUserAgentPlatformOsCpu,
+                   "all_except_legacy_windows_platform",
+                   true);
 
 // When enabled, Source Location blocking BFCache is captured
 // to send it to the browser.
@@ -2265,15 +2273,17 @@ BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kMaxBlockingTimeMsForRenderBlockingFonts(
-    &features::kRenderBlockingFonts,
-    "max-blocking-time",
-    1500);
+BASE_FEATURE_PARAM(int,
+                   kMaxBlockingTimeMsForRenderBlockingFonts,
+                   &features::kRenderBlockingFonts,
+                   "max-blocking-time",
+                   1500);
 
-const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
-    &features::kRenderBlockingFonts,
-    "max-fcp-delay",
-    100);
+BASE_FEATURE_PARAM(int,
+                   kMaxFCPDelayMsForRenderBlockingFonts,
+                   &features::kRenderBlockingFonts,
+                   "max-fcp-delay",
+                   100);
 
 BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              "RenderSizeInScoreAdBrowserSignals",
@@ -2372,44 +2382,75 @@ BASE_FEATURE(kSetTimeoutWithoutClamp,
 BASE_FEATURE(kSharedStorageAPI,
              "SharedStorageAPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kSharedStorageURLSelectionOperationInputURLSizeLimit{
-        &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 8};
+BASE_FEATURE_PARAM(size_t,
+                   kSharedStorageURLSelectionOperationInputURLSizeLimit,
+                   &kSharedStorageAPI,
+                   "url_selection_operation_input_url_size_limit",
+                   8);
 // We use a max of 5 MB = 5 * 1024 * 1024 B = 5242880 B.
-const base::FeatureParam<int> kMaxSharedStorageBytesPerOrigin = {
-    &kSharedStorageAPI, "MaxSharedStorageBytesPerOrigin", 5242880};
-const base::FeatureParam<int> kMaxSharedStoragePageSize = {
-    &kSharedStorageAPI, "MaxSharedStoragePageSize", 4096};
-const base::FeatureParam<int> kMaxSharedStorageCacheSize = {
-    &kSharedStorageAPI, "MaxSharedStorageCacheSize", 1024};
-const base::FeatureParam<int> kMaxSharedStorageInitTries = {
-    &kSharedStorageAPI, "MaxSharedStorageInitTries", 2};
-const base::FeatureParam<int> kMaxSharedStorageIteratorBatchSize = {
-    &kSharedStorageAPI, "MaxSharedStorageIteratorBatchSize", 100};
-const base::FeatureParam<int> kSharedStorageBitBudget = {
-    &kSharedStorageAPI, "SharedStorageBitBudget", 12};
-const base::FeatureParam<base::TimeDelta> kSharedStorageBudgetInterval = {
-    &kSharedStorageAPI, "SharedStorageBudgetInterval", base::Hours(24)};
-const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStalePurgeInitialInterval = {
-        &kSharedStorageAPI, "SharedStorageStalePurgeInitialInterval",
-        base::Minutes(2)};
-const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStalePurgeRecurringInterval = {
-        &kSharedStorageAPI, "SharedStorageStalePurgeRecurringInterval",
-        base::Hours(2)};
-const base::FeatureParam<base::TimeDelta> kSharedStorageStalenessThreshold = {
-    &kSharedStorageAPI, "SharedStorageStalenessThreshold", base::Days(30)};
-const base::FeatureParam<int>
-    kSharedStorageMaxAllowedFencedFrameDepthForSelectURL = {
-        &kSharedStorageAPI,
-        "SharedStorageMaxAllowedFencedFrameDepthForSelectURL", 1};
+BASE_FEATURE_PARAM(size_t,
+                   kMaxSharedStorageBytesPerOrigin,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageBytesPerOrigin",
+                   5242880);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStoragePageSize,
+                   &kSharedStorageAPI,
+                   "MaxSharedStoragePageSize",
+                   4096);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStorageCacheSize,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageCacheSize",
+                   1024);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStorageInitTries,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageInitTries",
+                   2);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStorageIteratorBatchSize,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageIteratorBatchSize",
+                   100);
+BASE_FEATURE_PARAM(int,
+                   kSharedStorageBitBudget,
+                   &kSharedStorageAPI,
+                   "SharedStorageBitBudget",
+                   12);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageBudgetInterval,
+                   &kSharedStorageAPI,
+                   "SharedStorageBudgetInterval",
+                   base::Hours(24));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageStalePurgeInitialInterval,
+                   &kSharedStorageAPI,
+                   "SharedStorageStalePurgeInitialInterval",
+                   base::Minutes(2));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageStalePurgeRecurringInterval,
+                   &kSharedStorageAPI,
+                   "SharedStorageStalePurgeRecurringInterval",
+                   base::Hours(2));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageStalenessThreshold,
+                   &kSharedStorageAPI,
+                   "SharedStorageStalenessThreshold",
+                   base::Days(30));
+BASE_FEATURE_PARAM(size_t,
+                   kSharedStorageMaxAllowedFencedFrameDepthForSelectURL,
+                   &kSharedStorageAPI,
+                   "SharedStorageMaxAllowedFencedFrameDepthForSelectURL",
+                   1);
 // NOTE: To preserve user privacy, the
 // `kSharedStorageExposeDebugMessageForSettingsStatus` feature param MUST remain
 // false by default.
-const base::FeatureParam<bool>
-    kSharedStorageExposeDebugMessageForSettingsStatus = {
-        &kSharedStorageAPI, "ExposeDebugMessageForSettingsStatus", false};
+BASE_FEATURE_PARAM(bool,
+                   kSharedStorageExposeDebugMessageForSettingsStatus,
+                   &kSharedStorageAPI,
+                   "ExposeDebugMessageForSettingsStatus",
+                   false);
 
 BASE_FEATURE(kSharedStorageSelectURLLimit,
              "SharedStorageSelectURLLimit",

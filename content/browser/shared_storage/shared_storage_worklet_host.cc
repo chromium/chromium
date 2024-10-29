@@ -358,8 +358,9 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
             elapsed_time_since_creation);
   }
 
-  if (!page_)
+  if (!page_) {
     return;
+  }
 
   // If the worklet is destructed and there are still unresolved URNs (i.e. the
   // keep-alive timeout is reached), consider the mapping to be failed.
@@ -532,9 +533,9 @@ void SharedStorageWorkletHost::SelectURL(
 
   DCHECK_LE(shared_storage_fenced_frame_root_count, fenced_frame_depth);
 
-  size_t max_allowed_fenced_frame_depth = base::checked_cast<size_t>(
+  size_t max_allowed_fenced_frame_depth =
       blink::features::kSharedStorageMaxAllowedFencedFrameDepthForSelectURL
-          .Get());
+          .Get();
 
   if (fenced_frame_depth > max_allowed_fenced_frame_depth) {
     std::move(callback).Run(
@@ -597,8 +598,9 @@ void SharedStorageWorkletHost::SelectURL(
   IncrementPendingOperationsCount();
 
   std::vector<GURL> urls;
-  for (const auto& url_with_metadata : urls_with_metadata)
+  for (const auto& url_with_metadata : urls_with_metadata) {
     urls.emplace_back(url_with_metadata->url);
+  }
 
   bool emplace_succeeded =
       unresolved_urns_.emplace(urn_uuid, std::move(urls_with_metadata)).second;
@@ -1163,8 +1165,9 @@ void SharedStorageWorkletHost::RecordUseCounters(
     const std::vector<blink::mojom::WebFeature>& features) {
   // If the worklet host has outlived the page, we unfortunately can't count the
   // feature.
-  if (!page_)
+  if (!page_) {
     return;
+  }
 
   for (blink::mojom::WebFeature feature : features) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
@@ -1399,8 +1402,9 @@ void SharedStorageWorkletHost::DecrementPendingOperationsCount() {
   base::CheckedNumeric<uint32_t> count = pending_operations_count_;
   pending_operations_count_ = (--count).ValueOrDie();
 
-  if (pending_operations_count_)
+  if (pending_operations_count_) {
     return;
+  }
 
   // This time will be overridden if another operation is subsequently queued
   // and completed.

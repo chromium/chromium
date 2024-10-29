@@ -16,22 +16,20 @@ namespace {
 
 size_t MaxChar16StringLength() {
   // Each char16_t takes 2 bytes.
-  return static_cast<size_t>(features::kMaxSharedStorageBytesPerOrigin.Get()) /
-         2;
+  return features::kMaxSharedStorageBytesPerOrigin.Get() / 2u;
 }
 
 }  // namespace
 
 bool IsValidSharedStorageURLsArrayLength(size_t length) {
-  return length > 0u &&
+  return length != 0 &&
          length <=
-             static_cast<size_t>(
-                 features::kSharedStorageURLSelectionOperationInputURLSizeLimit
-                     .Get());
+             features::kSharedStorageURLSelectionOperationInputURLSizeLimit
+                 .Get();
 }
 
 bool IsValidSharedStorageKeyStringLength(size_t length) {
-  return length > 0u && length <= MaxChar16StringLength();
+  return length != 0u && length <= MaxChar16StringLength();
 }
 
 bool IsValidSharedStorageValueStringLength(size_t length) {
