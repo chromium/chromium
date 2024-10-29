@@ -448,6 +448,9 @@ class Port(object):
             ','.join(known_fingerprints),
             # Required for WebTransport tests.
             '--webtransport-developer-mode',
+            # Enable `ontouch*` event handlers for testing, even if no
+            # touchscreen is actually detected.
+            '--touch-events=enabled',
         ])
         return flags
 
