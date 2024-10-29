@@ -283,7 +283,6 @@ config("compiler") {
   ldflags = []
   defines = []
   configs = []
-  rustflags = []
 
   # System-specific flags. If your compiler flags apply to one of the
   # categories here, add it to the associated file to keep this shared config
@@ -1102,6 +1101,12 @@ config("compiler") {
   if (current_cpu == "arm64") {
     defines += [ "__ARM_NEON__=1" ]
   }
+}
+
+# Don't allow unstable features to be enabled by `#![feature()]` without
+# additional command line flags.
+config("disallow_unstable_features") {
+  rustflags = [ "-Zallow-features=" ]
 }
 
 config("libcxx_hardening") {

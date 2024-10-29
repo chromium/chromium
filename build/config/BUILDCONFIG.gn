@@ -349,6 +349,7 @@ default_compiler_configs = [
   "//build/config/compiler:default_optimization",
   "//build/config/compiler:default_stack_frames",
   "//build/config/compiler:default_symbols",
+  "//build/config/compiler:disallow_unstable_features",
   "//build/config/compiler:libcxx_hardening",
   "//build/config/compiler:libcxx_module",
   "//build/config/compiler:no_exceptions",

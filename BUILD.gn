@@ -883,7 +883,10 @@ group("gn_all") {
 group("all_rust") {
   testonly = true
 
-  deps = [ ":rust_build_tests" ]
+  deps = [
+    ":rust_build_tests",
+    "third_party/cloud_authenticator/processor",
+  ]
 
   # There is rust stuff behind flags in here.
   deps += [ "//base:base_unittests" ]
@@ -897,6 +900,9 @@ group("all_rust") {
   }
   if (enable_rust_gtest_interop) {
     deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
+  }
+  if (enable_rust_png) {
+    deps += [ "//skia" ]
   }
 }
 

@@ -184,20 +184,14 @@ template("cargo_crate") {
   if (_crate_type == "bin") {
     _target_type = "rust_executable"
     assert(!defined(invoker.epoch))
-    if (defined(invoker.executable_configs)) {
-      _configs = invoker.executable_configs
-    }
+    _configs = invoker.executable_configs
   } else if (_crate_type == "proc-macro") {
     _target_type = "rust_macro"
-    if (defined(invoker.proc_macro_configs)) {
-      _configs = invoker.proc_macro_configs
-    }
+    _configs = invoker.proc_macro_configs
   } else {
     assert(_crate_type == "rlib")
     _target_type = "rust_static_library"
-    if (defined(invoker.library_configs)) {
-      _configs = invoker.library_configs
-    }
+    _configs = invoker.library_configs
   }
 
   if (defined(invoker.output_name)) {
@@ -280,15 +274,10 @@ template("cargo_crate") {
     allow_unsafe = true
 
     configs = []
-    if (defined(_configs)) {
-      configs += _configs
-    }
-
+    configs = _configs
     if (_crate_type == "rlib") {
       # Forward configs for unit tests.
-      if (defined(invoker.executable_configs)) {
-        executable_configs = invoker.executable_configs
-      }
+      executable_configs = invoker.executable_configs
     }
 
     if (!defined(rustflags)) {
@@ -379,15 +368,42 @@ template("cargo_crate") {
   }
 
   if (defined(invoker.build_root)) {
+    action("${_build_script_name}_write_rustflags") {
+      _rustflags_txt = "$_build_script_env_out_dir/rustflags.txt"
+      outputs = [ _rustflags_txt ]
+      script = rebase_path("//build/rust/write_rustflags.py")
+      args = [
+        "--output",
+        rebase_path(_rustflags_txt, root_build_dir),
+        "--",
+        "{{rustflags}}",
+      ]
+
+      # The configs are required to get `{{rustflags}}` so that the build script
+      # is compiled with the same flags as the library/binary will be. The build
+      # script is an executable so it also gets the executable configs. If this
+      # is ever a problem we can add a separate build_script_configs to the
+      # cargo_crate template and just have it default to the same thing as
+      # executable_configs.
+      configs = invoker.executable_configs
+    }
+
     # Extra targets required to make build script work
     action("${_build_script_name}_output") {
       script = rebase_path("//build/rust/run_build_script.py")
+      _write_rustflags_outputs =
+          get_target_outputs(":${_build_script_name}_write_rustflags")
+      _rustflags_txt = _write_rustflags_outputs[0]
       inputs = [
         "//build/action_helpers.py",
         "//build/gn_helpers.py",
+        _rustflags_txt,
       ]
       build_script_target = ":${_build_script_name}($rust_macro_toolchain)"
-      deps = [ build_script_target ]
+      deps = [
+        ":${_build_script_name}_write_rustflags",
+        build_script_target,
+      ]
       testonly = _testonly
       if (defined(invoker.visibility)) {
         visibility = invoker.visibility
@@ -424,6 +440,8 @@ template("cargo_crate") {
         rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
         "--target",
         rust_abi_target,
+        "--rustflags",
+        rebase_path(_rustflags_txt, root_build_dir),
       ]
       if (cargo_target_abi != "") {
         args += [

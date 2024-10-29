@@ -52,6 +52,12 @@ rust_static_library("mojo_system") {
   crate_root = "system/lib.rs"
   allow_unsafe = true
 
+  # This should be removed; we should not rely on unstable features. But it's in
+  # experimental code and won't block compiler rolls. If it becomes a problem
+  # just disable the whole build target.
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [ "-Zallow-features=maybe_uninit_slice" ]
+
   sources = [
     "system/core.rs",
     "system/data_pipe.rs",
@@ -74,7 +80,7 @@ rust_static_library("mojo_system") {
   ]
 
   # TODO(crbug.com/369430130): reenable this warning.
-  rustflags = [ "-Aimproper-ctypes" ]
+  rustflags += [ "-Aimproper-ctypes" ]
 }
 
 rust_static_library("mojo_system_test_support") {

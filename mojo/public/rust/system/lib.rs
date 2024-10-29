@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #![feature(maybe_uninit_slice)]
-// Require unsafe blocks for unsafe operations even in an unsafe fn.
-#![deny(unsafe_op_in_unsafe_fn)]
 
 mod handle;
 mod mojo_types;

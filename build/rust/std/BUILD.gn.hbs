@@ -36,6 +36,7 @@ cargo_crate("{{../name}}") {
   {{/with}}
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     {{#each remove_library_configs}}
     "{{this}}",
     {{/each}}
@@ -51,6 +52,7 @@ cargo_crate("{{../name}}") {
   ]
   executable_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     {{#each remove_executable_configs}}
     "{{this}}",
     {{/each}}

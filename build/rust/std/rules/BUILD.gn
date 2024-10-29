@@ -25,9 +25,15 @@ cargo_crate("addr2line") {
   cargo_pkg_name = "addr2line"
   cargo_pkg_description =
       "A cross-platform symbolication library written in Rust, using `gimli`"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -76,9 +82,15 @@ cargo_crate("adler") {
   cargo_pkg_name = "adler"
   cargo_pkg_description =
       "A simple clean-room implementation of the Adler-32 checksum"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -195,9 +207,15 @@ cargo_crate("alloc") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "alloc"
   cargo_pkg_description = "The Rust core allocation and collections library"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -230,9 +248,15 @@ cargo_crate("cfg_if") {
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "cfg-if"
   cargo_pkg_description = "A macro to ergonomically define an item depending on a large number of #[cfg] parameters. Structured like an if-else chain, the first matching branch is the item that gets emitted."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -439,10 +463,14 @@ cargo_crate("compiler_builtins") {
   cargo_pkg_description = "Compiler intrinsics used by the Rust compiler. Also available for other targets if necessary!"
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":rustc_std_workspace_core",
@@ -969,13 +997,17 @@ cargo_crate("core") {
   cargo_pkg_description = "The Rust Core Library"
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [
     "//build/config/compiler:no_chromium_code",
     "//build/rust:panic_immediate_abort",
   ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//build/rust/std:std_build_deps" ]
   rustenv = [
@@ -1006,9 +1038,15 @@ cargo_crate("getopts") {
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "getopts"
   cargo_pkg_description = "getopts-like option parsing."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":rustc_std_workspace_core",
@@ -1096,9 +1134,15 @@ cargo_crate("gimli") {
   cargo_pkg_name = "gimli"
   cargo_pkg_description =
       "A library for reading and writing the DWARF debugging format."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -1166,9 +1210,15 @@ cargo_crate("hashbrown") {
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -1454,10 +1504,14 @@ cargo_crate("libc") {
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":rustc_std_workspace_core",
@@ -1532,9 +1586,15 @@ cargo_crate("memchr") {
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"
   cargo_pkg_name = "memchr"
   cargo_pkg_description = "Safe interface to memchr."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -1588,9 +1648,15 @@ cargo_crate("miniz_oxide") {
   cargo_pkg_authors = "Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>"
   cargo_pkg_name = "miniz_oxide"
   cargo_pkg_description = "DEFLATE compression and decompression library rewritten in Rust based on miniz"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":adler",
@@ -1716,9 +1782,15 @@ cargo_crate("object") {
   cargo_pkg_name = "object"
   cargo_pkg_description =
       "A unified interface for reading and writing object file formats."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -1774,9 +1846,15 @@ cargo_crate("panic_abort") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "panic_abort"
   cargo_pkg_description = "Implementation of Rust panics via process aborts"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":alloc",
@@ -1821,9 +1899,15 @@ cargo_crate("panic_unwind") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "panic_unwind"
   cargo_pkg_description = "Implementation of Rust panics via stack unwinding"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":alloc",
@@ -1876,9 +1960,15 @@ cargo_crate("proc_macro") {
   edition = "2021"
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "proc_macro"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":core",
@@ -1911,10 +2001,14 @@ cargo_crate("profiler_builtins") {
   cargo_pkg_name = "profiler_builtins"
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -1950,9 +2044,15 @@ cargo_crate("rustc_demangle") {
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "rustc-demangle"
   cargo_pkg_description = "Rust compiler symbol demangling."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -1994,10 +2094,14 @@ cargo_crate("rustc_std_workspace_alloc") {
   cargo_pkg_description = "Hack for the compiler's own build system"
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":alloc",
@@ -2029,10 +2133,14 @@ cargo_crate("rustc_std_workspace_core") {
   cargo_pkg_description = "Hack for the compiler's own build system"
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":core",
@@ -2062,9 +2170,15 @@ cargo_crate("rustc_std_workspace_std") {
   cargo_pkg_version = "1.99.0"
   cargo_pkg_name = "rustc-std-workspace-std"
   cargo_pkg_description = "Hack for the compiler's own build system"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":std",
@@ -2745,12 +2859,18 @@ cargo_crate("std") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "std"
   cargo_pkg_description = "The Rust Standard Library"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [
     "//build/config/compiler:no_chromium_code",
     "//build/rust:panic_immediate_abort",
   ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":alloc",
@@ -2854,9 +2974,15 @@ cargo_crate("std_detect") {
   cargo_pkg_name = "std_detect"
   cargo_pkg_description =
       "`std::detect` - Rust's standard library run-time CPU feature detection."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":cfg_if",
@@ -2936,9 +3062,15 @@ cargo_crate("test") {
   edition = "2021"
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "test"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":core",
@@ -2979,9 +3111,15 @@ cargo_crate("unicode_width") {
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
   cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":compiler_builtins",
@@ -3029,9 +3167,15 @@ cargo_crate("unwind") {
   edition = "2021"
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "unwind"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":cfg_if",
@@ -3070,10 +3214,14 @@ cargo_crate("windows_targets") {
   cargo_pkg_description = "A drop-in replacement for the real windows-targets crate for use in std only."
   library_configs -= [
     "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
     "//build/config/coverage:default_coverage",
   ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:disallow_unstable_features",
+  ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//build/rust/std:std_build_deps" ]
   rustenv = [
