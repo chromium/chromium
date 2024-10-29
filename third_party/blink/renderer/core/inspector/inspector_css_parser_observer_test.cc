@@ -181,4 +181,26 @@ TEST_F(InspectorCSSParserObserverTest, NestedDeclarationsInvalidMedia) {
             Substring(text, media.child_rules[0]->rule_body_range));
 }
 
+TEST_F(InspectorCSSParserObserverTest, NestedDeclarationsInvalidPrecedingRule) {
+  // Note: We will first try to parse 'span:dino(t-rex){}' as a declaration,
+  // then as a nested rule. It is not valid as either, so the observer needs
+  // to decide whether we treat it as an invalid nested rule, or as an invalid
+  // declaration. We currently treat all such ambiguous cases as invalid
+  // declarations for compatibility with how the observer worked before
+  // CSS Nesting.
+  String text = "div { span { } span:dino(t-rex) { } }";
+  // Don't crash, crbug.com/372623082.
+  CSSRuleSourceDataList data = Parse(text);
+  ASSERT_EQ(1u, data.size());
+  ASSERT_EQ(2u, data[0]->child_rules.size());
+  EXPECT_EQ("span",
+            Substring(text, data[0]->child_rules[0]->rule_header_range));
+  // Being an invalid selector, this is treated as an invalid *declaration*
+  // by the parser, hence the CSSNestedDeclarations rule will contain that
+  // (invalid) declaration in its body.
+  ASSERT_EQ(1u, data[0]->child_rules[1]->property_data.size());
+  EXPECT_EQ("span", data[0]->child_rules[1]->property_data[0].name);
+  EXPECT_EQ("dino(t-rex)", data[0]->child_rules[1]->property_data[0].value);
+}
+
 }  // namespace blink

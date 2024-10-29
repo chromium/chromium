@@ -437,6 +437,12 @@ void InspectorCSSParserObserver::ObserveErroneousAtRule(
 
 void InspectorCSSParserObserver::ObserveNestedDeclarations(
     unsigned insert_rule_index) {
+  // Pop off data for a previous invalid rule.
+  if (current_rule_data_) {
+    current_rule_data_ = nullptr;
+    current_rule_data_stack_.pop_back();
+  }
+
   CHECK(!current_rule_data_stack_.empty());
   CSSRuleSourceData* rule = current_rule_data_stack_.back().Get();
   Vector<CSSPropertySourceData>& property_data = rule->property_data;
