@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 
+class SkStream;
+
 namespace blink {
 
 class SegmentStream;
@@ -41,9 +43,8 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
 
  protected:
   // OnCreateSkCodec needs to read enough of the image to get the image size.
-  virtual std::unique_ptr<SkCodec> OnCreateSkCodec(
-      std::unique_ptr<SegmentStream>,
-      SkCodec::Result* result) = 0;
+  virtual std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
+                                                   SkCodec::Result* result) = 0;
 
  private:
   // ImageDecoder:

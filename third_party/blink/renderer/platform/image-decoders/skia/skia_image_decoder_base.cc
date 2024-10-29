@@ -8,7 +8,7 @@
 #include <stack>
 
 #include "base/numerics/checked_math.h"
-#include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
+#include "third_party/blink/renderer/platform/image-decoders/skia/segment_stream.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkCodecAnimation.h"
 #include "third_party/skia/include/codec/SkEncodedImageFormat.h"

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
+#include "third_party/blink/renderer/platform/image-decoders/skia/segment_stream.h"
 
 #include <utility>
 

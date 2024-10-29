@@ -39,8 +39,8 @@ component("image_decoders") {
     "rw_buffer.h",
     "segment_reader.cc",
     "segment_reader.h",
-    "segment_stream.cc",
-    "segment_stream.h",
+    "skia/segment_stream.cc",
+    "skia/segment_stream.h",
     "skia/skia_image_decoder_base.cc",
     "skia/skia_image_decoder_base.h",
     "webp/webp_image_decoder.cc",
@@ -108,7 +108,7 @@ source_set("unit_tests") {
     "jpeg/jpeg_image_decoder_test.cc",
     "png/png_image_decoder_test.cc",
     "rw_buffer_test.cc",
-    "segment_stream_test.cc",
+    "skia/segment_stream_test.cc",
     "webp/webp_image_decoder_test.cc",
   ]
 
