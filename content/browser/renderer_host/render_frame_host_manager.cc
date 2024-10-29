@@ -1593,7 +1593,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
           features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
       current_frame_host()->lifecycle_state() ==
           LifecycleStateImpl::kInBackForwardCache) {
-    CHECK(!request->IsInMainFrame());
+    CHECK(request->GetParentFrameOrOuterDocument());
     CHECK(!request->NeedsUrlLoader() ||
           (!request->HasLoader() &&
            request->state() <=
