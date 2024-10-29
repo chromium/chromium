@@ -23,22 +23,6 @@
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
 namespace safe_browsing {
-namespace {
-
-const char* MigrateResultToString(HashPrefixMap::MigrateResult result) {
-  switch (result) {
-    case HashPrefixMap::MigrateResult::kUnknown:
-      return "Unknown";
-    case HashPrefixMap::MigrateResult::kSuccess:
-      return "Success";
-    case HashPrefixMap::MigrateResult::kFailure:
-      return "Failure";
-    case HashPrefixMap::MigrateResult::kNotNeeded:
-      return "NotNeeded";
-  }
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
@@ -151,8 +135,7 @@ ServicesDelegateDesktop::CreateDatabaseManager() {
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
       base::BindRepeating(
           &ServicesDelegateDesktop::GetEstimatedExtendedReportingLevel,
-          base::Unretained(this)),
-      base::BindOnce(&UpdateSyntheticFieldTrial));
+          base::Unretained(this)));
 }
 
 DownloadProtectionService*
@@ -177,14 +160,6 @@ void ServicesDelegateDesktop::StopOnUIThread(bool shutdown) {
 
 void ServicesDelegateDesktop::OnProfileWillBeDestroyed(Profile* profile) {
   download_service_->RemovePendingDownloadRequests(profile);
-}
-
-// static
-void ServicesDelegateDesktop::UpdateSyntheticFieldTrial(
-    HashPrefixMap::MigrateResult result) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "SafeBrowsingMigrateResult", MigrateResultToString(result),
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 }  // namespace safe_browsing

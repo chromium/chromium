@@ -65,8 +65,6 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   DownloadProtectionService* CreateDownloadProtectionService();
   IncidentReportingService* CreateIncidentReportingService();
 
-  static void UpdateSyntheticFieldTrial(HashPrefixMap::MigrateResult result);
-
   std::unique_ptr<DownloadProtectionService> download_service_;
   std::unique_ptr<IncidentReportingService> incident_service_;
 
