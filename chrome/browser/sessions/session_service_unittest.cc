@@ -1184,9 +1184,14 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
     const SessionID tab_id =
         CreateTabWithTestNavigationData(window_id, group_ndx);
     service()->SetTabGroup(window_id, tab_id, group_ids[group_ndx]);
+
+    if (saved_guids[group_ndx]) {
+      service()->AddSavedTabGroupsMapping(group_ids[group_ndx],
+                                          saved_guids[group_ndx].value());
+    }
+
     service()->SetTabGroupMetadata(window_id, group_ids[group_ndx],
-                                   &visual_data[group_ndx],
-                                   saved_guids[group_ndx]);
+                                   &visual_data[group_ndx]);
   }
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;

@@ -44,9 +44,11 @@
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -280,18 +282,46 @@ void SessionService::SetTabGroup(SessionID window_id,
 void SessionService::SetTabGroupMetadata(
     SessionID window_id,
     const tab_groups::TabGroupId& group_id,
+    const tab_groups::TabGroupVisualData* visual_data) {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+  std::optional<std::string> saved_guid;
+  if (tab_group_service) {
+    if (const std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_service->GetGroup(group_id)) {
+      saved_guid = saved_group->saved_guid().AsLowercaseString();
+    } else if (local_to_sync_id_mapping_.contains(group_id)) {
+      saved_guid = local_to_sync_id_mapping_.at(group_id);
+    }
+  }
+
+  SetTabGroupMetadata(window_id, group_id, visual_data, std::move(saved_guid));
+}
+
+void SessionService::SetTabGroupMetadata(
+    SessionID window_id,
+    const tab_groups::TabGroupId& group_id,
     const tab_groups::TabGroupVisualData* visual_data,
     std::optional<std::string> saved_guid) {
-  if (!ShouldTrackChangesToWindow(window_id))
+  if (!ShouldTrackChangesToWindow(window_id)) {
     return;
+  }
 
   // Any group metadata changes happening in a closing window can be ignored.
   if (base::Contains(pending_window_close_ids_, window_id) ||
-      base::Contains(window_closing_ids_, window_id))
+      base::Contains(window_closing_ids_, window_id)) {
     return;
+  }
 
   ScheduleCommand(sessions::CreateTabGroupMetadataUpdateCommand(
       group_id, visual_data, std::move(saved_guid)));
+}
+
+void SessionService::AddSavedTabGroupsMapping(
+    const tab_groups::TabGroupId& group_id,
+    const std::string& saved_guid) {
+  CHECK(!local_to_sync_id_mapping_.contains(group_id));
+  local_to_sync_id_mapping_.emplace(group_id, saved_guid);
 }
 
 void SessionService::AddTabExtraData(SessionID window_id,
