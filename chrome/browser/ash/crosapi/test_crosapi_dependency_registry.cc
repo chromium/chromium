@@ -7,9 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
-#include "chrome/browser/ash/crosapi/metrics_reporting_ash_test_helper.h"
-#include "components/metrics/metrics_service.h"
 
 namespace crosapi {
 
@@ -21,11 +18,5 @@ std::unique_ptr<CrosapiManager> CreateCrosapiManagerWithTestRegistry() {
 TestCrosapiDependencyRegistry::TestCrosapiDependencyRegistry() = default;
 
 TestCrosapiDependencyRegistry::~TestCrosapiDependencyRegistry() = default;
-
-std::unique_ptr<MetricsReportingAsh>
-TestCrosapiDependencyRegistry::CreateMetricsReportingAsh(
-    metrics::MetricsService*) {
-  return CreateTestMetricsReportingAsh();
-}
 
 }  // namespace crosapi

@@ -80,7 +80,6 @@ mojom("mojom") {
     "media_app.mojom",
     "media_ui.mojom",
     "metrics.mojom",
-    "metrics_reporting.mojom",
     "multi_capture_service.mojom",
     "native_theme.mojom",
     "network_change.mojom",

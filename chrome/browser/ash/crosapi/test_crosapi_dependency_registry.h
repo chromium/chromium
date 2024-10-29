@@ -16,6 +16,7 @@ class CrosapiManager;
 std::unique_ptr<CrosapiManager> CreateCrosapiManagerWithTestRegistry();
 
 // Crosapi dependency registry that should only be used in test.
+// TODO(crbug.com/373972275): Delete this class.
 class TestCrosapiDependencyRegistry : public CrosapiDependencyRegistry {
  public:
   TestCrosapiDependencyRegistry();
@@ -23,11 +24,6 @@ class TestCrosapiDependencyRegistry : public CrosapiDependencyRegistry {
   TestCrosapiDependencyRegistry& operator=(
       const TestCrosapiDependencyRegistry&) = delete;
   ~TestCrosapiDependencyRegistry() override;
-
-  // This creates a MetricsReportingAsh object that does not use the metrics
-  // service. It is safe to pass in a nullptr here.
-  std::unique_ptr<MetricsReportingAsh> CreateMetricsReportingAsh(
-      metrics::MetricsService* /* not_used */) override;
 };
 
 }  // namespace crosapi

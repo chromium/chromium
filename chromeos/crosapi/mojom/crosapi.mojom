@@ -76,7 +76,6 @@ import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/media_app.mojom";
 import "chromeos/crosapi/mojom/metrics.mojom";
-import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
@@ -552,11 +551,6 @@ interface Crosapi {
   // Added in M110.
   [MinVersion=102]
   BindMetrics@106(pending_receiver<Metrics> receiver);
-
-  // Binds the MetricsReporting interface for metrics reporting consent.
-  // Added in M89.
-  [MinVersion=8]
-  BindMetricsReporting@13(pending_receiver<MetricsReporting> receiver);
 
   // Binds the MultiCaptureService interface that handles multi capture related
   // usage indicators and notifications.

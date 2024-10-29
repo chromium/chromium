@@ -79,7 +79,6 @@
 #include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_ash.h"
-#include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
@@ -270,8 +269,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       media_app_ash_(std::make_unique<MediaAppAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       metrics_ash_(std::make_unique<MetricsAsh>()),
-      metrics_reporting_ash_(registry->CreateMetricsReportingAsh(
-          g_browser_process->metrics_service())),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
@@ -785,11 +782,6 @@ void CrosapiAsh::BindMediaSessionController(
 
 void CrosapiAsh::BindMetrics(mojo::PendingReceiver<mojom::Metrics> receiver) {
   metrics_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindMetricsReporting(
-    mojo::PendingReceiver<mojom::MetricsReporting> receiver) {
-  metrics_reporting_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMultiCaptureService(

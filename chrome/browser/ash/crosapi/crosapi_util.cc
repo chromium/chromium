@@ -128,7 +128,6 @@
 #include "chromeos/crosapi/mojom/media_app.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
-#include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
@@ -507,7 +506,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::MediaApp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MediaUI>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Metrics>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::MetricsReporting>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MultiCaptureService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NativeThemeService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkChange>(),

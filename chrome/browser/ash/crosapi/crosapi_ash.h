@@ -111,7 +111,6 @@ class LoginStateAsh;
 class MediaAppAsh;
 class MediaUIAsh;
 class MetricsAsh;
-class MetricsReportingAsh;
 class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
 class NetworkSettingsServiceAsh;
@@ -321,8 +320,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override;
   void BindMetrics(mojo::PendingReceiver<mojom::Metrics> receiver) override;
-  void BindMetricsReporting(
-      mojo::PendingReceiver<mojom::MetricsReporting> receiver) override;
   void BindMultiCaptureService(
       mojo::PendingReceiver<mojom::MultiCaptureService> receiver) override;
   void BindNativeThemeService(
@@ -707,7 +704,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<MediaAppAsh> media_app_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MetricsAsh> metrics_ash_;
-  std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;

@@ -4,16 +4,10 @@
 
 #include "chrome/browser/ash/crosapi/crosapi_dependency_registry.h"
 
-#include <memory>
-
-#include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
-
 namespace crosapi {
 
-std::unique_ptr<MetricsReportingAsh>
-crosapi::CrosapiDependencyRegistry::CreateMetricsReportingAsh(
-    metrics::MetricsService* metrics_service) {
-  return MetricsReportingAsh::CreateMetricsReportingAsh(metrics_service);
-}
+CrosapiDependencyRegistry::CrosapiDependencyRegistry() = default;
+
+CrosapiDependencyRegistry::~CrosapiDependencyRegistry() = default;
 
 }  // namespace crosapi

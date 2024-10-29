@@ -5,31 +5,21 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_CROSAPI_DEPENDENCY_REGISTRY_H_
 #define CHROME_BROWSER_ASH_CROSAPI_CROSAPI_DEPENDENCY_REGISTRY_H_
 
-#include <memory>
-
-namespace metrics {
-class MetricsService;
-}  // namespace metrics
-
 namespace crosapi {
-
-class MetricsReportingAsh;
 
 // A registry which knows how to provide dependencies for crosapi. Because
 // crosapi depends on many services, there may be instances where testing is
 // difficult due to a lack of test doubles or implicit assumptions which do not
 // hold true in test. This registry provides an indirection which allows users
 // to swap out unfriendly dependencies.
+// TODO(crbug.com/373972275): Delete this class.
 class CrosapiDependencyRegistry {
  public:
-  CrosapiDependencyRegistry() = default;
+  CrosapiDependencyRegistry();
   CrosapiDependencyRegistry(const CrosapiDependencyRegistry&) = delete;
   CrosapiDependencyRegistry& operator=(const CrosapiDependencyRegistry&) =
       delete;
-  virtual ~CrosapiDependencyRegistry() = default;
-
-  virtual std::unique_ptr<MetricsReportingAsh> CreateMetricsReportingAsh(
-      metrics::MetricsService* metrics_service);
+  virtual ~CrosapiDependencyRegistry();
 };
 
 }  // namespace crosapi
