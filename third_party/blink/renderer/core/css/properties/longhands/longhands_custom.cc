@@ -3487,35 +3487,60 @@ const CSSValue* DynamicRangeLimit::ParseSingleValue(
     return nullptr;
   }
 
-  const CSSValue* limit1;
-  const CSSValue* limit2;
-  const CSSPrimitiveValue* percentage;
+  HeapVector<Member<const CSSValue>> limits;
+  HeapVector<Member<const CSSPrimitiveValue>> percentages;
+  bool all_percentages_zero = true;
   {
     CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
+    while (true) {
+      stream.ConsumeWhitespace();
 
-    limit1 =
-        DynamicRangeLimit::ParseSingleValue(stream, context, local_context);
-    if (limit1 == nullptr ||
-        !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-      return nullptr;
-    }
-    limit2 =
-        DynamicRangeLimit::ParseSingleValue(stream, context, local_context);
-    if (limit2 == nullptr ||
-        !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-      return nullptr;
-    }
-    percentage = css_parsing_utils::ConsumePercent(
-        stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-    if (percentage == nullptr) {
-      return nullptr;
+      const CSSValue* limit =
+          DynamicRangeLimit::ParseSingleValue(stream, context, local_context);
+      if (limit == nullptr) {
+        return nullptr;
+      }
+      limits.push_back(limit);
+      stream.ConsumeWhitespace();
+
+      const CSSPrimitiveValue* percentage = css_parsing_utils::ConsumePercent(
+          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+      if (!percentage) {
+        return nullptr;
+      }
+      percentages.push_back(percentage);
+      stream.ConsumeWhitespace();
+
+      // Reject literal negative values and values > 100%, and track if all
+      // percentage values are zero.
+      if (auto* numeric = DynamicTo<CSSNumericLiteralValue>(percentage)) {
+        float numeric_percentage = numeric->ComputePercentage();
+        if (numeric_percentage < 0.f || numeric_percentage > 100.f) {
+          return nullptr;
+        }
+        all_percentages_zero &= numeric_percentage == 0.0f;
+      } else {
+        all_percentages_zero = false;
+      }
+
+      // If there is no comma then require that we be at the end of the
+      // functional.
+      if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+        if (!stream.AtEnd()) {
+          return nullptr;
+        }
+        break;
+      }
     }
   }
-  stream.ConsumeWhitespace();
+
+  // If all values are literally zero, reject at parse time.
+  if (all_percentages_zero) {
+    return nullptr;
+  }
 
   return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-      limit1, limit2, percentage);
+      std::move(limits), std::move(percentages));
 }
 
 const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
@@ -3530,45 +3555,30 @@ const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
   if (limit.constrained_high_mix == 1.f) {
     return CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh);
   }
-  if (limit.standard_mix == 0.f && limit.constrained_high_mix == 0.f) {
+  float high_mix = 1.f - limit.standard_mix - limit.constrained_high_mix;
+  if (high_mix == 1.f) {
     return CSSIdentifierValue::Create(CSSValueID::kHigh);
   }
-  const float high_mix = 1 - limit.standard_mix - limit.constrained_high_mix;
-  if (limit.standard_mix == 0.f) {
-    return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-        CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh),
-        CSSIdentifierValue::Create(CSSValueID::kHigh),
-        CSSNumericLiteralValue::Create(
-            100 * high_mix, CSSPrimitiveValue::UnitType::kPercentage));
+  HeapVector<Member<const CSSValue>> limits;
+  HeapVector<Member<const CSSPrimitiveValue>> percentages;
+  if (limit.standard_mix != 0.f) {
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kStandard));
+    percentages.push_back(CSSNumericLiteralValue::Create(
+        100 * limit.standard_mix, CSSPrimitiveValue::UnitType::kPercentage));
   }
-  if (limit.constrained_high_mix == 0.f) {
-    return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-        CSSIdentifierValue::Create(CSSValueID::kStandard),
-        CSSIdentifierValue::Create(CSSValueID::kHigh),
-        CSSNumericLiteralValue::Create(
-            100 * high_mix, CSSPrimitiveValue::UnitType::kPercentage));
+  if (limit.constrained_high_mix != 0.f) {
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh));
+    percentages.push_back(CSSNumericLiteralValue::Create(
+        100 * limit.constrained_high_mix,
+        CSSPrimitiveValue::UnitType::kPercentage));
   }
-  if (high_mix == 0.f) {
-    return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-        CSSIdentifierValue::Create(CSSValueID::kStandard),
-        CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh),
-        CSSNumericLiteralValue::Create(
-            100 * limit.constrained_high_mix,
-            CSSPrimitiveValue::UnitType::kPercentage));
+  if (high_mix != 0.f) {
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kHigh));
+    percentages.push_back(CSSNumericLiteralValue::Create(
+        100 * high_mix, CSSPrimitiveValue::UnitType::kPercentage));
   }
-  // If there is a bit of all three, nest two binary mixtures:
-  // mix(standard, mix(constrained-high, high, b%), a%)
-  // where b% must take into account that a% will also be applied to it.
   return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-      CSSIdentifierValue::Create(CSSValueID::kStandard),
-      MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-          CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh),
-          CSSIdentifierValue::Create(CSSValueID::kHigh),
-          CSSNumericLiteralValue::Create(
-              100 * (1 - limit.constrained_high_mix / (1 - limit.standard_mix)),
-              CSSPrimitiveValue::UnitType::kPercentage)),
-      CSSNumericLiteralValue::Create(100 * (1 - limit.standard_mix),
-                                     CSSPrimitiveValue::UnitType::kPercentage));
+      std::move(limits), std::move(percentages));
 }
 
 const CSSValue* EmptyCells::CSSValueFromComputedStyleInternal(
