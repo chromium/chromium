@@ -1096,6 +1096,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "RustyPng", "When enabled, uses Rust `png` crate to decode and encode PNG images."),
         Flag.baseFeature("Prerender2FallbackPrefetchSpecRules"),
+        Flag.baseFeature("PrefetchReusable"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
