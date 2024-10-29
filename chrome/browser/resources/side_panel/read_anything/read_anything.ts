@@ -12,7 +12,7 @@ export type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/c
 export type {AppElement, WordBoundaryState} from './app.js';
 export {currentReadHighlightClass, PauseActionSource, previousReadHighlightClass, WordBoundaryMode} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
-export {getCurrentSpeechRate, playFromSelectionTimeout, ToolbarEvent} from './common.js';
+export {getCurrentSpeechRate, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export type {LanguageMenuElement} from './language_menu.js';
 export type {LanguageToastElement} from './language_toast.js';
 export type {ColorMenu} from './menus/color_menu.js';

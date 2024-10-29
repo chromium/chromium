@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrom
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
+import {createSpeechSynthesisVoice, stubAnimationFrame, waitForSpinnerTimeout} from './common.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
@@ -322,6 +322,39 @@ suite('VoiceSelectionMenu', () => {
       assertTrue(clickEmitted);
     });
 
+    test('spinner shows before speech starts and is hidden after', async () => {
+      // Display dropdown menu
+      voiceSelectionMenu.onVoiceSelectionMenuClick(dots);
+
+      const previewButton =
+          getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+              '#preview-icon')!;
+      previewButton!.click();
+
+      await microtasksFinished();
+      await waitForSpinnerTimeout();
+      stubAnimationFrame();
+
+      const spinnerVoice0 =
+          getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+              '#spinner-span')!;
+
+      // The spinner should be visible and the preview button should be
+      // disabled.
+      assertTrue(spinnerVoice0.classList.contains('item-invisible-false'));
+      assertTrue(previewButton.disabled);
+
+      // Set the previewVoicePlaying to the voice, to simulate onstart
+      // being called on the preview SpeechSynthesisUtterance.
+      voiceSelectionMenu.previewVoicePlaying = voice1;
+      await microtasksFinished();
+
+      // After onstart, the spinner shouldn't be showing and the buttons
+      // shouldn't be disabled.
+      assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
+      assertFalse(previewButton.disabled);
+    });
+
     test('it shows preview-playing button when preview plays', async () => {
       await openVoiceMenu();
       voiceSelectionMenu.previewVoicePlaying = previewVoice;
@@ -333,6 +366,12 @@ suite('VoiceSelectionMenu', () => {
       const playIconOfPreviewVoice =
           getDropdownItemForVoice(previewVoice)
               .querySelector<CrIconButtonElement>('#preview-icon')!;
+      const spinnerVoice0 =
+          getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+              '#spinner-span')!;
+
+      // The spinner shouldn't be visible
+      assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
 
       // The play icon should flip to stop for the voice being previewed
       assertTrue(isPositionedOnPage(playIconOfPreviewVoice));

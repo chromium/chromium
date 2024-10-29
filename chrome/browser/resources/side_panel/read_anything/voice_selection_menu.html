@@ -35,14 +35,23 @@
                 ${voice.title}
               </span>
 
+              <span id="spinner-span" class="item-invisible-${this.hideSpinner_(voice)}">
+                <picture class="spinner">
+                  <source media="(prefers-color-scheme: dark)"
+                      srcset="//resources/images/throbber_small_dark.svg">
+                  <img srcset="//resources/images/throbber_small.svg" alt="">
+                </picture>
+              </span>
+
               <cr-icon-button id="preview-icon"
                   tabindex="${this.voiceItemTabIndex_(groupIndex, voiceIndex)}"
+                  ?disabled="${this.shouldDisableButton_(voice)}"
                   @click="${this.onVoicePreviewClick_}"
                   data-group-index="${groupIndex}"
                   data-voice-index="${voiceIndex}"
-                  title="${this.previewLabel_(voice.previewPlaying)}"
-                  aria-label="${this.previewAriaLabel_(voice.previewPlaying,voice.title)}"
-                  iron-icon="${this.previewIcon_(voice.previewPlaying)}">
+                  title="${this.previewLabel_(voice.previewInitiated)}"
+                  aria-label="${this.previewAriaLabel_(voice.previewInitiated,voice.title)}"
+                  iron-icon="${this.previewIcon_(voice.previewInitiated)}">
               </cr-icon-button>
             </button>
         `)}

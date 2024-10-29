@@ -25,6 +25,12 @@ cr-icon-button.active {
   background-color: var(--cr-active-background-color);
 }
 
+.spinner {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+
 #voiceSelectionMenu::part(dialog) {
   min-width: 304px;
   width: fit-content;
