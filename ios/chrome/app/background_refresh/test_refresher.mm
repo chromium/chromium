@@ -82,6 +82,15 @@
     case AppInitStage::kEnterprise:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageEnterprise;
       break;
+    // This stage is temporary. It is there to prepare decoupling AppInitStage
+    // and ProfileInitStage. It will eventually be removed (as will all the
+    // other stages after this one). Reuse the same value as the next stage
+    // to avoid having non-consecutive values in the histogram (especially as
+    // those values are scheduled to be deleted).
+    case AppInitStage::kLoadProfiles:
+      stage = InitStageDuringBackgroundRefreshActions::
+          kInitStageBrowserObjectsForUI;
+      break;
     case AppInitStage::kBrowserObjectsForUI:
       stage = InitStageDuringBackgroundRefreshActions::
           kInitStageBrowserObjectsForUI;

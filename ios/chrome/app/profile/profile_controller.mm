@@ -53,9 +53,6 @@
       [self attachProfileAgents];
       break;
 
-    case ProfileInitStage::kEnterprise:
-      break;
-
     case ProfileInitStage::kPrepareUI:
       break;
 

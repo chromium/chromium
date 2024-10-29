@@ -12,12 +12,12 @@ ProfileInitStage ProfileInitStageFromAppInitStage(AppInitStage app_init_stage) {
     case AppInitStage::kBrowserBasic:
     case AppInitStage::kSafeMode:
     case AppInitStage::kVariationsSeed:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kEnterprise:
       NOTREACHED();
 
-    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
-      return ProfileInitStage::kProfileLoaded;
-    case AppInitStage::kEnterprise:
-      return ProfileInitStage::kEnterprise;
+    case AppInitStage::kLoadProfiles:
+      return ProfileInitStage::kLoadProfile;
     case AppInitStage::kBrowserObjectsForUI:
       return ProfileInitStage::kPrepareUI;
     case AppInitStage::kNormalUI:

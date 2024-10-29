@@ -115,6 +115,9 @@
       break;
     case AppInitStage::kEnterprise:
       break;
+    case AppInitStage::kLoadProfiles:
+      [appState queueTransitionToNextInitStage];
+      break;
     case AppInitStage::kBrowserObjectsForUI:
       [appState queueTransitionToNextInitStage];
       break;

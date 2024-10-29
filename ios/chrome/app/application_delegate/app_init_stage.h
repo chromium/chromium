@@ -37,13 +37,18 @@ enum class AppInitStage {
   // new stages to be >= kBrowserObjectsForBackgroundHandlers.
   kBrowserObjectsForBackgroundHandlers,
 
+  // The app is fetching any enterprise policies. The initialization is blocked
+  // on this because the policies might have an effect on later init stages.
+  kEnterprise,
+
   // TODO(crbug.com/353683675): All follow-up stage will eventually become
   // ProfileInitStage and will disappear. And corresponding code should move
   // from MainController to ProfileController.
 
-  // The app is fetching any enterprise policies. The initialization is blocked
-  // on this because the policies might have an effect on later init stages.
-  kEnterprise,
+  // TODO(crbug.com/333863468): code should no longer check this enum value,
+  // instead it should use ProfileInitStage::kPrepareUI. The enum will be
+  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
+  kLoadProfiles,
 
   // TODO(crbug.com/333863468): code should no longer check this enum value,
   // instead it should use ProfileInitStage::kPrepareUI. The enum will be

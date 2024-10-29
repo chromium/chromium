@@ -625,7 +625,7 @@ BOOL ApplicationIsInBackground() {
   self.initStage = initStage;
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
   // AppInitStage are fully decoupled.
-  if (initStage >= AppInitStage::kBrowserObjectsForBackgroundHandlers) {
+  if (initStage >= AppInitStage::kLoadProfiles) {
     for (ProfileState* profileState in self.connectedProfileStates) {
       ProfileInitStage currStage = profileState.initStage;
       ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);

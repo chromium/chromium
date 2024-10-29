@@ -23,11 +23,6 @@ enum class ProfileInitStage {
   // next stage.
   kProfileLoaded,
 
-  // The application is fetching any enterprise policies for the profile. The
-  // initialization is blocked on this because the policies might have an effect
-  // on later init stages.
-  kEnterprise,
-
   // The application is loading any elements needed for UI for this profile
   // (e.g. Session data, ...)
   kPrepareUI,

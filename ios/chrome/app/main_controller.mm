@@ -374,13 +374,13 @@ void BeginMemoryExperimentationAfterDelay() {
 // background initilisation that are required, and then transition to the
 // next stage.
 - (void)startUpBrowserBackgroundInitialization;
+// Performs any initialisation that are required before the ProfileIOS can
+// be used (mostly migrating the session storage) and asynchronously progress
+// the initialisation stage when done.
+- (void)startUpBrowserBackgroundProfilesInitialization;
 // Initializes the browser objects for the browser UI (e.g., the browser
 // state).
 - (void)startUpBrowserForegroundInitialization;
-// Performs any background initialisation that are required before the app
-// can progress. If there are no initialisation, `completion` must be called
-// synchronously.
-- (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion;
 @end
 
 @implementation MainController {
@@ -453,16 +453,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
-  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
-  for (ProfileIOS* profile : manager->GetLoadedProfiles()) {
-    [self initializeProfile:profile];
-  }
-  DCHECK(!_profileControllers.empty());
-
-  for (SceneState* sceneState in self.appState.connectedScenes) {
-    [self attachProfileToSceneState:sceneState];
-  }
-
   // Give tests a chance to prepare for testing.
   tests_hook::SetUpTestsIfPresent();
 
@@ -492,23 +482,19 @@ SEQUENCE_CHECKER(_sequenceChecker);
       ChromeWebUIIOSControllerFactory::GetInstance());
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
-
-  // Perform any background initialisation that is required and then
-  // migrate to the next stage.
-  __weak __typeof(self) weakSelf = self;
-  [self performBrowserBackgroundInitialisation:^{
-    [weakSelf.appState queueTransitionToNextInitStage];
-  }];
+  [self.appState queueTransitionToNextInitStage];
 }
 
-- (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
+- (void)startUpBrowserBackgroundProfilesInitialization {
   const std::vector<ProfileIOS*> loadedProfiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
-  // `completion` should be called only once all BrowserStates have been
-  // migrated.
+  // Should transition the init stage when all ProfileIOS have been migrated.
+  __weak __typeof(self) weakSelf = self;
   base::RepeatingClosure closure =
-      base::BarrierClosure(loadedProfiles.size(), base::BindOnce(completion));
+      base::BarrierClosure(loadedProfiles.size(), base::BindOnce(^{
+                             [weakSelf.appState queueTransitionToNextInitStage];
+                           }));
 
   // MigrateSessionStorageFormat is synchronous if the storage is already in
   // the requested format, so this is safe to call and won't block the app
@@ -620,6 +606,18 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // TODO(crbug.com/40190949): Determine whether Chrome needs to resume watching
   // for crashes.
 
+  const std::vector<ProfileIOS*> loadedProfiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+
+  for (ProfileIOS* profile : loadedProfiles) {
+    [self initializeProfile:profile];
+  }
+  DCHECK(!_profileControllers.empty());
+
+  for (SceneState* sceneState in self.appState.connectedScenes) {
+    [self attachProfileToSceneState:sceneState];
+  }
+
   self.appState.postCrashAction = [self postCrashAction];
   [self startUpBeforeFirstWindowCreated];
   base::UmaHistogramEnumeration("Stability.IOS.PostCrashAction",
@@ -670,7 +668,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
     [sceneState.window makeKeyAndVisible];
   }
 
-  if (self.appState.initStage >= AppInitStage::kEnterprise) {
+  if (self.appState.initStage >= AppInitStage::kNormalUI) {
     [self attachProfileToSceneState:sceneState];
   }
 }
@@ -713,6 +711,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
       [self startUpBrowserBackgroundInitialization];
       break;
     case AppInitStage::kEnterprise:
+      break;
+    case AppInitStage::kLoadProfiles:
+      [self startUpBrowserBackgroundProfilesInitialization];
       break;
     case AppInitStage::kBrowserObjectsForUI:
       [self maybeContinueForegroundInitialization];
@@ -1562,7 +1563,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
   // AppInitStage are fully decoupled.
   AppInitStage initStage = self.appState.initStage;
-  if (initStage >= AppInitStage::kBrowserObjectsForBackgroundHandlers) {
+  if (initStage >= AppInitStage::kLoadProfiles) {
     ProfileInitStage currStage = profileState.initStage;
     ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
     while (currStage != nextStage) {
