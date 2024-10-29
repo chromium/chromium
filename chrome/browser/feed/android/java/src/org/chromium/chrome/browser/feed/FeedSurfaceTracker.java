@@ -9,6 +9,7 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
@@ -30,6 +31,7 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     private static final int CLEAR_FEED_CACHE_DEFAULT_DELAY_SECONDS_FOR_OPEN_CARD = 30;
     private static final int CLEAR_FEED_CACHE_DEFAULT_DELAY_SECONDS_FOR_LEAVE_FEED = 0;
     private static final int DO_NOT_CLEAR_FEED_CACHE = -1;
+    private static final int ALWAYS_CLEAR_FEED_CACHE_REGARDLESS_OF_MEMORY = -1;
 
     private static FeedSurfaceTracker sSurfaceTracker;
 
@@ -55,7 +57,20 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     }
 
     private FeedSurfaceTracker() {
+        boolean needToClearFeedCache = false;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT)) {
+            int physicalMemoryKB = SysUtils.amountOfPhysicalMemoryKB();
+            int lowMemoryThreasholdMB =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT,
+                            "low_memory_threshold",
+                            ALWAYS_CLEAR_FEED_CACHE_REGARDLESS_OF_MEMORY);
+            if ((lowMemoryThreasholdMB == ALWAYS_CLEAR_FEED_CACHE_REGARDLESS_OF_MEMORY)
+                    || (physicalMemoryKB > 0 && physicalMemoryKB / 1024 <= lowMemoryThreasholdMB)) {
+                needToClearFeedCache = true;
+            }
+        }
+        if (needToClearFeedCache) {
             mHandler = new Handler();
             int value =
                     ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
