@@ -949,7 +949,11 @@ class AutocompleteMediator
     void loadTypedOmniboxText(long eventTime, boolean openInNewTab) {
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
-        if (mAutocomplete.isPresent()) {
+
+        if (mAutocompleteInput.getPageClassification().getAsInt()
+                == PageClassification.ANDROID_HUB_VALUE) {
+            // For Hub Search, searching by keyboard typed query is not allowed so do nothing.
+        } else if (mAutocomplete.isPresent()) {
             findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
         } else {
             mDeferredLoadAction =
