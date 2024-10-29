@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -481,6 +482,43 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
   Member<BytesConsumer> blob_bytes_consumer_;
 };
 
+scoped_refptr<EncodedFormData> StripUnhandledElements(
+    scoped_refptr<EncodedFormData> form_data) {
+  scoped_refptr<EncodedFormData> new_data = EncodedFormData::Create();
+  new_data->SetBoundary(form_data->Boundary());
+  new_data->SetIdentifier(form_data->Identifier());
+  new_data->SetContainsPasswordData(form_data->ContainsPasswordData());
+  EncodedFormData::FormDataType type = EncodedFormData::FormDataType::kDataOnly;
+  for (auto& element : form_data->MutableElements()) {
+    switch (element.type_) {
+      case FormDataElement::kData:
+        break;
+      case FormDataElement::kEncodedFile:
+      case FormDataElement::kEncodedBlob:
+        if (type == EncodedFormData::FormDataType::kDataAndDataPipe) {
+          type = EncodedFormData::FormDataType::kInvalid;
+        } else {
+          type = EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob;
+        }
+        break;
+      case FormDataElement::kDataPipe:
+        if (type == EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob) {
+          type = EncodedFormData::FormDataType::kInvalid;
+        } else {
+          type = EncodedFormData::FormDataType::kDataAndDataPipe;
+        }
+        break;
+    }
+    if (type == EncodedFormData::FormDataType::kInvalid) {
+      return new_data;
+    }
+    new_data->MutableElements().push_back(std::move(element));
+  }
+  DUMP_WILL_BE_CHECK_NE(EncodedFormData::FormDataType::kInvalid,
+                        form_data->GetType());
+  return new_data;
+}
+
 }  // namespace
 
 FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
@@ -524,6 +562,14 @@ BytesConsumer* FormDataBytesConsumer::GetImpl(
     scoped_refptr<EncodedFormData> form_data,
     BytesConsumer* consumer_for_testing) {
   DCHECK(form_data);
+  // TODO(crbug.com/374124998): introduce canonical way not to lose elements.
+  // Also see https://issues.chromium.org/u/1/issues/356183778#comment57
+  if (form_data->GetType() == EncodedFormData::FormDataType::kInvalid) {
+    base::debug::DumpWithoutCrashing();
+    form_data = StripUnhandledElements(form_data);
+    DUMP_WILL_BE_CHECK_NE(EncodedFormData::FormDataType::kInvalid,
+                          form_data->GetType());
+  }
   switch (form_data->GetType()) {
     case EncodedFormData::FormDataType::kDataOnly:
       return MakeGarbageCollected<DataOnlyBytesConsumer>(std::move(form_data));

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -142,6 +143,22 @@ class FormDataBytesConsumerTest : public PageTestBase {
     PageTestBase::SetUp(gfx::Size());
     file_factory_helper_ = std::make_unique<FileBackedBlobFactoryTestHelper>(
         GetFrame().GetDocument()->GetExecutionContext());
+  }
+
+  String DrainAsString(scoped_refptr<EncodedFormData> input_form_data) {
+    auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+        GetFrame().DomWindow(), input_form_data);
+    auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(consumer);
+    std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
+    EXPECT_EQ(Result::kDone, result.first);
+    return BytesConsumerTestUtil::CharVectorToString(result.second);
+  }
+
+  scoped_refptr<EncodedFormData> DrainAsFormData(
+      scoped_refptr<EncodedFormData> input_form_data) {
+    auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+        GetFrame().DomWindow(), input_form_data);
+    return consumer->DrainAsFormData();
   }
 
  private:
@@ -524,6 +541,62 @@ TEST_F(FormDataBytesConsumerTest,
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(" hello world here's another data pipe bar baz",
             BytesConsumerTestUtil::CharVectorToString(result.second));
+}
+
+void AppendDataPipe(scoped_refptr<EncodedFormData> data, String content) {
+  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter;
+  // Object deletes itself.
+  new SimpleDataPipeGetter(content,
+                           data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  auto wrapped =
+      base::MakeRefCounted<WrappedDataPipeGetter>(std::move(data_pipe_getter));
+  data->AppendDataPipe(std::move(wrapped));
+}
+
+scoped_refptr<EncodedFormData> CreateDataPipeData() {
+  scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
+
+  data->AppendData("foo", 3);
+  AppendDataPipe(data, " hello world");
+  return data;
+}
+
+TEST_F(FormDataBytesConsumerTest, InvalidType1) {
+  const String kExpected = "foo hello world";
+  ASSERT_EQ(kExpected, DrainAsString(CreateDataPipeData()));
+
+  scoped_refptr<EncodedFormData> data = CreateDataPipeData();
+  data->AppendFileRange("/foo/bar/baz", 3, 4,
+                        base::Time::FromSecondsSinceUnixEpoch(5));
+  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+
+  EXPECT_EQ(kExpected, DrainAsString(data));
+}
+
+scoped_refptr<EncodedFormData> CreateBlobData() {
+  scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
+
+  data->AppendData("foo", 3);
+  auto blob_data = std::make_unique<BlobData>();
+  blob_data->AppendText("hello", false);
+  auto size = blob_data->length();
+  scoped_refptr<BlobDataHandle> blob_data_handle =
+      BlobDataHandle::Create(std::move(blob_data), size);
+  data->AppendBlob(blob_data_handle->Uuid(), blob_data_handle);
+  Vector<char> boundary;
+  boundary.Append("\0", 1);
+  data->SetBoundary(boundary);
+  return data;
+}
+
+TEST_F(FormDataBytesConsumerTest, InvaidType2) {
+  scoped_refptr<EncodedFormData> data = CreateBlobData();
+  AppendDataPipe(data, " hello world!");
+  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+
+  auto* consumer =
+      MakeGarbageCollected<FormDataBytesConsumer>(GetFrame().DomWindow(), data);
+  EXPECT_TRUE(consumer->DrainAsFormData());
 }
 
 }  // namespace
