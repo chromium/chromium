@@ -20,8 +20,8 @@ class RustLogIntegrationTest : public testing::Test {
   base::test::MockLog log_;
 };
 
-// TODO(crbug.com/374023535): Re-enable test.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+// TODO(crbug.com/374023535): Logging does not work in component builds.
+#if defined(COMPONENT_BUILD)
 #define MAYBE_CheckAllSeverity DISABLED_CheckAllSeverity
 #else
 #define MAYBE_CheckAllSeverity CheckAllSeverity
