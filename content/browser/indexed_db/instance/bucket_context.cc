@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <atomic>
 #include <compare>
+#include <limits>
 #include <list>
 #include <ostream>
 #include <set>
@@ -43,6 +44,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -302,12 +304,14 @@ BucketContext::BucketContext(
     storage::BucketInfo bucket_info,
     const base::FilePath& data_path,
     Delegate&& delegate,
+    scoped_refptr<base::UpdateableSequencedTaskRunner> updateable_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
         file_system_access_context)
     : bucket_info_(std::move(bucket_info)),
+      updateable_task_runner_(updateable_task_runner),
       data_path_(data_path),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       blob_storage_context_(std::move(blob_storage_context)),
@@ -421,6 +425,35 @@ void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_blobs_outstanding_ = blobs_outstanding;
   MaybeStartClosing();
+}
+
+void BucketContext::OnConnectionPriorityUpdated() {
+  if (!updateable_task_runner_) {
+    return;
+  }
+  int scheduling_priority = std::numeric_limits<int>::max();
+  // Established connections:
+  for (const auto& [name, database] : databases_) {
+    for (auto* connection : database->connections()) {
+      scheduling_priority =
+          std::min(scheduling_priority, connection->scheduling_priority());
+    }
+  }
+  // Pending connections:
+  for (auto iter = pending_connections_.begin();
+       iter != pending_connections_.end();) {
+    if (iter->WasInvalidated()) {
+      iter = pending_connections_.erase(iter);
+    } else {
+      scheduling_priority =
+          std::min(scheduling_priority, (*iter)->scheduling_priority);
+      ++iter;
+    }
+  }
+  base::TaskPriority priority = scheduling_priority == 0
+                                    ? base::TaskPriority::USER_BLOCKING
+                                    : base::TaskPriority::USER_VISIBLE;
+  updateable_task_runner_->UpdatePriority(priority);
 }
 
 void BucketContext::CheckCanUseDiskSpace(
@@ -706,7 +739,9 @@ void BucketContext::Open(
     database_ptr = it->second.get();
   }
 
+  pending_connections_.push_back(connection->weak_factory.GetWeakPtr());
   database_ptr->ScheduleOpenConnection(std::move(connection));
+  OnConnectionPriorityUpdated();
 }
 
 void BucketContext::DeleteDatabase(
