@@ -29,6 +29,7 @@ source_set("ui_bundled") {
     ":location_bar_model_delegate",
     "//base",
     "//components/feature_engagement/public",
+    "//components/lens",
     "//components/omnibox/browser",
     "//components/open_from_clipboard:",
     "//components/profile_metrics:profile_metrics",

@@ -45,6 +45,8 @@ constexpr char kOneLensDesktopWebFullscreen[] = "df";
 constexpr char kOneLensAmbientVisualSearchWebFullscreen[] = "avsf";
 constexpr char kViewportWidthQueryParameter[] = "vpw";
 constexpr char kViewportHeightQueryParameter[] = "vph";
+constexpr char kLensRequestQueryParameter[] = "vsrid";
+constexpr char kLensSurfaceQueryParameter[] = "lns_surface";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
@@ -225,6 +227,17 @@ bool IsValidLensResultUrl(const GURL& url) {
 bool IsLensUrl(const GURL& url) {
   return !url.is_empty() &&
          url.host() == GURL(lens::features::GetHomepageURLForLens()).host();
+}
+
+bool IsLensMWebResult(const GURL& url) {
+  std::string request_id;
+  std::string surface;
+  GURL result_url = GURL(lens::features::GetLensOverlayResultsSearchURL());
+  return !url.is_empty() && url.host() == result_url.host() &&
+         url.path() == result_url.path() &&
+         net::GetValueForKeyInQuery(url, kLensRequestQueryParameter,
+                                    &request_id) &&
+         !net::GetValueForKeyInQuery(url, kLensSurfaceQueryParameter, &surface);
 }
 
 }  // namespace lens
