@@ -231,8 +231,9 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
           AmbientBadgeManager::State::kShowing);
 }
 
+// TODO(crbug.com/376278389): Flaky
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
-                       BlockedBySegmentationResult) {
+                       DISABLED_BlockedBySegmentationResult) {
   SetSegmentationResult(MLInstallabilityPromoter::kDontShowLabel);
 
   RunTest(embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
