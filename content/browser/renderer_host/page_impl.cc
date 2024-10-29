@@ -366,6 +366,49 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
+int32_t PageImpl::GetSavedQueryResultIndexOrStoreCallback(
+    const url::Origin& origin,
+    const GURL& script_url,
+    const std::string& operation_name,
+    const std::u16string& query_name,
+    base::OnceCallback<void(uint32_t)> callback) {
+  auto key = std::make_tuple(origin, script_url, operation_name, query_name);
+  auto it = select_url_saved_query_index_results_.find(key);
+  if (it == select_url_saved_query_index_results_.end()) {
+    select_url_saved_query_index_results_[key] = SharedStorageSavedQueryData();
+    // The result index will be determined by running the registered worklet
+    // operation upon return to the SHaredStorageWorkletHost.
+    return -2;
+  }
+  if (it->second.index == -1) {
+    // The result index will be determined when a previously initiated worklet
+    // operation finishes running. We save a callback that will notify us of the
+    // result.
+    it->second.callbacks.push(std::move(callback));
+    return -1;
+  }
+  // The result index has been stored from a previously resolved worklet
+  // operation.
+  return it->second.index;
+}
+
+void PageImpl::SetSavedQueryResultIndexAndRunCallbacks(
+    const url::Origin& origin,
+    const GURL& script_url,
+    const std::string& operation_name,
+    const std::u16string& query_name,
+    uint32_t index) {
+  auto key = std::make_tuple(origin, script_url, operation_name, query_name);
+  auto it = select_url_saved_query_index_results_.find(key);
+  CHECK(it != select_url_saved_query_index_results_.end());
+  CHECK_EQ(it->second.index, -1L);
+  it->second.index = index;
+  while (!it->second.callbacks.empty()) {
+    std::move(it->second.callbacks.front()).Run(index);
+    it->second.callbacks.pop();
+  }
+}
+
 blink::SharedStorageSelectUrlBudgetStatus
 PageImpl::CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
                                              double bits_to_charge) {

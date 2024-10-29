@@ -416,22 +416,28 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
   void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
+      const std::string& operation_name,
+      const std::u16string& saved_query_name_to_cache,
       bool script_execution_success,
       const std::string& script_execution_error_message,
       uint32_t index,
+      bool use_page_budgets,
       BudgetResult budget_result) override {
     OnRunURLSelectionOperationOnWorkletFinishedHelper(
-        urn_uuid, start_time, script_execution_success,
-        script_execution_error_message, index, std::move(budget_result),
-        /*initial_message=*/true);
+        urn_uuid, start_time, operation_name, saved_query_name_to_cache,
+        script_execution_success, script_execution_error_message, index,
+        use_page_budgets, std::move(budget_result), /*initial_message=*/true);
   }
 
   void OnRunURLSelectionOperationOnWorkletFinishedHelper(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
+      const std::string& operation_name,
+      const std::u16string& saved_query_name_to_cache,
       bool script_execution_success,
       const std::string& script_execution_error_message,
       uint32_t index,
+      bool use_page_budgets,
       BudgetResult budget_result,
       bool initial_message) {
     bool in_keep_alive = IsInKeepAlivePhase();
@@ -439,14 +445,15 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       pending_worklet_messages_.push_back(base::BindOnce(
           &TestSharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletFinishedHelper,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-          script_execution_success, script_execution_error_message, index,
-          std::move(budget_result),
-          /*initial_message=*/false));
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time, operation_name,
+          saved_query_name_to_cache, script_execution_success,
+          script_execution_error_message, index, use_page_budgets,
+          std::move(budget_result), /*initial_message=*/false));
     } else {
       SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
-          urn_uuid, start_time, script_execution_success,
-          script_execution_error_message, index, std::move(budget_result));
+          urn_uuid, start_time, operation_name, saved_query_name_to_cache,
+          script_execution_success, script_execution_error_message, index,
+          use_page_budgets, std::move(budget_result));
     }
 
     if (initial_message)
@@ -9300,42 +9307,21 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_EQ(num_one_contribution_reports, 1);
 }
 
-class SharedStorageSelectURLLimitBrowserTest
-    : public SharedStorageBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class SharedStorageSelectURLLimitBrowserTestBase
+    : public SharedStorageBrowserTestBase {
  public:
-  SharedStorageSelectURLLimitBrowserTest() {
-    if (LimitSelectURLCalls()) {
-      select_url_limit_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{blink::features::kSharedStorageSelectURLLimit,
-            {{"SharedStorageSelectURLBitBudgetPerPageLoad",
-              base::NumberToString(kSelectURLOverallBitBudget)},
-             {"SharedStorageSelectURLBitBudgetPerSitePerPageLoad",
-              base::NumberToString(kSelectURLSiteBitBudget)}}}},
-          /*disabled_features=*/{});
-    } else {
-      select_url_limit_feature_list_.InitAndDisableFeature(
-          blink::features::kSharedStorageSelectURLLimit);
-    }
-
-    fenced_frame_api_change_feature_.InitWithFeatureState(
-        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
-  }
-
-  bool LimitSelectURLCalls() const { return std::get<0>(GetParam()); }
-
-  bool ResolveSelectURLToConfig() override { return std::get<1>(GetParam()); }
+  virtual bool LimitSelectURLCalls() const { return true; }
 
   // Precondition: `addModule('shared_storage/simple_module.js')` has been
   // called in the main frame.
   void RunSuccessfulSelectURLInMainFrame(
       std::string host_str,
       int num_urls,
-      WebContentsConsoleObserver* console_observer) {
+      WebContentsConsoleObserver* console_observer,
+      const std::u16string& saved_query_name = u"") {
     std::optional<std::pair<GURL, double>> result_pair =
-        RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), host_str,
-                                                         num_urls);
+        RunSelectURLExtractingMappedURLAndBudgetToCharge(
+            shell(), host_str, num_urls, saved_query_name);
     ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url = https_server()->GetURL(
@@ -9353,7 +9339,8 @@ class SharedStorageSelectURLLimitBrowserTest
   void RunSuccessfulSelectURLInIframe(
       FrameTreeNode* iframe_node,
       int num_urls,
-      WebContentsConsoleObserver* console_observer) {
+      WebContentsConsoleObserver* console_observer,
+      const std::u16string& saved_query_name = u"") {
     std::string host_str =
         iframe_node->current_frame_host()->GetLastCommittedURL().host();
     EXPECT_TRUE(ExecJs(iframe_node, R"(
@@ -9361,8 +9348,8 @@ class SharedStorageSelectURLLimitBrowserTest
     )"));
 
     std::optional<std::pair<GURL, double>> result_pair =
-        RunSelectURLExtractingMappedURLAndBudgetToCharge(iframe_node, host_str,
-                                                         num_urls);
+        RunSelectURLExtractingMappedURLAndBudgetToCharge(
+            iframe_node, host_str, num_urls, saved_query_name);
     ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url = https_server()->GetURL(
@@ -9381,7 +9368,8 @@ class SharedStorageSelectURLLimitBrowserTest
   RunSelectURLExtractingMappedURLAndBudgetToCharge(
       const ToRenderFrameHost& execution_target,
       std::string host_str,
-      int num_urls) {
+      int num_urls,
+      const std::u16string& saved_query_name = u"") {
     TestSelectURLFencedFrameConfigObserver config_observer(
         GetStoragePartition());
 
@@ -9390,7 +9378,8 @@ class SharedStorageSelectURLLimitBrowserTest
         .GetAttachedWorkletHostForFrame(execution_target.render_frame_host())
         ->SetExpectedWorkletResponsesCount(1);
 
-    EvalJsResult result = RunSelectURLScript(execution_target, num_urls);
+    EvalJsResult result =
+        RunSelectURLScript(execution_target, num_urls, saved_query_name);
 
     EXPECT_TRUE(result.error.empty()) << result.error;
     const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
@@ -9429,6 +9418,7 @@ class SharedStorageSelectURLLimitBrowserTest
  private:
   EvalJsResult RunSelectURLScript(const ToRenderFrameHost& execution_target,
                                   int num_urls,
+                                  const std::u16string& saved_query_name = u"",
                                   bool keep_alive_after_operation = true) {
     EXPECT_TRUE(ExecJs(execution_target, kGenerateURLsListScript));
     EXPECT_TRUE(
@@ -9439,6 +9429,9 @@ class SharedStorageSelectURLLimitBrowserTest
     EXPECT_TRUE(ExecJs(
         execution_target,
         JsReplace("window.keepWorklet = $1;", keep_alive_after_operation)));
+    EXPECT_TRUE(
+        ExecJs(execution_target,
+               JsReplace("window.savedQueryName = $1;", saved_query_name)));
 
     EvalJsResult result = EvalJs(execution_target, R"(
       (async function() {
@@ -9449,7 +9442,8 @@ class SharedStorageSelectURLLimitBrowserTest
           {
             data: {'mockResult': numUrls - 1},
             resolveToConfig: resolveSelectURLToConfig,
-            keepAlive: keepWorklet
+            keepAlive: keepWorklet,
+            savedQuery: savedQueryName
           }
         );
         if (resolveSelectURLToConfig &&
@@ -9461,7 +9455,36 @@ class SharedStorageSelectURLLimitBrowserTest
     )");
     return result;
   }
+};
 
+class SharedStorageSelectURLLimitBrowserTest
+    : public SharedStorageSelectURLLimitBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SharedStorageSelectURLLimitBrowserTest() {
+    if (LimitSelectURLCalls()) {
+      select_url_limit_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::kSharedStorageSelectURLLimit,
+            {{"SharedStorageSelectURLBitBudgetPerPageLoad",
+              base::NumberToString(kSelectURLOverallBitBudget)},
+             {"SharedStorageSelectURLBitBudgetPerSitePerPageLoad",
+              base::NumberToString(kSelectURLSiteBitBudget)}}}},
+          /*disabled_features=*/{});
+    } else {
+      select_url_limit_feature_list_.InitAndDisableFeature(
+          blink::features::kSharedStorageSelectURLLimit);
+    }
+
+    fenced_frame_api_change_feature_.InitWithFeatureState(
+        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
+  }
+
+  bool LimitSelectURLCalls() const override { return std::get<0>(GetParam()); }
+
+  bool ResolveSelectURLToConfig() override { return std::get<1>(GetParam()); }
+
+ private:
   base::test::ScopedFeatureList select_url_limit_feature_list_;
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
 };
@@ -10043,6 +10066,248 @@ IN_PROC_BROWSER_TEST_P(
         num_site_limit * (2 + per_site_input2_call_limit) +
             overall_budget_remaining + 1);
   }
+}
+
+class SharedStorageSelectURLSavedQueryBrowserTest
+    : public SharedStorageSelectURLLimitBrowserTestBase {
+ public:
+  SharedStorageSelectURLSavedQueryBrowserTest() {
+    select_url_limit_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageSelectURLLimit,
+          {{"SharedStorageSelectURLBitBudgetPerPageLoad",
+            base::NumberToString(kSelectURLOverallBitBudget)},
+           {"SharedStorageSelectURLBitBudgetPerSitePerPageLoad",
+            base::NumberToString(kSelectURLSiteBitBudget)}}}},
+        /*disabled_features=*/{});
+    select_url_saved_query_feature_.InitAndEnableFeature(
+        blink::features::kSharedStorageSelectURLSavedQueries);
+    fenced_frame_api_change_feature_.InitWithFeatureState(
+        blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
+  }
+
+  bool ResolveSelectURLToConfig() override { return true; }
+
+  // Precondition: `addModule('shared_storage/simple_module.js')` has been
+  // called in the main frame.
+  void RunSuccessfulSelectURLFromPreviouslySavedQueryInMainFrame(
+      std::string host_str,
+      int num_urls,
+      WebContentsConsoleObserver* console_observer,
+      const std::u16string& saved_query_name) {
+    CHECK(!saved_query_name.empty());
+    size_t num_previous_messages = console_observer->messages().size();
+
+    std::optional<std::pair<GURL, double>> result_pair =
+        RunSelectURLExtractingMappedURLAndBudgetToCharge(
+            shell(), host_str, num_urls, saved_query_name);
+    ASSERT_TRUE(result_pair.has_value());
+
+    GURL expected_mapped_url = https_server()->GetURL(
+        host_str, base::StrCat({"/fenced_frames/title",
+                                base::NumberToString(num_urls - 1), ".html"}));
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, std::log2(num_urls));
+
+    // There should be no new console messages, since the saved index was
+    // retrieved instead of running a worklet operation.
+    int num_new_messages =
+        console_observer->messages().size() - num_previous_messages;
+    EXPECT_EQ(num_new_messages, 0);
+  }
+
+  // Precondition: `addModule('shared_storage/simple_module.js')` has NOT been
+  // called in `iframe_node`.
+  void RunSuccessfulSelectURLFromPreviouslySavedQueryInIframe(
+      FrameTreeNode* iframe_node,
+      int num_urls,
+      WebContentsConsoleObserver* console_observer,
+      const std::u16string& saved_query_name) {
+    CHECK(!saved_query_name.empty());
+    size_t num_previous_messages = console_observer->messages().size();
+
+    std::string host_str =
+        iframe_node->current_frame_host()->GetLastCommittedURL().host();
+    EXPECT_TRUE(ExecJs(iframe_node, R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+    std::optional<std::pair<GURL, double>> result_pair =
+        RunSelectURLExtractingMappedURLAndBudgetToCharge(
+            iframe_node, host_str, num_urls, saved_query_name);
+    ASSERT_TRUE(result_pair.has_value());
+
+    GURL expected_mapped_url = https_server()->GetURL(
+        host_str, base::StrCat({"/fenced_frames/title",
+                                base::NumberToString(num_urls - 1), ".html"}));
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, std::log2(num_urls));
+
+    // `addModule` should generate 2 new console nessages. There should be no
+    // new console messages from `selectURL`, since the saved index was
+    // retrieved instead of running a worklet operation.
+    int num_new_messages =
+        console_observer->messages().size() - num_previous_messages;
+    EXPECT_EQ(num_new_messages, 2);
+  }
+
+ private:
+  base::test::ScopedFeatureList select_url_limit_feature_list_;
+  base::test::ScopedFeatureList select_url_saved_query_feature_;
+  base::test::ScopedFeatureList fenced_frame_api_change_feature_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
+                       SelectURL_MainFrame_SiteLimitReached_ReuseSavedQueries) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  // This test relies on the assumption that `kSelectURLOverallBitBudget` is set
+  // to be greater than or equal to `kSelectURLSiteBitBudget`.
+  EXPECT_GE(kSelectURLOverallBitBudget, kSelectURLSiteBitBudget);
+
+  // Here each call to `selectURL()` will have 8 input URLs, and hence
+  // 3 = log2(8) bits of entropy.
+  int call_limit = kSelectURLSiteBitBudget / 3;
+
+  for (int call = 0; call < call_limit; call++) {
+    RunSuccessfulSelectURLInMainFrame("a.test", /*num_urls=*/8,
+                                      &console_observer,
+                                      u"query" + base::NumberToString16(call));
+  }
+
+  // The limit for `selectURL()` has now been reached for "a.test". Make one
+  // more call without using the previously saved queries. This will return the
+  // default URL due to insufficient site pageload budget.
+  std::optional<std::pair<GURL, double>> result_pair =
+      RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), "a.test",
+                                                       /*num_urls=*/8);
+  ASSERT_TRUE(result_pair.has_value());
+
+  GURL expected_mapped_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html");
+  EXPECT_EQ(result_pair->first, expected_mapped_url);
+  EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
+
+  EXPECT_EQ("Insufficient budget for selectURL().",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Making calls using previously saved queries will succeed despite the lack
+  // of budget.
+  for (int call = 0; call < call_limit; call++) {
+    RunSuccessfulSelectURLFromPreviouslySavedQueryInMainFrame(
+        "a.test", /*num_urls=*/8, &console_observer,
+        u"query" + base::NumberToString16(call));
+  }
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
+
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     2 * call_limit + 1);
+  histogram_tester_.ExpectBucketCount(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+      2 * call_limit);
+  histogram_tester_.ExpectBucketCount(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::
+          kInsufficientSitePageloadBudget,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageSelectURLSavedQueryBrowserTest,
+    SelectURL_CrossOriginIframesSharingCommonSite_SiteLimitReached_ReuseSavedQueries) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // This test relies on the assumption that `kSelectURLOverallBitBudget` is set
+  // to be greater than or equal to `kSelectURLSiteBitBudget`.
+  EXPECT_GE(kSelectURLOverallBitBudget, kSelectURLSiteBitBudget);
+
+  // Here each call to `selectURL()` will have 8 input URLs, and hence
+  // 3 = log2(8) bits of entropy.
+  int call_limit = kSelectURLSiteBitBudget / 3;
+
+  GURL iframe_url;
+
+  for (int call = 0; call < call_limit; call++) {
+    std::string iframe_host =
+        base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+
+    iframe_url = https_server()->GetURL(iframe_host, kSimplePagePath);
+
+    // Create a new iframe.
+    FrameTreeNode* iframe_node =
+        CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+    RunSuccessfulSelectURLInIframe(iframe_node, /*num_urls=*/8,
+                                   &console_observer,
+                                   u"query" + base::NumberToString16(call));
+  }
+
+  iframe_url = https_server()->GetURL("b.test", kSimplePagePath);
+
+  // Create a new iframe.
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+  EXPECT_TRUE(ExecJs(iframe_node, R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  // The limit for `selectURL()` has now been reached for "b.test". Make one
+  // more call, which will return the default URL due to insufficient site
+  // pageload budget.
+  std::optional<std::pair<GURL, double>> result_pair =
+      RunSelectURLExtractingMappedURLAndBudgetToCharge(iframe_node, "b.test",
+                                                       /*num_urls=*/8);
+  ASSERT_TRUE(result_pair.has_value());
+
+  GURL expected_mapped_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title0.html");
+  EXPECT_EQ(result_pair->first, expected_mapped_url);
+  EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
+
+  EXPECT_EQ("Insufficient budget for selectURL().",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  for (int call = 0; call < call_limit; call++) {
+    std::string iframe_host =
+        base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+
+    iframe_url = https_server()->GetURL(iframe_host, kSimplePagePath);
+
+    // Create a new iframe.
+    iframe_node = CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+    RunSuccessfulSelectURLFromPreviouslySavedQueryInIframe(
+        iframe_node, /*num_urls=*/8, &console_observer,
+        u"query" + base::NumberToString16(call));
+  }
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     2 * call_limit + 1);
+  histogram_tester_.ExpectBucketCount(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+      2 * call_limit);
+  histogram_tester_.ExpectBucketCount(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::
+          kInsufficientSitePageloadBudget,
+      1);
 }
 
 class SharedStorageContextBrowserTest

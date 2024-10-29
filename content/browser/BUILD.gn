@@ -2112,6 +2112,8 @@ source_set("browser") {
     "shared_storage/shared_storage_header_observer.h",
     "shared_storage/shared_storage_render_thread_worklet_driver.cc",
     "shared_storage/shared_storage_render_thread_worklet_driver.h",
+    "shared_storage/shared_storage_saved_query_data.cc",
+    "shared_storage/shared_storage_saved_query_data.h",
     "shared_storage/shared_storage_url_loader_factory_proxy.cc",
     "shared_storage/shared_storage_url_loader_factory_proxy.h",
     "shared_storage/shared_storage_worklet_host.cc",

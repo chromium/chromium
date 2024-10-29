@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -90,6 +91,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       blink::CloneableMessage serialized_data,
       bool keep_alive_after_operation,
       blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+      const std::u16string& saved_query_name,
       SelectURLCallback callback) override;
   void Run(const std::string& name,
            blink::CloneableMessage serialized_data,
@@ -158,9 +160,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   virtual void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
+      const std::string& operation_name,
+      const std::u16string& saved_query_name_to_cache,
       bool script_execution_succeeded,
       const std::string& script_execution_error_message,
       uint32_t index,
+      bool use_page_budgets,
       BudgetResult budget_result);
 
   // Called if `keep_alive_after_operation_` is false, `IsInKeepAlivePhase()` is
@@ -183,9 +188,16 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
+      const std::string& operation_name,
+      const std::u16string& saved_query_name_to_cache,
       bool success,
       const std::string& error_message,
       uint32_t index);
+
+  void OnSelectURLSavedQueryFound(const GURL& urn_uuid,
+                                  base::TimeTicks start_time,
+                                  const std::string& operation_name,
+                                  uint32_t index);
 
   // Run `keep_alive_finished_callback_` to destroy `this`. Called when the last
   // pending operation has finished, or when a timeout is reached after entering
@@ -279,6 +291,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Whether `shared_storage_origin_` is same origin with the creator context's
   // origin.
   bool is_same_origin_worklet_;
+
+  // Whether saved queries are supported.
+  const bool saved_queries_enabled_;
 
   // A map of unresolved URNs to the candidate URL with metadata vector. Inside
   // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is

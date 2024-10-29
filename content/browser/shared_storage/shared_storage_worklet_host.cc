@@ -128,6 +128,7 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
     uint32_t index,
+    bool use_page_budgets,
     double budget_remaining,
     blink::SharedStorageSelectUrlBudgetStatus& budget_status) {
   DCHECK_EQ(budget_status, blink::SharedStorageSelectUrlBudgetStatus::kOther);
@@ -140,11 +141,14 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
   // If we are running out of budget, consider this mapping to be failed. Use
   // the default URL, and there's no need to further charge the budget.
   if (budget_to_charge > 0.0) {
-    budget_status = (budget_to_charge > budget_remaining)
-                        ? blink::SharedStorageSelectUrlBudgetStatus::
-                              kInsufficientSiteNavigationBudget
-                        : page->CheckAndMaybeDebitSelectURLBudgets(
-                              shared_storage_site, budget_to_charge);
+    budget_status =
+        (budget_to_charge > budget_remaining)
+            ? blink::SharedStorageSelectUrlBudgetStatus::
+                  kInsufficientSiteNavigationBudget
+            : (use_page_budgets ? page->CheckAndMaybeDebitSelectURLBudgets(
+                                      shared_storage_site, budget_to_charge)
+                                : blink::SharedStorageSelectUrlBudgetStatus::
+                                      kSufficientBudget);
     if (budget_status !=
         blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget) {
       index = 0;
@@ -279,6 +283,8 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       is_same_origin_worklet_(document_service.render_frame_host()
                                   .GetLastCommittedOrigin()
                                   .IsSameOriginWith(shared_storage_origin_)),
+      saved_queries_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kSharedStorageSelectURLSavedQueries)),
       creation_time_(base::TimeTicks::Now()) {
   GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
       &(document_service.render_frame_host()));
@@ -374,12 +380,12 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     std::optional<FencedFrameConfig> config =
         page_->fenced_frame_urls_map()
             .OnSharedStorageURNMappingResultDetermined(
-                urn_uuid,
-                CreateSharedStorageURNMappingResult(
-                    storage_partition_, browser_context_, page_.get(),
-                    main_frame_origin_, shared_storage_origin_,
-                    shared_storage_site_, std::move(it->second),
-                    /*index=*/0, /*budget_remaining=*/0.0, budget_status));
+                urn_uuid, CreateSharedStorageURNMappingResult(
+                              storage_partition_, browser_context_, page_.get(),
+                              main_frame_origin_, shared_storage_origin_,
+                              shared_storage_site_, std::move(it->second),
+                              /*index=*/0, /*use_page_budgets=*/false,
+                              /*budget_remaining=*/0.0, budget_status));
 
     shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
 
@@ -394,6 +400,7 @@ void SharedStorageWorkletHost::SelectURL(
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+    const std::u16string& saved_query_name,
     SelectURLCallback callback) {
   CHECK(private_aggregation_config);
   // `page_` can be null. See test
@@ -622,6 +629,32 @@ void SharedStorageWorkletHost::SelectURL(
       SharedStorageEventParams::CreateForSelectURL(name, serialized_data,
                                                    std::move(converted_urls)));
 
+  if (saved_queries_enabled_ && !saved_query_name.empty()) {
+    auto saved_query_callback = base::BindOnce(
+        &SharedStorageWorkletHost::OnSelectURLSavedQueryFound,
+        weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(), name);
+    int32_t index = page_->GetSavedQueryResultIndexOrStoreCallback(
+        shared_storage_origin_, script_source_url_, name, saved_query_name,
+        std::move(saved_query_callback));
+    if (index >= 0) {
+      // The result index has been stored from a previously resolved worklet
+      // operation.
+      OnSelectURLSavedQueryFound(urn_uuid, base::TimeTicks::Now(), name, index);
+      return;
+    }
+    if (index == -1) {
+      // The result index will be determined when a previously initiated worklet
+      // operation finishes running. A callback (`saved_query_callback`) will
+      // notify us of the result.
+      return;
+    }
+
+    // The result index will be determined by running the registered worklet
+    // operation via
+    // `blink::mojom::SharedStorageWorkletService::RunURLSelectionOperation()`.
+    CHECK_EQ(index, -2);
+  }
+
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
       name, urls, std::move(serialized_data),
       MaybeConstructPrivateAggregationOperationDetails(
@@ -629,7 +662,8 @@ void SharedStorageWorkletHost::SelectURL(
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now()));
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(),
+          name, saved_query_name));
 }
 
 void SharedStorageWorkletHost::Run(
@@ -1252,6 +1286,8 @@ void SharedStorageWorkletHost::
     OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
         const GURL& urn_uuid,
         base::TimeTicks start_time,
+        const std::string& operation_name,
+        const std::u16string& saved_query_name_to_cache,
         bool success,
         const std::string& error_message,
         uint32_t index) {
@@ -1277,15 +1313,19 @@ void SharedStorageWorkletHost::
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-                     success, error_message, index));
+                     operation_name, saved_query_name_to_cache, success,
+                     error_message, index, /*use_page_budgets=*/true));
 }
 
 void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
     base::TimeTicks start_time,
+    const std::string& operation_name,
+    const std::u16string& saved_query_name_to_cache,
     bool script_execution_succeeded,
     const std::string& script_execution_error_message,
     uint32_t index,
+    bool use_page_budgets,
     BudgetResult budget_result) {
   auto it = unresolved_urns_.find(urn_uuid);
   CHECK(it != unresolved_urns_.end(), base::NotFatalUntil::M130);
@@ -1302,8 +1342,8 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
         CreateSharedStorageURNMappingResult(
             storage_partition_, browser_context_, page_.get(),
             main_frame_origin_, shared_storage_origin_, shared_storage_site_,
-            std::move(urls_with_metadata), index, budget_result.bits,
-            budget_status);
+            std::move(urls_with_metadata), index, use_page_budgets,
+            budget_result.bits, budget_status);
 
     // Log histograms. These do not need the `document_service_`.
     blink::LogSharedStorageSelectURLBudgetStatus(budget_status);
@@ -1346,6 +1386,15 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
                 urn_uuid, std::move(mapping_result));
 
     shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
+
+    // If the query is named and not previously cached, cache the query's
+    // `index` for later and run any callbacks stored to make use of this
+    // result.
+    if (saved_queries_enabled_ && !saved_query_name_to_cache.empty()) {
+      page_->SetSavedQueryResultIndexAndRunCallbacks(
+          shared_storage_origin_, script_source_url_, operation_name,
+          saved_query_name_to_cache, index);
+    }
   } else {
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::kSelectURLWebVisible);
@@ -1355,6 +1404,32 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
       "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
       base::TimeTicks::Now() - start_time);
   DecrementPendingOperationsCount();
+}
+
+void SharedStorageWorkletHost::OnSelectURLSavedQueryFound(
+    const GURL& urn_uuid,
+    base::TimeTicks start_time,
+    const std::string& operation_name,
+    uint32_t index) {
+  auto it = unresolved_urns_.find(urn_uuid);
+  CHECK(it != unresolved_urns_.end(), base::NotFatalUntil::M130);
+
+  if (index >= it->second.size()) {
+    // Return the default index if the saved index is out-of-range for the
+    // current vector of URLs.
+    index = 0;
+  }
+
+  shared_storage_manager_->GetRemainingBudget(
+      shared_storage_site_,
+      base::BindOnce(&SharedStorageWorkletHost::
+                         OnRunURLSelectionOperationOnWorkletFinished,
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
+                     operation_name,
+                     /*saved_query_name_to_cache=*/std::u16string(),
+                     /*script_execution_succeeded=*/true,
+                     /*script_execution_error_message=*/std::string(), index,
+                     /*use_page_budgets=*/false));
 }
 
 void SharedStorageWorkletHost::ExpireWorklet() {
