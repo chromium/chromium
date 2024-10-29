@@ -392,6 +392,8 @@ class LensOverlayController : public LensSearchboxClient,
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
   // Sets whether the side panel should show a full error page.
   virtual void SetSidePanelShowErrorPage(bool should_show_error_page);
+  // Whether it's possible to capture a screenshot. virtual for testing.
+  virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.

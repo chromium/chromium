@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -587,6 +588,10 @@ class LensOverlayControllerFake : public LensOverlayController {
     side_panel_set_hide_error_page_++;
   }
 
+  bool IsScreenshotPossible(content::RenderWidgetHostView*) override {
+    return is_screenshot_possible_;
+  }
+
   // Helper function to force the fake query controller to return errors in its
   // responses to full image requests. This should be called before ShowUI.
   void SetFullImageRequestShouldReturnError() {
@@ -608,6 +613,7 @@ class LensOverlayControllerFake : public LensOverlayController {
   int is_side_panel_loading_set_to_false_ = 0;
   LensOverlayPageFake fake_overlay_page_;
   bool full_image_request_should_return_error_ = false;
+  bool is_screenshot_possible_ = true;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
       &fake_overlay_page_};
 };
@@ -4724,6 +4730,33 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   ASSERT_EQ(fake_query_controller->num_interaction_requests_sent_, 1);
   ASSERT_EQ(fake_query_controller->last_queried_text_, "oranges");
+}
+
+// This test checks that there is no crash when showing lens overlay when
+// screenshot is not available.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       ScreenshotUnavailable) {
+  // Wait for the real page to finish painting.
+  WaitForPaint();
+
+  // Pretend like a screenshot isn't available.
+  auto* fake_controller =
+      static_cast<LensOverlayControllerFake*>(GetLensOverlayController());
+  fake_controller->is_screenshot_possible_ = false;
+
+  // Show the overlay. State should still be off.
+  GetLensOverlayController()->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(fake_controller->state(), State::kOff);
+
+  // Background the tab.
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), /*index=*/-1,
+                   /*foreground=*/true);
+
+  // There should be two tabs. Close the first tab.
+  // Regression testing for crbug.com/373767988. Ensure no crash when
+  // closing a tab that wasn't screenshotable.
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

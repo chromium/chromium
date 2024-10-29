@@ -147,7 +147,6 @@ class TabFeatures {
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_controller_;
-  std::unique_ptr<LensOverlayController> lens_overlay_controller_;
   std::unique_ptr<FedCmAccountSelectionViewController>
       fedcm_account_selection_view_controller_;
 
@@ -155,6 +154,7 @@ class TabFeatures {
       permission_indicators_tab_data_;
 
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
+  std::unique_ptr<LensOverlayController> lens_overlay_controller_;
 
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>

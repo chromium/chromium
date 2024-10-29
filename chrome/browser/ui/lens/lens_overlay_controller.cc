@@ -477,6 +477,14 @@ void LensOverlayController::ShowUI(
                                       ->GetExclusiveAccessManager()
                                       ->fullscreen_controller());
 
+  NotifyUserEducationAboutOverlayUsed();
+
+  // Establish data required for session metrics.
+  search_performed_in_session_ = false;
+  invocation_time_ = base::TimeTicks::Now();
+  invocation_time_since_epoch_ = base::Time::Now();
+  hats_triggered_in_session_ = false;
+
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
   if (side_panel_coordinator_->IsSidePanelShowing()) {
@@ -493,14 +501,6 @@ void LensOverlayController::ShowUI(
   } else {
     CaptureScreenshot();
   }
-
-  NotifyUserEducationAboutOverlayUsed();
-
-  // Establish data required for session metrics.
-  search_performed_in_session_ = false;
-  invocation_time_ = base::TimeTicks::Now();
-  invocation_time_since_epoch_ = base::Time::Now();
-  hats_triggered_in_session_ = false;
 }
 
 void LensOverlayController::CloseUIAsync(
@@ -964,6 +964,11 @@ void LensOverlayController::SetSidePanelShowErrorPage(
   pending_side_panel_should_show_error_page_ = should_show_error_page;
 }
 
+bool LensOverlayController::IsScreenshotPossible(
+    content::RenderWidgetHostView* view) {
+  return view && view->IsSurfaceAvailableForCopy();
+}
+
 void LensOverlayController::OnSidePanelWillHide(
     SidePanelEntryHideReason reason) {
   // If the tab is not in the foreground, this is not relevant.
@@ -1374,6 +1379,8 @@ class LensOverlayController::UnderlyingWebContentsObserver
 };
 
 void LensOverlayController::CaptureScreenshot() {
+  state_ = State::kScreenshot;
+
   // Begin the process of grabbing a screenshot.
   content::RenderWidgetHostView* view = tab_->GetContents()
                                             ->GetPrimaryMainFrame()
@@ -1382,13 +1389,11 @@ void LensOverlayController::CaptureScreenshot() {
                                             ->GetView();
 
   // During initialization and shutdown a capture may not be possible.
-  if (!view || !view->IsSurfaceAvailableForCopy()) {
+  if (!IsScreenshotPossible(view)) {
     CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
-
-  state_ = State::kScreenshot;
 
   // Side panel is now full closed, take screenshot and open overlay.
   view->CopyFromSurface(
