@@ -170,6 +170,13 @@ BASE_FEATURE(kMediaFoundationVP9L1T2Support,
 BASE_FEATURE(kMediaFoundationVP9L1T3Support,
              "MediaFoundationVP9L1T3Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaFoundationAV1L1T2Support,
+             "MediaFoundationAV1L1T2Support",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Up to 3 temporal layers, i.e. this enables both L1T2 and L1T3.
+BASE_FEATURE(kMediaFoundationAV1L1T3Support,
+             "MediaFoundationAV1L1T3Support",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !defined(ARCH_CPU_X86)
 
 BASE_FEATURE(kMediaFoundationUseSWBRCForH264Camera,
@@ -362,6 +369,22 @@ int GetMaxTemporalLayerVendorLimit(
       return 3;
     }
     if (base::FeatureList::IsEnabled(kMediaFoundationVP9L1T2Support)) {
+      return 2;
+    }
+    return 1;
+  }
+
+  if (codec == VideoCodec::kAV1) {
+    // Whenever you add to the allow-list a new temporal layer limit, make sure
+    // you update output bitstream metadata to indicate whether the encoded AV1
+    // bitstream follows WebRTC SVC spec.
+    if (vendor != DriverVendor::kIntel) {
+      return 1;
+    }
+    if (base::FeatureList::IsEnabled(kMediaFoundationAV1L1T3Support)) {
+      return 3;
+    }
+    if (base::FeatureList::IsEnabled(kMediaFoundationAV1L1T2Support)) {
       return 2;
     }
     return 1;
@@ -1289,14 +1312,16 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     EncodeInternal(frame, discard_options, /*discard_output=*/true);
   }
 
-  if (codec_ == VideoCodec::kVP9 && vendor_ == DriverVendor::kIntel &&
-      IsTemporalScalabilityCoding() && options.key_frame) {
+  if ((codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) &&
+      vendor_ == DriverVendor::kIntel && IsTemporalScalabilityCoding() &&
+      options.key_frame) {
     // Currently, Intel drivers only allow apps to request keyframe on base
     // layer(T0) when encoding at L1T2/L1T3, any keyframe requests on T1/T2
-    // layer will be ignored by driver and not return a keyframe. For VP9, we
-    // expect when keyframe is requested, encoder will reset the temporal layer
-    // state and produce a keyframe, to work around this issue, MFVEA will add
-    // input and internally discard output until driver transition to T0 layer.
+    // layer will be ignored by driver and not return a keyframe. For VP9/AV1,
+    // we expect when keyframe is requested, encoder will reset the temporal
+    // layer state and produce a keyframe, to work around this issue, MFVEA will
+    // add input and internally discard output until driver transition to T0
+    // layer.
     uint32_t distance_to_base_layer = GetDistanceToNextTemporalBaseLayer(
         input_since_keyframe_count_ + pending_input_queue_.size(),
         num_temporal_layers_);
@@ -2050,6 +2075,26 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
              << var.ulVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set temporal layer count", false);
+
+    // On Intel platform at L1T2, for some codecs(AV1 & HEVC), recent drivers
+    // allow configuring the number of reference frames to 1, which will produce
+    // bitstream that follows WebRTC SVC spec for L1T2. For L1T3, however,
+    // driver does not allow reducing the number of reference frames to 1.
+    if (vendor_ == DriverVendor::kIntel && num_temporal_layers_ == 2) {
+      if (S_OK ==
+          codec_api_->IsModifiable(&CODECAPI_AVEncVideoMaxNumRefFrame)) {
+        var.ulVal = 1;
+        DVLOG(3) << "Setting CODECAPI_AVEncVideoMaxNumRefFrame to "
+                 << var.ulVal;
+        hr = codec_api_->SetValue(&CODECAPI_AVEncVideoMaxNumRefFrame, &var);
+        if (SUCCEEDED(hr)) {
+          encoder_produces_svc_spec_compliant_bitstream_ = true;
+        } else {
+          // Failing to set number of reference frames is not fatal.
+          DVLOG(3) << "Couldn't set CODECAPI_AVEncVideoMaxNumRefFrame to 1";
+        }
+      }
+    }
   }
 
   if (!rate_ctrl_ &&
@@ -2682,6 +2727,15 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       md.h264.emplace().temporal_idx = temporal_id;
     } else if (codec_ == VideoCodec::kHEVC) {
       md.svc_generic.emplace().temporal_idx = temporal_id;
+    } else if (codec_ == VideoCodec::kAV1) {
+      SVCGenericMetadata& svc = md.svc_generic.emplace();
+      svc.temporal_idx = temporal_id;
+      svc.spatial_idx = 0;
+      svc.follow_svc_spec = encoder_produces_svc_spec_compliant_bitstream_;
+      if (!svc.follow_svc_spec) {
+        svc.reference_flags = bits_md.reference_idx_flags;
+        svc.refresh_flags = bits_md.refresh_frame_flags;
+      }
     } else if (codec_ == VideoCodec::kVP9) {
       Vp9Metadata& vp9 = md.vp9.emplace();
       if (keyframe) {

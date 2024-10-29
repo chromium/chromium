@@ -342,6 +342,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Max supported framerate and resolution combinations.
   std::vector<FramerateAndResolution> max_framerate_and_resolutions_;
 
+  bool encoder_produces_svc_spec_compliant_bitstream_ = false;
+
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
   base::WeakPtr<MediaFoundationVideoEncodeAccelerator> weak_ptr_;
