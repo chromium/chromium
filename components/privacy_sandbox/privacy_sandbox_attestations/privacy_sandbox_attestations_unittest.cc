@@ -129,6 +129,8 @@ class PrivacySandboxAttestationsFeatureEnabledTest
 
   // Return the final expected status of `IsSiteAttested` given the `status`
   // which represents the actual status of the attestation.
+  // Note that this is the expected status when default behavior is not
+  // specified by the call site.
   Status GetExpectedStatus(Status status) {
     // If the attestations map is absent and feature
     // `kDefaultAllowPrivacySandboxAttestations` is on, the expected status is
@@ -709,6 +711,36 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 3);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
                                        Status::kAttestationFailed, 1);
+}
+
+TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
+       AttestationsDefaultBehaviorAllowWithMapBeingAbsent) {
+  net::SchemefulSite site(GURL("https://example.com"));
+
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kAttributionReporting,
+          AttestationsDefaultBehavior::kAllow);
+  EXPECT_EQ(attestation_status, Status::kAllowed);
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
+}
+
+TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
+       AttestationsDefaultBehaviorDenyWithMapBeingAbsent) {
+  net::SchemefulSite site(GURL("https://example.com"));
+
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kAttributionReporting,
+          AttestationsDefaultBehavior::kDeny);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileNotYetChecked);
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

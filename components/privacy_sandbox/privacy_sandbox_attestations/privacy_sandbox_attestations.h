@@ -37,6 +37,12 @@ using PrivacySandboxAttestationsGatedAPISet =
 using PrivacySandboxAttestationsMap =
     base::flat_map<net::SchemefulSite, PrivacySandboxAttestationsGatedAPISet>;
 
+// The default behavior when attestations are not yet ready.
+enum class AttestationsDefaultBehavior {
+  kAllow,
+  kDeny,
+};
+
 class PrivacySandboxAttestations {
  public:
   // Describes the status of attestations file parsing.
@@ -95,13 +101,19 @@ class PrivacySandboxAttestations {
 
   // Record the status returned by `IsSiteAttestedInternal` to a histogram, then
   // return the status.
+  // `attestations_default_behavior` optionally specifies the behavior when
+  // attestations are not yet ready. By default it depends on the feature
+  // `kDefaultAllowPrivacySandboxAttestations`, and when specified this
+  // parameter takes precedence over the feature status.
   // TODO(crbug.com/40940888): This method will occasionally return false
   // positives i.e. it may mark some sites as attested even when they are not.
   // This will occur for example, if the attestations file is corrupted on-disk,
   // or the file is otherwise unavailable.
   PrivacySandboxSettingsImpl::Status IsSiteAttested(
       const net::SchemefulSite& site,
-      PrivacySandboxAttestationsGatedAPI invoking_api) const;
+      PrivacySandboxAttestationsGatedAPI invoking_api,
+      std::optional<AttestationsDefaultBehavior> attestations_default_behavior =
+          std::nullopt) const;
 
   // Invoke `LoadAttestationsInternal()` to parse the attestations file
   // asynchronously on the SequencedTaskRunner `task_runner_` in the thread

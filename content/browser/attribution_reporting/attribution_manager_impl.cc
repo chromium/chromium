@@ -578,8 +578,6 @@ ScopedUseInMemoryStorageForTesting::~ScopedUseInMemoryStorageForTesting() {
 
 bool AttributionManagerImpl::IsReportAllowed(
     const AttributionReport& report) const {
-  // TODO(crbug.com/374790908): Consider always default allow before
-  // attestations are loaded.
   return IsOperationAllowed(
       *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kReport,

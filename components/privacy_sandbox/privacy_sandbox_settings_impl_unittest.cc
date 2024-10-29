@@ -1681,9 +1681,9 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetChecked) {
       TestOutput{
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
-               kMaySendAttributionReport, kIsFledgeJoinAllowed,
-               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
-               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
@@ -1692,8 +1692,7 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetChecked) {
            IsAttestationsDefaultAllowed()},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
-               kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsAttributionReportingAllowedMetric, kIsFledgeJoinAllowedMetric,
                kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
                kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
@@ -1704,6 +1703,8 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetChecked) {
            static_cast<int>(IsAttestationsDefaultAllowed()
                                 ? Status::kAllowed
                                 : Status::kAttestationsFileNotYetChecked)},
+          {kMaySendAttributionReport, true},
+          {kMaySendAttributionReportMetric, static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsPrivateAggregationBlockSiteSettingSpecific},
            &kFalse_}});

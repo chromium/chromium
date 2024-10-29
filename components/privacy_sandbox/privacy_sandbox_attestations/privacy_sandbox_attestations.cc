@@ -158,7 +158,9 @@ PrivacySandboxAttestations::~PrivacySandboxAttestations() = default;
 
 PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
     const net::SchemefulSite& site,
-    PrivacySandboxAttestationsGatedAPI invoking_api) const {
+    PrivacySandboxAttestationsGatedAPI invoking_api,
+    std::optional<AttestationsDefaultBehavior> attestations_default_behavior)
+    const {
   PrivacySandboxSettingsImpl::Status status =
       IsSiteAttestedInternal(site, invoking_api);
   base::UmaHistogramEnumeration(kAttestationStatusUMA, status);
@@ -176,10 +178,19 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
         kAttestationsDownloadedNotYetLoaded:
     case PrivacySandboxSettingsImpl::Status::kAttestationsFileCorrupt:
     case PrivacySandboxSettingsImpl::Status::kAttestationsFileNotYetChecked:
-      return base::FeatureList::IsEnabled(
-                 kDefaultAllowPrivacySandboxAttestations)
-                 ? PrivacySandboxSettingsImpl::Status::kAllowed
-                 : status;
+      if (attestations_default_behavior.has_value()) {
+        switch (*attestations_default_behavior) {
+          case AttestationsDefaultBehavior::kAllow:
+            return PrivacySandboxSettingsImpl::Status::kAllowed;
+          case AttestationsDefaultBehavior::kDeny:
+            return status;
+        }
+      } else {
+        return base::FeatureList::IsEnabled(
+                   kDefaultAllowPrivacySandboxAttestations)
+                   ? PrivacySandboxSettingsImpl::Status::kAllowed
+                   : status;
+      }
     default: {
       // Record whether the attestation map is parsed from the pre-installed or
       // downloaded file.
