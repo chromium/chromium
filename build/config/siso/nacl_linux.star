@@ -205,6 +205,32 @@ def __step_config(ctx, step_config):
             "action": "(.*_)?irt_x64_link",
             "remote": False,
         },
+        # nacl_helper_arm32
+        {
+            "name": "nacl/helper_arm32/clang++",
+            "action": "nacl_helper_arm32_cxx",
+            "remote": False,
+        },
+        {
+            "name": "nacl/helper_arm32/clang",
+            "action": "nacl_helper_arm32_cc",
+            "remote": False,
+        },
+        {
+            "name": "nacl/helper_arm32/alink",
+            "action": "nacl_helper_arm32_alink",
+            "remote": False,
+        },
+        {
+            "name": "nacl/helper_arm32/solink",
+            "action": "nacl_helper_arm32_solink",
+            "remote": False,
+        },
+        {
+            "name": "nacl/helper_arm32/link",
+            "action": "nacl_helper_arm32_link",
+            "remote": False,
+        },
         # nacl bootstrap
         {
             "name": "nacl/bootstrap/alink",
