@@ -56,11 +56,7 @@ KernelVersion KernelVersionNumbers() {
   KernelVersion ver;
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED_IN_MIGRATION();
-    ver.major = 0;
-    ver.minor = 0;
-    ver.bugfix = 0;
-    return ver;
+    NOTREACHED();
   }
   int num_read =
       sscanf(info.release, "%d.%d.%d", &ver.major, &ver.minor, &ver.bugfix);

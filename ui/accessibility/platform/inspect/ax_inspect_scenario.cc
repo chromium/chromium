@@ -175,8 +175,7 @@ void AXInspectScenario::ProcessDirective(Directive directive,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unrecognized " << directive << " directive";
-      break;
+      NOTREACHED() << "Unrecognized " << directive << " directive";
   }
 }
 

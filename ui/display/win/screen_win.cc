@@ -150,8 +150,7 @@ Display::Rotation OrientationToRotation(DWORD orientation) {
     case DMDO_270:
       return Display::ROTATE_270;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Display::ROTATE_0;
+      NOTREACHED();
   }
 }
 
@@ -792,24 +791,20 @@ void ScreenWin::UpdateDisplayInfosIfNeeded() {
 }
 
 HWND ScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 gfx::NativeWindow ScreenWin::GetNativeWindowFromHWND(HWND hwnd) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool ScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::optional<bool> ScreenWin::IsWindowOnCurrentVirtualDesktop(
     gfx::NativeWindow window) const {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 ScreenWin::ScreenWin(bool initialize_from_system)

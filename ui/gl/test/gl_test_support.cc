@@ -347,6 +347,6 @@ void GLTestSupport::SetBufferDataToColor(int width,
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 }  // namespace gl

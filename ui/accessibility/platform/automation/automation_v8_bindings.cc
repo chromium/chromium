@@ -1168,8 +1168,7 @@ void AutomationV8Bindings::AddV8Routes() {
                 node->GetStringListAttribute(
                     ax::mojom::StringListAttribute::kCustomActionDescriptions);
             if (custom_action_ids.size() != custom_action_descriptions.size()) {
-              NOTREACHED_IN_MIGRATION();
-              return;
+              NOTREACHED();
             }
 
             v8::Local<v8::Context> context = isolate->GetCurrentContext();

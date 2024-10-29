@@ -32,11 +32,9 @@ GestureEventDataPacket::GestureSource ToGestureSource(
     case ui::MotionEvent::Action::HOVER_MOVE:
     case ui::MotionEvent::Action::BUTTON_PRESS:
     case ui::MotionEvent::Action::BUTTON_RELEASE:
-      NOTREACHED_IN_MIGRATION();
-      return GestureEventDataPacket::INVALID;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return GestureEventDataPacket::INVALID;
+  NOTREACHED();
 }
 
 }  // namespace

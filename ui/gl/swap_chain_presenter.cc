@@ -131,8 +131,7 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
     case DXGI_FORMAT_P010:
       return "P010";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "UNKNOWN";
+      NOTREACHED();
   }
 }
 

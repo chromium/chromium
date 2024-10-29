@@ -48,8 +48,7 @@ void CommonThemePaintMenuItemBackground(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid state " << state;
-      break;
+      NOTREACHED() << "Invalid state " << state;
   }
   if (menu_item.corner_radius > 0) {
     const SkScalar radius = SkIntToScalar(menu_item.corner_radius);

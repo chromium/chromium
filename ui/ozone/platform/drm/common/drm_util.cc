@@ -1018,8 +1018,7 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return DRM_FORMAT_P010;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1039,8 +1038,7 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
       return res->enums[i].value;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property) {
@@ -1195,8 +1193,7 @@ std::string GetEnumNameForProperty(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::optional<std::string> GetDrmDriverNameFromFd(int fd) {

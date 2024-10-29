@@ -113,8 +113,7 @@ bool MotionEventAura::OnTouch(const TouchEvent& touch) {
       UpdateTouch(touch);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   UpdateCachedAction(touch);
@@ -182,8 +181,7 @@ void MotionEventAura::UpdateCachedAction(const TouchEvent& touch) {
       set_action(Action::MOVE);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

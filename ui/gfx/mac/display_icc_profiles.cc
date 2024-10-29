@@ -31,7 +31,7 @@ DisplayICCProfiles::DisplayICCProfiles() {
 }
 
 DisplayICCProfiles::~DisplayICCProfiles() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DisplayICCProfiles::UpdateIfNeeded() {

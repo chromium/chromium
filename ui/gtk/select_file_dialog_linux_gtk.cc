@@ -279,8 +279,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
               &SelectFileDialogLinuxGtk::OnSelectSingleFileDialogResponse);
       break;
     case SELECT_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   if (GtkCheckVersion(4)) {
     gtk_window_set_hide_on_close(GTK_WINDOW(dialog), true);
@@ -375,7 +374,7 @@ void SelectFileDialogLinuxGtk::FileSelected(GtkWidget* dialog,
              type() == SELECT_EXISTING_FOLDER) {
     set_last_opened_path(path.DirName());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (listener_) {

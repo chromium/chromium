@@ -860,12 +860,13 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   HardwareDisplayController* controller =
       screen_manager_->GetDisplayController(GetPrimaryBounds());
   for (const auto& crtc : controller->crtc_controllers()) {
-    if (crtc->crtc() == primary_crtc_id)
+    if (crtc->crtc() == primary_crtc_id) {
       EXPECT_EQ(kDefaultMode.clock, crtc->mode().clock);
-    else if (crtc->crtc() == secondary_crtc_id)
+    } else if (crtc->crtc() == secondary_crtc_id) {
       EXPECT_EQ(secondary_mode.clock, crtc->mode().clock);
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   }
 }
 

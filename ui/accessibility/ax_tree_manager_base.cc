@@ -41,8 +41,7 @@ AXTreeManagerBase::AXTreeManagerBase(std::unique_ptr<AXTree> tree) {
 
   const AXTreeID& tree_id = tree->GetAXTreeID();
   if (tree_id.type() == ax::mojom::AXTreeIDType::kUnknown) {
-    NOTREACHED_IN_MIGRATION() << "Invalid tree ID.\n" << tree->ToString();
-    return;
+    NOTREACHED() << "Invalid tree ID.\n" << tree->ToString();
   }
 
   tree_ = std::move(tree);
@@ -94,14 +93,12 @@ AXTree* AXTreeManagerBase::GetTree() const {
 std::unique_ptr<AXTree> AXTreeManagerBase::SetTree(
     std::unique_ptr<AXTree> tree) {
   if (!tree) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Attempting to set a new tree, but no tree has been provided.";
-    return {};
   }
 
   if (tree->GetAXTreeID().type() == ax::mojom::AXTreeIDType::kUnknown) {
-    NOTREACHED_IN_MIGRATION() << "Invalid tree ID.\n" << tree->ToString();
-    return {};
+    NOTREACHED() << "Invalid tree ID.\n" << tree->ToString();
   }
 
   if (tree_) {

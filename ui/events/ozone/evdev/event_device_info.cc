@@ -745,8 +745,7 @@ bool EventDeviceInfo::HasDirect() const {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EventDeviceInfo::HasPointer() const {
@@ -765,8 +764,7 @@ bool EventDeviceInfo::HasPointer() const {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EventDeviceInfo::HasStylus() const {

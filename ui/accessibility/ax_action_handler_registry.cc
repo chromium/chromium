@@ -23,8 +23,7 @@ void AXActionHandlerRegistry::SetFrameIDForAXTreeID(
     const AXTreeID& ax_tree_id) {
   auto it = frame_to_ax_tree_id_map_.find(frame_id);
   if (it != frame_to_ax_tree_id_map_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   frame_to_ax_tree_id_map_[frame_id] = ax_tree_id;

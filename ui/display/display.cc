@@ -69,8 +69,7 @@ const char* ToRotationString(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return "270";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 }  // namespace
@@ -138,8 +137,7 @@ display::Display::Rotation Display::DegreesToRotation(int degrees) {
     return display::Display::ROTATE_180;
   if (degrees == 270)
     return display::Display::ROTATE_270;
-  NOTREACHED_IN_MIGRATION();
-  return display::Display::ROTATE_0;
+  NOTREACHED();
 }
 
 // static
@@ -154,8 +152,7 @@ int Display::RotationToDegrees(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return 270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // static
@@ -199,8 +196,7 @@ int Display::RotationAsDegree() const {
     case ROTATE_270:
       return 270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const gfx::DisplayColorSpaces& Display::GetColorSpaces() const {
@@ -227,7 +223,7 @@ void Display::SetRotationAsDegree(int rotation) {
       break;
     default:
       // We should not reach that but we will just ignore the call if we do.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

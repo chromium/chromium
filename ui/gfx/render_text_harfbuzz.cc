@@ -236,9 +236,7 @@ size_t FindRunBreakingCharacter(const std::u16string& text,
   base::i18n::BreakIterator grapheme_iterator(
       run_text, base::i18n::BreakIterator::BREAK_CHARACTER);
   if (!grapheme_iterator.Init() || !grapheme_iterator.Advance()) {
-    // In case of error, isolate the first character in a separate run.
-    NOTREACHED_IN_MIGRATION();
-    return run_start + 1;
+    NOTREACHED();
   }
 
   // Retrieve the first grapheme and its codepoint properties.

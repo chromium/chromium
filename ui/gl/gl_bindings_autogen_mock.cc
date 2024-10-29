@@ -4673,7 +4673,7 @@ MockGLInterface::Mock_glWindowRectanglesEXT(GLenum mode,
 }
 
 static void MockGlInvalidFunction() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GLFunctionPointerType GL_BINDING_CALL

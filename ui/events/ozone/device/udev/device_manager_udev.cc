@@ -124,7 +124,7 @@ void DeviceManagerUdev::OnFileCanReadWithoutBlocking(int fd) {
 }
 
 void DeviceManagerUdev::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(

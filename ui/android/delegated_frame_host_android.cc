@@ -513,7 +513,7 @@ void DelegatedFrameHostAndroid::CancelSuccessfulPresentationTimeRequest() {
 
 void DelegatedFrameHostAndroid::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DelegatedFrameHostAndroid::OnFrameTokenChanged(

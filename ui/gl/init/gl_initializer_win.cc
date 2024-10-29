@@ -49,8 +49,8 @@ bool LoadD3DXLibrary(const base::FilePath& module_path,
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
 
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
@@ -99,6 +99,7 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   AddGLNativeLibrary(gles_library);
 
   return true;
+#endif
 }
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
@@ -144,7 +145,7 @@ GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
     case kGLImplementationStubGL:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return display;
 }
@@ -170,10 +171,8 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 void ShutdownGLPlatform(GLDisplay* display) {

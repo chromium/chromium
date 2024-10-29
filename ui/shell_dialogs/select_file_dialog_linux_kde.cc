@@ -290,8 +290,7 @@ void SelectFileDialogLinuxKde::SelectFileImpl(
       CreateSaveAsDialog(title_string, default_path, window);
       return;
     case SELECT_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -426,15 +425,16 @@ void SelectFileDialogLinuxKde::GetKDialogCommandLine(
 }
 
 void SelectFileDialogLinuxKde::FileSelected(const base::FilePath& path) {
-  if (type() == SELECT_SAVEAS_FILE)
+  if (type() == SELECT_SAVEAS_FILE) {
     set_last_saved_path(path.DirName());
-  else if (type() == SELECT_OPEN_FILE)
+  } else if (type() == SELECT_OPEN_FILE) {
     set_last_opened_path(path.DirName());
-  else if (type() == SELECT_FOLDER || type() == SELECT_UPLOAD_FOLDER ||
-           type() == SELECT_EXISTING_FOLDER)
+  } else if (type() == SELECT_FOLDER || type() == SELECT_UPLOAD_FOLDER ||
+             type() == SELECT_EXISTING_FOLDER) {
     set_last_opened_path(path);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
   if (listener_) {  // What does the filter index actually do?
     // TODO(dfilimon): Get a reasonable index value from somewhere.
     listener_->FileSelected(SelectedFileInfo(path), 1);

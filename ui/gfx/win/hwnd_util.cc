@@ -42,8 +42,7 @@ void AdjustWindowToFit(HWND hwnd, const RECT& bounds, bool fit_to_monitor) {
       }
       // Else fall through.
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unable to find default monitor";
-      // Fall through.
+      NOTREACHED() << "Unable to find default monitor";
     }
   }  // Else fall through.
 
@@ -180,7 +179,7 @@ void CenterAndSizeWindow(HWND parent,
       GetMonitorInfo(monitor, &mi);
       center_bounds = mi.rcWork;
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unable to get default monitor";
+      NOTREACHED() << "Unable to get default monitor";
     }
   }
 

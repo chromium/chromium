@@ -94,12 +94,7 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {
-      .translation = {rounded_bounds.x(), rounded_bounds.y()},
-      .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
-      .image_flip = fuchsia::ui::composition::ImageFlip::NONE,
-  };
+  NOTREACHED();
 }
 
 // Converts a gfx size to the associated Fuchsia size, and accounts for any

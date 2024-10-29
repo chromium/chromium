@@ -28,14 +28,11 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
   ~ClientNativePixmapOpaque() override = default;
 
   bool Map() override { return false; }
-  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
+  void Unmap() override { NOTREACHED(); }
   size_t GetNumberOfPlanes() const override {
     return pixmap_handle_.planes.size();
   }
-  void* GetMemoryAddress(size_t plane) const override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
   int GetStride(size_t plane) const override {
     CHECK_LT(plane, pixmap_handle_.planes.size());
     // Even though a ClientNativePixmapOpaque should not be mapped, we may still
@@ -128,8 +125,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
         return base::WrapUnique(
             new ClientNativePixmapOpaque(std::move(handle)));
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 

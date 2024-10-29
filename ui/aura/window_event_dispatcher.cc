@@ -797,7 +797,7 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
       dispatch_details = OnEventFromSource(event.get());
     } else {
       // TODO(rbyers): GESTURE_TAP_DOWN not yet supported: crbug.com/170987.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     if (dispatch_details.dispatcher_destroyed)
       return dispatch_details;

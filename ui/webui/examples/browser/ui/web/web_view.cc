@@ -25,13 +25,11 @@ WebView::WebView(PassKey pass_key,
     : guest_view::GuestView<WebView>(owner_render_frame_host) {}
 
 const char* WebView::GetAPINamespace() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 int WebView::GetTaskPrefix() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void WebView::CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
@@ -67,7 +65,7 @@ void WebView::CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
 
 void WebView::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool WebView::HandleContextMenu(content::RenderFrameHost& render_frame_host,

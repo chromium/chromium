@@ -80,8 +80,7 @@ EGLint FourCC(gfx::BufferFormat format) {
       return DRM_FORMAT_INVALID;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return DRM_FORMAT_INVALID;
+  NOTREACHED();
 }
 
 }  // namespace

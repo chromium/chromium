@@ -106,8 +106,7 @@ void PlatformWindowDelegate::OnOcclusionStateChanged(
 
 int64_t PlatformWindowDelegate::OnStateUpdate(const State& old,
                                               const State& latest) {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 std::optional<OwnedWindowAnchor>

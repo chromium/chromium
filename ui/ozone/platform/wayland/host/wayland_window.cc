@@ -488,8 +488,7 @@ void WaylandWindow::Close() {
 }
 
 bool WaylandWindow::IsVisible() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void WaylandWindow::PrepareForShutdown() {
@@ -739,8 +738,7 @@ EventTarget* WaylandWindow::GetParentTarget() {
 }
 
 std::unique_ptr<EventTargetIterator> WaylandWindow::GetChildIterator() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 EventTargeter* WaylandWindow::GetEventTargeter() {
@@ -766,7 +764,7 @@ void WaylandWindow::OcclusionStateChanged(
 }
 
 void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
 }
 
@@ -843,7 +841,7 @@ std::string WaylandWindow::WindowStates::ToString() const {
 void WaylandWindow::HandleToplevelConfigure(int32_t widht,
                                             int32_t height,
                                             const WindowStates& window_states) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "Only shell toplevels must receive HandleToplevelConfigure calls.";
 }
 
@@ -853,13 +851,12 @@ void WaylandWindow::HandleToplevelConfigureWithOrigin(
     int32_t width,
     int32_t height,
     const WindowStates& window_states) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "Only shell toplevels must receive HandleAuraToplevelConfigure calls.";
 }
 
 void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
-  NOTREACHED_IN_MIGRATION()
-      << "Only shell popups must receive HandlePopupConfigure calls.";
+  NOTREACHED() << "Only shell popups must receive HandlePopupConfigure calls.";
 }
 
 void WaylandWindow::OnCloseRequest() {

@@ -1261,8 +1261,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
             green = blue = 1;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case CALayerType::kDefault:

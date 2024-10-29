@@ -437,8 +437,7 @@ views::SlideOutController::SlideMode MessageView::CalculateSlideMode() const {
       return views::SlideOutController::SlideMode::kFull;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return views::SlideOutController::SlideMode::kFull;
+  NOTREACHED();
 }
 
 MessageView::Mode MessageView::GetMode() const {

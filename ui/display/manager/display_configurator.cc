@@ -274,10 +274,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
   switch (new_display_state) {
     case MULTIPLE_DISPLAY_STATE_INVALID:
-      NOTREACHED_IN_MIGRATION()
-          << "Ignoring request to enter invalid state with " << displays.size()
-          << " connected display(s)";
-      return false;
+      NOTREACHED() << "Ignoring request to enter invalid state with "
+                   << displays.size() << " connected display(s)";
     case MULTIPLE_DISPLAY_STATE_HEADLESS:
       if (displays.size() != 0) {
         LOG(WARNING) << "Ignoring request to enter headless mode with "

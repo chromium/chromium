@@ -131,8 +131,7 @@ void SelectFileDialogImpl::SelectFileImpl(
       mojo_type = SelectFileDialogType::kSaveAsFile;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   SelectFileTypeInfoPtr mojo_file_types;

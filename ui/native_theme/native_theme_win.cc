@@ -535,7 +535,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
       case kSliderTrack:
       case kSliderThumb:
       case kMaxPart:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -654,7 +654,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kSliderTrack:
     case kSliderThumb:
     case kMaxPart:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -665,15 +665,11 @@ bool NativeThemeWin::SupportsNinePatch(Part part) const {
 }
 
 gfx::Size NativeThemeWin::GetNinePatchCanvasSize(Part part) const {
-  NOTREACHED_IN_MIGRATION()
-      << "NativeThemeWin doesn't support nine-patch resources.";
-  return gfx::Size();
+  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
 }
 
 gfx::Rect NativeThemeWin::GetNinePatchAperture(Part part) const {
-  NOTREACHED_IN_MIGRATION()
-      << "NativeThemeWin doesn't support nine-patch resources.";
-  return gfx::Rect();
+  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
 }
 
 bool NativeThemeWin::ShouldUseDarkColors() const {
@@ -867,8 +863,7 @@ void NativeThemeWin::PaintButtonClassic(HDC hdc,
       classic_state |= DFCS_BUTTONPUSH;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (state == kDisabled)
@@ -953,8 +948,7 @@ void NativeThemeWin::PaintScrollbarArrowClassic(HDC hdc,
       classic_state = DFCS_SCROLLUP;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   switch (state) {
     case kDisabled:
@@ -969,8 +963,7 @@ void NativeThemeWin::PaintScrollbarArrowClassic(HDC hdc,
       classic_state |= DFCS_PUSHED;
       break;
     case kNumStates:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DrawFrameControl(hdc, rect, DFC_SCROLL, classic_state);
 }
@@ -1208,9 +1201,8 @@ NativeThemeWin::ThemeName NativeThemeWin::GetThemeName(Part part) {
     case kSliderTrack:
     case kSliderThumb:
     case kMaxPart:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return LAST;
 }
 
 // static
@@ -1283,9 +1275,8 @@ int NativeThemeWin::GetWindowsPart(Part part,
     case kSliderTrack:
     case kSliderThumb:
     case kMaxPart:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 int NativeThemeWin::GetWindowsState(Part part,
@@ -1305,8 +1296,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return ABS_DOWNPRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kScrollbarLeftArrow:
       switch (state) {
@@ -1321,8 +1311,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return ABS_LEFTPRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kScrollbarRightArrow:
       switch (state) {
@@ -1337,8 +1326,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return ABS_RIGHTPRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kScrollbarUpArrow:
       switch (state) {
@@ -1353,8 +1341,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return ABS_UPPRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kCheckbox: {
       const auto& button = absl::get<ButtonExtraParams>(extra);
@@ -1377,8 +1364,7 @@ int NativeThemeWin::GetWindowsState(Part part,
                                 : (button.indeterminate ? CBS_MIXEDPRESSED
                                                         : CBS_UNCHECKEDPRESSED);
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     }
     case kMenuList:
@@ -1392,8 +1378,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return CBXS_PRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kTextField:
       switch (state) {
@@ -1411,8 +1396,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return ETS_SELECTED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kMenuPopupArrow:
       return (state == kDisabled) ? MSM_DISABLED : MSM_NORMAL;
@@ -1437,8 +1421,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return PBS_PRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kRadio: {
       const auto& button = absl::get<ButtonExtraParams>(extra);
@@ -1452,8 +1435,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return button.checked ? RBS_CHECKEDPRESSED : RBS_UNCHECKEDPRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     }
     case kScrollbarHorizontalGripper:
@@ -1477,8 +1459,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return SCRBS_PRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kTrackbarThumb:
     case kTrackbarTrack:
@@ -1492,8 +1473,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return TUS_PRESSED;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kInnerSpinButton: {
       const auto& inner_spin = absl::get<InnerSpinButtonExtraParams>(extra);
@@ -1511,8 +1491,7 @@ int NativeThemeWin::GetWindowsState(Part part,
           return inner_spin.spin_up ? static_cast<int>(UPS_PRESSED)
                                     : static_cast<int>(DNS_PRESSED);
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     }
     case kMenuPopupGutter:
@@ -1527,8 +1506,7 @@ int NativeThemeWin::GetWindowsState(Part part,
         case kPressed:
           return 0;
         case kNumStates:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     case kMenuPopupBackground:
     case kMenuItemBackground:
@@ -1536,9 +1514,8 @@ int NativeThemeWin::GetWindowsState(Part part,
     case kSliderTrack:
     case kSliderThumb:
     case kMaxPart:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 HRESULT NativeThemeWin::PaintFrameControl(HDC hdc,
@@ -1581,8 +1558,7 @@ HRESULT NativeThemeWin::PaintFrameControl(HDC hdc,
       break;
     case kPressed:
     case kNumStates:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   COLORREF old_bg_color = SetBkColor(hdc, GetSysColor(bg_color_key));
   COLORREF old_text_color = SetTextColor(hdc, GetSysColor(text_color_key));
@@ -1643,8 +1619,7 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
     handle = OpenThemeData(nullptr, L"Spin");
     break;
   case LAST:
-    NOTREACHED_IN_MIGRATION();
-    break;
+    NOTREACHED();
   }
   theme_handles_[theme_name] = handle;
   return handle;

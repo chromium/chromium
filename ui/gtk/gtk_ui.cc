@@ -170,8 +170,7 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
       return std::make_unique<GtkUiPlatformWayland>();
 #endif  // BUILDFLAG(IS_OZONE_WAYLAND)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

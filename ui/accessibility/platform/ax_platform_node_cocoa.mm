@@ -1568,8 +1568,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   switch (static_cast<ax::mojom::AriaCurrentState>(ariaCurrent)) {
     case ax::mojom::AriaCurrentState::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return @"false";
+      NOTREACHED();
     case ax::mojom::AriaCurrentState::kFalse:
       return @"false";
     case ax::mojom::AriaCurrentState::kTrue:
@@ -1586,8 +1585,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return @"time";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return @"false";
+  NOTREACHED();
 }
 
 - (NSNumber*)AXARIAColumnCount {

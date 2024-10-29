@@ -103,7 +103,7 @@ void HardwareDisplayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
       std::move(type).WriteString("DRM_PLANE_TYPE_CURSOR");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

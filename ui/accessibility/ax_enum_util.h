@@ -198,9 +198,7 @@ T ParseAXEnum(const char* attribute) {
     return result.value();
   }
 
-  LOG(ERROR) << "Could not parse: " << attribute;
-  NOTREACHED_IN_MIGRATION();
-  return T::kNone;
+  NOTREACHED() << "Could not parse: " << attribute;
 }
 
 }  // namespace ui

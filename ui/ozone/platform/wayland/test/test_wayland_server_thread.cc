@@ -319,8 +319,7 @@ bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
     case ShouldUseExplicitSynchronizationProtocol::kUse:
       return zwp_linux_explicit_synchronization_v1_.Initialize(display_.get());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool TestWaylandServerThread::SetupLinuxDrmSyncobjProtocol(
@@ -331,8 +330,7 @@ bool TestWaylandServerThread::SetupLinuxDrmSyncobjProtocol(
     case wl::ShouldUseLinuxDrmSyncobjProtocol::kUse:
       return wp_linux_drm_syncobj_manager_v1_.Initialize(display_.get());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::unique_ptr<base::MessagePump> TestWaylandServerThread::CreateMessagePump(

@@ -293,8 +293,7 @@ std::unique_ptr<ui::EventTargetIterator> Env::GetChildIterator() const {
 }
 
 ui::EventTargeter* Env::GetEventTargeter() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace aura

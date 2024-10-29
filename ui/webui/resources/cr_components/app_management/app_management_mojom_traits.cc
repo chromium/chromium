@@ -207,8 +207,7 @@ UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::GetTag(
   } else if (absl::holds_alternative<apps::TriState>(r)) {
     return PermissionValueDataView::Tag::kTristateValue;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PermissionValueDataView::Tag::kBoolValue;
+  NOTREACHED();
 }
 
 bool UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::
@@ -226,8 +225,7 @@ bool UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 InstallReason EnumTraits<InstallReason, apps::InstallReason>::ToMojom(

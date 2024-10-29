@@ -292,7 +292,7 @@ class GestureEventConsumeDelegate : public TestWindowDelegate {
         // Only used in unified gesture detection.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     if (wait_until_event_ == gesture->type() && run_loop_) {
       run_loop_->Quit();
@@ -473,7 +473,7 @@ class GestureEventSynthDelegate : public TestWindowDelegate {
         mouse_exit_ = true;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     event->SetHandled();
   }

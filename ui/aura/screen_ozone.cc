@@ -28,7 +28,7 @@ ScreenOzone::ScreenOzone() {
     // that call into `Screen` functions below have a valid `platform_screen_`.
     platform->InitScreen(platform_screen_.get());
   } else {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "PlatformScreen is not implemented for this ozone platform.";
   }
 }

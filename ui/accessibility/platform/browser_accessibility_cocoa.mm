@@ -1357,10 +1357,8 @@ bool ui::IsNSRange(id value) {
     case ax::mojom::SortDirection::kOther:
       return NSAccessibilityUnknownSortDirectionValue;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return nil;
 }
 
 // Returns a text marker that points to the first character in the document that

@@ -56,10 +56,8 @@ MotionEventAndroid::Action FromAndroidAction(int android_action) {
     ACTION_CASE(BUTTON_PRESS);
     ACTION_CASE(BUTTON_RELEASE);
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid Android MotionEvent action: " << android_action;
+      NOTREACHED() << "Invalid Android MotionEvent action: " << android_action;
   }
-  return MotionEventAndroid::Action::CANCEL;
 }
 
 int ToAndroidAction(MotionEventAndroid::Action action) {
@@ -76,9 +74,8 @@ int ToAndroidAction(MotionEventAndroid::Action action) {
     ACTION_REVERSE_CASE(BUTTON_PRESS);
     ACTION_REVERSE_CASE(BUTTON_RELEASE);
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid MotionEvent action: " << action;
+      NOTREACHED() << "Invalid MotionEvent action: " << action;
   }
-  return JNI_MotionEvent::ACTION_CANCEL;
 }
 
 int ToAndroidToolType(MotionEventAndroid::ToolType tool_type) {
@@ -89,10 +86,8 @@ int ToAndroidToolType(MotionEventAndroid::ToolType tool_type) {
     TOOL_TYPE_REVERSE_CASE(MOUSE);
     TOOL_TYPE_REVERSE_CASE(ERASER);
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid MotionEvent tool type: " << tool_type;
+      NOTREACHED() << "Invalid MotionEvent tool type: " << tool_type;
   }
-  return JNI_MotionEvent::TOOL_TYPE_UNKNOWN;
 }
 
 #undef ACTION_CASE
@@ -380,10 +375,9 @@ MotionEventAndroid::ToolType MotionEventAndroid::FromAndroidToolType(
     TOOL_TYPE_CASE(MOUSE);
     TOOL_TYPE_CASE(ERASER);
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid Android MotionEvent tool type: " << android_tool_type;
+      NOTREACHED() << "Invalid Android MotionEvent tool type: "
+                   << android_tool_type;
   }
-  return MotionEventAndroid::ToolType::UNKNOWN;
 }
 
 #undef TOOL_TYPE_CASE

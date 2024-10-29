@@ -336,7 +336,7 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
         context_attributes.push_back(EGL_HIGH_POWER_ANGLE);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

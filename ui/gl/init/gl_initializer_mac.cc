@@ -33,8 +33,8 @@ const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
 
   // Some unit test targets depend on Angle/SwiftShader but aren't built
   // as app bundles. In that case, the .dylib is next to the executable.
@@ -80,6 +80,7 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   AddGLNativeLibrary(egl_library);
 
   return true;
+#endif
 }
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
@@ -146,10 +147,8 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 void ShutdownGLPlatform(GLDisplay* display) {

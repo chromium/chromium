@@ -98,8 +98,7 @@ std::optional<PreparationOutput> PrepareForPNGDecode(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid color format " << format;
-      return std::nullopt;
+      NOTREACHED() << "Invalid color format " << format;
   }
   output.image_info =
       SkImageInfo::Make(codec_info.width(), codec_info.height(), color_type,

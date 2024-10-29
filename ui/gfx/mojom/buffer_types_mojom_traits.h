@@ -58,8 +58,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       case gfx::BufferFormat::P010:
         return gfx::mojom::BufferFormat::P010;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::BufferFormat::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::BufferFormat input,
@@ -117,8 +116,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         *out = gfx::BufferFormat::P010;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -152,8 +150,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
         return gfx::mojom::BufferUsage::SCANOUT_FRONT_RENDERING;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::BufferUsage::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::BufferUsage input, gfx::BufferUsage* out) {
@@ -195,8 +192,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         *out = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -268,8 +264,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       case gfx::BufferPlane::A:
         return gfx::mojom::BufferPlane::A;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::BufferPlane::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::BufferPlane input, gfx::BufferPlane* out) {
@@ -293,8 +288,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         *out = gfx::BufferPlane::A;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

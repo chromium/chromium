@@ -40,9 +40,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 // Rotations are dependent on modifiers. Tiled formats can be rotated,

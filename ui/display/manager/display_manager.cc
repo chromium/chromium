@@ -1627,8 +1627,7 @@ Display DisplayManager::GetMirroringDisplayForUnifiedDesktop(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return Display();
+  NOTREACHED();
 }
 
 int DisplayManager::GetMirroringDisplayRowIndexInUnifiedMatrix(

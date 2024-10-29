@@ -1513,7 +1513,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
   if (delegate_->HasIntAttribute(
           ax::mojom::IntAttribute::kDropeffectDeprecated)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Expose class attribute.

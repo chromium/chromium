@@ -318,8 +318,7 @@ void PrintDialogGtk::UpdateSettings(
         cups_duplex_mode = kDuplexNone;
         break;
       default:  // kUnknownDuplexMode
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     gtk_print_settings_set(gtk_settings_, kCUPSDuplex, cups_duplex_mode);
   }
@@ -563,8 +562,7 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
           break;
         case GTK_PRINT_PAGES_CURRENT:
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       auto settings = std::make_unique<PrintSettings>();
@@ -583,7 +581,7 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
     }
     case GTK_RESPONSE_APPLY:
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

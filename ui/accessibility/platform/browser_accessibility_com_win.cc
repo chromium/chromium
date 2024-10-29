@@ -1751,8 +1751,7 @@ LONG BrowserAccessibilityComWin::FindStartOfStyle(
 
   switch (direction) {
     case ax::mojom::MoveDirection::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return start_offset;
+      NOTREACHED();
     case ax::mojom::MoveDirection::kBackward: {
       if (offset_to_text_attributes().empty())
         return 0;
@@ -1770,8 +1769,7 @@ LONG BrowserAccessibilityComWin::FindStartOfStyle(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return start_offset;
+  NOTREACHED();
 }
 
 BrowserAccessibilityComWin* BrowserAccessibilityComWin::GetFromID(

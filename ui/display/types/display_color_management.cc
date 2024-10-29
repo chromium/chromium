@@ -58,8 +58,7 @@ float EvaluateLut(float x,
       lut_j1 = lut[j1].b;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return (alpha * lut_j0 + one_minus_alpha * lut_j1) / 65535.f;

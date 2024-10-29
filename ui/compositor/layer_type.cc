@@ -21,8 +21,7 @@ std::string_view LayerTypeToString(LayerType type) {
     case LayerType::LAYER_NINE_PATCH:
       return "nine_patch";
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 }  // namespace ui

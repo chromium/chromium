@@ -46,8 +46,7 @@ ChromeLatencyInfo2::LatencyComponentType GetComponentProtoEnum(
     CASE_TYPE(INPUT_EVENT_GPU_SWAP_BUFFER);
     CASE_TYPE(INPUT_EVENT_LATENCY_FRAME_SWAP);
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled LatencyComponentType: " << type;
-      return ChromeLatencyInfo2::LatencyComponentType::COMPONENT_UNSPECIFIED;
+      NOTREACHED() << "Unhandled LatencyComponentType: " << type;
   }
 #undef CASE_TYPE
 }

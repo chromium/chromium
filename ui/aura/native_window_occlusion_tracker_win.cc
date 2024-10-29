@@ -94,9 +94,7 @@ void NativeWindowOcclusionTrackerWin::DeleteInstanceForTesting() {
 void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
   DCHECK(window->IsRootWindow());
   if (window->HasObserver(this)) {
-    NOTREACHED_IN_MIGRATION()
-        << "window shouldn't already be observing occlusion tracker";
-    return;
+    NOTREACHED() << "window shouldn't already be observing occlusion tracker";
   }
   // Add this as an observer so that we can be notified
   // when it's no longer true that all windows are minimized, and when the

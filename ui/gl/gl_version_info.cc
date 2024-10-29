@@ -249,7 +249,7 @@ GLVersionInfo::VersionStrings GLVersionInfo::GetFakeVersionStrings(
     result.gl_version = "OpenGL ES 3.0";
     result.glsl_version = "OpenGL ES GLSL ES 3.00";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return result;
 }

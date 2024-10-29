@@ -855,13 +855,13 @@ void Compositor::FrameSinksToThrottleUpdated(
 
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Compositor::OnFrameTokenChanged(uint32_t frame_token,
                                      base::TimeTicks activation_time) {
   // TODO(yiyix, fsamuel): Implement frame token propagation for Compositor.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 Compositor::TrackerState::TrackerState() = default;

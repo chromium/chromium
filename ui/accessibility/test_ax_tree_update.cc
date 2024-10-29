@@ -68,8 +68,7 @@ bool StringToBool(const std::string& s) {
   }
 
   // TODO: Specify which node this error was found at.
-  NOTREACHED_IN_MIGRATION() << "Invalid value passed to StringToBool: " << s;
-  return false;
+  NOTREACHED() << "Invalid value passed to StringToBool: " << s;
 }
 
 void ParseAndAddNodeProperties(
@@ -153,7 +152,7 @@ void ParseAndAddNodeProperties(
 
     } else {
       // TODO: Will extend to more properties here.
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Either an invalid property was specified, or this function does "
              "not currently support the specified property.";
     }

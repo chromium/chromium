@@ -125,8 +125,7 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return Info(RT_NONE);
+  NOTREACHED();
 }
 
 int GetGestureTypeIndex(EventType type) {

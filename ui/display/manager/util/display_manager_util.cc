@@ -113,8 +113,7 @@ std::string MultipleDisplayStateToString(MultipleDisplayState state) {
     case MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED:
       return "MULTI_EXTENDED";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
-  return "INVALID";
+  NOTREACHED() << "Unknown state " << state;
 }
 
 bool GetContentProtectionMethods(DisplayConnectionType type,
@@ -191,8 +190,7 @@ std::vector<float> GetDisplayZoomFactorForDsf(float dsf) {
       return std::vector<float>(bucket.second.begin(), bucket.second.end());
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Received a DSF not on the list: " << dsf;
-  return {1.f / dsf, 1.f};
+  NOTREACHED() << "Received a DSF not on the list: " << dsf;
 }
 
 ManagedDisplayInfo::ManagedDisplayModeList CreateInternalManagedDisplayModeList(

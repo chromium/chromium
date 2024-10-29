@@ -1151,8 +1151,7 @@ SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
           .postTranslate(-16.0f / 219.0f, translate_uv, translate_uv);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return SkM44();
+  NOTREACHED();
 }
 
 bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {

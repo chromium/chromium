@@ -306,9 +306,7 @@ wl::Clipboard* WaylandClipboard::GetClipboard(ClipboardBuffer buffer) {
     return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported clipboard buffer: " << static_cast<int>(buffer);
-  return nullptr;
+  NOTREACHED() << "Unsupported clipboard buffer: " << static_cast<int>(buffer);
 }
 
 }  // namespace ui

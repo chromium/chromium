@@ -182,12 +182,9 @@ ui::mojom::EventType TypeConverter<ui::mojom::EventType,
     case ui::EventType::kTouchCancelled:
       return ui::mojom::EventType::TOUCH_CANCELLED;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Using unknown event types closes connections:"
-          << ui::EventTypeName(type);
-      break;
+      NOTREACHED() << "Using unknown event types closes connections:"
+                   << ui::EventTypeName(type);
   }
-  return ui::mojom::EventType::UNKNOWN;
 }
 
 // static
@@ -241,9 +238,8 @@ ui::EventType TypeConverter<ui::EventType, ui::mojom::EventType>::Convert(
     case ui::mojom::EventType::TOUCH_CANCELLED:
       return ui::EventType::kTouchCancelled;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ui::EventType::kUnknown;
 }
 
 // static
@@ -499,9 +495,7 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
       break;
     }
     case ui::mojom::EventType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION()
-          << "Using unknown event types closes connections";
-      return false;
+      NOTREACHED() << "Using unknown event types closes connections";
   }
 
   if (!out->get())

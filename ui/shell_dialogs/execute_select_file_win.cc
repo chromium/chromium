@@ -429,7 +429,7 @@ void ExecuteSelectFile(
                                 &file_type_index, &paths);
       break;
     case SelectFileDialog::SELECT_NONE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::move(on_select_file_executed_callback).Run(paths, file_type_index);

@@ -112,8 +112,7 @@ std::string PanelOrientationToString(PanelOrientation orientation) {
     case kRightUp:
       return "RightUp";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace

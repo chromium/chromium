@@ -949,7 +949,7 @@ void WaylandFrameManager::FreezeTimeout() {
     MaybeProcessSubmittedFrames();
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WaylandFrameManager::Hide() {

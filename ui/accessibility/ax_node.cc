@@ -727,10 +727,8 @@ std::optional<int> AXNode::CompareTo(const AXNode& other) const {
     return 1;
 
   if (our_ancestors.empty() || other_ancestors.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << "The common ancestor should be followed by two uncommon "
-           "children in the two corresponding lists of ancestors.";
-    return std::nullopt;
+    NOTREACHED() << "The common ancestor should be followed by two uncommon "
+                    "children in the two corresponding lists of ancestors.";
   }
 
   size_t this_uncommon_ancestor_index = our_ancestors.top()->GetIndexInParent();

@@ -157,8 +157,7 @@ CommandType CommandFromString(const std::string& source) {
   RETURN_IF_IS(FLIPS_IN_RTL);
 #undef RETURN_IF_IS
 
-  NOTREACHED_IN_MIGRATION() << "Unrecognized command: " << source;
-  return CLOSE;
+  NOTREACHED() << "Unrecognized command: " << source;
 }
 
 bool StringToDouble(std::string_view piece, double* out) {

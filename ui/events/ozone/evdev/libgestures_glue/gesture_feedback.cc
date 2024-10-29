@@ -57,10 +57,8 @@ std::string DumpGesturePropertyValue(GesturesProp* property) {
     case GesturePropertyProvider::PT_REAL:
       return DumpArrayProperty(property->GetDoubleValue(), "%lf");
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::string();
 }
 
 // Compress dumped event logs in place.

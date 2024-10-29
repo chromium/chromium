@@ -137,8 +137,7 @@ bool WrappedTask::ShouldRunBefore(const WrappedTask& other) {
   if (sequence_number_ > other.sequence_number_)
     return false;
   // Sequence numbers are unique, so this should never happen.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void WrappedTask::Run() {
@@ -274,8 +273,7 @@ bool PumpableTaskRunner::PostNonNestableDelayedTask(
     base::TimeDelta delay) {
   // The correctness of non-nestable events hasn't been proven for this
   // structure.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool PumpableTaskRunner::RunsTasksInCurrentSequence() const {

@@ -79,7 +79,7 @@ void X11EventWatcherFdWatch::OnFileCanReadWithoutBlocking(int fd) {
 }
 
 void X11EventWatcherFdWatch::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ui

@@ -148,8 +148,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
     case MotionEvent::Action::HOVER_MOVE:
     case MotionEvent::Action::BUTTON_PRESS:
     case MotionEvent::Action::BUTTON_RELEASE:
-      NOTREACHED_IN_MIGRATION();
-      return handled;
+      NOTREACHED();
 
     case MotionEvent::Action::POINTER_DOWN: {
       down_focus_x_ = last_focus_x_ = focus_x;

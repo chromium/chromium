@@ -73,8 +73,7 @@ std::unique_ptr<Event> CreateEventForType(EventType type) {
       return std::make_unique<ScrollEvent>(
           type, gfx::Point(), base::TimeTicks::Now(), 0, 0, 0, 0, 0, 0);
     default:
-      NOTREACHED_IN_MIGRATION() << base::to_underlying(type);
-      return nullptr;
+      NOTREACHED() << base::to_underlying(type);
   }
 }
 
@@ -113,8 +112,7 @@ class TestConstantEventRewriterOld : public EventRewriter {
   EventRewriteStatus NextDispatchEvent(
       const Event& last_event,
       std::unique_ptr<Event>* new_event) override {
-    NOTREACHED_IN_MIGRATION();
-    return status_;
+    NOTREACHED();
   }
   bool SupportsNonRootLocation() const override { return true; }
 
@@ -242,7 +240,7 @@ class TestStateMachineEventRewriter : public EventRewriter {
       if (details.dispatcher_destroyed || find->second.state_action == RETURN)
         return details;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

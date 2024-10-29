@@ -193,8 +193,7 @@ bool UIControlsOzone::SendMouseEventsNotifyWhenDone(
       changed_button_flag = ui::EF_RIGHT_MOUSE_BUTTON;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Process the accelerator key state.

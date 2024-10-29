@@ -281,7 +281,7 @@ std::unique_ptr<Event> TranslateFromXEvent(const x11::Event& xev) {
         // buttons.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   if (xev.As<x11::Input::DeviceEvent>())

@@ -997,8 +997,7 @@ ax::mojom::Role StringToRole(const std::string& role) {
   }
 
   // We should never pass in an invalid role.
-  NOTREACHED_IN_MIGRATION() << "Invalid role was provided: " << role;
-  return ax::mojom::Role::kUnknown;
+  NOTREACHED() << "Invalid role was provided: " << role;
 }
 
 const char* ToString(ax::mojom::State state) {
@@ -1088,8 +1087,7 @@ ax::mojom::State StringToState(const std::string& str) {
   }
 
   // We should never pass in an invalid state.
-  NOTREACHED_IN_MIGRATION() << "An invalid state was provided: " << str;
-  return ax::mojom::State::kNone;
+  NOTREACHED() << "An invalid state was provided: " << str;
 }
 
 const char* ToString(ax::mojom::Action action) {
@@ -1439,9 +1437,8 @@ ax::mojom::StringAttribute StringToStringAttribute(
   } else if (string_attribute == "kVirtualContent") {
     return ax::mojom::StringAttribute::kVirtualContent;
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "An invalid StringAttribute was provided: " << string_attribute;
-    return ax::mojom::StringAttribute::kNone;
+    NOTREACHED() << "An invalid StringAttribute was provided: "
+                 << string_attribute;
   }
 }
 
@@ -1727,9 +1724,7 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
     return ax::mojom::IntAttribute::kMaxLength;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "An invalid IntAttribute was provided: " << int_attribute;
-  return ax::mojom::IntAttribute::kNone;
+  NOTREACHED() << "An invalid IntAttribute was provided: " << int_attribute;
 }
 
 const char* ToString(ax::mojom::FloatAttribute float_attribute) {
@@ -1857,9 +1852,7 @@ ax::mojom::BoolAttribute StringToBoolAttribute(
   } else if (bool_attribute == "kLongClickable") {
     return ax::mojom::BoolAttribute::kLongClickable;
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "An invalid BoolAttribute was provided: " << bool_attribute;
-    return ax::mojom::BoolAttribute::kNone;
+    NOTREACHED() << "An invalid BoolAttribute was provided: " << bool_attribute;
   }
 }
 

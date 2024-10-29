@@ -252,9 +252,8 @@ ui::EventType GetTouchEventType(const x11::Event& x11_event) {
         return ui::EventType::kTouchMoved;
       return ui::EventType::kUnknown;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ui::EventType::kUnknown;
 }
 
 double GetParamFromXEvent(const x11::Event& xev,
@@ -347,8 +346,7 @@ base::TimeTicks TimeTicksFromXEvent(const x11::Event& xev) {
     }
     return TimeTicksFromXEventTime(device->time);
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeTicks();
+  NOTREACHED();
 }
 
 // This is ported from libxi's FP1616toDBL in XExtInt.c
