@@ -34,6 +34,20 @@
 namespace web_app {
 
 namespace {
+bool WasCaptured(NavigationHandlingInitialResult result) {
+  switch (result) {
+    case NavigationHandlingInitialResult::kBrowserTab:
+    case NavigationHandlingInitialResult::kForcedNewAppContextAppWindow:
+    case NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab:
+    case NavigationHandlingInitialResult::kNotHandledByNavigationHandling:
+    case NavigationHandlingInitialResult::kAuxContext:
+      return false;
+    case NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow:
+    case NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab:
+    case NavigationHandlingInitialResult::kNavigateCapturingNavigateExisting:
+      return true;
+  }
+}
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
@@ -172,12 +186,10 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
   // After this point:
   // - The browsing context is a top-level browsing context.
   // - The initial navigation capturing app_id does not match the final
-  //   navigation captured app_id (and either can be std::nullopt, but not
-  //   both).
+  //   target_app_id (and either can be std::nullopt, but not both).
   // - Navigation is only triggered as part of left, middle or shift clicks.
 
-  bool is_source_app_matching_final_target =
-      target_app_id && source_app_id && target_app_id == source_app_id;
+  bool is_source_app_matching_final_target = target_app_id == source_app_id;
 
   // First, handle cases where the final url is not in scope of any app. These
   // can mostly proceed as is, except for two cases where the initial navigation
@@ -193,31 +205,57 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  blink::mojom::DisplayMode target_display_mode =
+      registrar.GetAppEffectiveDisplayMode(*target_app_id);
+
   // For the remaining cases we know that the navigation ended up in scope of a
   // target application.
 
-  // First, handle the case where a new app window was force-created for an app
-  // for user modified clicks. This refers to the use-cases here:
+  // First, handle the case where a new app container (app or browser) was
+  // force-created for an app for user modified clicks. This refers to the
+  // use-cases here:
   // https://bit.ly/pwa-navigation-capturing?tab=t.0#bookmark=id.ugh0e993wsl8,
-  // where a new app container is made. Corrections handled here:
-  // - If the final url IS NOT in scope of any app, then reparent this new
-  // window into a tabbed browser window based on the type of the user modified
-  // click.
-  // - If the final url IS in scope of an app, then create a new app window and
-  // reparent this web contents into the new app window, provided the source and
-  // new app ids do not match.
-  bool is_user_modified =
-      (link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) ||
-      (link_click_disposition == WindowOpenDisposition::NEW_WINDOW);
+  // where a new app container is made.
   if (initial_nav_handling_result ==
       NavigationHandlingInitialResult::kForcedNewAppContextAppWindow) {
     CHECK(redirection_info.app_id_source_browser().has_value());
-    // TODO(crbug.com/336371044): This is no longer true due to apps being
-    // open-in-browser-tab too for this case. Fix here (or verify this can't
-    // happen).
-    CHECK(chrome::FindBrowserWithTab(web_contents_for_navigation)
-              ->app_controller());
-    if (!is_source_app_matching_final_target) {
+    CHECK(navigation_handling_first_stage_app);
+    // standalone-app -> browser-tab-app.
+    if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
+      EnqueueLaunchParams(web_contents_for_navigation, *target_app_id,
+                          final_url, /*wait_for_navigation_to_complete=*/true);
+      RecordLaunchMetrics(*target_app_id,
+                          apps::LaunchContainer::kLaunchContainerTab,
+                          apps::LaunchSource::kFromNavigationCapturing,
+                          final_url, web_contents_for_navigation);
+      ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
+                                         link_click_disposition);
+      return content::NavigationThrottle::PROCEED;
+    }
+    // standalone-app -> standalone-app.
+    if (target_display_mode != blink::mojom::DisplayMode::kBrowser) {
+      ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
+                                              *target_app_id, final_url);
+      return content::NavigationThrottle::PROCEED;
+    }
+  }
+  if (initial_nav_handling_result ==
+      NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab) {
+    // browser-tab-app -> browser-tab-app.
+    if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
+      EnqueueLaunchParams(web_contents_for_navigation, *target_app_id,
+                          final_url, /*wait_for_navigation_to_complete=*/true);
+      RecordLaunchMetrics(*target_app_id,
+                          apps::LaunchContainer::kLaunchContainerTab,
+                          apps::LaunchSource::kFromNavigationCapturing,
+                          final_url, web_contents_for_navigation);
+      return content::NavigationThrottle::PROCEED;
+    }
+    // browser-tab-app -> standalone-app. This must have a source app id to
+    // ensure that we cannot have a user-modified click go from a regular
+    // browser tab to an app window.
+    if (target_display_mode != blink::mojom::DisplayMode::kBrowser &&
+        source_app_id.has_value()) {
       ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
                                               *target_app_id, final_url);
       return content::NavigationThrottle::PROCEED;
@@ -229,22 +267,31 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
   // See
   // https://bit.ly/pwa-navigation-capturing?tab=t.0#bookmark=id.ugh0e993wsl8
   // for more information.
-  // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
-  // redirection.
-  if ((initial_nav_handling_result ==
-           NavigationHandlingInitialResult::kBrowserTab ||
-       initial_nav_handling_result ==
-           NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab ||
-       initial_nav_handling_result ==
-           NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab) &&
+  bool is_user_modified =
+      (link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) ||
+      (link_click_disposition == WindowOpenDisposition::NEW_WINDOW);
+  if (initial_nav_handling_result ==
+          NavigationHandlingInitialResult::kBrowserTab &&
       is_user_modified && source_app_id.has_value()) {
+    // As per the UX direction in the doc, NEW_BACKGROUND_TAB only creates a
+    // new app window for an app when coming from the same app window.
+    // Otherwise, only NEW_WINDOW can create a new app window when coming from
+    // an app.
     if ((link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
          is_source_app_matching_final_target) ||
         (link_click_disposition == WindowOpenDisposition::NEW_WINDOW)) {
-      // As per the UX direction in the doc, NEW_BACKGROUND_TAB only creates a
-      // new app window for an app when coming from the same app window.
-      // Otherwise, only NEW_WINDOW can create a new app window when coming from
-      // an app.
+      // browser-tab -> browser-tab-app.
+      if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
+        EnqueueLaunchParams(web_contents_for_navigation, *target_app_id,
+                            final_url,
+                            /*wait_for_navigation_to_complete=*/true);
+        RecordLaunchMetrics(*target_app_id,
+                            apps::LaunchContainer::kLaunchContainerTab,
+                            apps::LaunchSource::kFromNavigationCapturing,
+                            final_url, web_contents_for_navigation);
+        return content::NavigationThrottle::PROCEED;
+      }
+      // browser-tab -> standalone app
       ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
                                               *target_app_id, final_url);
       return content::NavigationThrottle::PROCEED;
@@ -289,12 +336,7 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
   // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
   // redirection.
   bool final_navigation_can_be_capturable =
-      initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow ||
-      initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab ||
-      initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kNavigateCapturingNavigateExisting ||
+      WasCaptured(initial_nav_handling_result) ||
       initial_nav_handling_result ==
           NavigationHandlingInitialResult::kBrowserTab;
   if (!final_navigation_can_be_capturable) {

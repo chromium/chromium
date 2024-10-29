@@ -1753,6 +1753,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kTab),
         testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
+        // TODO(crbug.com/375619465): Test redirection.
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink),
         testing::Values(test::ClickMethod::kLeftClick),
@@ -1817,6 +1818,29 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(test::ClickMethod::kShiftClick),
                      testing::Values(OpenerMode::kOpener),
                      testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// This is meant to test (most) of the user-modified click scenarios that
+// include browser tab apps.
+INSTANTIATE_TEST_SUITE_P(
+    Redirect_Modified_BrowserApp,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(ClientModeCombination::kAuto),
+        testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A,
+                        Destination::kScopeA2B,
+                        Destination::kScopeA2X),
+        testing::Values(RedirectType::kServerSideViaA,
+                        RedirectType::kServerSideViaB,
+                        RedirectType::kServerSideViaX),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kShiftClick,
+                        test::ClickMethod::kMiddleClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
 // Use-case where redirection goes into a browser tab as an intermediate step,
