@@ -278159,6 +278159,19 @@
          {}
         ]
        ],
+       "2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative.html": [
+        "fac5f6f2b67163d652e4ddca6680c39dea3ae754",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.text.measure.text-clusters-rendering-font-change.tentative.html": [
         "a927cfcd33094f502c3d46fd88da7bd26381256b",
         [
@@ -281642,6 +281655,32 @@
          [
           [
            "/html/canvas/offscreen/text/2d.text.measure.text-clusters-rendering-baseline.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative.html": [
+        "8d304cb1a78dbae42ff19aeb83926570198396aa",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative.w.html": [
+        "76f61dad315a125da4b096c1181ef1b8d0aa30fd",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative-expected.html",
            "=="
           ]
          ],
@@ -365516,7 +365555,11 @@
          "7d9c498e8da29f6d23df33d49a2aab5b85e9f1e2",
          []
         ]
-       }
+       },
+       "selection-preserve-expected.txt": [
+        "54319d2054de4a21418eae6791e1ac37e7e51929",
+        []
+       ]
       }
      },
      "mutationobservers.js": [
@@ -372842,15 +372885,15 @@
       []
      ],
      "activeelement-after-calling-window-focus-middle.sub.html": [
-      "c5a0d60a71de3708c429769c221c5e38555a9964",
+      "da5164e4252efaf1023dc813ca5f32e9f4ae1c6f",
       []
      ],
      "activeelement-after-calling-window-focus-outer-different.sub.html": [
-      "2cddcf233dbd618b3ba42868c7b191f7d89ff8e9",
+      "bbbb50d4e4576a0f7b689dda67b53d8d144685a2",
       []
      ],
      "activeelement-after-calling-window-focus-outer-same.sub.html": [
-      "4833e94bc9414c461d6779e5a762e9d2833ceeea",
+      "b3ce29e20d27d62c2ebef5a22746abdc42461724",
       []
      ],
      "activeelement-after-focusing-different-site-iframe-inner-contentwindow.html": [
@@ -372862,7 +372905,7 @@
       []
      ],
      "activeelement-after-focusing-different-site-iframe-outer-contentwindow.sub.html": [
-      "fd66cbaa55c2044922af9d232ca2276ddf5b3028",
+      "4a9a9a110d9fd29b66eed4a6a5b30be0cab27dce",
       []
      ],
      "activeelement-after-focusing-different-site-iframe-outer.sub.html": [
@@ -373046,11 +373089,11 @@
       []
      ],
      "iframe-contentwindow-focus-with-different-site-intermediate-frame-middle.sub.html": [
-      "e3a5facf82e4c08753705ee1803b76ceef30f671",
+      "c59e3ec703f32b1143de28cfa4522e54ae5b1e09",
       []
      ],
      "iframe-contentwindow-focus-with-different-site-intermediate-frame-outer.sub.html": [
-      "9dbb6af9d9a4dd795cd0976bc87695e0363372b4",
+      "cc5412dfb488faf85497b11ca9461849b333bd11",
       []
      ],
      "iframe-contentwindow-focus-with-same-as-top-intermediate-frame-inner.html": [
@@ -373058,11 +373101,11 @@
       []
      ],
      "iframe-contentwindow-focus-with-same-as-top-intermediate-frame-middle.sub.html": [
-      "747e1467466eabe5b09ec80891603e8ad1a5335c",
+      "a94a03101c587d7e917baa4a68a0aab564e8f14c",
       []
      ],
      "iframe-contentwindow-focus-with-same-as-top-intermediate-frame-outer.html": [
-      "71cfe78c0d7614f585a7dcecb3b6c12e6698d321",
+      "bd96a9680cef6cf346e2710ea756a79cfb631c0b",
       []
      ],
      "iframe-focus-with-different-site-intermediate-frame-inner.html": [
@@ -373074,7 +373117,7 @@
       []
      ],
      "iframe-focus-with-different-site-intermediate-frame-outer.sub.html": [
-      "5e80410206d0d2fe7cbe5faef206c9a930a5a8ed",
+      "299f3787b3a7959e3ae2f49895d5d7bac6e029bb",
       []
      ],
      "iframe-focus-with-same-as-top-intermediate-frame-inner.html": [
@@ -374457,7 +374500,7 @@
      []
     ],
     "generic-sensor-iframe-tests.sub.js": [
-     "ed3415e66ec799da22277dcd3f81dbbfb956145b",
+     "277d5d0ea9b290b554a7746567dde65b826a165d",
      []
     ],
     "generic-sensor-tests.js": [
@@ -379027,6 +379070,10 @@
         "2dffe90aadc57ae07067fa7decab24fd43fc8728",
         []
        ],
+       "2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative-expected.html": [
+        "6d109c3ffcd3ed269cd68638a4a722ac7d4a5c58",
+        []
+       ],
        "2d.text.measure.text-clusters-rendering-font-change.tentative-expected.html": [
         "9a9443962dfb988da61453159d02d953e620be6c",
         []
@@ -379663,6 +379710,10 @@
         "2dffe90aadc57ae07067fa7decab24fd43fc8728",
         []
        ],
+       "2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative-expected.html": [
+        "6d109c3ffcd3ed269cd68638a4a722ac7d4a5c58",
+        []
+       ],
        "2d.text.measure.text-clusters-rendering-font-change.tentative-expected.html": [
         "9a9443962dfb988da61453159d02d953e620be6c",
         []
@@ -379894,7 +379945,7 @@
         []
        ],
        "text.yaml": [
-        "78312640c08938cf81e38ca0671b82280093e43b",
+        "7fe59a91a357868cf5f97773e8a70a15988e0400",
         []
        ],
        "the-canvas-state.yaml": [
@@ -400166,6 +400217,10 @@
        "fd3da53a29c3e7f55f950611d34694867b0ff0a4",
        []
       ],
+      "permissions-policy-focus-without-user-activation.html": [
+       "c802d6f06999e58e927fa52c08cfb4d81423e768",
+       []
+      ],
       "permissions-policy-private-state-token-redemption.html": [
        "7a055f0e7bfb8740b20afc1e43df0e0d66a5ef93",
        []
@@ -404427,7 +404482,7 @@
      []
     ],
     "scroll-to-text-fragment-target.html": [
-     "ceb9a2ca3ff0e0b3503796d28cfe6bab9029668f",
+     "3a2b3571147a7fc3e6fcf7cbdb9082d23b4e99d2",
      []
     ],
     "stash.js": [
@@ -424332,7 +424387,7 @@
      ]
     ],
     "get-databases.any.js": [
-     "ac1ab15f27f7624238ab695957f50cc5bde1b453",
+     "a79adb808d925a53c6892ee7e193de6b8b9105af",
      [
       "IndexedDB/get-databases.any.html",
       {
@@ -502891,7 +502946,14 @@
      ]
     ],
     "ElementInternals-accessibility.html": [
-     "3b04f257dea0ffef43775be018adcc624819b96a",
+     "20861e5cfd1db5c58ac5daf26830457b93967f02",
+     [
+      null,
+      {}
+     ]
+    ],
+    "ElementInternals-accessibility.tentative.html": [
+     "2bab6bedfd29872e3c424819db7900e1aa75517a",
      [
       null,
       {}
@@ -503335,7 +503397,14 @@
       ]
      ],
      "AriaMixin-string-attributes.html": [
-      "c058084ab28ce7d3688517578f5367a1287c235c",
+      "0b32326f5a4d3f5d42b1150b002055e0541caff8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "AriaMixin-string-attributes.tentative.html": [
+      "8c81adb30c6c684feb7a601b143363292a2500b5",
       [
        null,
        {}
@@ -508294,7 +508363,7 @@
         ]
        ],
        "selection-preserve.html": [
-        "04b81c9a0563894c68ad498b49352e7de9e01049",
+        "c61741e92c56071db97b8b7731fc240f27a03dc7",
         [
          null,
          {
@@ -597503,7 +597572,14 @@
     },
     "dom": {
      "aria-attribute-reflection.html": [
-      "d2e5b03f853baa85ee53224953e3995ec3743a80",
+      "2a73f5c557b3e534756ccfa307ca958dde51c577",
+      [
+       null,
+       {}
+      ]
+     ],
+     "aria-attribute-reflection.tentative.html": [
+      "db38ddef06c61989dbe89bec9bc8b7ac14c55809",
       [
        null,
        {}
@@ -641021,6 +641097,13 @@
      ]
     ],
     "experimental-features": {
+     "focus-without-user-activation-default-permissions-policy.tentative.https.sub.html": [
+      "9ca1426040c6edecba4200c92b53ff8ce6ee61cd",
+      [
+       null,
+       {}
+      ]
+     ],
      "focus-without-user-activation-disabled-tentative.html": [
       "3980fd1219cba990454ffa86e0a5bd493b9eb5e6",
       [
@@ -644870,6 +644953,53 @@
         [
          "script",
          "resources/helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "supported-encodings.https.any.js": [
+     "45b5ed1cba46c63c908d35d0391c844acc536c04",
+     [
+      "push-api/supported-encodings.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "push-api/supported-encodings.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "push-api/supported-encodings.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "push-api/supported-encodings.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
         ]
        ]
       }
@@ -782621,7 +782751,7 @@
       },
       "new_session": {
        "create_alwaysMatch.py": [
-        "64fd0a7425657fa0596298ec281ea4a1bbe08a4f",
+        "7a7f007dabb3188ac02893f3567ff805dab78b5b",
         [
          null,
          {
@@ -782630,7 +782760,7 @@
         ]
        ],
        "create_firstMatch.py": [
-        "d4523f4330c76e46fd9441901dc17314aec85c66",
+        "22c74bcfbd748d4eea838d22a5764fae2eaecdda",
         [
          null,
          {
