@@ -285,6 +285,31 @@ try_.builder(
             "minimal_symbols",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_webkit_isolated_scripts",
+        ],
+        mixins = [
+            targets.mixin(
+                swarming = targets.swarming(
+                    hard_timeout_sec = 900,
+                ),
+            ),
+            "win11",
+        ],
+        per_test_modifications = {
+            "blink_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    hard_timeout_sec = 2400,
+                ),
+            ),
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    hard_timeout_sec = 2400,
+                ),
+            ),
+        },
+    ),
     builderless = True,
     os = os.WINDOWS_ANY,
 )
