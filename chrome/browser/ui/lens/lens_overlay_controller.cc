@@ -481,6 +481,8 @@ void LensOverlayController::ShowUI(
     CaptureScreenshot();
   }
 
+  NotifyUserEducationAboutOverlayUsed();
+
   // Establish data required for session metrics.
   search_performed_in_session_ = false;
   invocation_time_ = base::TimeTicks::Now();
@@ -2723,5 +2725,14 @@ void LensOverlayController::ShowTutorialIPH() {
   if (auto* user_ed =
           tab_->GetBrowserWindowInterface()->GetUserEducationInterface()) {
     user_ed->MaybeShowFeaturePromo(feature_engagement::kIPHLensOverlayFeature);
+  }
+}
+
+void LensOverlayController::NotifyUserEducationAboutOverlayUsed() {
+  if (auto* user_ed =
+          tab_->GetBrowserWindowInterface()->GetUserEducationInterface()) {
+    user_ed->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHLensOverlayFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 }

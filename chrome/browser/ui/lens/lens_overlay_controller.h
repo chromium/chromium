@@ -938,6 +938,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Shows the tutorial IPH.
   void ShowTutorialIPH();
 
+  // Notifies the user education service that the overlay has been used.
+  void NotifyUserEducationAboutOverlayUsed();
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
