@@ -2668,6 +2668,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.Notifications.SendTab.MagicStack.AllowNotificationsPressed"
+    enum="Boolean" expires_after="2025-09-13">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Recorded when a user taps on the 'Allow Notifications' button on the Send
+    Tab Notifications Promo module in the Magic Stack.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.SendTab.Received"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-09-13">

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/pref_names.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -57,6 +58,8 @@
 
 - (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {
   CHECK(moduleType == ContentSuggestionsModuleType::kSendTabPromo);
+  base::UmaHistogramBoolean(
+      "IOS.Notifications.SendTab.MagicStack.AllowNotificationsPressed", true);
   [self.notificationsDelegate enableNotifications:moduleType];
 }
 
