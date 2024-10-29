@@ -30,7 +30,6 @@ hex-literal = "0.4"
 itertools = "0.11"
 lazy_static = "1"
 libc = "0.2"
-log = "0.4"
 nom = "7.1.3"
 proc-macro2 = "1"
 prost = "0.12.3"
@@ -67,6 +66,12 @@ features = ["rustc_1_55"]
 [dependencies.cxxbridge-cmd]
 version = "1"
 artifact = "bin"
+
+[dependencies.log]
+version = "0.4"
+# `release_max_level_info` disables debug and trace logs at compile time
+# when debug asserts are off, which is when DCHECK_IS_ON() is false.
+features = [ "std", "release_max_level_info" ]
 
 [dependencies.rstest]
 default-features = false

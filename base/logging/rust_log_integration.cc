@@ -19,22 +19,16 @@ BASE_EXPORT void print_rust_log(const char* msg,
                                 const char* file,
                                 int line,
                                 enum RustLogSeverity severity) {
-  // Drop debug and trace logs when DCHECK_IS_ON() is false. Otherwise, log them
-  // as info, since the C++ implementation lacks support for debug and trace
-  // logs.
-#if !DCHECK_IS_ON()
-  if (severity == RustLogSeverity::DEBUG ||
-      severity == RustLogSeverity::TRACE) {
-    return;
-  }
-#endif
-
   logging::LogSeverity log_severity;
   switch (severity) {
     case RustLogSeverity::DEBUG:
+      // Note that DEBUG level logs are dropped at compile time when
+      // DCHECK_IS_ON() is false. This is done through a Cargo feature.
       log_severity = logging::LOGGING_INFO;
       break;
     case RustLogSeverity::TRACE:
+      // Note that TRACE level logs are dropped at compile time when
+      // DCHECK_IS_ON() is false. This is done through a Cargo feature.
       log_severity = logging::LOGGING_INFO;
       break;
     case RustLogSeverity::INFO:
