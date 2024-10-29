@@ -310,14 +310,33 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
   for (size_t i = 0; i < file_types().extensions.size(); ++i) {
     PortalFilter filter;
 
+    std::vector<std::string> original_patterns;
+
     for (const std::string& extension : file_types().extensions[i]) {
       if (extension.empty())
         continue;
 
-      filter.patterns.push_back("*." + base::ToLowerASCII(extension));
-      auto upper = "*." + base::ToUpperASCII(extension);
-      if (upper != filter.patterns.back())
-        filter.patterns.push_back(std::move(upper));
+      // We want to allow ASCII case-insensitive matches for the extension on
+      // a per-character basis, since that's what
+      // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
+      // suggests.  For example, we should accept file.txt, file.TXT, or
+      // file.tXt.  To do this, we expand characters with ASCII case
+      // equivalents to be represented by [aA], as documented in
+      // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.FileChooser.html
+      std::string pattern("*.");
+      for (char c : extension) {
+        char lower = base::ToLowerASCII(c);
+        char upper = base::ToUpperASCII(c);
+        if (upper != lower) {
+          pattern.append({'[', lower, upper, ']'});
+        } else {
+          pattern.append({c});
+        }
+      }
+      filter.patterns.push_back(pattern);
+
+      // Save the original form for use as a fallback description.
+      original_patterns.push_back("*." + extension);
     }
 
     if (filter.patterns.empty())
@@ -330,9 +349,7 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
           base::UTF16ToUTF8(file_types().extension_description_overrides[i]);
     }
     if (filter.name.empty()) {
-      std::vector<std::string> patterns_vector(filter.patterns.begin(),
-                                               filter.patterns.end());
-      filter.name = base::JoinString(patterns_vector, ",");
+      filter.name = base::JoinString(original_patterns, ",");
     }
 
     // The -1 is required to match against the right filter because
