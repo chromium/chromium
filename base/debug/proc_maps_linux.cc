@@ -14,7 +14,9 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 
@@ -168,6 +170,73 @@ bool ParseProcMaps(const std::string& input,
 
   regions_out->swap(regions);
   return true;
+}
+
+std::optional<SmapsRollup> ParseSmapsRollup(const std::string& buffer) {
+  std::vector<std::string> lines =
+      SplitString(buffer, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  std::unordered_map<std::string, size_t> tmp;
+  for (const auto& line : lines) {
+    // This should be more than enough space for any output we get (but we also
+    // verify the size below).
+    std::string key;
+    key.resize(100);
+    size_t val;
+    if (sscanf(line.c_str(), "%99s %" PRIuS " kB", key.data(), &val) == 2) {
+      // sscanf writes a nul-byte at the end of the result, so |strlen| is safe
+      // here. |resize| does not count the length of the nul-byte, and we want
+      // to trim off the trailing colon at the end, so we use |strlen - 1| here.
+      key.resize(strlen(key.c_str()) - 1);
+      tmp[key] = val * 1024;
+    }
+  }
+
+  SmapsRollup smaps_rollup;
+
+  smaps_rollup.rss = tmp["Rss"];
+  smaps_rollup.pss = tmp["Pss"];
+  smaps_rollup.pss_anon = tmp["Pss_Anon"];
+  smaps_rollup.pss_file = tmp["Pss_File"];
+  smaps_rollup.pss_shmem = tmp["Pss_Shmem"];
+  smaps_rollup.private_dirty = tmp["Private_Dirty"];
+  smaps_rollup.swap = tmp["Swap"];
+  smaps_rollup.swap_pss = tmp["SwapPss"];
+
+  return smaps_rollup;
+}
+
+std::optional<SmapsRollup> ReadAndParseSmapsRollup() {
+  const size_t read_size = base::GetPageSize();
+
+  base::ScopedFD fd(HANDLE_EINTR(open("/proc/self/smaps_rollup", O_RDONLY)));
+  if (!fd.is_valid()) {
+    DPLOG(ERROR) << "Couldn't open /proc/self/smaps_rollup";
+    return std::nullopt;
+  }
+
+  std::string buffer;
+  buffer.resize(read_size);
+
+  ssize_t bytes_read = HANDLE_EINTR(
+      read(fd.get(), static_cast<void*>(buffer.data()), read_size));
+  if (bytes_read < 0) {
+    DPLOG(ERROR) << "Couldn't read /proc/self/smaps_rollup";
+    return std::nullopt;
+  }
+
+  // We expect to read a few hundred bytes, which should be significantly less
+  // the page size.
+  DCHECK(static_cast<size_t>(bytes_read) < read_size);
+
+  buffer.resize(static_cast<size_t>(bytes_read));
+
+  return ParseSmapsRollup(buffer);
+}
+
+std::optional<SmapsRollup> ParseSmapsRollupForTesting(
+    const std::string& smaps_rollup) {
+  return ParseSmapsRollup(smaps_rollup);
 }
 
 }  // namespace debug
