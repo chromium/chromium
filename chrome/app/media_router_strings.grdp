@@ -102,10 +102,10 @@
     Permission to cast is rejected. Open a help center article in a new tab to learn more.
   </message>
   <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL" desc="The error message including the link to the OS settings page, shown when the browser does not have the permission to connect to devices on the local network.">
-    To cast, give Chrome access in <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK">$1<ex>system settings</ex></ph>
+    To cast, give Chrome access in: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK">$1<ex>System Settings</ex></ph> > Local Network > Chrome
   </message>
-    <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" desc="Text for the link to the OS settings page allowing useres to turn on the permission. This string will be embedded in a longer sentence that makes up the whole label.">
-    system settings
+  <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" desc="Text for the link to the OS settings page allowing useres to turn on the permission. This string will be embedded in a longer sentence that makes up the whole label.">
+    System Settings
   </message>
   <message name="IDS_MEDIA_ROUTER_SINK_AVAILABLE" desc="Text shown as the status of a Cast destination that the user can Cast to." meaning="Device status shown in Cast dialog">
     Available
