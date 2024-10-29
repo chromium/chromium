@@ -572,12 +572,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         // Set to all types, and restrict further by MIME-type below.
         getContentIntent.setType(ALL_TYPES);
 
-        if (mMimeTypes.size() > 0) {
-            // If some of the extensions are generic, just let user selectall files.
-            List<String> types =
-                    mMimeTypes.contains(GENERIC_TYPE)
-                            ? new ArrayList<>()
-                            : new ArrayList<>(mMimeTypes);
+        // If some of the extensions are generic, just let user select all files.
+        if (mMimeTypes.size() > 0 && !mMimeTypes.contains(GENERIC_TYPE)) {
+            List<String> types = new ArrayList<>(mMimeTypes);
             // Calls to ACTION_GET_CONTENT can result in the MediaPicker hijacking the call and
             // showing itself instead of the Files app, when only images or videos are provided.
             // This flow is not only confusing for the user (a MediaPicker on top of a MediaPicker?)
@@ -587,10 +584,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             if (shouldShowImageTypes() || shouldShowVideoTypes()) {
                 types.add("type/nonexistent");
             }
-
-            if (!types.isEmpty()) {
-                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
-            }
+            getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
         }
 
         ArrayList<Intent> extraIntents = new ArrayList<Intent>();

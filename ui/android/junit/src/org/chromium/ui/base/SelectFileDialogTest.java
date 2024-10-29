@@ -421,7 +421,8 @@ public class SelectFileDialogTest {
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
 
-        // Setup showIntent to check for invalid file extensions.
+        // Setup showIntent to check for invalid file extensions. Because the MIME type is
+        // generic, EXTRA_MIME_TYPES filter should be dropped.
         Mockito.doAnswer(
                         (invocation) -> {
                             Intent chooserIntent = (Intent) invocation.getArguments()[0];
@@ -430,9 +431,7 @@ public class SelectFileDialogTest {
                             assertEquals(
                                     true, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
                             assertEquals("*/*", getContentIntent.getType());
-                            String[] mimeTypes =
-                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
-                            assertArrayEquals(new String[] {"type/nonexistent"}, mimeTypes);
+                            assertFalse(getContentIntent.hasExtra(Intent.EXTRA_MIME_TYPES));
                             assertEquals(
                                     null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
                             assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
