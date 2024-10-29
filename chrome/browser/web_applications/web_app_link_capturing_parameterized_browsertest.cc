@@ -757,9 +757,9 @@ class WebAppLinkCapturingParameterizedBrowserTest
   //
   // @param message_queue The message queue expected to see the message.
   void WaitForNavigationFinishedMessage(
-      content::DOMMessageQueue* message_queue) {
+      content::DOMMessageQueue& message_queue) {
     std::string message;
-    EXPECT_TRUE(message_queue->WaitForMessage(&message));
+    EXPECT_TRUE(message_queue.WaitForMessage(&message));
     std::string unquoted_message;
     ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
     EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
@@ -849,19 +849,25 @@ class WebAppLinkCapturingParameterizedBrowserTest
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         launch_future;
+
+    content::DOMMessageQueue message_queue;
     provider().scheduler().LaunchApp(app_id, url, launch_future.GetCallback());
     EXPECT_TRUE(launch_future.Wait());
     content::WebContents* contents =
         launch_future.Get<base::WeakPtr<content::WebContents>>().get();
     content::WaitForLoadStop(contents);
+    WaitForNavigationFinishedMessage(message_queue);
     return contents;
   }
 
   content::WebContents* LaunchPageInTab(const GURL& url) {
+    content::DOMMessageQueue message_queue;
+    // Note: We do not need to call WaitForLoadStop because NavigateToURL calls
+    // that internally.
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    content::WaitForLoadStop(contents);
+    WaitForNavigationFinishedMessage(message_queue);
     return contents;
   }
 
@@ -1390,8 +1396,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
     Browser* browser_a;
     content::WebContents* contents_a;
     {
-      content::DOMMessageQueue message_queue;
-
       if (StartInAppWindow()) {
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchStartPageAsApp(app_a, url_a);
@@ -1400,11 +1404,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchPageInTab(url_a);
       }
-
-      std::string message;
-      EXPECT_TRUE(message_queue.WaitForMessage(&message));
-      EXPECT_TRUE(base::Contains(message, "FinishedNavigating")) << message;
-      DLOG(INFO) << message;
 
       browser_a = chrome::FindBrowserWithTab(contents_a);
       ASSERT_TRUE(browser_a != nullptr);
@@ -1437,7 +1436,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
       }
 
       if (expect_navigation) {
-        WaitForNavigationFinishedMessage(&message_queue);
+        WaitForNavigationFinishedMessage(message_queue);
       }
     }
 
@@ -1947,7 +1946,7 @@ class NavigationCapturingTestWithAppBLaunched
     ASSERT_TRUE(launch_future.Wait());
     url_observer.Wait();
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(&message_queue);
+    WaitForNavigationFinishedMessage(message_queue);
   }
 
   std::string GetTestClassName() const override {
@@ -2092,7 +2091,7 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     LaunchPageInTab(url_b_dest);
 
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(&message_queue);
+    WaitForNavigationFinishedMessage(message_queue);
   }
 
   std::string GetTestClassName() const override {
@@ -2179,7 +2178,7 @@ class NavigationCapturingTestWithExtraBrowserTabB
     content::WaitForLoadStop(contents_b);
 
     // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(&message_queue);
+    WaitForNavigationFinishedMessage(message_queue);
   }
 
   std::string GetTestClassName() const override {
