@@ -5,7 +5,6 @@
 #include "chrome/browser/companion/core/utils.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

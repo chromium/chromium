@@ -12,11 +12,8 @@ static_library("core") {
     "companion_permission_utils.h",
     "companion_url_builder.cc",
     "companion_url_builder.h",
-    "constants.h",
     "features.cc",
     "features.h",
-    "promo_handler.cc",
-    "promo_handler.h",
     "signin_delegate.h",
     "utils.cc",
     "utils.h",
@@ -47,7 +44,6 @@ source_set("unit_tests") {
     "companion_url_builder_unittest.cc",
     "mock_signin_delegate.cc",
     "mock_signin_delegate.h",
-    "promo_handler_unittest.cc",
     "utils_unittest.cc",
   ]
 

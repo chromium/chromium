@@ -269,7 +269,6 @@
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
-#include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
@@ -1132,6 +1131,26 @@ inline constexpr char kWallpaperSeaPenMigrationStatus[] =
 inline constexpr char kFirstTimeInterstitialBannerState[] =
     "profile.managed.banner_state";
 
+// Deprecated 10/2024
+inline constexpr char kSidePanelCompanionEntryPinnedToToolbar[] =
+    "side_panel.companion_pinned_to_toolbar";
+inline constexpr char kMsbbPromoDeclinedCountPref[] =
+    "Companion.Promo.MSBB.Declined.Count";
+inline constexpr char kSigninPromoDeclinedCountPref[] =
+    "Companion.Promo.Signin.Declined.Count";
+inline constexpr char kExpsPromoDeclinedCountPref[] =
+    "Companion.Promo.Exps.Declined.Count";
+inline constexpr char kExpsPromoShownCountPref[] =
+    "Companion.Promo.Exps.Shown.Count";
+inline constexpr char kPcoPromoShownCountPref[] =
+    "Companion.Promo.PCO.Shown.Count";
+inline constexpr char kPcoPromoDeclinedCountPref[] =
+    "Companion.Promo.PCO.Declined.Count";
+inline constexpr char kExpsOptInStatusGrantedPref[] =
+    "Companion.Exps.OptIn.Status.Granted";
+inline constexpr char kHasNavigatedToExpsSuccessPage[] =
+    "Companion.HasNavigatedToExpsSuccessPage";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1601,6 +1620,17 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2024
   registry->RegisterIntegerPref(kFirstTimeInterstitialBannerState, 0);
+
+  // Deprecated 10/2024
+  registry->RegisterBooleanPref(kSidePanelCompanionEntryPinnedToToolbar, false);
+  registry->RegisterIntegerPref(kMsbbPromoDeclinedCountPref, 0);
+  registry->RegisterIntegerPref(kSigninPromoDeclinedCountPref, 0);
+  registry->RegisterIntegerPref(kExpsPromoDeclinedCountPref, 0);
+  registry->RegisterIntegerPref(kExpsPromoShownCountPref, 0);
+  registry->RegisterIntegerPref(kPcoPromoShownCountPref, 0);
+  registry->RegisterIntegerPref(kPcoPromoDeclinedCountPref, 0);
+  registry->RegisterBooleanPref(kExpsOptInStatusGrantedPref, false);
+  registry->RegisterBooleanPref(kHasNavigatedToExpsSuccessPage, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2109,7 +2139,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   CartService::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   commerce::CommerceUiTabHelper::RegisterProfilePrefs(registry);
-  companion::PromoHandler::RegisterProfilePrefs(registry);
   DeviceServiceImpl::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
@@ -2956,6 +2985,17 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2024
   profile_prefs->ClearPref(kFirstTimeInterstitialBannerState);
+
+  // Added 10/2024
+  profile_prefs->ClearPref(kSidePanelCompanionEntryPinnedToToolbar);
+  profile_prefs->ClearPref(kMsbbPromoDeclinedCountPref);
+  profile_prefs->ClearPref(kSigninPromoDeclinedCountPref);
+  profile_prefs->ClearPref(kExpsPromoDeclinedCountPref);
+  profile_prefs->ClearPref(kExpsPromoShownCountPref);
+  profile_prefs->ClearPref(kPcoPromoShownCountPref);
+  profile_prefs->ClearPref(kPcoPromoDeclinedCountPref);
+  profile_prefs->ClearPref(kExpsOptInStatusGrantedPref);
+  profile_prefs->ClearPref(kHasNavigatedToExpsSuccessPage);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

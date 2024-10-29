@@ -6,7 +6,6 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,22 +43,7 @@ ExpsRegistrationSuccessObserver::ExpsRegistrationSuccessObserver(
 ExpsRegistrationSuccessObserver::~ExpsRegistrationSuccessObserver() = default;
 
 void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
-  if (!web_contents() || !pref_service()) {
-    return;
-  }
-
-  if (pref_service()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
-    return;
-  }
-
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-  if (!DoesUrlMatchPatternsInList(url,
-                                  exps_registration_success_url_patterns_)) {
-    return;
-  }
-
-  // Save the status to a pref.
-  pref_service()->SetBoolean(kHasNavigatedToExpsSuccessPage, true);
+  // TODO(crbug.com/348678854): Remove this when removing all companion code.
 }
 
 PrefService* ExpsRegistrationSuccessObserver::pref_service() {

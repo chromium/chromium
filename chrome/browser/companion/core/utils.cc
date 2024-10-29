@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "net/base/url_util.h"
 

@@ -260,7 +260,6 @@ source_set("impl") {
     ]
   } else {
     deps += [
-      "//chrome/browser/companion/core",
       "//chrome/browser/on_device_translation:prefs",
       "//chrome/browser/promos:utils",
       "//chrome/browser/screen_ai:prefs",

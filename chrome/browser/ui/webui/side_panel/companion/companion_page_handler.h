@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
@@ -31,7 +30,6 @@ class Profile;
 namespace companion {
 class CompanionMetricsLogger;
 class CompanionUrlBuilder;
-class PromoHandler;
 class SigninDelegate;
 
 class CompanionPageHandler
@@ -145,7 +143,6 @@ class CompanionPageHandler
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
   std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
-  std::unique_ptr<PromoHandler> promo_handler_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       consent_helper_;
 

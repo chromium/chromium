@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
@@ -133,18 +132,12 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
 #endif
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
-  promo_state->set_signin_promo_denial_count(
-      pref_service_->GetInteger(kSigninPromoDeclinedCountPref));
-  promo_state->set_msbb_promo_denial_count(
-      pref_service_->GetInteger(kMsbbPromoDeclinedCountPref));
-  promo_state->set_exps_promo_denial_count(
-      pref_service_->GetInteger(kExpsPromoDeclinedCountPref));
-  promo_state->set_exps_promo_shown_count(
-      pref_service_->GetInteger(kExpsPromoShownCountPref));
-  promo_state->set_pco_promo_shown_count(
-      pref_service_->GetInteger(kPcoPromoShownCountPref));
-  promo_state->set_pco_promo_denial_count(
-      pref_service_->GetInteger(kPcoPromoDeclinedCountPref));
+  promo_state->set_signin_promo_denial_count(0);
+  promo_state->set_msbb_promo_denial_count(0);
+  promo_state->set_exps_promo_denial_count(0);
+  promo_state->set_exps_promo_shown_count(0);
+  promo_state->set_pco_promo_shown_count(0);
+  promo_state->set_pco_promo_denial_count(0);
 
   // Set region search IPH state.
   promo_state->set_should_show_region_search_iph(

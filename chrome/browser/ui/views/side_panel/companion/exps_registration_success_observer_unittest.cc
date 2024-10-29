@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -36,7 +35,6 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-constexpr char kDefaultUrl[] = "http://example.com";
 constexpr char kBlocklistedUrl[] = "https://labs.google.com/search";
 constexpr char kBlocklistedUrl2[] = "https://labs.google.com/search/playground";
 constexpr char kExpsRegistationSuccessUrl[] = "https://labs.google.com/search";
@@ -70,13 +68,6 @@ class ExpsRegistrationSuccessObserverTest
         .WillRepeatedly(testing::Return(true));
   }
 
-  void SetPrefValues(bool exps_granted, bool has_seen_success_page) {
-    pref_service_.registry()->RegisterBooleanPref(
-        companion::kExpsOptInStatusGrantedPref, exps_granted);
-    pref_service_.registry()->RegisterBooleanPref(
-        companion::kHasNavigatedToExpsSuccessPage, has_seen_success_page);
-  }
-
   void SetUpFeatureList() {
     base::FieldTrialParams enabled_params;
     enabled_params["exps-registration-success-page-urls"] =
@@ -100,32 +91,6 @@ class ExpsRegistrationSuccessObserverTest
 };
 
 }  // namespace
-
-TEST_F(ExpsRegistrationSuccessObserverTest,
-       ExpsRegistrationSuccessUpdatesThePref) {
-  SetUpFeatureList();
-  SetPrefValues(/*exps_granted=*/false,
-                /*has_seen_success_page=*/false);
-  SetupExpsObserver();
-
-  NavigateAndCommit(GURL(kExpsRegistationSuccessUrl));
-
-  EXPECT_TRUE(
-      pref_service_.GetBoolean(companion::kHasNavigatedToExpsSuccessPage));
-}
-
-TEST_F(ExpsRegistrationSuccessObserverTest,
-       RandomUrlDoesntUpdateExpsRegistrationPref) {
-  SetUpFeatureList();
-  SetPrefValues(/*exps_granted=*/false,
-                /*has_seen_success_page=*/false);
-  SetupExpsObserver();
-
-  NavigateAndCommit(GURL(kDefaultUrl));
-
-  EXPECT_FALSE(
-      pref_service_.GetBoolean(companion::kHasNavigatedToExpsSuccessPage));
-}
 
 TEST_F(ExpsRegistrationSuccessObserverTest, MatchURL) {
   SetupExpsObserver();

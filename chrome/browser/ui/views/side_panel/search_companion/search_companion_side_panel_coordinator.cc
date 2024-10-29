@@ -9,7 +9,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -88,18 +87,6 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
       base::BindRepeating(
           &SearchCompanionSidePanelCoordinator::OnPolicyPrefChanged,
           base::Unretained(this)));
-
-  if (base::FeatureList::IsEnabled(
-          companion::features::internal::
-              kCompanionEnabledByObservingExpsNavigations)) {
-    exps_optin_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    exps_optin_pref_change_registrar_->Init(pref_service_);
-    exps_optin_pref_change_registrar_->Add(
-        companion::kHasNavigatedToExpsSuccessPage,
-        base::BindRepeating(
-            &SearchCompanionSidePanelCoordinator::OnExpsPolicyPrefChanged,
-            base::Unretained(this)));
-  }
 }
 
 SearchCompanionSidePanelCoordinator::~SearchCompanionSidePanelCoordinator() =
@@ -286,9 +273,6 @@ void SearchCompanionSidePanelCoordinator::OnExpsPolicyPrefChanged() {
   if (!pref_service_) {
     return;
   }
-  base::UmaHistogramBoolean(
-      "Companion.HasNavigatedToExpsSuccessPagePref.OnChanged",
-      pref_service_->GetBoolean(companion::kHasNavigatedToExpsSuccessPage));
 
   UpdateCompanionAvailabilityInSidePanel();
 

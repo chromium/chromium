@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -100,24 +99,6 @@ bool IsSearchInCompanionSidePanelSupportedForProfile(
   }
 
   if (include_runtime_checks) {
-    // If `kSidePanelCompanion` and `kSidePanelCompanion2` are disabled, then
-    // `kCompanionEnabledByObservingExpsNavigations` must be enabled and pref
-    // must be set to true.
-    if (!base::FeatureList::IsEnabled(
-            features::internal::kSidePanelCompanion) &&
-        !base::FeatureList::IsEnabled(
-            features::internal::kSidePanelCompanion2)) {
-      CHECK(base::FeatureList::IsEnabled(
-          features::internal::kCompanionEnabledByObservingExpsNavigations));
-      base::UmaHistogramBoolean(
-          "Companion.HasNavigatedToExpsSuccessPagePref.Status",
-          profile->GetPrefs()->GetBoolean(
-              companion::kHasNavigatedToExpsSuccessPage));
-      if (!profile->GetPrefs()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
-        return false;
-      }
-    }
-
     return search::DefaultSearchProviderIsGoogle(profile) &&
            IsCompanionFeatureEnabledByPolicy(profile->GetPrefs());
   }

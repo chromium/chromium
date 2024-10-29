@@ -11,7 +11,6 @@
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/companion_url_builder.h"
 #include "chrome/browser/companion/core/features.h"
-#include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
@@ -62,8 +61,6 @@ CompanionPageHandler::CompanionPageHandler(
       url_builder_(
           std::make_unique<CompanionUrlBuilder>(GetProfile()->GetPrefs(),
                                                 signin_delegate_.get())),
-      promo_handler_(std::make_unique<PromoHandler>(GetProfile()->GetPrefs(),
-                                                    signin_delegate_.get())),
       consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
                           NewAnonymizedDataCollectionConsentHelper(
                               GetProfile()->GetPrefs())) {
@@ -324,7 +321,6 @@ void CompanionPageHandler::OnPromoAction(
     return;
   }
 
-  promo_handler_->OnPromoAction(promo_type, promo_action);
   metrics_logger_->OnPromoAction(promo_type, promo_action);
 }
 
@@ -343,8 +339,6 @@ void CompanionPageHandler::OnRegionSearchClicked() {
 
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
   metrics_logger_->OnExpsOptInStatusAvailable(is_exps_opted_in);
-  auto* pref_service = GetProfile()->GetPrefs();
-  pref_service->SetBoolean(kExpsOptInStatusGrantedPref, is_exps_opted_in);
   // Update default value for pref indicating whether companion should be
   // pinned to the toolbar.
   companion::UpdateCompanionDefaultPinnedToToolbarState(GetProfile());

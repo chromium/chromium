@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel/lens/lens_core_tab_side_panel_helper.h"
 
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
