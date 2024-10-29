@@ -68,9 +68,10 @@ void BabelOrcaProducer::OnSessionEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   in_session_ = false;
   session_captions_enabled_ = false;
-  local_captions_enabled_ = false;
-  StopRecognition();
   rate_limited_sender_.reset();
+  if (!local_captions_enabled_) {
+    StopRecognition();
+  }
 }
 
 void BabelOrcaProducer::OnSessionCaptionConfigUpdated(

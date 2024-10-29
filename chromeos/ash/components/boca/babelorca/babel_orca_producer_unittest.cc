@@ -345,7 +345,7 @@ TEST_F(BabelOrcaProducerTest, SessionEndedWhileSigninInFlight) {
   std::move(signin_cb).Run(true);
 }
 
-TEST_F(BabelOrcaProducerTest, SessionEndWillStopRecognition) {
+TEST_F(BabelOrcaProducerTest, SessionEndLocalCaptionsDisabled) {
   FakeTachyonRequestDataProvider data_provider("session-id", "tachyon_token",
                                                "group-id", "sender@email.com");
   MockSpeechRecognizer* speech_recognizer_ptr = speech_recognizer_.get();
@@ -360,7 +360,6 @@ TEST_F(BabelOrcaProducerTest, SessionEndWillStopRecognition) {
   producer.OnSessionStarted();
   EXPECT_CALL(*speech_recognizer_ptr, ObserveTranscriptionResult).Times(1);
   EXPECT_CALL(*speech_recognizer_ptr, Start).Times(1);
-  producer.OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
   producer.OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
 
   // 2 Times, one on `OnSessionEnded` and one on destruction.
@@ -369,6 +368,34 @@ TEST_F(BabelOrcaProducerTest, SessionEndWillStopRecognition) {
   EXPECT_CALL(*speech_recognizer_ptr, Stop).Times(2);
   EXPECT_CALL(*caption_controller_wrapper_ptr, OnAudioStreamEnd).Times(2);
   producer.OnSessionEnded();
+}
+
+TEST_F(BabelOrcaProducerTest, SessionEndLocalCaptionsEnabled) {
+  FakeTachyonRequestDataProvider data_provider("session-id", "tachyon_token",
+                                               "group-id", "sender@email.com");
+  MockSpeechRecognizer* speech_recognizer_ptr = speech_recognizer_.get();
+  MockLiveCaptionControllerWrapper* caption_controller_wrapper_ptr =
+      caption_controller_wrapper_.get();
+  TranscriptionResultCallback transcript_cb;
+  BabelOrcaProducer producer(url_loader_factory_.GetSafeWeakWrapper(),
+                             std::move(speech_recognizer_),
+                             std::move(caption_controller_wrapper_),
+                             std::move(authed_client_), &data_provider);
+
+  producer.OnSessionStarted();
+  producer.OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
+
+  EXPECT_CALL(*speech_recognizer_ptr, RemoveTranscriptionResultObservation)
+      .Times(0);
+  EXPECT_CALL(*speech_recognizer_ptr, Stop).Times(0);
+  EXPECT_CALL(*caption_controller_wrapper_ptr, OnAudioStreamEnd).Times(0);
+  producer.OnSessionEnded();
+
+  // Stop recognition on destruction.
+  EXPECT_CALL(*speech_recognizer_ptr, RemoveTranscriptionResultObservation)
+      .Times(1);
+  EXPECT_CALL(*speech_recognizer_ptr, Stop).Times(1);
+  EXPECT_CALL(*caption_controller_wrapper_ptr, OnAudioStreamEnd).Times(1);
 }
 
 TEST_F(BabelOrcaProducerTest, DisableLocalWhileSessionCaptionsEnabled) {
