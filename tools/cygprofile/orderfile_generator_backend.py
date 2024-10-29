@@ -564,7 +564,7 @@ class OrderfileGenerator:
       # only save the instrumented out dir since it is needed to deobfuscate the
       # stack trace. The uninstrumented build is used to compare performance on
       # Speedometer with/without orderfile, which is less likely to fail.
-      self._instrumented_out_dir = _OUT_PATH / 'Release'
+      self._instrumented_out_dir = pathlib.Path(options.common_out_dir)
     else:
       self._instrumented_out_dir = (
           _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out')
@@ -1005,8 +1005,8 @@ class OrderfileGenerator:
       if _OUT_PATH.exists():
         logging.info('Clobbering %s...', _OUT_PATH)
         shutil.rmtree(_OUT_PATH, ignore_errors=True)
-        # The bot assumes that `out/Release` is always available.
-        out_release_path = _OUT_PATH / 'Release'
+        # The bot assumes that the common dir is always available.
+        out_release_path = pathlib.Path(self._options.common_out_dir)
         logging.info('mkdir %s', out_release_path)
         out_release_path.mkdir(parents=True)
 
@@ -1161,9 +1161,15 @@ def CreateArgumentParser():
   parser.add_argument('--commit-hashes', action='store_true',
                       help=('Commit any orderfile hash files in the current '
                             'checkout; performs no other action'))
+  # TODO(https://crbug.com/375614283): Remove the default and add asserts that
+  #     this arg is passed whenever --use-common-out-dir-for-instrumented is
+  #     passed on the bot, after the migration is done.
+  parser.add_argument('--common-out-dir',
+                      default=str(_OUT_PATH / 'Release'),
+                      help='The bot will pass in its own unique path.')
   parser.add_argument('--use-common-out-dir-for-instrumented',
                       action='store_true',
-                      help='Use out/Release for the instrumented out dir so '
+                      help='Use the common dir for the instrumented out dir so '
                       'that the stack tool works on the bot.')
   parser.add_argument('--clobber',
                       action='store_true',
