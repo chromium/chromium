@@ -264,7 +264,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1446396933673057385">Verificación de exactitud</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Las claves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no se pueden establecer en el mismo diccionario que las claves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
-<translation id="1452803302401719440">La configuración que eligió tu madre o padre ahora te protege en línea</translation>
 <translation id="1455413310270022028">Borrador</translation>
 <translation id="1458059624921545588">Personas y sociedad</translation>
 <translation id="1458140305240870199">Ropa interior</translation>
@@ -2938,7 +2937,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6311642842034740437">Ubicación con nombre</translation>
 <translation id="6312113039770857350">Página web no disponible</translation>
 <translation id="6316110367871394043">Se pausó la carga de archivos a <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="6316723751983724988">Nuevo: Aquí se aplican las opciones de Family Link para Chrome</translation>
 <translation id="63172326633386613">Administrar la configuración de accesibilidad</translation>
 <translation id="6321917430147971392">Revisa la configuración de DNS.</translation>
 <translation id="6322182122604171028">No se pudo usar Windows Hello</translation>

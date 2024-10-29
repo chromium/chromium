@@ -903,6 +903,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5295239312320826323">Do ta heqësh llogarinë <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5311061401280561833">Lejohet qasja te kamera dhe mikrofoni</translation>
+<translation id="531209241254508943">grupin e skedave</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> nga <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318298563956633672">Po e monitoron tashmë këtë produkt.</translation>
@@ -1639,7 +1640,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8601611099293226919">Kërko në ekranin tënd me "Lenten e Google"</translation>
 <translation id="8605219856220328675">Mbylle skedën</translation>
 <translation id="8609743333007776886">Shto ${url} te faqeshënuesit</translation>
-<translation id="8611922158252451755">Çdo person që ka lidhjen mund të modifikojë të gjithë skedat, kështu që ndaje me kujdes. Lidhja skadon pas 48 orësh.</translation>
+<translation id="8611922158252451755">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat, kështu që ndaje me kujdes. Lidhja skadon pas 48 orësh.</translation>
 <translation id="8620640915598389714">Redakto</translation>
 <translation id="8625706492572042370">Modifiko ekranin bazë</translation>
 <translation id="8633025649649592204">Aktiviteti i fundit</translation>

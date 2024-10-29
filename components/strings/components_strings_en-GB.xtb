@@ -264,7 +264,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1446396933673057385">Accuracy check</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Keys '<ph name="DATA_CONTROLS_FIRST_KEY_SET" />' cannot be set in the same dictionary as the '<ph name="DATA_CONTROLS_SECOND_KEY_SET" />' keys</translation>
-<translation id="1452803302401719440">The settings your parent chose are now keeping you safer online</translation>
 <translation id="1455413310270022028">Eraser</translation>
 <translation id="1458059624921545588">People and society</translation>
 <translation id="1458140305240870199">Undergarments</translation>
@@ -2937,7 +2936,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6311642842034740437">Named location</translation>
 <translation id="6312113039770857350">Web page not available</translation>
 <translation id="6316110367871394043">File upload to <ph name="CLOUD_PROVIDER" /> has been paused</translation>
-<translation id="6316723751983724988">New: Family Link choices for Chrome apply here</translation>
 <translation id="63172326633386613">Manage accessibility settings</translation>
 <translation id="6321917430147971392">Check your DNS settings</translation>
 <translation id="6322182122604171028">Couldn't use Windows Hello</translation>

@@ -501,6 +501,9 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> til <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + søketasten + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Den innebygde styreflaten er slått av. Bruk tastaturet eller en annen pekeenhet for å bekrefte endringen.
+
+Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Avslutt opptaksmodus</translation>
 <translation id="2785499565474703580">1 enhet er tilkoblet</translation>
 <translation id="2791421900609674576">Du ser anbefalinger, slik at du kan fortsette der du slapp. Trykk og hold for å fjerne anbefalinger.</translation>
@@ -598,6 +601,9 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3113492864356515707">Fremhev det forrige elementet på hyllen</translation>
 <translation id="311799651966070385">Lukk påminnelsen</translation>
 <translation id="3120421559657122717">Vil du slå av enheten?</translation>
+<translation id="3121411970001795539">Den innebygde styreflaten er slått av fordi en mus er koblet til. Bruk musen eller tastaturet for å bekrefte endringen.
+
+Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3125690294288312932">Kursarbeidstype</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1141,6 +1147,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4902797682482387055">Forslag til gjøremål du kan fokusere på</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="4911191962826748981">Dette er en AI-funksjon på forsøksstadiet. Det kan hende at den gjør feil.</translation>
 <translation id="491504982845934899">Aktiver etter enhetsoppsett <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Godta</translation>
@@ -1470,7 +1477,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5975235751479998104">Gå fremover gjennom vinduer</translation>
 <translation id="5978382165065462689">Deler kontroll av skjermen via fjernhjelp.</translation>
 <translation id="5980301590375426705">Avslutt gjesteøkten</translation>
-<translation id="5982119059638483922">Trykk på Fn + Søk eller Shift for å avbryte.</translation>
 <translation id="5983567367406220847">Wifi-sonen er slått av på grunn av inaktivitet.</translation>
 <translation id="598407983968395253">Bruk mal</translation>
 <translation id="5986723678596105470">Bli med via Google Meet</translation>
@@ -1712,6 +1718,7 @@ Nylig installert</translation>
 <translation id="6751826523481687655">Ytelsessporing er slått på</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> ble fjernet og slått sammen med skrivebord <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">faner</translation>
+<translation id="6754918760968695779">Hurtiginnsetting</translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
 <translation id="6760438044935091345">Spilloversikt</translation>
 <translation id="6768043681523654438">lagring</translation>
@@ -2003,6 +2010,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Tommel opp sender tilbakemelding om at du liker dette forslaget</translation>
 <translation id="7825412704590278437">Fra en kommende kalenderaktivitet</translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
 <translation id="7830453190047749513">Du kan tilpasse knappehandlinger, markørhastigheten med mer for <ph name="PERIPHERAL_NAME" /></translation>
@@ -2157,6 +2165,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock er på</translation>
 <translation id="8315514906653279104">Slår på …</translation>
+<translation id="8319634750346253957">Tommel ned sender tilbakemelding om at du ikke liker dette forslaget</translation>
 <translation id="8331351032546853669">Nedlasting venter</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>

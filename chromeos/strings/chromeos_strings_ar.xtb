@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">رمادي</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5600027863942488546">تم اختبار المفتاح <ph name="KEY_NAME" />.</translation>
+<translation id="5606865426897221650">‏مفتاح Tab</translation>
 <translation id="5613201299517339763">لقد سجّلت الخروج</translation>
 <translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5630438231335788050">فن الباوهاوس</translation>
@@ -1348,8 +1349,6 @@
 <translation id="7544853251252956727">ترتيب عشوائي</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />ضبطَ مشرف <ph name="MANAGER" /> وقتًا لاستخدام جهاز <ph name="DEVICE_TYPE" /> خلاله.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />سيصبح بإمكانك استخدام هذا الجهاز مجددًا <ph name="DAY" /> في <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">معاينة لقطة الشاشة</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7561759921596375678">تفعيل الصوت</translation>

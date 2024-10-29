@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Abrir versión online</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
+<translation id="1070329623210597193">Archivos que este sitio puede ver o editar</translation>
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1240190568154816272">Consejos de Chrome</translation>
 <translation id="1242008676835033345">Insertada en <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Toca Aplicaciones &gt; Aplicaciones predeterminadas</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1289742167380433257">Para ahorrar datos, Google ha optimizado las imágenes de esta página.</translation>
 <translation id="129382876167171263">Los archivos que guarden los sitios web aparecerán aquí</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Es posible que no puedas usar algunas funciones. Los sitios relacionados podrán seguir usando cookies de terceros.</translation>
+<translation id="3922092564198021702">En tu teléfono, abre Configuración</translation>
 <translation id="3933121352599513978">Ocultar solicitudes no deseadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">Más</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
 <translation id="6071501408666570960">Puede que se cierre tu sesión en este sitio</translation>
+<translation id="6085954183010297841">¿Eliminar autorización para editar archivos? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Cuando esta opción está activada, los sitios pueden solicitar permiso para saber cuándo usas activamente tu dispositivo. Si está desactivada, los sitios no pueden saber cuándo usas activamente tu dispositivo.</translation>
 <translation id="6140839633433422817">¿Seguro que quieres restablecer los permisos y eliminar las cookies y los datos de sitios?</translation>
 <translation id="6165508094623778733">Más información</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">Privacidad en la publicidad</translation>
 <translation id="6207207788774442484">Eliminar datos y restablecer permisos</translation>
 <translation id="6231752747840485235">¿Desinstalar <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Toca Aplicación de navegador &gt; Chrome</translation>
 <translation id="6262191102408817757">Basadas en tu última pestaña</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> bloqueados</translation>
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres que te envíen notificaciones</translation>

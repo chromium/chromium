@@ -1147,6 +1147,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4902797682482387055">Iminumungkahing gawain na pagtutuunan ng pansin</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
+<translation id="4911191962826748981">Isa itong pang-eksperimentong feature ng AI at hindi ito palaging tama.</translation>
 <translation id="491504982845934899">I-activate ang <ph name="NETWORK_NAME" /> pagkatapos ng pag-set up ng device</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
@@ -1476,7 +1477,6 @@ Walang nakakonektang device.</translation>
 <translation id="5975235751479998104">Mag-navigate nang paabante sa mga window</translation>
 <translation id="5978382165065462689">Pagbabahagi ng kontrol sa iyong screen sa pamamagitan ng Remote Assistance.</translation>
 <translation id="5980301590375426705">Lumabas</translation>
-<translation id="5982119059638483922">Pindutin ang Fn+Search o Shift para kanselahin.</translation>
 <translation id="5983567367406220847">Dahil sa kawalan ng aktibidad, na-off ang hotspot.</translation>
 <translation id="598407983968395253">Gamitin ang template</translation>
 <translation id="5986723678596105470">Sumali gamit ang Google Meet</translation>
@@ -1718,6 +1718,7 @@ Kaka-install lang</translation>
 <translation id="6751826523481687655">Naka-on ang pag-trace ng performance</translation>
 <translation id="6752912906630585008">Inalis ang Desk na <ph name="REMOVED_DESK" /> at isinama sa Desk na <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">mga tab</translation>
+<translation id="6754918760968695779">Quick Insert</translation>
 <translation id="6757237461819837179">Walang nagpe-play na media</translation>
 <translation id="6760438044935091345">Dashboard ng game</translation>
 <translation id="6768043681523654438">storage</translation>
@@ -2008,6 +2009,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7807067443225230855">Paghahanap at Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> at <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Sa pag-thumbs up, magsusumite ng feedback na gusto mo ang suhestyong ito</translation>
 <translation id="7825412704590278437">Mula sa paparating na event sa kalendaryo</translation>
 <translation id="7829386189513694949">Malakas ang signal</translation>
 <translation id="7830453190047749513">Puwede mong i-personalize ang mga pagkilos ng button, bilis ng cursor, at higit pa para sa iyong <ph name="PERIPHERAL_NAME" /></translation>
@@ -2162,6 +2164,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Naka-on ang Caps Lock</translation>
 <translation id="8315514906653279104">Ino-on...</translation>
+<translation id="8319634750346253957">Sa pag-thumbs down, magsusumite ng feedback na hindi mo gusto ang suhestyong ito</translation>
 <translation id="8331351032546853669">Nakabinbin ang pag-download</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

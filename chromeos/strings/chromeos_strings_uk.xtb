@@ -1171,7 +1171,7 @@
 <translation id="6716013206176357696">полуниця</translation>
 <translation id="671733080802536771">модерн</translation>
 <translation id="6721525125027474520">болото</translation>
-<translation id="6723839937902243910">Заряд</translation>
+<translation id="6723839937902243910">Живлення</translation>
 <translation id="6723847290197874913">Підсвічування клавіатури</translation>
 <translation id="672609503628871915">Докладніше про нові функції</translation>
 <translation id="6738867403308150051">Завантаження…</translation>
@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">Перемішати</translation>
 <translation id="7550715992156305117">Послідовності дій для діагностики</translation>
 <translation id="7551123448725492271">Це аудіопристрій.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Адміністратор <ph name="MANAGER" /> налаштував, коли можна використовувати цей пристрій <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Ви зможете знову використовувати цей пристрій <ph name="DAY" /> о <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Попередній перегляд знімка екрана</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7561759921596375678">Увімкнути звук</translation>

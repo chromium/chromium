@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">خاکستری</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
+<translation id="5606865426897221650">ٹیب</translation>
 <translation id="5613201299517339763">آپ سائن آؤٹ ہو گئے ہیں</translation>
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5630438231335788050">باہاؤس</translation>
@@ -1348,8 +1349,6 @@
 <translation id="7544853251252956727">شفل کریں</translation>
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
 <translation id="7551123448725492271">آلہ ایک آڈیو آلہ ہے۔</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /> <ph name="MANAGER" /> منتظم نے <ph name="DEVICE_TYPE" /> کے استعمال کیے جا سکنے کا وقت سیٹ کیا ہے۔<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" /> آپ اس آلہ کو <ph name="DAY" /> کو <ph name="TIME" /> پر دوبارہ استعمال کر سکیں گے۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">اسکرین شاٹ کا پیش منظر دیکھیں</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7561759921596375678">والیوم کو آن کریں</translation>

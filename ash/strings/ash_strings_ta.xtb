@@ -500,6 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> முதல் <ph name="KEY_TWO" /> வரை ஏதேனும் ஒன்றை அழுத்தவும்</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
+<translation id="2781658180588759579">உள்ளமைந்த டச்பேட் முடக்கப்பட்டுள்ளது. மாற்றத்தை உறுதிப்படுத்த கீபோர்டு அல்லது மற்றொரு சுட்டிச் சாதனத்தைப் பயன்படுத்தவும்.
+
+இல்லையென்றால், உள்ளமைந்த டச்பேட் <ph name="TIMEOUT_SECONDS" /> இல் மீண்டும் இயக்கப்படும்.</translation>
 <translation id="2782591952652094792">படமெடுப்புப் பயன்முறையிலிருந்து வெளியேறும்</translation>
 <translation id="2785499565474703580">1 சாதனம் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="2791421900609674576">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். தொட்டுப் பிடிப்பதன் மூலம் அவற்றை அகற்றலாம்.</translation>
@@ -596,6 +599,9 @@
 <translation id="3113492864356515707">ஷெல்ஃப்பில் முந்தையதை ஹைலைட் செய்யும்</translation>
 <translation id="311799651966070385">நினைவூட்டலை மூடு</translation>
 <translation id="3120421559657122717">சாதனத்தை ஷட் டவுன் செய்யவா?</translation>
+<translation id="3121411970001795539">மவுஸை இணைத்துள்ளதால் உள்ளமைந்த டச்பேட் முடக்கப்பட்டுள்ளது. மாற்றத்தை உறுதிப்படுத்த மவுஸ் அல்லது கீபோர்டைப் பயன்படுத்தவும்.
+
+இல்லையென்றால், உள்ளமைந்த டச்பேட் <ph name="TIMEOUT_SECONDS" /> இல் மீண்டும் இயக்கப்படும்.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">வகுப்புப்பாடத்தின் வகை</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1466,7 +1472,6 @@
 <translation id="5975235751479998104">சாளரங்களுக்கு இடையே முன்னோக்கிச் செல்</translation>
 <translation id="5978382165065462689">தொலைநிலை உதவி மூலம் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
 <translation id="5980301590375426705">விருந்தினரிலிருந்து வெளியேறவும்</translation>
-<translation id="5982119059638483922">ரத்துசெய்ய Fn + Search அல்லது Shift பட்டனை அழுத்தவும்.</translation>
 <translation id="5983567367406220847">செயலின்மை காரணமாக ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="598407983968395253">டெம்ப்ளேட்டைப் பயன்படுத்து</translation>
 <translation id="5986723678596105470">Google Meet மூலம் சேரும்</translation>
@@ -1708,6 +1713,7 @@
 <translation id="6751826523481687655">செயல்திறன் டிரேஸிங் இயக்கத்தில் உள்ளது</translation>
 <translation id="6752912906630585008">டெஸ்க் <ph name="REMOVED_DESK" /> அகற்றப்பட்டு டெஸ்க் <ph name="RECEIVE_DESK" /> உடன் சேர்க்கப்பட்டது</translation>
 <translation id="6753390234084146956">பக்கங்கள்</translation>
+<translation id="6754918760968695779">விரைவாகச் சேர்த்தல்</translation>
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
 <translation id="6760438044935091345">கேம் டாஷ்போர்டு</translation>
 <translation id="6768043681523654438">சேமிப்பகம்</translation>

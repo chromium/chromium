@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">続き</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3321030238473337787">再生速度</translation>
+<translation id="3327613592010997943">このデバイスは、<ph name="DAY" /> の <ph name="TIME" /> に再び使用できるようになります。</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="3340978935015468852">設定</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">灰色</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> キーをテストしました</translation>
+<translation id="5606865426897221650">タブ</translation>
 <translation id="5613201299517339763">ログアウトしました</translation>
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5630438231335788050">バウハウス</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">ポータル状態</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> を更新して再起動しています</translation>
 <translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
+<translation id="5775340474232476653">教師がクラスを終了しました</translation>
 <translation id="5779818640587041940">録音中は常に画面を表示する</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
@@ -1348,8 +1351,6 @@
 <translation id="7544853251252956727">シャッフル</translation>
 <translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> の管理者が、この <ph name="DEVICE_TYPE" /> を使用できる時間を設定しました。<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />このデバイスは、<ph name="DAY" /> の <ph name="TIME" /> に再び使用できるようになります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">スクリーンショットのプレビュー</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7561759921596375678">音量をオンにする</translation>
@@ -1358,6 +1359,7 @@
 <translation id="757747079855995705">石</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> の管理者が、この <ph name="DEVICE_TYPE" /> を使用できる時間を設定しました。</translation>
 <translation id="7613724632293948900">マウスまたは矢印キーを使用して位置を変更します。</translation>
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
@@ -1463,6 +1465,7 @@
 <translation id="8088963492174775412">押すと録音を開始します</translation>
 <translation id="8094062939584182041">この問題に関するメールの送信を Google に許可する</translation>
 <translation id="8104083085214006426">保護されていないオープン ネットワークを使用しています</translation>
+<translation id="8110942816572072814">教師が画面をロックしました</translation>
 <translation id="811820734797650957">（Android）ゲートウェイへの ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8131740175452115882">確認</translation>

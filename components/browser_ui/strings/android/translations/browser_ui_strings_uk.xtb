@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1240190568154816272">Поради щодо Chrome</translation>
 <translation id="1242008676835033345">Вбудовано на сайті <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Натисніть "Додатки" &gt; "Додатки за умовчанням".</translation>
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1289742167380433257">Щоб заощадити трафік, ми оптимізували зображення на цій сторінці.</translation>
 <translation id="129382876167171263">Файли, збережені веб-сайтами, відображаються тут</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Заборонити сторонні файли cookie в режимі анонімного перегляду</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Деякі функції можуть не працювати. При цьому пов’язані сайти все одно можуть використовувати сторонні файли cookie.</translation>
+<translation id="3922092564198021702">На телефоні відкрийте додаток Налаштування.</translation>
 <translation id="3933121352599513978">Згорнути небажані запити (рекомендовано)</translation>
 <translation id="3955193568934677022">Дозволити сайтам відтворювати захищений вміст (рекомендується)</translation>
 <translation id="3967822245660637423">Завантажено</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
 <translation id="6207207788774442484">Видалити дані й скинути дозволи</translation>
 <translation id="6231752747840485235">Видалити додаток <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Натисніть "Вебпереглядач" &gt; "Chrome".</translation>
 <translation id="6262191102408817757">На основі даних останньої використаної вкладки</translation>
 <translation id="6262279340360821358">Заблоковано: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />"</translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>

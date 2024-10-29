@@ -501,6 +501,9 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> až <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Vestavěný touchpad je deaktivován. Pomocí klávesnice nebo jiného ukazovacího zařízení změnu potvrďte.
+
+Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> znovu aktivuje.</translation>
 <translation id="2782591952652094792">Ukončit režim nahrávání</translation>
 <translation id="2785499565474703580">Připojené zařízení: 1</translation>
 <translation id="2791421900609674576">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit podržením.</translation>
@@ -598,6 +601,9 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3113492864356515707">Zvýraznit předchozí položku na poličce</translation>
 <translation id="311799651966070385">Zavřít šťouchnutí</translation>
 <translation id="3120421559657122717">Vypnout zařízení?</translation>
+<translation id="3121411970001795539">Vestavěný touchpad je deaktivován, protože je připojena myš. Myší nebo klávesnicí změnu potvrďte.
+
+Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> znovu aktivuje.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Typ práce v kurzu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1470,7 +1476,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5975235751479998104">Procházet okna vpřed</translation>
 <translation id="5978382165065462689">Ovládání obrazovky je sdíleno prostřednictvím Vzdálené pomoci.</translation>
 <translation id="5980301590375426705">Odhlásit hosta</translation>
-<translation id="5982119059638483922">Vypnete ho stisknutím kombinace kláves Alt + Hledat nebo Shift.</translation>
 <translation id="5983567367406220847">Hotspot byl z důvodu nečinnosti vypnut.</translation>
 <translation id="598407983968395253">Použít šablonu</translation>
 <translation id="5986723678596105470">Připojit se přes Google Meet</translation>
@@ -1712,6 +1717,7 @@ Nová instalace</translation>
 <translation id="6751826523481687655">Trasování výkonu je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> byla odstraněna a sloučena s plochou <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
+<translation id="6754918760968695779">Rychle vložit</translation>
 <translation id="6757237461819837179">Nepřehrává se žádný mediální obsah</translation>
 <translation id="6760438044935091345">Herní panel</translation>
 <translation id="6768043681523654438">úložiště</translation>

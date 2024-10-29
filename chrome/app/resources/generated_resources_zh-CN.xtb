@@ -1162,7 +1162,6 @@
 <translation id="1809734401532861917">将我的书签、历史记录、密码和其他设置添加至 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">如需在手机上使用您已保存的密码，请扫描二维码，下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
 <translation id="1810366086647840386">映像服务器</translation>
-<translation id="1810391395243432441">使用屏幕锁定功能保护密码</translation>
 <translation id="1811908311154949291">无痕式围栏框架：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> 无法继续使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">正在投放 <ph name="TAB_NAME" /></translation>
@@ -3197,7 +3196,6 @@
 <translation id="3262261769033093854">不允许网站捕获和使用您的鼠标输入</translation>
 <translation id="3262336253311870293">由于此账号是由 <ph name="DOMAIN" /> 管理，您不会被强制退出自己的 Google 账号。您的书签、历史记录、密码和其他设置将不再保持同步。不过，您之前同步的数据仍会存储在您的 Google 账号中，并可通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />进行管理。</translation>
 <translation id="3262986719682892278">太大</translation>
-<translation id="3264239161215962624">如需投放，请在<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="3264544094376351444">Sans-serif 字体</translation>
 <translation id="3264582393905923483">上下文</translation>
 <translation id="3265459715026181080">关闭窗口</translation>
@@ -3799,7 +3797,6 @@
 <translation id="3699624789011381381">电子邮件地址</translation>
 <translation id="3699920817649120894">要关闭同步和个性化功能吗？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
-<translation id="3700966190175650601">您正在使用指纹填充密码</translation>
 <translation id="3700993174159313525">不允许网站跟踪您的摄像头位置</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
@@ -4516,6 +4513,7 @@
 <translation id="4195378859392041564">使用鼠标点击任意按键，然后按一个键盘按键即可自定义</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
+<translation id="4196350776737072374">没有任何问题。请尝试询问“总结此页面”之类的问题，或提出您自己的问题。</translation>
 <translation id="4198268995694216131">更多网站</translation>
 <translation id="4200609364258658652">复制视频帧(&amp;Y)</translation>
 <translation id="4200689466366162458">自定义字词</translation>
@@ -4998,7 +4996,6 @@
 <translation id="4554591392113183336">外部扩展程序的版本与现有版本相同或更低。</translation>
 <translation id="4555769855065597957">阴影</translation>
 <translation id="4555863373929230635">若想将密码保存到您的 Google 账号中，请登录账号并开启同步功能。</translation>
-<translation id="4556069465387849460">您正在使用屏幕锁定功能填充密码</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" />与您分享了 <ph name="WEBSITE_NAME" /> 的密码。您可以在登录表单中使用该密码。</translation>
 <translation id="4558426062282641716">已请求获取自动启动权限</translation>
 <translation id="4558542033859106586">正在 <ph name="TARGET_APP" /> 中打开…</translation>
@@ -5256,7 +5253,6 @@
 <translation id="4744260496658845719">键盘背光亮度</translation>
 <translation id="4744268813103118742">前往网站</translation>
 <translation id="4744571849207727284">Excel</translation>
-<translation id="4744816391336495134">您每次使用保存的密码时，都可以使用指纹验证您的身份</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
 <translation id="4745500401920035244">您的管理员做了一项系统级更改，致使一些旧个人资料遭到停用。您无法再访问此个人资料，但仍然可以将其移除</translation>
 <translation id="474609389162964566">说“Hey Google”即可启动 Google 助理</translation>
@@ -6948,6 +6944,7 @@
 <translation id="5992225669837656567">所有鼠标均已断开连接</translation>
 <translation id="5992652489368666106">无边框</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 个网站已完成审核}other{{NUM_SITES} 个网站已完成审核}}</translation>
+<translation id="5996490984199062729">您的工作资料尚未设置完毕</translation>
 <translation id="5997337190805127100">详细了解网站访问权限</translation>
 <translation id="5998458948782718639">帮助改进自动填充功能</translation>
 <translation id="5998976983953384016">确认并开启</translation>
@@ -8429,7 +8426,6 @@
 <translation id="7068591156533195518"><ph name="APP_NAME" />和另外几款应用在您的 <ph name="DEVICE_TYPE" /> 上已被屏蔽</translation>
 <translation id="706949303827219454">在新标签页中打开安全设置页面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
-<translation id="7070144569727915108">系统设置</translation>
 <translation id="7070484045139057854">可读取和更改网站数据</translation>
 <translation id="7072010813301522126">快捷方式名称</translation>
 <translation id="7072078320324181561">系统服务以及具有位置信息权限的应用和网站可以使用您的位置信息<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -10173,7 +10169,6 @@
 <translation id="8322814362483282060">系统已阻止此网页使用您的麦克风。</translation>
 <translation id="8323167517179506834">输入网址</translation>
 <translation id="8323317289166663449">读取和更改您在自己的计算机上以及在所有网站上的所有数据</translation>
-<translation id="8323505966575306467">对您的密码增强保护</translation>
 <translation id="8323518750352551353">是否单独浏览？</translation>
 <translation id="8324158725704657629">别再询问</translation>
 <translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
@@ -10642,7 +10637,6 @@
 <translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>
 <translation id="8663099077749055505">始终禁止在 <ph name="HOST" /> 上自动下载多个文件</translation>
 <translation id="8664389313780386848">查看网页源代码(&amp;V)</translation>
-<translation id="8664603206102030248">选择已指定的姿势会将其从原始操作中移除</translation>
 <translation id="8665110742939124773">您输入的访问代码不正确。请重试。</translation>
 <translation id="8665180165765946056">备份完成</translation>
 <translation id="866611985033792019">信任该证书，以便标识电子邮件用户的身份</translation>

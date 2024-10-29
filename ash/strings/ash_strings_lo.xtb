@@ -631,6 +631,7 @@
 <translation id="3208321278970793882">ແອັບ</translation>
 <translation id="3213571860604332401">ບັນທຶກລິ້ງເປັນບຸກມາກ</translation>
 <translation id="3217205077783620295">ລະດັບສຽງເປີດຢູ່, ການສະຫຼັບຈະປິດສຽງ.</translation>
+<translation id="3218561536255328229">ກົດ Esc 5 ເທື່ອເພື່ອເປີດການນຳໃຊ້ແຜ່ນສຳຜັດ</translation>
 <translation id="3226991577105957773">ອີກ +<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
 <translation id="3233611303007751344">ປິດຕົວປະຢັດແບັດເຕີຣີແລ້ວ</translation>
@@ -1477,7 +1478,6 @@
 <translation id="5975235751479998104">ວົນໄປໜ້າຜ່ານໜ້າຈໍ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
-<translation id="5982119059638483922">ກົດ Fn + Search ຫຼື Shift ເພື່ອຍົກເລີກ.</translation>
 <translation id="5983567367406220847">ເນື່ອງຈາກບໍ່ມີການເຄື່ອນໄຫວ, ຮັອດສະປອດຖືກປິດໄວ້ແລ້ວ.</translation>
 <translation id="598407983968395253">ໃຊ້ແມ່ແບບ</translation>
 <translation id="5986723678596105470">ເຂົ້າຮ່ວມດ້ວຍ Google Meet</translation>
@@ -1719,6 +1719,7 @@
 <translation id="6751826523481687655">ການຕິດຕາມປະສິດທິພາບເປີດຢູ່</translation>
 <translation id="6752912906630585008">ລຶບເດັສ <ph name="REMOVED_DESK" /> ອອກ ແລະ ຮວມກັບເດັສ <ph name="RECEIVE_DESK" /> ແລ້ວ</translation>
 <translation id="6753390234084146956">ແຖບ</translation>
+<translation id="6754918760968695779">ແຊກດ່ວນ</translation>
 <translation id="6757237461819837179">ບໍ່ມີການຫຼິ້ນມີເດຍ</translation>
 <translation id="6760438044935091345">ແຜງໜ້າປັດເກມ</translation>
 <translation id="6768043681523654438">ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>

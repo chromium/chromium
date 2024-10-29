@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">meer</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3321030238473337787">Afspeelsnelheid</translation>
+<translation id="3327613592010997943">Je kunt dit apparaat <ph name="DAY" /> weer gebruiken om <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test actief</translation>
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3340978935015468852">instellingen</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Status van portal</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> opnieuw opstarten en updaten</translation>
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
+<translation id="5775340474232476653">Je docent heeft de les beëindigd</translation>
 <translation id="5779818640587041940">Scherm aan laten tijdens opnemen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
@@ -1348,8 +1350,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
 <translation id="7551123448725492271">Apparaat is een audioapparaat.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />De beheerder van <ph name="MANAGER" /> heeft ingesteld wanneer dit <ph name="DEVICE_TYPE" /> kan worden gebruikt.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Je kunt dit apparaat weer gebruiken <ph name="DAY" /> om <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Voorbeeld van screenshot bekijken</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7561759921596375678">Volume aanzetten</translation>
@@ -1358,6 +1358,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="757747079855995705">steen</translation>
 <translation id="7590883480672980941">Invoerinstellingen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">De beheerder van <ph name="MANAGER" /> heeft ingesteld wanneer dit <ph name="DEVICE_TYPE" /> kan worden gebruikt.</translation>
 <translation id="7613724632293948900">Verplaats met de muis of pijltoetsen.</translation>
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
@@ -1463,6 +1464,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8088963492174775412">Druk om op te nemen</translation>
 <translation id="8094062939584182041">Toestaan dat Google je e-mail stuurt over dit probleem</translation>
 <translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
+<translation id="8110942816572072814">Je docent heeft je scherm vergrendeld</translation>
 <translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bevestigen</translation>

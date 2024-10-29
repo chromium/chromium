@@ -564,7 +564,7 @@
 <translation id="2985148236010982088">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="2992272421330787632">မီဒီယာ အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="2992327365391326550">စက်၏မိုက်ခရိုဖုန်းခလုတ် ပိတ်ထားသည်။</translation>
-<translation id="2993956882370897557">‘End’ ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
+<translation id="2993956882370897557">End ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
 <translation id="3000461861112256445">မိုနိုအသံ</translation>
 <translation id="3001391739687111021">ဖန်သားပြင်အရွယ်အစား ပြင်ဆင်ရန်</translation>
 <translation id="3009178788565917040">အထွက်</translation>
@@ -1476,7 +1476,6 @@
 <translation id="5975235751479998104">ဝင်းဒိုးများကို ရှေ့သို့လည်ပြီး ပြရန်</translation>
 <translation id="5978382165065462689">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အားမျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="5980301590375426705">ဧည့်သည် ထွက်ရန်</translation>
-<translation id="5982119059638483922">ပယ်ဖျက်ရန်အတွက် Fn+ရှာရန်ခလုတ် (သို့) Shift ကိုနှိပ်ပါ။</translation>
 <translation id="5983567367406220847">အသုံးပြုမှုမရှိသဖြင့် ဟော့စပေါ့ကို ပိတ်လိုက်သည်။</translation>
 <translation id="598407983968395253">နမူနာပုံစံ သုံးရန်</translation>
 <translation id="5986723678596105470">Google Meet ဖြင့် တက်ရောက်နိုင်သည်</translation>
@@ -1718,6 +1717,7 @@
 <translation id="6751826523481687655">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို ဖွင့်ထားသည်</translation>
 <translation id="6752912906630585008">'မြင်ကွင်း <ph name="REMOVED_DESK" />' ကိုဖယ်ရှားပြီး 'မြင်ကွင်း <ph name="RECEIVE_DESK" />' နှင့် ပေါင်းစည်းလိုက်သည်</translation>
 <translation id="6753390234084146956">တဘ်</translation>
+<translation id="6754918760968695779">အမြန်ထည့်</translation>
 <translation id="6757237461819837179">မည်သည့်မီဒီယာမျှ ဖွင့်မထားပါ</translation>
 <translation id="6760438044935091345">ဂိမ်း ဒက်ရှ်ဘုတ်</translation>
 <translation id="6768043681523654438">သိုလှောင်ခန်း</translation>

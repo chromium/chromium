@@ -264,7 +264,6 @@
 <translation id="1446396933673057385">Contrôle de la fiabilité</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Les clés « <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> » ne peuvent pas être définies dans le même dictionnaire que les clés « <ph name="DATA_CONTROLS_SECOND_KEY_SET" /> »</translation>
-<translation id="1452803302401719440">Les paramètres choisis par tes parents te protègent désormais en ligne</translation>
 <translation id="1455413310270022028">Gomme</translation>
 <translation id="1458059624921545588">Personnes et société</translation>
 <translation id="1458140305240870199">Sous-vêtements</translation>
@@ -2937,7 +2936,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6311642842034740437">Lieu-dit</translation>
 <translation id="6312113039770857350">La page Web n'est pas disponible</translation>
 <translation id="6316110367871394043">Téléversement du fichier vers <ph name="CLOUD_PROVIDER" /> suspendu</translation>
-<translation id="6316723751983724988">Nouveau : les choix de Family Link pour Chrome s'appliquent ici</translation>
 <translation id="63172326633386613">Gérer les paramètres d'accessibilité</translation>
 <translation id="6321917430147971392">Vérifier vos paramètres DNS</translation>
 <translation id="6322182122604171028">Impossible d'utiliser Windows Hello</translation>

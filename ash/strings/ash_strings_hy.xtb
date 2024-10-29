@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-ից <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Որոնում + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
+<translation id="2781658180588759579">Ներկառուցված հպահարթակն անջատված է: Փոփոխությունը հաստատելու համար օգտագործեք ձեր մկնիկը կամ նշորդի այլ սարք։
+
+Այլապես ներկառուցված հպահարթակը <ph name="TIMEOUT_SECONDS" /> անց նորից կակտիվանա։</translation>
 <translation id="2782591952652094792">Դուրս գալ տեսագրման ռեժիմից</translation>
 <translation id="2785499565474703580">Միացած է 1 սարք</translation>
 <translation id="2791421900609674576">Դուք առաջարկություններ կտեսնեք և կկարողանաք շարունակել այն պահից, որտեղ կանգ էիք առել։ Առաջարկությունները հեռացնելու համար հպեք և պահեք։</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">Առանձնացնել նախորդ տարրը դարակում</translation>
 <translation id="311799651966070385">Փակել հիշեցումը</translation>
 <translation id="3120421559657122717">Անջատե՞լ սարքը</translation>
+<translation id="3121411970001795539">Ներկառուցված հպահարթակն անջատված է, քանի որ մկնիկ է միացված։ Փոփոխությունը հաստատելու համար օգտագործեք մկնիկը կամ ստեղնաշարը։
+
+Այլապես ներկառուցված հպահարթակը <ph name="TIMEOUT_SECONDS" /> անց նորից կակտիվանա։</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Դասարանային աշխատանքի տեսակ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1470,7 +1476,6 @@
 <translation id="5975235751479998104">Անցնել հաջորդ պատուհանին</translation>
 <translation id="5978382165065462689">Էկրանի կառավարման համօգտագործում Հեռակա օգնության միջոցով:</translation>
 <translation id="5980301590375426705">Ավարտել հյուրի սեսիան</translation>
-<translation id="5982119059638483922">Չեղարկելու համար սեղմեք Fn+Search կամ Shift։</translation>
 <translation id="5983567367406220847">Անգործուն լինելու պատճառով թեժ կետն անջատվել է։</translation>
 <translation id="598407983968395253">Օգտագործել ձևանմուշը</translation>
 <translation id="5986723678596105470">Միանալ Google Meet-ով</translation>
@@ -1712,6 +1717,7 @@
 <translation id="6751826523481687655">Արդյունավետության հետագծումը միացված է</translation>
 <translation id="6752912906630585008">Աշխատասեղան <ph name="REMOVED_DESK" />-ը հեռացվել է և միացվել է աշխատասեղան <ph name="RECEIVE_DESK" />-ի հետ</translation>
 <translation id="6753390234084146956">ներդիրներ</translation>
+<translation id="6754918760968695779">Արագ զետեղում</translation>
 <translation id="6757237461819837179">Մեդիա բովանդակություն չի նվագարկվում</translation>
 <translation id="6760438044935091345">Խաղային վահանակ</translation>
 <translation id="6768043681523654438">տարածք</translation>

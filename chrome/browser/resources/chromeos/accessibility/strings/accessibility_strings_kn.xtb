@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">ಗಾತ್ರ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ಕೋರ್ಡ್</translation>
 <translation id="1923956950274750765">ಮಧ್ಯಮ ಆರ್ಕಿಡ್</translation>
+<translation id="1926147969119007125">ಫೇಸ್ ಕಂಟ್ರೋಲ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="1928932365747995741">ಯಾವುದೇ ಹಿಂದಿನ ಎಡಿಟ್ ಮಾಡಬಹುದಾದ ಪಠ್ಯದ ಫೀಲ್ಡ್ ಇಲ್ಲ</translation>
 <translation id="1964135212174907577">ಮುಂದಿನ ವಿಷಯ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">ಮುಂದೆ ಗಮನಹರಿಸಬಹುದಾದ ಐಟಂಗೆ ಹೋಗಿ</translation>
 <translation id="2756452585631602151">ಕಸ್ಟಮ್ ಲೇಬಲ್ ನಮೂದಿಸಿ</translation>
 <translation id="2766299274563946262">ಎಡಕ್ಕೆ ಯಾವುದೇ ಸೆಲ್ ಇಲ್ಲ</translation>
+<translation id="2770947749427257887">ಸ್ಕ್ರಾಲ್‌ ಮೋಡ್‌ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ಹಿಂದಿನ ಐಟಂಗೆ ತೆರಳಲು, ನೀವು ಒಂದು ಬೆರಳನ್ನು ಬಲದಿಂದ ಎಡಕ್ಕೂ ಸಹ ಸ್ವೈಪ್ ಮಾಡಬಹುದು. ಇದನ್ನು ಈಗ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="280499067616661124">ChromeVox ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -339,6 +341,7 @@
 <translation id="311015743332597320">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="3112457281078985179">ChromeVox ಅನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಲು, Control+Alt+Z ಬಳಸಿ.</translation>
 <translation id="3115800313647508384">ಸ್ಕ್ರೀನ್ ಆಫ್ ಮಾಡಬೇಕೇ?</translation>
+<translation id="3127625407966660979">ಉಕ್ತಲೇಖನ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="3131002934070407451">ಸಂಖ್ಯೆಗಳನ್ನು ಹೀಗೆ ಓದಿ:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ಆಲಿವ್</translation>
@@ -402,6 +405,7 @@
 <translation id="3466530247399808663">ಅಮಾನ್ಯವಾದ ಕೀಲಿ ಒತ್ತುವಿಕೆ</translation>
 <translation id="3468959318854349468">ಯಾವುದೇ ಶೀರ್ಷಿಕೆಯಿಲ್ಲ</translation>
 <translation id="3469413619751135069">ತಿಳಿ ಹಸಿರು</translation>
+<translation id="3473744269398144689">ಡಿಕ್ಟೇಶನ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="3490765818161916458">ಪಟ್ಟಿಯ ಗ್ರಿಡ್</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{ಬಲ ಆವರಣ}one{# ಬಲ ಆವರಣಗಳು}other{# ಬಲ ಆವರಣಗಳು}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -658,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
 <translation id="5290220123487191192">ನೀವು ನಿಯಮಿತವಾಗಿ ಬಳಸುವ ಕೆಲವು ಕೀಗಳೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸೋಣ. ನೀವು ಸಕ್ರಿಯಗೊಳಿಸಲು ಬಯಸುವ ಐಟಂ ಅನ್ನು ನೀವು ತಲುಪಿದರೆ, ಒಂದು ಬೆರಳಿನಿಂದ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಡಬಲ್-ಟ್ಯಾಪ್ ಮಾಡಿ. ಮುಂದುವರಿಸಲು, ಇದೀಗ ಡಬಲ್-ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="5291860916305032607">ಫೇಸ್ ಕಂಟ್ರೋಲ್ ಅನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="5302089807023311274">ಗ್ರಂಥಸೂಚಿ ಉಲ್ಲೇಖ</translation>
 <translation id="530391007967514163">ಕೆಳಗಿನ ಪಠ್ಯವನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಶೀರ್ಷಿಕೆಯ ಮೂಲಕ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ಟ್ಯಾಬ್</translation>
@@ -683,6 +688,7 @@
 <translation id="5400836586163650660">ಬೂದು</translation>
 <translation id="5402367795255837559">ಬ್ರೈಲಿ</translation>
 <translation id="5402791055281059602">ಒಂದು ಮಾದರಿ ಎಚ್ಚರಿಕೆ</translation>
+<translation id="5406272775687194041">ಡ್ರ್ಯಾಗ್ ಅಂಡ್ ಡ್ರಾಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{ಅಲ್ಪವಿರಾಮ ಚಿಹ್ನೆ}one{# ಅರ್ಧವಿರಾಮ ಚಿಹ್ನೆಗಳು}other{# ಅರ್ಧವಿರಾಮ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="5420259671171615858">ಮೆನುಗಳಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="5435274640623994081">ಇಯರ್‌ಕಾನ್‌ ಲಾಗ್ ಇನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -750,6 +756,7 @@
 <translation id="5824976764713185207">ಇದು ಲೋಡ್ ಮಾಡುವಿಕೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪುಟವನ್ನು ಓದಿ</translation>
 <translation id="5826479389509458994">ಸಾಲು <ph name="ROW" /> ಕಾಲಮ್ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ಯಾವುದೇ ARIA ಲ್ಯಾಂಡ್‌ಮಾರ್ಕ್‌‌ಗಳಿಲ್ಲ</translation>
+<translation id="584044465500042213">ಸ್ಕ್ರಾಲ್‌ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="5842625257683688671">ಯಾವುದೇ ಮುಂದಿನ ಗ್ರಾಫಿಕ್ ಇಲ್ಲ</translation>
 <translation id="5847883414085148048">ಸಮರ್ಪಣೆ</translation>
 <translation id="5850707923114094062">ಹಿಮ್ಮುಖವಾಗಿ ಪ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -952,6 +959,7 @@
 <translation id="7285387653379749618">ಕೋಷ್ಠಕಗಳು</translation>
 <translation id="7289186959554153431">ಶೀರ್ಷಿಕೆ 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">ಡ್ರ್ಯಾಗ್ ಅಂಡ್ ಡ್ರಾಪ್ ಅನ್ನು ಕೊನೆಗೊಳಿಸಿ</translation>
 <translation id="7308519659008003150">ಯಾವುದೇ ಹಿಂದಿನ ಫಾರ್ಮ್ ಫೀಲ್ಡ್ ಇಲ್ಲ</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">ಸಹಾಯ</translation>
@@ -1157,6 +1165,7 @@
 <translation id="8775203254697638994">ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿ ಒಂದರಿಂದ ನೀವು ಐಟಂ ಒಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಬೇಕಾಗುವ ಸಂದರ್ಭಗಳಿರುತ್ತವೆ. ಹಾಗೆ ಮಾಡಲು, ಮೊದಲು ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತುವ ಮೂಲಕ ಪಟ್ಟಿಯನ್ನು ವಿಸ್ತರಿಸಿ. ನಂತರ ಐಟಂ ಒಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಮೇಲ್ಮುಖ ಮತ್ತು ಕೆಳಮುಖ ಬಾಣದ ಗುರುತಿನ ಕೀಗಳನ್ನು ಬಳಸಿ. ಅಂತಿಮವಾಗಿ, ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತುವ ಮೂಲಕ ಪಟ್ಟಿಯನ್ನು ಕುಗ್ಗಿಸಿ.</translation>
 <translation id="8779057862865475116">ಯಾವುದೇ ಹಿಂದಿನ ಲಿಂಕ್ ಇಲ್ಲ</translation>
 <translation id="8796411681063377102">ಮುಂದಿನ ಹಂತ 3 ಶಿರೋನಾಮೆ</translation>
+<translation id="8821891849214789910">ಡಿಕ್ಟೇಶನ್ ಅನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" /> ರಲ್ಲಿ <ph name="CURRENTPAGE" /> ನೇ ಪುಟ</translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">ಮುಖ್ಯ</translation>

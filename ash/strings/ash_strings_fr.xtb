@@ -442,6 +442,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2530896289327917474">Activer ou désactiver la navigation au clavier</translation>
 <translation id="2531025035050312891">appareil lent</translation>
 <translation id="2531107890083353124">Appuyez sur <ph name="KEY_ONE" /> tout en faisant glisser l'onglet</translation>
+<translation id="2545334090614121435">Vous essayez d'utiliser Début ? Utilisez</translation>
 <translation id="254900897760075745">Copier le contenu sélectionné dans le presse-papiers</translation>
 <translation id="2549711466868162843">Améliorer l'éclairage</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
@@ -500,6 +501,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> à <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+recherche+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Le pavé tactile intégré est désactivé. Utilisez le clavier ou un autre dispositif de pointage pour confirmer la modification.
+
+Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
 <translation id="2785499565474703580">1 appareil connecté</translation>
 <translation id="2791421900609674576">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez appuyer dessus de manière prolongée pour les supprimer.</translation>
@@ -560,6 +564,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2985148236010982088">Voir toutes les applis</translation>
 <translation id="2992272421330787632">Masquer toutes les suggestions de contenus multimédias</translation>
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
+<translation id="2993956882370897557">Vous essayez d'utiliser Fin ? Utilisez</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Modifier la taille de l'écran</translation>
 <translation id="3009178788565917040">Sortie</translation>
@@ -596,6 +601,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3113492864356515707">Mettre en surbrillance l'élément précédent sur l'étagère</translation>
 <translation id="311799651966070385">Fermer le rappel automatique</translation>
 <translation id="3120421559657122717">Éteindre l'appareil ?</translation>
+<translation id="3121411970001795539">Le pavé tactile intégré est désactivé, car une souris est connectée. Utilisez la souris ou le clavier pour confirmer la modification.
+
+Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">UC</translation>
 <translation id="3125690294288312932">Type de travaux et devoirs</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -612,6 +620,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="316798519864381606">Présentation Google Slides</translation>
 <translation id="3171170659304083361">Paramètres des modes de saisie</translation>
+<translation id="3174897399179348329">Vous essayez d'utiliser Page précédente ? Utilisez</translation>
 <translation id="3176221688814061633">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version du Bluetooth. Activez le Bluetooth Super Résolution ou utilisez un micro interne pour une meilleure qualité audio.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
@@ -1259,6 +1268,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5297704307811127955">Désactivé</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5302048478445481009">Langue</translation>
+<translation id="5302531370473608800">Mettez à jour votre <ph name="DEVICE_TYPE" /> pour utiliser YouTube Music</translation>
 <translation id="5303319262469238330">Il reste <ph name="PERCENTAGE" /> % de batterie.
 Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la batterie.</translation>
 <translation id="5308380583665731573">Connexion</translation>
@@ -1466,7 +1476,6 @@ Aucun appareil connecté.</translation>
 <translation id="5975235751479998104">Passer à la fenêtre suivante</translation>
 <translation id="5978382165065462689">Partager le contrôle de votre écran via l'assistance à distance</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
-<translation id="5982119059638483922">Appuyez sur Fn+Rechercher ou Maj pour annuler.</translation>
 <translation id="5983567367406220847">Le point d'accès a été désactivé pour cause d'inactivité.</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="5986723678596105470">Participer avec Google Meet</translation>
@@ -1708,6 +1717,7 @@ Nouvelle installation</translation>
 <translation id="6751826523481687655">Le suivi des performances est activé</translation>
 <translation id="6752912906630585008">Bureau <ph name="REMOVED_DESK" /> supprimé et fusionné avec le Bureau <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">onglets</translation>
+<translation id="6754918760968695779">Insertion Rapide</translation>
 <translation id="6757237461819837179">Aucun contenu multimédia en cours lecture</translation>
 <translation id="6760438044935091345">Tableau de bord Jeux</translation>
 <translation id="6768043681523654438">espace de stockage</translation>
@@ -1817,6 +1827,7 @@ Nouvelle installation</translation>
 <translation id="7144942256906679589">État de la batterie</translation>
 <translation id="7145639536026937076">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant. Économiseur de batterie activé.</translation>
 <translation id="7147587499155271409">Aucun historique de navigation</translation>
+<translation id="7147657298465433425">Pour accéder aux touches F, appuyez sur la touche Fn et sur une touche de la rangée supérieure</translation>
 <translation id="7149149900052329230">Gérez vos fichiers locaux et vos fichiers Google Drive dans l'appli Fichiers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1924,6 +1935,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre micro</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
+<translation id="7568154670718626683">Vous essayez d'utiliser Suppr ? Utilisez</translation>
 <translation id="7568790562536448087">Mise à jour en cours</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7569886975397378678">Ignorer la configuration concernant l'affichage des notifications et applis de votre téléphone</translation>
@@ -2126,6 +2138,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="820256110035940528"><ph name="TITLE" /> Vous venez de vous concentrer pendant <ph name="FOCUSED_TIME" />. Ouvrez les Réglages rapides pour réactiver le mode Sans distractions.</translation>
 <translation id="8203224998425013577">Afficher plus d'emoji et de GIF</translation>
 <translation id="8203795194971602413">Clic droit</translation>
+<translation id="8205469348819768313">Vous essayez d'utiliser Page suivante ? Utilisez</translation>
 <translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché à une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise électrique. N'éteignez pas votre Chromebook.</translation>
 <translation id="8220076512072059941">Ajouter <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2317,6 +2330,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
 <translation id="8926951137623668982">Étagère toujours masquée</translation>
+<translation id="8929566928381252430">Vous essayez d'utiliser Verr Maj ? Utilisez</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">a désactivé</translation>
 <translation id="8938800817013097409">Appareil USB de type C (port situé sur l'arrière de l'appareil, à droite)</translation>

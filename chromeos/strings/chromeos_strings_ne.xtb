@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">मिसाउनुहोस्</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
 <translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> का एड्मिनले यो <ph name="DEVICE_TYPE" /> प्रयोग गर्न सकिने समय तय गर्नुभएको छ।<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />तपाईं यो डिभाइस <ph name="DAY" /> <ph name="TIME" /> बजे फेरि प्रयोग गर्न सक्नु हुने छ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">स्क्रिनसट प्रिभ्यू गर्नुहोस्</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7561759921596375678">भोल्युम अन गर्नुहोस्</translation>

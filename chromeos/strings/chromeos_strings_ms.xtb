@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">lagi</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3321030238473337787">Kelajuan main balik</translation>
+<translation id="3327613592010997943">Anda akan dapat menggunakan peranti lagi pada <ph name="DAY" /> pukul <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
 <translation id="3340978935015468852">tetapan</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Keadaan Portal</translation>
 <translation id="5763838252932650682">Memulakan semula dan mengemaskinikan <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Tingkatkan kecerahan paparan</translation>
+<translation id="5775340474232476653">Guru anda telah menamatkan kelas</translation>
 <translation id="5779818640587041940">Pastikan skrin hidup semasa merakam</translation>
 <translation id="57838592816432529">Redam</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
@@ -1349,8 +1351,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7544853251252956727">Rombak</translation>
 <translation id="7550715992156305117">Rutin Diagnostik</translation>
 <translation id="7551123448725492271">Peranti ialah peranti audio.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Pentadbir <ph name="MANAGER" /> telah menetapkan masa <ph name="DEVICE_TYPE" /> boleh digunakan.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Anda akan dapat menggunakan peranti lagi pada <ph name="DAY" /> pukul <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Pratonton Tangkapan Skrin</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>
 <translation id="7561759921596375678">Hidupkan kelantangan</translation>
@@ -1359,6 +1359,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="757747079855995705">batu</translation>
 <translation id="7590883480672980941">Tetapan input</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
+<translation id="7600430297804876776">Pentadbir <ph name="MANAGER" /> telah menetapkan masa untuk <ph name="DEVICE_TYPE" /> boleh digunakan.</translation>
 <translation id="7613724632293948900">Ubah kedudukan dengan tetikus atau kekunci anak panah.</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
@@ -1464,6 +1465,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8088963492174775412">Tekan untuk merakam</translation>
 <translation id="8094062939584182041">Benarkan Google menghantar e-mel tentang isu ini kepada anda</translation>
 <translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
+<translation id="8110942816572072814">Guru anda telah mengunci skrin anda</translation>
 <translation id="811820734797650957">Get laluan boleh Diping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Sahkan</translation>

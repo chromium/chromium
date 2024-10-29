@@ -264,7 +264,6 @@
 <translation id="1446396933673057385">ನಿಖರತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" ನಂತೆ ಅದೇ ನಿಘಂಟಿನಲ್ಲಿ "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ಕೀಲಿಗಳನ್ನು ಸೆಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="1452803302401719440">ನಿಮ್ಮ ಪೋಷಕರು ಆಯ್ಕೆಮಾಡಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಇದೀಗ ನಿಮ್ಮನ್ನು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತಿವೆ</translation>
 <translation id="1455413310270022028">ಎರೇಸರ್</translation>
 <translation id="1458059624921545588">ಜನರು ಮತ್ತು ಸಮಾಜ</translation>
 <translation id="1458140305240870199">ಒಳಉಡುಪುಗಳು</translation>
@@ -2266,6 +2265,7 @@
 <translation id="5087286274860437796">ಈ ಸಮಯದಲ್ಲಿ ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರ ಮಾನ್ಯವಾಗಿಲ್ಲ.</translation>
 <translation id="5087580092889165836">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="5088142053160410913">ಆಪರೇಟರ್‌ಗೆ ಸಂದೇಶ</translation>
+<translation id="5089791650329866127">ಈ ಫೀಚರ್ ನಿಮ್ಮ ವಿಳಾಸದಂತಹ ಆಟೋಫಿಲ್ ಮೂಲಕ ನೀವು ಈಗಾಗಲೇ ಸೇವ್‌ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="5090647584136241764">ನಿಮಗೆ ಮುಖ್ಯವಾದ ವಿವರಗಳನ್ನು ಸುಲಭವಾಗಿ ಹೋಲಿಸಲು ಒಂದೇ ರೀತಿಯ ಉತ್ಪನ್ನಗಳ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5093232627742069661">ಝೆಡ್ ಮಾದರಿಯಲ್ಲಿ ಮಡಿಸಿ</translation>
 <translation id="5094747076828555589">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು Chromium ಮೂಲಕ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
@@ -2933,7 +2933,6 @@
 <translation id="6311642842034740437">ಹೆಸರಿಸಲಾದ ಸ್ಥಳ</translation>
 <translation id="6312113039770857350">ವೆಬ್‌ಪುಟ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> ಗೆ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="6316723751983724988">ಹೊಸತು: Chrome ಗಾಗಿ Family Link ಆಯ್ಕೆಗಳು ಇಲ್ಲಿ ಅನ್ವಯಿಸುತ್ತವೆ</translation>
 <translation id="63172326633386613">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6321917430147971392">ನಿಮ್ಮ DNS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6322182122604171028">Windows Hello ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -4540,6 +4539,7 @@
 <translation id="9211461151375991073">ಹುಡುಕಲು @ ನಮೂದಿಸಿ <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chrome ನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
+<translation id="921738974253889319">ಈ ಫೀಚರ್ ನಿಮ್ಮ ವಿಳಾಸದಂತಹ ಆಟೋಫಿಲ್ ಮೂಲಕ ನೀವು ಈಗಾಗಲೇ ಸೇವ್‌ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸುತ್ತದೆ. ಈ ಪುಟದಲ್ಲಿ ನೀವು ಈ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಮತ್ತು ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="92178312226016010">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="9218430445555521422">ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="9219103736887031265">Images</translation>

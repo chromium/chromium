@@ -264,7 +264,6 @@
 <translation id="1446396933673057385">სიზუსტის შემოწმება</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">„<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ გასაღებები ვერ განისაზღვრება იმ ლექსიკონში, რომელშიც „<ph name="DATA_CONTROLS_SECOND_KEY_SET" />“ გასაღებებია</translation>
-<translation id="1452803302401719440">თქვენი მშობლის არჩეული პარამეტრები მეტად დაგიცავთ ონლაინ</translation>
 <translation id="1455413310270022028">საშლელი</translation>
 <translation id="1458059624921545588">ხალხი და საზოგადოება</translation>
 <translation id="1458140305240870199">საცვლები</translation>
@@ -2938,7 +2937,6 @@
 <translation id="6311642842034740437">მდებარეობა</translation>
 <translation id="6312113039770857350">ვებგვერდი მიუწვდომელია</translation>
 <translation id="6316110367871394043">ფაილის <ph name="CLOUD_PROVIDER" />-ზე ატვირთვა დაპაუზდა</translation>
-<translation id="6316723751983724988">სიახლე: აქ მოქმედებს Family Link-ში Chrome-თან დაკავშირებით დაფიქსირებული არჩევანი</translation>
 <translation id="63172326633386613">მარტივი წვდომის პარამეტრების მართვა</translation>
 <translation id="6321917430147971392">შეამოწმეთ თქვენი DNS პარამეტრები</translation>
 <translation id="6322182122604171028">Windows Hello-ს გამოყენება ვერ მოხერხდა</translation>

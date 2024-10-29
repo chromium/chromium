@@ -1348,8 +1348,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7544853251252956727">Stokka</translation>
 <translation id="7550715992156305117">Greiningarrútínur</translation>
 <translation id="7551123448725492271">Tækið er hljómtæki.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Kerfisstjóri <ph name="MANAGER" /> stillti hvenær hægt er að nota þessa <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Þú getur notað þetta tæki aftur <ph name="DAY" /> klukkan <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Forskoða skjámynd</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7561759921596375678">Kveikja á hljóði</translation>

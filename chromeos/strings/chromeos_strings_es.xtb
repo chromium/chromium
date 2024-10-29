@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">gris</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
+<translation id="5606865426897221650">Tabulador</translation>
 <translation id="5613201299517339763">Se ha cerrado la sesión</translation>
 <translation id="5620281292257375798">Solo para uso interno</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -1348,8 +1349,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7544853251252956727">Aleatorio</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />El administrador de <ph name="MANAGER" /> ha definido cuándo se puede usar este <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Podrás volver a usar este dispositivo <ph name="DAY" /> a las <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Vista previa de captura de pantalla</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7561759921596375678">Activar volumen</translation>
@@ -1470,7 +1469,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8135609423982943441">Se ha restablecido tu Chromebook a los valores predeterminados seguros. Puedes cambiar estos ajustes en cualquier momento desde Configuración.</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
-<translation id="8151185429379586178">Herramientas para desarrolladores</translation>
+<translation id="8151185429379586178">DevTools</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">mágica</translation>
 <translation id="8162776280680283326">zorros</translation>

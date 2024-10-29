@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + пошук + s</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Вбудовану сенсорну панель вимкнено. Підтвердьте зміну за допомогою клавіатури або іншого маніпулятора.
+
+В іншому разі вбудовану сенсорну панель буде знову ввімкнено через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Вийти з режиму зйомки</translation>
 <translation id="2785499565474703580">Підключено 1 пристрій</translation>
 <translation id="2791421900609674576">Ви побачите рекомендації, тож зможете продовжити з місця зупинки. Натисність і втримуйте, щоб видалити їх.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">Виділити попередній елемент на панелі запуску</translation>
 <translation id="311799651966070385">Закрити нагадування</translation>
 <translation id="3120421559657122717">Завершити роботу пристрою?</translation>
+<translation id="3121411970001795539">Вбудовану сенсорну панель вимкнено, оскільки підключено мишу. Підтвердьте зміну за допомогою миші або клавіатури.
+
+В іншому разі вбудовану сенсорну панель буде знову ввімкнено через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3125690294288312932">Тип завдання</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1141,6 +1147,7 @@
 <translation id="4902797682482387055">Рекомендоване завдання для режиму зосередження</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">Це експериментальна функція на основі ШІ, тому вона не завжди працює правильно.</translation>
 <translation id="491504982845934899">Щоб активувати мережу <ph name="NETWORK_NAME" />, потрібно налаштувати пристрій</translation>
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4918086044614829423">Прийняти</translation>
@@ -1470,7 +1477,6 @@
 <translation id="5975235751479998104">Переходити вперед між вікнами</translation>
 <translation id="5978382165065462689">Спільний доступ до екрана через віддалену допомогу.</translation>
 <translation id="5980301590375426705">Закрити сеанс гостя</translation>
-<translation id="5982119059638483922">Щоб скасувати, натисніть Fn + Пошук або Shift.</translation>
 <translation id="5983567367406220847">Точку доступу вимкнено, оскільки ви нею не користувалися.</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="5986723678596105470">Приєднатися через Google Meet</translation>
@@ -1700,7 +1706,7 @@
 <translation id="6704375469818246414">Якість контенту, створеного за допомогою генеративного ШІ, може бути різною.</translation>
 <translation id="6706742084323792866">Закріпити клавіатуру</translation>
 <translation id="6710213216561001401">Назад</translation>
-<translation id="6723839937902243910">Заряд</translation>
+<translation id="6723839937902243910">Живлення</translation>
 <translation id="672609503628871915">Докладніше про нові функції</translation>
 <translation id="6727969043791803658">Під'єднано, акумулятор заряджено на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1712,6 +1718,7 @@
 <translation id="6751826523481687655">Відстеження ефективності ввімкнено</translation>
 <translation id="6752912906630585008">Робочий стіл "<ph name="REMOVED_DESK" />" видалено й об'єднано з робочим столом "<ph name="RECEIVE_DESK" />"</translation>
 <translation id="6753390234084146956">вкладки</translation>
+<translation id="6754918760968695779">Швидке вставлення</translation>
 <translation id="6757237461819837179">Медіаконтент не відтворюється</translation>
 <translation id="6760438044935091345">Ігрова панель</translation>
 <translation id="6768043681523654438">сховище</translation>
@@ -2003,6 +2010,7 @@
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">За допомогою позначки "Подобається" можна надіслати схвальний відгук про цю пропозицію</translation>
 <translation id="7825412704590278437">З майбутньої події в календарі</translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
 <translation id="7830453190047749513">Ви можете персоналізувати дії для кнопок, швидкість курсора тощо на пристрої <ph name="PERIPHERAL_NAME" /></translation>
@@ -2157,6 +2165,7 @@
 <translation id="830868413617744215">Бета-версія</translation>
 <translation id="8314772463905284467">Режим Caps Lock увімкнено</translation>
 <translation id="8315514906653279104">Увімкнення…</translation>
+<translation id="8319634750346253957">За допомогою позначки "Не подобається" можна надіслати негативний відгук про цю пропозицію</translation>
 <translation id="8331351032546853669">Очікує на завантаження</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>

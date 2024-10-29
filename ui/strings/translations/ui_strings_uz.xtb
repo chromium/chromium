@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Dasturchilar UI moduli (dev_ui) oʻrnatilmagani sababli sahifa yuklanmadi</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> tizimi</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Chap strelka</translation>
 <translation id="5633029987065897167">Boʻsh</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 daqiqa}other{# daqiqa}}</translation>
@@ -224,6 +225,7 @@
 <translation id="9059834730836941392">Bildirishnomani yig‘ish</translation>
 <translation id="9170848237812810038">&amp;Bekor qilish</translation>
 <translation id="9195990613383871904">Ertaga</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="944069440740578670">Yangi bildirishnomalar</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 soniya oldin}other{# soniya oldin:}}</translation>

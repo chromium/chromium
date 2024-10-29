@@ -1148,6 +1148,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4902797682482387055">Tarea sugerida en la que concentrarse</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Batería: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">Esta es una función experimental basada en IA y puede tener errores.</translation>
 <translation id="491504982845934899">Activar luego de configurar el dispositivo <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -1477,7 +1478,6 @@ No hay dispositivos conectados.</translation>
 <translation id="5975235751479998104">Desplazarse hacia adelante por las ventanas</translation>
 <translation id="5978382165065462689">Se está compartiendo el control de la pantalla mediante la Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
-<translation id="5982119059638483922">Presiona Fn + Búsqueda o Mayúsculas para cancelarlo.</translation>
 <translation id="5983567367406220847">Debido a la inactividad, se desactivó el hotspot.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="5986723678596105470">Unirse con Google Meet</translation>
@@ -1719,6 +1719,7 @@ Nueva instalación</translation>
 <translation id="6751826523481687655">Se activó el registro del rendimiento</translation>
 <translation id="6752912906630585008">Se quitó el escritorio <ph name="REMOVED_DESK" /> y se combinó con el <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">pestañas</translation>
+<translation id="6754918760968695779">Insertar rápido</translation>
 <translation id="6757237461819837179">No se está reproduciendo nada</translation>
 <translation id="6760438044935091345">Panel de juego</translation>
 <translation id="6768043681523654438">almacenamiento</translation>
@@ -2010,6 +2011,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">La opción Me gusta enviará comentarios que indican que te gusta esta sugerencia</translation>
 <translation id="7825412704590278437">De un evento próximo del calendario</translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7830453190047749513">Puedes personalizar las acciones de los botones, la velocidad del cursor y mucho más para tu <ph name="PERIPHERAL_NAME" /></translation>
@@ -2164,6 +2166,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloq Mayús está activado.</translation>
 <translation id="8315514906653279104">Activando…</translation>
+<translation id="8319634750346253957">La opción No me gusta enviará comentarios que indican que no te gusta esta sugerencia</translation>
 <translation id="8331351032546853669">Descarga pendiente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

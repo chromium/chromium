@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">حجم <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">الوَتر <ph name="DOT" /></translation>
 <translation id="1923956950274750765">أرجواني خفيف متوسط</translation>
+<translation id="1926147969119007125">إيقاف ميزة "التحكّم بالوجه" مؤقتًا</translation>
 <translation id="1928932365747995741">ليس هناك حقل نص سابق قابل للتعديل.</translation>
 <translation id="1964135212174907577">الكائن التالي</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">الانتقال إلى العنصر التالي القابل للتركيز</translation>
 <translation id="2756452585631602151">أدخِل تصنيفًا مخصّصًا.</translation>
 <translation id="2766299274563946262">ليست هناك خلية في اليسار.</translation>
+<translation id="2770947749427257887">تفعيل وضع التمرير</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{بالإضافة إلى عنصر واحد}zero{بالإضافة إلى # عنصر}two{بالإضافة إلى عنصرَين (#)}few{بالإضافة إلى # عناصر}many{بالإضافة إلى # عنصرًا}other{بالإضافة إلى # عنصر}}</translation>
 <translation id="2792200646155001340">يمكنك أيضًا تمرير إصبع واحد من اليسار إلى اليمين للانتقال إلى العنصر السابق. جرِّب ذلك الآن.</translation>
 <translation id="280499067616661124">‏البحث في صفحة ChromeVox</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">الضغط على مفتاح غير صالح</translation>
 <translation id="3468959318854349468">بلا عنوان</translation>
 <translation id="3469413619751135069">أخضر باهت</translation>
+<translation id="3473744269398144689">بدء الإملاء</translation>
 <translation id="3490765818161916458">شبكة القوائم</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{قوس متوسط أيمن واحد}zero{# right brackets}two{قوسان متوسطان أيمنان (#)}few{# أقواس متوسطة يمنى}many{# قوسًا متوسطًا أيمنًا}other{# من الأقواس المتوسطة اليمنى}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
 <translation id="5290220123487191192">لنبدأ ببعض الإيماءات التي ستستخدمها بانتظام. إذا وصلت إلى عنصر تريد تفعيله، انقر مرّتين على الشاشة بإصبع واحد. للمتابعة، انقر مرّتين الآن.</translation>
+<translation id="5291860916305032607">استئناف ميزة "التحكّم بالوجه"</translation>
 <translation id="5302089807023311274">مرجع قائمة مراجع</translation>
 <translation id="530391007967514163">جرِّب الانتقال السريع بين العناوين للتنقُّل بين النصوص أدناه.</translation>
 <translation id="5304943142864553931">علامة التبويب <ph name="TITLE" /></translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">رمادي</translation>
 <translation id="5402367795255837559">لغة برايل</translation>
 <translation id="5402791055281059602">تنبيه نمطي</translation>
+<translation id="5406272775687194041">بدء السحب والإفلات</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{فاصلة منقوطة واحدة}zero{# semicolons}two{فاصلتان منقوطتان (#)}few{# فواصل منقوطة}many{# فاصلة منقوطة}other{# من الفواصل المنقوطة}}</translation>
 <translation id="5420259671171615858">البحث في القوائم</translation>
 <translation id="5435274640623994081">تفعيل ميزة تسجيل الرمز الصوتي</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">قراءة الصفحة تلقائيًا بعد انتهاء التحميل</translation>
 <translation id="5826479389509458994">الصف <ph name="ROW" /> العمود <ph name="COL" /></translation>
 <translation id="5833044594931167190">‏ليست هناك معالم ARIA.</translation>
+<translation id="584044465500042213">الخروج من وضع التمرير</translation>
 <translation id="5842625257683688671">ليس هناك رسم تالٍ.</translation>
 <translation id="5847883414085148048">إهداء</translation>
 <translation id="5850707923114094062">لقطة استعراضية إلى الوراء</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">الجداول</translation>
 <translation id="7289186959554153431">العنوان الثالث</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">إنهاء السحب والإفلات</translation>
 <translation id="7308519659008003150">ليس هناك حقل نموذج سابق.</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">مساعدة</translation>
@@ -1158,6 +1165,7 @@
 <translation id="8775203254697638994">ستحتاج في بعض الأحيان إلى اختيار عنصر من قائمة منسدلة. لإجراء ذلك، وسِّع القائمة المنسدلة عن طريق الضغط على مفتاح البحث + مفتاح المسافة. بعد ذلك، استخدِم مفتاحَي السهم المتّجه للأعلى والسهم المتّجه للأسفل لاختيار عنصر من القائمة. وأخيرًا، صغِّر القائمة المنسدلة عن طريق الضغط على مفتاح البحث + مفتاح المسافة.</translation>
 <translation id="8779057862865475116">ليس هناك رابط سابق.</translation>
 <translation id="8796411681063377102">عنوان المستوى الثالث التالي</translation>
+<translation id="8821891849214789910">إيقاف الإملاء</translation>
 <translation id="8823311177246872527">الصفحة <ph name="CURRENTPAGE" /> من أصل <ph name="TOTALPAGES" /> صفحة</translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">main</translation>

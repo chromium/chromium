@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">শাফল করুন</translation>
 <translation id="7550715992156305117">ডায়াগনস্টিক রুটিন</translation>
 <translation id="7551123448725492271">ডিভাইস একটি অডিও ডিভাইস।</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />এই <ph name="DEVICE_TYPE" /> কখন ব্যবহার করা যাবে তা <ph name="MANAGER" /> অ্যাডমিনিস্ট্রেটর সেট করেছেন।<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />আপনি এই ডিভাইস আবার <ph name="DAY" /> <ph name="TIME" />-এ ব্যবহার করতে পারবেন।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">স্ক্রিনশট প্রিভিউ করুন</translation>
 <translation id="7561454561030345039">এই কাজটি আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="7561759921596375678">ভলিউম চালু করুন</translation>

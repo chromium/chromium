@@ -849,6 +849,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5010886807652684893">Visualització visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
+<translation id="5012253429094023177">Sembla que <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> i <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> estan relacionats. Assegura't que confies en <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> abans d'utilitzar la teva contrasenya.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Últims 15 minuts</translation>
 <translation id="5032430150487044192">No es pot crear el codi QR</translation>

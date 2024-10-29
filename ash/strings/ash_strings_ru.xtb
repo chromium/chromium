@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> клавиши от <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Поиcк + S</translation>
 <translation id="2778650143428714839">Устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
+<translation id="2781658180588759579">Встроенная сенсорная панель отключена. Подтвердите это изменение с помощью другого указывающего устройства или клавиатуры.
+
+В противном случае сенсорная панель будет снова включена через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Выйти из режима съемки</translation>
 <translation id="2785499565474703580">Подключено 1 устройство.</translation>
 <translation id="2791421900609674576">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них и удерживайте, чтобы удалить.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">Выделить предыдущий элемент на панели запуска</translation>
 <translation id="311799651966070385">Закрыть напоминание</translation>
 <translation id="3120421559657122717">Выключить устройство?</translation>
+<translation id="3121411970001795539">Встроенная сенсорная панель отключена, так как подключена мышь. Подтвердите это изменение с помощью мыши или клавиатуры.
+
+В противном случае сенсорная панель будет снова включена через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3125690294288312932">Тип задания</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1141,6 +1147,7 @@
 <translation id="4902797682482387055">Рекомендуемая задача</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="4911191962826748981">Это экспериментальная ИИ-функция. Она может показывать неточную информацию.</translation>
 <translation id="491504982845934899">Чтобы активировать сеть <ph name="NETWORK_NAME" />, сначала настройте устройство</translation>
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4918086044614829423">Принять</translation>
@@ -1470,7 +1477,6 @@
 <translation id="5975235751479998104">Перейти к следующему окну</translation>
 <translation id="5978382165065462689">Доступ к экрану с помощью удаленного помощника</translation>
 <translation id="5980301590375426705">Выйти как гость</translation>
-<translation id="5982119059638483922">Для отмены нажмите Fn + Search или Shift.</translation>
 <translation id="5983567367406220847">Точка доступа отключена из-за бездействия.</translation>
 <translation id="598407983968395253">Использовать шаблон</translation>
 <translation id="5986723678596105470">Присоединиться в Google Meet</translation>
@@ -1712,6 +1718,7 @@
 <translation id="6751826523481687655">Отслеживание эффективности включено.</translation>
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>
 <translation id="6753390234084146956">вкладки</translation>
+<translation id="6754918760968695779">Быстрая вставка</translation>
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
 <translation id="6760438044935091345">Игровая панель</translation>
 <translation id="6768043681523654438">хранилище</translation>
@@ -2003,6 +2010,7 @@
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Поставить подсказке отметку "Нравится"</translation>
 <translation id="7825412704590278437">Из предстоящего мероприятия в календаре</translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
 <translation id="7830453190047749513">Вы можете задать действия для кнопок, скорость передвижения указателя и настроить другие параметры устройства "<ph name="PERIPHERAL_NAME" />".</translation>
@@ -2157,6 +2165,7 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Включен режим Caps Lock</translation>
 <translation id="8315514906653279104">Включение…</translation>
+<translation id="8319634750346253957">Поставить подсказке отметку "Не нравится"</translation>
 <translation id="8331351032546853669">Ожидание скачивания</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

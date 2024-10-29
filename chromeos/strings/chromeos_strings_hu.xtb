@@ -1348,8 +1348,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7544853251252956727">Keverés</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />A(z) <ph name="MANAGER" /> adminisztrátora meghatározta, hogy mikor használható ez a(z) <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Ezt az eszközt ezen a napon és időpontban használhatja újra: <ph name="DAY" />, <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Képernyőkép előnézete</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7561759921596375678">Hang bekapcsolása</translation>

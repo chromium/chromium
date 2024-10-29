@@ -426,6 +426,7 @@
 <translation id="1288037062697528143">Ноћно светло се аутоматски укључује када сунце зађе</translation>
 <translation id="1288300545283011870">Својства говора</translation>
 <translation id="1289619947962767206">Ова опција више није подржана. Да бисте приказали картицу, користите <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Ако изаберете већ додељен покрет, уклонићете га из првобитне радње.</translation>
 <translation id="1291119821938122630">Услови коришћења услуге <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Ресетуј тастере</translation>
 <translation id="1292849930724124745">Уметните паметну картицу да бисте остали пријављени</translation>
@@ -1168,7 +1169,6 @@
 <translation id="1809734401532861917">Додај обележиваче, историју, лозинке и друга подешавања на <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">Да бисте користили сачуване лозинке на телефону, пратите QR кôд, преузмите Chrome за iOS и пријавите се на Google налог.</translation>
 <translation id="1810366086647840386">Сервер за слике</translation>
-<translation id="1810391395243432441">Заштитите лозинке помоћу закључавања екрана</translation>
 <translation id="1811908311154949291">Затворени оквир без архивирања: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да настави да користи услугу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Пребацивање картице <ph name="TAB_NAME" /></translation>
@@ -3209,7 +3209,6 @@
 <translation id="3262261769033093854">Не дозвољавај сајтовима да снимају и користе унос мишем</translation>
 <translation id="3262336253311870293">Пошто овим налогом управља <ph name="DOMAIN" />, нећете бити одјављени са Google налога. Обележивачи, историја, лозинке и друга подешавања се више неће синхронизовати. Међутим, претходно синхронизовани подаци се чувају на Google налогу и можете да управљате њима на <ph name="BEGIN_LINK" />Google контролној табли<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Превелико</translation>
-<translation id="3264239161215962624">Да бисте пребацивали, одобрите Chrome-у приступ у: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /></translation>
 <translation id="3264544094376351444">Фонт Sans-serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Затвори прозор</translation>
@@ -3811,7 +3810,6 @@
 <translation id="3699624789011381381">Имејл адреса</translation>
 <translation id="3699920817649120894">Желите да искључите синхронизацију и персонализацију?</translation>
 <translation id="3700888195348409686">Приказује се (<ph name="PAGE_ORIGIN" />)</translation>
-<translation id="3700966190175650601">Користите отисак прста за попуњавање лозинки</translation>
 <translation id="3700993174159313525">Не дозвољавај сајтовима да прате положај камере</translation>
 <translation id="3701167022068948696">Реши проблем одмах</translation>
 <translation id="3701515417135397388">Упозори ме ако је лозинка угрожена при повреди података</translation>
@@ -5014,7 +5012,6 @@
 <translation id="4554591392113183336">Верзија спољног додатка је иста или старија од постојећег.</translation>
 <translation id="4555769855065597957">Нови профил</translation>
 <translation id="4555863373929230635">Да бисте сачували лозинке на Google налогу, пријавите се и укључите синхронизацију.</translation>
-<translation id="4556069465387849460">Користите откључавање екрана за попуњавање лозинки</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> дели са вама лозинку за: <ph name="WEBSITE_NAME" />. Можете да је користите у обрасцу за пријављивање.</translation>
 <translation id="4558426062282641716">Тражи се дозвола за аутоматско покретање</translation>
 <translation id="4558542033859106586">Отвара се у <ph name="TARGET_APP" /></translation>
@@ -5273,7 +5270,6 @@
 <translation id="4744260496658845719">Позадинско осветљење тастатуре</translation>
 <translation id="4744268813103118742">Иди на сајт</translation>
 <translation id="4744571849207727284">Excel</translation>
-<translation id="4744816391336495134">Можете да користите отиске прста да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>
 <translation id="4745500401920035244">Администратор је унео промену која се односи на цео систем и која је онемогућила неке старе профиле. Више не можете да приступите овом профилу, али и даље можете да га уклоните</translation>
 <translation id="474609389162964566">Приступајте Помоћнику фразом „Хеј Google“</translation>
@@ -6746,6 +6742,7 @@
 <translation id="5832970156002835240">Дозволи на свим сајтовима</translation>
 <translation id="5833397272224757657">Користи садржај на сајтовима које посећујете, као и активности и интеракције у прегледачу ради персонализације</translation>
 <translation id="5833726373896279253">Ова подешавања може да измени само власник:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Не дозвољавај сајтовима да користе JavaScript</translation>
 <translation id="583431638776747">Сајт није био доступан</translation>
 <translation id="5834581999798853053">Остало је око <ph name="TIME" /> минута</translation>
@@ -8458,7 +8455,6 @@
 <translation id="7068591156533195518"><ph name="APP_NAME" /> и још неколико апликација је блокирано на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Отвара страницу са безбедносним подешавањима на новој картици</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Нова лозинка за овај сајт}one{Нове лозинке за овај сајт}few{Нове лозинке за овај сајт}other{Нове лозинке за овај сајт}}</translation>
-<translation id="7070144569727915108">системска подешавања</translation>
 <translation id="7070484045139057854">Ово може да чита и мења податке сајтова</translation>
 <translation id="7072010813301522126">Назив пречице</translation>
 <translation id="7072078320324181561">Апликације и веб-сајтови са дозволом за локацију, као и системске услуге, могу да користе локацију <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -10202,7 +10198,6 @@
 <translation id="8322814362483282060">Овој страници је забрањен приступ микрофону.</translation>
 <translation id="8323167517179506834">Унесите URL</translation>
 <translation id="8323317289166663449">да чита и мења све податке на вашем рачунару и свим веб-сајтовима</translation>
-<translation id="8323505966575306467">Додајте још заштите лозинкама</translation>
 <translation id="8323518750352551353">Желите да раздвојите прегледање?</translation>
 <translation id="8324158725704657629">Не питај поново</translation>
 <translation id="8324784016256120271">Сајтови могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа</translation>
@@ -10671,7 +10666,6 @@
 <translation id="8662978096466608964">Chrome не може да подеси позадину.</translation>
 <translation id="8663099077749055505">Увек блокирај више аутоматских преузимања на хосту <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Прикажи извор странице</translation>
-<translation id="8664603206102030248">Ако изаберете већ додељен покрет, уклонићете га из првобитне радње</translation>
 <translation id="8665110742939124773">Унели сте нетачан приступни кôд. Пробајте поново.</translation>
 <translation id="8665180165765946056">Резервна копија је направљена</translation>
 <translation id="866611985033792019">Овај сертификат је поуздан за идентификацију корисника имејла</translation>

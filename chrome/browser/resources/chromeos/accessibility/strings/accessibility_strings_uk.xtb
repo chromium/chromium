@@ -339,6 +339,7 @@
 <translation id="311015743332597320">Проведіть чотирма пальцями праворуч</translation>
 <translation id="3112457281078985179">Щоб увімкнути чи вимкнути ChromeVox, натисніть комбінацію клавіш Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Вимкнути екран?</translation>
+<translation id="3127625407966660979">Диктування активовано</translation>
 <translation id="3131002934070407451">Зачитувати числа як:</translation>
 <translation id="3134461040845705080">лише читання</translation>
 <translation id="3137663468179739624">Оливковий</translation>
@@ -497,6 +498,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{секунда}one{секунда}few{секунди}many{секунд}other{секунди}}</translation>
 <translation id="4161663686871496107">Голосові підказки ChromeVox активовано</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
+<translation id="4176677444195790114">Триває перетягування</translation>
 <translation id="4187322598335821254">Проведіть пальцем угору або вниз, щоб переходити між рядками</translation>
 <translation id="4188530942454211480">Попереднє речення</translation>
 <translation id="4191918948604314587">Кнопка</translation>

@@ -1169,7 +1169,6 @@
 <translation id="1809734401532861917">Додај ги моите обележувачи, историја, лозинки и други поставки на <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">За да ги користите зачуваните лозинки на вашиот телефон, следете го QR-кодот, преземете Chrome за iOS и најавете се на вашата сметка на Google.</translation>
 <translation id="1810366086647840386">Отсликан сервер</translation>
-<translation id="1810391395243432441">Заштитете ги лозинките со заклучувањето екран</translation>
 <translation id="1811908311154949291">Изолирана инкогнито рамка: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продолжи со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Се емитува <ph name="TAB_NAME" /></translation>
@@ -3197,7 +3196,6 @@
 <translation id="3262261769033093854">Не им дозволувај на сајтовите да го заклучуваат и користат дејството со глувче</translation>
 <translation id="3262336253311870293">Бидејќи <ph name="DOMAIN" /> управува со сметкава, нема да бидете одјавени од вашата сметка на Google. Вашите обележувачи, историја, лозинки и други поставки веќе нема да бидат синхронизирани. Меѓутоа, претходно синхронизираните податоци ќе останат зачувани во вашата сметка на Google и може да се управува со нив на <ph name="BEGIN_LINK" />Контролна табла на Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Преголема</translation>
-<translation id="3264239161215962624">За да емитувате, дајте му пристап на Chrome во <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /></translation>
 <translation id="3264544094376351444">Фонт Sans-Serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Затвори го прозорецот</translation>
@@ -4986,7 +4984,6 @@
 <translation id="4554591392113183336">Надворешната наставка е иста или пониска верзија споредена со постоечката.</translation>
 <translation id="4555769855065597957">Сенка</translation>
 <translation id="4555863373929230635">За да се зачувуваат лозинки во сметката на Google, најавете се и вклучете синхронизација.</translation>
-<translation id="4556069465387849460">Го користите заклучувањето екран за пополнување лозинки</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> сподели лозинка со вас за <ph name="WEBSITE_NAME" />. Може да ја користите во формуларот за најавување.</translation>
 <translation id="4558426062282641716">Потребна е дозвола за автоматско стартување</translation>
 <translation id="4558542033859106586">Се отвора во <ph name="TARGET_APP" />…</translation>
@@ -8402,7 +8399,6 @@
 <translation id="7068591156533195518"><ph name="APP_NAME" /> и уште неколку апликации се блокирани на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Ја отвора страницата со поставки за безбедност во нова картичка</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Нова лозинка за сајтов}one{Нови лозинки за сајтов}other{Нови лозинки за сајтов}}</translation>
-<translation id="7070144569727915108">Системски поставки</translation>
 <translation id="7070484045139057854">Може да ги чита и изменува податоците за сајтот</translation>
 <translation id="7072010813301522126">Име на кратенка</translation>
 <translation id="7072078320324181561">Апликациите и веб-сајтовите со дозволата за локација, како и системските услуги, може да ја користат локацијата <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -10599,7 +10595,6 @@
 <translation id="8662978096466608964">Chrome не може да постави тапет.</translation>
 <translation id="8663099077749055505">Секогаш блокирај повеќекратно автоматско преземање на <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Прикажи извор на страница</translation>
-<translation id="8664603206102030248">Избирањето веќе доделено дејство ќе го отстрани од неговото првично дејство</translation>
 <translation id="8665110742939124773">Внесовте неточен код за пристап. Обидете се повторно.</translation>
 <translation id="8665180165765946056">Бекапот е завршен</translation>
 <translation id="866611985033792019">Имајте доверба во сертификатов за идентификување на корисниците на е-пошта</translation>

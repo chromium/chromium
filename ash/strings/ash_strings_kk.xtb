@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> – <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
+<translation id="2781658180588759579">Ендірілген сенсорлық тақта өшірілді. Өзгерісті пернетақтамен немесе басқа нұсқаушы құрылғымен растаңыз.
+
+Әйтпесе ендірілген сенсорлық тақта <ph name="TIMEOUT_SECONDS" /> өткеннен кейін қайта қосылады.</translation>
 <translation id="2782591952652094792">Түсіру режимінен шығу</translation>
 <translation id="2785499565474703580">1 құрылғы жалғанған.</translation>
 <translation id="2791421900609674576">Көретін ұсыныстардың арқасында тоқтаған жеріңізден жалғастыра аласыз.  Ұсыныстарды өшіру үшін басып тұрыңыз.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">Сөредегі алдыңғы элементті ерекшелеу</translation>
 <translation id="311799651966070385">Еске салғышты жабу</translation>
 <translation id="3120421559657122717">Құрылғы өшірілсін бе?</translation>
+<translation id="3121411970001795539">Ендірілген сенсорлық тақта өшірілді, себебі тінтуір қосылды. Өзгерісті тінтуірмен немесе сенсорлық тақтамен растаңыз.
+
+Әйтпесе ендірілген сенсорлық тақта <ph name="TIMEOUT_SECONDS" /> өткеннен кейін қайта қосылады.</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3125690294288312932">Сынып жұмысының түрі</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1470,7 +1476,6 @@
 <translation id="5975235751479998104">Терезелер арқылы алға айналдыру</translation>
 <translation id="5978382165065462689">Remote Assistance арқылы экранды бөлісіп басқару.</translation>
 <translation id="5980301590375426705">Қонақты шығару</translation>
-<translation id="5982119059638483922">Бас тарту үшін Fn + Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="5983567367406220847">Әрекетсіздікке байланысты хотспот өшірілді.</translation>
 <translation id="598407983968395253">Үлгіні қолдану</translation>
 <translation id="5986723678596105470">Google Meet-пен қосылу</translation>
@@ -1712,6 +1717,7 @@
 <translation id="6751826523481687655">Жұмыс өнімділігін қадағалау функциясы қосылды</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> үстелі өшіріліп, <ph name="RECEIVE_DESK" /> үстелімен біріктірілді.</translation>
 <translation id="6753390234084146956">қойындылар</translation>
+<translation id="6754918760968695779">Жылдам енгізу</translation>
 <translation id="6757237461819837179">Ешқандай медиамазмұн ойнатылып жатқан жоқ.</translation>
 <translation id="6760438044935091345">Ойын тақтасы</translation>
 <translation id="6768043681523654438">жад көлемі</translation>

@@ -501,6 +501,9 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> à <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+recherche+s</translation>
 <translation id="2778650143428714839">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Le pavé tactile intégré est désactivé. Utilisez votre clavier ou un autre dispositif de pointage pour confirmer la modification.
+
+Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
 <translation id="2785499565474703580">1 appareil connecté</translation>
 <translation id="2791421900609674576">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez maintenir le doigt pour retirer les recommandations.</translation>
@@ -598,6 +601,9 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3113492864356515707">Mettre en évidence l'article précédent sur l'étagère</translation>
 <translation id="311799651966070385">Fermer le coup de coude</translation>
 <translation id="3120421559657122717">Éteindre l'appareil?</translation>
+<translation id="3121411970001795539">Le pavé tactile intégré est désactivé, car une souris est connectée. Utilisez la souris ou le clavier pour confirmer la modification.
+
+Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3125690294288312932">Type de travaux et devoirs</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1469,7 +1475,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5975235751479998104">Faire défiler les fenêtres par l'avant</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
-<translation id="5982119059638483922">Appuyez sur Fn+Recherche ou Majuscule pour annuler.</translation>
 <translation id="5983567367406220847">En raison d'inactivité, le point d'accès sans fil a été désactivé.</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="5986723678596105470">Se joindre avec Google Meet</translation>
@@ -1711,6 +1716,7 @@ Nouvelle installation</translation>
 <translation id="6751826523481687655">Le suivi des performances est activé</translation>
 <translation id="6752912906630585008">Le bureau <ph name="REMOVED_DESK" /> a été supprimé et fusionné avec le bureau <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">onglets</translation>
+<translation id="6754918760968695779">Insertion rapide</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
 <translation id="6760438044935091345">Tableau de bord de jeu</translation>
 <translation id="6768043681523654438">stockage</translation>

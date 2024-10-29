@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">เปิดแบบออนไลน์</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1044891598689252897">เว็บไซต์จะทำงานตามปกติ</translation>
+<translation id="1070329623210597193">ไฟล์ที่เว็บไซต์นี้ดูหรือแก้ไขได้</translation>
 <translation id="1073417869336441572">ช่วยปรับปรุง Chrome โดยแจ้งให้เราทราบถึงเหตุผลที่คุณอนุญาตคุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">ใช้ Chrome โดยค่าเริ่มต้น</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6064125863973209585">การดาวน์โหลดที่เสร็จสมบูรณ์แล้ว</translation>
 <translation id="6071501408666570960">ระบบอาจนำคุณออกจากระบบเว็บไซต์นี้</translation>
+<translation id="6085954183010297841">ลบสิทธิ์การแก้ไขไฟล์ไหม <ph name="FILE" /></translation>
 <translation id="6120483543004435978">เมื่อเปิด เว็บไซต์จะขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้ เมื่อปิด เว็บไซต์จะไม่ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="6140839633433422817">คุณแน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ รวมถึงลบคุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>

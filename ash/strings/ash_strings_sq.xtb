@@ -500,6 +500,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> - <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+kërko+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">Blloku i integruar me prekje është çaktivizuar. Përdor tastierën ose një pajisje tjetër treguese për të konfirmuar ndryshimin.
+
+Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Dil nga modaliteti i regjistrimit</translation>
 <translation id="2785499565474703580">1 pajisje e lidhur</translation>
 <translation id="2791421900609674576">Do të shohësh rekomandime, në mënyrë që të vazhdosh aty ku e ke lënë. Mund të prekësh dhe të mbash shtypur për të hequr rekomandimet.</translation>
@@ -596,6 +599,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3113492864356515707">Thekso artikullin e mëparshëm në raft</translation>
 <translation id="311799651966070385">Mbyll shtytjen</translation>
 <translation id="3120421559657122717">Të fiket pajisja?</translation>
+<translation id="3121411970001795539">Blloku i integruar me prekje është çaktivizuar pasi është lidhur një mi. Përdor miun ose tastierën për të konfirmuar ndryshimin.
+
+Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Lloji i detyrave të klasës</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1466,7 +1472,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5975235751479998104">Lëviz para përmes dritareve</translation>
 <translation id="5978382165065462689">Po ndan kontrollin e ekranit përmes "Ndihmës në distancë".</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
-<translation id="5982119059638483922">Shtyp F + "Kërko" ose "Shift" për të anuluar.</translation>
 <translation id="5983567367406220847">Për shkak të mungesës së aktivitetit, zona e qasjes për internet është çaktivizuar.</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="5986723678596105470">Bashkohu me Google Meet</translation>
@@ -1708,6 +1713,7 @@ Instalim i ri</translation>
 <translation id="6751826523481687655">Gjurmimi i cilësisë së funksionimit është aktivizuar</translation>
 <translation id="6752912906630585008">Tavolina e punës <ph name="REMOVED_DESK" /> u hoq dhe u shkri me tavolinën e punës <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">skedat</translation>
+<translation id="6754918760968695779">Fut shpejt</translation>
 <translation id="6757237461819837179">Nuk po luhet asnjë media</translation>
 <translation id="6760438044935091345">Paneli i lojës</translation>
 <translation id="6768043681523654438">hapësira ruajtëse</translation>

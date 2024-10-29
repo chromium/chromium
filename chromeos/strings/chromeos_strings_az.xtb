@@ -1348,8 +1348,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7544853251252956727">Qarışdırın</translation>
 <translation id="7550715992156305117">Diaqnostika Rejimləri</translation>
 <translation id="7551123448725492271">Cihaz audio cihazdır.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> administratoru bu <ph name="DEVICE_TYPE" /> cihazının istifadə oluna biləcəyi vaxtı təyin edib.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" /><ph name="DAY" /> günü <ph name="TIME" /> radələrində bu cihazı yenidən istifadə edə biləcəksiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Skrinşotu Önizləyin</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7561759921596375678">Səs səviyyəsini aktiv edin</translation>

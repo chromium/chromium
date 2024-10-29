@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1240190568154816272">Съвети за Chrome</translation>
 <translation id="1242008676835033345">Вграден в <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Докоснете „Приложения &gt; Приложения по подразбиране“.</translation>
 <translation id="1272079795634619415">Стоп</translation>
 <translation id="1289742167380433257">Изображенията на тази страница бяха оптимизирани от Google с цел пестене на данни.</translation>
 <translation id="129382876167171263">Тук се показват файловете, запазени от уебсайтове</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Някои функции може да не работят. Сродните сайтове пак могат да използват „бисквитки“ на трети страни.</translation>
+<translation id="3922092564198021702">Отворете „Настройки“ на телефона си.</translation>
 <translation id="3933121352599513978">Свиване на нежеланите заявки (препоръчително)</translation>
 <translation id="3955193568934677022">Разрешаване на сайтовете да възпроизвеждат защитено съдържание (препоръчително)</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6207207788774442484">Изтриване на данните и нулиране на разрешенията</translation>
 <translation id="6231752747840485235">Да се деинсталира ли <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Докоснете „Приложение за браузър &gt; Chrome“.</translation>
 <translation id="6262191102408817757">Въз основа на последния ви раздел</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> са блокирани</translation>
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>

@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">আকাৰ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ক’ৰ্ড</translation>
 <translation id="1923956950274750765">মধ্যমীয়া অৰ্কিড</translation>
+<translation id="1926147969119007125">মুখাৱয়বৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা কাৰ্যটো পজ কৰক</translation>
 <translation id="1928932365747995741">কোনো পূর্বৱর্তী সম্পাদনা কৰিব পৰা পাঠ ক্ষেত্ৰ নাই</translation>
 <translation id="1964135212174907577">পৰৱৰ্তী অব্‌জেক্ট</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">পৰৱৰ্তী ফ’কাছ কৰিবলগীয়া বস্তুটোলৈ যাওক</translation>
 <translation id="2756452585631602151">এটা কাষ্টম লেবেল দিয়ক</translation>
 <translation id="2766299274563946262">কোনো কক্ষ বাকী নাই</translation>
+<translation id="2770947749427257887">স্ক্ৰ’ল ম’ডত সোমাওক</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">আপুনি পূৰ্বৱৰ্তী বস্তুটোলৈ যাবলৈ এটা আঙুলিৰে সোঁফালৰ পৰা বাওঁফাললৈ ছোৱাইপ কৰিবও পাৰে। এইটো এতিয়াই কৰি চাওক।</translation>
 <translation id="280499067616661124">পৃষ্ঠাটোত ChromeVoxৰে সন্ধান কৰক</translation>
@@ -339,6 +341,7 @@
 <translation id="311015743332597320">চাৰিটা আঙুলিৰে সোঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="3112457281078985179">ChromeVox অন বা অফ কৰিবলৈ, Control+Alt+Z ব্যৱহাৰ কৰক৷</translation>
 <translation id="3115800313647508384">স্ক্ৰীন অফ কৰিবনে?</translation>
+<translation id="3127625407966660979">শ্ৰুতলিপি সক্ৰিয় হৈ আছে</translation>
 <translation id="3131002934070407451">নম্বৰসমূহ এইদৰে পঢ়ক:</translation>
 <translation id="3134461040845705080">ৰীড্‌অন্‌লী</translation>
 <translation id="3137663468179739624">জলফাইৰঙী</translation>
@@ -402,6 +405,7 @@
 <translation id="3466530247399808663">অমান্য কী দবোৱা হৈছে</translation>
 <translation id="3468959318854349468">কোনো শিৰোনাম নাই</translation>
 <translation id="3469413619751135069">শেঁতা সেউজীয়া</translation>
+<translation id="3473744269398144689">শ্ৰুতলিপি আৰম্ভ কৰক</translation>
 <translation id="3490765818161916458">সূচীৰ গ্ৰিড</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{সোঁ-বন্ধনী}one{#টা সোঁ-বন্ধনী}other{#টা সোঁ-বন্ধনী}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -658,6 +662,7 @@
 <translation id="5263344797180442561">শিৰোমান২</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
 <translation id="5290220123487191192">আহক, আপুনি নিয়মীয়াকৈ ব্যৱহাৰ কৰিবলগীয়া কেইটামান নিৰ্দেশেৰে আৰম্ভ কৰোঁ। আপুনি সক্ৰিয় কৰিব খোজা বস্তুটো পালে এটা আঙুলিৰে স্ক্ৰীনখনত দুবাৰ টিপক। অব্যাহত ৰাখিবলৈ এতিয়াই দুবাৰ টিপক।</translation>
+<translation id="5291860916305032607">মুখাৱয়বৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা কাৰ্যটো পুনৰ আৰম্ভ কৰক</translation>
 <translation id="5302089807023311274">গ্ৰন্থপঞ্জীৰ প্ৰসংগ</translation>
 <translation id="530391007967514163">তলৰ পাঠটো নেভিগে'ট কৰিবলৈ শিৰোনামৰ জড়িয়তে পোনপটীয়াকৈ যাবলৈ চাওক।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, টেব</translation>
@@ -683,6 +688,7 @@
 <translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
 <translation id="5402367795255837559">ব্ৰেইল</translation>
 <translation id="5402791055281059602">কোনো মডেল সতর্কতা</translation>
+<translation id="5406272775687194041">টানি আনি এৰা কাৰ্যটো আৰম্ভ কৰক</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{ছেমিকলন}one{#টা ছেমিকলন}other{#টা ছেমিকলন}}</translation>
 <translation id="5420259671171615858">মেনুবোৰ সন্ধান কৰক</translation>
 <translation id="5435274640623994081">ইয়েৰক’ন লগ ইন সক্ষম কৰক</translation>
@@ -750,6 +756,7 @@
 <translation id="5824976764713185207">ল’ড কৰা সম্পূৰ্ণ হ’লে পৃষ্ঠাখন স্বয়ংক্ৰিয়ভাৱে পঢ়ক</translation>
 <translation id="5826479389509458994">শাৰী <ph name="ROW" /> স্তম্ভ <ph name="COL" /></translation>
 <translation id="5833044594931167190">কোনো ARIA লেণ্ডমার্ক নাই</translation>
+<translation id="584044465500042213">স্ক্ৰ’ল ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="5842625257683688671">কোনো পৰৱৰ্তী গ্ৰাফিক নাই</translation>
 <translation id="5847883414085148048">নিষ্ঠা</translation>
 <translation id="5850707923114094062">পিছ ফাললৈ পেন কৰক</translation>
@@ -952,6 +959,7 @@
 <translation id="7285387653379749618">তালিকা</translation>
 <translation id="7289186959554153431">শিৰোনাম ৩</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">টানি আনি এৰা কাৰ্যটো সমাপ্ত কৰক</translation>
 <translation id="7308519659008003150">কোনো পূৰ্বৱৰ্তী ফৰ্মৰ ক্ষেত্ৰ নাই</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">সহায়</translation>
@@ -1158,6 +1166,7 @@
 <translation id="8775203254697638994">আপুনি এখন ড্ৰপ ডাউন সূচীৰ পৰা এটা বস্তু বাছনি কৰিব লগা হোৱাৰ সময় থাকিব। সেইটো কৰিবলৈ, প্ৰথমে ছাৰ্চ + স্পেছ টিপি সূচীখন বিস্তাৰ কৰক। তাৰ পাছত কোনো বস্তু বাছনি কৰিবলৈ আপ আৰু ডাউন এৰ' কীসমূহ ব্যৱহাৰ কৰক। শেষত, ছাৰ্চ + স্পেছ টিপি সূচীখন সংকোচন কৰক।</translation>
 <translation id="8779057862865475116">কোনো পূর্বৱর্তী লিংক নাই</translation>
 <translation id="8796411681063377102">পৰৱৰ্তী স্তৰ ৩ৰ শিৰোনাম</translation>
+<translation id="8821891849214789910">শ্ৰুতলিপি বন্ধ কৰক</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" /> খন পৃষ্ঠাৰ <ph name="CURRENTPAGE" /> নম্বৰ পৃষ্ঠা</translation>
 <translation id="8825828890761629845">বেনাৰ</translation>
 <translation id="8851136666856101339">মুখ্য</translation>

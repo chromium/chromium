@@ -631,6 +631,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3208321278970793882">Aplikacja</translation>
 <translation id="3213571860604332401">Zapisz link jako zakładkę</translation>
 <translation id="3217205077783620295">Dźwięk jest włączony. Kliknij, by wyciszyć.</translation>
+<translation id="3218561536255328229">Naciśnij 5 razy klawisz Esc, aby włączyć touchpad</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Oszczędzanie baterii zostało wyłączone</translation>
@@ -1477,7 +1478,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="5975235751479998104">Przełączaj się do przodu między oknami</translation>
 <translation id="5978382165065462689">Udostępnianie sterowania ekranem przy użyciu pomocy zdalnej.</translation>
 <translation id="5980301590375426705">Zakończ sesję gościa</translation>
-<translation id="5982119059638483922">Aby anulować, naciśnij Fn + Wyszukaj lub Shift.</translation>
 <translation id="5983567367406220847">Z powodu braku aktywności hotspot został wyłączony.</translation>
 <translation id="598407983968395253">Użyj szablonu</translation>
 <translation id="5986723678596105470">Dołącz w Google Meet</translation>
@@ -1718,6 +1718,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6751826523481687655">Śledzenie wydajności jest włączone</translation>
 <translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
+<translation id="6754918760968695779">Szybkie wstawianie</translation>
 <translation id="6757237461819837179">Multimedia nie są odtwarzane</translation>
 <translation id="6760438044935091345">Panel gier</translation>
 <translation id="6768043681523654438">miejsce na dane</translation>

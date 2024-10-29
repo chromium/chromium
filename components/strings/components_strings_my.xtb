@@ -264,7 +264,6 @@
 <translation id="1446396933673057385">တိကျမှု စစ်ဆေးခြင်း</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ကီးများကို "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" ကီးများနှင့် အဘိဓာန်တူ တစ်ခုတည်းတွင် သတ်မှတ်၍မရပါ</translation>
-<translation id="1452803302401719440">သင့်မိဘရွေးထားသော ဆက်တင်များသည် အွန်လိုင်းတွင် သင့်ကို ယခု ပိုမိုလုံခြုံစေသည်</translation>
 <translation id="1455413310270022028">ခဲဖျက်</translation>
 <translation id="1458059624921545588">လူနှင့် လူအဖွဲ့အစည်း</translation>
 <translation id="1458140305240870199">အတွင်းခံအဝတ်အစား</translation>
@@ -2937,7 +2936,6 @@
 <translation id="6311642842034740437">တည်နေရာအမည်</translation>
 <translation id="6312113039770857350">ဝဘ်စာမျက်နှာ မရှိ</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> သို့ အပ်လုဒ်လုပ်သော ဖိုင်ကို ခဏရပ်ထားသည်</translation>
-<translation id="6316723751983724988">အသစ်- Chrome အတွက် Family Link ရွေးချယ်စရာများကို ဤနေရာတွင် လုပ်နိုင်သည်</translation>
 <translation id="63172326633386613">အများသုံးနိုင်မှု ဆက်တင်များ စီမံရန်</translation>
 <translation id="6321917430147971392">သင်၏ DNS ဆက်တင်များကို စစ်ကြည့်ပါ</translation>
 <translation id="6322182122604171028">Windows Hello ကို အသုံးပြု၍ မရပါ</translation>

@@ -1348,7 +1348,6 @@
 <translation id="7544853251252956727">隨機播放</translation>
 <translation id="7550715992156305117">診斷日常安排</translation>
 <translation id="7551123448725492271">裝置類型為音訊裝置。</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> 系統管理員已設定這部 <ph name="DEVICE_TYPE" /> 的可使用時間。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />你可以在<ph name="DAY" /><ph name="TIME" /> 再次使用這部裝置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">預覽螢幕截圖</translation>
 <translation id="7561454561030345039">這個動作是由系統管理員管理</translation>
 <translation id="7561759921596375678">開啟音量。</translation>

@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">pilkos spalvos</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5600027863942488546">Išbandytas klavišas <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tabuliavimo klavišas</translation>
 <translation id="5613201299517339763">Buvote atjungti</translation>
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5630438231335788050">bauhauzas</translation>
@@ -1348,8 +1349,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7544853251252956727">Maišyti</translation>
 <translation id="7550715992156305117">Diagnostikos veiksmų sekos</translation>
 <translation id="7551123448725492271">Įrenginys yra garso įrenginys.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> administratorius apribojo šio „<ph name="DEVICE_TYPE" />“ naudojimo laiką.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Šį įrenginį vėl galėsite naudoti <ph name="DAY" /> <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Peržiūrėti ekrano kopiją</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7561759921596375678">Įjungti garsumą</translation>

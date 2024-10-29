@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">ערבוב</translation>
 <translation id="7550715992156305117">תרחישי אבחון</translation>
 <translation id="7551123448725492271">המכשיר הוא התקן אודיו.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />אפשר יהיה להשתמש שוב במכשיר הזה <ph name="DAY" /> בשעה <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">התצוגה המקדימה של צילום המסך</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7561759921596375678">הפעלת השמע</translation>

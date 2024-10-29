@@ -264,7 +264,6 @@
 <translation id="1446396933673057385">Перевірка достовірності</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Ключі "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" не можна додати в той самий словник, що й ключі "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
-<translation id="1452803302401719440">Налаштування, які вибрали твої батьки, захищають тебе в Інтернеті</translation>
 <translation id="1455413310270022028">Гумка</translation>
 <translation id="1458059624921545588">Люди й суспільство</translation>
 <translation id="1458140305240870199">Спідня білизна</translation>
@@ -2937,7 +2936,6 @@
 <translation id="6311642842034740437">Назва місця</translation>
 <translation id="6312113039770857350">Веб-сторінка недоступна</translation>
 <translation id="6316110367871394043">Завантаження файлів у сервіс <ph name="CLOUD_PROVIDER" /> призупинено</translation>
-<translation id="6316723751983724988">Новинка: тут застосовуються налаштування Family Link для Chrome</translation>
 <translation id="63172326633386613">Керувати налаштуваннями доступності</translation>
 <translation id="6321917430147971392">Перевірте налаштування DNS</translation>
 <translation id="6322182122604171028">Не вдалося скористатися Windows Hello</translation>

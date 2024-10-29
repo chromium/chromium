@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="100421257800558142">Appuyer sur la flèche vers la droite</translation>
 <translation id="100506692671054486">aucune commande précédente</translation>
 <translation id="1009046985747440431">Appuyez sur la flèche vers le haut ou vers le bas pour parcourir les éléments, et sur la touche Entrée pour les activer</translation>
 <translation id="1011903154582639569">Trouver une touche, puis relever le doigt pour taper</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Bouton d'activation</translation>
 <translation id="1299774449519412690">Bleu ciel clair</translation>
 <translation id="1303806948938513162">Appuyez avec quatre doigts pour accéder aux menus ChromeVox</translation>
+<translation id="1304162325618937178">Appuyer sur la touche Espace</translation>
 <translation id="1313373992684326101">Passer à la section précédente. Exemples : barre d'état et Lanceur d'applications.</translation>
 <translation id="1315077335264761176">Se servir des gestes</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, case d'option désélectionnée de l'élément de menu</translation>
@@ -184,9 +186,11 @@
 <translation id="2197863150503783129">Lavallière</translation>
 <translation id="2199994615414171367">Objet Math précédent</translation>
 <translation id="2203046366315513658">Diminuer la valeur</translation>
+<translation id="2206580811360135054">Afficher ou masquer l'aperçu des fenêtres</translation>
 <translation id="2216790501338699346">URL du lien : <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Reculer d'un caractère</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
+<translation id="2239819015858077439">Appuyer sur la flèche vers le bas</translation>
 <translation id="2243633977138166243">Pour passer d'un menu à l'autre, appuyez sur la flèche vers la gauche ou vers la droite, puis sur Entrée pour activer</translation>
 <translation id="224426591676115802">Aucune donnée audio disponible dans la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Arrêt du mode d'apprentissage</translation>
@@ -493,6 +497,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{seconde}one{seconde}other{secondes}}</translation>
 <translation id="4161663686871496107">La fonctionnalité de commentaires audio ChromeVox est prête.</translation>
 <translation id="4176463684765177261">Désactivé</translation>
+<translation id="4176677444195790114">Glisser-déposer en cours…</translation>
 <translation id="4187322598335821254">Balayez l'écran vers le haut ou vers le bas pour vous déplacer ligne par ligne</translation>
 <translation id="4188530942454211480">Phrase précédente</translation>
 <translation id="4191918948604314587">Un bouton</translation>
@@ -540,6 +545,7 @@
 <translation id="4432457053224379116">Rouge indien</translation>
 <translation id="4432896207833262240">Contenu marqué</translation>
 <translation id="4437615272777527928">Saisissez le texte à rechercher dans les menus. Utilisez les flèches vers le haut et vers le bas pour parcourir les résultats. Utilisez les flèches vers la gauche et vers la droite pour déplacer le curseur de texte et passer d'un menu à l'autre.</translation>
+<translation id="4441677939526091190">Appuyer sur la flèche vers le haut</translation>
 <translation id="4453530046591759283">Pour accéder à d'autres parties de l'écran, comme les barres d'outils ou la barre d'état système, appuyez sur Ctrl+F1. F1 est la première touche à droite de la touche Échap.</translation>
 <translation id="4457472090507035117">Sélectionner la voix actuelle :</translation>
 <translation id="4476183483923481720">Nouvelle ligne</translation>
@@ -718,6 +724,7 @@
 <translation id="5653397561111110475">Utiliser les fonctionnalités d'accessibilité de l'écran tactile du Chromebook</translation>
 <translation id="5655682562155942719">Commandes d'accès direct</translation>
 <translation id="56637627897541303">Zone de texte</translation>
+<translation id="5666746275818170484">Appuyer sur la flèche vers la gauche</translation>
 <translation id="5669637233317991674">Appuyez sur Recherche+Flèche vers la droite ou sur Recherche+Flèche vers la gauche pour parcourir cette leçon</translation>
 <translation id="5677240841070992068">Position actuelle</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -924,6 +931,7 @@
 <translation id="7161771961008409533">Bouton pop-up</translation>
 <translation id="7167657087543110">écho des caractères</translation>
 <translation id="7173102181852295013">Bleu nuit</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Développé</translation>
 <translation id="7209751026933045237">Aucun curseur suivant</translation>
 <translation id="7218782500591078391">Jaune paille</translation>
@@ -1096,6 +1104,7 @@
 <translation id="8378855320830505539">Section</translation>
 <translation id="8382679411218029383">Saisie semi-automatique intégrée ou sous forme de liste</translation>
 <translation id="8394908167088220973">Contenu multimédia : lecture/pause</translation>
+<translation id="8409502156784390079">Mode défilement actif</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428603554127842284">niveau <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1173,6 +1182,7 @@
 <translation id="8986362086234534611">Retirer</translation>
 <translation id="8989104346085848538">Pour arrêter la diffusion vocale ChromeVox, appuyez sur la touche Ctrl.</translation>
 <translation id="9014206344398081366">Tutoriel ChromeVox</translation>
+<translation id="9034592733577768445">Contrôle par le visage mis en pause</translation>
 <translation id="9040132695316389094">Titre 1</translation>
 <translation id="9061884144798498064">Sélectionner un tableau braille à huit points :</translation>
 <translation id="9063946545000394379">passer au caractère précédent</translation>

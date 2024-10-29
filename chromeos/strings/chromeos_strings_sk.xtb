@@ -1348,8 +1348,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7544853251252956727">Náhodne prehrávať</translation>
 <translation id="7550715992156305117">Diagnostické postupy</translation>
 <translation id="7551123448725492271">Zariadenie je audio zariadenie.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Správca <ph name="MANAGER" /> nastavil, kedy môže byť toto zariadenie <ph name="DEVICE_TYPE" /> používané.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Toto zariadenie budete môcť znova použiť <ph name="DAY" /> o <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Zobraziť ukážku snímky obrazovky</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7561759921596375678">Zapnutie zvuku</translation>

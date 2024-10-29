@@ -501,6 +501,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />—<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
+<translation id="2781658180588759579">Курама сенсордук такта өчүрүлдү. Өзгөртүүнү баскычтоп же башка көрсөтүүчү түзмөк менен ырастаңыз.
+
+Болбосо, курама сенсордук такта <ph name="TIMEOUT_SECONDS" /> кийин кайра иштетилет.</translation>
 <translation id="2782591952652094792">Сүрөткө тартуу режиминен чыгуу</translation>
 <translation id="2785499565474703580">1 түзмөк туташып турат</translation>
 <translation id="2791421900609674576">Токтогон жериңизден улантуу үчүн сунуштарды көрөсүз. Сунуштарды өчүрүү үчүн коё бербей басып туруңуз.</translation>
@@ -598,6 +601,9 @@
 <translation id="3113492864356515707">Текчедеги мурунку нерсени бөлүп көрсөтүү</translation>
 <translation id="311799651966070385">Эстетүүнү жабуу</translation>
 <translation id="3120421559657122717">Түзмөк өчүрүлсүнбү?</translation>
+<translation id="3121411970001795539">Чычкан туташтырылгандыктан, курама сенсордук такта өчүрүлдү. Өзгөртүүнү чычкан же баскычтоп менен ырастаңыз.
+
+Болбосо, курама сенсордук такта <ph name="TIMEOUT_SECONDS" /> кийин кайра иштетилет.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Класс ишинин түрү</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1470,7 +1476,6 @@
 <translation id="5975235751479998104">Кийинки терезеге өтүү</translation>
 <translation id="5978382165065462689">Алыскы жардамчы аркылуу экраныңыздын көзөмөлүн бөлүшүүдө.</translation>
 <translation id="5980301590375426705">Конокту чыгаруу</translation>
-<translation id="5982119059638483922">Өчүрүп коюу үчүн Fn+Search же Shift баскычтарын басыңыз.</translation>
 <translation id="5983567367406220847">Колдонулбагандыктан, байланыш түйүнү өчүрүлдү.</translation>
 <translation id="598407983968395253">Үлгүнү колдонуу</translation>
 <translation id="5986723678596105470">Google Meet аркылуу кошулуу</translation>
@@ -1712,6 +1717,7 @@
 <translation id="6751826523481687655">Майнаптуулукка көз салуу күйгүзүлгөн</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> иш тактасы өчүрүлдү жана <ph name="RECEIVE_DESK" /> иш тактасы менен бириктирилди</translation>
 <translation id="6753390234084146956">өтмөктөр</translation>
+<translation id="6754918760968695779">Ыкчам киргизүү</translation>
 <translation id="6757237461819837179">Медиа ойнотулган жок</translation>
 <translation id="6760438044935091345">Оюн тактасы</translation>
 <translation id="6768043681523654438">сактагыч</translation>

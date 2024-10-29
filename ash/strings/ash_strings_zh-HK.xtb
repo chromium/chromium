@@ -1147,6 +1147,7 @@
 <translation id="4902797682482387055">建議專注的工作</translation>
 <translation id="490375751687810070">垂直</translation>
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">這是實驗版 AI 功能，提供的建議不一定符合需求。</translation>
 <translation id="491504982845934899">喺裝置設定完 <ph name="NETWORK_NAME" /> 之後啟用</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
@@ -1475,7 +1476,6 @@
 <translation id="5975235751479998104">向前循環切換視窗</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
-<translation id="5982119059638483922">按下 Fn + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="5983567367406220847">由於閒置過久，因此熱點已關閉。</translation>
 <translation id="598407983968395253">使用範本</translation>
 <translation id="5986723678596105470">透過 Google Meet 加入</translation>
@@ -1716,6 +1716,7 @@
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
 <translation id="6753390234084146956">分頁</translation>
+<translation id="6754918760968695779">快速插入</translation>
 <translation id="6757237461819837179">目前沒有播放任何媒體</translation>
 <translation id="6760438044935091345">遊戲資訊主頁</translation>
 <translation id="6768043681523654438">儲存空間</translation>
@@ -2007,6 +2008,7 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7807067443225230855">搜尋和助理功能</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">㩒一下鍾意就可以俾正評呢個建議</translation>
 <translation id="7825412704590278437">來自即將開始的日曆活動</translation>
 <translation id="7829386189513694949">訊號強大</translation>
 <translation id="7830453190047749513">你可為「<ph name="PERIPHERAL_NAME" />」個人化按鈕操作、游標速度等</translation>
@@ -2161,6 +2163,7 @@
 <translation id="830868413617744215">測試版</translation>
 <translation id="8314772463905284467">啟用咗 Caps Lock 鍵</translation>
 <translation id="8315514906653279104">正在開啟…</translation>
+<translation id="8319634750346253957">㩒一下唔鍾意就可以俾負評呢個建議</translation>
 <translation id="8331351032546853669">等待下載</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>

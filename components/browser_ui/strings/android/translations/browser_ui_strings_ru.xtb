@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Открыть в Интернете</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1044891598689252897">Сайты будут работать в нормальном режиме</translation>
+<translation id="1070329623210597193">Файлы, которые этот сайт может открывать или редактировать</translation>
 <translation id="1073417869336441572">Помогите нам улучшить Chrome – расскажите, почему вы разрешили сторонние файлы cookie. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Используйте Chrome по умолчанию</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1240190568154816272">Советы по работе с Chrome</translation>
 <translation id="1242008676835033345">Встроено на сайте <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Выберите "Приложения &gt; Приложения по умолчанию".</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1289742167380433257">В целях экономии трафика изображения на странице были оптимизированы.</translation>
 <translation id="129382876167171263">Здесь появятся файлы, сохраненные сайтами.</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Некоторые функции могут не работать. При этом связанные сайты по-прежнему смогут использовать сторонние файлы cookie.</translation>
+<translation id="3922092564198021702">Откройте настройки на телефоне.</translation>
 <translation id="3933121352599513978">Свернуть ненужные запросы (рекомендуется)</translation>
 <translation id="3955193568934677022">Разрешить сайтам воспроизводить защищенный контент (рекомендуется)</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6064125863973209585">Завершенные скачивания</translation>
 <translation id="6071501408666570960">Возможно, вам потребуется повторно войти в аккаунт на этом сайте.</translation>
+<translation id="6085954183010297841">Удалить разрешение на редактирование файлов? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Когда этот параметр включен, сайтам разрешено запрашивать информацию о том, используете ли вы сейчас устройство. Когда параметр отключен, сайтам запрещен доступ к таким сведениям.</translation>
 <translation id="6140839633433422817">Разрешения будут сброшены, а файлы cookie и другие данные этого сайта – удалены.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
 <translation id="6207207788774442484">Удалить данные и сбросить разрешения</translation>
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
+<translation id="6234351944623978659">Нажмите "Браузер &gt; Chrome".</translation>
 <translation id="6262191102408817757">На основе данных последней использованной вкладки</translation>
 <translation id="6262279340360821358">Заблокировано: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>

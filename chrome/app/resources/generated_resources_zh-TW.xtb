@@ -428,6 +428,7 @@
 <translation id="1291421198328146277">重設按鍵</translation>
 <translation id="1292849930724124745">插入智慧型卡片才能保持登入狀態</translation>
 <translation id="1293264513303784526">USB-C 裝置 (左側連接埠)</translation>
+<translation id="1293360286536751243">「<ph name="MAIN_GESTURE" />」可能與「<ph name="CONFLICTING_GESTURE_ONE" />」、「<ph name="CONFLICTING_GESTURE_TWO" />」和「<ph name="CONFLICTING_GESTURE_THREE" />」相似。如果可以，請選擇其他表情。</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1294807885394205587">這項程序可能需要幾分鐘才能完成。正在啟動容器管理工具。</translation>
 <translation id="12951065153783848">你的帳戶是由貴機構管理</translation>
@@ -1166,7 +1167,6 @@
 <translation id="1809734401532861917">將我的書籤、歷史記錄、密碼和其他設定新增至 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">如要在手機上使用儲存的密碼，請掃描 QR code 下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
 <translation id="1810366086647840386">映像檔伺服器</translation>
-<translation id="1810391395243432441">使用螢幕鎖定功能保護密碼</translation>
 <translation id="1811908311154949291">無痕模式下的 Fenced Frame：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1812284620455788548">投放 <ph name="TAB_NAME" /></translation>
@@ -2614,6 +2614,7 @@
 <translation id="2806372837663997957">你試圖分享檔案的目標裝置並未接受檔案分享</translation>
 <translation id="2806891468525657116">捷徑已經存在</translation>
 <translation id="2807517655263062534">你下載的檔案會顯示在這裡</translation>
+<translation id="2808985063107661499">「<ph name="MAIN_GESTURE" />」可能與「<ph name="CONFLICTING_GESTURE_ONE" />」和「<ph name="CONFLICTING_GESTURE_TWO" />」相似。如果可以，請選擇其他表情。</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
 <translation id="2812171980080389735">儲存的網路和密碼，方便即時連線</translation>
@@ -3202,7 +3203,6 @@
 <translation id="3262261769033093854">禁止網站擷取及使用滑鼠輸入內容</translation>
 <translation id="3262336253311870293">這是由 <ph name="DOMAIN" /> 管理的帳戶，因此你將不會登出自己的 Google 帳戶。系統將不再同步書籤、歷史記錄、密碼和其他設定，但先前已同步的資料仍儲存在 Google 帳戶，你可以前往 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
 <translation id="3262986719682892278">檔案過大</translation>
-<translation id="3264239161215962624">如要投放，請前往<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />授予 Chrome 存取權</translation>
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
@@ -3804,7 +3804,6 @@
 <translation id="3699624789011381381">電子郵件地址</translation>
 <translation id="3699920817649120894">要停用同步處理和個人化功能嗎？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
-<translation id="3700966190175650601">你正在使用指紋填入密碼</translation>
 <translation id="3700993174159313525">禁止網站追蹤攝影機位置</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">在密碼因資料侵害事件而外洩時發出警告</translation>
@@ -4344,6 +4343,7 @@
 <translation id="404894744863342743">下載的檔案使用完畢之後，請務必刪除，避免這部裝置的其他使用者知道你的密碼。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
 <translation id="4050225813016893843">驗證方式</translation>
+<translation id="4050379682069019014">「<ph name="MAIN_GESTURE" />」可能與「<ph name="CONFLICTING_GESTURE" />」相似。如果可以，請選擇其他表情。</translation>
 <translation id="4050534976465737778">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (開啟狀態區，再啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">如要切換到上次使用的輸入法，請按下 <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">搜尋鍵 + 向右鍵</translation>
@@ -5003,7 +5003,6 @@
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同，或版本較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存到你的 Google 帳戶，請登入並開啟同步功能。</translation>
-<translation id="4556069465387849460">你正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> 與你分享了「<ph name="WEBSITE_NAME" />」的密碼。你可以在登入表單中使用。</translation>
 <translation id="4558426062282641716">已要求自動啟動權限</translation>
 <translation id="4558542033859106586">正在使用「<ph name="TARGET_APP" />」開啟</translation>
@@ -5261,7 +5260,6 @@
 <translation id="4744260496658845719">鍵盤背光亮度</translation>
 <translation id="4744268813103118742">前往網站</translation>
 <translation id="4744571849207727284">Excel</translation>
-<translation id="4744816391336495134">你隨時可以使用指紋驗證身分，使用已儲存的密碼</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="4745500401920035244">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。你無法再存取這個設定檔，但仍可將其移除</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
@@ -8434,7 +8432,6 @@
 <translation id="7068591156533195518">「<ph name="APP_NAME" />」和另外幾個應用程式已禁止在 <ph name="DEVICE_TYPE" /> 上使用</translation>
 <translation id="706949303827219454">在新分頁中開啟安全性設定頁面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
-<translation id="7070144569727915108">系統設定</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7072078320324181561">系統服務和具有位置存取權的應用程式與網站可使用你的位置資訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -10178,7 +10175,6 @@
 <translation id="8322814362483282060">系統已封鎖這個網頁存取你的麥克風。</translation>
 <translation id="8323167517179506834">輸入網址</translation>
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
-<translation id="8323505966575306467">為密碼提供額外防護</translation>
 <translation id="8323518750352551353">要另外建立新設定檔嗎？</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
@@ -10647,7 +10643,6 @@
 <translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
 <translation id="8663099077749055505">一律禁止在 <ph name="HOST" /> 自動下載多個檔案</translation>
 <translation id="8664389313780386848">檢視網頁原始碼(&amp;V)</translation>
-<translation id="8664603206102030248">如果選取已指派的手勢，該手勢就會從原始動作中移除</translation>
 <translation id="8665110742939124773">輸入的存取碼有誤，請再試一次。</translation>
 <translation id="8665180165765946056">備份完成</translation>
 <translation id="866611985033792019">信任這個用於識別電子郵件使用者的憑證</translation>

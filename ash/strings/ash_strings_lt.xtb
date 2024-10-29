@@ -631,6 +631,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3208321278970793882">Programa</translation>
 <translation id="3213571860604332401">Išsaugoti nuorodą kaip žymę</translation>
 <translation id="3217205077783620295">Garsumas įjungtas; perjungiant garsas bus nutildytas.</translation>
+<translation id="3218561536255328229">Paspauskite „Esc“ penkis kartus, kad įgalintumėte jutiklinę dalį</translation>
 <translation id="3226991577105957773">Dar <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3233611303007751344">Akumuliatoriaus tausojimo priemonė išjungta</translation>
@@ -1477,7 +1478,6 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5975235751479998104">Pereiti pirmyn per langus</translation>
 <translation id="5978382165065462689">Leidžiama valdyti jūsų ekraną naudojant Nuotolinę pagalbą.</translation>
 <translation id="5980301590375426705">Išeiti iš sveč. rež.</translation>
-<translation id="5982119059638483922">Jei norite atšaukti, paspauskite „Fn“ + paieškos klavišą arba „Fn“ + „Shift“.</translation>
 <translation id="5983567367406220847">Dėl neaktyvumo viešosios interneto prieigos taškas išjungtas.</translation>
 <translation id="598407983968395253">Naudoti šabloną</translation>
 <translation id="5986723678596105470">Prisijungti prie „Google Meet“</translation>
@@ -1719,6 +1719,7 @@ Naujas įdiegimas</translation>
 <translation id="6751826523481687655">Našumo stebėjimas įjungtas</translation>
 <translation id="6752912906630585008">Darbalaukis „<ph name="REMOVED_DESK" />“ pašalintas ir sujungtas su darbalaukiu „<ph name="RECEIVE_DESK" />“</translation>
 <translation id="6753390234084146956">skirtukų</translation>
+<translation id="6754918760968695779">Spartusis įterpimas</translation>
 <translation id="6757237461819837179">Medija neleidžiama</translation>
 <translation id="6760438044935091345">Žaidimų informacijos suvestinė</translation>
 <translation id="6768043681523654438">saugykla</translation>

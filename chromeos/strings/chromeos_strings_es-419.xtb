@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">más</translation>
 <translation id="3310640316857623290">La latencia de DNS supera significativamente el umbral permitido</translation>
 <translation id="3321030238473337787">Velocidad de reproducción</translation>
+<translation id="3327613592010997943">Desbloqueo de este dispositivo: <ph name="DAY" />, <ph name="TIME" /></translation>
 <translation id="3328783797891415197">Prueba en ejecución</translation>
 <translation id="3340011300870565703">Nivel de batería del auricular derecho <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Estado del portal</translation>
 <translation id="5763838252932650682">Se está reiniciando y actualizando <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumentar el brillo de la pantalla</translation>
+<translation id="5775340474232476653">El profesor finalizó la clase</translation>
 <translation id="5779818640587041940">Mantener la pantalla encendida durante la grabación</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
@@ -1348,8 +1350,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7544853251252956727">Reproducir aleatoriamente</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />El administrador de <ph name="MANAGER" /> estableció cuándo se puede usar este dispositivo <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Podrás volver a usar este dispositivo <ph name="DAY" /> a las <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Obtener vista previa de la captura de pantalla</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7561759921596375678">Activar el volumen</translation>
@@ -1358,6 +1358,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="757747079855995705">piedra</translation>
 <translation id="7590883480672980941">Configuración de entradas</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">El administrador de <ph name="MANAGER" /> estableció cuándo se puede usar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Cambia la posición con el mouse o las teclas de flecha.</translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Más información en el Centro de ayuda</translation>
@@ -1463,6 +1464,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8088963492174775412">Presiona para grabar</translation>
 <translation id="8094062939584182041">Permitir que Google te envíe un correo electrónico sobre este problema</translation>
 <translation id="8104083085214006426">Estás usando una red abierta y no segura</translation>
+<translation id="8110942816572072814">Tu profesor bloqueó tu pantalla</translation>
 <translation id="811820734797650957">(Android) se puede hacer ping a la puerta de enlace</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>

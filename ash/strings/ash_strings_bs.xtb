@@ -501,9 +501,9 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
-<translation id="2781658180588759579">Ugrađena dodirna podloga je onemogućena. Upotrijebite tipkovnicu ili drugi pokazivački uređaj da biste potvrdili promjenu.
+<translation id="2781658180588759579">Ugrađena dodirna podloga je onemogućena. Potvrdite promjenu pomoću tastature ili drugog uređaja za pokazivanje.
 
-U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIMEOUT_SECONDS" />.</translation>
+U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Izlaz iz načina rada za snimanje</translation>
 <translation id="2785499565474703580">Povezan je 1 uređaj</translation>
 <translation id="2791421900609674576">Vidjet ćete preporuke da možete nastaviti gdje ste stali.  Možete dodirnuti i zadržati da uklonite preporuke.</translation>
@@ -601,9 +601,9 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="3113492864356515707">Istaknite prethodnu stavku na polici</translation>
 <translation id="311799651966070385">Zatvorite podsjećanje</translation>
 <translation id="3120421559657122717">Isključiti uređaj?</translation>
-<translation id="3121411970001795539">Ugrađena dodirna podloga onemogućena je jer je povezan miš. Upotrijebite miša ili tipkovnicu da biste potvrdili promjenu.
+<translation id="3121411970001795539">Ugrađena dodirna podloga je onemogućena jer je povezan miš. Potvrdite promjenu pomoću miša ili tastature.
 
-U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIMEOUT_SECONDS" />.</translation>
+U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Vrsta školskog zadatka</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -1148,7 +1148,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4902797682482387055">Predloženi zadatak na koji se trebate fokusirati</translation>
 <translation id="490375751687810070">Vertikalno</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% baterije</translation>
-<translation id="4911191962826748981">Ovo je eksperimentalna AI značajka i neće uvijek biti bez pogrešaka.</translation>
+<translation id="4911191962826748981">Ovo je eksperimentalna AI funkcija i ponekad može pogriješiti.</translation>
 <translation id="491504982845934899">Aktivirajte nakon što postavite uređaj – <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Jako</translation>
 <translation id="4918086044614829423">Prihvati</translation>
@@ -1478,7 +1478,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5975235751479998104">Kretanje kroz prozore naprijed</translation>
 <translation id="5978382165065462689">Dijeljenje kontrole nad vašim ekranom putem pomoći na daljinu.</translation>
 <translation id="5980301590375426705">Napusti sesiju gosta</translation>
-<translation id="5982119059638483922">Da otkažete, pritisnite Fn i tipku za pretraživanje ili Shift.</translation>
 <translation id="5983567367406220847">Pristupna tačka je isključena zbog neaktivnosti.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="5986723678596105470">Pridružite se putem Google Meeta</translation>
@@ -1720,6 +1719,7 @@ Nova instalacija</translation>
 <translation id="6751826523481687655">Uključeno je praćenje performansi</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena s radnom površinom <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">kartice</translation>
+<translation id="6754918760968695779">Brzo umetanje</translation>
 <translation id="6757237461819837179">Medijski fajlovi se ne reproduciraju</translation>
 <translation id="6760438044935091345">Kontrolna tabla igre</translation>
 <translation id="6768043681523654438">pohrana</translation>
@@ -2011,7 +2011,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7807067443225230855">Pretraživanje i Asistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Palac gore poslao bi povratne informacije da vam se prijedlog sviđa</translation>
+<translation id="7823946889603375473">Oznaka "Sviđa mi se" šalje povratne informacije o tome da vam se sviđa ovaj prijedlog</translation>
 <translation id="7825412704590278437">U vezi s predstojećim događajem u kalendaru</translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7830453190047749513">Možete personalizirati radnje dugmadi, brzinu kursora i drugo za uređaj <ph name="PERIPHERAL_NAME" /></translation>
@@ -2166,7 +2166,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Uključena su velika slova</translation>
 <translation id="8315514906653279104">Uključivanje…</translation>
-<translation id="8319634750346253957">Palac dolje poslao bi povratne informacije da vam se taj prijedlog ne sviđa</translation>
+<translation id="8319634750346253957">Oznaka "Ne sviđa mi se" šalje povratne informacije o tome da vam se ne sviđa ovaj prijedlog</translation>
 <translation id="8331351032546853669">Preuzimanje je na čekanju</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

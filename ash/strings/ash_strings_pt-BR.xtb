@@ -501,6 +501,9 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + pesquisa + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">O touchpad integrado está desativado. Use o teclado ou outro dispositivo apontador para confirmar a mudança.
+
+Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Sair do modo de captura</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, toque na tela e a mantenha pressionada.</translation>
@@ -598,6 +601,9 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3113492864356515707">Destacar item anterior na estante</translation>
 <translation id="311799651966070385">Fechar alerta</translation>
 <translation id="3120421559657122717">Desligar dispositivo?</translation>
+<translation id="3121411970001795539">O touchpad integrado está desativado porque um mouse está conectado. Use o mouse ou o teclado para confirmar a mudança.
+
+Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de atividade</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -625,6 +631,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3213571860604332401">Salvar link como favorito</translation>
 <translation id="3217205077783620295">O som está ativado. Alterná-lo desativará o som.</translation>
+<translation id="3218561536255328229">Pressione Esc cinco vezes para ativar o touchpad</translation>
 <translation id="3226991577105957773">Mais <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3233611303007751344">"Economia de bateria" desativada</translation>
@@ -1470,7 +1477,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5975235751479998104">Navegar pelas janelas</translation>
 <translation id="5978382165065462689">Compartilhando o controle de sua tela por meio da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sessão visit.</translation>
-<translation id="5982119059638483922">Pressione Fn+Pesquisar ou Shift para cancelar.</translation>
 <translation id="5983567367406220847">Devido à inatividade, o ponto de acesso foi desativado.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="5986723678596105470">Entrar com o Google Meet</translation>
@@ -1712,6 +1718,7 @@ Nova instalação</translation>
 <translation id="6751826523481687655">O acompanhamento de performance está ativado</translation>
 <translation id="6752912906630585008">Espaço de trabalho <ph name="REMOVED_DESK" /> removido e integrado ao <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">guias</translation>
+<translation id="6754918760968695779">Inserção multimídia</translation>
 <translation id="6757237461819837179">Nenhuma mídia em reprodução</translation>
 <translation id="6760438044935091345">Painel de jogo</translation>
 <translation id="6768043681523654438">armazenamento</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">още</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
+<translation id="3327613592010997943">Ще можете да използвате това устройство отново <ph name="DAY" /> в <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">настройките</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Състояние на портала</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> се рестартира и актуализира</translation>
 <translation id="576835345334454681">Увеличаване на яркостта на дисплея</translation>
+<translation id="5775340474232476653">Преподавателят ви е приключил урока</translation>
 <translation id="5779818640587041940">Предотвратяване на изключването на екрана по време на запис</translation>
 <translation id="57838592816432529">Заглушаване</translation>
 <translation id="5784136236926853061">Голямо забавяне на HTTP</translation>
@@ -1348,8 +1350,6 @@
 <translation id="7544853251252956727">Разбъркване</translation>
 <translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7551123448725492271">Устройството е за аудио.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Ще можете да го използвате отново <ph name="DAY" /> в <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Визуализация на екранната снимка</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7561759921596375678">Включване на звука</translation>
@@ -1358,6 +1358,7 @@
 <translation id="757747079855995705">камък</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7613724632293948900">Преместете с мишката или клавишите със стрелки.</translation>
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
@@ -1463,6 +1464,7 @@
 <translation id="8088963492174775412">Натиснете, за да запишете</translation>
 <translation id="8094062939584182041">Разрешаване на Google да ви изпраща имейли за този проблем</translation>
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
+<translation id="8110942816572072814">Преподавателят ви е заключил екрана ви</translation>
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>

@@ -1147,6 +1147,7 @@
 <translation id="4902797682482387055">फोकस गर्न सिफारिस गरिएको कार्य</translation>
 <translation id="490375751687810070">ठाडो</translation>
 <translation id="490788395437447240">ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
+<translation id="4911191962826748981">यो परीक्षणका क्रममा रहेको AI सुविधा भएकाले यसले सधैँ सही जानकारी नदिन सक्छ।</translation>
 <translation id="491504982845934899">डिभाइस सेटअप गरेपछि <ph name="NETWORK_NAME" /> एक्टिभेट गर्नुहोस्</translation>
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="4918086044614829423">स्वीकार्नुहोस्</translation>
@@ -1476,7 +1477,6 @@
 <translation id="5975235751479998104">विन्डोहरू सुल्टो क्रमअनुसार पालैपालो हेर्नुहोस्</translation>
 <translation id="5978382165065462689">रिमोट सहायता मार्फत तपाईँको स्क्रीन नियन्त्रण साझेदारी गर्दै।</translation>
 <translation id="5980301590375426705">अतिथि सत्रबाट निस्कनु…</translation>
-<translation id="5982119059638483922">रद्द गर्न Fn र सर्च वा सिफ्ट की थिच्नुहोस्।</translation>
 <translation id="5983567367406220847">कुनै पनि क्रियाकलाप नगरिएको हुनाले हटस्पट अफ गरिएको छ।</translation>
 <translation id="598407983968395253">टेम्प्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="5986723678596105470">Google Meet मार्फत सामेल हुनुहोस्</translation>
@@ -1718,6 +1718,7 @@
 <translation id="6751826523481687655">प्रदर्शन ट्रेस गरिँदै छ</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>
 <translation id="6753390234084146956">ट्याब</translation>
+<translation id="6754918760968695779">क्विक इन्सर्ट</translation>
 <translation id="6757237461819837179">कुनै मिडिया प्ले भइरहेको छैन</translation>
 <translation id="6760438044935091345">गेम ड्यासबोर्ड</translation>
 <translation id="6768043681523654438">भण्डारण</translation>
@@ -2009,6 +2010,7 @@
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7807067443225230855">खोज र सहायक</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> र <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">तपाईं थम्ज अप बटनमा क्लिक गरेर आफूलाई यो सुझाव मन परेको जनाउने प्रतिक्रिया पेस गर्न सक्नुहुन्छ</translation>
 <translation id="7825412704590278437">पात्रोमा सेट गरिएको आगामी कार्यक्रमबाट लिइएको</translation>
 <translation id="7829386189513694949">बलियो सिग्नल</translation>
 <translation id="7830453190047749513">तपाईं <ph name="PERIPHERAL_NAME" /> का लागि बटनमार्फत गरिने कारबाही, कर्सरको गतिलगायतका कुराहरू पर्सनलाइज गर्न सक्नुहुन्छ</translation>
@@ -2163,6 +2165,7 @@
 <translation id="830868413617744215">बेटा</translation>
 <translation id="8314772463905284467">क्याप्स लक अन छ</translation>
 <translation id="8315514906653279104">अन हुँदै छ…</translation>
+<translation id="8319634750346253957">तपाईं थम्ज डाउन बटनमा क्लिक गरेर आफूलाई यो सुझाव मन नपरेको जनाउने प्रतिक्रिया पेस गर्न सक्नुहुन्छ</translation>
 <translation id="8331351032546853669">डाउनलोड गर्न बाँकी छ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

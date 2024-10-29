@@ -264,7 +264,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1446396933673057385">Verificação da precisão</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Não é possível definir as chaves "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" no mesmo dicionário que as chaves "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
-<translation id="1452803302401719440">As definições que um dos teus pais escolheu estão agora a melhorar a tua segurança online</translation>
 <translation id="1455413310270022028">Borracha</translation>
 <translation id="1458059624921545588">Pessoas e sociedade</translation>
 <translation id="1458140305240870199">Roupa interior</translation>
@@ -2937,7 +2936,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6311642842034740437">Localização com nome</translation>
 <translation id="6312113039770857350">Página Web não disponível</translation>
 <translation id="6316110367871394043">O carregamento do ficheiro para o <ph name="CLOUD_PROVIDER" /> foi pausado</translation>
-<translation id="6316723751983724988">Novo: as opções do Family Link para o Chrome aplicam-se aqui</translation>
 <translation id="63172326633386613">Gerir definições de acessibilidade</translation>
 <translation id="6321917430147971392">Rever as definições do DNS</translation>
 <translation id="6322182122604171028">Não foi possível utilizar o Windows Hello</translation>

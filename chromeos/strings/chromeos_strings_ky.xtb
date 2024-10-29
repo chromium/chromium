@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">Аралаш</translation>
 <translation id="7550715992156305117">Мүчүлүштүктөрдү аныктоо программалары</translation>
 <translation id="7551123448725492271">Түзмөк — аудио түзмөк.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> администратору ушул <ph name="DEVICE_TYPE" /> түзмөгүн колдонууга боло турган убакытты көрсөттү.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Бул түзмөктү <ph name="DAY" /> саат <ph name="TIME" /> колдоно аласыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Скриншотту алдын ала көрүү</translation>
 <translation id="7561454561030345039">Бул аракетти администраторуңуз башкарат</translation>
 <translation id="7561759921596375678">Үнүн күйгүзүү</translation>

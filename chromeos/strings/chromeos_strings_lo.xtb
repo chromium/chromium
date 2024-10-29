@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">ເພີ່ມເຕີມ</translation>
 <translation id="3310640316857623290">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ຫຼາຍ</translation>
 <translation id="3321030238473337787">ຄວາມໄວການຫຼິ້ນ</translation>
+<translation id="3327613592010997943">ທ່ານຈະສາມາດໃຊ້ອຸປະກອນນີ້ໄດ້ອີກຄັ້ງ <ph name="DAY" /> ເວລາ <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">ກຳລັງດຳເນີນການທົດສອບຢູ່</translation>
 <translation id="3340011300870565703">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຂວາເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">ເທົາ</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="5600027863942488546">ທົດສອບປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
+<translation id="5606865426897221650">ແຖບ</translation>
 <translation id="5613201299517339763">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5630438231335788050">ສະຖາບັນເບົາເຮົາສ໌</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">ສະຖານະຜອດໂທລ</translation>
 <translation id="5763838252932650682">ກຳລັງຣີສະຕາດ ແລະ ອັບເດດ <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">ເພີ່ມຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
+<translation id="5775340474232476653">ຄູຂອງທ່ານສິ້ນສຸດຫ້ອງຮຽນແລ້ວ</translation>
 <translation id="5779818640587041940">ເປີດໜ້າຈໍຄ້າງໄວ້ເມື່ອບັນທຶກ</translation>
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
@@ -1349,8 +1352,6 @@
 <translation id="7544853251252956727">ສັບປ່ຽນ</translation>
 <translation id="7550715992156305117">ການວິນິໄສທີ່ເຮັດປະຈຳ</translation>
 <translation id="7551123448725492271">ອຸປະກອນແມ່ນເຄື່ອງ​ສຽງ.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />ຜູ້ເບິ່ງແຍງລະບົບ <ph name="MANAGER" /> ໄດ້ກຳນົດເວລາທີ່ຈະສາມາດໃຊ້ <ph name="DEVICE_TYPE" /> ເຄື່ອງນີ້ໄດ້.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />ທ່ານຈະສາມາດໃຊ້ອຸປະກອນນີ້ໄດ້ອີກຄັ້ງ <ph name="DAY" /> ເວລາ <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">ເບິ່ງຕົວຢ່າງຮູບໜ້າຈໍ</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7561759921596375678">ເປີດລະດັບສຽງ</translation>
@@ -1359,6 +1360,7 @@
 <translation id="757747079855995705">ຫິນ</translation>
 <translation id="7590883480672980941">ການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">ຜູ້ເບິ່ງແຍງລະບົບ <ph name="MANAGER" /> ໄດ້ກຳນົດເວລາທີ່ຈະສາມາດໃຊ້ <ph name="DEVICE_TYPE" /> ເຄື່ອງນີ້ໄດ້.</translation>
 <translation id="7613724632293948900">ປ່ຽນຕຳແໜ່ງດ້ວຍເມົ້າ ຫຼື ປຸ່ມລູກສອນ.</translation>
 <translation id="7618774594543487847">ປານກາງ</translation>
 <translation id="7620771111601174153">ສຶກສາເພີ່ມເຕີມໃນສູນຊ່ວຍເຫຼືອ</translation>
@@ -1464,6 +1466,7 @@
 <translation id="8088963492174775412">ກົດເພື່ອບັນທຶກ</translation>
 <translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
+<translation id="8110942816572072814">ຄູຂອງທ່ານລັອກໜ້າຈໍຂອງທ່ານແລ້ວ</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>

@@ -264,7 +264,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1446396933673057385">Controllo accuratezza</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Impossibile impostare le chiavi "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" nello stesso dizionario delle chiavi "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />"</translation>
-<translation id="1452803302401719440">Ora le impostazioni che ha scelto il tuo genitore ti garantiscono maggiore sicurezza online</translation>
 <translation id="1455413310270022028">Gomma</translation>
 <translation id="1458059624921545588">Persone e società</translation>
 <translation id="1458140305240870199">Biancheria intima</translation>
@@ -2933,7 +2932,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6311642842034740437">Località con nome</translation>
 <translation id="6312113039770857350">Pagina web non disponibile</translation>
 <translation id="6316110367871394043">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> è stato messo in pausa</translation>
-<translation id="6316723751983724988">Novità: le scelte di Family Link per Chrome sono applicate a questo sito</translation>
 <translation id="63172326633386613">Gestisci le impostazioni di accessibilità</translation>
 <translation id="6321917430147971392">Controlla le impostazioni DNS</translation>
 <translation id="6322182122604171028">Impossibile usare Windows Hello</translation>

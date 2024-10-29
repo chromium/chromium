@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">ಬೂದು</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ಕೀ ಪರೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="5606865426897221650">ಟ್ಯಾಬ್</translation>
 <translation id="5613201299517339763">ನೀವು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5630438231335788050">ಬೌಹೌಸ್</translation>
@@ -1348,8 +1349,6 @@
 <translation id="7544853251252956727">ಶಫಲ್ ಮಾಡಿ</translation>
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
 <translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೋ ಸಾಧನವಾಗಿದೆ.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> ನಿರ್ವಾಹಕರು ಈ <ph name="DEVICE_TYPE" /> ಯಾವಾಗ ಬಳಸಬಹುದೆಂದು ಸೆಟ್‌ ಮಾಡಿದ್ದಾರೆ.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />ನೀವು <ph name="DAY" /> <ph name="TIME" /> ಗೆ ಈ ಸಾಧನವನ್ನು ಮತ್ತೆ ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7561759921596375678">ವಾಲ್ಯೂಮ್ ಆನ್ ಮಾಡಿ</translation>

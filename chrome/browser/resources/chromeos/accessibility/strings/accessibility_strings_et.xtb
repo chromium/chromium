@@ -341,6 +341,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="311015743332597320">Pühkige nelja sõrmega paremale</translation>
 <translation id="3112457281078985179">ChromeVoxi sisse- või väljalülitamiseks vajutage klahvikombinatsiooni Control + Alt + Z.</translation>
 <translation id="3115800313647508384">Kas lülitada ekraan välja?</translation>
+<translation id="3127625407966660979">Dikteerimine on aktiivne</translation>
 <translation id="3131002934070407451">Loe numbreid järgmiselt:</translation>
 <translation id="3134461040845705080">kirjutuskaitstud</translation>
 <translation id="3137663468179739624">Oliivroheline</translation>
@@ -500,6 +501,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4161104397932142764">{COUNT,plural, =1{sekund}other{sekundit}}</translation>
 <translation id="4161663686871496107">ChromeVoxi kõnena esitatav tagasiside on valmis</translation>
 <translation id="4176463684765177261">Keelatud</translation>
+<translation id="4176677444195790114">Pukseerimine on pooleli</translation>
 <translation id="4187322598335821254">Rea kaupa liikumiseks pühkige üles või alla</translation>
 <translation id="4188530942454211480">Eelmine lause</translation>
 <translation id="4191918948604314587">Nupp</translation>

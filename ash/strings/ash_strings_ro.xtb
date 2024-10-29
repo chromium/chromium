@@ -1147,6 +1147,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4902797682482387055">Activitate sugerată asupra căreia să te concentrezi</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="4911191962826748981">Aceasta este o funcție AI experimentală și nu va răspunde întotdeauna corect.</translation>
 <translation id="491504982845934899">Activează după configurarea dispozitivului <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4918086044614829423">Acceptă</translation>
@@ -1476,7 +1477,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5975235751479998104">Parcurge înainte ferestrele</translation>
 <translation id="5978382165065462689">În prezent, permiți controlul la ecran prin Asistență la distanță.</translation>
 <translation id="5980301590375426705">Ieși ca invitat</translation>
-<translation id="5982119059638483922">Apasă pe Fn + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="5983567367406220847">Hotspotul a fost dezactivat din cauza inactivității.</translation>
 <translation id="598407983968395253">Folosește șablonul</translation>
 <translation id="5986723678596105470">Participă cu Google Meet</translation>
@@ -1718,6 +1718,7 @@ Instalare nouă</translation>
 <translation id="6751826523481687655">Urmărirea performanțelor este activată</translation>
 <translation id="6752912906630585008">Desktopul <ph name="REMOVED_DESK" /> a fost eliminat și îmbinat cu desktopul <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">file</translation>
+<translation id="6754918760968695779">Inserare rapidă</translation>
 <translation id="6757237461819837179">Nu se redă conținut media</translation>
 <translation id="6760438044935091345">Tabloul de bord al jocului</translation>
 <translation id="6768043681523654438">stocare</translation>
@@ -2009,6 +2010,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7807067443225230855">Căutarea și Asistentul</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Dacă alegi Îmi place, trimiți ca feedback faptul că îți place această sugestie</translation>
 <translation id="7825412704590278437">De la un eveniment din calendar viitor</translation>
 <translation id="7829386189513694949">Semnal puternic</translation>
 <translation id="7830453190047749513">Poți personaliza acțiunile butoanelor, viteza cursorului și altele pentru <ph name="PERIPHERAL_NAME" /></translation>
@@ -2163,6 +2165,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Tasta Caps Lock este activată</translation>
 <translation id="8315514906653279104">Se activează…</translation>
+<translation id="8319634750346253957">Dacă alegi Nu îmi place, trimiți ca feedback faptul că nu îți place această sugestie</translation>
 <translation id="8331351032546853669">Descărcare în așteptare</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

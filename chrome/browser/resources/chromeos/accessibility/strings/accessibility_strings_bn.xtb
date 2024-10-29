@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">ফন্টের সাইজ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> কিয়ের সেট</translation>
 <translation id="1923956950274750765">মাঝারি অর্কিড</translation>
+<translation id="1926147969119007125">'ফেস কন্ট্রোল' পজ করুন</translation>
 <translation id="1928932365747995741">কোনও পূর্ববর্তী এডিট করার মতো টেক্সট ফিল্ড নেই</translation>
 <translation id="1964135212174907577">পরবর্তী বস্তু</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">পরবর্তী ফোকাসযোগ্য আইটেমে জাম্প করুন</translation>
 <translation id="2756452585631602151">কাস্টম লেবেল লিখুন</translation>
 <translation id="2766299274563946262">বামদিকে কোনও কক্ষ নেই</translation>
+<translation id="2770947749427257887">স্ক্রল মোড চালু করুন</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{আরও #টি}one{আরও #টি}other{আরও #টি}}</translation>
 <translation id="2792200646155001340">এছাড়াও আপনি আগের আইটেমে ফিরে যেতে এক আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করতে পারেন। এখনই করে দেখুন।</translation>
 <translation id="280499067616661124">ChromeVox পৃষ্ঠাতে খুঁজুন</translation>
@@ -402,6 +404,7 @@
 <translation id="3466530247399808663">একটি ভুল কী টেপা</translation>
 <translation id="3468959318854349468">কোনও শীর্ষক নেই</translation>
 <translation id="3469413619751135069">ফ্যাকাশে সবুজ</translation>
+<translation id="3473744269398144689">ডিকটেশন শুরু করুন</translation>
 <translation id="3490765818161916458">সূচির গ্রিড</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{ডান বন্ধনী}one{#টি বাঁ বন্ধনী}other{#টি বাঁ বন্ধনী}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -658,6 +661,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5290220123487191192">আপনি নিয়মিত ব্যবহার করবেন এমন কয়েকটি জেস্চার দিয়ে শুরু করুন। অ্যাক্টিভেট করতে চান এমন কোনও আইটেম পেলে স্ক্রিনে এক আঙুল দিয়ে ডবল ট্যাপ করুন। চালিয়ে যেতে, এখনই ডবল ট্যাপ করুন।</translation>
+<translation id="5291860916305032607">'ফেস কন্ট্রোল' আবার চালু করুন</translation>
 <translation id="5302089807023311274">বিবলিওগ্রাফি রেফারেন্স</translation>
 <translation id="530391007967514163">নিচের টেক্সটে নেভিগেট করতে জাম্প কমান্ড ব্যবহার করে দেখুন।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ট্যাব</translation>
@@ -683,6 +687,7 @@
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5402367795255837559">ব্রেইল</translation>
 <translation id="5402791055281059602">একটি মোডাল সতর্কতা</translation>
+<translation id="5406272775687194041">টেনে নিয়ে রাখার সুবিধা চালু করুন</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{সেমিকোলন}one{#টি সেমিকোলন}other{#টি সেমিকোলন}}</translation>
 <translation id="5420259671171615858">মেনু সার্চ করে দেখুন</translation>
 <translation id="5435274640623994081">ইয়ারকন লগ-ইন চালু করুন</translation>
@@ -750,6 +755,7 @@
 <translation id="5824976764713185207">পৃষ্ঠা লোড হওয়ার পর সেটি অটোমেটিক পড়ে</translation>
 <translation id="5826479389509458994">সারি <ph name="ROW" /> কলাম <ph name="COL" /></translation>
 <translation id="5833044594931167190">কোনও ARIA ল্যান্ডমার্ক নেই</translation>
+<translation id="584044465500042213">স্ক্রল মোড বন্ধ করুন</translation>
 <translation id="5842625257683688671">কোনও পরবর্তী গ্রাফিক নেই</translation>
 <translation id="5847883414085148048">উৎসর্গ</translation>
 <translation id="5850707923114094062">পিছনের দিকে প্যান করুন</translation>
@@ -952,6 +958,7 @@
 <translation id="7285387653379749618">সারণীগুলি</translation>
 <translation id="7289186959554153431">শিরোনাম ৩</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">টেনে নিয়ে রাখার সুবিধা বন্ধ করুন</translation>
 <translation id="7308519659008003150">কোনও পূর্ববর্তী ফর্ম ফিল্ড নেই</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">help</translation>
@@ -1158,6 +1165,7 @@
 <translation id="8775203254697638994">বিভিন্ন সময়ে আপনাকে একটি ড্রপ-ডাউন তালিকা থেকে কোনও আইটেম বেছে নিতে হবে। এটি করতে প্রথমে Search + Space কী প্রেস করে তালিকাটি বড় করুন। তারপরে, কোনও আইটেম বেছে নিতে Up Arrow ও Down Arrow কী ব্যবহার করুন। পরিশেষে, Search + Space কী প্রেস করে তালিকাটি আড়াল করুন।</translation>
 <translation id="8779057862865475116">কোনও পূর্ববর্তী লিঙ্ক নেই</translation>
 <translation id="8796411681063377102">পরবর্তী স্তর ৩ শিরোনাম</translation>
+<translation id="8821891849214789910">ডিকটেশন বন্ধ করুন</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" />টির মধ্যে <ph name="CURRENTPAGE" /> নম্বর পৃষ্ঠা</translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">প্রধান</translation>

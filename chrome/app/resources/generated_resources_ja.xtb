@@ -424,10 +424,12 @@
 <translation id="1288037062697528143">夜間モードは日の入り時刻に自動的にオンになります</translation>
 <translation id="1288300545283011870">読み上げのプロパティ</translation>
 <translation id="1289619947962767206">このオプションのサポートは終了しました。タブを表示するには、<ph name="GOOGLE_MEET" /> を使用してください。</translation>
+<translation id="1291057703584594733">割り当て済みのジェスチャーを選択すると、そのジェスチャーが元のアクションから削除されます</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> 利用規約</translation>
 <translation id="1291421198328146277">キーをリセット</translation>
 <translation id="1292849930724124745">ログイン状態を保持するにはスマートカードを挿入してください</translation>
 <translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
+<translation id="1293360286536751243">「<ph name="MAIN_GESTURE" />」は「<ph name="CONFLICTING_GESTURE_ONE" />」、「<ph name="CONFLICTING_GESTURE_TWO" />」、「<ph name="CONFLICTING_GESTURE_THREE" />」と重複している可能性があります。可能な場合は別のジェスチャーを選択してください。</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1294807885394205587">この処理には数分かかることがあります。コンテナ マネージャーを起動しています。</translation>
 <translation id="12951065153783848">あなたのアカウントは組織が管理しています</translation>
@@ -614,6 +616,7 @@
 <translation id="1436671784520050284">設定を続行</translation>
 <translation id="1436784010935106834">削除しました</translation>
 <translation id="1437986450143295708">問題の内容を詳しくご説明ください</translation>
+<translation id="1438630805136563416">アクション「<ph name="REMOVED_ACTION" />」を削除しました</translation>
 <translation id="1439671507542716852">長期サポート</translation>
 <translation id="1440090277117135316">教育機関の登録が完了しました</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> 個のアイテムを選択しました</translation>
@@ -978,6 +981,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> を追加できません</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1678849866171627536">スキャンに失敗しました。このファイルはウイルスや不正なソフトウェアの可能性があります。</translation>
+<translation id="1678919064276516737">入力したメールアドレスと PIN が一致しません</translation>
 <translation id="1679068421605151609">デベロッパー ツール</translation>
 <translation id="1679810534535368772">終了してもよろしいですか？</translation>
 <translation id="167983332380191032">管理サービスから HTTP エラーが送信されました。</translation>
@@ -1165,7 +1169,6 @@
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
 <translation id="1810070166657251157">スマートフォンに保存されているパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードし、Google アカウントにログインします。</translation>
 <translation id="1810366086647840386">イメージ サーバー</translation>
-<translation id="1810391395243432441">画面ロックを使用したパスワードの保護</translation>
 <translation id="1811908311154949291">シークレット モードのフェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> で続行できません</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> をキャストしています</translation>
@@ -1422,6 +1425,7 @@
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}、{field_2}}other{{field_1}、{field_2}、{field_3}}}</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
+<translation id="198507684520034826">ヘルプ</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
 <translation id="1987317783729300807">アカウント</translation>
 <translation id="1987574314042117472">人気のアプリを選択してインストール</translation>
@@ -2608,6 +2612,7 @@
 <translation id="2806372837663997957">共有先のデバイス側で承認されませんでした</translation>
 <translation id="2806891468525657116">ショートカットがすでに存在します</translation>
 <translation id="2807517655263062534">ダウンロードしたファイルがここに表示されます</translation>
+<translation id="2808985063107661499">「<ph name="MAIN_GESTURE" />」は「<ph name="CONFLICTING_GESTURE_ONE" />」、「<ph name="CONFLICTING_GESTURE_TWO" />」と重複している可能性があります。可能な場合は別のジェスチャーを選択してください。</translation>
 <translation id="2811205483104563968">アカウント</translation>
 <translation id="2812049959647166806">Thunderbolt はサポートされていません</translation>
 <translation id="2812171980080389735">すぐに接続できるようにネットワークとパスワードを保存します</translation>
@@ -2913,6 +2918,7 @@
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
 <translation id="3029808567601324798">ロックまでの時間</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、今日中にアップデートをダウンロードするよう求めています。アップデートは、インターネットに接続すると自動的にダウンロードされます。}other{<ph name="MANAGER" /> が期限までにアップデートをダウンロードするよう求めています。アップデートは、インターネットに接続すると自動的にダウンロードされます。}}</translation>
+<translation id="3030772324014024606">編集</translation>
 <translation id="3030967311408872958">日の入りから日の出まで</translation>
 <translation id="3031417829280473749">エージェント X</translation>
 <translation id="3031532026314193077">タッチパッドとキーボードを使用して右クリックする</translation>
@@ -3197,7 +3203,6 @@
 <translation id="3262261769033093854">サイトにマウス入力の取得と使用を許可しない</translation>
 <translation id="3262336253311870293">このアカウントは <ph name="DOMAIN" /> で管理されているため、Google アカウントからはログアウトされません。ブックマーク、履歴、パスワード、その他の設定は同期されなくなります。ただし、これまでに同期したデータは引き続き Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
 <translation id="3262986719682892278">ファイルが大きすぎます</translation>
-<translation id="3264239161215962624">キャストするには、<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> で Chrome にアクセスを許可してください</translation>
 <translation id="3264544094376351444">Sans Serif フォント</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
 <translation id="3265459715026181080">ウインドウを閉じる</translation>
@@ -3798,7 +3803,6 @@
 <translation id="3699624789011381381">メール アドレス</translation>
 <translation id="3699920817649120894">同期とカスタマイズをオフにしますか？</translation>
 <translation id="3700888195348409686">表示中（<ph name="PAGE_ORIGIN" />）</translation>
-<translation id="3700966190175650601">パスワード入力で指紋認証を使用しています</translation>
 <translation id="3700993174159313525">サイトにカメラ位置の追跡を許可しない</translation>
 <translation id="3701167022068948696">今すぐ修正</translation>
 <translation id="3701515417135397388">データ侵害によりパスワードが漏洩した場合に警告する</translation>
@@ -4017,6 +4021,7 @@
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">ログインして他のデバイスのタブを表示</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}other{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">表示</translation>
 <translation id="3825635794653163640">アプリアイコンに通知のドットを表示する</translation>
 <translation id="3826071569074535339">モーション センサーの使用を許可するサイト</translation>
 <translation id="3826086052025847742">ChromeOS Flex のログ</translation>
@@ -4128,6 +4133,7 @@
 <translation id="3905761538810670789">アプリを修復</translation>
 <translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
 <translation id="3908501907586732282">拡張機能を有効にする</translation>
+<translation id="3909456989251621103">サーバー証明書を削除すると、その証明書は Chrome によるサーバーの識別に使用されなくなります。</translation>
 <translation id="3909701002594999354">すべてのコントロールを表示(&amp;C)</translation>
 <translation id="3909791450649380159">切り取り(&amp;T)</translation>
 <translation id="39103738135459590">アクティベーション コード</translation>
@@ -4339,6 +4345,7 @@
 <translation id="404894744863342743">ダウンロードしたファイルを使用した後は削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}other{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}}</translation>
 <translation id="4050225813016893843">認証方法</translation>
+<translation id="4050379682069019014">「<ph name="MAIN_GESTURE" />」は「<ph name="CONFLICTING_GESTURE" />」と重複している可能性があります。可能な場合は別のジェスチャーを選択してください。</translation>
 <translation id="4050534976465737778">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。連絡先に登録されていない Chromebook とファイルを共有する場合は、その Chromebook で周辺ユーザーによる検出がオンになっていることも確認してください（ステータス領域を開いて、周辺ユーザーによる検出をオンにします）。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">前回使用した入力方法に切り替えるには、<ph name="KEY_CODES" /> キーを押します</translation>
 <translation id="4051177682900543628">検索+右矢印</translation>
@@ -4996,7 +5003,6 @@
 <translation id="4554591392113183336">外部の拡張機能のバージョンが既存のバージョン以下です。</translation>
 <translation id="4555769855065597957">シャドウ</translation>
 <translation id="4555863373929230635">パスワードを Google アカウントに保存するには、ログインして同期を有効にします。</translation>
-<translation id="4556069465387849460">パスワード入力で画面ロックを使用しています</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> さんが <ph name="WEBSITE_NAME" /> のパスワードをあなたと共有しました。このパスワードはログイン フォームで使用できます。</translation>
 <translation id="4558426062282641716">自動起動の許可の要求</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" /> で開いています</translation>
@@ -5044,6 +5050,7 @@
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>
+<translation id="4584770411839426377">ウィンドウ</translation>
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
@@ -5254,7 +5261,6 @@
 <translation id="4744260496658845719">キーボード バックライトの明るさ</translation>
 <translation id="4744268813103118742">サイトに移動</translation>
 <translation id="4744571849207727284">Excel</translation>
-<translation id="4744816391336495134">保存したパスワードを使用するたびに指紋認証で本人確認を行うことができます</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
 <translation id="4745500401920035244">管理者がシステム全体に行った変更により、一部の古いプロフィールが無効になりました。このプロフィールにアクセスすることはできませんが、削除することはできます</translation>
 <translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
@@ -5436,6 +5442,7 @@
 <translation id="4872192066608821120">パスワードをインポートするには、CSV ファイルを選択してください</translation>
 <translation id="4872212987539553601">オンデバイスの暗号化を設定</translation>
 <translation id="4873312501243535625">メディア ファイル チェッカー</translation>
+<translation id="4875690134140862902">タブ</translation>
 <translation id="4876273079589074638">このクラッシュについて迅速に調査、解決できるよう、具体的な操作についてできるだけ詳しくご説明ください。</translation>
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
 <translation id="4876327226315760474">この場合、サイトの機能は想定どおりに動作するものの、ブラウジング保護の強度が低くなる可能性があります。</translation>
@@ -5548,6 +5555,7 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">今後このサイトのパスワードを保存しない</translation>
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
+<translation id="4954652437333037880">ファイル</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> の公開設定</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6722,6 +6730,7 @@
 <translation id="5832970156002835240">すべてのサイトで許可する</translation>
 <translation id="5833397272224757657">ユーザーがアクセスしたサイトのコンテンツと、ブラウザのアクティビティおよび操作をカスタマイズに使用します</translation>
 <translation id="5833726373896279253">これらの設定を変更できるのは所有者だけです:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">サイトに JavaScript の使用を許可しない</translation>
 <translation id="583431638776747">サイトを利用できませんでした</translation>
 <translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
@@ -7801,6 +7810,7 @@
 <translation id="6635674640674343739">ネットワーク接続を確立できません。ネットワーク接続を確認して、もう一度お試しください。</translation>
 <translation id="663569763553406962">拡張機能がサイトから読み取りまたは変更できる内容を確認する</translation>
 <translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
+<translation id="6636258750460740634">履歴</translation>
 <translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
 <translation id="6640268266988685324">開いているタブ</translation>
@@ -8427,7 +8437,6 @@
 <translation id="7068591156533195518"><ph name="APP_NAME" /> とその他数個のアプリが <ph name="DEVICE_TYPE" /> でブロックされています</translation>
 <translation id="706949303827219454">セキュリティ設定ページを新しいタブで開きます</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
-<translation id="7070144569727915108">システム設定</translation>
 <translation id="7070484045139057854">サイトデータの読み取りと変更を行います</translation>
 <translation id="7072010813301522126">ショートカット名</translation>
 <translation id="7072078320324181561">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスは位置情報を使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -10169,7 +10178,6 @@
 <translation id="8322814362483282060">このページはマイクへのアクセスを禁止されています。</translation>
 <translation id="8323167517179506834">URL を入力してください</translation>
 <translation id="8323317289166663449">自分のパソコンとすべてのウェブサイト上にある自分の全データの読み取りと変更</translation>
-<translation id="8323505966575306467">パスワードの保護を強化</translation>
 <translation id="8323518750352551353">ブラウジングを切り分け？</translation>
 <translation id="8324158725704657629">次回から表示しない</translation>
 <translation id="8324784016256120271">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できます（広告のパーソナライズなどが行えます）</translation>
@@ -10638,7 +10646,6 @@
 <translation id="8662978096466608964">壁紙は設定できません。</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> 上での複数ファイルの自動ダウンロードを常にブロックする</translation>
 <translation id="8664389313780386848">ページのソースを表示(&amp;V)</translation>
-<translation id="8664603206102030248">割り当て済みのジェスチャーを選択すると、そのジェスチャーが元のアクションから削除されます</translation>
 <translation id="8665110742939124773">間違ったアクセスコードが入力されました。もう一度お試しください。</translation>
 <translation id="8665180165765946056">バックアップが完了しました</translation>
 <translation id="866611985033792019">メールユーザーの識別でこの証明書を信頼します</translation>

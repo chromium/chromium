@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">셔플</translation>
 <translation id="7550715992156305117">진단 루틴</translation>
 <translation id="7551123448725492271">오디오 기기입니다.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /> <ph name="MANAGER" />관리자가 <ph name="DEVICE_TYPE" />을(를) 사용할 수 있는 시기를 설정했습니다.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" /><ph name="DAY" /> <ph name="TIME" />에 이 기기를 다시 사용할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">스크린샷 미리보기</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
 <translation id="7561759921596375678">볼륨 켜기</translation>

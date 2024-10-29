@@ -501,6 +501,9 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ktrl + Bilaketa + S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
+<translation id="2781658180588759579">Ukipen-panel integratua desgaitu da. Aldaketa berresteko, erabili teklatua edo beste gailu erakusle bat.
+
+Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel integratua.</translation>
 <translation id="2782591952652094792">Irten edukia kapturatzeko modutik</translation>
 <translation id="2785499565474703580">1 gailu dago konektatuta</translation>
 <translation id="2791421900609674576">Gomendioak ikusiko dituzu utzi zenuen tokitik jarraitu ahal izateko. Haiek kentzeko, eduki itzazu sakatuta.</translation>
@@ -598,6 +601,9 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3113492864356515707">Nabarmendu aurreko elementua apalean</translation>
 <translation id="311799651966070385">Itxi abisua</translation>
 <translation id="3120421559657122717">Gailua itzali nahi duzu?</translation>
+<translation id="3121411970001795539">Ukipen-panel integratua desgaitu da, sagu bat konektatu delako. Aldaketa berresteko, erabili sagua edo teklatua.
+
+Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel integratua.</translation>
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3125690294288312932">Ikasgelako lan mota</translation>
 <translation id="3126026824346185272">Ktrl</translation>
@@ -1471,7 +1477,6 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5975235751479998104">Egin aurrera leiho batetik bestera</translation>
 <translation id="5978382165065462689">Urruneko laguntzaren bidez pantailaren kontrola partekatzen.</translation>
 <translation id="5980301590375426705">Irten gonb. saiotik</translation>
-<translation id="5982119059638483922">Bertan behera uzteko, sakatu Fn + Bilaketa edo Maius.</translation>
 <translation id="5983567367406220847">Jarduerarik egon ez denez, wifi-gunea desaktibatu da.</translation>
 <translation id="598407983968395253">Erabili txantiloia</translation>
 <translation id="5986723678596105470">Sartu Google Meet-ekin</translation>
@@ -1713,6 +1718,7 @@ Berriki instalatu da</translation>
 <translation id="6751826523481687655">Aktibatuta dago funtzionamenduaren jarraipena egiteko aukera</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> lan-eremua kendu egin da, eta <ph name="RECEIVE_DESK" /> lan-eremuarekin bateratu</translation>
 <translation id="6753390234084146956">fitxak</translation>
+<translation id="6754918760968695779">Txertatze bizkorra</translation>
 <translation id="6757237461819837179">Ez da ari ezer erreproduzitzen</translation>
 <translation id="6760438044935091345">Joko-panela</translation>
 <translation id="6768043681523654438">biltegiratzea</translation>

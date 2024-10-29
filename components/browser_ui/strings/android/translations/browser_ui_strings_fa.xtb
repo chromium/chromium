@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">باز کردن نسخه آنلاین</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
+<translation id="1070329623210597193">فایل‌هایی که این سایت می‌تواند مشاهده یا ویرایش کند</translation>
 <translation id="1073417869336441572">‏با گفتن دلیل مجاز کردن کوکی‌های شخص ثالث، به ما در بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">‏استفاده از Chrome به‌طور پیش‌فرض</translation>
 <translation id="1178581264944972037">مکث</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1240190568154816272">‏نکته‌های Chrome</translation>
 <translation id="1242008676835033345">جاسازی‌شده در <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">روی «برنامه‌ها &gt; برنامه‌های پیش‌فرض» تک‌ضرب بزنید</translation>
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1289742167380433257">‏برای صرفه‌جویی درمصرف داده، Google تصاویر این صفحه را بهینه‌سازی کرده است.</translation>
 <translation id="129382876167171263">فایل‌هایی را که وب‌سایت‌ها ذخیره کرده‌اند، در اینجا نمایش داده می‌شود</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شود</translation>
 <translation id="3913461097001554748">‫<ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ممکن است برخی‌از ویژگی‌ها کار نکنند. سایت‌های مرتبط همچنان می‌توانند از کوکی‌های شخص ثالث استفاده کنند.</translation>
+<translation id="3922092564198021702">در تلفن، «تنظیمات» را باز کنید</translation>
 <translation id="3933121352599513978">جمع کردن درخواست‌های ناخواسته (توصیه می‌شود)</translation>
 <translation id="3955193568934677022">به سایت‌ها اجازه داده شود محتوای محافظت‌شده پخش کنند (توصیه می‌شود)</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">بیشتر</translation>
 <translation id="6064125863973209585">بارگیری‌های کامل‌شده</translation>
 <translation id="6071501408666570960">ممکن است از سیستم این سایت خارج شده باشید</translation>
+<translation id="6085954183010297841">مجوز ویرایش فایل حذف شود؟ <ph name="FILE" /></translation>
 <translation id="6120483543004435978">هرگاه روشن باشد، سایت‌ها می‌توانند مطلع شدن از مواقعی را که فعالانه از دستگاهتان استفاده می‌کنید درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند بدانند چه مواقعی فعالانه از دستگاهتان استفاده می‌کنید.</translation>
 <translation id="6140839633433422817">مطمئنید می‌خواهید اجازه‌ها را بازنشانی کنید و کوکی‌ها و داده‌های سایت را حذف کنید؟</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6207207788774442484">حذف داده‌ها و بازنشانی اجازه‌ها</translation>
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
+<translation id="6234351944623978659">‏روی «برنامه مرورگر &gt; Chrome» تک‌ضرب بزنید</translation>
 <translation id="6262191102408817757">براساس آخرین برگه شما</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود هستند</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>

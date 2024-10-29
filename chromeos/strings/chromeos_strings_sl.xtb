@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">Naključno predvajanje</translation>
 <translation id="7550715992156305117">Rutine za diagnostiko</translation>
 <translation id="7551123448725492271">Naprava je zvočna naprava.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Skrbnik za <ph name="MANAGER" /> je določil, kdaj je mogoče uporabljati to napravo <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />To napravo boste lahko znova uporabljali <ph name="DAY" /> ob <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Predogled posnetka zaslona</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7561759921596375678">Vklop glasnosti zvoka</translation>

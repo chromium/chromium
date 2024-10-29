@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Next</translation>
 <translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Tap Apps  &gt; Default apps</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">To save you data, this page's images have been optimised by Google.</translation>
 <translation id="129382876167171263">Files saved by websites appear here</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
+<translation id="3922092564198021702">On your phone, open Settings</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
 <translation id="3967822245660637423">Download complete</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6207207788774442484">Delete data and reset permissions</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
+<translation id="6234351944623978659">Tap Browser app &gt; Chrome</translation>
 <translation id="6262191102408817757">Based on your last tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>

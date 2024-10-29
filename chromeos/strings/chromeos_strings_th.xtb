@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">เพิ่มเติม</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3321030238473337787">ความเร็วในการเล่น</translation>
+<translation id="3327613592010997943"><ph name="DAY" />คุณจะใช้อุปกรณ์นี้ได้อีกครั้งในเวลา <ph name="TIME" /></translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">การตั้งค่า</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">สถานะพอร์ทัล</translation>
 <translation id="5763838252932650682">กำลังรีสตาร์ทและอัปเดต <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">เพิ่มความสว่างของหน้าจอ</translation>
+<translation id="5775340474232476653">ครูได้สิ้นสุดชั้นเรียนแล้ว</translation>
 <translation id="5779818640587041940">เปิดหน้าจอค้างไว้เมื่อบันทึก</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5784136236926853061">เวลาในการตอบสนองของ HTTP สูง</translation>
@@ -1349,8 +1351,6 @@
 <translation id="7544853251252956727">สุ่มเพลง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />คุณจะใช้อุปกรณ์นี้ได้อีกครั้ง<ph name="DAY" /> เวลา <ph name="TIME" /><ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">ดูตัวอย่างภาพหน้าจอ</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7561759921596375678">เปิดระดับเสียง</translation>
@@ -1359,6 +1359,7 @@
 <translation id="757747079855995705">หิน</translation>
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้</translation>
 <translation id="7613724632293948900">เปลี่ยนตำแหน่งด้วยเมาส์หรือแป้นลูกศร</translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
@@ -1464,6 +1465,7 @@
 <translation id="8088963492174775412">กดเพื่อบันทึก</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
+<translation id="8110942816572072814">ครูล็อกหน้าจอของคุณไว้</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>

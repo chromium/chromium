@@ -628,6 +628,7 @@
 <translation id="3208321278970793882">التطبيق</translation>
 <translation id="3213571860604332401">حفظ الرابط كإشارة مرجعية</translation>
 <translation id="3217205077783620295">تم تفعيل الصوت، وسيؤدي التبديل إلى كتم الصوت</translation>
+<translation id="3218561536255328229">‏اضغط على مفتاح Esc‏ 5 مرّات لتفعيل لوحة اللمس</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> والمزيد</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
 <translation id="3233611303007751344">وضع "توفير شحن البطارية" غير مُفعَّل.</translation>
@@ -1475,7 +1476,6 @@
 <translation id="5975235751479998104">الانتقال إلى الأمام في قائمة النوافذ</translation>
 <translation id="5978382165065462689">مشاركة التحكم في شاشتك عن طريق المساعدة عن بُعد.</translation>
 <translation id="5980301590375426705">إنهاء جلسة الضيف</translation>
-<translation id="5982119059638483922">‏للإلغاء، اضغط على المفتاح Fn + مفتاح البحث، أو اضغط على المفتاح Shift.</translation>
 <translation id="5983567367406220847">تم إيقاف نقطة الاتصال بسبب عدم استخدامها.</translation>
 <translation id="598407983968395253">استخدام النموذج</translation>
 <translation id="5986723678596105470">‏الانضمام عبر Google Meet</translation>
@@ -1717,6 +1717,7 @@
 <translation id="6751826523481687655">تتبّع الأداء قيْد التفعيل</translation>
 <translation id="6752912906630585008">تمت إزالة سطح المكتب <ph name="REMOVED_DESK" /> ودمجه مع سطح المكتب <ph name="RECEIVE_DESK" />.</translation>
 <translation id="6753390234084146956">علامات التبويب</translation>
+<translation id="6754918760968695779">الإدراج السريع</translation>
 <translation id="6757237461819837179">لا يتم تشغيل أي وسائط حاليًا</translation>
 <translation id="6760438044935091345">لوحة بيانات الألعاب</translation>
 <translation id="6768043681523654438">مساحة التخزين</translation>

@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">آن لائن کھولیں</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
+<translation id="1070329623210597193">وہ فائلز جو یہ سائٹ دیکھ سکتی ہے یا ترمیم کر سکتی ہے</translation>
 <translation id="1073417869336441572">‏ہمیں یہ بتا کر Chrome کو بہتر بنانے میں ہماری مدد کریں کہ آپ نے فریق ثالث کوکیز کی اجازت کیوں دی۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1240190568154816272">‏Chrome کی تجاویز</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> پر سرایت کردہ</translation>
+<translation id="1263609676484797429">ایپس &gt; ڈیفالٹ ایپس پر تھپتھپائیں</translation>
 <translation id="1272079795634619415">روکیں</translation>
 <translation id="1289742167380433257">‏آپ کے ڈیٹا کو محفوظ کرنے کیلئے، اس صفحہ کی تصاویر Google کے ذریعے بہتر بنائی گئی ہیں۔</translation>
 <translation id="129382876167171263">ویب سائٹس کے ذریعے محفوظ کردہ فائلز یہاں ظاہر ہوں گی</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ہو سکتا ہے کچھ خصوصیات کام نہ کریں۔ متعلقہ سائٹس اب بھی فریق ثالث کوکیز استعمال کر سکتی ہیں۔</translation>
+<translation id="3922092564198021702">اپنے فون پر، ترتیبات کھولیں</translation>
 <translation id="3933121352599513978">غیر مطلوبہ درخواستوں کو سکیڑیں (تجویز کردہ)</translation>
 <translation id="3955193568934677022">سائٹس کو محفوظ کردہ مواد چلانے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">مزید</translation>
 <translation id="6064125863973209585">مکمل کردہ ڈاؤن لوڈز</translation>
 <translation id="6071501408666570960">ہو سکتا ہے کہ آپ اس سائٹ سے سائن آؤٹ ہو جائیں</translation>
+<translation id="6085954183010297841">فائل میں ترمیم کرنے کی اجازت ہٹائیں؟ <ph name="FILE" /></translation>
 <translation id="6120483543004435978">آن ہونے پر، سائٹس یہ جاننے کے لیے پوچھ سکتی ہیں کہ آپ اپنا آلہ فعال طور پر کب استعمال کر رہے ہیں۔ آف ہونے پر، سائٹس نہیں جان سکتی کہ آپ اپنا آلہ فعال طور پر کب استعمال کر رہے ہیں۔</translation>
 <translation id="6140839633433422817">کیا آپ واقعی اجازتوں کو ری سیٹ کرنا چاہتے ہیں، ساتھ ہی کوکیز اور سائٹ ڈیٹا کو بھی حذف کرنا چاہتے ہیں؟</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6207207788774442484">ڈیٹا حذف اور اجازتیں ری سیٹ کریں</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />' اَن انسٹال کریں؟</translation>
+<translation id="6234351944623978659">‏براؤزر ایپ &gt; Chrome پر تھپتھپائیں</translation>
 <translation id="6262191102408817757">آپ کے آخری ٹیب کی بنیاد پر</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کو مسدود کیا گیا</translation>
 <translation id="6270391203985052864">سائٹس اطلاعات بھیجنے کے لیے کہہ سکتی ہیں</translation>

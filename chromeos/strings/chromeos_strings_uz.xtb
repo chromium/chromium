@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">kulrang</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tugmasi sinaldi</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Siz tizimdan chiqdingiz</translation>
 <translation id="5620281292257375798">Maxfiy</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -1348,8 +1349,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7544853251252956727">Tasodifiy</translation>
 <translation id="7550715992156305117">Diagnostika dasturlari</translation>
 <translation id="7551123448725492271">Qurilma — audio qurilma.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Administrator (<ph name="MANAGER" />) bu qurilmadan (<ph name="DEVICE_TYPE" />) foydalanish vaqtini cheklagan<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Bu qurilmadan <ph name="DAY" /> <ph name="TIME" /> da foydalana olasiz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Skrinshotga razm solish</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7561759921596375678">Tovushni yoqish</translation>

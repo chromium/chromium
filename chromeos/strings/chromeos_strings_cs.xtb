@@ -1348,8 +1348,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7544853251252956727">Přehrávat náhodně</translation>
 <translation id="7550715992156305117">Diagnostické rutiny</translation>
 <translation id="7551123448725492271">Zařízení je audiozařízení.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Administrátor domény <ph name="MANAGER" /> nastavil, kdy se toto zařízení <ph name="DEVICE_TYPE" /> může používat.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Budete ho moci znovu použít <ph name="DAY" /> v <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Náhled snímku obrazovky</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7561759921596375678">Zapnout zvuk</translation>

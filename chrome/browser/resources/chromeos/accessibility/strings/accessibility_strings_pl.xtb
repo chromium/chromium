@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">Rozmiar <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Średni storczykowy</translation>
+<translation id="1926147969119007125">Wstrzymaj sterowanie za pomocą twarzy</translation>
 <translation id="1928932365747995741">Nie ma poprzedniego pola tekstowego do edytowania</translation>
 <translation id="1964135212174907577">Następny obiekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">Przejdź do następnego elementu, który można zaznaczyć</translation>
 <translation id="2756452585631602151">Dodaj etykietę własną</translation>
 <translation id="2766299274563946262">Nie ma komórki z lewej strony</translation>
+<translation id="2770947749427257887">Włącz tryb przewijania</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}few{+ #}many{+ #}other{+ #}}</translation>
 <translation id="2792200646155001340">Możesz też przesunąć jednym palcem z prawej do lewej, aby przejść do poprzedniego elementu. Zrób to teraz.</translation>
 <translation id="280499067616661124">ChromeVox – znajdź na stronie</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">Naciśnięcie niewłaściwego klawisza</translation>
 <translation id="3468959318854349468">Bez tytułu</translation>
 <translation id="3469413619751135069">Bladozielony</translation>
+<translation id="3473744269398144689">Zacznij dyktować</translation>
 <translation id="3490765818161916458">Siatka listy</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{prawy nawias kwadratowy}few{# prawe nawiasy kwadratowe}many{# prawych nawiasów kwadratowych}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Zakończ</translation>
 <translation id="5290220123487191192">Zacznijmy od kilku gestów, których będziesz często używać. Gdy dotrzesz do elementu, który chcesz uaktywnić, dotknij dwukrotnie ekranu jednym palcem. Aby kontynuować, dotknij dwukrotnie ekranu teraz.</translation>
+<translation id="5291860916305032607">Wznów sterowanie za pomocą twarzy</translation>
 <translation id="5302089807023311274">Odniesienie bibliograficzne</translation>
 <translation id="530391007967514163">Spróbuj poruszać się po poniższym tekście metodą przechodzenia między nagłówkami.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, karta</translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
 <translation id="5402791055281059602">Alert w oknie modalnym</translation>
+<translation id="5406272775687194041">Rozpocznij przeciąganie i upuszczanie</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{średnik}few{# średniki}many{# średników}other{# semicolons}}</translation>
 <translation id="5420259671171615858">Przeszukaj menu</translation>
 <translation id="5435274640623994081">Włącz rejestrowanie ikony audio</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">Automatycznie zacznij czytać stronę po jej załadowaniu</translation>
 <translation id="5826479389509458994">wiersz <ph name="ROW" />, kolumna <ph name="COL" /></translation>
 <translation id="5833044594931167190">Brak punktów orientacyjnych ARIA</translation>
+<translation id="584044465500042213">Wyłącz tryb przewijania</translation>
 <translation id="5842625257683688671">Nie ma następnej grafiki</translation>
 <translation id="5847883414085148048">Dedykacja</translation>
 <translation id="5850707923114094062">Przesuń do tyłu</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">Tabele</translation>
 <translation id="7289186959554153431">Nagłówek 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Zakończ przeciąganie i upuszczanie</translation>
 <translation id="7308519659008003150">Nie ma poprzedniego pola formularza</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">pomoc</translation>
@@ -1158,6 +1165,7 @@
 <translation id="8775203254697638994">Czasem trzeba wybrać element z listy. Aby to zrobić, najpierw rozwiń listę, naciskając klawisz wyszukiwania + spacja. Następnie użyj klawiszy strzałek w górę i w dół, by wybrać element. Na koniec zwiń listę, naciskając klawisz wyszukiwania + spacja.</translation>
 <translation id="8779057862865475116">Nie ma poprzedniego linku</translation>
 <translation id="8796411681063377102">Następny nagłówek poziomu 3</translation>
+<translation id="8821891849214789910">Przestań dyktować</translation>
 <translation id="8823311177246872527">Strona <ph name="CURRENTPAGE" /> z <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">główny</translation>

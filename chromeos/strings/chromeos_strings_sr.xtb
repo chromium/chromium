@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">још</translation>
 <translation id="3310640316857623290">Кашњење DNS-а знатно премашује дозвољену граничну вредност</translation>
 <translation id="3321030238473337787">Брзина репродукције</translation>
+<translation id="3327613592010997943">Моћи ћете поново да користите овај уређај <ph name="DAY" />у <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Тест је у току</translation>
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>
 <translation id="3340978935015468852">подешавања</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Статус портала</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> се рестартује и ажурира</translation>
 <translation id="576835345334454681">Повећајте осветљеност екрана</translation>
+<translation id="5775340474232476653">Наставник је завршио час</translation>
 <translation id="5779818640587041940">Не искључуј екран током снимања</translation>
 <translation id="57838592816432529">Искључи звук</translation>
 <translation id="5784136236926853061">Велико HTTP кашњење</translation>
@@ -1349,8 +1351,6 @@
 <translation id="7544853251252956727">Пусти насумично</translation>
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7551123448725492271">Уређај је аудио уређај.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Администратор за <ph name="MANAGER" /> је подесио када овај <ph name="DEVICE_TYPE" /> може да се користи.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Моћи ћете поново да користите овај уређај <ph name="DAY" /> у <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Преглед снимка екрана</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7561759921596375678">Укључите звук</translation>
@@ -1359,6 +1359,7 @@
 <translation id="757747079855995705">камена</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7595982850646262331">Још <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Администратор за <ph name="MANAGER" /> је подесио када овај <ph name="DEVICE_TYPE" /> може да се користи</translation>
 <translation id="7613724632293948900">Промените положај помоћу тастера миша или тастера са стрелицама.</translation>
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>
@@ -1464,6 +1465,7 @@
 <translation id="8088963492174775412">Притисните да бисте снимили</translation>
 <translation id="8094062939584182041">Дозволите Google-у да вам пошаље имејл о овом проблему</translation>
 <translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
+<translation id="8110942816572072814">Наставник је закључао екран</translation>
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Потврди</translation>

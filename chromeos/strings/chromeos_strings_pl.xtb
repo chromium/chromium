@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">szary</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5600027863942488546">Przetestowano klawisz <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Wylogowaliśmy Cię</translation>
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
 <translation id="5630438231335788050">Bauhausu</translation>
@@ -1346,8 +1347,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7544853251252956727">Odtwarzaj losowo</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7551123448725492271">To urządzenie typu audio.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Administrator witryny <ph name="MANAGER" /> określił, kiedy można używać tego urządzenia <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Ponownie będzie to możliwe <ph name="DAY" /> o <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Wyświetl podgląd zrzutu ekranu</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7561759921596375678">Włącz dźwięk</translation>

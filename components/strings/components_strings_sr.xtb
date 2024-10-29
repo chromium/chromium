@@ -264,7 +264,6 @@
 <translation id="1446396933673057385">Провера тачности</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1448166547804028941">Кључеви „<ph name="DATA_CONTROLS_FIRST_KEY_SET" />“ не могу да се подесе у истом речнику као и кључеви <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
-<translation id="1452803302401719440">Подешавања која је родитељ изабрао сада те боље штите онлајн</translation>
 <translation id="1455413310270022028">Брисач</translation>
 <translation id="1458059624921545588">Људи и друштво</translation>
 <translation id="1458140305240870199">Доњи веш</translation>
@@ -2937,7 +2936,6 @@
 <translation id="6311642842034740437">Именована локација</translation>
 <translation id="6312113039770857350">Веб-страница није доступна</translation>
 <translation id="6316110367871394043">Отпремање фајла у <ph name="CLOUD_PROVIDER" /> је паузирано</translation>
-<translation id="6316723751983724988">Ново: Овде се примењују Family Link опције за Chrome</translation>
 <translation id="63172326633386613">Управљајте подешавањима приступачности</translation>
 <translation id="6321917430147971392">Проверите DNS подешавања</translation>
 <translation id="6322182122604171028">Коришћење функције Windows Hello није успело</translation>

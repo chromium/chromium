@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">ऑनलाइन उघडा</translation>
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1044891598689252897">साइट सामान्यपणे काम करतील</translation>
+<translation id="1070329623210597193">या साइटवरील फाइल पाहता येऊ शकतात किंवा संपादित केल्या जाऊ शकतात</translation>
 <translation id="1073417869336441572">तुम्ही तृतीय पक्ष कुकीना अनुमती का दिली हे सांगून Chrome मध्ये सुधारणा करण्यात आम्हाला मदत करा. <ph name="BEGIN_LINK" />फीडबॅक पाठवणे<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1240190568154816272">Chrome शी संबंधित टिपा</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> वर एम्बेड केले</translation>
+<translation id="1263609676484797429">अ‍ॅप्स  &gt; डीफॉल्ट ॲप्सवर टॅप करा</translation>
 <translation id="1272079795634619415">थांबा</translation>
 <translation id="1289742167380433257">तुमचा डेटा वाचवण्यासाठी, या पेजच्या इमेज Google ने ऑप्टिमाइझ केल्या आहेत.</translation>
 <translation id="129382876167171263">वेबसाइटद्वारे सेव्ह केलेल्या फाइल येथे दिसतील</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">काही वैशिष्ट्ये कदाचित काम करणार नाहीत. संबंधित साइट तरीही तृतीय पक्ष कुकी वापरू शकतात.</translation>
+<translation id="3922092564198021702">तुमच्या फोनवर, सेटिंग्ज उघडा</translation>
 <translation id="3933121352599513978">अनावश्यक विनंत्या कोलॅप्स करा (शिफारस केलेले)</translation>
 <translation id="3955193568934677022">संरक्षित आशय प्ले करण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">अधिक</translation>
 <translation id="6064125863973209585">डाउनलोड पूर्ण झाले</translation>
 <translation id="6071501408666570960">तुम्हाला या साइटमधून साइन आउट केले जाऊ शकते</translation>
+<translation id="6085954183010297841">फाइल संपादन मंजुरी हटवायची आहे का? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">सुरू असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेण्याची विनंती करू शकतात. बंद असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेऊ शकत नाहीत.</translation>
 <translation id="6140839633433422817">तुम्हाला नक्की परवानग्या रीसेट करणे आणि कुकी व साइट डेटा हटवणे हे करायचे आहे का?</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6207207788774442484">डेटा हटवा आणि परवानग्या रीसेट करा</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइंस्टॉल करायचे आहे का?</translation>
+<translation id="6234351944623978659">ब्राउझर अ‍ॅप &gt; Chrome वर टॅप करा</translation>
 <translation id="6262191102408817757">तुमच्या शेवटच्या टॅबवर आधारित</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>

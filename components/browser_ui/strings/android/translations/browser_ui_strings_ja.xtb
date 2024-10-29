@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
+<translation id="1070329623210597193">このサイトが表示または編集できるファイル</translation>
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1240190568154816272">Chrome を使いこなすヒント</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> に埋め込まれたページ</translation>
+<translation id="1263609676484797429">[アプリ] &gt; [デフォルトのアプリ] をタップします</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1289742167380433257">データを節約するため、このページの画像は Google によって最適化されています。</translation>
 <translation id="129382876167171263">ウェブサイトによって保存されたファイルがここに表示されます</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">一部の機能が動作しない可能性があります。関連サイトでは引き続きサードパーティ Cookie を使用できます。</translation>
+<translation id="3922092564198021702">スマートフォンの [設定] を開きます</translation>
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6064125863973209585">完了したダウンロード</translation>
 <translation id="6071501408666570960">このサイトからログアウトされる可能性があります</translation>
+<translation id="6085954183010297841"><ph name="FILE" /> のファイル編集権限を削除しますか？</translation>
 <translation id="6120483543004435978">オンにすると、サイトはデバイスのアクティブ状態の検出を要求できます。オフにすると、サイトはデバイスのアクティブ状態を検出できません。</translation>
 <translation id="6140839633433422817">権限をリセットし、Cookie とサイトデータを削除してもよろしいですか？</translation>
 <translation id="6165508094623778733">詳細</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
 <translation id="6231752747840485235">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
+<translation id="6234351944623978659">[ブラウザアプリ] &gt; [Chrome] をタップします</translation>
 <translation id="6262191102408817757">最後のタブに基づく</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロック</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>

@@ -375,6 +375,7 @@
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome откри повторно използвана парола, която можете да подобрите}other{Chrome откри # повторно използвани пароли, които можете да подобрите}}</translation>
 <translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2981364137500752533">Можете да отворите до 5 прозореца.</translation>
 <translation id="2983102365694924129">Въз основа на активността ви в даден сайт. Тази настройка е изключена.</translation>
 <translation id="2984978667043170458">Включване на съседния текст в търсенията с Google</translation>
+<translation id="2988638966064514052">Подобрете паролите си</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2992473221983447149">Описания на изображенията</translation>
 <translation id="2996291259634659425">Създаване на пропуск</translation>
@@ -1686,6 +1688,7 @@
 <translation id="8754448020583829686">Копиране без връзката</translation>
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
 <translation id="8765470054473112089">Когато пишете в адресната лента или полето за търсене, Chrome изпраща въведеното от вас до основната ви търсеща машина с цел получаване на по-добри предложения. Тази функция е изключена в режим „инкогнито“.</translation>
+<translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome откри ненадеждна парола, която можете да подобрите}other{Chrome откри # ненадеждни пароли, които можете да подобрите}}</translation>
 <translation id="8766529642647037772">Да се създаде ли откроена връзка като тази?</translation>
 <translation id="8788265440806329501">Историята на навигацията е затворена</translation>
 <translation id="8788968922598763114">Повторно отваряне на последно затворения раздел</translation>

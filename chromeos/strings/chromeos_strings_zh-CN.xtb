@@ -1348,8 +1348,6 @@
 <translation id="7544853251252956727">随机播放</translation>
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7551123448725492271">设备类型是音频设备。</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> 管理员已设置此 <ph name="DEVICE_TYPE" /> 可供使用的时间。<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />您在<ph name="DAY" /><ph name="TIME" /> 后将能够再次使用此设备。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">预览屏幕截图</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7561759921596375678">开启声音</translation>

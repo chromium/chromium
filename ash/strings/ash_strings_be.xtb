@@ -1477,7 +1477,6 @@
 <translation id="5975235751479998104">Пераключацца наперад паміж вокнамі</translation>
 <translation id="5978382165065462689">Абагульванне кантролю над экранам праз Аддаленую дапамогу.</translation>
 <translation id="5980301590375426705">Выйсці з гасцявога рэжыму</translation>
-<translation id="5982119059638483922">Каб скасаваць, націсніце "Fn+Пошук" або "Shift".</translation>
 <translation id="5983567367406220847">Хот-спот быў выключаны праз бяздзейнасць.</translation>
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="5986723678596105470">Далучыцца праз Google Meet</translation>
@@ -1719,6 +1718,7 @@
 <translation id="6751826523481687655">Трасіроўка прадукцыйнасці ўключана</translation>
 <translation id="6752912906630585008">Стол <ph name="REMOVED_DESK" /> быў выдалены і аб’яднаны са Сталом <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">укладкі</translation>
+<translation id="6754918760968695779">Хуткая ўстаўка</translation>
 <translation id="6757237461819837179">Медыяфайлы не прайграюцца</translation>
 <translation id="6760438044935091345">Гульнявая панэль</translation>
 <translation id="6768043681523654438">сховішча</translation>

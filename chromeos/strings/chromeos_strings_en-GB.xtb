@@ -1348,8 +1348,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7550715992156305117">Diagnostic routines</translation>
 <translation id="7551123448725492271">Device is an audio device.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />You'll be able to use this device again on <ph name="DAY" /> at <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Preview screenshot</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
 <translation id="7561759921596375678">Turn on volume</translation>

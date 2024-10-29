@@ -1475,7 +1475,6 @@
 <translation id="5975235751479998104">正向浏览各个窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
-<translation id="5982119059638483922">按 Fn+搜索键或按 Shift 键可停用。</translation>
 <translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
 <translation id="598407983968395253">使用模板</translation>
 <translation id="5986723678596105470">通过 Google Meet 加入</translation>
@@ -1717,6 +1716,7 @@
 <translation id="6751826523481687655">已启用性能跟踪</translation>
 <translation id="6752912906630585008">桌面“<ph name="REMOVED_DESK" />”已移除并与桌面“<ph name="RECEIVE_DESK" />”合并</translation>
 <translation id="6753390234084146956">标签页</translation>
+<translation id="6754918760968695779">快捷插入</translation>
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
 <translation id="6760438044935091345">游戏信息中心</translation>
 <translation id="6768043681523654438">存储空间</translation>

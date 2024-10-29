@@ -428,6 +428,7 @@
 <translation id="1291421198328146277">키 재설정</translation>
 <translation id="1292849930724124745">로그인 상태를 유지하려면 스마트 카드 삽입</translation>
 <translation id="1293264513303784526">USB-C 기기(왼쪽 포트)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" 동작이 "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", "<ph name="CONFLICTING_GESTURE_THREE" />" 동작과 겹칠 수 있습니다. 가능하다면 다른 동작을 선택해 보세요.</translation>
 <translation id="1293556467332435079">파일</translation>
 <translation id="1294807885394205587">이 과정은 몇 분 정도 걸릴 수 있습니다. 컨테이너 관리자를 시작합니다.</translation>
 <translation id="12951065153783848">조직에서 계정을 관리합니다</translation>
@@ -1175,7 +1176,6 @@
 <translation id="1809734401532861917">북마크, 방문 기록, 비밀번호, 기타 설정을 <ph name="USER_EMAIL_ADDRESS" />에 추가합니다.</translation>
 <translation id="1810070166657251157">휴대전화에서 저장된 비밀번호를 사용하려면 QR 코드를 따라가 iOS용 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="1810366086647840386">이미지 서버</translation>
-<translation id="1810391395243432441">화면 잠금으로 비밀번호 보호</translation>
 <translation id="1811908311154949291">시크릿 모드 펜스된 프레임: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용하여 계속할 수 없음</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> 전송 중</translation>
@@ -2629,6 +2629,7 @@
 <translation id="2806372837663997957">공유하려는 기기에서 수락하지 않았습니다.</translation>
 <translation id="2806891468525657116">바로가기가 이미 존재합니다.</translation>
 <translation id="2807517655263062534">다운로드한 파일이 여기에 표시됩니다.</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" 동작이 "<ph name="CONFLICTING_GESTURE_ONE" />" 및 "<ph name="CONFLICTING_GESTURE_TWO" />" 동작과 겹칠 수 있습니다. 가능하다면 다른 동작을 선택해 보세요.</translation>
 <translation id="2811205483104563968">계정</translation>
 <translation id="2812049959647166806">Thunderbolt가 지원되지 않음</translation>
 <translation id="2812171980080389735">즉시 연결할 수 있도록 저장된 네트워크 및 비밀번호</translation>
@@ -3220,7 +3221,6 @@
 <translation id="3262261769033093854">사이트에서 마우스 입력을 캡처하고 사용하도록 허용하지 않음</translation>
 <translation id="3262336253311870293"><ph name="DOMAIN" />에서 관리하는 계정이므로 Google 계정에서 로그아웃되지 않습니다. 북마크, 방문 기록, 비밀번호, 기타 설정이 더 이상 동기화되지 않습니다. 하지만 이전에 동기화된 데이터는 Google 계정에 계속 남아 있으며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="3262986719682892278">너무 큼</translation>
-<translation id="3264239161215962624">전송하려면 <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />에서 Chrome에 액세스 권한을 부여하세요</translation>
 <translation id="3264544094376351444">Sans-serif</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
 <translation id="3265459715026181080">창 닫기</translation>
@@ -3822,7 +3822,6 @@
 <translation id="3699624789011381381">이메일 주소</translation>
 <translation id="3699920817649120894">동기화 및 맞춤설정을 사용 중지하시겠습니까?</translation>
 <translation id="3700888195348409686">표시 중(<ph name="PAGE_ORIGIN" />)</translation>
-<translation id="3700966190175650601">비밀번호 입력 시 지문 사용 중</translation>
 <translation id="3700993174159313525">사이트에서 카메라 위치를 추적하도록 허용하지 않음</translation>
 <translation id="3701167022068948696">지금 해결하기</translation>
 <translation id="3701515417135397388">정보 유출로 인해 비밀번호가 유출된 경우 경고</translation>
@@ -4363,6 +4362,7 @@
 <translation id="404894744863342743">다운로드한 파일을 사용한 후에는 이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 파일을 삭제하세요.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}other{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}}</translation>
 <translation id="4050225813016893843">인증 방법</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" 동작이 "<ph name="CONFLICTING_GESTURE" />" 동작과 겹칠 수 있습니다. 가능하다면 다른 동작을 선택해 보세요.</translation>
 <translation id="4050534976465737778">두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하는 경우 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">마지막에 사용한 입력 방법으로 전환하려면 <ph name="KEY_CODES" />키를 누르세요</translation>
 <translation id="4051177682900543628">검색 + 오른쪽 화살표</translation>
@@ -5021,7 +5021,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4554591392113183336">외부 확장 프로그램의 버전이 기존 프로그램과 동일하거나 낮습니다.</translation>
 <translation id="4555769855065597957">그림자</translation>
 <translation id="4555863373929230635">Google 계정에 비밀번호를 저장하려면 로그인한 다음 동기화를 사용 설정하세요.</translation>
-<translation id="4556069465387849460">비밀번호 입력 시 화면 잠금 사용 중</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" />님이 <ph name="WEBSITE_NAME" />의 비밀번호를 공유했습니다. 로그인 양식에서 사용할 수 있습니다.</translation>
 <translation id="4558426062282641716">자동 실행 권한 요청됨</translation>
 <translation id="4558542033859106586"><ph name="TARGET_APP" />에서 열림</translation>
@@ -5279,7 +5278,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4744260496658845719">키보드 백라이트 밝기</translation>
 <translation id="4744268813103118742">사이트로 이동</translation>
 <translation id="4744571849207727284">Excel</translation>
-<translation id="4744816391336495134">저장된 비밀번호를 사용할 때마다 지문을 사용하여 본인 인증을 할 수 있습니다.</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
 <translation id="4745500401920035244">관리자가 시스템 전체에 변경사항을 적용하여 일부 기존 프로필이 비활성화되었습니다. 더 이상 이 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
@@ -8458,7 +8456,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7068591156533195518"><ph name="DEVICE_TYPE" />에서 <ph name="APP_NAME" /> 외 몇 가지 앱이 차단되었습니다</translation>
 <translation id="706949303827219454">새 탭에서 보안 설정 페이지 열기</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{이 사이트의 새 비밀번호}other{이 사이트의 새 비밀번호}}</translation>
-<translation id="7070144569727915108">시스템 설정</translation>
 <translation id="7070484045139057854">사이트 데이터를 읽고 변경할 수 있음</translation>
 <translation id="7072010813301522126">바로가기 이름</translation>
 <translation id="7072078320324181561">위치 정보 액세스 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 내 위치 정보를 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -10202,7 +10199,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8322814362483282060">마이크 액세스가 차단된 페이지입니다.</translation>
 <translation id="8323167517179506834">URL 입력</translation>
 <translation id="8323317289166663449">컴퓨터 및 모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
-<translation id="8323505966575306467">비밀번호 보안 강화</translation>
 <translation id="8323518750352551353">탐색을 분리하시겠습니까?</translation>
 <translation id="8324158725704657629">다시 묻지 않음</translation>
 <translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
@@ -10671,7 +10667,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8662978096466608964">Chrome에서 배경화면을 설정할 수 없습니다.</translation>
 <translation id="8663099077749055505"><ph name="HOST" />에서 여러 항목을 자동으로 다운로드하지 않도록 항상 차단</translation>
 <translation id="8664389313780386848">페이지 소스 보기(&amp;V)</translation>
-<translation id="8664603206102030248">이미 할당된 동작을 선택하면 원래 작업에서 동작이 삭제됩니다</translation>
 <translation id="8665110742939124773">잘못된 액세스 코드를 입력했습니다. 다시 시도해 주세요.</translation>
 <translation id="8665180165765946056">백업 완료</translation>
 <translation id="866611985033792019">이메일 사용자를 식별하기 위해 이 인증서 신뢰</translation>

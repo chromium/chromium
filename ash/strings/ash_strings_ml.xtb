@@ -1147,6 +1147,7 @@
 <translation id="4902797682482387055">ഫോക്കസ് ചെയ്യാൻ നിർദ്ദേശിക്കുന്ന ടാസ്‌ക്</translation>
 <translation id="490375751687810070">ലംബം</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
+<translation id="4911191962826748981">ഇതൊരു പരീക്ഷണാത്മക AI ഫീച്ചറാണ്, എല്ലായ്‌പ്പോഴും ശരിയായിരിക്കണമെന്നില്ല.</translation>
 <translation id="491504982845934899">ഉപകരണം സജ്ജീകരിച്ച് <ph name="NETWORK_NAME" /> സജീവമാക്കൂ</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
@@ -1476,7 +1477,6 @@
 <translation id="5975235751479998104">ഒരോരോ വിൻഡോയിലൂടെയും മുന്നോട്ട് പോകുക</translation>
 <translation id="5978382165065462689">നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
 <translation id="5980301590375426705">ഗസ്റ്റ് എക്സിറ്റ്</translation>
-<translation id="5982119059638483922">റദ്ദാക്കാൻ Fn+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="5983567367406220847">നിഷ്‌ക്രിയത്വത്തെ തുടർന്ന്, ഹോട്ട്‌സ്പോട്ട് ഓഫാക്കി.</translation>
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="5986723678596105470">Google Meet ഉപയോഗിച്ച് ചേരുക</translation>
@@ -1718,6 +1718,7 @@
 <translation id="6751826523481687655">പ്രകടനം പിന്തുടരൽ ഓണാണ്</translation>
 <translation id="6752912906630585008">ഡെസ്‌ക് <ph name="REMOVED_DESK" /> നീക്കം ചെയ്‌ത്, ഡെസ്‌ക് <ph name="RECEIVE_DESK" />-മായി ലയിപ്പിച്ചു</translation>
 <translation id="6753390234084146956">ടാബുകൾ</translation>
+<translation id="6754918760968695779">ക്വിക്ക് ഇൻസേർട്ട്</translation>
 <translation id="6757237461819837179">മീഡിയയൊന്നും പ്ലേ ചെയ്യുന്നില്ല</translation>
 <translation id="6760438044935091345">ഗെയിം ഡാഷ്ബോർഡ്</translation>
 <translation id="6768043681523654438">സ്‌റ്റോറേജ്</translation>
@@ -2010,6 +2011,7 @@
 <translation id="780301667611848630">വേണ്ട</translation>
 <translation id="7807067443225230855">തിരയലും സഹായിയും</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />, <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">തംബ്‌സ് അപ്പ്, നിങ്ങൾ ഈ നിർദ്ദേശം ലൈക്ക് ചെയ്തുവെന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കും</translation>
 <translation id="7825412704590278437">വരാനിരിക്കുന്ന കലണ്ടർ ഇവന്റിൽ നിന്ന്</translation>
 <translation id="7829386189513694949">ശക്തിയുള്ള സിഗ്നൽ</translation>
 <translation id="7830453190047749513">നിങ്ങളുടെ <ph name="PERIPHERAL_NAME" /> എന്നതിനുള്ള ബട്ടൺ പ്രവർത്തനങ്ങളും കഴ്‌സർ വേഗതയും മറ്റും നിങ്ങൾക്ക് വ്യക്തിപരമാക്കാം</translation>
@@ -2164,6 +2166,7 @@
 <translation id="830868413617744215">ബീറ്റ</translation>
 <translation id="8314772463905284467">Caps Lock ഓൺ ആണ്</translation>
 <translation id="8315514906653279104">ഓണാക്കുന്നു...</translation>
+<translation id="8319634750346253957">തംബ്‌സ് ഡൗൺ, നിങ്ങൾ ഈ നിർദ്ദേശം ഡിസ്‌ലൈക്ക് ചെയ്തുവെന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കും</translation>
 <translation id="8331351032546853669">ഡൗൺലോഡ് ശേഷിക്കുന്നു</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

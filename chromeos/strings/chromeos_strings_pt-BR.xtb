@@ -924,6 +924,7 @@
 <translation id="5595623927872580850">cinza</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600027863942488546">A tecla <ph name="KEY_NAME" /> foi testada</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Você saiu da sua conta</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
@@ -1348,8 +1349,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7544853251252956727">Ordem aleatória</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7551123448725492271">Este é um dispositivo de áudio.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />O administrador do <ph name="MANAGER" /> definiu quando este <ph name="DEVICE_TYPE" /> pode ser usado.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Você poderá usar este dispositivo de novo <ph name="DAY" /> às <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Captura de tela da prévia</translation>
 <translation id="7561454561030345039">Essa ação é gerenciada pelo administrador</translation>
 <translation id="7561759921596375678">Ativar o som</translation>
