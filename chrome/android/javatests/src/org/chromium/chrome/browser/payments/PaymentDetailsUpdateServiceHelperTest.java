@@ -283,6 +283,9 @@ public class PaymentDetailsUpdateServiceHelperTest {
         public void paymentDetailsNotUpdated() {
             mPaymentDetailsDidNotUpdate = true;
         }
+
+        @Override
+        public void setPaymentDetailsUpdateService(IPaymentDetailsUpdateService service) {}
     }
 
     private String receivedErrorString() {

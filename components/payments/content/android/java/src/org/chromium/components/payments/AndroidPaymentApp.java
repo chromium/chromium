@@ -9,6 +9,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -52,13 +53,15 @@ public class AndroidPaymentApp extends PaymentApp
     private final boolean mIsIncognito;
     private final String mPackageName;
     private final String mPayActivityName;
-    private final String mIsReadyToPayServiceName;
+    @Nullable private final String mIsReadyToPayServiceName;
+    @Nullable private final String mPaymentDetailsUpdateServiceName;
     private final SupportedDelegations mSupportedDelegations;
     private final boolean mShowReadyToPayDebugInfo;
 
     private IsReadyToPayCallback mIsReadyToPayCallback;
     private InstrumentDetailsCallback mInstrumentDetailsCallback;
     private IsReadyToPayServiceHelper mIsReadyToPayServiceHelper;
+    private PaymentDetailsUpdateConnection mPaymentDetailsUpdateConnection;
     @Nullable private String mApplicationIdentifierToHide;
     private boolean mBypassIsReadyToPayServiceInTest;
     private boolean mIsPreferred;
@@ -220,6 +223,9 @@ public class AndroidPaymentApp extends PaymentApp
      * @param activity The name of the payment activity in the payment app.
      * @param isReadyToPayService The name of the service that can answer "is ready to pay" query,
      *     or null of none.
+     * @param paymentDetailsUpdateServiceName The name of the payment app's service for dynamically
+     *     updating the payment details (e.g., the total price) based on changes in user's payment
+     *     method, shipping address, or shipping option.
      * @param label The UI label to use for the payment app.
      * @param icon The icon to use in UI for the payment app.
      * @param isIncognito Whether the user is in incognito mode.
@@ -233,6 +239,7 @@ public class AndroidPaymentApp extends PaymentApp
             String packageName,
             String activity,
             @Nullable String isReadyToPayService,
+            @Nullable String paymentDetailsUpdateServiceName,
             String label,
             Drawable icon,
             boolean isIncognito,
@@ -247,6 +254,7 @@ public class AndroidPaymentApp extends PaymentApp
         mPackageName = packageName;
         mPayActivityName = activity;
         mIsReadyToPayServiceName = isReadyToPayService;
+        mPaymentDetailsUpdateServiceName = paymentDetailsUpdateServiceName;
 
         if (mIsReadyToPayServiceName != null) {
             assert !isIncognito;
@@ -509,6 +517,16 @@ public class AndroidPaymentApp extends PaymentApp
 
         mLauncher.launchPaymentApp(
                 payIntent, this::notifyErrorInvokingPaymentApp, this::onIntentCompleted);
+
+        if (!TextUtils.isEmpty(mPaymentDetailsUpdateServiceName)) {
+            mPaymentDetailsUpdateConnection =
+                    new PaymentDetailsUpdateConnection(
+                            ContextUtils.getApplicationContext(),
+                            WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
+                                    mPackageName, mPaymentDetailsUpdateServiceName),
+                            new PaymentDetailsUpdateService().getBinder());
+            mPaymentDetailsUpdateConnection.connectToService();
+        }
     }
 
     private void notifyErrorInvokingPaymentApp(String errorMessage) {
@@ -522,13 +540,13 @@ public class AndroidPaymentApp extends PaymentApp
                 });
     }
 
-    public void onIntentCompletedForTesting(IntentResult intentResult) {
-        onIntentCompleted(intentResult);
-    }
-
-    private void onIntentCompleted(IntentResult intentResult) {
+    @VisibleForTesting
+    /* package */ void onIntentCompleted(IntentResult intentResult) {
         assert mInstrumentDetailsCallback != null;
         ThreadUtils.assertOnUiThread();
+        if (mPaymentDetailsUpdateConnection != null) {
+            mPaymentDetailsUpdateConnection.terminateConnection();
+        }
         WebPaymentIntentHelper.parsePaymentResponse(
                 intentResult.resultCode,
                 intentResult.data,

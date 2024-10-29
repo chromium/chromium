@@ -121,6 +121,7 @@ android_library("service_java") {
     "java/src/org/chromium/components/payments/PackageManagerDelegate.java",
     "java/src/org/chromium/components/payments/PayerData.java",
     "java/src/org/chromium/components/payments/PaymentAddressTypeConverter.java",
+    "java/src/org/chromium/components/payments/PaymentDetailsUpdateConnection.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateService.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateServiceHelper.java",
     "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
@@ -378,6 +379,7 @@ robolectric_library("junit_test_support") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/payments/PaymentDetailsUpdateConnectionTest.java",
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredTest.java",

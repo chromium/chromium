@@ -27,6 +27,10 @@ BASE_DECLARE_FEATURE(kOmitParametersInReadyToPay);
 // IS_READY_TO_PAY intent, whenever Clank fires this intent.
 BASE_DECLARE_FEATURE(kShowReadyToPayDebugInfo);
 
+// If enabled, PaymentRequest looks up the UPDATE_PAYMENT_DETAILS intent filter
+// in the payment app.
+BASE_DECLARE_FEATURE(kUpdatePaymentDetailsIntentFilterInPaymentApp);
+
 }  // namespace android
 }  // namespace payments
 

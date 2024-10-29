@@ -1175,4 +1175,38 @@ public class WebPaymentIntentHelperTest {
                 methodDataMap,
                 /* clearIdFields= */ true);
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void createPaymentDetailsUpdateServiceIntent() throws Throwable {
+        Intent intent =
+                WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
+                        "package.name", "service.name");
+        Assert.assertEquals("package.name", intent.getComponent().getPackageName());
+        Assert.assertEquals("service.name", intent.getComponent().getClassName());
+        Assert.assertNull(intent.getExtras());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void createPaymentDetailsUpdateServiceIntentThrowsWithoutPackageName() throws Throwable {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("packageName should not be null or empty.");
+
+        WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
+                /* packageName= */ null, "service.name");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void createPaymentDetailsUpdateServiceIntentThrowsWithoutServiceName() throws Throwable {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("serviceName should not be null or empty.");
+
+        WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
+                "package.name", /* serviceName= */ null);
+    }
 }

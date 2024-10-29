@@ -81,4 +81,9 @@ public class PaymentDetailsUpdateService extends Service {
                 "PaymentRequest.PaymentDetailsUpdateService.Bind", true);
         return mBinder;
     }
+
+    /** Returns the binder that can be passed to the AIDL call. */
+    public IPaymentDetailsUpdateService.Stub getBinder() {
+        return mBinder;
+    }
 }

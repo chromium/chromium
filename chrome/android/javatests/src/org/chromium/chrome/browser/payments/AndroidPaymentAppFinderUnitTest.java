@@ -68,6 +68,7 @@ import java.util.Map;
 /** Tests for the native Android payment app finder. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
+@Features.EnableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
 public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";
@@ -508,29 +509,24 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
 
         Mockito.when(mPackageManagerDelegate.getAppLabel(Mockito.any(ResolveInfo.class)))
                 .thenReturn("A non-empty label");
-        Mockito.when(
-                        mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
-                                ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
+        Mockito.when(mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
+                             ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
                 .thenReturn(activities);
 
-        Mockito.when(
-                        mPackageManagerDelegate.getStringArrayResourceForApplication(
-                                ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
-                                ArgumentMatchers.eq(1)))
+        Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
+                             ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
+                             ArgumentMatchers.eq(1)))
                 .thenReturn(new String[] {"https://bobpay.test", "basic-card"});
 
-        List<ResolveInfo> services = new ArrayList<>();
-        ResolveInfo isBobPayReadyToPay = new ResolveInfo();
-        isBobPayReadyToPay.serviceInfo = new ServiceInfo();
-        isBobPayReadyToPay.serviceInfo.packageName = "com.bobpay.app";
-        isBobPayReadyToPay.serviceInfo.name = "com.bobpay.app.IsReadyToWebPay";
-        services.add(isBobPayReadyToPay);
-        Intent isReadyToPayIntent = new Intent(AndroidPaymentAppFinder.ACTION_IS_READY_TO_PAY);
-        Mockito.when(
-                        mPackageManagerDelegate.getServicesThatCanRespondToIntent(
-                                ArgumentMatchers.argThat(
-                                        new IntentArgumentMatcher(isReadyToPayIntent))))
-                .thenReturn(services);
+        Mockito.when(mPackageManagerDelegate.getServicesThatCanRespondToIntent(
+                             ArgumentMatchers.argThat(new IntentArgumentMatcher(
+                                     new Intent(AndroidPaymentAppFinder.ACTION_IS_READY_TO_PAY)))))
+                .thenReturn(createService("IsReadyToWebPay"));
+
+        Mockito.when(mPackageManagerDelegate.getServicesThatCanRespondToIntent(
+                             ArgumentMatchers.argThat(new IntentArgumentMatcher(new Intent(
+                                     AndroidPaymentAppFinder.ACTION_UPDATE_PAYMENT_DETAILS)))))
+                .thenReturn(createService("PaymentDetailsUpdate"));
 
         PackageInfo bobPayPackageInfo = new PackageInfo();
         bobPayPackageInfo.versionCode = 10;
@@ -607,6 +603,17 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                 .onPaymentAppCreated(
                         ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.bobpay.app")));
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/* factory= */ null);
+    }
+
+    private static List<ResolveInfo> createService(String serviceName) {
+        ResolveInfo serviceResolveInfo = new ResolveInfo();
+        serviceResolveInfo.serviceInfo = new ServiceInfo();
+        serviceResolveInfo.serviceInfo.packageName = "com.bobpay.app";
+        serviceResolveInfo.serviceInfo.name = "com.bobpay.app." + serviceName;
+
+        List<ResolveInfo> result = new ArrayList<>();
+        result.add(serviceResolveInfo);
+        return result;
     }
 
     private static final class Matches implements ArgumentMatcher<PaymentApp> {

@@ -125,6 +125,7 @@ public class AndroidPaymentAppUnitTest {
                         "com.company.app",
                         "com.company.app.PaymentActivity",
                         "com.company.app.IsReadyToPayService",
+                        "com.company.app.PaymentDetailsUpdateService",
                         "App Label",
                         /* icon= */ null,
                         /* isIncognito= */ false,
@@ -195,7 +196,7 @@ public class AndroidPaymentAppUnitTest {
         extras.putString("methodName", "https://company.com/pay");
         extras.putString("details", "{}");
         intentResult.data.putExtras(extras);
-        app.onIntentCompletedForTesting(intentResult);
+        app.onIntentCompleted(intentResult);
 
         CriteriaHelper.pollUiThreadNested(() -> mInvokePaymentAppFinished);
     }
