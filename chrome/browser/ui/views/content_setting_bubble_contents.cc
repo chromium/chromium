@@ -345,12 +345,6 @@ int ContentSettingBubbleContents::GetSelectedRadioOption() {
   NOTREACHED();
 }
 
-void ContentSettingBubbleContents::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  if (learn_more_button_)
-    StyleLearnMoreButton();
-}
-
 std::u16string ContentSettingBubbleContents::GetWindowTitle() const {
   if (!content_setting_bubble_model_)
     return std::u16string();
@@ -521,16 +515,6 @@ void ContentSettingBubbleContents::Init() {
   content_setting_bubble_model_->set_owner(this);
 }
 
-void ContentSettingBubbleContents::StyleLearnMoreButton() {
-  DCHECK(learn_more_button_);
-  const ui::ColorProvider* cp = GetColorProvider();
-  SkColor icon_color = cp->GetColor(ui::kColorIcon);
-  SkColor icon_disabled_color = cp->GetColor(ui::kColorIconDisabled);
-  views::SetImageFromVectorIconWithColor(learn_more_button_,
-                                         vector_icons::kHelpOutlineIcon,
-                                         icon_color, icon_disabled_color);
-}
-
 std::unique_ptr<views::View>
 ContentSettingBubbleContents::CreateHelpAndManageView() {
   DCHECK(content_setting_bubble_model_);
@@ -539,15 +523,16 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   std::vector<std::unique_ptr<views::View>> extra_views;
   // Optionally add a help icon if the view wants to link to a help page.
   if (bubble_content.show_learn_more) {
-    auto learn_more_button = views::CreateVectorImageButton(base::BindRepeating(
-        [](ContentSettingBubbleContents* bubble) {
-          bubble->GetWidget()->Close();
-          bubble->content_setting_bubble_model_->OnLearnMoreClicked();
-        },
-        base::Unretained(this)));
+    auto learn_more_button = views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(
+            [](ContentSettingBubbleContents* bubble) {
+              bubble->GetWidget()->Close();
+              bubble->content_setting_bubble_model_->OnLearnMoreClicked();
+            },
+            base::Unretained(this)),
+        vector_icons::kHelpOutlineIcon);
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-    learn_more_button_ = learn_more_button.get();
     extra_views.push_back(std::move(learn_more_button));
   }
   // Optionally add a "Manage" button if the view wants to use a button to
