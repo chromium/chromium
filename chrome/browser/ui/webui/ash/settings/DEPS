@@ -76,6 +76,9 @@ specific_include_rules = {
     '+ash/shell.h',
     '+ash/system/power',
   ],
+  'search_section\.(cc|h)': [
+    "+ash/lobster",
+  ],
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',
   ],

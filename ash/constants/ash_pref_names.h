@@ -87,6 +87,9 @@ inline constexpr char kHMRConsentStatus[] = "settings.hmr.consent_status";
 inline constexpr char kHMRConsentWindowDismissCount[] =
     "settings.hmr.consent_window_dismiss_count";
 
+// A boolean pref of whether Lobster is enabled.
+inline constexpr char kLobsterEnabled[] = "settings.lobster_enabled";
+
 // A boolean pref used by an admin policy to enable/disable particular
 // features on the physical keyboard. See the policy at
 // PhysicalKeyboardAutocorrect.yml.

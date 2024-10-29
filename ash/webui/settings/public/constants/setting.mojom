@@ -179,6 +179,7 @@ enum Setting {
   kQuickAnswersUnitConversion = 611,
   kMahiOnOff = 612,
   kMagicBoostOnOff = 613,
+  kLobsterOnOff = 614,
 
   // Apps section.
   kManageAndroidPreferences = 700,

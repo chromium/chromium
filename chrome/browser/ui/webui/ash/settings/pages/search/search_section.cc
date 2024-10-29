@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
+#include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -38,6 +39,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash::settings {
 
@@ -79,6 +84,11 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
   }
 
   return hmr_needs_notice_banner || hmw_needs_notice_banner;
+}
+
+bool IsLobsterSettingsToggleVisible() {
+  return ash::features::IsLobsterEnabled() &&
+         ash::LobsterController::IsEnabled();
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
@@ -380,6 +390,10 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableHelpMeWrite", IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE},
       {"enableHelpMeWriteDesc",
        IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"enableLobster", IDS_OS_SETTINGS_ENABLE_LOBSTER},
+      {"enableLobsterDesc", IDS_OS_SETTINGS_ENABLE_LOBSTER_DESCRIPTION},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"osSearchEngineLabel", kIsRevampEnabled
                                   ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
                                   : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
@@ -407,6 +421,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isMagicBoostNoticeBannerVisible",
                           IsMagicBoostNoticeBannerVisible(profile()));
+
+  html_source->AddBoolean("isLobsterSettingsToggleVisible",
+                          IsLobsterSettingsToggleVisible());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
@@ -467,6 +484,10 @@ bool SearchSection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.MagicBoost.HelpMeWriteEnabled", value.GetBool());
       return true;
 
+    case mojom::Setting::kLobsterOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.MagicBoost.LobsterEnabled",
+                                value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -484,6 +505,7 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // log it.
   generator->RegisterTopLevelSetting(mojom::Setting::kMahiOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kMagicBoostOnOff);
+  generator->RegisterTopLevelSetting(mojom::Setting::kLobsterOnOff);
 
   // Search.
   generator->RegisterTopLevelSubpage(

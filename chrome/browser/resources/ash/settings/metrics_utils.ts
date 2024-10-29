@@ -254,6 +254,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kShowOrca,
     type: PrefType.BOOLEAN,
   },
+  'settings.lobster_enabled': {
+    setting: Setting.kLobsterOnOff,
+    type: PrefType.BOOLEAN,
+  },
 };
 
 // Converts a given settings pref to a pair of setting ID and setting change

@@ -156,6 +156,7 @@ suite('<search-and-assistant-settings-card>', () => {
     test('sub items are deep-linkable', async () => {
       loadTimeData.overrideValues({
         isMagicBoostFeatureEnabled: true,
+        isLobsterSettingsToggleVisible: true,
       });
       createSearchAndAssistantCard();
       const fakePrefs = {
@@ -171,6 +172,9 @@ suite('<search-and-assistant-settings-card>', () => {
       const subItems = new Map<settingMojom.Setting, string>([
         [settingMojom.Setting.kMahiOnOff, '#helpMeReadToggle'],
         [settingMojom.Setting.kShowOrca, '#helpMeWriteToggle'],
+        // <if expr="_google_chrome" >
+        [settingMojom.Setting.kLobsterOnOff, '#lobsterToggle'],
+        // </if>
       ]);
 
       for (const [setting, element] of subItems) {
@@ -189,6 +193,71 @@ suite('<search-and-assistant-settings-card>', () => {
             `Element should be focused for settingId=${setting}.'`);
       }
     });
+
+    suite(
+        'Lobster setting toggle',
+        () => {
+            [{
+              isMagicBoostFeatureEnabled: false,
+              isLobsterSettingsToggleVisible: false,
+              expectedVisibility: false
+            },
+             {
+               isMagicBoostFeatureEnabled: false,
+               isLobsterSettingsToggleVisible: true,
+               expectedVisibility: false
+             },
+             {
+               isMagicBoostFeatureEnabled: true,
+               isLobsterSettingsToggleVisible: false,
+               expectedVisibility: false
+             },
+             {
+               isMagicBoostFeatureEnabled: true,
+               isLobsterSettingsToggleVisible: true,
+               expectedVisibility: true
+             },
+    ].forEach(({
+                isMagicBoostFeatureEnabled,
+                isLobsterSettingsToggleVisible,
+                expectedVisibility
+              }) => {
+                  test(
+                      `should ${
+                          expectedVisibility ?
+                              '' :
+                              'not'} show if isMagicBoostFeatureEnabled is ${
+                          isMagicBoostFeatureEnabled ?
+                              'true' :
+                              'false'} and isLobsterSettingsToggleVisible is ${
+                          isLobsterSettingsToggleVisible ? 'true' : 'false'}`,
+                      () => {
+                        loadTimeData.overrideValues({
+                          isMagicBoostFeatureEnabled,
+                          isLobsterSettingsToggleVisible,
+                        });
+                        createSearchAndAssistantCard();
+                        const fakePrefs = {
+                          settings: {
+                            magic_boost_enabled: {
+                              value: true,
+                            },
+                          },
+                        };
+                        searchAndAssistantSettingsCard.prefs = fakePrefs;
+                        flush();
+                        // <if expr="_google_chrome" >
+                        assertEquals(
+                            isVisible(searchAndAssistantSettingsCard.shadowRoot!
+                                          .querySelector('#lobsterToggle')),
+                            expectedVisibility);
+                        // </if>
+                        // <if expr="not _google_chrome" >
+                        assertFalse(
+                            isVisible(searchAndAssistantSettingsCard.shadowRoot!
+                                          .querySelector('#lobsterToggle')));
+                        // </if>
+                      })})});
   });
 
   suite('when Quick Answers is not supported', () => {
