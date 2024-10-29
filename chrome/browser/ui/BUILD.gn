@@ -1562,12 +1562,6 @@ static_library("ui") {
       "webui/side_panel/bookmarks/bookmarks_page_handler.h",
       "webui/side_panel/bookmarks/bookmarks_side_panel_ui.cc",
       "webui/side_panel/bookmarks/bookmarks_side_panel_ui.h",
-      "webui/side_panel/companion/companion_page_handler.cc",
-      "webui/side_panel/companion/companion_page_handler.h",
-      "webui/side_panel/companion/companion_side_panel_untrusted_ui.cc",
-      "webui/side_panel/companion/companion_side_panel_untrusted_ui.h",
-      "webui/side_panel/companion/signin_delegate_impl.cc",
-      "webui/side_panel/companion/signin_delegate_impl.h",
       "webui/side_panel/customize_chrome/customize_chrome_page_handler.cc",
       "webui/side_panel/customize_chrome/customize_chrome_page_handler.h",
       "webui/side_panel/customize_chrome/customize_chrome_ui.cc",
@@ -1668,8 +1662,6 @@ static_library("ui") {
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
       # gets modularized.
       "//chrome/browser/chooser_controller",
-      "//chrome/browser/companion/core",
-      "//chrome/browser/companion/text_finder",
       "//chrome/browser/content_extraction",
       "//chrome/browser/download",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",

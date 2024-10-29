@@ -8,7 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -369,37 +368,3 @@ TEST_F(CustomizeToolbarHandlerTest, ActionsUpdatedOnVisibilityChange) {
   EXPECT_FALSE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kDevTools));
 }
-
-class CustomizeToolbarHandlerCompanionTest
-    : public CustomizeToolbarHandlerTest {
- public:
-  CustomizeToolbarHandlerCompanionTest() = default;
-
- protected:
-  void SetupFeatureList() override {
-    feature_list_.InitWithFeatures(
-        {companion::features::internal::kSidePanelCompanion},
-        {lens::features::kLensOverlay});
-  }
-};
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-TEST_F(CustomizeToolbarHandlerCompanionTest, ListActionsContainsCompanion) {
-  std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
-  base::MockCallback<CustomizeToolbarHandler::ListActionsCallback> callback;
-  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&actions));
-  handler().ListActions(callback.Get());
-
-  const auto contains_action =
-      [&actions](side_panel::customize_chrome::mojom::ActionId id) -> bool {
-    return std::find_if(
-               actions.begin(), actions.end(),
-               [id](side_panel::customize_chrome::mojom::ActionPtr& action) {
-                 return action->id == id;
-               }) != actions.end();
-  };
-
-  EXPECT_TRUE(contains_action(
-      side_panel::customize_chrome::mojom::ActionId::kShowSearchCompanion));
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)

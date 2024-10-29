@@ -4182,7 +4182,6 @@ static_library("browser") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/autofill_prediction_improvements:util",
-      "//chrome/browser/companion/core",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
@@ -8662,7 +8661,6 @@ static_library("browser_generated_files") {
   } else {
     public_deps += [
       "//chrome/browser/cart:mojo_bindings",
-      "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/lens/core/mojom:mojo_bindings",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
