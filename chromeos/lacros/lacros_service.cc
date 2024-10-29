@@ -88,7 +88,6 @@
 #include "chromeos/crosapi/mojom/media_app.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
-#include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
@@ -808,14 +807,6 @@ void LacrosService::BindMediaControllerManager(
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>,
       &crosapi::mojom::Crosapi::BindMediaSessionController>(std::move(remote));
-}
-
-void LacrosService::BindMetricsReporting(
-    mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver) {
-  DCHECK(IsSupported<crosapi::mojom::MetricsReporting>());
-  BindPendingReceiverOrRemote<
-      mojo::PendingReceiver<crosapi::mojom::MetricsReporting>,
-      &crosapi::mojom::Crosapi::BindMetricsReporting>(std::move(receiver));
 }
 
 void LacrosService::BindPrintPreviewCrosDelegate(
