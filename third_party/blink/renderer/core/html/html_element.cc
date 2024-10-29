@@ -1232,6 +1232,7 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   }
   if (type == PopoverValueType::kNone) {
     if (HasPopoverAttribute()) {
+      SetImplicitAnchor(nullptr);
       // If the popover attribute is being removed, remove the PopoverData.
       RemovePopoverData();
     }
@@ -1802,9 +1803,6 @@ void HTMLElement::HidePopoverInternal(
 
   MarkPopoverInvokersDirty(*this);
   GetPopoverData()->setInvoker(nullptr);
-  if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
-    SetImplicitAnchor(nullptr);
-  }
   // Events are only fired in the case that the popover is not being removed
   // from the document.
   if (transition_behavior ==
