@@ -188,8 +188,8 @@ void GetTabDataForModelPrototyping(
   for (int index = 0; index < tab_strip_model->count(); index++) {
     content::WebContents* tab_web_contents =
         tab_strip_model->GetWebContentsAt(index);
-    auto title = base::UTF16ToUTF8(web_contents->GetTitle());
-    auto url = web_contents->GetLastCommittedURL().spec();
+    auto title = base::UTF16ToUTF8(tab_web_contents->GetTitle());
+    auto url = tab_web_contents->GetLastCommittedURL().spec();
     if (index >= inner_text_limit) {
       OnGetTabInnerText(index, std::move(title), std::move(url),
                         concurrent.CreateCallback(), nullptr);
