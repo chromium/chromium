@@ -182,7 +182,7 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kHistorySearch:
       return true;
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
-      return false;
+      return true;
     case ModelBasedCapabilityKey::kFormsAnnotations:
     case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kTabOrganization:
