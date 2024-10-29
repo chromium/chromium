@@ -2654,6 +2654,8 @@ void TabStripModel::InsertTabAtIndexImpl(
 
   ValidateTabStripModel();
 
+  tab_ptr->DidInsert(base::PassKey<TabStripModel>());
+
   TabStripModelChange::Insert insert;
   insert.contents.push_back({web_contents, index});
   TabStripModelChange change(std::move(insert));

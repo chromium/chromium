@@ -142,6 +142,10 @@ void TabModel::WillDetach(base::PassKey<TabStripModel>,
   will_detach_callback_list_.Notify(this, reason);
 }
 
+void TabModel::DidInsert(base::PassKey<TabStripModel>) {
+  did_insert_callback_list_.Notify(this);
+}
+
 content::WebContents* TabModel::GetContents() const {
   return contents();
 }
@@ -168,6 +172,11 @@ base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
 base::CallbackListSubscription TabModel::RegisterWillDetach(
     TabInterface::WillDetach callback) {
   return will_detach_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterDidInsert(
+    TabInterface::DidInsertCallback callback) {
+  return did_insert_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(

@@ -112,6 +112,9 @@ class TabModel final : public SupportsHandles<TabModel>,
   void WillDetach(base::PassKey<TabStripModel>,
                   tabs::TabInterface::DetachReason reason);
 
+  // Called by TabStripModel when a tab has been inserted into a tab strip.
+  void DidInsert(base::PassKey<TabStripModel>);
+
   // TabInterface overrides:
   content::WebContents* GetContents() const override;
   base::CallbackListSubscription RegisterWillDiscardContents(
@@ -123,6 +126,8 @@ class TabModel final : public SupportsHandles<TabModel>,
       TabInterface::WillEnterBackgroundCallback callback) override;
   base::CallbackListSubscription RegisterWillDetach(
       TabInterface::WillDetach callback) override;
+  base::CallbackListSubscription RegisterDidInsert(
+      TabInterface::DidInsertCallback callback) override;
 
   // Register for this callback to detect when the pinned state changes.
   base::CallbackListSubscription RegisterPinnedStateChanged(
@@ -201,6 +206,10 @@ class TabModel final : public SupportsHandles<TabModel>,
       base::RepeatingCallbackList<void(TabInterface*,
                                        tabs::TabInterface::DetachReason)>;
   WillDetachCallbackList will_detach_callback_list_;
+
+  using DidInsertCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  DidInsertCallbackList did_insert_callback_list_;
 
   using PinnedStateChangedCallbackList =
       base::RepeatingCallbackList<void(TabModel*, bool new_pinned_state)>;

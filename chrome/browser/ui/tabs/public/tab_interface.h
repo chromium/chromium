@@ -103,6 +103,15 @@ class TabInterface {
   virtual base::CallbackListSubscription RegisterWillDetach(
       WillDetach callback) = 0;
 
+  // Register for this callback to detect when a tab has been inserted into a
+  // window's tab strip. Registered callbacks will fire for all tab strip
+  // insertion events, including when the tab is first created and added to the
+  // tab strip if a callback has been registered early enough in the tab's
+  // lifecycle.
+  using DidInsertCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidInsert(
+      DidInsertCallback callback) = 0;
+
   // Features that want to show tab-modal UI are mutually exclusive. Before
   // showing a modal UI first check `CanShowModal`. Then call ShowModal() and
   // keep `ScopedTabModal` alive to prevent other features from showing
