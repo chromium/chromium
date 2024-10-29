@@ -533,8 +533,9 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
 }
 
+// TODO(crbug.com/376317307): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
-                       ZeroStateShowsSuggestions) {
+                       DISABLED_ZeroStateShowsSuggestions) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test1.png"));
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test2.png"));
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test3.png"));
