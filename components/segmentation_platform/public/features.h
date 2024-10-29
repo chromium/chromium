@@ -114,7 +114,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker);
 
 extern const char kEphemeralCardRankerForceShowCardParam[];
 extern const char kEphemeralCardRankerForceHideCardParam[];
-extern const char kPriceTrackingPromoForceOverride[];
 
 // Feature flag for enabling the Ephemeral Card ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralCardRanker);

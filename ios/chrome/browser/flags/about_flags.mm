@@ -954,11 +954,11 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
-     segmentation_platform::features::kPriceTrackingPromoForceOverride},
+     segmentation_platform::kPriceTrackingNotificationPromo},
 };
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
-     segmentation_platform::features::kPriceTrackingPromoForceOverride},
+     segmentation_platform::kPriceTrackingNotificationPromo},
 };
 
 // Address Bar Position

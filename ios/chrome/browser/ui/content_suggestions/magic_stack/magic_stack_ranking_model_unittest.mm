@@ -718,7 +718,7 @@ TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
             kSegmentationPlatformEphemeralCardRanker,
         {{segmentation_platform::features::
               kEphemeralCardRankerForceShowCardParam,
-          segmentation_platform::features::kPriceTrackingPromoForceOverride}}}},
+          segmentation_platform::kPriceTrackingNotificationPromo}}}},
       {});
   commerce::MockShoppingService* shopping_service =
       static_cast<commerce::MockShoppingService*>(
