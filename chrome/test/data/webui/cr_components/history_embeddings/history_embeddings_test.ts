@@ -574,6 +574,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
             /* answerShown= */ false,
             /* answerCitationClicked= */ false,
             /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
           ],
           await handler.whenCalled('recordSearchResultsMetrics'));
 
@@ -603,6 +604,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
             /* answerShown= */ false,
             /* answerCitationClicked= */ false,
             /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
           ],
           await handler.whenCalled('recordSearchResultsMetrics'),
           'Empty result set metrics are flushed.');
@@ -628,6 +630,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
             /* answerShown= */ true,
             /* answerCitationClicked= */ false,
             /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
           ],
           await handler.whenCalled('recordSearchResultsMetrics'),
           'Shown answers are recorded.');
@@ -647,6 +650,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
             /* answerShown= */ true,
             /* answerCitationClicked= */ false,
             /* otherHistoryResultClicked= */ true,
+            /* queryWordCount= */ 2,
           ],
           await handler.whenCalled('recordSearchResultsMetrics'),
           'Non-embedding result clicked is recorded.');
@@ -671,6 +675,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
             /* answerShown= */ true,
             /* answerCitationClicked= */ true,
             /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
           ],
           await handler.whenCalled('recordSearchResultsMetrics'),
           'Clicking answers is recorded.');

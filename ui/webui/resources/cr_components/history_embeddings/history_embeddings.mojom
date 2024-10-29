@@ -107,7 +107,8 @@ interface PageHandler {
   // non-empty embeddings results, and if the user clicked one of the results.
   RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult,
                              bool answerShown, bool answerCitationClicked,
-                             bool otherHistoryResultClicked);
+                             bool otherHistoryResultClicked,
+                             uint32 queryWordCount);
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);

@@ -11,7 +11,7 @@ export interface HistoryEmbeddingsBrowserProxy {
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean,
       answerShown: boolean, answerCitationClicked: boolean,
-      otherHistoryResultClicked: boolean): void;
+      otherHistoryResultClicked: boolean, queryWordCount: number): void;
   setUserFeedback(userFeedback: UserFeedback): void;
   maybeShowFeaturePromo(): void;
   openSettingsPage(): void;
@@ -58,10 +58,10 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean,
       answerShown: boolean, answerCitationClicked: boolean,
-      otherHistoryResultClicked: boolean) {
+      otherHistoryResultClicked: boolean, queryWordCount: number) {
     this.handler.recordSearchResultsMetrics(
         nonEmptyResults, userClickedResult, answerShown, answerCitationClicked,
-        otherHistoryResultClicked);
+        otherHistoryResultClicked, queryWordCount);
   }
 
   setUserFeedback(userFeedback: UserFeedback) {

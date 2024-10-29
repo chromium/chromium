@@ -53,6 +53,7 @@ constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
     "download-warning-page-heed";
 constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
     "download-warning-page-ignore";
+constexpr char kHatsSurveyTriggerHistoryEmbeddings[] = "history-embeddings";
 constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
 constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
 constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
@@ -263,6 +264,16 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopNtpModules,
       kHatsSurveyTriggerNtpModules);
+
+  // History embeddings survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForHistoryEmbeddings,
+      kHatsSurveyTriggerHistoryEmbeddings,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"non empty results",
+                               "best matches result clicked", "result_clicked",
+                               "answer shown", "answer citation clicked"},
+      std::vector<std::string>{"query word count"});
 
   // NTP Photos module opt-out survey.
   survey_configs.emplace_back(

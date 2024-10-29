@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -131,6 +136,9 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 
     static_cast<TestBrowserWindow*>(window())->SetFeaturePromoController(
         std::make_unique<user_education::test::MockFeaturePromoController>());
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile_, base::BindRepeating(&BuildMockHatsService)));
 
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
@@ -140,6 +148,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     browser()->tab_strip_model()->CloseAllTabs();
+    mock_hats_service_ = nullptr;
     web_contents_.reset();
     handler_.reset();
     MockOptimizationGuideKeyedService::ResetForTesting();
@@ -162,6 +171,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   content::TestWebUI web_ui_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
   testing::NiceMock<MockPage> page_;
+  raw_ptr<MockHatsService> mock_hats_service_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -231,7 +241,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
-  handler_->RecordSearchResultsMetrics(false, false, false, false, false);
+  handler_->RecordSearchResultsMetrics(false, false, false, false, false, 2);
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsSearch, 1);
@@ -251,7 +261,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kOtherHistoryResultClicked, 0);
 
-  handler_->RecordSearchResultsMetrics(true, true, true, true, true);
+  handler_->RecordSearchResultsMetrics(true, true, true, true, true, 2);
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsSearch, 2);
@@ -297,4 +307,34 @@ TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
                   feature_engagement::kIPHHistorySearchFeature)))
       .Times(1);
   handler_->MaybeShowFeaturePromo();
+}
+
+TEST_F(HistoryEmbeddingsHandlerTest, LaunchesDelayedHaTSSurvey) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kHappinessTrackingSurveysForHistoryEmbeddings}, {});
+
+  bool non_empty_results = true;
+  bool user_clicked_results = true;
+  bool answer_shown = true;
+  bool answer_citation_clicked = false;
+  bool other_history_result_clicked = false;
+  const SurveyBitsData survey_bits_data = {
+      {"non empty results", non_empty_results},
+      {"best matches result clicked", user_clicked_results},
+      {"result clicked", other_history_result_clicked},
+      {"answer shown", answer_shown},
+      {"answer citation clicked", answer_citation_clicked},
+  };
+  int query_word_count = 2;
+  const SurveyStringData product_specific_string_data = {
+      {"query word count", base::NumberToString(query_word_count)}};
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurvey(kHatsSurveyTriggerHistoryEmbeddings, testing::_,
+                          survey_bits_data, product_specific_string_data))
+      .Times(1);
+  handler_->RecordSearchResultsMetrics(
+      non_empty_results, user_clicked_results, answer_shown,
+      answer_citation_clicked, other_history_result_clicked, query_word_count);
 }

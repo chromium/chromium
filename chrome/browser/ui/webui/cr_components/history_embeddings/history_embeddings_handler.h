@@ -50,7 +50,8 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
                                   bool user_clicked_results,
                                   bool answer_shown,
                                   bool answer_citation_clicked,
-                                  bool other_history_result_clicked) override;
+                                  bool other_history_result_clicked,
+                                  uint32_t query_word_count) override;
   void SetUserFeedback(
       history_embeddings::mojom::UserFeedback user_feedback) override;
   void MaybeShowFeaturePromo() override;

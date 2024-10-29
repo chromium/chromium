@@ -431,7 +431,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         /* nonEmptyResults= */ true, /* userClickedResult= */ true,
         /* answerShown= */ this.hasAnswer_(),
         /* answerCitationClicked= */ this.answerLinkClicked_,
-        /* otherHistoryResultClicked= */ this.otherHistoryResultClicked);
+        /* otherHistoryResultClicked= */ this.otherHistoryResultClicked,
+        /* queryWordCount= */ this.searchQuery.split(' ').length);
   }
 
   private onSearchQueryChanged_() {
@@ -538,7 +539,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
           nonEmptyResults, /* userClickedResult= */ false,
           /* answerShown= */ this.hasAnswer_(),
           /* answerCitationClicked= */ this.answerLinkClicked_,
-          /* otherHistoryResultClicked= */ this.otherHistoryResultClicked);
+          /* otherHistoryResultClicked= */ this.otherHistoryResultClicked,
+          /* queryWordCount= */ this.searchQuery.split(' ').length);
     }
 
     if (!this.forceSuppressLogging && canLog) {

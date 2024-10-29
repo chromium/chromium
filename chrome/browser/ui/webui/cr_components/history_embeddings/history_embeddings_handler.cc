@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -13,6 +14,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
@@ -192,7 +196,8 @@ void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
     bool user_clicked_results,
     bool answer_shown,
     bool answer_citation_clicked,
-    bool other_history_result_clicked) {
+    bool other_history_result_clicked,
+    uint32_t query_word_count) {
   auto record_histograms = [&](const std::string& histogram_name) {
     base::UmaHistogramEnumeration(
         histogram_name, HistoryEmbeddingsUserActions::kEmbeddingsSearch);
@@ -229,6 +234,25 @@ void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
     record_histograms("History.Embeddings.UserActions.SidePanel");
   } else {
     record_histograms("History.Embeddings.UserActions.HistoryPage");
+  }
+
+  if (answer_shown &&
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForHistoryEmbeddings)) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        profile_.get(), /*create_if_necessary=*/true);
+    CHECK(hats_service);
+
+    base::TimeDelta delay_time =
+        features::kHappinessTrackingSurveysForHistoryEmbeddingsDelayTime.Get();
+    hats_service->LaunchDelayedSurvey(
+        kHatsSurveyTriggerHistoryEmbeddings, delay_time.InMilliseconds(),
+        {{"non empty results", non_empty_results},
+         {"best matches result clicked", user_clicked_results},
+         {"result clicked", other_history_result_clicked},
+         {"answer shown", answer_shown},
+         {"answer citation clicked", answer_citation_clicked}},
+        {{"query word count", base::NumberToString(query_word_count)}});
   }
 }
 
