@@ -640,8 +640,8 @@ class HeaderAndFooterContext {
     void BindToFrame(blink::WebNavigationControl* frame) override {
       frame_ = frame;
     }
-    void FrameDetached() override {
-      frame_->Close();
+    void FrameDetached(blink::DetachReason detach_reason) override {
+      frame_->Close(detach_reason);
       frame_ = nullptr;
     }
 
@@ -844,7 +844,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       blink::WebPolicyContainerBindParams policy_container_bind_params,
       ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override;
-  void FrameDetached() override;
+  void FrameDetached(blink::DetachReason detach_reason) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void CallOnReady();
@@ -1036,10 +1036,11 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
   return nullptr;
 }
 
-void PrepareFrameAndViewForPrint::FrameDetached() {
+void PrepareFrameAndViewForPrint::FrameDetached(
+    blink::DetachReason detach_reason) {
   blink::WebLocalFrame* frame = frame_.GetFrame();
   DCHECK(frame);
-  frame->Close();
+  frame->Close(detach_reason);
   navigation_control_ = nullptr;
   frame_.Reset(nullptr);
 }

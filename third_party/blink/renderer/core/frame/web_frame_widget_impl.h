@@ -157,7 +157,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   virtual void Trace(Visitor*) const;
 
   // Shutdown the widget.
-  void Close();
+  void Close(DetachReason detach_reason);
 
   // Returns the WebFrame that this widget is attached to. It will be a local
   // root since only local roots have a widget attached.

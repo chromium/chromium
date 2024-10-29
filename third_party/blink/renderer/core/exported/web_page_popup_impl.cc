@@ -964,7 +964,7 @@ void WebPagePopupImpl::Close() {
   // TODO(dtapuska): WidgetBase shutdown should happen before Page is
   // disposed if the PageScheduler get used more. See crbug.com/1340914
   // for a crash.
-  widget_base_->Shutdown();
+  widget_base_->Shutdown(/*delay_release=*/false);
   widget_base_.reset();
 
   // Self-delete on Close().

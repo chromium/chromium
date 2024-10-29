@@ -747,6 +747,16 @@ BASE_FEATURE_PARAM(double,
                    "CostReductionOfMultiplexedRequests",
                    0.5);
 
+BASE_FEATURE(kDelayLayerTreeViewDeletionOnLocalSwap,
+             "DelayLayerTreeViewDeletionOnLocalSwap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam,
+                   &kDelayLayerTreeViewDeletionOnLocalSwap,
+                   "deletion_task_delay",
+                   base::Milliseconds(1000));
+
 BASE_FEATURE(kDirectCompositorThreadIpc,
              "DirectCompositorThreadIpc",
              base::FEATURE_DISABLED_BY_DEFAULT);

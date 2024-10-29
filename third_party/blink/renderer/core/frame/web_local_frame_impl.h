@@ -115,7 +115,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       public WebNavigationControl {
  public:
   // WebFrame overrides:
-  void Close() override;
+  void Close(DetachReason detach_reason) override;
   WebView* View() const override;
   v8::Local<v8::Object> GlobalProxy(v8::Isolate* isolate) const override;
   bool IsLoading() const override;

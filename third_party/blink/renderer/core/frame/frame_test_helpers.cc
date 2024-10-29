@@ -811,9 +811,9 @@ void TestWebFrameClient::Bind(WebLocalFrame* frame,
   self_owned_ = std::move(self_owned);
 }
 
-void TestWebFrameClient::FrameDetached() {
+void TestWebFrameClient::FrameDetached(DetachReason detach_reason) {
   std::move(frame_detached_callback_).Run();
-  frame_->Close();
+  frame_->Close(detach_reason);
   self_owned_.reset();
 }
 

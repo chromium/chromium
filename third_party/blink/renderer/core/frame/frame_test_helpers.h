@@ -517,7 +517,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
             std::unique_ptr<TestWebFrameClient> self_owned = nullptr);
 
   // WebLocalFrameClient:
-  void FrameDetached() override;
+  void FrameDetached(DetachReason detach_reason) override;
   WebLocalFrame* CreateChildFrame(
       blink::mojom::blink::TreeScopeType,
       const WebString& name,

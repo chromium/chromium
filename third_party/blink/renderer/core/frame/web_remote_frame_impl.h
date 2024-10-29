@@ -57,7 +57,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   ~WebRemoteFrameImpl() override;
 
   // WebFrame methods:
-  void Close() override;
+  void Close(DetachReason detach_reason) override;
   WebView* View() const override;
 
   // WebRemoteFrame methods:

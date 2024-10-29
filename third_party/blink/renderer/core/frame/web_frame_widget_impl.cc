@@ -364,7 +364,7 @@ bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
   return ForMainFrame() && !main_data().is_for_nested_main_frame;
 }
 
-void WebFrameWidgetImpl::Close() {
+void WebFrameWidgetImpl::Close(DetachReason detach_reason) {
   TRACE_EVENT0("navigation", "WebFrameWidgetImpl::Close");
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.WebFrameWidgetImpl.Close");
@@ -385,7 +385,15 @@ void WebFrameWidgetImpl::Close() {
 
   mutator_dispatcher_ = nullptr;
   local_root_ = nullptr;
-  widget_base_->Shutdown();
+  // Shut down the widget, but potentially delay the release of the resources
+  // for LayerTreeView if we're closing because of a navigation. This is to
+  // prevent delaying the navigation commit, as releasing the LayerTreeView
+  // resources blocks on the compositor thread.
+  bool delay_release =
+      (base::FeatureList::IsEnabled(
+           blink::features::kDelayLayerTreeViewDeletionOnLocalSwap) &&
+       detach_reason == DetachReason::kNavigation);
+  widget_base_->Shutdown(delay_release);
   widget_base_.reset();
   // These WeakPtrs must be invalidated for WidgetInputHandlerManager at the
   // same time as the WidgetBase is.

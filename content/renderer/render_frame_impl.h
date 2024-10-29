@@ -561,7 +561,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::RemoteFrameToken& frame_token) override;
   blink::WebFrame* FindFrame(const blink::WebString& name) override;
   void WillDetach(blink::DetachReason detach_reason) override;
-  void FrameDetached() override;
+  void FrameDetached(blink::DetachReason detach_reason) override;
   void DidChangeName(const blink::WebString& name) override;
   void DidMatchCSS(
       const blink::WebVector<blink::WebString>& newly_matching_selectors,

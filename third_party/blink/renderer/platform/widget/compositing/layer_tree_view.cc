@@ -135,7 +135,7 @@ void LayerTreeView::Disconnect() {
   delegate_ = nullptr;
 }
 
-void LayerTreeView::ReattachTo(
+void LayerTreeView::ClearPreviousDelegateAndReattachIfNeeded(
     LayerTreeViewDelegate* delegate,
     scoped_refptr<scheduler::WidgetScheduler> scheduler) {
   // Reset state tied to the previous `delegate_`.
@@ -160,6 +160,14 @@ void LayerTreeView::ReattachTo(
 
   // Invalidate weak ptrs so callbacks from the previous delegate are dropped.
   weak_factory_for_delegate_.InvalidateWeakPtrs();
+
+  if (!delegate) {
+    // If we're not reattaching to a new delegate, return early as there's no
+    // need to request a new frame sink. Also, ensure that the LayerTreeHost is
+    // no longer visible.
+    layer_tree_host_->SetVisible(false);
+    return;
+  }
 
   switch (frame_sink_state_) {
     case FrameSinkState::kNoFrameSink:
