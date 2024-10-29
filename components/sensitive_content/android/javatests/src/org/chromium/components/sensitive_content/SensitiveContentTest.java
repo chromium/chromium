@@ -6,6 +6,7 @@ package org.chromium.components.sensitive_content;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
@@ -35,7 +36,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -198,9 +198,8 @@ public class SensitiveContentTest {
         // Open the tab switcher.
         RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is sensitive.
-        assertEquals(
-                getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+        checkContentSensitivityOfViewWithId(
+                R.id.tab_list_recycler_view, /* contentIsSensitive= */ true);
 
         // Close the second tab (the only tab with sensitive content).
         regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(1, RegularTabSwitcherStation.class);
@@ -209,9 +208,8 @@ public class SensitiveContentTest {
         // Open the tab switcher.
         regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is not sensitive anymore.
-        assertEquals(
-                getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        checkContentSensitivityOfViewWithId(
+                R.id.tab_list_recycler_view, /* contentIsSensitive= */ false);
 
         // Go back to a tab to cleanup tab state.
         regularTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
@@ -232,9 +230,8 @@ public class SensitiveContentTest {
         // Open the incognito tab switcher.
         IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is sensitive.
-        assertEquals(
-                getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+        checkContentSensitivityOfViewWithId(
+                R.id.tab_list_recycler_view, /* contentIsSensitive= */ true);
 
         // Close the second incognito tab (the only tab with sensitive content).
         incognitoTabSwitcher =
@@ -244,9 +241,8 @@ public class SensitiveContentTest {
         // Open the incognito tab switcher.
         incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is not sensitive anymore.
-        assertEquals(
-                getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        checkContentSensitivityOfViewWithId(
+                R.id.tab_list_recycler_view, /* contentIsSensitive= */ false);
 
         // Go back to a tab to cleanup tab state.
         incognitoTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
@@ -269,9 +265,8 @@ public class SensitiveContentTest {
         // Open the tab switcher.
         final RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is sensitive.
-        assertEquals(
-                getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+        checkContentSensitivityOfViewWithId(
+                R.id.tab_list_recycler_view, /* contentIsSensitive= */ true);
 
         // Go back to a tab to cleanup tab state. It is easier to open a new tab than to go to an
         // existing tab.
@@ -299,9 +294,8 @@ public class SensitiveContentTest {
         // Open the incognito tab switcher.
         final IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is sensitive.
-        assertEquals(
-                getFocusedTabSwitcherPane().getRootView().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_SENSITIVE);
+        checkContentSensitivityOfViewWithId(
+                R.id.tab_list_recycler_view, /* contentIsSensitive= */ true);
 
         // Go back to a tab to cleanup tab state. It is easier to open a new tab than to go to an
         // existing tab.
@@ -326,14 +320,8 @@ public class SensitiveContentTest {
         // Click on the "arrow button" from the bottom toolbar to display the tab group UI.
         onView(allOf(withId(R.id.toolbar_show_group_dialog_button))).perform(click());
         // Check that the tab group UI view is sensitive.
-        onView(allOf(withId(R.id.dialog_parent_view)))
-                .check(
-                        (view, noMatchException) -> {
-                            if (noMatchException != null) throw noMatchException;
-                            assertEquals(
-                                    view.getContentSensitivity(),
-                                    View.CONTENT_SENSITIVITY_SENSITIVE);
-                        });
+        checkContentSensitivityOfViewWithId(
+                R.id.dialog_parent_view, /* contentIsSensitive= */ true);
         // Check that the content view is not sensitive. This ensures that the screen won't be
         // redacted if the tab group UI closes.
         assertNotEquals(
@@ -385,18 +373,17 @@ public class SensitiveContentTest {
                                 == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
     }
 
-    private Pane getFocusedTabSwitcherPane() {
-        return (Pane)
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                sActivityTestRule
-                                        .getActivity()
-                                        .getHubProvider()
-                                        .getHubManagerSupplier()
-                                        .get()
-                                        .getPaneManager()
-                                        .getFocusedPaneSupplier()
-                                        .get());
+    private void checkContentSensitivityOfViewWithId(int viewId, boolean contentIsSensitive) {
+        onView(allOf(withId(viewId), isDisplayed()))
+                .check(
+                        (view, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            assertEquals(
+                                    view.getContentSensitivity(),
+                                    contentIsSensitive
+                                            ? View.CONTENT_SENSITIVITY_SENSITIVE
+                                            : View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+                        });
     }
 
     private View getContentViewOfCurrentTab() {

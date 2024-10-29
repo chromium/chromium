@@ -13,7 +13,6 @@ specific_include_rules = {
   ],
   '.*Test.*\.java': [
     "+chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management",
-    "+chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub",
     "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab",
     "+chrome/test/android/javatests/src/org/chromium/chrome/test",
     "+net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",

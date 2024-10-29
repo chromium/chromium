@@ -496,7 +496,7 @@ public class TabUiUtilsUnitTest {
     }
 
     @Test
-    public void testUpdateViewContentSensitivityForTabs() {
+    public void testUpdateViewContentSensitivityForListOfTabs() {
         List<Tab> tabList = List.of(mTab);
 
         when(mTab.getTabHasSensitiveContent()).thenReturn(true);
@@ -505,6 +505,20 @@ public class TabUiUtilsUnitTest {
 
         when(mTab.getTabHasSensitiveContent()).thenReturn(false);
         TabUiUtils.updateViewContentSensitivityForTabs(tabList, mContentSensitivitySetter);
+        verify(mContentSensitivitySetter).onResult(false);
+    }
+
+    @Test
+    public void testUpdateViewContentSensitivityForTabList() {
+        when(mTabModel.getCount()).thenAnswer(invocation -> 1);
+        when(mTabModel.getTabAt(0)).thenAnswer(invocation -> mTab);
+
+        when(mTab.getTabHasSensitiveContent()).thenReturn(true);
+        TabUiUtils.updateViewContentSensitivityForTabs(mTabModel, mContentSensitivitySetter);
+        verify(mContentSensitivitySetter).onResult(true);
+
+        when(mTab.getTabHasSensitiveContent()).thenReturn(false);
+        TabUiUtils.updateViewContentSensitivityForTabs(mTabModel, mContentSensitivitySetter);
         verify(mContentSensitivitySetter).onResult(false);
     }
 }

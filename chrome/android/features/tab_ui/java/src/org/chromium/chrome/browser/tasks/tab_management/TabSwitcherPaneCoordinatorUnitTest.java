@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CLIP_TO_PADDING;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CONTENT_SENSITIVE;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
@@ -87,6 +88,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
 
@@ -450,5 +452,16 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
         assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTabSwitcherContentSensitivity() {
+        PropertyModel containerViewModel = mCoordinator.getContainerViewModelForTesting();
+        assertFalse(containerViewModel.get(IS_CONTENT_SENSITIVE));
+        mCoordinator.setTabSwitcherContentSensitivity(/* contentIsSensitive= */ true);
+        assertTrue(containerViewModel.get(IS_CONTENT_SENSITIVE));
+        mCoordinator.setTabSwitcherContentSensitivity(/* contentIsSensitive= */ false);
+        assertFalse(containerViewModel.get(IS_CONTENT_SENSITIVE));
     }
 }

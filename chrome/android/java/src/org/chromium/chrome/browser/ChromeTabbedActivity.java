@@ -3748,11 +3748,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return (ChromeNextTabPolicySupplier) mNextTabPolicySupplier;
     }
 
-    @VisibleForTesting
-    public HubProvider getHubProvider() {
-        return mHubProvider;
-    }
-
     /** Returns whether to show a NTP as the home surface at startup on tablet in regular mode. */
     private boolean shouldShowNtpHomeSurfaceOnStartup() {
         if (mTabModelSelector.isIncognitoSelected()) return false;

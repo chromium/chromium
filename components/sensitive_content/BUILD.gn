@@ -102,7 +102,6 @@ if (is_android) {
       "//chrome/android:chrome_java",
       "//chrome/android/features/tab_ui:test_support_javalib",
       "//chrome/browser/flags:java",
-      "//chrome/browser/hub:java",
       "//chrome/browser/tab:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_transit",

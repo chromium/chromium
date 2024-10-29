@@ -571,6 +571,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mIsScrollingSupplier;
     }
 
+    /**
+     * Sets the content sensitivity on the recycler view of the tab switcher.
+     *
+     * @param contentIsSensitive True if the tab switcher is sensitive.
+     */
+    public void setTabSwitcherContentSensitivity(boolean contentIsSensitive) {
+        mContainerViewModel.set(
+                TabListContainerProperties.IS_CONTENT_SENSITIVE, contentIsSensitive);
+    }
+
     @Override
     public @BackPressResult int handleBackPress() {
         return mMediator.handleBackPress();

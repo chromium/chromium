@@ -18,6 +18,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
+import android.os.Build;
+import android.view.View;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.annotation.UiThreadTest;
@@ -30,6 +33,7 @@ import org.mockito.Spy;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -178,5 +182,19 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
         // 500 / 2 - range / 9 / 2 = result.
         verify(mLinearLayoutManager, times(1))
                 .scrollToPositionWithOffset(eq(5), eq(250 - range / 9 / 2));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testSetIsContentSensitive() {
+        // Chances are the sensitivity is set to auto initially. That's not a problem, it just needs
+        // not to be sensitive.
+        assertNotEquals(View.CONTENT_SENSITIVITY_SENSITIVE, mRecyclerView.getContentSensitivity());
+        mContainerModel.set(TabListContainerProperties.IS_CONTENT_SENSITIVE, true);
+        assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, mRecyclerView.getContentSensitivity());
+        mContainerModel.set(TabListContainerProperties.IS_CONTENT_SENSITIVE, false);
+        assertEquals(View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mRecyclerView.getContentSensitivity());
     }
 }
