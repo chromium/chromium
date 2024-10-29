@@ -2483,7 +2483,8 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FieldPredictionQuality.Aggregate.{LabelSource}"
+<histogram
+    name="Autofill.FieldPredictionQuality.Aggregate.Heuristic.{LabelSource}"
     enum="BooleanPredictionQualityByLabelSource" expires_after="2025-04-13">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
