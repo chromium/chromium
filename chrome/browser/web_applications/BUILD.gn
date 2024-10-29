@@ -1023,6 +1023,7 @@ source_set("web_applications_browser_tests") {
   testonly = true
 
   sources = [
+    "alternative_error_page_override_info_browsertest.cc",
     "commands/compute_app_size_command_browsertest.cc",
     "commands/externally_managed_install_command_browsertest.cc",
     "commands/fetch_manifest_and_install_command_browsertest.cc",
@@ -1075,6 +1076,10 @@ source_set("web_applications_browser_tests") {
     sources += [
       "os_integration/web_app_file_handler_registration_linux_browsertest.cc",
     ]
+  }
+
+  if (is_mac) {
+    sources += [ "system_media_controls_bridge_browsertest.cc" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -1130,6 +1135,13 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/web_applications/ash/migrations:browser_tests",
     ]
   }
+
+  if (is_mac) {
+    deps += [
+      "//chrome/browser/apps/app_shim:app_shim",
+      "//components/system_media_controls",
+    ]
+  }
 }
 
 group("browser_tests") {
@@ -1147,7 +1159,12 @@ source_set("app_service_browser_tests") {
   ]
 
   if (is_chromeos) {
-    sources += [ "chromeos_web_app_experiments_browsertest.cc" ]
+    sources += [
+      "app_service/web_app_publisher_helper_browsertest.cc",
+      "app_service/web_apps_browsertest.cc",
+      "app_service/web_apps_chromeos_browsertest.cc",
+      "chromeos_web_app_experiments_browsertest.cc",
+    ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
