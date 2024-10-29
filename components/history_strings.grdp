@@ -140,7 +140,7 @@
     Get answers from your history, powered by AI
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI with answerer." translateable="false">
-    You can now also ask questions like "what was that square pizza place in Chicago?" or "what ingredients were in that eggplant pasta recipe?".  Using question words like "what", "when", or "where" will help Chrome give you better answers. You can also describe what you're looking for such as "comfortable walking shoes".  As you visit more sites on this device, you'll see more results powered by AI.
+    You can ask questions like "what ingredients were in that pasta recipe?" Using question words like "what" or "where" helps Chrome give you better answers. Or describe what you're looking for in a few words. As you visit more sites, you'll see more AI-powered results.
   </message>
   <message name="IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT" desc="On the history page, the text of the link to edit the user's history search setting." translateable="false">
     Manage your history search setting
@@ -212,7 +212,7 @@
     Summary
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING" desc="Heading for answer section in history search results when the answer is loading." translateable="false">
-    Generating summary based on your browsing history
+    Searching for a summary...
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL" desc="Label for visited date for answer section in history search results." translateable="false">
     Visited <ph name="DATE"><ex>Oct 4, 2024</ex>$1</ph>
