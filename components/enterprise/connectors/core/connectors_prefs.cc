@@ -58,11 +58,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckMode,
                                 REAL_TIME_CHECK_DISABLED);
   registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckScope, 0);
-
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(kOnSecurityEventPref);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterListPref(kOnFileAttachedPref);

@@ -2390,6 +2390,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<BooleanDisablingPolicyHandler>(
           key::kUrlKeyedMetricsAllowed,
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kOnSecurityEventEnterpriseConnector,
+          enterprise_connectors::kOnSecurityEventPref,
+          enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
   // Policies for all platforms - End
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -2536,12 +2543,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           enterprise_connectors::kOnFileTransferPref,
           enterprise_connectors::kOnFileTransferScopePref, chrome_schema));
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  handlers->AddHandler(
-      std::make_unique<
-          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
-          key::kOnSecurityEventEnterpriseConnector,
-          enterprise_connectors::kOnSecurityEventPref,
-          enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
 
   handlers->AddHandler(
       std::make_unique<web_app::WebAppSettingsPolicyHandler>(chrome_schema));

@@ -192,11 +192,6 @@ class ConnectorsServiceBaseReportingSettingsTest
 
 TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
   TestConnectorsService service;
-  // TODO(b/344593927): Re-enable this test for Android
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(service.GetPrefs()->FindPreference(
-      "enterprise_connectors.on_security_event"));
-#else
   service.set_connectors_manager_base();
   if (pref_value()) {
     service.GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
@@ -210,7 +205,6 @@ TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
             !service.GetConnectorsManagerBase()
                  ->GetReportingConnectorsSettingsForTesting()
                  .empty());
-#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(

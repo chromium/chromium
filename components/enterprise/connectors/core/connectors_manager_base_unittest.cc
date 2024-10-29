@@ -16,13 +16,11 @@ namespace {
 constexpr ReportingConnector kAllReportingConnectors[] = {
     ReportingConnector::SECURITY_EVENT};
 
-#if !BUILDFLAG(IS_ANDROID)
 constexpr char kNormalReportingSettingsPref[] = R"([
   {
     "service_provider": "google"
   }
 ])";
-#endif
 }  // namespace
 
 class ConnectorsManagerBaseTest : public testing::Test {
@@ -75,11 +73,6 @@ class ConnectorsManagerBaseReportingTest
 };
 
 TEST_P(ConnectorsManagerBaseReportingTest, DynamicPolicies) {
-  // TODO(b/344593927): Re-enable this test for Android
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(pref_service()->FindPreference(
-      "enterprise_connectors.on_security_event"));
-#else
   ConnectorsManagerBase manager(pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
@@ -101,7 +94,6 @@ TEST_P(ConnectorsManagerBaseReportingTest, DynamicPolicies) {
 
   // The cache should be empty again after the pref is reset.
   ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
-#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(ConnectorsManagerBaseReportingTest,
