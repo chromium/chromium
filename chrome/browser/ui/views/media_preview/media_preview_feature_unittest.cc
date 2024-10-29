@@ -103,10 +103,19 @@ class MediaPreviewFeatureTest : public testing::Test {
   GURL invalid_url_;
 };
 
-TEST_F(MediaPreviewFeatureTest, TestFeatureDisabled) {
+TEST_F(MediaPreviewFeatureTest, TestFeatureDisabledNoOriginTrial) {
   scoped_feature_list_.InitAndDisableFeature(
       blink::features::kCameraMicPreview);
-  EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(_, _, _, _)).Times(0);
+  auto requester_origin = url::Origin::Create(requester_url_);
+  auto embedder_origin = url::Origin::Create(embedder_url_);
+  EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(
+                                  requester_origin, requester_origin,
+                                  OriginTrialFeature::kMediaPreviewsOptOut, _))
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(
+                                  embedder_origin, embedder_origin,
+                                  OriginTrialFeature::kMediaPreviewsOptOut, _))
+      .WillOnce(Return(false));
   EXPECT_FALSE(media_preview_feature::ShouldShowMediaPreview(
       *profile_, requester_url_, embedder_url_, UiLocation::kPageInfo));
 }
@@ -134,11 +143,28 @@ TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledInvalidUrls) {
       *profile_, invalid_url_, invalid_url_, UiLocation::kPageInfo));
 }
 
+TEST_F(MediaPreviewFeatureTest, TestFeatureDisabledInvalidUrls) {
+  scoped_feature_list_.InitAndDisableFeature(
+      blink::features::kCameraMicPreview);
+  EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(_, _, _, _)).Times(0);
+  EXPECT_FALSE(media_preview_feature::ShouldShowMediaPreview(
+      *profile_, invalid_url_, invalid_url_, UiLocation::kPageInfo));
+}
+
 TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledNullDelegate) {
   scoped_feature_list_.InitAndEnableFeature(blink::features::kCameraMicPreview);
   auto url_in_ot_origin = url::Origin::Create(url_in_ot_);
   profile_->NullifyDelegate();
   EXPECT_TRUE(media_preview_feature::ShouldShowMediaPreview(
+      *profile_, url_in_ot_, embedder_url_, UiLocation::kPageInfo));
+}
+
+TEST_F(MediaPreviewFeatureTest, TestFeatureDisabledNullDelegate) {
+  scoped_feature_list_.InitAndDisableFeature(
+      blink::features::kCameraMicPreview);
+  auto url_in_ot_origin = url::Origin::Create(url_in_ot_);
+  profile_->NullifyDelegate();
+  EXPECT_FALSE(media_preview_feature::ShouldShowMediaPreview(
       *profile_, url_in_ot_, embedder_url_, UiLocation::kPageInfo));
 }
 
