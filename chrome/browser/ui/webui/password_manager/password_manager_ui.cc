@@ -424,13 +424,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"save", IDS_SAVE},
       {"savePasswordsLabel",
        IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      {"screenlockReauthPromoConfirmation",
-       IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_CONFIRMATION},
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-      {"screenlockReauthPromoConfirmation",
-       IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_CONFIRMATION_CHROMEOS},
-#endif
       {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
       {"shareDialogTitle", IDS_PASSWORD_MANAGER_UI_SHARE_DIALOG_TITLE},
       {"shareDialogLoadingTitle",

@@ -3288,8 +3288,6 @@ static_library("ui") {
       "views/passwords/biometric_authentication_confirmation_bubble_view.h",
       "views/passwords/biometric_authentication_for_filling_bubble_view.cc",
       "views/passwords/biometric_authentication_for_filling_bubble_view.h",
-      "webui/password_manager/promo_cards/screenlock_reauth_promo.cc",
-      "webui/password_manager/promo_cards/screenlock_reauth_promo.h",
     ]
   }
 
