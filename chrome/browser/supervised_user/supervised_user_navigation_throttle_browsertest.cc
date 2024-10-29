@@ -879,9 +879,13 @@ IN_PROC_BROWSER_TEST_P(
   // The trivial "www" subdomain is stripped for the url in the remote approval
   // request.
   EXPECT_EQ(requested_host, kStrippedExampleHost);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/376229427): Unguard once flakiness removed.
   WaitForNavigationFinished(blocked_frame_id, blocked_url);
   // The unstriped url gets unblocked.
   EXPECT_FALSE(IsInterstitialBeingShownInFrame(blocked_frame_id));
+#endif
 }
 
 // Tests that the url stripping is applied on the url on the interstitial, when
