@@ -315,6 +315,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollbarTrack,
     kPseudoScrollbarTrackPiece,
     kPseudoSearchText,
+    kPseudoSelectArrow,
     kPseudoSelectHasChildButton,
     kPseudoPicker,
     kPseudoSelection,

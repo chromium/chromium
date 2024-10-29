@@ -341,6 +341,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdBefore;
     case kPseudoAfter:
       return kPseudoIdAfter;
+    case kPseudoSelectArrow:
+      return kPseudoIdSelectArrow;
     case kPseudoMarker:
       return kPseudoIdMarker;
     case kPseudoBackdrop:
@@ -649,6 +651,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scroll-next-button", CSSSelector::kPseudoScrollNextButton},
     {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
+    {"select-arrow", CSSSelector::kPseudoSelectArrow},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
@@ -868,18 +871,19 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
 
   switch (GetPseudoType()) {
     case kPseudoAfter:
-    case kPseudoCheck:
     case kPseudoBefore:
     case kPseudoFirstLetter:
     case kPseudoFirstLine:
       // The spec says some pseudos allow both single and double colons like
-      // :before for backwards compatability. Single colon becomes PseudoClass,
+      // :before for backwards compatibility. Single colon becomes PseudoClass,
       // but should be PseudoElement like double colon.
       if (Match() == kPseudoClass) {
         bits_.set<MatchField>(kPseudoElement);
       }
       [[fallthrough]];
     // For pseudo elements
+    case kPseudoSelectArrow:
+    case kPseudoCheck:
     case kPseudoBackdrop:
     case kPseudoCue:
     case kPseudoMarker:
@@ -1606,7 +1610,9 @@ bool CSSSelector::IsAllowedInParentPseudo() const {
 bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
          (GetPseudoType() == kPseudoCheck || GetPseudoType() == kPseudoBefore ||
-          GetPseudoType() == kPseudoAfter || GetPseudoType() == kPseudoMarker ||
+          GetPseudoType() == kPseudoAfter ||
+          GetPseudoType() == kPseudoSelectArrow ||
+          GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
           GetPseudoType() == kPseudoBackdrop ||
@@ -1641,6 +1647,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoCheck:
     case kPseudoBefore:
     case kPseudoAfter:
+    case kPseudoSelectArrow:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:

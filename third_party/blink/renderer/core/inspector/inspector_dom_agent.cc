@@ -201,6 +201,9 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Before;
     case kPseudoIdAfter:
       return protocol::DOM::PseudoTypeEnum::After;
+    case kPseudoIdSelectArrow:
+      // To be added in a followup CL
+      NOTREACHED();
     case kPseudoIdMarker:
       return protocol::DOM::PseudoTypeEnum::Marker;
     case kPseudoIdBackdrop:
