@@ -18,6 +18,9 @@
 [submodule "third_party/libunwind/src"]
 	path = third_party/libunwind/src
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind
+[submodule "third_party/llvm-libc/src"]
+	path = third_party/llvm-libc/src
+	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc
 [submodule "chrome/test/data/autofill/captured_sites/artifacts"]
 	path = chrome/test/data/autofill/captured_sites/artifacts
 	url = https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill

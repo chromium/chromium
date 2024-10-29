@@ -229,10 +229,12 @@ target(_libcxx_target_type, "libc++") {
     }
   }
 
+  deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
+
   if (!is_win) {
     defines += [ "LIBCXX_BUILDING_LIBCXXABI" ]
     if (!export_libcxxabi_from_executables) {
-      deps = [ "//buildtools/third_party/libc++abi" ]
+      deps += [ "//buildtools/third_party/libc++abi" ]
     }
   }
 }

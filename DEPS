@@ -477,10 +477,14 @@ vars = {
   # the commit queue can handle CLs rolling beto-core
   # and whatever else without interference from each other.
   'betocore_revision': '89563fec14c756482afa08b016eeba9087c8d1e3',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling llvm-libc
+  # and whatever else without interference from each other.
+  'llvm_libc_revision':    '194ae301addaa480cd3a6c9a0efebb67053a7838',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       'e2c39ff9388bec289115081575581fdff2333d4f',
+  'libcxx_revision':       '8e31ad42561900383e10dbefc1d3e8f38cedfbe9',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:feafd1012a32c05ec6095f69ddc3850afb621f3a',
@@ -1100,6 +1104,10 @@ deps = {
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/libunwind.git' + '@' +
     Var('libunwind_revision'),
+  'src/third_party/llvm-libc/src':
+    Var('chromium_git') +
+    '/external/github.com/llvm/llvm-project/libc.git' + '@' +
+    Var('llvm_libc_revision'),
 
   'src/third_party/updater/chrome_linux64/cipd': {
       'dep_type': 'cipd',
