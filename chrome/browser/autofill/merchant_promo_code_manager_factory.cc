@@ -42,10 +42,12 @@ MerchantPromoCodeManagerFactory::MerchantPromoCodeManagerFactory()
 
 MerchantPromoCodeManagerFactory::~MerchantPromoCodeManagerFactory() = default;
 
-KeyedService* MerchantPromoCodeManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MerchantPromoCodeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  MerchantPromoCodeManager* service = new MerchantPromoCodeManager();
+  std::unique_ptr<MerchantPromoCodeManager> service =
+      std::make_unique<MerchantPromoCodeManager>();
   service->Init(PersonalDataManagerFactory::GetForBrowserContext(context),
                 profile->IsOffTheRecord());
   return service;
