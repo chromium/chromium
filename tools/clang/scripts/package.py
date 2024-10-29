@@ -308,6 +308,7 @@ def main():
     runtime_package_name = 'clang-mac-runtime-library'
     runtime_packages = set([
         # AddressSanitizer runtime.
+        'lib/clang/$V/lib/darwin/libclang_rt.asan_ios_dynamic.dylib',
         'lib/clang/$V/lib/darwin/libclang_rt.asan_iossim_dynamic.dylib',
         'lib/clang/$V/lib/darwin/libclang_rt.asan_osx_dynamic.dylib',
 
