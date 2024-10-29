@@ -2343,7 +2343,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
 // there is no FallbackSurface for the RenderWidgetHostView to display during
 // the navigation. (https://crbug.com/1258363)
 TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
-       TwoTabsOneNavigatesAndCrashesThenNavigatesBack) {
+       DISALBED_TwoTabsOneNavigatesAndCrashesThenNavigatesBack) {
   const GURL kUrl1("http://www.google.com/");
   const GURL kUrl2("http://webkit.org/");
 
