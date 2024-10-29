@@ -422,7 +422,7 @@ void SelectFileDialogLinuxKde::GetKDialogCommandLine(
   // file/folder and set up mime type filters.
   if (file_operation)
     command_line->AppendArg(GetMimeTypeFilterString());
-  VLOG(1) << "KDialog command line: " << command_line->GetCommandLineString();
+  DVLOG(1) << "KDialog command line: " << command_line->GetCommandLineString();
 }
 
 void SelectFileDialogLinuxKde::FileSelected(const base::FilePath& path) {
@@ -527,7 +527,7 @@ void SelectFileDialogLinuxKde::CreateSaveAsDialog(
 void SelectFileDialogLinuxKde::SelectSingleFileHelper(
     bool allow_folder,
     std::unique_ptr<KDialogOutputParams> results) {
-  VLOG(1) << "[kdialog] SingleFileResponse: " << results->output;
+  DVLOG(1) << "[kdialog] SingleFileResponse: " << results->output;
   if (results->exit_code || results->output.empty()) {
     FileNotSelected();
     return;
@@ -565,7 +565,7 @@ void SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse(
     gfx::AcceleratedWidget parent,
     std::unique_ptr<KDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "[kdialog] MultiFileResponse: " << results->output;
+  DVLOG(1) << "[kdialog] MultiFileResponse: " << results->output;
 
   parents_.erase(parent);
 
