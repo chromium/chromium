@@ -1232,6 +1232,9 @@
   "ash/system/video_conference/resources/vc_resources.grd": {
     "structures":[9220],
   },
+  "ash/wm/overview/birch/resources/coral_resources.grd": {
+    "structures":[9230],
+  },
   "base/tracing/protos/resources.grd": {
     "includes": [9240],
   },
