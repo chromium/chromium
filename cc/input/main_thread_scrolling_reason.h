@@ -61,9 +61,8 @@ struct CC_EXPORT MainThreadScrollingReason {
     // InputHandler::ScrollStatus.
 
     // We need main thread Scrolling in a popup because it doesn't have a
-    // threaded input handler. This flag is used in blink only, to prevent
-    // composited scroll animation in a popup.
-    // See blink::ScrollAnimator::SendAnimationToCompositor().
+    // threaded input handler. This flag is for metrics only, see
+    // blink::WebPagePopupImpl::HandleGestureEvent.
     kPopupNoThreadedInput = 1 << 4,
 
     // Scrolling can be handled on the compositor thread but it might be

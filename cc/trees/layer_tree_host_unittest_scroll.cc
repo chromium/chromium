@@ -1717,7 +1717,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
   void SetupTree() override {
     LayerTreeHostScrollTest::SetupTree();
     GetScrollNode(layer_tree_host()->OuterViewportScrollLayerForTesting())
-        ->main_thread_scrolling_reasons =
+        ->main_thread_repaint_reasons =
         MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
     scroller_ = Layer::Create();
@@ -2715,13 +2715,13 @@ class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
  public:
   void SetupTree() override {
     LayerTreeHostScrollTest::SetupTree();
-    GetViewportScrollNode()->main_thread_scrolling_reasons =
+    GetViewportScrollNode()->main_thread_repaint_reasons =
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
   void UpdateLayerTreeHost() override {
     if (layer_tree_host()->SourceFrameNumber() == 1)
-      GetViewportScrollNode()->main_thread_scrolling_reasons =
+      GetViewportScrollNode()->main_thread_repaint_reasons =
           MainThreadScrollingReason::kNotScrollingOnMain;
   }
 

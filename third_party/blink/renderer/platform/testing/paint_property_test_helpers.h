@@ -318,7 +318,7 @@ inline TransformPaintPropertyNode* CreateScrollTranslation(
   scroll_state.overflow_clip_node = overflow_clip;
   scroll_state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kScroll);
-  scroll_state.main_thread_scrolling_reasons = main_thread_reasons;
+  scroll_state.main_thread_repaint_reasons = main_thread_reasons;
   scroll_state.user_scrollable_horizontal = true;
   scroll_state.user_scrollable_vertical = true;
   TransformPaintPropertyNode::State translation_state{

@@ -121,14 +121,6 @@ PaintPropertyTreeBuilderFragmentContext::
       &ScrollPaintPropertyNode::Root();
 }
 
-PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
-    : force_subtree_update_reasons(0),
-      has_svg_hidden_container_ancestor(false),
-      was_layout_shift_root(false),
-      global_main_thread_scrolling_reasons(0),
-      composited_scrolling_preference(
-          static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
-
 void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
     VisualViewport& visual_viewport,
@@ -412,7 +404,7 @@ class FragmentPaintPropertyTreeBuilder {
                                                  namespace_id);
   }
 
-  MainThreadScrollingReasons GetMainThreadScrollingReasons(
+  MainThreadScrollingReasons GetMainThreadRepaintReasonsForScroll(
       bool user_scrollable) const;
 
   const LayoutObject& object_;
@@ -2640,13 +2632,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
 }
 
 MainThreadScrollingReasons
-FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons(
+FragmentPaintPropertyTreeBuilder::GetMainThreadRepaintReasonsForScroll(
     bool user_scrollable) const {
   DCHECK(IsA<LayoutBox>(object_));
   auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
   DCHECK(scrollable_area);
-  MainThreadScrollingReasons reasons =
-      full_context_.global_main_thread_scrolling_reasons;
+  MainThreadScrollingReasons reasons = 0;
+  if (full_context_.requires_main_thread_for_background_attachment_fixed) {
+    reasons |=
+        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  }
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
     reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
   }
@@ -2661,6 +2656,7 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons(
   if (!user_scrollable) {
     reasons |= cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
   }
+  DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(reasons));
   return reasons;
 }
 
@@ -2720,7 +2716,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
   state.composited_scrolling_preference =
       static_cast<CompositedScrollingPreference>(
           full_context_.composited_scrolling_preference);
-  state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons(
+  state.main_thread_repaint_reasons = GetMainThreadRepaintReasonsForScroll(
       state.user_scrollable_horizontal || state.user_scrollable_vertical);
 
   state.compositor_element_id = scrollable_area->GetScrollElementId();
@@ -3565,7 +3561,7 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 
   if (IsA<LayoutView>(object_)) {
-    UpdateGlobalMainThreadScrollingReasons();
+    UpdateGlobalMainThreadRepaintReasonsForScroll();
   }
 
   context_.old_scroll_offset = gfx::Vector2dF();
@@ -3601,33 +3597,20 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   }
 }
 
-void PaintPropertyTreeBuilder::UpdateGlobalMainThreadScrollingReasons() {
+void PaintPropertyTreeBuilder::UpdateGlobalMainThreadRepaintReasonsForScroll() {
   DCHECK(IsA<LayoutView>(object_));
 
   if (object_.GetFrameView()
           ->RequiresMainThreadScrollingForBackgroundAttachmentFixed()) {
-    context_.global_main_thread_scrolling_reasons |=
-        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+    context_.requires_main_thread_for_background_attachment_fixed = true;
   }
 
-  if (!RuntimeEnabledFeatures::ExcludePopupMainThreadScrollingReasonEnabled() &&
-      !object_.GetFrame()->Client()->GetWebFrame()) {
-    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
-    // threaded scrolling.  This currently only happens in a WebPagePopup.
-    context_.global_main_thread_scrolling_reasons |=
-        cc::MainThreadScrollingReason::kPopupNoThreadedInput;
-  }
-
-  constexpr auto kGlobalReasons =
-      PaintPropertyTreeBuilderContext::kGlobalMainThreadScrollingReasons;
-  DCHECK_EQ(context_.global_main_thread_scrolling_reasons & ~kGlobalReasons,
-            0u);
   if (auto* properties = object_.FirstFragment().PaintProperties()) {
     if (auto* scroll = properties->Scroll()) {
-      if ((scroll->GetMainThreadScrollingReasons() & kGlobalReasons) !=
-          context_.global_main_thread_scrolling_reasons) {
-        // The changed global_main_thread_scrolling_reasons needs to propagate
-        // to all scroll nodes in this view.
+      if (scroll->RequiresMainThreadForBackgroundAttachmentFixed() !=
+          context_.requires_main_thread_for_background_attachment_fixed) {
+        // The changed requires_main_thread_for_background_attachment_fixed
+        // needs to propagate to all scroll nodes in this view.
         context_.force_subtree_update_reasons |=
             PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
       }

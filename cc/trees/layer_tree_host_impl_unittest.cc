@@ -1432,7 +1432,7 @@ TEST_P(LayerTreeHostImplTest, TargetMainThreadScroller) {
   }
 
   // Now add a main-thread repaint reason. ScrollBegin should still succeed.
-  host_impl_->OuterViewportScrollNode()->main_thread_scrolling_reasons =
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
       MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
   {
@@ -1443,7 +1443,7 @@ TEST_P(LayerTreeHostImplTest, TargetMainThreadScroller) {
               status.main_thread_hit_test_reasons);
     EXPECT_EQ(
         MainThreadScrollingReason::kPreferNonCompositedScrolling,
-        host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+        host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
   }
 }
 
@@ -1757,7 +1757,7 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
 
 TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
   SetupViewportLayersOuterScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
-  host_impl_->OuterViewportScrollNode()->main_thread_scrolling_reasons =
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
       MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   DrawFrame();
 
@@ -1771,9 +1771,8 @@ TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
             status.main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
-  EXPECT_EQ(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
 
   status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(), gfx::Vector2d(0, 10),
@@ -1785,9 +1784,8 @@ TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
             status.main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
-  EXPECT_EQ(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollWithOverlappingNonScrollableLayer) {
@@ -8411,7 +8409,7 @@ TEST_P(LayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
       AddScrollableLayer(root, scroll_container_size, surface_size);
   LayerImpl* content_layer =
       AddScrollableLayer(scroll_layer, scroll_container_size, surface_size);
-  GetScrollNode(content_layer)->main_thread_scrolling_reasons =
+  GetScrollNode(content_layer)->main_thread_repaint_reasons =
       MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   DrawFrame();
 
@@ -8423,9 +8421,8 @@ TEST_P(LayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
-  EXPECT_EQ(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
             status.main_thread_repaint_reasons);
 }
@@ -10622,7 +10619,7 @@ TEST_P(LayerTreeHostImplTest, OverscrollOnImplThread) {
   LayerImpl* scroll_layer = InnerViewportScrollLayer();
   ScrollNode* scroll_node = GetScrollNode(scroll_layer);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            scroll_node->main_thread_scrolling_reasons);
+            scroll_node->main_thread_repaint_reasons);
 
   DrawFrame();
 
@@ -15110,10 +15107,10 @@ TEST_P(LayerTreeHostImplTest, MainThreadFallback) {
                                   /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
   EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 525u);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Assign a main_thread_scrolling_reason to the scroll node.
-  GetScrollNode(scroll_layer)->main_thread_scrolling_reasons =
+  GetScrollNode(scroll_layer)->main_thread_repaint_reasons =
       MainThreadScrollingReason::kPreferNonCompositedScrolling;
   compositor_threaded_scrolling_result = GetInputHandler().MouseDown(
       gfx::PointF(350, 500), /*jump_key_modifier*/ false);
@@ -16253,7 +16250,7 @@ void LayerTreeHostImplTestBase::SetupMouseMoveAtTestScrollbarStates(
   LayerImpl* root_scroll = OuterViewportScrollLayer();
 
   if (main_thread_scrolling) {
-    GetScrollNode(root_scroll)->main_thread_scrolling_reasons =
+    GetScrollNode(root_scroll)->main_thread_repaint_reasons =
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
@@ -16359,7 +16356,7 @@ void LayerTreeHostImplTestBase::SetupMouseMoveAtTestScrollbarStates(
       AddScrollableLayer(root_scroll, gfx::Size(100, 100), child_layer_size);
   child->SetOffsetToTransformParent(gfx::Vector2dF(50, 50));
   if (main_thread_scrolling) {
-    GetScrollNode(child)->main_thread_scrolling_reasons =
+    GetScrollNode(child)->main_thread_repaint_reasons =
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
@@ -17762,7 +17759,7 @@ TEST_P(LayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
   GetInputHandler().MouseUp(gfx::PointF(190, 490));
 
   EXPECT_EQ(scroll_result.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Test with DSF = 1. As the scrollable layers aren't rescaled by the DSF,
   // neither the scroll offset, the same result for DSF = 3 is expected.
@@ -17773,7 +17770,7 @@ TEST_P(LayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
   GetInputHandler().MouseUp(gfx::PointF(190, 490));
 
   EXPECT_EQ(scroll_with_dsf_1.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
   host_impl_->ReleaseLayerTreeFrameSink();
@@ -17868,7 +17865,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   }
 
   void CreateScroller(
-      uint32_t main_thread_scrolling_reasons,
+      uint32_t main_thread_repaint_reasons,
       HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kOpaque) {
     // Creates a regular composited scroller that comes with a ScrollNode and
     // Layer.
@@ -17880,8 +17877,8 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
                            scrollable_content_bounds);
     layer->SetHitTestOpaqueness(hit_test_opaqueness);
     scroller_layer_ = layer;
-    GetScrollNode(layer)->main_thread_scrolling_reasons =
-        main_thread_scrolling_reasons;
+    GetScrollNode(layer)->main_thread_repaint_reasons =
+        main_thread_repaint_reasons;
     GetScrollNode(layer)->is_composited = true;
 
     UpdateDrawProperties(host_impl_->active_tree());
@@ -18438,7 +18435,7 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
 
   TestNonCompositedScrollingState(/*mutates_transform_tree=*/false);
 
-  ASSERT_EQ(ScrollerNode()->main_thread_scrolling_reasons,
+  ASSERT_EQ(ScrollerNode()->main_thread_repaint_reasons,
             MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
   TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
   TransformNode* transform_node = tree.Node(ScrollerNode()->transform_id);
@@ -18446,7 +18443,7 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   // Removing the main thread reason bit should start mutating the transform
   // tree.
   {
-    ScrollerNode()->main_thread_scrolling_reasons =
+    ScrollerNode()->main_thread_repaint_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
     UpdateDrawProperties(host_impl_->active_tree());
     host_impl_->active_tree()->DidBecomeActive();

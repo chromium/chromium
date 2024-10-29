@@ -1695,13 +1695,6 @@
       name: "EventTimingTapStopScrollNoInteractionId",
       status: "stable",
     },
-    // Killswitch. Remove after 1-2 stable releases, and rename
-    // cc::ScrollNode::main_thread_scrolling_reasons to
-    // main_thread_repaint_reasons.
-    {
-      name: "ExcludePopupMainThreadScrollingReason",
-      status: "stable",
-    },
     {
       name: "ExcludeTransparentTextsFromBeingLcpEligible",
       status: "stable",

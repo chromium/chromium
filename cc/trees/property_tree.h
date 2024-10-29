@@ -650,7 +650,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   bool ShouldRealizeScrollsOnMain(const ScrollNode& node) const;
 
   // Reports reasons for blocking scroll updates on main-thread repaint.
-  // Returns bitfield of values from MainThreadScrollingReason.
   uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
 
  private:

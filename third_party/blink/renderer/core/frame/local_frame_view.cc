@@ -4601,7 +4601,7 @@ String LocalFrameView::MainThreadScrollingReasonsAsText() {
     const auto* compositor =
         GetFrame().LocalFrameRoot().View()->paint_artifact_compositor_.Get();
     CHECK(compositor);
-    reasons = compositor->GetMainThreadScrollingReasons(*properties->Scroll());
+    reasons = compositor->GetMainThreadRepaintReasons(*properties->Scroll());
   }
   return String(cc::MainThreadScrollingReason::AsText(reasons).c_str());
 }
