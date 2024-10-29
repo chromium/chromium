@@ -486,6 +486,18 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     return ThemeSyncState::kApplied;
   }
 
+  const bool use_new_fields =
+      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics);
+  // The new specifics will always include `browser_color_scheme` field. If it
+  // is absent and the theme specifics is the default theme, avoid setting to
+  // default theme. This is because the old clients can send such specifics upon
+  // any change to theme sent via preferences which the new clients do not read.
+  if (use_new_fields && !new_specs.has_browser_color_scheme() &&
+      !HasNonDefaultTheme(new_specs)) {
+    DVLOG(1) << "Skip setting default theme from old clients";
+    return ThemeSyncState::kApplied;
+  }
+
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
   if (new_specs.use_custom_theme()) {
@@ -541,8 +553,6 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     return ThemeSyncState::kWaitingForExtensionInstallation;
   }
 
-  const bool use_new_fields =
-      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics);
   // Apply theme besides the NTP background and the browser color scheme. These
   // themes cannot exist alongside each other.
   if (use_new_fields && new_specs.has_user_color_theme() &&
