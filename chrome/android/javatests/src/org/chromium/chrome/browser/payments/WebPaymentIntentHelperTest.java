@@ -443,21 +443,20 @@ public class WebPaymentIntentHelperTest {
 
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
-        Intent payIntent =
-                WebPaymentIntentHelper.createPayIntent(
-                        "package.name",
-                        "activity.name",
-                        "id",
-                        /* merchantName= */ "",
-                        "schemeless.origin",
-                        "schemeless.iframe.origin",
-                        /* certificateChain= */ null,
-                        methodDataMap,
-                        total,
-                        /* displayItems= */ null,
-                        /* modifiers= */ null,
-                        /* paymentOptions= */ null,
-                        /* shippingOptions= */ null);
+        WebPaymentIntentHelper.createPayIntent(
+                "package.name",
+                "activity.name",
+                "id",
+                /* merchantName= */ "",
+                "schemeless.origin",
+                "schemeless.iframe.origin",
+                /* certificateChain= */ null,
+                methodDataMap,
+                total,
+                /* displayItems= */ null,
+                /* modifiers= */ null,
+                /* paymentOptions= */ null,
+                /* shippingOptions= */ null);
     }
 
     @Test
@@ -700,8 +699,6 @@ public class WebPaymentIntentHelperTest {
         Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
         methodDataMap.put("bobPay", bobPayMethodData);
-
-        PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
                 "package.name",
@@ -1147,8 +1144,6 @@ public class WebPaymentIntentHelperTest {
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
         methodDataMap.put("bobPay", bobPayMethodData);
 
-        PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
-
         WebPaymentIntentHelper.createIsReadyToPayIntent(
                 /* packageName= */ null,
                 "service.name",
@@ -1170,8 +1165,6 @@ public class WebPaymentIntentHelperTest {
         Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
         methodDataMap.put("bobPay", bobPayMethodData);
-
-        PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createIsReadyToPayIntent(
                 /* packageName= */ null,
