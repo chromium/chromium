@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/strong_alias.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/file_info.h"
@@ -33,8 +35,18 @@ namespace {
 constexpr char kPickerCopyToClipboardToastId[] = "picker_copy_to_clipboard";
 
 struct HtmlAttr {
-  // `name` has to be a compile-time constant.
-  const char* name;
+ private:
+  using Name = base::StrongAlias<class NameTag, std::string_view>;
+
+ public:
+  static constexpr auto kSrc = Name("src");
+  static constexpr auto kReferrerPolicy = Name("referrerpolicy");
+  static constexpr auto kAlt = Name("alt");
+  static constexpr auto kWidth = Name("width");
+  static constexpr auto kHeight = Name("height");
+
+  // `name` must be set to one of the values above.
+  Name name;
   std::string value;
 };
 
@@ -44,7 +56,7 @@ std::string ImageHtmlAttrsToStr(std::vector<HtmlAttr> attrs) {
   base::ranges::transform(
       std::move(attrs), std::back_inserter(attrs_as_strings),
       [](HtmlAttr attr) {
-        return base::StringPrintf(R"(%s="%s")", attr.name, attr.value.c_str());
+        return base::StringPrintf(R"(%s="%s")", *attr.name, attr.value.c_str());
       });
 
   return base::StringPrintf(
@@ -56,19 +68,19 @@ std::string BuildImageHtml(const PickerImageMedia& image) {
   std::vector<HtmlAttr> attrs;
   // GURL::specs are always canonicalised and escaped, so this cannot result in
   // an XSS.
-  attrs.emplace_back("src", image.url.spec());
+  attrs.emplace_back(HtmlAttr::kSrc, image.url.spec());
   // Referrer-Policy is used to prevent the website from getting information
   // about where the GIFs are being used.
-  attrs.emplace_back("referrerpolicy", "no-referrer");
+  attrs.emplace_back(HtmlAttr::kReferrerPolicy, "no-referrer");
   if (!image.content_description.empty()) {
     attrs.emplace_back(
-        "alt",
+        HtmlAttr::kAlt,
         base::EscapeForHTML(base::UTF16ToUTF8(image.content_description)));
   }
   if (image.dimensions.has_value()) {
-    attrs.emplace_back("width",
+    attrs.emplace_back(HtmlAttr::kWidth,
                        base::NumberToString(image.dimensions->width()));
-    attrs.emplace_back("height",
+    attrs.emplace_back(HtmlAttr::kHeight,
                        base::NumberToString(image.dimensions->height()));
   }
   return ImageHtmlAttrsToStr(std::move(attrs));
