@@ -119,10 +119,6 @@ BASE_FEATURE(kPageVisibilityBatchAnnotations,
              "PageVisibilityBatchAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTextEmbeddingBatchAnnotations,
-             "TextEmbeddingBatchAnnotations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPageContentAnnotationsValidation,
              "PageContentAnnotationsValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -144,11 +140,6 @@ BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              "ExtractRelatedSearchesFromPrefetchedZPSResponse",
              enabled_by_default_desktop_only);
 
-// Enables text embeddings to annotated on every page visit and later queried.
-BASE_FEATURE(kQueryInMemoryTextEmbeddings,
-             "QueryInMemoryTextEmbeddings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations,
@@ -163,10 +154,6 @@ bool ShouldEnablePageContentAnnotations() {
                                           kPageContentAnnotationsValidation) ||
          base::FeatureList::IsEnabled(
              page_content_annotations::features::kRemotePageMetadata);
-}
-
-bool ShouldQueryEmbeddings() {
-  return (base::FeatureList::IsEnabled(kQueryInMemoryTextEmbeddings));
 }
 
 bool ShouldWriteContentAnnotationsToHistoryService() {
@@ -221,10 +208,6 @@ double NoiseProbabilityForRAPPORMetrics() {
 
 bool PageVisibilityBatchAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
-}
-
-bool TextEmbeddingBatchAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(kTextEmbeddingBatchAnnotations);
 }
 
 size_t AnnotateVisitBatchSize() {
