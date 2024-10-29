@@ -15,6 +15,7 @@
   const canvas = document.getElementById('canvas');
   const offscreen = canvas.transferControlToOffscreen();
   await transferBackFromGPUTexture_paintInvalidation(offscreen);
+  await waitForCanvasUpdate(canvas);
   document.documentElement.classList.remove('reftest-wait');
 </script>
 </html>
