@@ -19,20 +19,20 @@ struct Type1 {
 
 void fct() {
   // Expected rewrite:
-  // std::array<int, 4> buf = {1, 2, 3, 4};
-  std::array<int, 4> buf = {1, 2, 3, 4};
+  // auto buf = std::to_array<int>({1, 2, 3, 4});
+  auto buf = std::to_array<int>({1, 2, 3, 4});
   int index = 0;
   buf[index] = 11;
 
   // Expected rewrite:
-  // std::array<int, 5> buf2 = {1, 1, 1, 1, 1};
-  std::array<int, 5> buf2 = {1, 1, 1, 1, 1};
+  // auto buf2 = std::to_array<int, 5>({1, 1, 1, 1, 1});
+  auto buf2 = std::to_array<int, 5>({1, 1, 1, 1, 1});
   buf2[index] = 11;
 
   constexpr int size = 5;
   // Expected rewrite:
-  // constexpr std::array<int, size> buf3 = {1, 1, 1, 1, 1};
-  constexpr std::array<int, size> buf3 = {1, 1, 1, 1, 1};
+  // constexpr auto buf3 = std::to_array<int, size>({1, 1, 1, 1, 1});
+  constexpr auto buf3 = std::to_array<int, size>({1, 1, 1, 1, 1});
   (void)buf3[index];
 
   // Expected rewrite:
@@ -41,34 +41,34 @@ void fct() {
   buf4[index] = 11;
 
   // Expected rewrite:
-  // std::array<ns1::Type, 5> buf5 = {{{1}, {1}, {1}, {1}, {1}}};
-  std::array<ns1::Type1, 5> buf5 = {{{1}, {1}, {1}, {1}, {1}}};
+  // auto buf5 = std::to_array<ns1::Type1>({{1}, {1}, {1}, {1}, {1}});
+  auto buf5 = std::to_array<ns1::Type1>({{1}, {1}, {1}, {1}, {1}});
   buf5[index].value = 11;
 
   // Expected rewrite:
-  // std::array<uint16_t, 3> buf6;
-  std::array<uint16_t, 3> buf6 = {1, 1, 1};
+  // auto buf6 = std::to_array<uint16_t>({1, 1, 1});
+  auto buf6 = std::to_array<uint16_t>({1, 1, 1});
   buf6[index] = 1;
 
   // Expected rewrite:
-  // std::array<int (*)(int), 16> buf7 = {nullptr};
-  std::array<int (*)(int), 16> buf7 = {nullptr};
+  // auto buf7 = std::to_array<int (*)(int), 16>({nullptr});
+  auto buf7 = std::to_array<int (*)(int), 16>({nullptr});
   buf7[index] = nullptr;
 
   // Expected rewrite:
-  // std::array<int (**)[], 16> buf8 = {nullptr};
-  std::array<int(**)[], 16> buf8 = {nullptr};
+  // auto buf8 = std::to_array<int(**)[], 16>({nullptr});
+  auto buf8 = std::to_array<int(**)[], 16>({nullptr});
   buf8[index] = nullptr;
 
   using Arr = int(**)[];
   // Expected rewrite:
-  // std::array<Arr, buf3[0]> buf9 = {nullptr};
-  std::array<Arr, buf3[0]> buf9 = {nullptr};
+  // auto buf9 = std::to_array<Arr, buf3[0]>({nullptr});
+  auto buf9 = std::to_array<Arr, buf3[0]>({nullptr});
   buf9[index] = nullptr;
 
   // Expected rewrite:
-  // static std::array<const volatile char*, 3> buf10 = {"1", "2", "3"};
-  static std::array<const volatile char*, 3> buf10 = {"1", "2", "3"};
+  // static auto buf10 = std::to_array<const volatile char*>({"1", "2", "3"});
+  static auto buf10 = std::to_array<const volatile char*>({"1", "2", "3"});
   buf10[index] = nullptr;
 
   index = kPropertyVisitedIDs[index];

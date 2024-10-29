@@ -52,12 +52,13 @@ void fct() {
   // struct FuncBuffer2 {
   //   int val;
   // };
-  // static const std::array<FuncBuffer2, 4> func_buffer2 = {{{1}, {2}, {3},
-  // {4}}};
+  // static const auto func_buffer2 =
+  //     std::to_array<FuncBuffer2>({{1}, {2}, {3}, {4}});
   struct FuncBuffer2 {
     int val;
   };
-  static const std::array<FuncBuffer2, 4> func_buffer2 = {{{1}, {2}, {3}, {4}}};
+  static const auto func_buffer2 =
+      std::to_array<FuncBuffer2>({{1}, {2}, {3}, {4}});
 
   // Buffer accesses to trigger spanification.
   func_buffer[2].val = 3;

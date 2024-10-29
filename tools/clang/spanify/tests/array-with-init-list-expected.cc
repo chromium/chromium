@@ -23,43 +23,47 @@ void test_with_structs() {
   const int index = 0;
 
   // Expected rewrite:
-  // std::array<Aggregate, 3> buf0 = {{{13, 1, 7}, {14, 2, 5}, {15, 2, 4}}};
-  std::array<Aggregate, 3> buf0 = {{{13, 1, 7}, {14, 2, 5}, {15, 2, 4}}};
+  // auto buf0 = std::to_array<Aggregate>({{13, 1, 7}, {14, 2, 5}, {15, 2, 4}});
+  auto buf0 = std::to_array<Aggregate>({{13, 1, 7}, {14, 2, 5}, {15, 2, 4}});
   buf0[index].a = 0;
 
   // Expected rewrite:
-  // std::array<Aggregate, 2> buf1 = {
+  // auto buf1 = std::to_array<Aggregate, 2>({
   //     Build(1, 2, 3),
   //     Build(4, 5, 6),
-  // };
-  std::array<Aggregate, 2> buf1 = {
+  // });
+  auto buf1 = std::to_array<Aggregate, 2>({
       Build(1, 2, 3),
       Build(4, 5, 6),
-  };
+  });
   buf1[index].a = 0;
 
   // Expected rewrite:
-  // std::array<Aggregate, 3> buf2 = {{
+  // auto buf2 = std::to_array<Aggregate, 3>({
   //     Build(1, 2, 3),
   //     {1, 2, 3},
   //     Build(4, 5, 6),
-  // }};
-  std::array<Aggregate, 3> buf2 = {{
+  // });
+  auto buf2 = std::to_array<Aggregate, 3>({
       Build(1, 2, 3),
       {1, 2, 3},
       Build(4, 5, 6),
-  }};
+  });
   buf2[index].a = 0;
 }
 
 void test_with_arrays() {
   // Expected rewrite:
-  // std::array<int[3], 3> buf0 = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}};
-  std::array<int[3], 3> buf0 = {{
+  // auto buf0 = std::to_array<std::array<int, 3>, 3>({
+  //     {0, 1, 2},
+  //     {3, 4, 5},
+  //     {6, 7, 8},
+  // });
+  auto buf0 = std::to_array<std::array<int, 3>, 3>({
       {0, 1, 2},
       {3, 4, 5},
       {6, 7, 8},
-  }};
+  });
   buf0[0][0] = 0;
 
   // Since function returning array is not allowed, we don't need to
@@ -74,7 +78,7 @@ void test_with_arrays() {
 void test_with_strings() {
   const int index = 0;
   // Expected rewrite:
-  // std::array<std::string, 3> buf0 = {"1", "2", "3"};
-  std::array<std::string, 3> buf0 = {"1", "2", "3"};
+  // auto buf0 = std::to_array<std::string>({"1", "2", "3"});
+  auto buf0 = std::to_array<std::string>({"1", "2", "3"});
   buf0[index] = "4";
 }

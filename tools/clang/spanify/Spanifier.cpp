@@ -534,43 +534,6 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   return data_node;
 }
 
-// Gets the array size as written in the source code (if possible), otherwise
-// relies on the compile time value as seen in the ConstantArrayType.
-// Returns an empty string in case of error.
-std::string getArraySize(const MatchFinder::MatchResult& result) {
-  const clang::SourceManager& source_manager = *result.SourceManager;
-  const clang::ASTContext& ast_context = *result.Context;
-  const auto& lang_opts = ast_context.getLangOpts();
-
-  const auto* type_loc =
-      result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
-
-  auto array_type_loc = type_loc->getAs<clang::ArrayTypeLoc>();
-
-  // This is the case for arrays where the size expression is omitted. Example:
-  // int a[] = {1,2,3,4};
-  // For such cases, we rely on getting the compile-time size from the
-  // ConstantArrayType below.
-  if (array_type_loc.getLBracketLoc() != array_type_loc.getRBracketLoc()) {
-    auto source_range =
-        clang::SourceRange(array_type_loc.getLBracketLoc().getLocWithOffset(1),
-                           array_type_loc.getRBracketLoc());
-    auto size_text = clang::Lexer::getSourceText(
-                         clang::CharSourceRange::getCharRange(source_range),
-                         source_manager, lang_opts)
-                         .str();
-    if (!size_text.empty()) {
-      return size_text;
-    }
-  }
-  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>("array_type");
-  if (const clang::ConstantArrayType* type =
-          clang::dyn_cast<clang::ConstantArrayType>(array_type)) {
-    return std::to_string(*type->getSize().getRawData());
-  }
-  assert(false && "Unable to determine array size.");
-}
-
 // Takes in a copy of a variable assumed to be in snake_case and switches it
 // into CamelCase.
 std::string snakeCaseToCamelCase(std::string snake_case) {
@@ -673,6 +636,50 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
   return std::make_pair(new_class_name_string, class_definition);
 }
 
+// Gets the array size as written in the source code if it's explicitly
+// specified. Otherwise, returns the empty string.
+std::string GetArraySize(const clang::ArrayTypeLoc& array_type_loc,
+                         const clang::SourceManager& source_manager,
+                         const clang::ASTContext& ast_context) {
+  assert(!array_type_loc.isNull());
+
+  clang::SourceRange source_range(
+      array_type_loc.getLBracketLoc().getLocWithOffset(1),
+      array_type_loc.getRBracketLoc());
+  return clang::Lexer::getSourceText(
+             clang::CharSourceRange::getCharRange(source_range), source_manager,
+             ast_context.getLangOpts())
+      .str();
+}
+
+// Produces a std::array type from the given (potentially nested) C array type.
+// Returns a string representation of the std::array type.
+std::string RewriteCArrayToStdArray(const clang::QualType& type,
+                                    const clang::TypeLoc& type_loc,
+                                    const clang::SourceManager& source_manager,
+                                    const clang::ASTContext& ast_context) {
+  const clang::ArrayType* array_type = ast_context.getAsArrayType(type);
+  if (!array_type) {
+    return GetTypeAsString(type, ast_context);
+  }
+  const clang::ArrayTypeLoc& array_type_loc =
+      type_loc.getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
+  assert(!array_type_loc.isNull());
+
+  const clang::QualType& element_type = array_type->getElementType();
+  const clang::TypeLoc& element_type_loc = array_type_loc.getElementLoc();
+  const std::string& element_type_as_string = RewriteCArrayToStdArray(
+      element_type, element_type_loc, source_manager, ast_context);
+
+  const std::string& size_as_string =
+      GetArraySize(array_type_loc, source_manager, ast_context);
+
+  std::ostringstream result;
+  result << "std::array<" << element_type_as_string << ", " << size_as_string
+         << ">";
+  return result.str();
+}
+
 // Returns an initializer list(`initListExpr`) of the given
 // `var_decl`(`clang::VarDecl`) if exists. Otherwise, returns `nullptr`.
 const clang::InitListExpr* GetArrayInitList(const clang::VarDecl* var_decl) {
@@ -711,68 +718,58 @@ const clang::InitListExpr* GetArrayInitList(const clang::VarDecl* var_decl) {
   return clang::dyn_cast_or_null<clang::InitListExpr>(*first_child);
 }
 
-// Returns true if the array's initializer list needs one more brace({}) after
-// rewriting into `std::array<>`.
-bool ArrayInitListNeedsExtraBrace(clang::QualType element_type,
-                                  const clang::InitListExpr* init_list_expr) {
-  if (!init_list_expr) {
-    return false;
-  }
-  if (!(element_type->isArrayType() ||
-        element_type->isStructureOrClassType())) {
-    return false;
-  }
-  // `std::array` is a struct that encapsulates a fixed-size array as a member
-  // variable. It's an aggregate type, meaning it can be initialized using
-  // aggregate initialization (like plain arrays and structs).  Unlike
-  // `std::vector` or other containers, `std::array` doesn't have constructors
-  // that explicitly take initializer lists. However, aggregate initialization
-  // allows sub elements to be initialized with initializer lists.
-  //
-  // The extra brace is required to indicate that the inner initializer list
-  // corresponds to the initialization of a single element of the inner
-  // array, not a field of the wrapper (e.g. a field of std::array).
-  //
-  // For instance:
-  // std::array<Aggregate, 1> buffer =
-  // {      // Initialization of std::array<Aggregate,1>
-  //   {    // Initialization of std::array<Aggregate,1>::inner_ C-style array.
-  //     {  // Initialization of Aggregate
-  //        1,2,3
-  //     }
-  //   }
-  // }
-  //
-  for (unsigned int index = 0; index < init_list_expr->getNumInits(); ++index) {
-    const clang::Expr* expr = init_list_expr->getInit(index);
-    if (clang::dyn_cast_or_null<clang::InitListExpr>(expr)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
-  auto* array_type_loc =
+  const auto* type_loc =
       result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
-  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>("array_type");
-  auto* array_variable =
+  const clang::ArrayTypeLoc& array_type_loc =
+      type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
+  assert(!array_type_loc.isNull());
+  const auto* array_type =
+      result.Nodes.getNodeAs<clang::ArrayType>("array_type");
+  const auto* array_variable =
       result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+  const std::string& array_variable_as_string =
+      array_variable->getNameAsString();
+  const std::string& array_size_as_string =
+      GetArraySize(array_type_loc, source_manager, ast_context);
+  const clang::QualType& element_type = array_type->getElementType();
 
-  auto element_type = array_type->getElementType();
+  std::stringstream qualifier_string;
+  if (array_variable->isConstexpr()) {
+    qualifier_string << "constexpr ";
+  }
+  if (array_variable->isStaticLocal()) {
+    qualifier_string << "static ";
+  }
+  // `const int buf[] = ...` must be `const std::array<int,...> buf = ...`.
+  if (!element_type->isPointerOrReferenceType() &&
+      element_type.isConstant(ast_context)) {
+    qualifier_string << "const ";
+  }
 
+  // TODO(yukishiino): Currently we support only simple cases like:
+  //   - Unnamed struct/class
+  //   - Redundant struct/class keyword
+  // and
+  //   - Multi-dimensional array
+  // But we need to support combinations of above:
+  //   - Multi-dimensional array of unnamed struct/class
+  //   - Multi-dimensional array with redundant struct/class keyword
   std::string element_type_as_string;
-
-  // If the `element_type` is an elaborated type with a keyword, i.e.
-  // `struct`, `class`, `union`, we will create another ElaboratedType
-  // without the keyword. So `struct funcHasName` will be `funcHasHame`.
-  if (element_type->isElaboratedTypeSpecifier()) {
-    auto original_type = element_type->getAs<clang::ElaboratedType>();
+  const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
+      element_type, array_variable, array_variable_as_string, ast_context);
+  if (!unnamed_class.empty()) {
+    element_type_as_string = unnamed_class;
+  } else if (element_type->isElaboratedTypeSpecifier()) {
+    // If the `element_type` is an elaborated type with a keyword, i.e.
+    // `struct`, `class`, `union`, we will create another ElaboratedType
+    // without the keyword. So `struct funcHasName` will be `funcHasHame`.
+    auto* original_type = element_type->getAs<clang::ElaboratedType>();
     // Create a new ElaboratedType without 'struct', 'class', 'union'
     // keywords.
     auto new_element_type = ast_context.getElaboratedType(
@@ -786,16 +783,16 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
         nullptr);
     element_type_as_string = GetTypeAsString(new_element_type, ast_context);
   } else {
-    element_type_as_string = GetTypeAsString(element_type, ast_context);
+    element_type_as_string =
+        RewriteCArrayToStdArray(element_type, array_type_loc.getElementLoc(),
+                                source_manager, ast_context);
   }
 
-  std::string array_size_as_string = getArraySize(result);
-  std::string array_variable_as_string = array_variable->getNameAsString();
-  std::stringstream qualifier_string;
+  const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
 
-  //   static const char* array[32] = ...;
+  //   static const char* array[] = {...};
   //   |            |
-  //   |            +--array_type_loc->getSourceRange().getBegin()
+  //   |            +-- type_loc->getSourceRange().getBegin()
   //   |
   //   +---- array_variable->getSourceRange().getBegin()
   //
@@ -804,49 +801,33 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   //
   // The array must be rewritten into:
   //
-  //   static std::array<const char*, 32> array = ...;
+  //   static auto array = std::to_array<const char*>({...});
   //
-  // So the `replace_range` need to include the `const`.
+  // So the `replacement_range` need to include the `const` and
+  // `init_list_expr` if any.
   clang::SourceRange replacement_range = {
       array_variable->getSourceRange().getBegin(),
-      array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
-
-  if (array_variable->isConstexpr()) {
-    qualifier_string << "constexpr ";
-  }
-  if (array_variable->isStaticLocal()) {
-    qualifier_string << "static ";
-  }
-
-  const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
-      element_type, array_variable, array_variable_as_string, ast_context);
-  if (!unnamed_class.empty()) {
-    element_type_as_string = unnamed_class;
-  }
-
-  // `const int buf[] = ...` must be `const std::array<int,...> buf = ...`.
-  if (!element_type->isPointerOrReferenceType() &&
-      element_type.isConstant(ast_context)) {
-    qualifier_string << "const ";
-  }
-
-  const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
+      init_list_expr ? init_list_expr->getEndLoc().getLocWithOffset(1)
+                     : type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
   std::string replacement_text;
-  if (ArrayInitListNeedsExtraBrace(element_type, init_list_expr)) {
+  if (init_list_expr) {
     clang::Rewriter rw(source_manager, ast_context.getLangOpts());
-    std::string init_expr_as_string = rw.getRewrittenText(clang::SourceRange(
-        init_list_expr->getBeginLoc(), init_list_expr->getEndLoc()));
+    std::string init_expr_as_string =
+        rw.getRewrittenText(init_list_expr->getSourceRange());
 
-    replacement_range =
-        clang::SourceRange(array_variable->getSourceRange().getBegin(),
-                           init_list_expr->getEndLoc().getLocWithOffset(1));
-    replacement_text = llvm::formatv(
-        "std::array<{0},{1}> {2} = {{{3}}", element_type_as_string,
-        array_size_as_string, array_variable_as_string, init_expr_as_string);
+    if (array_size_as_string.empty()) {
+      replacement_text = llvm::formatv(
+          "auto {0} = std::to_array<{1}>({2})", array_variable_as_string,
+          element_type_as_string, init_expr_as_string);
+    } else {
+      replacement_text = llvm::formatv(
+          "auto {0} = std::to_array<{1}, {2}>({3})", array_variable_as_string,
+          element_type_as_string, array_size_as_string, init_expr_as_string);
+    }
   } else {
     replacement_text =
-        llvm::formatv("std::array<{0},{1}> {2}", element_type_as_string,
+        llvm::formatv("std::array<{0}, {1}> {2}", element_type_as_string,
                       array_size_as_string, array_variable_as_string);
   }
 

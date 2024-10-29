@@ -230,8 +230,8 @@ void fct() {
 namespace buffers_into_arrays {
 void fct() {
   // Expected rewrite:
-  // std::array<int, 4> buf = {1, 2, 3, 4};
-  std::array<int, 4> buf = {1, 2, 3, 4};
+  // auto buf = std::to_array<int>({1, 2, 3, 4});
+  auto buf = std::to_array<int>({1, 2, 3, 4});
   int index = 0;
   buf[index] = 11;
 }
