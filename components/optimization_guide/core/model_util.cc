@@ -143,6 +143,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ModelExecutionFeatureSummarize";
     case proto::OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
       return "PasswordManagerFormClassification";
+    case proto::OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION:
+      return "NotificationContentDetection";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
