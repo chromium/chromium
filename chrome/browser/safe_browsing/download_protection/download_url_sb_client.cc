@@ -28,7 +28,8 @@ DownloadUrlSBClient::DownloadUrlSBClient(
     CheckDownloadCallback callback,
     const scoped_refptr<SafeBrowsingUIManager>& ui_manager,
     const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager)
-    : item_(item),
+    : SafeBrowsingDatabaseManager::Client(GetPassKey()),
+      item_(item),
       sha256_hash_(item->GetHash()),
       url_chain_(item->GetUrlChain()),
       referrer_url_(item->GetReferrerUrl()),

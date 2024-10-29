@@ -116,6 +116,8 @@ class AbusiveNotificationPermissionsManager {
       : safe_browsing::SafeBrowsingDatabaseManager::Client {
    public:
     SafeBrowsingCheckClient(
+        base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
+            pass_key,
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>

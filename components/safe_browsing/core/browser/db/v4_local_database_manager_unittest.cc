@@ -254,12 +254,15 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   TestClient(SBThreatType sb_threat_type,
              const GURL& url,
              V4LocalDatabaseManager* manager_to_cancel = nullptr)
-      : expected_sb_threat_type_(sb_threat_type),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        expected_sb_threat_type_(sb_threat_type),
         expected_urls_(1, url),
         manager_to_cancel_(manager_to_cancel) {}
 
   TestClient(SBThreatType sb_threat_type, const std::vector<GURL>& url_chain)
-      : expected_sb_threat_type_(sb_threat_type), expected_urls_(url_chain) {}
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        expected_sb_threat_type_(sb_threat_type),
+        expected_urls_(url_chain) {}
 
   void OnCheckBrowseUrlResult(const GURL& url,
                               SBThreatType threat_type,
@@ -303,7 +306,8 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
   // called.
   explicit TestAllowlistClient(bool match_expected,
                                SBThreatType expected_sb_threat_type)
-      : expected_sb_threat_type_(expected_sb_threat_type),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        expected_sb_threat_type_(expected_sb_threat_type),
         match_expected_(match_expected) {}
 
   void OnCheckAllowlistUrlResult(bool is_allowlisted) override {
@@ -324,7 +328,8 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
 class TestExtensionClient : public SafeBrowsingDatabaseManager::Client {
  public:
   TestExtensionClient(const std::set<FullHashStr>& expected_bad_crxs)
-      : expected_bad_crxs_(expected_bad_crxs),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        expected_bad_crxs_(expected_bad_crxs),
         on_check_extensions_result_called_(false) {}
 
   void OnCheckExtensionsResult(const std::set<FullHashStr>& bad_crxs) override {

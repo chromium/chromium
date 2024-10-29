@@ -20,14 +20,28 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "url/gurl.h"
 
+class AbusiveNotificationPermissionsManager;
+class AutoPictureInPictureSafeBrowsingCheckerClient;
+class CrowdDenySafeBrowsingRequest;
+class SafeBrowsingRequest;
+
+namespace extensions {
+class Blocklist;
+}  // namespace extensions
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace subresource_filter {
+class SubresourceFilterSafeBrowsingClientRequest;
+}  // namespace subresource_filter
 
 namespace safe_browsing {
 
@@ -63,7 +77,13 @@ class SafeBrowsingDatabaseManager
   // request is still pending.
   class Client {
    public:
-    Client();
+    // Use a `pass_key` to require owners review for new integrations
+    // with the Safe Browsing database. For tests, this can be provided
+    // by `GetPassKeyForTesting()`. For non-test code, please add a
+    // friend declaration and use `GetPassKey()`.
+    explicit Client(base::PassKey<Client> pass_key);
+
+    Client() = delete;
     virtual ~Client();
 
     // Called when the result of checking the API blocklist is known.
@@ -92,7 +112,24 @@ class SafeBrowsingDatabaseManager
     // Returns a WeakPtr to this.
     base::WeakPtr<Client> GetWeakPtr();
 
+    static base::PassKey<Client> GetPassKeyForTesting();
+
    private:
+    // safe_browsing clients:
+    friend class AllowlistCheckerClient;
+    friend class DatabaseManagerMechanism;
+    friend class DownloadUrlSBClient;
+
+    // External clients:
+    friend class ::AbusiveNotificationPermissionsManager;
+    friend class ::AutoPictureInPictureSafeBrowsingCheckerClient;
+    friend class ::CrowdDenySafeBrowsingRequest;
+    friend class extensions::Blocklist;
+    friend class ::SafeBrowsingRequest;
+    friend class subresource_filter::SubresourceFilterSafeBrowsingClientRequest;
+
+    static base::PassKey<Client> GetPassKey();
+
     base::WeakPtrFactory<Client> weak_factory_{this};
   };
 

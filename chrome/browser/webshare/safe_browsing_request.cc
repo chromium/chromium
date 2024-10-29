@@ -29,11 +29,15 @@ constexpr base::TimeDelta kSafeBrowsingCheckTimeout = base::Seconds(2);
 class SafeBrowsingRequest::SafeBrowsingClient
     : public safe_browsing::SafeBrowsingDatabaseManager::Client {
  public:
-  SafeBrowsingClient(scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-                         database_manager,
-                     base::WeakPtr<SafeBrowsingRequest> handler,
-                     scoped_refptr<base::TaskRunner> handler_task_runner)
-      : database_manager_(database_manager),
+  SafeBrowsingClient(
+      base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
+          pass_key,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager,
+      base::WeakPtr<SafeBrowsingRequest> handler,
+      scoped_refptr<base::TaskRunner> handler_task_runner)
+      : safe_browsing::SafeBrowsingDatabaseManager::Client(std::move(pass_key)),
+        database_manager_(database_manager),
         handler_(handler),
         handler_task_runner_(handler_task_runner) {}
 
@@ -95,6 +99,7 @@ SafeBrowsingRequest::SafeBrowsingRequest(
     base::OnceCallback<void(bool)> callback)
     : callback_(std::move(callback)) {
   client_ = std::make_unique<SafeBrowsingClient>(
+      safe_browsing::SafeBrowsingDatabaseManager::Client::GetPassKey(),
       database_manager, weak_factory_.GetWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());
   client_->CheckUrl(url);

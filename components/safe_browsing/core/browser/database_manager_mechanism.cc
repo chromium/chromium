@@ -18,6 +18,7 @@ DatabaseManagerMechanism::DatabaseManagerMechanism(
     CheckBrowseUrlType check_type,
     bool check_allowlist)
     : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
+      SafeBrowsingDatabaseManager::Client(GetPassKey()),
       check_allowlist_(check_allowlist),
       check_type_(check_type) {}
 

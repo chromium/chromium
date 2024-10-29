@@ -324,7 +324,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                      public SafeBrowsingDatabaseManager::Client {
  public:
   TestSBClient()
-      : threat_type_(SB_THREAT_TYPE_SAFE),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        threat_type_(SB_THREAT_TYPE_SAFE),
         safe_browsing_service_(g_browser_process->safe_browsing_service()) {}
 
   TestSBClient(const TestSBClient&) = delete;

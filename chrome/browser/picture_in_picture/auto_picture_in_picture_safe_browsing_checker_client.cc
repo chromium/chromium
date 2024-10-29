@@ -12,7 +12,8 @@ AutoPictureInPictureSafeBrowsingCheckerClient::
             database_manager,
         base::TimeDelta safe_browsing_check_delay,
         ReportUrlSafetyCb report_url_safety_cb)
-    : database_manager_(database_manager),
+    : safe_browsing::SafeBrowsingDatabaseManager::Client(GetPassKey()),
+      database_manager_(database_manager),
       safe_browsing_check_delay_(safe_browsing_check_delay),
       report_url_safety_cb_(std::move(report_url_safety_cb)),
       threat_types_(safe_browsing::CreateSBThreatTypeSet(

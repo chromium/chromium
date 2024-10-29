@@ -62,7 +62,8 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   TestClient(scoped_refptr<RemoteSafeBrowsingDatabaseManager> db,
              const GURL& expected_url,
              SBThreatType expected_threat_type)
-      : db_(db),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        db_(db),
         expected_url_(expected_url),
         expected_threat_type_(expected_threat_type) {}
 

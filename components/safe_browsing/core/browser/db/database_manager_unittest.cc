@@ -33,7 +33,9 @@ namespace {
 
 class TestClient : public SafeBrowsingDatabaseManager::Client {
  public:
-  TestClient() : callback_invoked_(false) {}
+  TestClient()
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        callback_invoked_(false) {}
 
   TestClient(const TestClient&) = delete;
   TestClient& operator=(const TestClient&) = delete;
