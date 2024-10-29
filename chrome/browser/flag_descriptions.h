@@ -247,18 +247,6 @@ extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
-extern const char
-    kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];
-
-extern const char
-    kEnableSupervisedUserSkipParentApprovalToInstallExtensionsName[];
-extern const char
-    EnableSupervisedUserSkipParentApprovalToInstallExtensionsDescription[];
-
-extern const char kUpdatedSupervisedUserExtensionApprovalStringsName[];
-extern const char kUpdatedSupervisedUserExtensionApprovalStringsDescription[];
-
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 

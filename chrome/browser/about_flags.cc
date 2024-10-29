@@ -8156,39 +8156,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kUseOutOfProcessVideoDecoding)},
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    {"enable-family-link-extensions-permissions",
-     flag_descriptions::
-         kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName,
-     flag_descriptions::
-         kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop)},
-
-    {"enable-updated-supervised-user-extension-approval-strings",
-     flag_descriptions::kUpdatedSupervisedUserExtensionApprovalStringsName,
-     flag_descriptions::
-         kUpdatedSupervisedUserExtensionApprovalStringsDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings)},
-
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"enable-skip-parent-approval-to-install-extensions",
-     flag_descriptions::
-         kEnableSupervisedUserSkipParentApprovalToInstallExtensionsName,
-     flag_descriptions::
-         EnableSupervisedUserSkipParentApprovalToInstallExtensionsDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         supervised_user::
-             kEnableSupervisedUserSkipParentApprovalToInstallExtensions)},
-#endif
-
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,
      flag_descriptions::kNotificationSchedulerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(notifications::features::kNotificationScheduleService)},
