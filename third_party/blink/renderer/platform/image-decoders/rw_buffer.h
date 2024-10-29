@@ -29,7 +29,7 @@ class PLATFORM_EXPORT RWBuffer {
    public:
     explicit ROIter(RWBuffer*, size_t);
     size_t size() const;
-    const void* data() const;
+    const uint8_t* data() const;
     // Checks whether there is another block available and advances the iterator
     // if there is.
     bool Next();
@@ -107,7 +107,7 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
      * Return the current continuous block of memory, or nullptr if the
      * iterator is exhausted
      */
-    const void* data() const;
+    const uint8_t* data() const;
 
     /**
      * Returns the number of bytes in the current contiguous block of memory,
